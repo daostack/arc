@@ -3,8 +3,11 @@ The DAOStack Roadmap
 
 DAOStack 0.1 (end of October)
 ------------
+(Output from **DAOStack Workshop One**: Oct 19-23)
+
 - Implementation will be in the form of a preliminary whitepaper draft only, no code.
 - Purchasing DAOStack tokens will be available via a perliminary crowdsale / ICO.
+
 
 DAOStack 0.2 (Q4 2016)
 ----------------------
