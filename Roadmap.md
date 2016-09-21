@@ -5,7 +5,8 @@ DAOStack 0.1 (end of October)
 
 DAOStack 0.2 (Q4 2016)
 ----------------------
-A solid technical spec
+- A solid technical spec.
+- The spec will undergo multiple, successful independant security audits by field experts. 
 
 DAOStack 0.3 (Q1 2017)
 ----------------------
