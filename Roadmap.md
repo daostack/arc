@@ -1,3 +1,6 @@
+The DAOStack Roadmap
+====================
+
 DAOStack 0.1 (end of October)
 ------------
 - Implementation will be in the form of a preliminary whitepaper draft only, no code.
