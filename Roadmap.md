@@ -6,7 +6,8 @@ DAOStack 0.1 (end of October)
 (Output from **DAOStack Workshop One**: Oct 19-23)
 
 - Implementation will be in the form of a preliminary whitepaper draft only, no code.
-- Purchasing DAOStack tokens will be available via a preliminary crowdsale / ICO.
+- DAOStack tokens will be available for purchase via a preliminary crowdsale / ICO.
+- The ICO will only accept eth, and will be capped (max funds collected in the crowdsale = cost of two large pizzas).
 
 
 DAOStack 0.2 (Q4 2016)
