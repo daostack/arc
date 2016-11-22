@@ -43,7 +43,9 @@ Most of the code is in the directory `project`
 
 ## Deployment
 
+To deploy a test contract on the `morden` test net:
 
+    populus deploy MyContract -- 
 
 # Using the contract
 
