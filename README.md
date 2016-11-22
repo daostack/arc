@@ -5,6 +5,3 @@ DAOStack is a [Decentralized Autonomous Organization](https://en.wikipedia.org/w
 See [The DAOStack roadmap](Roadmap.md) and the [STEPS](STEPS.md).
 
 If you want to run the tests, or to contribute, please checkout the file  [CONTRIBUTING.md](CONTRIBUTING.md)
-
-
-testing push
