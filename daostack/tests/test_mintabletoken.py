@@ -1,4 +1,5 @@
-from fixtures import mintable_token
+from fixtures import mintable_token, reputation
+
 
 def test_sanity(chain):
     """test simple transfers to and from the token account"""

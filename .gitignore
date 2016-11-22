@@ -1,1 +1,8 @@
 venv/
+*sublime*
+*.pyc
+daostack/build/
+daostack/chains/
+daostack/logs/
+daostack/.cache/
+fabfile.py
