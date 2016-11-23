@@ -12,11 +12,11 @@ It only provides a partial implementation of the standard - the "allowance" mech
 
 ### Solidity Contract
 
-[Token.sol](daostack/contracts/Token.sol)
+[Token.sol](../daostack/contracts/Token.sol)
 
 ### Tests
 
-[test_token](daostack/tests/test_token.py)
+[test_token](../daostack/tests/test_token.py)
 
 ### Address on the blockchain
 

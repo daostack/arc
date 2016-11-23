@@ -19,11 +19,11 @@ It's just a standard contract.  Although this one's perhaps slightly more elegan
 
 ### Solidity code
 
-[Owned.sol](daostack/contracts/Owned.sol)
+[Owned.sol](../daostack/contracts/Owned.sol)
 
 ### Tests
 
-[test_owned.py](daostack/tests/test_owned.py)
+[test_owned.py](../daostack/tests/test_owned.py)
 
 ### Address on the blockchain
 
