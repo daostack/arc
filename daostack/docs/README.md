@@ -4,15 +4,11 @@
 Steps from 0 to MVP, contract can do:
 
 
-1. Owned contract 
-    * contract with an owner, ownership can be transfered (ownership will later be transfered to a “reputation contract”)
-1. Standard ERC20 token contract
-1. Token contract in wich the owner is also  single “miner” 
-    * (i.e. the owner can print/mint new tokens)
-1. Reputation Contract
-    * Initial distribution to owner of contract (default number)
-    * From there on, owner can distribute power score to an address
-1.   Reputation contract with weighted median voting (vote /in [0,/infty) 
+1. [Owned contract](owned.md)
+2. [Standard ERC20 token contract](token.md)
+3. [Token contract in wich the owner is also  single “miner”](mintabletoken.md)
+4. [Reputation Contract](reputation.md)
+5. [Reputation contract with weighted median voting (vote /in [0,/infty)](votingcontract.md)
 1. Reputation contract “owned by itself” 
     * (i.e. rep can be redistributed by median voting)
 1. Combine reputation contract with tojen contract 

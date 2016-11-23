@@ -1,25 +1,35 @@
 import pytest
 
 
-def test_sanity(chain):
-    """test setting and getting reputation by the owner"""
-    rep = chain.get_contract('Reputation') #, deploy_kwargs=kwargs)
+@pytest.fixture
+def reputation(chain):
+    rep = chain.get_contract('Reputation')
+    return rep
 
-    accounts = chain.web3.eth.accounts
-    assert rep.call().owner() == accounts[0]
-    rep.transact().set_reputation(accounts[1], 10000)
-    rep.transact().set_reputation(accounts[2], 3141)
+
+def test_sanity(chain, accounts, reputation):
+    """test setting and getting reputation by the owner"""
+
+    # the owner of the contract is its creator, accounts[0]
+    assert reputation.call().owner() == accounts[0]
+
+    # we can set the reputation of accounts[1] and accounts[2]
+    reputation.transact().set_reputation(accounts[1], 10000)
+    reputation.transact().set_reputation(accounts[2], 3141)
+
+    assert reputation.call().reputationOf(accounts[2]) == 3141
+
+
+def test_type_errors(chain, accounts, reputation):
     # this should raise an error
     try:
-        rep.transact().set_reputation(accounts[2], 3.14)
+        reputation.transact().set_reputation(accounts[2], 3.14)
     except TypeError:
         pass
 
-    assert rep.call().reputationOf(accounts[2]) == 3141
 
+def test_ownership(chain, accounts, reputation):
     # setting the rep from another account should fail
     with pytest.raises(ValueError):
-        rep.transact(transaction={'from': accounts[3]}).set_reputation(accounts[3], 1234)
-
-
-        
+        reputation.transact(transaction={'from': accounts[3]}).set_reputation(accounts[3], 1234)
+       

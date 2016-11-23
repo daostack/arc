@@ -6,3 +6,4 @@ daostack/chains/
 daostack/logs/
 daostack/.cache/
 fabfile.py
+.cache/
