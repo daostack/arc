@@ -8,7 +8,8 @@ Steps from 0 to MVP, contract can do:
 2. [Standard ERC20 token contract](token.md)
 3. [Token contract in wich the owner is also  single “miner”](mintabletoken.md)
 4. [Reputation Contract](reputation.md)
-5. [Reputation contract with weighted median voting](votingcontract.md)
+5. [Reputation contract with weighted median voting (votes in limited specifed range)](votingcontract.md)
+6. [Reputation contract with weighted median voting (votes in range 0-infinity)](votingcontract.md)
 1. Reputation contract “owned by itself” 
     * (i.e. rep can be redistributed by median voting)
 1. Combine reputation contract with tojen contract 
