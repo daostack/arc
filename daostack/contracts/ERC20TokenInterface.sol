@@ -1,3 +1,4 @@
+pragma solidity ^0.4.4;
 // This contract is from https://github.com/ConsenSys/Tokens/edit/master/Token_Contracts/contracts/Token.sol
 
 
