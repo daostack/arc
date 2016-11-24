@@ -14,11 +14,11 @@ Works.
 
 ### Solidity code
 
-[MintableToken.sol](daostack/contracts/MintableToken.sol)
+[MintableToken.sol](../daostack/contracts/MintableToken.sol)
 
 ### Tests
 
-[test_mintabletoken.py](daostack/tests/test_mintabletoken.py)
+[test_mintabletoken.py](../daostack/tests/test_mintabletoken.py)
 
 ### Address on the blockchain
 
