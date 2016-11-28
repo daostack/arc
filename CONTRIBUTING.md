@@ -9,49 +9,22 @@ These contracts are tested using the populus framework.
 
 ## Installation
 
-Install `pip` and `virtualenv` on your platform, and install the solidity compiles according to the instructions here: http://solidity.readthedocs.io/en/develop/installing-solidity.html.
+Make sure you have a recent version of node.js and npm:
 
-The following instructions do this on Debian:
-    
-    sudo apt-get install python-pip python-virtualenv
-    sudo add-apt-repository ppa:ethereum/ethereum
-    sudo apt-get update
-    sudo apt-get install solc
+    npm install -g npm
+    sudo npm cache clean -f
+    sudo npm install -g n
+    sudo n stable
 
-Or, on mac:
-
-    brew update
-    brew upgrade
-    brew tap ethereum/ethereum
-    brew install solidity
-    brew linkapps solidity
-
-Then clone this repository, and run the following commands
-
-    
-    git clone git@github.com:daostack/daostack.git
-    cd daostack
-    # create a virtual environment to isolate the project from your system python
-    virtualenv venv
-    source venv/bin/activate
-    pip install --upgrade pip setuptools
-    pip install -r daostack/requirements.txt
-
+    npm install truffle -g
+    npm install -g ethereumjs-testrpc
 
 ## Run tests
 
-Before running the tests in populus, you need to configure a local test chain:
- 
+to compile:
+    
+    truffle compile
 
-    # activate the virtualenv if you have not done so yet
-    source venv/bin/activate
-    # configure a local chain called local_test
-    populus chain config local_test
-
-Now you are ready to run the tests:
-
-    cd daostack
-    py.test tests/
 
 
 ## Deployment

@@ -7,3 +7,4 @@ daostack/logs/
 daostack/.cache/
 fabfile.py
 .cache/
+daostack/node_modules/
