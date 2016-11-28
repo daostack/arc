@@ -5,7 +5,7 @@ A series of Smart Contracts that will hopefully converge to a DAO that implement
 
 # Testing and deploying
 
-These contracts are tested using the populus framework.
+These contracts are tested using the truffle framework
 
 ## Installation
 
@@ -21,21 +21,18 @@ Make sure you have a recent version of node.js and npm:
 
 ## Run tests
 
-to compile:
+Start testrpc
+
+    testrpc
+
+And in another window, run the tests:
     
-    truffle compile
+    cd daostack
+    truffle test
 
 
+# Contributing
 
-## Deployment
+Bug reports and pull requests very much welcomed.
 
-To deploy a contract on the `morden` test net:
-
-    populus deploy MyContract morden
-
-# Using the contract
-
-## API
-
-
-## In Mist
+Please make sure test pass before submitting a PR.
