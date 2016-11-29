@@ -21,11 +21,11 @@ Rep can be either stored as a percentage (Ann has 2% rep, total = 100%) or as an
 
 ### Solidity code
 
-[Reputation.sol](../daostack/contracts/Reputation.sol)
+[Reputation.sol](../contracts/Reputation.sol)
 
 ### Tests
 
-[test_reputation.py](../daostack/tests/test_reputation.py)
+[test_reputation.py](../tests/test_reputation.py)
 
 ### Address on the blockchain
 
