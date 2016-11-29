@@ -1,8 +1,4 @@
 
-# What is this?
-
-A series of Smart Contracts that will hopefully converge to a DAO that implements the Backfeed Governance model.
-
 # Testing and deploying
 
 These contracts are tested using the truffle framework
@@ -29,6 +25,30 @@ And in another window, run the tests:
     
     cd daostack
     truffle test
+
+## Try out the Dapps on the local test net
+
+Start testrpc
+
+    testrpc
+
+Now, in another terminal window, deploy the contracts to the testnet
+
+    truffle migrate
+
+Build the application. This will create files in the directory `build` that will be your final Dapp
+
+    truffle build
+
+To try out the application with your local testrpc, open yet another terminal window and start a test server:
+
+    truffle serve
+
+Now you can play with your application by browsing to
+
+    http://127.0.0.1:80808/
+
+
 
 
 # Contributing
