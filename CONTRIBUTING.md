@@ -46,7 +46,7 @@ To try out the application with your local testrpc, open yet another terminal wi
 
 Now you can play with your application by browsing to
 
-    http://127.0.0.1:80808/
+    http://127.0.0.1:8080/
 
 
 
