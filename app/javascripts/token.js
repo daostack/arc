@@ -1,6 +1,7 @@
-var accounts;
 var account;
 var token;
+// accounts of the token contract
+var accounts = new Set();
 var TOKEN_ADDRESS;
 
 function setContractAddress() {
@@ -23,9 +24,7 @@ function setStatus(message) {
 function refreshBalance() {
   // next line does not seem to return the right contract
   setStatus('Your account: ' + account)
-  setStatus('Fetching contract at ' + TOKEN_ADDRESS)
-  token = Token.at(TOKEN_ADDRESS);
-
+  var token = getToken();
 
   // XXX: without next line thing does not work - why?
   token.balanceOf(account);
@@ -40,27 +39,20 @@ function refreshBalance() {
 
   
   token.balanceOf.call(account, {from: account}).then(function(value) {
-  	setStatus('Value of calling balanceOf: '+ String(value));
     var balance_element = document.getElementById("balance");
     balance_element.innerHTML = value.valueOf();
   }).catch(function(e) {
     console.log(e);
     setStatus("Error getting balance; see log.");
   });
-
-  var token_accounts = [account, '0xe56eBaF2068EC449ACc4660Ce5dBa11fdDC91AAb']
-  for (i=0; i < token_accounts.length; i++) {
-  	(function(i) {
-	  	token.balanceOf(token_accounts[i]).then(function(value) {
-	  		setStatus('Balance of ' + String(token_accounts[i]) + ' is ' + value);
-	  	});
- 	})(i);
-  };
 };
 
-function sendCoin() {
-  var token = Token.at(TOKEN_ADDRESS)
+function getToken() {
+  return Token.at(TOKEN_ADDRESS)
+}
 
+function sendCoin() {
+  var token = getToken();
   var amount = parseInt(document.getElementById("amount").value);
   var receiver = document.getElementById("receiver").value;
 
@@ -76,6 +68,28 @@ function sendCoin() {
   });
 };
 
+
+function addAccount(account) {
+  var token = getToken();
+  if (!accounts.has(account)) {
+      accounts.add(account);
+      token.balanceOf(account).then(function(value) {
+         setStatus('Balance of ' + account + ' is ' + value);
+      });
+  }
+}
+function getAccounts() {
+  var token = getToken();
+  var events = token.allEvents({fromBlock: 0, toBlock: 'latest'})
+  events.watch(function(error, event) {
+    if (event.event == 'Transfer') {
+      addAccount(event.args._from);
+      addAccount(event.args._to);
+    }
+  });
+  return accounts;
+
+}
 function checkNetworkStatus() {
   try {
     return web3.net.listening
@@ -103,10 +117,9 @@ window.onload = function() {
       return;
     }
 
-    accounts = accs;
-    account = accounts[0];
-    setStatus('refreshing balance...')
-
+    // accounts = accs;
+    account = accs[0];
     refreshBalance();
+    getAccounts();
   });
 }
