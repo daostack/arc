@@ -1,8 +1,7 @@
 *sublime*
 *.pyc
 build/
-chains/
 logs/
-.cache/
 fabfile.py
 node_modules/
+NOTES.md

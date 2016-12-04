@@ -26,19 +26,20 @@ And in another window, run the tests:
     cd daostack
     truffle test
 
-## Try out the Dapps on the local test net
-
-Start testrpc
-
-    testrpc
-
-Now, in another terminal window, deploy the contracts to the testnet
+##  Building, deploying
 
     truffle migrate
 
 Build the application. This will create files in the directory `build` that will be your final Dapp
 
     truffle build
+
+
+## Try out the Dapps on testrpc (a local in-memory test net)
+
+Start testrpc
+
+    testrpc
 
 To try out the application with your local testrpc, open yet another terminal window and start a test server:
 
@@ -48,6 +49,21 @@ Now you can play with your application by browsing to
 
     http://127.0.0.1:8080/
 
+## Try out the Dapps on the Ropsten testnet
+
+First build the files:
+
+    truffle build
+
+You will now have a directory called `build`, with an `index.html`
+
+    Open your Mist browser.
+    Under > develop > network, chooise `testnet`
+    Choose "Browse"
+    Enter the path to `build/index.html`
+    Ask Jelle to send you some tokens...
+
+[todo: publish the dapps online so these instructions become easier]
 
 
 

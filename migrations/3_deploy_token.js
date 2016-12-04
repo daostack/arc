@@ -1,3 +1,3 @@
 module.exports = function(deployer) {
-  deployer.deploy(Token);
+  deployer.deploy(Token, 14423);
 };
