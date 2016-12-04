@@ -28,12 +28,10 @@ This is close to the contract captured in the Truffle Webpack Demo
 
 ### 1. Owned, initialized token contract
 
-* UI shows positive-balance addresses and their balance
+* UI shows positive-balance addresses and their balance (*)
 * Anyone can send a transaction through the UI
 
-NOTE: In the Truffle Webpack demo 10 addresses are prepared through testrpc and shown in the UI by default.
-In here we'd like to show only addresses that have >0 (/epsilon) balance. (In real chain there's no
-meaning of "opening an address" which is used here just for test purposes.)
+(*) this is actually also a requirement on the contract, because it needs an extra datastructure. I.e. having this feature costs money.
 
 ### 2. Mine tokens on the go
 

@@ -67,8 +67,20 @@ function sendCoin() {
   });
 };
 
+function checkNetworkStatus() {
+  try {
+    return web3.net.listening
+  } catch(err) {
+    setStatus('Network Error' + err)
+    return false;
+  }
+
+}
 window.onload = function() {
   web3.eth.getAccounts(function(err, accs) {
+    if (!checkNetworkStatus()) {
+      return true;
+    }
     setContractAddress();
     setStatus('web3.version.network: ' + web3.version.network);
     setStatus('web3.version.node: ' + web3.version.node);

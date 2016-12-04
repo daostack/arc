@@ -41,6 +41,10 @@ Start testrpc
 
     testrpc
 
+Deploy the contracts:
+
+    truffle migrate
+
 To try out the application with your local testrpc, open yet another terminal window and start a test server:
 
     truffle serve
@@ -64,7 +68,6 @@ You will now have a directory called `build`, with an `index.html`
     Ask Jelle to send you some tokens...
 
 [todo: publish the dapps online so these instructions become easier]
-
 
 
 # Contributing
