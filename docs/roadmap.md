@@ -1,7 +1,7 @@
 
 # Roadmap
 
-## Contracts
+## Contract steps
 
 ### 1. Owned, initialized token contract
 
@@ -13,7 +13,7 @@ This is close to the contract captured in the Truffle Webpack Demo
 * Anyone can transfer his own tokens to others (initially only the owner)
 * Kill-contract function by the owner
 * Ownership can be transferred
-* can transfer all balances 
+
 
 ### 2. Mine tokens on the go
 
@@ -22,7 +22,7 @@ This is close to the contract captured in the Truffle Webpack Demo
 
 ### 3. Add simple voting
 
-* each
+*
 
 ## UI
 
@@ -39,13 +39,5 @@ meaning of "opening an address" which is used here just for test purposes.)
 
 * Mining through UI (with amount)— activated only for the owner
 * Log of all mining and transfer activities
-** mining (miner=owner, amount of mining, total_balance) in red
-** transfer (from, to, amount) in green
-
-
-
-
-## 7. votePower UI
-## 8. change token distribution from owner to majority vote (owner is initial votePower)
-## 9. vote on distribution (=1) votePower
-## 10. general votePower and median vote
+  * mining (miner=owner, amount of mining, total_balance) in red
+  * transfer (from, to, amount) in green
