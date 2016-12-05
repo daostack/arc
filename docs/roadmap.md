@@ -14,7 +14,7 @@ This is close to the contract captured in the Truffle Webpack Demo
 2. **Transferrable ownership and killing contract**
   * Contract deployer is first owner
   * Ownership can be transferred
-  * Kill/suicide function by owner
+  * Kill/suicide function by owner: funds go back to owner
 
 
 
