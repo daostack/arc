@@ -1,0 +1,35 @@
+{
+  "name": "daostack",
+  "version": "0.0.1",
+  "description": "Building DAOs",
+  "main": "truffle.js",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-2": "^6.18.0",
+    "babel-preset-stage-3": "^6.17.0",
+    "ethereumjs-testrpc": "^3.0.2",
+    "truffle": "^2.1.1"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daostack/daostack.git"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "security",
+    "doastack",
+    "backfeed"
+  ],
+  "author": "Jelle Gerbrandy <jelle@gerbrandy.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/daostack/daostack/issues"
+  },
+  "homepage": "https://github.com/daostack/daostack"
+}

@@ -4,9 +4,9 @@ pragma solidity ^0.4.4;
     in which reputation is managed by the owner of the contract
 */
 
-import "./Owned.sol";
+import "./Ownable.sol";
 
-contract Reputation is Owned {
+contract Reputation is Ownable {
 
     mapping (address => uint256) reputation;
     uint256 totalReputation;

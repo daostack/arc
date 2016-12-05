@@ -12,8 +12,10 @@ Make sure you have a recent version of node.js and npm:
     sudo npm install -g n
     sudo n stable
 
-    npm install truffle -g
-    npm install -g ethereumjs-testrpc
+Now you are ready to install doastack:
+
+    npm install 
+
 
 ## Run tests
 

@@ -9,11 +9,11 @@ Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
 
 import "./Token.sol";
-import "./Owned.sol";
+import "./Ownable.sol";
 
 // perhaps call it DilutableToken
 
-contract MintableToken is Owned, Token(0) { 
+contract MintableToken is Ownable, Token(0) { 
 
     function MintableToken(
         uint256 _initialAmount

@@ -1,10 +1,10 @@
 pragma solidity ^0.4.4;
 
-import "./Owned.sol";
+import "./Ownable.sol";
 import "./Reputation.sol";
 import "./Token.sol";
 
-contract BackfeedDCO is Owned {
+contract BackfeedDCO is Ownable {
 	string public name;
 	Token public tokenContract;
 	Reputation public reputationContract;

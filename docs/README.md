@@ -4,7 +4,7 @@
 Steps from 0 to MVP, contract can do:
 
 
-1. [Owned contract](owned.md)
+1. [Owned contract](ownable.md)
 2. [Standard ERC20 token contract](token.md)
 3. [Token contract in wich the owner is also  single “miner”](mintabletoken.md)
 4. [Reputation Contract](reputation.md)
