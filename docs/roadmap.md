@@ -34,7 +34,6 @@ This is close to the contract captured in the Truffle Webpack Demo
 * UI shows positive-balance addresses and their balance (*)
 * Anyone can send a transaction through the UI
 
-(*) this is actually also a requirement on the contract, because it needs an extra datastructure. I.e. having this feature costs money.
 
 ### 2. Mine tokens on the go
 

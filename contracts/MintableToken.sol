@@ -1,19 +1,14 @@
 pragma solidity ^0.4.4;
 /*
-You should inherit from StandardToken or, for a token like you would want to
-deploy in something like Mist, see HumanStandardToken.sol.
-(This implements ONLY the standard functions and NOTHING else.
-If you deploy this, you won't have anything useful.)
 
-Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
 
 import "./Token.sol";
-import "./Ownable.sol";
+import "./zeppelin-solidity/Ownable.sol";
 
 // perhaps call it DilutableToken
 
-contract MintableToken is Ownable, Token(0) { 
+contract MintableToken is Ownable, Token { 
 
     function MintableToken(
         uint256 _initialAmount

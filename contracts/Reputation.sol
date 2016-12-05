@@ -4,7 +4,7 @@ pragma solidity ^0.4.4;
     in which reputation is managed by the owner of the contract
 */
 
-import "./Ownable.sol";
+import "./zeppelin-solidity/Ownable.sol";
 
 contract Reputation is Ownable {
 

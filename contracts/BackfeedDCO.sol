@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-import "./Ownable.sol";
+import "./zeppelin-solidity/Ownable.sol";
 import "./Reputation.sol";
 import "./Token.sol";
 
