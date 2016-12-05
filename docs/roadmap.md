@@ -8,10 +8,10 @@
 This is close to the contract captured in the Truffle Webpack Demo
 (besides killing and transference of ownership).
 
-1.
+1. Single-time miner
   * Contract launched with 10,000 tokens to deployer
   * Anyone can transfer his own tokens to others (initially only the owner)
-2. 
+2. Killing the contract and transferrable ownership
   * Contract deployer is first owner
   * Ownership can be transferred
   * Kill/suicide function by owner
