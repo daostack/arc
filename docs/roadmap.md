@@ -8,10 +8,10 @@
 This is close to the contract captured in the Truffle Webpack Demo
 (besides killing and transference of ownership).
 
-a.
+1.
   * Contract launched with 10,000 tokens to deployer
   * Anyone can transfer his own tokens to others (initially only the owner)
-b.
+2. 
   * Contract deployer is first owner
   * Ownership can be transferred
   * Kill/suicide function by owner
