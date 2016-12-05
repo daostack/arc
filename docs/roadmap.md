@@ -3,22 +3,22 @@
 
 ## Contract steps
 
-### 1. Owned, initialized token contract
+### 1. Basic token
 
 This is close to the contract captured in the Truffle Webpack Demo
 (besides killing and transference of ownership).
 
-1. Single-time miner
+1. One-time mined token
   * Contract launched with 10,000 tokens to deployer
   * Anyone can transfer his own tokens to others (initially only the owner)
-2. Killing the contract and transferrable ownership
+2. Transferrable ownership and killing contract
   * Contract deployer is first owner
   * Ownership can be transferred
   * Kill/suicide function by owner
 
 
 
-### 2. Mine tokens on the go
+### 2. Continuous mining
 
 * Owner can keep mining tokens to himself by calling a mining function
 * Add a function to mine+distribute tokens together (owner mines to himself and then distribute)
