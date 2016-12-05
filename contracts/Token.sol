@@ -9,10 +9,12 @@ Implements ERC 20 Token standard: https://github.com/ethereum/EIPs/issues/20
 .*/
 
 import "./zeppelin-solidity/token/BasicToken.sol";
+import "./zeppelin-solidity/Ownable.sol";
+import "./zeppelin-solidity/Killable.sol";
 
 // TODO: make the following statement work:
 // contract Token is ERC20TokenInterface {
-contract Token is BasicToken { 
+contract Token is BasicToken, Ownable, Killable { 
 
     uint256 public totalSupply;
    
