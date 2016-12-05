@@ -8,11 +8,14 @@
 This is close to the contract captured in the Truffle Webpack Demo
 (besides killing and transference of ownership).
 
-* Contract deployer is the default owner
-* Contract launched with 10,000 tokens to the owner
-* Anyone can transfer his own tokens to others (initially only the owner)
-* Kill-contract function by the owner
-* Ownership can be transferred
+a.
+  * Contract launched with 10,000 tokens to deployer
+  * Anyone can transfer his own tokens to others (initially only the owner)
+b.
+  * Contract deployer is first owner
+  * Ownership can be transferred
+  * Kill/suicide function by owner
+
 
 
 ### 2. Mine tokens on the go
@@ -24,7 +27,7 @@ This is close to the contract captured in the Truffle Webpack Demo
 
 *
 
-## UI
+## UI Steps
 
 ### 1. Owned, initialized token contract
 
