@@ -1,7 +1,5 @@
 # Ownable
 
-Step 1 in the DAO stack.
-
 ## Description
 
 Contract with an owner, ownership can be transfered (ownership will later be transfered to a “reputation contract”)
