@@ -4,7 +4,7 @@
 
 ## 1. Basic token
 
-See issue #1
+See issue #3
 
 This is a standard Token contract that is Ownable and Killable.
 
