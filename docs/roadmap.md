@@ -3,6 +3,8 @@
 
 The basic idea here is to break into steps the path from the most basic token contract to the MVP contract that can distribute tokens and voting power (plus some additional necessary ingredients), from which we can continue onward using the contract itself. Then we can list as many features as we wish, letting the community decide about the way to move forward.
 
+Can also publicly list tasks [here](https://workflowy.com/s/hIDfJ7fGZm)
+
 ## Contract steps
 
 ### 1. Basic token
