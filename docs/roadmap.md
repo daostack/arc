@@ -9,12 +9,12 @@ The basic idea here is to break into steps the path from the most basic token co
 
 See issue #3
 
-This is a standard Token contract that is Ownable and Killable.
+This is a standard Token contract that is Ownable, Killable and Upgradable.
 
 * Contract initiated with fixed amount of tokens to deployer
 * Contract deployer is first owner
 * Function to transfer ownership by owner
-* Function to kill contract by owner: funds go back to the owner
+* Function to kill contract by owner: existing fund goes back to owner
 * Function to transfer tokens by their owner
 * Other standard read functions (total supply, balances, etc.)
 * Function to upgrade the contract
