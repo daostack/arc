@@ -1,66 +1,64 @@
 
 # Roadmap
 
+The basic idea here is to break into steps the path from the most basic token contract to the MVP contract that can distribute tokens and voting power (plus some additional necessary ingredients), from which we can continue onward using the contract itself. Then we can list as many features as we wish, letting the community decide about the way to move forward.
 
-## 1. Basic token
+## Contract steps
+
+### 1. Basic token
 
 See issue #3
 
 This is a standard Token contract that is Ownable and Killable.
 
-- Contract launched with 10,000 tokens to deployer
-- Anyone can transfer his own tokens to others 
-- Contract deployer is first owner
-- Ownership can be transferred
-- Kill/suicide function by owner: funds go back to owner
+* Contract initiated with fixed amount of tokens to deployer
+* Contract deployer is first owner
+* Function to transfer ownership by owner
+* Function to kill contract by owner: funds go back to the owner
+* Function to transfer tokens by their owner
+* Other standard read functions (total supply, balances, etc.)
+* Function to upgrade the contract
 
-### UI
+### 2. Continuous mining
 
-- UI shows positive-balance addresses and their balance (*)
-- Anyone can send a transaction through the UI
+* Function to mine new tokens to owner, by owner
+* Function to mine new tokens & distribute them (together), by owner
+
+### 3. Reputation Contract
+
+* Contract initiated with fixed amount of non-transferable reputation score to deployer
+* Assign new reputation score by voting:
+  * Function to open a vote with contributor address link to contribution
+  * Each vote is given by a positive number
+  * Result of vote is the reputation-weighted median (RWM) of votes (out of entire reputation)
+  * Once RWM becomes positive:
+    * New reputation score is mined to contributor address according to the RWM
+    * New tokens are being mined to contributor address according to the RWM
 
 
-## 2. Continuous mining
+### 4. Combine Reputation and Token Contract
 
-* Owner can keep mining tokens to himself by calling a mining function
-* Add a function to mine+distribute tokens together (owner mines to himself and then distribute)
+* Combine reputation contract with token contract
+* Replace single miner → distribute tokens to address by weighted median vote
+* Upgrade contract upon reputation-majority vote
 
-### UI
 
-* Mining through UI (with amount)— activated only for the owner
+### More features that can be added later
+
+* Token distribution scheme to buyer
+* Token and (decaying) power distribution scheme to buyer
+* Update the contract feature → majority vote on protocol changes
+* Vested tokens
+* Scheme for successful contributor to choose from vested-amount range option
+* Reducing power by supermajority vote (80%?)
+* Deploy a new contract easily with some API parameters (incl. with which external token can purchase the internal token)
+* Internal successful vote translated to external vote
+* Affiliate contract (my own address for buyers / contributors) to give reputation + tokens for deployer
+* Reputation flow upon vote according to alignment
+
+## UI
+
+* View of list of positive-balance addresses and their balances
+* Send a transaction (by anyone)
+* Mine new tokens— activated only for the owner
 * Log of all mining and transfer activities
-  * mining (miner=owner, amount of mining, total_balance) in red
-  * transfer (from, to, amount) in green
-
-## 3. Reputation Contract
-
-* Contract with (non-transferable) reputation score
-* Voting with weighed median voting 
-* Reputation can be assigned to new users by median voting
-
-
-## 4. Combine Reputation and Token Contract
-
-1. Combine reputation contract with tojen contract 
-1. Replace single miner → distribute tokens to address by weighted median vote
-
-## 5. Reputation flow
-
-* Backfeed objective protocol 
-
-# [Other stuff to add]
-
-1. Add token distribution scheme to buyer
-1. Add token and (decaying) power distribution scheme to buyer
-1. Bundled votes (say, reputation and tokens linearly; fits contribution)
-1. Contribution: bundled vote + hash of contribution
-1. Update the contract feature → majority vote on protocol changes 
-1. Add vested tokens (and voting on their distribution)
-1. Add scheme for successful contributor to choose from vested-amount range option
-1.  Reducing power by supermajority vote (80%?)
-1. Deploy a new contract easily with some API parameters (incl. with which external token can purchase the internal token)
-Add to contribution bundle an investment option (purchase shares in the contribution)
-1. Add to contribution a collective external investment (in the external token, from the fund, upon conditions) in the contribution upon internal majority success
-1. Add internal success also translated to external vote
-1. Simple power flow between evaluators
-1. Affiliate contract (my own address for buyers / contributors) to give reputation + tokens for deployer
