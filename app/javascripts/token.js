@@ -29,7 +29,7 @@ function refreshBalance() {
   // XXX: without next line thing does not work - why?
   token.balanceOf(account);
 
-  token.totalSupply.call().then(function(value) {
+  token.INITIAL_SUPPLY.call().then(function(value) {
     var totalSupply_element = document.getElementById("totalSupply");
     totalSupply_element.innerHTML = value.valueOf();
   }).catch(function(e) {

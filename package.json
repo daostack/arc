@@ -11,7 +11,8 @@
     "truffle": "^2.1.1"
   },
   "scripts": {
-    "test": "truffle test"
+    "test": "truffle test",
+    "testrpc": "pm2 start testrpc"
   },
   "repository": {
     "type": "git",
