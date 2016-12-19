@@ -1,7 +1,6 @@
 module.exports = {
   build: {
     "index.html": "index.html",
-    "metacoin.html": "metacoin.html",
     "token.html": "token.html",
     "token.js": [
       "javascripts/token.js"
