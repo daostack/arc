@@ -9,24 +9,28 @@ Can also publicly list tasks [here](https://workflowy.com/s/hIDfJ7fGZm)
 
 ### 1. Basic token
 
-See issue #3
+See [issue #3](//github.com/daostack/daostack/issues/3)
 
 This is a standard Token contract that is Ownable, Killable and Upgradable.
 
-* Contract initiated with fixed amount of tokens to deployer
-* Contract deployer is first owner
-* Function to transfer ownership by owner
-* Function to kill contract by owner: existing fund goes back to owner
-* Function to transfer tokens by their owner
-* Other standard read functions (total supply, balances, etc.)
-* Function to upgrade the contract
+- [x] Contract initiated with fixed amount of tokens to deployer
+- [x] Contract deployer is first owner
+- [x] Function to transfer ownership by owner
+- [x] Function to kill contract by owner: existing fund goes back to owner
+- [x] Function to transfer tokens by their owner
+- [x] Other standard read functions (total supply, balances, etc.)
 
 ### 2. Continuous mining
 
-* Function to mine new tokens to owner, by owner
-* Function to mine new tokens & distribute them (together), by owner
+See [issue](//github.com/daostack/daostack/issues/6)
+
+
+- [ ] Function to mine new tokens to owner, by owner
+- [ ] Function to mine new tokens & distribute them (together), by owner
 
 ### 3. Reputation Contract
+
+See [issue](//github.com/daostack/daostack/issues/7)
 
 * Contract initiated with fixed amount of non-transferable reputation score to deployer
 * Assign new reputation score by voting:
