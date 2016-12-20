@@ -9,7 +9,7 @@ import "./zeppelin-solidity/Ownable.sol";
 contract Reputation is Ownable {
 
     mapping (address => uint256) reputation;
-    uint256 totalReputation;
+    uint256 public totalReputation;
 
     function Reputation() {
         reputation[msg.sender] = 1;
@@ -20,8 +20,10 @@ contract Reputation is Ownable {
         return reputation[_owner];
     }
 
-	function set_reputation(address _account, uint256 _amount) onlyOwner {
+	function setReputation(address _account, uint256 _amount) onlyOwner {
+	    uint prevTotalReputation = totalReputation; 
         totalReputation = totalReputation - reputation[_account] + _amount;
+        if( ( _amount >= reputation[_account] ) && ( prevTotalReputation > totalReputation ) ) throw; // overflow 
 		reputation[_account] = _amount;
 	}
 }
