@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/daostack/daostack.svg?branch=master)](https://travis-ci.org/daostack/daostack)
+
 # Mission Statement
 
 DAOStack is a widely open collaboration to build the basic framework for [Decentralized Autonomous Organizations](https://en.wikipedia.org/wiki/Decentralized_autonomous_organization) (DAO) through  bootstrap, or dogfooding.
