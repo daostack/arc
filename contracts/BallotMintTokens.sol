@@ -45,7 +45,8 @@ contract BallotMintTokens is Ballot {
         // do something with the winning proposal
         executed = true;
         // only succeeds if msg.sender is the owner of the tokenContract
-        tokenContract.mint(10, beneficary);
+        tokenContract.mint(10);
+        tokenContract.transfer(beneficary, 10);
 
     }	
 }
