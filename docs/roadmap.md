@@ -49,16 +49,18 @@ See [issue](//github.com/daostack/daostack/issues/7)
 * Upgrade contract upon reputation-majority vote
 
 
-### More features that can be added later
+### Next features 
 
-* Token distribution scheme to buyer
-* Token and (decaying) power distribution scheme to buyer
-* Update the contract feature → majority vote on protocol changes
-* Vested tokens
-* Scheme for successful contributor to choose from vested-amount range option
-* Reducing power by supermajority vote (80%?)
-* Deploy a new contract easily with some API parameters (incl. with which external token can purchase the internal token)
+* Token sale 
+ * Simplest sale of tokens for send of ETH with fixed rate
+ * Sale of tokens for other tokens (not ETH) with fixed rate 
+ * Varying sale schemes (possibly with vesting) (template for the general token distribution scheme)
+ * Possibly (decaying) reputation distribution scheme to token buyers
+* Vested tokens scheme for contributors (template for the general token distribution scheme)
+ * Possibly let successful contributor to choose from vested-amount range option
+* Reducing reputation by supermajority vote (80%?) (right now reducing and increasing is symmetric)
 * Internal successful vote translated to external vote
+* Conditions to trigger external contribution
 * Affiliate contract (my own address for buyers / contributors) to give reputation + tokens for deployer
 * Reputation flow upon vote according to alignment
 
