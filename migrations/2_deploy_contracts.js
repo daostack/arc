@@ -4,4 +4,5 @@ module.exports = function(deployer) {
   deployer.deploy(Ownable);
   deployer.deploy(Token);
   deployer.deploy(MintableToken);
+  deployer.deploy(Reputation);
 };
