@@ -46,52 +46,32 @@ contract('Test Reputation', function(accounts) {
     var BigNumber = require('bignumber.js');
     var bigNum = ((new BigNumber(2)).toPower(255));
 
+    let tx = await rep.setReputation(accounts[1], bigNum, {from: accounts[0]});
+
+    let totalRepBefore = await rep.totalReputation();
+
+
+    const assertJump = require('./zeppelin-solidity/helpers/assertJump');
+    try {
+        let tx2 = await rep.setReputation(accounts[1], bigNum, {from: accounts[0]});
+    } catch(error) {
+        assertJump(error);
+    }
+
+    /*
+
     rep.setReputation(accounts[0], bigNum, {from: accounts[0]}).then(function(tx) {
       // If this callback is called, the transaction was successfully processed.
       // Note that Ether Pudding takes care of watching the network and triggering
       // this callback.
+      console.log("as");
       assert(false, "overflow tx should fail");
     }).catch(function(e) {
       // error is expected
-    })    
+    });*/    
     
-    //let tx = await rep.setReputation(accounts[1], bigNum, {from: accounts[0]});    
+    let totalRepAfter = await rep.totalReputation();
         
-    let totalRep = await rep.totalReputation();
-
-    assert( totalRep.greaterThanOrEqualTo(bigNum), "should not overflow" );        
+    assert( totalRepBefore.equals(totalRepAfter), "reputation should remain the same");
   });
-
-
-/*
-  it("abc", async function() {
-    let rep = Reputation.deployed();
-    let account0Rep = await rep.reputationOf(accounts[0]);
-    let totalRep = await rep.totalReputation();
-    assert.equal(account0Rep, 1, "as");
-    assert.equal(totalRep, 1, "as");    
-  });
-*/
-
-/*
-  it("should put 10000 reputation in the second account", function() {
-    var rep = Reputation.deployed();
-
-    console.log("sd");
-          console.log(rep);
-    console.log("sd2");              
-    rep.set_reputation(accounts[1], 1000, {from: accounts[0]}).then(function(tx_id) {
-    // If this callback is called, the transaction was successfully processed.
-    // check balance
-        console.log("hello");
-        rep.reputationOf.call(accounts[1]).then(function(reputation) {
-          assert.equal(reputation.valueOf(),1000, "1000 rep wasn't in the first account");
-        }).catch(function(e) {
-          assert(false,"reputationOf failed");
-        });      
-  }).catch(function(e) {
-    assert(false,"tx failed");
-  });
-  });
-  */
 });

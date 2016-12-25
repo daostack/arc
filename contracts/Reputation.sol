@@ -5,8 +5,9 @@ pragma solidity ^0.4.4;
 */
 
 import "./zeppelin-solidity/Ownable.sol";
+import "./zeppelin-solidity/SafeMath.sol";
 
-contract Reputation is Ownable {
+contract Reputation is Ownable, SafeMath {
 
     mapping (address => uint256) reputation;
     uint256 public totalReputation;
@@ -21,9 +22,8 @@ contract Reputation is Ownable {
     }
 
 	function setReputation(address _account, uint256 _amount) onlyOwner {
-	    uint prevTotalReputation = totalReputation; 
-        totalReputation = totalReputation - reputation[_account] + _amount;
-        if( ( _amount >= reputation[_account] ) && ( prevTotalReputation > totalReputation ) ) throw; // overflow 
+        totalReputation = safeAdd( safeSub(totalReputation, reputation[_account]),
+                                  _amount );
 		reputation[_account] = _amount;
 	}
 }
