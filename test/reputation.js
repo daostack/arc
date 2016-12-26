@@ -60,30 +60,18 @@ contract('Test Reputation', function(accounts) {
     var BigNumber = require('bignumber.js');
     var bigNum = ((new BigNumber(2)).toPower(255));
 
-    let tx = await rep.setReputation(accounts[1], bigNum, {from: accounts[0]});
+    let tx = await rep.setReputation(accounts[0], bigNum, {from: accounts[0]});
 
     let totalRepBefore = await rep.totalReputation();
 
-
     const assertJump = require('./zeppelin-solidity/helpers/assertJump');
     try {
-        let tx2 = await rep.setReputation(accounts[1], bigNum, {from: accounts[0]});
+      let tx2 = await rep.setReputation(accounts[1], bigNum, {from: accounts[0]});
+      throw 'an error' // make sure that an error is thrown
     } catch(error) {
-        assertJump(error);
+      assertJump(error);
     }
 
-    /*
-
-    rep.setReputation(accounts[0], bigNum, {from: accounts[0]}).then(function(tx) {
-      // If this callback is called, the transaction was successfully processed.
-      // Note that Ether Pudding takes care of watching the network and triggering
-      // this callback.
-      console.log("as");
-      assert(false, "overflow tx should fail");
-    }).catch(function(e) {
-      // error is expected
-    });*/    
-    
     let totalRepAfter = await rep.totalReputation();
         
     assert( totalRepBefore.equals(totalRepAfter), "reputation should remain the same");
