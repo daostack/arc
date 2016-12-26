@@ -1,14 +1,10 @@
 pragma solidity ^0.4.4;
-/*
-*/
 
 import "./Reputation.sol";
 import "./Ballot.sol";
 
 
 contract NamedProposalBallot is Ballot {
-
-    Reputation public reputationContract;
 
     // This is a type for a single proposal.
     struct Proposal
@@ -22,14 +18,13 @@ contract NamedProposalBallot is Ballot {
 
     // A dynamically-sized array of `Proposal` structs.
     Proposal[] public proposals;
-
+    
     /// Create a new ballot to choose one of `proposalNames`.
     function NamedProposalBallot(
-        Reputation reputationContractAddress,
-        bytes32[] proposalNames) 
-        Ballot (reputationContractAddress) {
-        reputationContract = reputationContractAddress;
-
+        Reputation _reputationContractAddress,
+        bytes32[] proposalNames
+        ) 
+        Ballot (_reputationContractAddress) {
         // For each of the provided proposal names,
         // create a new proposal object and add it
         // to the end of the array.
@@ -48,12 +43,10 @@ contract NamedProposalBallot is Ballot {
     function vote(uint proposal) {
         if (voters[msg.sender] != 0)
             throw;
-        
         voters[msg.sender] = proposals[proposal].name;
 
         // If `proposal` is out of the range of the array,
-        // this will throw automatically and revert all
-        // changes.
+        // this will throw automatically and revert all changes.
         proposals[proposal].voteCount += reputationContract.reputationOf(msg.sender);
     }
 

@@ -14,9 +14,8 @@ contract Ballot {
     mapping(address => bytes32) public voters;
 
     /// Create a new ballot to choose one of `proposalNames`.
-    function Ballot(
-        Reputation reputationContractAddress) {
-        reputationContract = reputationContractAddress;
+    function Ballot(Reputation _reputationContractAddress) {
+        reputationContract = _reputationContractAddress;
     }
 
     /// Give your vote to proposal `proposals[proposal].name`.
