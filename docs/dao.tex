@@ -415,7 +415,7 @@ DAO stack is a framework for...
 \end{abstract}
 \section{Introduction}
 \section{System of Value}
-\noindent \textbf{Agents.} An \emph{agent} is an entity \MyComment{entity $->$address, or entity with an address} that can interact with blockchain contracts. Formally, an agent is either an account whose private key is known to some individual or a contract.
+\noindent \textbf{Agents.} An \emph{agent} is an entity with an address that can interact with blockchain contracts. Formally, an agent is either an account whose private key is known to some individual or a contract.
 \newcommand{\Agents}{\mathcal{A}}
 We denote the set of all agents by $\Agents$.
 An \emph{agent operation} is a valid transaction (technically for Ethereum either an external or internal transaction).
@@ -426,13 +426,14 @@ We say that a sequence $O'\in \mathcal{O}$ is the \emph{$f$-successor} of $O\in 
 
 \noindent \textbf{System of value.}
 \newcommand{\SysValue}{\mathcal{S}}
-A system of value is a tuple $\SysValue = \langle T, T_u, R, R_u, C, C_u, E_s, E_o, E_u, U \rangle$, where
+A system of value is a tuple $\SysValue = \langle T, T_u, R, R_u, C, C_u, E_s, E_o, E_u, D, D_u, U \rangle$, where
 intuitively
 \begin{itemize}
 \item $T$ is the \emph{native token} (or value) of the system and $T_u$ is a mechanism to update the token distribution.
 \item $R$ is a \emph{reputation} metric, controlled by the system and $R_u$ is a mechanism to update the reputation distribution.
 \item $C$ is a mechanism to submit \emph{contributions} for the system and $C_u$ is a mechanism to change $C$.
 \item $E_s$ and $E_o$ are mechanisms for the evaluation of a contribution. The role of $E_s$ is to evaluate \emph{subjective} contributions and the role of $E_o$ is to evaluate \emph{objective} ones. $E_u$ is a mechanism to update $E_s$ and $E_o$.
+\item $D$ is a delegation mechanism to perform agent actions in other systems and $D_u$ is a mechanism to change $D$.
 \item $U$ is a mechanism to update all the \emph{update mechanisms}, namely, $T_u, R_u, C_u, E_u$ and $U$ itself.
 \end{itemize}
 \textbf{A system of value is an agent}.
@@ -449,7 +450,7 @@ The distribution of the tokens, defined by $T$, can be changed by the mechanism 
 In a transfer the sum of all tokens in the system is not changed.
 Formally, let $T$ be the token distribution before a transfer and $T'$ be the result of one transfer, then it always hold that $\sum_{a\in\Agents} T(a) = \sum_{a\in\Agents} T'(a)$.
 
-\emph{Token minting} changes only the value of $T(\SysValue)$. It may increase or decrease it. \MyComment{I'm not sure decreasing make sense —since one can transfer his tokens to somewhere else, unless it's about frozen or constraint tokens}
+\emph{Token minting} changes only the value of $T(\SysValue)$. It may increase or decrease it. \MyComment{I'm not sure decreasing make sense —since one can transfer his tokens to somewhere else, unless it's about frozen or constraint tokens - Yaron: you mentioned burning tokens. For example burning 5 tokens in exchange to one ether}
 
 The update function $T_u$ dictates the rules on how $T$ is changed.
 For example it can limit token transfer volume or prevent the transfer of tokens before some maturity threshold is reached.
@@ -471,10 +472,7 @@ A reputation is a function $R:\Agents \to \nat$ (maybe also negative reputation 
 The reputation update mechanism may increase or decrease the reputation of a single agent. Therefor, reputation is not explicitly transferable~\footnote{An agent may chose to delegate its reputation by handing partial control over the agent's operations. \MyComment{This may have consequences}}.
 Hence, the reputation update mechanism is a function $R_u : \Agents \to (\Agents\to \nat)$, such that if $O'$ is the $R_u$-successor of $O$, then there exists at most one agent $a$ with $(R_u(O))(a)\neq(R_u(O'))(a)$.  
 
-If the system wishes to update the reputation of more than one agent, then it has to break it down to a sequence of single reputation updates. \MyComment{Why? not clearly possible; definitely not for BF-like reputation flow}
-
-
-TODO - should put restrictions on reputation update? E.g., only in return to contribution or evaluation or in return to investment.  \MyComment{No need for reputation distribution restriction (e.g. can also decide to give reputation to a new agent that has reputation in another value system despite not making new contribution in a current system; this is of course equivalent to posting a null contribution; however, practically speaking, might like to have reputation distribution templates for contributions, investment, etc.  However, when speaking about BF-like reputation flow there should be a formal criteria for reputation flow standing for resilience.}
+If the system wishes to update the reputation of more than one agent, then it has to break it down to a sequence of single reputation updates. \MyComment{Why? not clearly possible; definitely not for BF-like reputation flow. Yaron: in any case, in solidity you can only do bounded number of operations. It is not possible to update the reputation of all members. In reputation flow, each agent would have to initiate the update of its own reputation.}
 
 
 \noindent \textbf{Contribution submission.}
@@ -518,10 +516,23 @@ TODO - should put restrictions on subjective evaluation? E.g., only reputation c
 The function $E_u$ updates the evaluation mechanisms.
 Formally it is a function $E_u : \AgentOperations \to ((\nat \times \Agents \to \nat^3)\times(\AgentOperations \times \nat \times \Agents \to \nat^3))$.
 
+
+\noindent \textbf{Inter-system extension}
+For a system of value to be an agent in a different system of value, it must have the ability to perform agent operations.
+In particular it should be able to submit contributions and to evaluate other contributions.
+In the most general setting, the system should be able to delegate its token holdings and reputation\textbf{s} (i.e., reputation in other systems) to perform actions in other systems.
+Formally, a \emph{delegation mechanism} is a function $D:\AgentOperations\to \AgentOperations$, which decides on $\SysValue$ next action or actions based the actions of its agents.
+For example, agents can take a vote on the next action of the system.
+We note that $D$ can only decide on actions that $\SysValue$ does in other systems.
+The function $D_u$ updates the delegation mechanism.
+Formally it is a function $D_u : \AgentOperations\to (\AgentOperations \to \AgentOperations)$.
+
 \noindent \textbf{General update mechanism.}
 Each of the token, reputation, contribution submission and contribution evaluation update mechanism and even the general update mechanism may be changed.
-For this purpose we extend the evaluation mechanism, such that in addition to suggested reward, it would also output \emph{opinions} on whether the submitted contribution should replace $T_u, R_u, C_u, E_u$ or $U$.
+For this purpose we extend the evaluation mechanism, such that in addition to suggested reward, it would also output \emph{opinions} on whether the submitted contribution should replace $T_u, R_u, C_u, E_u, D_u$ or $U$.
 The general update mechanism $U$ is a threshold for every mechanism, such that certain mechanism is replaced if and only if the alternative is evaluated with an higher value.
+
+
 
 \section{Recommended Mechanisms}
 \subsection{Recommended Token Mechanism}
