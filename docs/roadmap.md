@@ -1,7 +1,7 @@
 
 # Roadmap for the DOAStack
 
-DAOStack is a collective of programmers and blockchain exerts that is growing and bootstrapping itself into a DAO while building the necessary blockchain (and other) code for itself. 
+DAOStack is a collective of programmers and blockchain experts that is growing and bootstrapping itself into a DAO while building the necessary blockchain (and other) code for itself. 
 
 # Formal and informal whitepaper
 
