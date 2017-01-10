@@ -21,6 +21,8 @@ A Value System (VS) is a smart contract, through which [Agents](#agents) manage 
 * **External fund management** (in terms of other VS's tokens held by the VS)
 * **Curation** (in terms of ranking of digitally-identified objects)
 *  **Operation** (in terms of calling other smart contracts)
+*  **Protocol update** (in terms of changing the VS protocol itself)
+
 
 Generally a VS may process all of them, but often each VS will have one type of decision making that is primary (i.e. being its *purpose*) and the others that will be *secondary* (serving the primary).
 
