@@ -2,9 +2,11 @@
 DAO Protocol
 ===========
 
------
+---
 
->This is a collaborative work to document the general framework and protocol for collaborative DAOs. It parallels the collaboration on the [formal whitepaper](https://github.com/daostack/daostack/raw/master/docs/dao.pdf) ([source](https://github.com/daostack/daostack/blob/master/docs/dao.tex)), which is supposed to cover the same material in a rigorous language.
+> This is a collaborative work to document the general framework and protocol for collaborative DAOs. It parallels the collaboration on the [formal whitepaper](https://github.com/daostack/daostack/raw/master/docs/dao.pdf) ([source](https://github.com/daostack/daostack/blob/master/docs/dao.tex)), which is supposed to cover the same material in a rigorous language.  
+
+Tip: try [StackEdit](https://stackedit.io/) or [Dilinger](http://dillinger.io/) for editing.
 
 ---
 
@@ -15,18 +17,21 @@ Basics
 
 ### Value System
 
-A Value System (VS) is a smart contract, through which [Agents](#agents) manage five types of collective decision:
+A Value System (VS) is a smart contract allowing a dynamic community of [Agents](#agents) to manage collective decisions, in particular about the ownership and distribution of digital assets.
 
-* **Internal fund management** (in terms of the VS's own native token)
-* **External fund management** (in terms of other VS's tokens held by the VS)
-* **Curation** (in terms of ranking of digitally-identified objects)
-*  **Operation** (in terms of calling other smart contracts)
-*  **Protocol update** (in terms of changing the VS protocol itself)
+There are generally five types of decisions a VS can make:
 
+* **Internal fund management**: in terms of distribution of the native token controlled by the VS smart contract.
+* **External fund management**: in terms of distribution of other tokens (of other VS) which are owned and managed by the VS smart contract (e.g. as a result of investments in its native token).
+* **Curation**: in terms of adding metadata to (and particularly ranking of) digitally-identified objects, such as article, websites, questions and answers, ideas, physical entities (companies, restaurants), etc.
+*  **Operation**: in terms of calling and executing functions of other smart contracts (that may be triggering similar activities in other VS but can also be more general).
+*  **Protocol update**: in terms of changing the VS protocol for the process of making these (five types of) collective decisions itself.
 
 Generally a VS may process all of them, but often each VS will have one type of decision making that is primary (i.e. being its *purpose*) and the others that will be *secondary* (serving the primary).
 
-> The VS distributes its [tokens](#tokens) and [reputation](#reputation) to agents for posting successful *evaluations* and *contributions* (as perceived by the VS through its reputation holders).
+> For example, a pure curation VS could be purposed for collective curation of articles, websites or restaurant. A collaborative code-development VS would primarily distribute its internal tokens (as ownership of the guild) to contributors of valuable code. And a decentralized investment (or insurance) fund will primarily allocate external funds (such as ETH) to promising projects (or peers' claims).
+
+Generally speaking, the VS distributes its [tokens](#tokens) and [reputation](#reputation) to agents for posting successful *evaluations* and *contributions* (as perceived by the VS through the evaluations of its reputation holders).
 
 <!---
 ![](https://raw.githubusercontent.com/fmatan/mytests/master/protocol/VS.png) -->
@@ -37,16 +42,20 @@ Generally a VS may process all of them, but often each VS will have one type of 
 
 Agent is an address that can interact with the blockchain, and it comes in two types:
 
-- **private key** (and a private holder of that key)
-- **contract** (multisig, another value system, or any other contract) .
+- **private key**: and a private holder of that key (that has to be kept somewhere by someone).
+- **contract**: would it be a multisig contract of several private agents, another value system, or more generally any other contract.
+
+> For example, three private agents can form their own private VS, could be a simple 2-of-3 multisig contract or a more complicated one, and collective become an agent inside other VSs. That collective agent makes its own contributions and evaluations (so that their internal contract should also define how their private inputs turn into single voice), and correspondingly gains its own reputation and tokens (of other VSs). While earned tokens can be distributed between the private agents comprising that collective contract agent, the reputation is forever attributed to the contract as a single, indivisible agent.
 
 Generally an agent has the following attributes within a VS:
 
 - token balance
 - reputation score
-- history of *contributions*
+- history of *contributions* and *evaluations*
 
-> The public actions of an agent in a VS are posting [contributions](#contribution) and  [evaluations](#evaluation) of contributions (and more generally casting votes on the VS [proposals](#proposal)). Privately, an agent can transfer tokens and delegate reputation to other peers.
+The public actions of an agent in a VS are posting [contributions](#contribution),  [evaluations](#evaluation) of contributions, and casting votes on the VS [proposals](#proposal). Privately, an agent can transfer tokens and delegate reputation to other peers. (One can also consider making agents' evaluations secret.)
+
+
 
 ---
 
@@ -115,7 +124,3 @@ The reputation flow element is perhaps the complex part of the reputation protoc
 ### Token Sale Schemes
 
 ---
-
-
-
-> Written with [StackEdit](https://stackedit.io/).
