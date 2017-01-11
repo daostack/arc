@@ -4,7 +4,10 @@ DAO Protocol
 
 ---
 
-> This is a collaborative work to document the general framework and protocol for collaborative DAOs. It parallels the collaboration on the [formal whitepaper](https://github.com/daostack/daostack/raw/master/docs/dao.pdf) ([source](https://github.com/daostack/daostack/blob/master/docs/dao.tex)), which is supposed to cover the same material in a rigorous language.  
+ This document describes the general framework and protocol for collaborative DAOs. It parallels the [formal whitepaper](https://github.com/daostack/daostack/raw/master/docs/dao.pdf) ([source](https://github.com/daostack/daostack/blob/master/docs/dao.tex)), which is supposed to cover the same material in a rigorous language.  
+
+
+> Welcome to edit, add comments/questions, and submit pull request.
 
 Tip: try [StackEdit](https://stackedit.io/) or [Dilinger](http://dillinger.io/) for editing.
 
@@ -56,27 +59,43 @@ Generally an agent has the following attributes within a VS:
 The public actions of an agent in a VS are posting [contributions](#contribution),  [evaluations](#evaluation) of contributions, and casting votes on the VS [proposals](#proposal). Privately, an agent can transfer tokens and delegate reputation to other peers. (One can also consider making agents' evaluations secret.)
 
 
-
 ---
 
 ### Tokens
 
 Each value system (VS) has its own native token which is transferrable.
 
-> A token is generally **transferrable**, although various conditions can be applied to it, such as **Vesting** or **Freezing**, when  tokens are distributed under future conditions, or remained non-transferrable for a period of time. For example, a distribution mechanism might allow a successful contributor to choose if she likes to be rewarded with more tokens which are more vested, or less tokens which are more tangible.
+> While a token is generally **transferrable**,  various conditions can be applied to it, such as **Vesting** or **Freezing**, when  tokens are distributed under future conditions, or remained non-transferrable for a period of time. For example, a distribution mechanism might allow a successful contributor to choose if she likes to be rewarded with 10 two-months locked tokens (i.e. rendered non-transferrable for two months), or 5 tangible tokens (which are transferrable immediately).
 
 
-Agents in the VS have their token balance, which represent their financial ownership in that VS. Distribution of internal tokens is at the core of the VS's activity (or decision making).
+Agents in the VS have their native token balance, and the distribution of internal tokens is at the core of the VS's activity (or decision making). The token balance is analogous to their financial ownership in that VS, and generally (unless otherwise implemented), internal tokens are backed by the VS assets.
 
-A VS contract can manage its own *internal* (native) tokens, as well as *external* tokens —tokens of other VS— that were invested in it.
+> For example, if VS-A owns 10 tokens of VS-B, and has distributed 100 VS-A tokens to its agents, then each VS-A token is generally redeemable against 0.1 VS-B tokens. Practically it means an agent X can send to the VS-A contract his 5 VS-A tokens; the contract effectively burns those tokens out of circulation (or simply deletes it from its database), and correspondingly sends 0.5 of its VS-B owned tokens back to the address of X from which he has sent his 5 VS-A tokens. That's the default, but of course, could also devised differently by VS-A.
 
-#### Distribution
+There are generally two ways a VS gains external assets:
+
+* Through agents *purchasing* its native tokens via one of its [token distribution](#token-distribution) schemes.
+
+> Agent X sends 10 ETH
+
+* Through successful contributions of the VS into other VSs
+
+> Say,
+
+#### Token Distribution
 
 The VS contract mints and distributes new internal tokens upon three types of triggers:
 
 1. **Investment**:  agent A sends *external* funds (say, D1 tokens) into the contract (say, D2 VS), and resultingly the D2 contract keeps the sent D1 tokens, mints T D2 tokens and send them back to agent A. (Possibly also issuing R D2 reputation score to be allocated to agent A as well.) The exact details of how many tokens, vested or not (and for how long), reputation or not (and how much) can be very general and depend on the token distribution scheme adopted by the D2 VS. DAOstack lets each founded VS decide and constantly update (through majority votes —but this default choice is also open for change by the VS) the token- and reputation-distribution schemes, and additional templates will be built during its evolution.
 
 > For example, a crowd-sale type template can offer a bounded sale of tokens (say, 1M of them), open for 1 month, with price rising linearly from: 1 D2 token = 1 D1 token, to 1 D2 token = 2 D1 tokens over that period, and a total of 10% of the D2 reputation score allocated to the investors, in proportion to their investment and in linearly decreasing amount over time. Infinitely many other distribution schemes can be suggested to design different economies and incentive structures. We'll offer a few initial [token sale schemes](#token-sale-schemes) below, including their contracts.
+
+2. **Objective contribution** (or objectively measured), which is not transaction of tokens (i.e. purchase). **MORE ON THIS**
+3. **Subjective contribution**, that needs to be evaluated by the VS reputation holders. **MORE ON THIS**
+
+#### Token Value
+
+...where the token get its value from, the token's "business model", submission fee, VS reserve...
 
 ---
 
@@ -105,22 +124,37 @@ The reputation flow element is perhaps the complex part of the reputation protoc
 
 ---
 
+### Proposal
+
+... submitting a proposal for token/reputation-distribution scheme, for example:
+
+1. contribution proposal with fixed reward and majority approval (Yes/No vote)
+2. contribution proposal with open reward (numeric evaluation and reputation-weighted median)
+3. token-sale distribution scheme 1: fixed-rate sale with no reputation distribution
+4. token-sale distribution scheme 2: linearly-growing rate sale with exponentially-decreasing reputation distribution (20% in total)
+
+...
+
+---
+
 ### Contribution
 
 ---
 
-### Proposal
-
----
-
 ### Evaluation
-
-------
-
-### Reputation Flow
 
 ---
 
 ### Token Sale Schemes
 
 ---
+
+### Reputation Flow - I
+
+----
+
+### Contract Architecture
+
+A preliminary contract architecture looks something like this:
+
+![](https://raw.githubusercontent.com/daostack/daostack/master/docs/dao-architecture-1.png)
