@@ -2,5 +2,5 @@
 
 
 * [Roadmap](roadmap.md)
-* [DAO protocol](DAO_protocol.md)
+* [DAO protocol](DAO-protocol.md)
 * [DAO protocol - formal](https://github.com/daostack/daostack/blob/master/docs/dao.pdf) 
