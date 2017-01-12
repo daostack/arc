@@ -1,16 +1,18 @@
 pragma solidity ^0.4.4;
 
-import "./Reputation.sol";
+import "../Reputation.sol";
 import "./Ballot.sol";
 
 
 contract NamedProposalBallot is Ballot {
 
     // This is a type for a single proposal.
+    event ProposalAdded(bytes32 name);
+
     struct Proposal
     {
         bytes32 name;   // short name (up to 32 bytes)
-        uint voteCount; // number of accumulated votes
+        uint voteCount; // amount of accumulated reputation
     }
 
     // mapping address to the proposal that they voted
@@ -36,20 +38,26 @@ contract NamedProposalBallot is Ballot {
                 name: proposalNames[i],
                 voteCount: 0
             }));
+            ProposalAdded(proposalNames[i]);
         }
     }
 
     /// Give your vote to proposal `proposals[proposal].name`.
-    function vote(uint proposal) {
-        if (voters[msg.sender] != 0)
+    function vote(uint _proposal) {
+        registerVote(_proposal, msg.sender);
+    }
+
+    function registerVote(uint _proposal, address _voter) {
+        if (voters[_voter] != 0) {
             throw;
-        voters[msg.sender] = proposals[proposal].name;
+        }
+        voters[_voter] = proposals[_proposal].name;
 
         // If `proposal` is out of the range of the array,
         // this will throw automatically and revert all changes.
-        proposals[proposal].voteCount += reputationContract.reputationOf(msg.sender);
-    }
+        proposals[_proposal].voteCount += reputationContract.reputationOf(_voter);
 
+    }
     /// @dev Computes the winning proposal taking all
     /// previous votes into account.
     function winningProposal() constant
@@ -62,10 +70,5 @@ contract NamedProposalBallot is Ballot {
                 winningProposal = p;
             }
         }
-    }
-
-    function executeWinningProposal() {
-        // do something with the winning proposal
-
     }
 }

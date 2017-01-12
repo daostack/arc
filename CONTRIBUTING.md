@@ -71,6 +71,13 @@ You will now have a directory called `build`, with an `index.html`
 
 [todo: publish the dapps online so these instructions become easier]
 
+# breakpoints
+
+if you run tests with:
+
+    node debug ./node_modules/truffle/cli.js test
+
+it is possible to use `debugger` statemetns and inspect the state
 
 # Contributing
 

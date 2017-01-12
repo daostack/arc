@@ -1,7 +1,7 @@
 contract('Test Reputation', function(accounts) {
   it("test setting and getting reputation by the owner", async function() {
     let value;
-    var reputation = Reputation.deployed();  
+    let reputation = Reputation.deployed();  
     
     await reputation.setReputation.sendTransaction(accounts[0], 3131);
     
@@ -10,7 +10,7 @@ contract('Test Reputation', function(accounts) {
   });
     
   it("should be owned by the main account", async function() {
-    var reputation = Reputation.deployed();
+    let reputation = Reputation.deployed();
     let owner = await reputation.owner();
     assert.equal(owner, accounts[0]);
   });
@@ -57,8 +57,8 @@ contract('Test Reputation', function(accounts) {
 
   it("check total reputation overflow", async function() {
     let rep = Reputation.deployed();
-    var BigNumber = require('bignumber.js');
-    var bigNum = ((new BigNumber(2)).toPower(255));
+    let BigNumber = require('bignumber.js');
+    let bigNum = ((new BigNumber(2)).toPower(255));
 
     let tx = await rep.setReputation(accounts[0], bigNum, {from: accounts[0]});
 

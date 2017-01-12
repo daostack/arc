@@ -4,11 +4,10 @@ contract('Test Ballot', function(accounts) {
   it("should implement basic voting workflow", async function() {
 
     // create a reputation contract
-    var reputation = Reputation.deployed()
+    let reputation = Reputation.deployed()
     await reputation.setReputation(accounts[0], 1000);
     await reputation.setReputation(accounts[1], 1000);
     await reputation.setReputation(accounts[2], 1000);
-
     // create a ballot
     let ballot = await NamedProposalBallot.new(reputation.address, ['y', 'n'])
     await ballot.vote(0, {'from': accounts[0]})
@@ -27,7 +26,7 @@ contract('Test Ballot', function(accounts) {
   })
 
   it('voting twice should throw an error', async function() {
-    var reputation = Reputation.deployed()
+    let reputation = Reputation.deployed()
     let ballot = await NamedProposalBallot.new(reputation.address, ['y', 'n'])
     await ballot.vote(0, {'from': accounts[0]})
     try {
@@ -40,7 +39,7 @@ contract('Test Ballot', function(accounts) {
   })
 
   it('an unknown voter can vote, but it will have no effect', async function(){
-    var reputation = Reputation.deployed()
+    let reputation = Reputation.deployed()
     let ballot = await NamedProposalBallot.new(reputation.address, ['y', 'n'])
     await ballot.vote(1, {'from': accounts[8]})
     let proposal1 = await ballot.proposals(1)
@@ -48,7 +47,7 @@ contract('Test Ballot', function(accounts) {
   })
 
   it('voting for an unknown proposal raises an error', async function() {
-    var reputation = Reputation.deployed()
+    let reputation = Reputation.deployed()
     let ballot = await NamedProposalBallot.new(reputation.address, ['y', 'n'])
     try {
       await ballot.vote(1234, {'from': accounts[0]})
@@ -57,8 +56,5 @@ contract('Test Ballot', function(accounts) {
         assertJump(error);
     };
   });
-
-// def test_vote_not_reached_quorum(chain, accounts):
-//     pass
 
 });
