@@ -37,6 +37,7 @@ contract DCO is Ownable {
 
     }
 
+
     function createBallotToMintTokens(uint _amount, address _recipient) returns (BallotMintTokens) {
         BallotMintTokens ballot = new BallotMintTokens(reputationContract, tokenContract,  _amount, _recipient);
         BallotCreated(ballot);

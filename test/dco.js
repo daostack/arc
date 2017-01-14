@@ -16,7 +16,8 @@ contract('Test DCO Voting', function(accounts) {
     await reputation.setReputation(accounts[0], 1000);
 
     // create a ballot to give 1413 tokens to accounts[1]
-    let tx = await dco.createBallotToMintTokens(1413, accounts[1])
+    // let tx = await dco.createBallotToMintTokens(1413, accounts[1])
+    let tx = await dco.addBallot('minttokens', 1413, accounts[1])
 
     // check that tx.logs[0] is the BallotCreated event we need for the address 
     assert.equal(tx.logs[0].event, 'BallotCreated')
