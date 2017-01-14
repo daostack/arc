@@ -1,7 +1,6 @@
 const assertJump = require('./zeppelin-solidity/helpers/assertJump');
 
 contract('Test DCO Voting', function(accounts) {
-
   it("test basic workflow", async function() {
     // returns logs with the transaction, so we can easily get the ballot address
     // TODO: remove this when this becomes standard behavior in truffle 
@@ -17,7 +16,7 @@ contract('Test DCO Voting', function(accounts) {
     await reputation.setReputation(accounts[0], 1000);
 
     // create a ballot to give 1413 tokens to accounts[1]
-    let tx = await dco.createBallotToMintTokens(accounts[1], 1413)
+    let tx = await dco.createBallotToMintTokens(1413, accounts[1])
 
     // check that tx.logs[0] is the BallotCreated event we need for the address 
     assert.equal(tx.logs[0].event, 'BallotCreated')
