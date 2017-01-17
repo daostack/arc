@@ -27,13 +27,6 @@ contract BallotMintTokens is Ballot {
     uint256 public amount;
     address public beneficary;
 
-    event BallotExecuted(string msg);
-
-    uint[] proposals = [0, 1];
-    // map proposals to amount of votes
-    mapping (uint => uint) voteCount;
-    // map voters to their votes
-    mapping(address => uint) public voters;
 
     function BallotMintTokens( 
         address _dco,
@@ -44,51 +37,12 @@ contract BallotMintTokens is Ballot {
         amount = _amount;
         beneficary = _beneficary;
     }
-    /// @dev Computes the winning proposal taking all
-    /// previous votes into account.
-    function vote(uint _proposal) {
 
-        if (voters[msg.sender] != 0) {
-            // voter has already voted
-            throw;
-        }
-        voters[msg.sender] = _proposal;
-
-        // If `proposal` is out of the range of the array,
-        // this will throw automatically and revert all changes.
-        voteCount[proposals[_proposal]] += reputationContract.reputationOf(msg.sender);
-
-    }
-    function winningProposal() constant
-            returns (uint)
-    {
-        uint winningProposal;
-        uint winningVoteCount = 0;
-        uint totalReputation = reputationContract.totalReputation();
-        for (uint p = 0; p < proposals.length; p++) {
-            if (voteCount[proposals[p]] > winningVoteCount) {
-                winningVoteCount = voteCount[proposals[p]];
-                winningProposal = p;
-            }
-        }
-        // the winning proposal should have at least half ot he totalReputation
-        if (totalReputation < winningVoteCount * 2) {
-            return winningProposal;
-        }
-        return 0;
-
-        // uint totalReputation = dco.reputationContract().totalReputation();
-        // if (winningVoteCount * 2 < totalrepu) {
-        //     winningProposal = 0;
-
-        // } 
-    }
 
     function executeWinningProposal() returns (bool) {
         /*
             This function expects to be called from the dco (by calling dco.executeBallot(ballot))
         */
-
         if (winningProposal() == 1) {
             dco.mintTokens(amount, beneficary, dco.tokenContract());
             BallotExecuted('BallotMintTokens executed');

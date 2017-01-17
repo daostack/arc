@@ -26,14 +26,12 @@ contract('DCO', function(accounts) {
     assert.equal(oldBalance.valueOf(), 0)
 
     // create a ballot to create 1413 tokens and give them to accounts[1]
-    // let ballot = await BallotMintTokens.new(dco.address, 1413, accounts[1])
-
-    // register this ballot
     let tx = await dco.registerBallotMintTokens(1413, accounts[1])
 
+    // get the ballot action from the transaction
     let ballot = getBallot(tx)
 
-    // vote for it (with all the reputation you have)
+    // vote for it - 1 will be the winning proposal because we have all the rep
     await ballot.vote(1);
 
     // execute the ballot
