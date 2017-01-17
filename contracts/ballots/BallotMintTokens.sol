@@ -2,6 +2,7 @@ pragma solidity ^0.4.4;
 
 import "./Ballot.sol";
 import "./NamedProposalBallot.sol";
+import "../DCOInterface.sol";
 import "../MintableToken.sol";
 import "../Reputation.sol";
 
@@ -11,8 +12,7 @@ contract BallotMintTokens is NamedProposalBallot {
 
     The constructor takes the following arguments:
 
-        _reputationContract: a Reputation contract
-        _tokenContract: A MintableToken contract
+        _dco: 
         _amount: the amount of tokens to assign
         _beneficary: the beneficary of the action
 
@@ -24,37 +24,61 @@ contract BallotMintTokens is NamedProposalBallot {
 	*/
 
     bool public executed;
-	address public beneficary;
-	MintableToken public tokenContract;
-    Reputation public reputationContract;
+    DCOInterface public dco;
     uint256 public amount;
+    address public beneficary;
+
+    event BallotExecuted(string msg);
 
     bytes32[] _proposals = [bytes32("n"), bytes32("y")];
 
     function BallotMintTokens( 
-    	Reputation _reputationContract,
-        MintableToken _tokenContract,
+        address _dco,
         uint256 _amount,
         address _beneficary
-        ) NamedProposalBallot(_reputationContract, _proposals) {
-        reputationContract = _reputationContract;
-        tokenContract = MintableToken(_tokenContract);
-        beneficary = _beneficary;
+        )  NamedProposalBallot (DCOInterface(_dco).reputationContract(), _proposals) {
+        dco = DCOInterface(_dco);
         amount = _amount;
+        beneficary = _beneficary;
+    }
+    /// @dev Computes the winning proposal taking all
+    /// previous votes into account.
+    function winningProposal() constant
+            returns (uint)
+    {
+        uint winningProposal;
+        uint winningVoteCount = 0;
+        for (uint p = 0; p < proposals.length; p++) {
+            if (proposals[p].voteCount > winningVoteCount) {
+                winningVoteCount = proposals[p].voteCount;
+                winningProposal = p;
+            }
+        }
+        // winningProposal = 0;
+        return winningProposal;
+        // uint totalReputation = dco.reputationContract().totalReputation();
+        // if (winningVoteCount * 2 < totalrepu) {
+        //     winningProposal = 0;
+
+        // } 
     }
 
     function executeWinningProposal() returns (bool) {
-        // if (winningProposal() == 0 && !executed) {
-            // executed = true;
-            // tokenContract.mint(amount, beneficary);
-            // if (tokenContract.mint(amount, beneficary) == true) {
-            // //     // executed = true; 
-            //     return true;
-            // }
-            // return true;
-        // } else {
-            // throw;
-            // return false;
-        // }
-    }	
+        /*
+            This function expects to be called from the dco (by calling dco.executeBallot(ballot))
+        */
+
+        if (winningProposal() == 1) {
+            dco.mintTokens(amount, beneficary, dco.tokenContract());
+            BallotExecuted('BallotMintTokens executed');
+            return true;
+        } 
+        return false;
+
+        // use "delegatecall" to have code running in the context of the original msg.sender
+        // if (!dco.delegatecall(bytes4(sha3("mintTokens(uint256,address,address)")), amount, beneficary, dco.tokenContract())) {
+        //     throw;
+        // } 
+    }   
+
 }

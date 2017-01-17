@@ -21,7 +21,7 @@ contract Token is BasicToken, Ownable, Killable {
     uint public decimals = 18;
     uint public INITIAL_SUPPLY = 10000;
       
-    function Token() {
+    function Token() Ownable() {
         totalSupply = INITIAL_SUPPLY;
         balances[msg.sender] = INITIAL_SUPPLY;
     }

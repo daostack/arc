@@ -17,6 +17,7 @@ Use it like this:
 
     dco =  new DCO(tokenContract.address, reputationContract.address); 
     tokenContract.transferOwnership(dco.address)
+    reputationContract.transferOwnership(dco.address)
 
 */
 
@@ -26,6 +27,13 @@ contract DCO is Ownable {
 
     event BallotCreated(address indexed ballotaddress); 
     event BallotExecuted(string msg); 
+
+    mapping (address => bool) registeredBallots;
+    modifier onlyRegisteredBallot() { 
+        // this function can only be executed by a registered contract
+        if (registeredBallots[msg.sender])
+            _;
+    }
 
     // the creator of the DCO must be owner of the token contract
     function DCO(
@@ -37,29 +45,34 @@ contract DCO is Ownable {
 
     }
 
-
-    function createBallotToMintTokens(uint _amount, address _recipient) returns (BallotMintTokens) {
-        BallotMintTokens ballot = new BallotMintTokens(reputationContract, tokenContract,  _amount, _recipient);
-        BallotCreated(ballot);
-        return ballot;
-    }
-
-    function addBallot(string ballotType, bytes32 arg1, bytes32 arg2 ) returns (BallotMintTokens) {
-        BallotMintTokens ballot = new BallotMintTokens(reputationContract, tokenContract,  uint(arg1), address(arg2));
-        BallotCreated(ballot);
-        return ballot;
-    }
     function vote(Ballot _ballot, uint _vote) {
+        /* cast a vote in a ballot */
         _ballot.registerVote(_vote, msg.sender);
     }
 
-    function executeBallot(BallotMintTokens _ballot) {
-        if (_ballot.winningProposal() == 1) {
-            bool result = tokenContract.mint(_ballot.amount(), _ballot.beneficary());
-            if (result) {
-                BallotExecuted("Minted your tokens!!! address");
-            }
+    function executeBallot(address _ballot) returns (bool) {
+        /* execute the winning proposal in a ballot */
+        if (!registeredBallots[_ballot]) {
+            BallotExecuted('execution failed because ballot is not registered');
+            return false; 
         }
+        Ballot ballot = Ballot(_ballot);
+        if (!ballot.executeWinningProposal()) {
+            BallotExecuted('execution failed');
+            return false;
+        }
+        BallotExecuted('ballot executed');
+        return true;
     }
 
+    function registerBallotMintTokens(uint256 _amount, address _beneficary) {
+        BallotMintTokens ballot = new BallotMintTokens(this, _amount, _beneficary);
+        registeredBallots[ballot] = true;
+        BallotCreated(ballot);
+    }
+
+    function mintTokens(uint256 _amount, address _beneficary, address _tokenContract ) 
+        onlyRegisteredBallot {
+        MintableToken(_tokenContract).mint(_amount, _beneficary); 
+    }
 }

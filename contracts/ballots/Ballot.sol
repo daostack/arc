@@ -16,7 +16,7 @@ contract Ballot is Ownable {
     mapping(address => bytes32) public voters;
 
     /// Create a new ballot to choose one of `proposalNames`.
-    function Ballot(Reputation _reputationContractAddress) {
+    function Ballot(Reputation _reputationContractAddress) Ownable() {
         reputationContract = _reputationContractAddress;
     }
 
