@@ -45,10 +45,10 @@ contract DCO is Ownable {
 
     }
 
-    function vote(Ballot _ballot, uint _vote) {
-        /* cast a vote in a ballot */
-        _ballot.registerVote(_vote, msg.sender);
-    }
+    // function vote(Ballot _ballot, uint _vote) {
+    //      cast a vote in a ballot 
+    //     _ballot.registerVote(_vote, msg.sender);
+    // }
 
     function executeBallot(address _ballot) returns (bool) {
         /* execute the winning proposal in a ballot */

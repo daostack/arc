@@ -34,17 +34,17 @@ contract('BallotMintTokens', function(accounts) {
     // proposal 1 got only 1/3 of the votes, so it should not pass yet
     let proposal
     proposal = await ballot.winningProposal()
-    // assert.equal(proposal.valueOf(), 0)
+    assert.equal(proposal.valueOf(), 0)
 
-    // // the fact that accounts[1] votes again should have no effect
+    // // the fact that accounts[1] votes again should throw an error
     // await ballot.vote(1);
     // proposal = await ballot.winningProposal()
     // assert.equal(proposal.valueOf(), 0)
 
-    // // after a yes vote of accounts[1], we have a winner (i.e 1)
-    // await ballot.vote(1, {"from": accounts[1]});
-    // proposal = await ballot.winningProposal()
-    // assert.equal(proposal.valueOf(), 1)
+    // after a yes vote of accounts[1], we have a winner (i.e 1)
+    await ballot.vote(1, {"from": accounts[1]});
+    proposal = await ballot.winningProposal()
+    assert.equal(proposal.valueOf(), 1)
 
   })
 });

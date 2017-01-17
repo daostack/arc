@@ -23,7 +23,7 @@ contract Ballot is Ownable {
     /// Give your vote to proposal `proposals[proposal].name`.
     function vote(uint proposal); 
 
-    function registerVote(uint _proposal, address _voter); 
+    // function registerVote(uint _proposal, address _voter); 
 
     /// @dev Computes the winning proposal taking all
     /// previous votes into account.

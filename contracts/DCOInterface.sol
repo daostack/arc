@@ -28,8 +28,6 @@ contract DCOInterface {
 
     mapping (address => bool) registeredBallots;
 
-    function vote(Ballot _ballot, uint _vote); 
-
     function executeBallot(address _ballot) returns (bool);
 
     function registerBallotToMintTokens(uint256 _amount, address _beneficary);
