@@ -1,13 +1,13 @@
 pragma solidity ^0.4.4;
 
-import "./Ballot.sol";
-import "../DCOInterface.sol";
+import "./Proposal.sol";
+import "../DAOInterface.sol";
 import "../MintableToken.sol";
 import "../Reputation.sol";
 
 
-contract BallotMintTokens is Ballot {
-	/* a ballot to decide to assign a number of new tokens to a given beneficary 
+contract ProposalMintTokens is Proposal {
+	/* a proposal to decide to assign a number of new tokens to a given beneficary 
 
     The constructor takes the following arguments:
 
@@ -17,35 +17,35 @@ contract BallotMintTokens is Ballot {
 
     The proposal can be executed in case:
         - more than 50% of reputation holders in the reputation contract 
-          have voted 'y' on the ballot
+          have voted 'y' on the proposal
         - the reputationContract has the rights to mint new tokens
 
 	*/
 
     bool public executed;
-    DCOInterface public dco;
+    DAOInterface public dco;
     uint256 public amount;
     address public beneficary;
 
 
-    function BallotMintTokens( 
+    function ProposalMintTokens( 
         address _dco,
         uint256 _amount,
         address _beneficary
-        )  Ballot (DCOInterface(_dco).reputationContract()) {
-        dco = DCOInterface(_dco);
+        )  Proposal (DAOInterface(_dco).reputationContract()) {
+        dco = DAOInterface(_dco);
         amount = _amount;
         beneficary = _beneficary;
     }
 
 
-    function executeWinningProposal() returns (bool) {
+    function executeDecision() returns (bool) {
         /*
-            This function expects to be called from the dco (by calling dco.executeBallot(ballot))
+            This function expects to be called from the dco (by calling dco.executeProposal(proposal))
         */
-        if (winningProposal() == 1) {
+        if (winningChoice() == 1) {
             dco.mintTokens(amount, beneficary, dco.tokenContract());
-            BallotExecuted('BallotMintTokens executed');
+            ProposalExecuted('ProposalMintTokens executed');
             return true;
         } 
         return false;

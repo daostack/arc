@@ -2,14 +2,14 @@ pragma solidity ^0.4.4;
 
 
 /*
-A DCO is a Decentralized Collaborative Organization. 
+A DAO is a Decentralized Collaborative Organization. 
 
 It is associated with a Token contract and a Reputation contract.
 
 Use it like this:
 (NOTE: this is a bit clumsy and my change in the future)
 
-    dco =  new DCO(tokenContract.address, reputationContract.address); 
+    dco =  new DAO(tokenContract.address, reputationContract.address); 
     tokenContract.transferOwnership(dco.address)
     reputationContract.transferOwnership(dco.address)
 
@@ -17,20 +17,20 @@ Use it like this:
 import "./Reputation.sol";
 import "./Token.sol";
 import "./MintableToken.sol";
-import "./ballots/Ballot.sol";
+import "./proposals/Proposal.sol";
 
-contract DCOInterface {
+contract DAOInterface {
     MintableToken public tokenContract;
     Reputation public reputationContract;
 
-    event BallotCreated(address indexed ballotaddress); 
-    event BallotExecuted(string msg); 
+    event ProposalCreated(address indexed proposaladdress); 
+    event ProposalExecuted(string msg); 
 
-    mapping (address => bool) registeredBallots;
+    mapping (address => bool) registeredProposals;
 
-    function executeBallot(address _ballot) returns (bool);
+    function executeProposal(address _proposal) returns (bool);
 
-    function registerBallotToMintTokens(uint256 _amount, address _beneficary);
+    function registerProposalToMintTokens(uint256 _amount, address _beneficary);
 
     function mintTokens(uint256 _amount, address _beneficary, address _tokenContract);
 }

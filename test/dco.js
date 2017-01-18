@@ -1,13 +1,13 @@
 const assertJump = require('./zeppelin-solidity/helpers/assertJump');
 
-contract('DCO', function(accounts) {
+contract('DAO', function(accounts) {
     let reputation, token, dco;
 
     before(async function(){
         // set up a dco
         reputation = Reputation.deployed()
         token = MintableToken.deployed()
-        dco = await DCO.new(reputation.address, token.address);
+        dco = await DAO.new(reputation.address, token.address);
         await token.transferOwnership(dco.address)
         await reputation.transferOwnership(dco.address)
     })  
@@ -22,26 +22,26 @@ contract('DCO', function(accounts) {
 
         // (next statement makes transaction return more data, and can be remove
         // once a new version of truffle comes out)
-        DCO.next_gen = true;
+        DAO.next_gen = true;
 
-        // create a ballot to create 1413 tokens and give them to accounts[1]
-        let tx = await dco.registerBallotMintTokens(1413, accounts[1])
+        // create a proposal to create 1413 tokens and give them to accounts[1]
+        let tx = await dco.registerProposalMintTokens(1413, accounts[1])
 
-        // get the ballot action from the transaction
-        let ballot = getBallot(tx)
+        // get the proposal action from the transaction
+        let proposal = getProposal(tx)
 
         // vote for it - 1 will be the winning proposal because we have all the rep
-        await ballot.vote(1);
+        await proposal.vote(1);
 
-        // execute the ballot
-        await dco.executeBallot(ballot.address);
+        // execute the proposal
+        await dco.executeProposal(proposal.address);
 
         // now accounts[1] should have 1413 tokens
         let newBalance = await token.balanceOf(accounts[1])
         assert.equal(newBalance.valueOf(), 1413)
     })
 
-    it("an unregistered ballot cannot be executed", async function() {
+    it("an unregistered proposal cannot be executed", async function() {
         // give all reputation to default account
         await reputation.setReputation(accounts[0], 1000);
 
@@ -49,28 +49,28 @@ contract('DCO', function(accounts) {
         let oldBalance = await token.balanceOf(accounts[2])
         assert.equal(oldBalance.valueOf(), 0)
 
-        // create a ballot to create 1413 tokens and give them to accounts[1]
-        let ballot = await BallotMintTokens.new(dco.address, 1413, accounts[1])
+        // create a proposal to create 1413 tokens and give them to accounts[1]
+        let proposal = await ProposalMintTokens.new(dco.address, 1413, accounts[1])
 
         // vote for it (with all the reputation you have)
-        await ballot.vote(1);
+        await proposal.vote(1);
 
-        // execute the ballot
-        await dco.executeBallot(ballot.address);
+        // execute the proposal
+        await dco.executeProposal(proposal.address);
 
         // the number of tokens of accounts[1] should remain unchanged
-        // because the ballot was not registered
+        // because the proposal was not registered
         let newBalance = await token.balanceOf(accounts[2])
         assert.equal(newBalance.valueOf(), 0)
     })
 
 }); 
 
-function getBallot(tx) {
-    // helper function that returns a ballot object from the BallotCreated event 
+function getProposal(tx) {
+    // helper function that returns a proposal object from the ProposalCreated event 
     // in the logs of tx
-    assert.equal(tx.logs[0].event, 'BallotCreated')
-    let ballotAddress = tx.logs[0].args.ballotaddress
-    let ballot = Ballot.at(ballotAddress)
-    return ballot
+    assert.equal(tx.logs[0].event, 'ProposalCreated')
+    let proposalAddress = tx.logs[0].args.proposaladdress
+    let proposal = Proposal.at(proposalAddress)
+    return proposal
 }

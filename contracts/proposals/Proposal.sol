@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 /*
-    A Ballot defines a number of proposals that can be voted for +
+    A Proposal defines a number of proposals that can be voted for +
     a way to decide which proposal has won.
 
     The present contract has two proposals "y" and "n"
@@ -13,13 +13,13 @@ import "../zeppelin-solidity/Ownable.sol";
 
 
 /// @title Voting
-contract Ballot is Ownable {
+contract Proposal is Ownable {
 
     Reputation public reputationContract;
 
-    event BallotExecuted(string msg);
+    event ProposalExecuted(string msg);
 
-    struct Proposal
+    struct Choice
     {
         bytes32 name;   // short name (up to 32 bytes)
         uint voteCount; // amount of accumulated reputation
@@ -29,25 +29,25 @@ contract Ballot is Ownable {
     mapping(address => bytes32) public voters;
 
     // A dynamically-sized array of `Proposal` structs.
-    Proposal[] public proposals;
+    Choice[] public proposals;
     
     // map proposals to amount of votes
     // mapping (uint => uint) public voteCount;
-    /// Create a new ballot to choose one of `proposalNames`.
-    function Ballot(Reputation _reputationContractAddress) Ownable() {
+    /// Create a new proposal to choose one of `proposalNames`.
+    function Proposal(Reputation _reputationContractAddress) Ownable() {
         reputationContract = _reputationContractAddress;
-        proposals.push(Proposal({
+        proposals.push(Choice({
                 name: 'y', 
                 voteCount: 0
             }));
-        proposals.push(Proposal({
+        proposals.push(Choice({
                 name: 'n', 
                 voteCount: 0
             }));
  
     }
 
-    function executeWinningProposal() returns (bool) {
+    function executeDecision() returns (bool) {
         // do something with the winning proposal, return true if executed, false if not
     }
 
@@ -71,21 +71,21 @@ contract Ballot is Ownable {
 
     /// @dev Computes the winning proposal taking all
     /// previous votes into account.
-    function winningProposal() constant
+    function winningChoice() constant
             returns (uint)
     {
-        uint winningProposal;
+        uint winningChoice;
         uint winningVoteCount = 0;
         uint totalReputation = reputationContract.totalReputation();
         for (uint p = 0; p < proposals.length; p++) {
             if (proposals[p].voteCount > winningVoteCount) {
                 winningVoteCount = proposals[p].voteCount;
-                winningProposal = p;
+                winningChoice = p;
             }
         }
         // the winning proposal should have at least half ot he totalReputation
         if (totalReputation < winningVoteCount * 2) {
-            return winningProposal;
+            return winningChoice;
         }
         return 0;
     }
