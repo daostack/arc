@@ -12,8 +12,7 @@ A DCO is a Decentralized Collaborative Organization.
 
 It is associated with a Token contract and a Reputation contract.
 
-Use it like this:
-(NOTE: this is a bit clumsy and my change in the future)
+Create a DCO like this (NOTE: this is a bit clumsy and my change in the future)
 
     dco =  new DCO(tokenContract.address, reputationContract.address); 
     tokenContract.transferOwnership(dco.address)
@@ -45,11 +44,6 @@ contract DCO is Ownable {
 
     }
 
-    // function vote(Ballot _ballot, uint _vote) {
-    //      cast a vote in a ballot 
-    //     _ballot.registerVote(_vote, msg.sender);
-    // }
-
     function executeBallot(address _ballot) returns (bool) {
         /* execute the winning proposal in a ballot */
         if (!registeredBallots[_ballot]) {
@@ -66,6 +60,7 @@ contract DCO is Ownable {
     }
 
     function registerBallotMintTokens(uint256 _amount, address _beneficary) {
+        // anybody can register a ballot. Should we protect this? Only rep holders?
         BallotMintTokens ballot = new BallotMintTokens(this, _amount, _beneficary);
         registeredBallots[ballot] = true;
         BallotCreated(ballot);
