@@ -3,10 +3,9 @@ pragma solidity ^0.4.4;
 import "./Proposal.sol";
 import "../DAOInterface.sol";
 import "../Reputation.sol";
-import "../debug/Debug.sol";
 
 
-contract ProposalMintReputation is Debug, Proposal {
+contract ProposalMintReputation is Proposal {
 	/* a proposal to decide to mint a number of new reputation to a given beneficary 
 
     The constructor takes the following arguments:
@@ -43,15 +42,11 @@ contract ProposalMintReputation is Debug, Proposal {
         /*
             This function expects to be called from the dao (by calling dao.executeProposal(proposal))
         */
-        PrintString('Winning choice:');
-        PrintUint(winningChoice());
         if (winningChoice() == 1) {
             dao.mintReputation(amount, beneficary);
             ProposalExecuted('ProposalMintReputation executed');
             return true;
         } 
         return false;
-
     }   
-
 }

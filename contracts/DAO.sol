@@ -27,8 +27,6 @@ contract DAO {
 
     event ProposalCreated(address indexed proposaladdress); 
     event ProposalExecuted(string msg); 
-    event PrintString(string msg);
-    event PrintAddress(string msg);
 
     mapping (address => bool) registeredProposals;
 
@@ -88,8 +86,6 @@ contract DAO {
         ProposalMintReputation proposal = new ProposalMintReputation(this, _amount, _beneficary);
         registeredProposals[proposal] = true;
         ProposalCreated(proposal);
-        PrintString('registerd proposal at');
-        // PrintAddress(proposal);
     }
 
 }

@@ -4,10 +4,9 @@ import "./Proposal.sol";
 import "../DAOInterface.sol";
 import "../MintableToken.sol";
 import "../Reputation.sol";
-import "../debug/Debug.sol";
 
 
-contract ProposalMintTokens is Debug, Proposal {
+contract ProposalMintTokens is Proposal {
 	/* a proposal to decide to assign a number of new tokens to a given beneficary 
 
     The constructor takes the following arguments:
@@ -44,8 +43,6 @@ contract ProposalMintTokens is Debug, Proposal {
         /*
             This function expects to be called from the dao (by calling dao.executeProposal(proposal))
         */
-        PrintString('winningChoice()');
-        PrintUint(winningChoice());
         if (winningChoice() == 1) {
             dao.mintTokens(amount, beneficary);
             ProposalExecuted('ProposalMintTokens executed');
