@@ -2,13 +2,12 @@ pragma solidity ^0.4.4;
 
 import "./Proposal.sol";
 import "../DAOInterface.sol";
-import "../MintableToken.sol";
 import "../Reputation.sol";
 import "../debug/Debug.sol";
 
 
-contract ProposalMintTokens is Debug, Proposal {
-	/* a proposal to decide to assign a number of new tokens to a given beneficary 
+contract ProposalMintReputation is Debug, Proposal {
+	/* a proposal to decide to mint a number of new reputation to a given beneficary 
 
     The constructor takes the following arguments:
 
@@ -29,7 +28,7 @@ contract ProposalMintTokens is Debug, Proposal {
     address public beneficary;
 
 
-    function ProposalMintTokens( 
+    function ProposalMintReputation( 
         address _dao,
         uint256 _amount,
         address _beneficary
@@ -44,19 +43,15 @@ contract ProposalMintTokens is Debug, Proposal {
         /*
             This function expects to be called from the dao (by calling dao.executeProposal(proposal))
         */
-        PrintString('winningChoice()');
+        PrintString('Winning choice:');
         PrintUint(winningChoice());
         if (winningChoice() == 1) {
-            dao.mintTokens(amount, beneficary);
-            ProposalExecuted('ProposalMintTokens executed');
+            dao.mintReputation(amount, beneficary);
+            ProposalExecuted('ProposalMintReputation executed');
             return true;
         } 
         return false;
 
-        // use "delegatecall" to have code running in the context of the original msg.sender
-        // if (!dao.delegatecall(bytes4(sha3("mintTokens(uint256,address,address)")), amount, beneficary, dao.tokenContract())) {
-        //     throw;
-        // } 
     }   
 
 }

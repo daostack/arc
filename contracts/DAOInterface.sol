@@ -32,5 +32,6 @@ contract DAOInterface {
 
     function registerProposalToMintTokens(uint256 _amount, address _beneficary);
 
-    function mintTokens(uint256 _amount, address _beneficary, address _tokenContract);
+    function mintTokens(uint256 _amount, address _beneficary);
+    function mintReputation(uint256 _amount, address _beneficary);
 }

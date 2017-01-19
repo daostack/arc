@@ -6,6 +6,7 @@ import "./Token.sol";
 import "./MintableToken.sol";
 import "./proposals/Proposal.sol";
 import "./proposals/ProposalMintTokens.sol";
+import "./proposals/ProposalMintReputation.sol";
 
 /*
 A DAO is a Decentralized Collaborative Organization. 
@@ -20,14 +21,17 @@ Create a DAO like this (NOTE: this is a bit clumsy and my change in the future)
 
 */
 
-contract DAO is Ownable {
+contract DAO {
     MintableToken public tokenContract;
     Reputation public reputationContract;
 
     event ProposalCreated(address indexed proposaladdress); 
     event ProposalExecuted(string msg); 
+    event PrintString(string msg);
+    event PrintAddress(string msg);
 
     mapping (address => bool) registeredProposals;
+
     modifier onlyRegisteredProposal() { 
         // this function can only be executed by a registered contract
         if (registeredProposals[msg.sender])
@@ -42,6 +46,21 @@ contract DAO is Ownable {
         reputationContract = _reputationContract;
         tokenContract = _tokenContract;
 
+    }
+
+    function mintTokens(uint256 _amount, address _beneficary) 
+        onlyRegisteredProposal {
+        tokenContract.mint(_amount, _beneficary); 
+    }
+
+    function mintReputation(uint256 _amount, address _beneficary) 
+        onlyRegisteredProposal {
+        reputationContract.mint(_amount, _beneficary); 
+    }
+
+    function upgrade(address _newDAO) {
+        tokenContract.transferOwnership(_newDAO);
+        reputationContract.transferOwnership(_newDAO);
     }
 
     function executeProposal(address _proposal) returns (bool) {
@@ -60,14 +79,17 @@ contract DAO is Ownable {
     }
 
     function registerProposalMintTokens(uint256 _amount, address _beneficary) {
-        // anybody can register a proposal. Should we protect this? Only rep holders?
         ProposalMintTokens proposal = new ProposalMintTokens(this, _amount, _beneficary);
         registeredProposals[proposal] = true;
         ProposalCreated(proposal);
     }
 
-    function mintTokens(uint256 _amount, address _beneficary, address _tokenContract ) 
-        onlyRegisteredProposal {
-        MintableToken(_tokenContract).mint(_amount, _beneficary); 
+    function registerProposalMintReputation(uint256 _amount, address _beneficary) {
+        ProposalMintReputation proposal = new ProposalMintReputation(this, _amount, _beneficary);
+        registeredProposals[proposal] = true;
+        ProposalCreated(proposal);
+        PrintString('registerd proposal at');
+        // PrintAddress(proposal);
     }
+
 }

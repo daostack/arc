@@ -2,25 +2,25 @@ contract('ProposalMintTokens', function(accounts) {
     it("should respect basic sanity", async function() {
         let reputation = Reputation.deployed()
         let token = MintableToken.deployed()
-        let dco = await DAO.new(reputation.address, token.address);
+        let dao = await DAO.new(reputation.address, token.address);
 
-        // give the dco the ownership of the token
-        await token.transferOwnership(dco.address)
-        assert.equal(await token.owner(), dco.address);
+        // give the dao the ownership of the token
+        await token.transferOwnership(dao.address)
+        assert.equal(await token.owner(), dao.address);
 
-        // give all reputation to default account
-        await reputation.setReputation(accounts[0], 1000);
-        await reputation.setReputation(accounts[1], 1000);
-        await reputation.setReputation(accounts[2], 1000);
+        await reputation.mint(1000, accounts[0]);
+        await reputation.mint(1000, accounts[1]);
+        await reputation.mint(1000, accounts[2]);
+
 
         // create a proposal to mint tokens
-        let proposal = await ProposalMintTokens.new(dco.address, 1413, accounts[1])
+        let proposal = await ProposalMintTokens.new(dao.address, 1413, accounts[1])
 
         let proposal_amount = await proposal.amount()
         assert.equal(1413,  proposal_amount.valueOf())
-        let proposal_dco = await proposal.dco()
+        let proposal_dao = await proposal.dao()
 
-        assert.equal(dco.address,  proposal_dco)
+        assert.equal(dao.address,  proposal_dao)
 
         // before any voee are cast, the "winning proposal" is 0 (i.e. "no")
         assert.equal(await proposal.winningChoice(), 0)

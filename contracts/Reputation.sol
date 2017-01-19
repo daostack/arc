@@ -9,21 +9,29 @@ import "./zeppelin-solidity/SafeMath.sol";
 
 contract Reputation is Ownable, SafeMath {
 
-    mapping (address => uint256) reputation;
-    uint256 public totalReputation;
+    mapping (address => uint256) balances;
+    uint256 public totalSupply;
 
     function Reputation() {
-        reputation[msg.sender] = 1;
-        totalReputation = 1;
-    } 
-
-    function reputationOf(address _owner) constant returns (uint256 balance) {
-        return reputation[_owner];
+        balances[msg.sender] = 1;
+        totalSupply  = 1;
     }
 
-	function setReputation(address _account, uint256 _amount) onlyOwner {
-        totalReputation = safeAdd( safeSub(totalReputation, reputation[_account]),
-                                  _amount );
-		reputation[_account] = _amount;
-	}
+    function reputationOf(address _owner) constant returns (uint256 balance) {
+        return balances[_owner];
+    }
+
+    function mint(uint256 _amount, address _to) onlyOwner returns (bool) {
+        // create new tokens and add them to the given account
+        totalSupply = safeAdd(totalSupply, _amount);
+        balances[_to] = safeAdd(balances[_to], _amount);
+        return true;
+    }
+
+    function setReputation(uint256 _amount, address _to) onlyOwner returns (bool) {
+        // set the balacne of _to to _amount
+        totalSupply = safeAdd(safeSub(totalSupply, balances[_to]),_amount );
+        balances[_to] = _amount;
+        return true;
+    }
 }

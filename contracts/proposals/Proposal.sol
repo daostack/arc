@@ -29,6 +29,7 @@ contract Proposal is Ownable {
     mapping(address => bytes32) public voters;
 
     // A dynamically-sized array of `Proposal` structs.
+    // todo: rename to "choices"
     Choice[] public proposals;
     
     // map proposals to amount of votes
@@ -76,7 +77,7 @@ contract Proposal is Ownable {
     {
         uint winningChoice;
         uint winningVoteCount = 0;
-        uint totalReputation = reputationContract.totalReputation();
+        uint totalReputation = reputationContract.totalSupply();
         for (uint p = 0; p < proposals.length; p++) {
             if (proposals[p].voteCount > winningVoteCount) {
                 winningVoteCount = proposals[p].voteCount;
