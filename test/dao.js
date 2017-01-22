@@ -34,6 +34,32 @@ contract('DAO', function(accounts) {
         assert.equal(newBalance.valueOf(), 1413)
     })
 
+    it("test reputation minting", async function() {
+        // use the MintReputationRecipe to create a new proposal
+        // to give 1413 new rep to accounts[1]
+        let tx = await this.mintreputationRecipe.createProposal(this.dao.address, 1413, accounts[1])
+        let proposal = helpers.getProposal(tx)
+ 
+
+        // accounts[1] has no tokens at this point
+        let oldBalance = await this.reputation.reputationOf(accounts[1])
+        assert.equal(oldBalance.valueOf(), 0)
+
+        // vote yes
+        await proposal.vote(1);
+
+        // the proposal will be accepted because default account has all rep
+        let w = await proposal.winningChoice()
+        assert.equal(w.valueOf(), 1)
+
+        // execute the proposal
+        await this.dao.executeProposal(proposal.address);
+
+        // now accounts[1] should have 1413 tokens
+        let newBalance = await this.reputation.reputationOf(accounts[1])
+        assert.equal(newBalance.valueOf(), 1413)
+    })
+
 
     it("test basic workflow (obsolete)", async function() {
         // accounts[2] has no tokens at this point
