@@ -13,3 +13,33 @@ function getProposal(tx) {
 
 module.exports.getProposal = getProposal
 module.exports.getProposalAddress = getProposalAddress
+
+async function setupDAO(ctx) {
+    // set up a DAO from scratch
+    // (this procedure should be simplified)
+
+    let reputation = await Reputation.new()
+    await reputation.setReputation(1000, web3.eth.accounts[0]);
+    let token = await MintableToken.new()
+    let dao = await DAO.new(reputation.address, token.address);
+    await token.transferOwnership(dao.address)
+    await reputation.transferOwnership(dao.address)
+
+    let minttokensfactory = await ProposalMintTokensFactory.new(dao.address)
+    await dao.registerFactory(minttokensfactory.address)
+    // we finished configuring the DAO, we can now transfer ownership to itself
+    await dao.transferOwnership(dao.address)
+ 
+    // make variables available in the context
+    ctx.token = token
+    ctx.reputation = reputation
+    ctx.dao = dao
+    ctx.minttokensfactory = minttokensfactory
+
+    // next statement makes truffle return more data with transactions, 
+    // and can be removed once a new version of truffle comes out)
+    DAO.next_gen = true
+    ProposalMintTokensFactory.next_gen = true
+}
+
+module.exports.setupDAO = setupDAO
