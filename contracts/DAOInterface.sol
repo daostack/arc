@@ -1,19 +1,5 @@
 pragma solidity ^0.4.4;
 
-
-/*
-A DAO is a Decentralized Collaborative Organization. 
-
-It is associated with a Token contract and a Reputation contract.
-
-Use it like this:
-(NOTE: this is a bit clumsy and my change in the future)
-
-    dco =  new DAO(tokenContract.address, reputationContract.address); 
-    tokenContract.transferOwnership(dco.address)
-    reputationContract.transferOwnership(dco.address)
-
-*/
 import "./Reputation.sol";
 import "./Token.sol";
 import "./MintableToken.sol";
@@ -32,8 +18,11 @@ contract DAOInterface {
 
     function registerProposal(address proposal); 
 
-    function registerProposalToMintTokens(uint256 _amount, address _beneficary);
+    function registerRecipe(address _recipe); 
+
+    function unregisterRecipe(address _recipe);
 
     function mintTokens(uint256 _amount, address _beneficary);
+
     function mintReputation(uint256 _amount, address _beneficary);
 }

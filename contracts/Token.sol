@@ -12,8 +12,7 @@ import "./zeppelin-solidity/token/BasicToken.sol";
 import "./zeppelin-solidity/Ownable.sol";
 import "./zeppelin-solidity/Killable.sol";
 
-// TODO: make the following statement work:
-// contract Token is ERC20TokenInterface {
+
 contract Token is BasicToken, Ownable, Killable { 
 
     uint256 public totalSupply;

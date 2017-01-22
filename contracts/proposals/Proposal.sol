@@ -30,21 +30,19 @@ contract Proposal is Ownable {
     mapping(address => bytes32) public voters;
 
     // A dynamically-sized array of `Proposal` structs.
-    // todo: rename to "choices"
-    Choice[] public proposals;
+    Choice[] public choices;
     
-    /// Create a new proposal to choose one of `proposalNames`.
     function Proposal(Reputation _reputationContractAddress) {
-        // dao = _dao;
         reputationContract = _reputationContractAddress; 
-        proposals.push(Choice({
-                name: 'y', 
-                voteCount: 0
-            }));
-        proposals.push(Choice({
-                name: 'n', 
-                voteCount: 0
-            }));
+        // default 'yay/nay' choice
+        choices.push(Choice({
+            name: 'n', 
+            voteCount: 0
+        }));
+        choices.push(Choice({
+            name: 'y', 
+            voteCount: 0
+        }));
  
     }
 
@@ -53,7 +51,7 @@ contract Proposal is Ownable {
     }
 
     // vote for a certain proposal
-    // proposals are identified by their index in the array of proposals
+    // choices are identified by their index in the array of choices
     function vote(uint _choice) {
 
         if (voters[msg.sender] != 0) {
@@ -62,12 +60,12 @@ contract Proposal is Ownable {
         }
         // // register the vote by name, not by index, because index can be 0, which is
         // // also the default value for uninitilized variables
-        voters[msg.sender] = proposals[_choice].name;
+        voters[msg.sender] = choices[_choice].name;
 
         // If `proposal` is out of the range of the array,
         // this will throw automatically and revert all changes.
         // TODO: use safeAdd
-        proposals[_choice].voteCount += reputationContract.reputationOf(msg.sender);
+        choices[_choice].voteCount += reputationContract.reputationOf(msg.sender);
 
     }
 
@@ -79,9 +77,9 @@ contract Proposal is Ownable {
         uint winningChoice;
         uint winningVoteCount = 0;
         uint totalReputation = reputationContract.totalSupply();
-        for (uint p = 0; p < proposals.length; p++) {
-            if (proposals[p].voteCount > winningVoteCount) {
-                winningVoteCount = proposals[p].voteCount;
+        for (uint p = 0; p < choices.length; p++) {
+            if (choices[p].voteCount > winningVoteCount) {
+                winningVoteCount = choices[p].voteCount;
                 winningChoice = p;
             }
         }

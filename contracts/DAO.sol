@@ -2,22 +2,17 @@ pragma solidity ^0.4.4;
 
 import "./zeppelin-solidity/Ownable.sol";
 import "./Reputation.sol";
-import "./Token.sol";
 import "./MintableToken.sol";
 import "./proposals/Proposal.sol";
-import "./proposals/ProposalMintTokens.sol";
-import "./proposals/ProposalMintReputation.sol";
 
 /*
-A DAO is a Decentralized Collaborative Organization. 
+A DAO is a template for a Decentralized Autonous Organization. 
 
-It is associated with a Token contract and a Reputation contract.
+    It controls a Token contract and controls - and is controlled by - a reputation contract
 
-Create a DAO like this (NOTE: this is a bit clumsy and my change in the future)
+    Decisions are made by voting on Proposals.
 
-    dco =  new DAO(tokenContract.address, reputationContract.address); 
-    tokenContract.transferOwnership(dco.address)
-    reputationContract.transferOwnership(dco.address)
+    Proposals can be added by Recipes.
 
 */
 
@@ -28,10 +23,11 @@ contract DAO is Ownable {
     event ProposalCreated(address indexed proposaladdress); 
     event ProposalExecuted(string msg); 
 
+    // proposals that are allowed to be executed
     mapping (address => bool) registeredProposals;
 
-    // TODO: for usability, it may make sense to have here some descriptive info
-    // or, at least, make it an array
+    // recipes that are allowed to add proposals
+    // TODO: make this an array, so it can be queried.
     mapping (address => bool) registeredRecipes;
 
     modifier onlyRegisteredProposal() { 
@@ -40,10 +36,16 @@ contract DAO is Ownable {
             _;
     }
 
-    modifier onlyRegisteredRecipes() {
+    modifier onlyRegisteredRecipe() {
         if (registeredRecipes[msg.sender])
             _;
     }
+
+    modifier onlyOwnerOrRegisteredRecipe() {
+        if (msg.sender == owner || registeredRecipes[msg.sender])
+            _;
+    }
+
 
     // the creator of the DAO must be owner of the token contract
     function DAO(
@@ -85,25 +87,32 @@ contract DAO is Ownable {
         return true;
     }
 
-    function registerProposal(address proposal) onlyRegisteredRecipes {
-        // TODO: add RegisterProposal event (?)
-        registeredProposals[proposal] = true;
+    function registerProposal(address _proposal) onlyRegisteredRecipe {
+        /* register a proposal.
+
+        Only registered recipes can add a proposal
+        */
+        registeredProposals[_proposal] = true;
     }
 
-    function registerRecipe(address Recipe) onlyOwner {
-        // TODO: add RegisterRecipe event (?)
-        registeredRecipes[Recipe] = true;
-    }
-    function registerProposalMintTokens(uint256 _amount, address _beneficary) {
-        ProposalMintTokens proposal = new ProposalMintTokens(this, _amount, _beneficary);
-        registeredProposals[proposal] = true;
-        ProposalCreated(proposal);
+    function registerRecipe(address _recipe) onlyOwnerOrRegisteredRecipe {
+        /* register a Recipe 
+
+        only the owner, or other recipes, can register a new recipe.
+        the DAO can be made to be controlled only by itself by settings 
+        the ownership of the DAO to its own address.
+        */
+        registeredRecipes[_recipe] = true;
     }
 
-    function registerProposalMintReputation(uint256 _amount, address _beneficary) {
-        ProposalMintReputation proposal = new ProposalMintReputation(this, _amount, _beneficary);
-        registeredProposals[proposal] = true;
-        ProposalCreated(proposal);
+    function unregisterRecipe(address _recipe) onlyOwnerOrRegisteredRecipe {
+        /*  remove a recipe from the list of allowed recipes
+
+        only the owner, or other recipes, can register a new recipe.
+        the DAO can be made to be controlled only by itself by settings 
+        the ownership of the DAO to its own address.
+        */
+        registeredRecipes[_recipe] = false;
     }
 
 }

@@ -60,32 +60,6 @@ contract('DAO', function(accounts) {
         assert.equal(newBalance.valueOf(), 1413)
     })
 
-
-    it("test basic workflow (obsolete)", async function() {
-        // accounts[2] has no tokens at this point
-        let oldBalance = await this.token.balanceOf(accounts[2])
-        assert.equal(oldBalance.valueOf(), 0)
-
-        // create a proposal to create 1413 tokens and give them to accounts[1]
-        let tx = await this.dao.registerProposalMintTokens(1413, accounts[2])
-
-        // get the proposal action from the transaction
-        let proposal = helpers.getProposal(tx)
-
-        // vote for it - 1 will be the winning proposal because we have all the rep
-        await proposal.vote(1);
-
-        let w = await proposal.winningChoice()
-        assert.equal(w.valueOf(), 1)
-
-        // execute the proposal
-        await this.dao.executeProposal(proposal.address);
-
-        // now accounts[1] should have 1413 tokens
-        let newBalance = await this.token.balanceOf(accounts[2])
-        assert.equal(newBalance.valueOf(), 1413)
-    })
-
     it("an unregistered proposal should not be executed", async function() {
         // accounts[0] has no tokens at this point
         let oldBalance = await this.token.balanceOf(accounts[3])

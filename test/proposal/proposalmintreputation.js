@@ -15,16 +15,12 @@ contract('ProposalMintReputation', function(accounts) {
         await reputation.setReputation(1000, accounts[2]);
 
         // create a proposal to mint reputation
-        // XXX: TODO: this test crashes the est runner, for some reason!
-        DAO.next_gen = true;
-        return
-        let tx = await dao.registerProposalMintReputation(1413, accounts[1])
-
-        let proposal = ProposalMintReputation.at(helpers.getProposalAddress(tx))
+        let proposal = await ProposalMintReputation.new(dao.address, 1413, accounts[1])
 
         let proposal_amount = await proposal.amount()
         assert.equal(1413,  proposal_amount.valueOf())
         let proposal_dao = await proposal.dao()
+
         assert.equal(dao.address,  proposal_dao)
 
         // before any voee are cast, the "winning proposal" is 0 (i.e. "no")
@@ -41,11 +37,6 @@ contract('ProposalMintReputation', function(accounts) {
         await proposal.vote(1, {"from": accounts[1]});
         outcome = await proposal.winningChoice()
         assert.equal(outcome.valueOf(), 1)
-
-        dao.executeProposal(proposal.address)
-
-        // now accounts[1]'s rep should be 1413  
-        // assert.equal(await reputation.reputationOf(accounts[1]), 1413)
-
     })
 });
+
