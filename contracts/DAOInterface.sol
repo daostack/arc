@@ -17,7 +17,7 @@ Use it like this:
 import "./Reputation.sol";
 import "./Token.sol";
 import "./MintableToken.sol";
-import "./proposals/Proposal.sol";
+
 
 contract DAOInterface {
     MintableToken public tokenContract;
@@ -29,6 +29,8 @@ contract DAOInterface {
     mapping (address => bool) registeredProposals;
 
     function executeProposal(address _proposal) returns (bool);
+
+    function registerProposal(address proposal); 
 
     function registerProposalToMintTokens(uint256 _amount, address _beneficary);
 

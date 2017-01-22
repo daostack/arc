@@ -21,7 +21,7 @@ Create a DAO like this (NOTE: this is a bit clumsy and my change in the future)
 
 */
 
-contract DAO {
+contract DAO is Ownable {
     MintableToken public tokenContract;
     Reputation public reputationContract;
 
@@ -30,9 +30,18 @@ contract DAO {
 
     mapping (address => bool) registeredProposals;
 
+    // TODO: for usability, it may make sense to have here some descriptive info
+    // or, at least, make it an array
+    mapping (address => bool) registeredFactories;
+
     modifier onlyRegisteredProposal() { 
         // this function can only be executed by a registered contract
         if (registeredProposals[msg.sender])
+            _;
+    }
+
+    modifier onlyRegisteredFactories() {
+        if (registeredFactories[msg.sender])
             _;
     }
 
@@ -76,6 +85,15 @@ contract DAO {
         return true;
     }
 
+    function registerProposal(address proposal) onlyRegisteredFactories {
+        // TODO: add RegisterProposal event (?)
+        registeredProposals[proposal] = true;
+    }
+
+    function registerFactory(address factory) onlyOwner {
+        // TODO: add RegisterFactory event (?)
+        registeredFactories[factory] = true;
+    }
     function registerProposalMintTokens(uint256 _amount, address _beneficary) {
         ProposalMintTokens proposal = new ProposalMintTokens(this, _amount, _beneficary);
         registeredProposals[proposal] = true;

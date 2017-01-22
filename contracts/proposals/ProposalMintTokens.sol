@@ -22,8 +22,6 @@ contract ProposalMintTokens is Proposal {
 
 	*/
 
-    bool public executed;
-    DAOInterface public dao;
     uint256 public amount;
     address public beneficary;
 

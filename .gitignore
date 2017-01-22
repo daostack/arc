@@ -5,3 +5,4 @@ logs/
 fabfile.py
 node_modules/
 NOTES.md
+test/play.js

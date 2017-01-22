@@ -8,7 +8,7 @@ contract('Test Reputation', function(accounts) {
         
         await reputation.mint(3131, accounts[1]);
         
-        value = await reputation.reputationOf.call(accounts[1]);
+        value = await reputation.reputationOf(accounts[1]);
         assert.equal(value.valueOf(), 3131);
     });
         

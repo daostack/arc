@@ -9,12 +9,13 @@ pragma solidity ^0.4.4;
 */
 
 import "../Reputation.sol";
+import "../DAOInterface.sol";
 import "../zeppelin-solidity/Ownable.sol";
 
 
-/// @title Voting
 contract Proposal is Ownable {
 
+    DAOInterface public dao;
     Reputation public reputationContract;
 
     event ProposalExecuted(string msg);
@@ -25,18 +26,17 @@ contract Proposal is Ownable {
         uint voteCount; // amount of accumulated reputation
     }
 
-    // mapping address to the index of the proposal that they voted
+    // mapping address to the name of the proposal that they voted
     mapping(address => bytes32) public voters;
 
     // A dynamically-sized array of `Proposal` structs.
     // todo: rename to "choices"
     Choice[] public proposals;
     
-    // map proposals to amount of votes
-    // mapping (uint => uint) public voteCount;
     /// Create a new proposal to choose one of `proposalNames`.
-    function Proposal(Reputation _reputationContractAddress) Ownable() {
-        reputationContract = _reputationContractAddress;
+    function Proposal(Reputation _reputationContractAddress) {
+        // dao = _dao;
+        reputationContract = _reputationContractAddress; 
         proposals.push(Choice({
                 name: 'y', 
                 voteCount: 0
@@ -54,19 +54,20 @@ contract Proposal is Ownable {
 
     // vote for a certain proposal
     // proposals are identified by their index in the array of proposals
-    function vote(uint _proposal) {
+    function vote(uint _choice) {
 
         if (voters[msg.sender] != 0) {
             // voter has already voted
             throw;
         }
-        // register the vote by name, not by index, because index can be 0, which is
-        // also the default value for uninitilized variables
-        voters[msg.sender] = proposals[_proposal].name;
+        // // register the vote by name, not by index, because index can be 0, which is
+        // // also the default value for uninitilized variables
+        voters[msg.sender] = proposals[_choice].name;
 
         // If `proposal` is out of the range of the array,
         // this will throw automatically and revert all changes.
-        proposals[_proposal].voteCount += reputationContract.reputationOf(msg.sender);
+        // TODO: use safeAdd
+        proposals[_choice].voteCount += reputationContract.reputationOf(msg.sender);
 
     }
 

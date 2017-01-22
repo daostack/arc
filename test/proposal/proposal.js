@@ -2,9 +2,10 @@ const assertJump = require('../zeppelin-solidity/helpers/assertJump');
 
 contract('Proposal', function(accounts) {
     it("should implement basic voting workflow", async function() {
-
         // create a reputation contract
         let reputation = await Reputation.new()
+        let token = await MintableToken.new()
+        let dao = await DAO.new(reputation.address)
         await reputation.setReputation(1000, accounts[0]);
         await reputation.setReputation(1000, accounts[1]);
         await reputation.setReputation(1000, accounts[2]);
@@ -29,6 +30,7 @@ contract('Proposal', function(accounts) {
 
     it('voting twice should throw an error', async function() {
         let reputation = await Reputation.new()
+        let dao = await DAO.new(reputation.address)
         let proposal = await Proposal.new(reputation.address)
         await proposal.vote(0, {'from': accounts[0]})
         try {
@@ -37,11 +39,11 @@ contract('Proposal', function(accounts) {
         } catch(error) {
             assertJump(error);
         }
-
     })
 
     it('an unknown voter can vote, but it will have no effect', async function(){
         let reputation = await Reputation.new()
+        // let dao = await DAO.new(reputation.address)
         let proposal = await Proposal.new(reputation.address)
         let proposal1 = await proposal.proposals(1)
         assert.equal(await proposal1[1], 0)
@@ -52,6 +54,7 @@ contract('Proposal', function(accounts) {
 
     it('voting for an unknown proposal raises an error', async function() {
         let reputation = await Reputation.new()
+        // let dao = await DAO.new(reputation.address)
         let proposal = await Proposal.new(reputation.address)
         try {
           await proposal.vote(1234, {'from': accounts[0]})
