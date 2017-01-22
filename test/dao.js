@@ -9,9 +9,9 @@ contract('DAO', function(accounts) {
     })  
 
     it("test token minting", async function() {
-        // use the MintTokensFactory to create a new proposal
+        // use the MintTokensRecipe to create a new proposal
         // to give 1413 tokens to accounts[1]
-        let tx = await this.minttokensfactory.createProposal(this.dao.address, 1413, accounts[1])
+        let tx = await this.minttokensRecipe.createProposal(this.dao.address, 1413, accounts[1])
         let proposal = helpers.getProposal(tx)
  
 

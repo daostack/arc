@@ -32,7 +32,7 @@ contract DAO is Ownable {
 
     // TODO: for usability, it may make sense to have here some descriptive info
     // or, at least, make it an array
-    mapping (address => bool) registeredFactories;
+    mapping (address => bool) registeredRecipes;
 
     modifier onlyRegisteredProposal() { 
         // this function can only be executed by a registered contract
@@ -40,8 +40,8 @@ contract DAO is Ownable {
             _;
     }
 
-    modifier onlyRegisteredFactories() {
-        if (registeredFactories[msg.sender])
+    modifier onlyRegisteredRecipes() {
+        if (registeredRecipes[msg.sender])
             _;
     }
 
@@ -85,14 +85,14 @@ contract DAO is Ownable {
         return true;
     }
 
-    function registerProposal(address proposal) onlyRegisteredFactories {
+    function registerProposal(address proposal) onlyRegisteredRecipes {
         // TODO: add RegisterProposal event (?)
         registeredProposals[proposal] = true;
     }
 
-    function registerFactory(address factory) onlyOwner {
-        // TODO: add RegisterFactory event (?)
-        registeredFactories[factory] = true;
+    function registerRecipe(address Recipe) onlyOwner {
+        // TODO: add RegisterRecipe event (?)
+        registeredRecipes[Recipe] = true;
     }
     function registerProposalMintTokens(uint256 _amount, address _beneficary) {
         ProposalMintTokens proposal = new ProposalMintTokens(this, _amount, _beneficary);

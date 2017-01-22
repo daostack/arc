@@ -25,8 +25,8 @@ async function setupDAO(ctx) {
     await token.transferOwnership(dao.address)
     await reputation.transferOwnership(dao.address)
 
-    let minttokensfactory = await ProposalMintTokensFactory.new(dao.address)
-    await dao.registerFactory(minttokensfactory.address)
+    let minttokensRecipe = await ProposalMintTokensRecipe.new(dao.address)
+    await dao.registerRecipe(minttokensRecipe.address)
     // we finished configuring the DAO, we can now transfer ownership to itself
     await dao.transferOwnership(dao.address)
  
@@ -34,12 +34,12 @@ async function setupDAO(ctx) {
     ctx.token = token
     ctx.reputation = reputation
     ctx.dao = dao
-    ctx.minttokensfactory = minttokensfactory
+    ctx.minttokensRecipe = minttokensRecipe
 
     // next statement makes truffle return more data with transactions, 
     // and can be removed once a new version of truffle comes out)
     DAO.next_gen = true
-    ProposalMintTokensFactory.next_gen = true
+    ProposalMintTokensRecipe.next_gen = true
 }
 
 module.exports.setupDAO = setupDAO
