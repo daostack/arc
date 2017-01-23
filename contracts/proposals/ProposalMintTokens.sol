@@ -2,7 +2,6 @@ pragma solidity ^0.4.4;
 
 import "./Proposal.sol";
 import "../DAOInterface.sol";
-import "../MintableToken.sol";
 import "../Reputation.sol";
 
 
@@ -37,21 +36,21 @@ contract ProposalMintTokens is Proposal {
     }
 
 
-    function executeDecision() returns (bool) {
-        /*
-            This function expects to be called from the dao (by calling dao.executeProposal(proposal))
-        */
-        if (winningChoice() == 1) {
-            dao.mintTokens(amount, beneficary);
-            ProposalExecuted('ProposalMintTokens executed');
-            return true;
-        } 
-        return false;
+    // function executeDecision() returns (bool) {
+    //     /*
+    //         This function expects to be called from the dao (by calling dao.executeProposal(proposal))
+    //     */
+    //     if (winningChoice() == 1) {
+    //         dao.mintTokens(amount, beneficary);
+    //         ProposalExecuted('ProposalMintTokens executed');
+    //         return true;
+    //     } 
+    //     return false;
 
-        // use "delegatecall" to have code running in the context of the original msg.sender
-        // if (!dao.delegatecall(bytes4(sha3("mintTokens(uint256,address,address)")), amount, beneficary, dao.tokenContract())) {
-        //     throw;
-        // } 
-    }   
+    //     // use "delegatecall" to have code running in the context of the original msg.sender
+    //     // if (!dao.delegatecall(bytes4(sha3("mintTokens(uint256,address,address)")), amount, beneficary, dao.tokenContract())) {
+    //     //     throw;
+    //     // } 
+    // }   
 
 }

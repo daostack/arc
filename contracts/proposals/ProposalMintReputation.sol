@@ -36,15 +36,15 @@ contract ProposalMintReputation is Proposal {
     }
 
 
-    function executeDecision() returns (bool) {
-        /*
-            This function expects to be called from the dao (by calling dao.executeProposal(proposal))
-        */
-        if (winningChoice() == 1) {
-            dao.mintReputation(amount, beneficary);
-            ProposalExecuted('ProposalMintReputation executed');
-            return true;
-        } 
-        return false;
-    }   
+    // function executeDecision() returns (bool) {
+    //     /*
+    //         This function expects to be called from the dao (by calling dao.executeProposal(proposal))
+    //     */
+    //     if (winningChoice() == 1) {
+    //         dao.mintReputation(amount, beneficary);
+    //         ProposalExecuted('ProposalMintReputation executed');
+    //         return true;
+    //     } 
+    //     return false;
+    // }   
 }

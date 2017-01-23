@@ -1,18 +1,31 @@
 pragma solidity ^0.4.4;
 
 import "./ProposalMintTokens.sol";
+import "./ProposalRecipe.sol";
 import "../DAOInterface.sol";
 
 
-contract ProposalMintTokensRecipe {
+contract ProposalMintTokensRecipe is ProposalRecipe {
 
-    event ProposalCreated(address indexed proposaladdress); 
+    function ProposalMintTokensRecipe(DAOInterface _dao) {
+    	dao = _dao;
+    }
 
-	function createProposal(DAOInterface _dao, uint256 _amount, address _benificary) returns (ProposalMintTokens) {
+	function createProposal(uint256 _amount, address _benificary) returns (ProposalMintTokens) {
 		/* create a proposal and register at the DAO */
-		ProposalMintTokens proposal = new ProposalMintTokens(_dao, _amount, _benificary);
-		_dao.registerProposal(proposal);
+		ProposalMintTokens proposal = new ProposalMintTokens(dao, _amount, _benificary);
+        registeredProposals[proposal] = true;
 		ProposalCreated(proposal);
 		return proposal;
 	}
+
+	function executeProposal(ProposalMintTokens _proposal) returns (bool)  {
+        if (registeredProposals[_proposal] && _proposal.winningChoice() == 1) {
+            dao.mintTokens(_proposal.amount(), _proposal.beneficary());
+            ProposalExecuted(_proposal);
+            return true;
+        } 
+        return false;
+	}
+           
 }

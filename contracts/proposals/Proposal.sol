@@ -1,19 +1,18 @@
 pragma solidity ^0.4.4;
 /*
-    A Proposal defines a number of proposals that can be voted for +
-    a way to decide which proposal has won.
+    A Proposal defines a number of choices that can be voted for +
+    and a mechanism to decide which proposal has won.
 
-    The present contract has two proposals "y" and "n"
-    the winning proposal is simply a proposal that has more than 50% of the votes.
+    The present contract has two choices: "y" and "n"
+    the winning choice is simply the choice that has more than 50% of the votes.
 
 */
 
 import "../Reputation.sol";
 import "../DAOInterface.sol";
-import "../zeppelin-solidity/Ownable.sol";
 
 
-contract Proposal is Ownable {
+contract Proposal {
 
     DAOInterface public dao;
     Reputation public reputationContract;
@@ -26,7 +25,7 @@ contract Proposal is Ownable {
         uint voteCount; // amount of accumulated reputation
     }
 
-    // mapping address to the name of the proposal that they voted
+    // mapping address to the name of the choice that they voted
     mapping(address => bytes32) public voters;
 
     // A dynamically-sized array of `Proposal` structs.
@@ -46,11 +45,7 @@ contract Proposal is Ownable {
  
     }
 
-    function executeDecision() returns (bool) {
-        // do something with the winning proposal, return true if executed, false if not
-    }
-
-    // vote for a certain proposal
+    // vote for a certain choice
     // choices are identified by their index in the array of choices
     function vote(uint _choice) {
 
@@ -62,14 +57,14 @@ contract Proposal is Ownable {
         // // also the default value for uninitilized variables
         voters[msg.sender] = choices[_choice].name;
 
-        // If `proposal` is out of the range of the array,
+        // If `choice` is out of the range of the array,
         // this will throw automatically and revert all changes.
         // TODO: use safeAdd
         choices[_choice].voteCount += reputationContract.reputationOf(msg.sender);
 
     }
 
-    /// @dev Computes the winning proposal taking all
+    /// @dev Computes the winning choice taking all
     /// previous votes into account.
     function winningChoice() constant
             returns (uint)

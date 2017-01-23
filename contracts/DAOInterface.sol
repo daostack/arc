@@ -14,8 +14,6 @@ contract DAOInterface {
 
     mapping (address => bool) registeredProposals;
 
-    function executeProposal(address _proposal) returns (bool);
-
     function registerProposal(address proposal); 
 
     function registerRecipe(address _recipe); 

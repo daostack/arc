@@ -1,18 +1,30 @@
 pragma solidity ^0.4.4;
 
 import "./ProposalMintReputation.sol";
+import "./ProposalRecipe.sol";
 import "../DAOInterface.sol";
 
 
-contract ProposalMintReputationRecipe {
+contract ProposalMintReputationRecipe  is ProposalRecipe  {
 
-    event ProposalCreated(address indexed proposaladdress); 
+    function ProposalMintReputationRecipe(DAOInterface _dao) {
+        dao = _dao;
+    }
 
-	function createProposal(DAOInterface _dao, uint256 _amount, address _benificary) returns (ProposalMintReputation) {
-		/* create a proposal and register at the DAO */
-		ProposalMintReputation proposal = new ProposalMintReputation(_dao, _amount, _benificary);
-		_dao.registerProposal(proposal);
-		ProposalCreated(proposal);
-		return proposal;
-	}
+    function createProposal(uint256 _amount, address _benificary) returns (ProposalMintReputation) {
+        /* create a proposal and register at the DAO */
+        ProposalMintReputation proposal = new ProposalMintReputation(dao, _amount, _benificary);
+        registeredProposals[proposal] = true;
+        ProposalCreated(proposal);
+        return proposal;
+    }
+
+    function executeProposal(ProposalMintReputation _proposal) returns (bool)  {
+        if (registeredProposals[_proposal] && _proposal.winningChoice() == 1) {
+            dao.mintReputation(_proposal.amount(), _proposal.beneficary());
+            ProposalExecuted(_proposal);
+            return true;
+        } 
+        return false;
+    }
 }

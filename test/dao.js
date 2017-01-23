@@ -11,7 +11,7 @@ contract('DAO', function(accounts) {
     it("test token minting", async function() {
         // use the MintTokensRecipe to create a new proposal
         // to give 1413 tokens to accounts[1]
-        let tx = await this.minttokensRecipe.createProposal(this.dao.address, 1413, accounts[1])
+        let tx = await this.minttokensRecipe.createProposal(1413, accounts[1])
         let proposal = helpers.getProposal(tx)
  
 
@@ -27,7 +27,7 @@ contract('DAO', function(accounts) {
         assert.equal(w.valueOf(), 1)
 
         // execute the proposal
-        await this.dao.executeProposal(proposal.address);
+        await this.minttokensRecipe.executeProposal(proposal.address);
 
         // now accounts[1] should have 1413 tokens
         let newBalance = await this.token.balanceOf(accounts[1])
@@ -37,7 +37,7 @@ contract('DAO', function(accounts) {
     it("test reputation minting", async function() {
         // use the MintReputationRecipe to create a new proposal
         // to give 1413 new rep to accounts[1]
-        let tx = await this.mintreputationRecipe.createProposal(this.dao.address, 1413, accounts[1])
+        let tx = await this.mintreputationRecipe.createProposal(1413, accounts[1])
         let proposal = helpers.getProposal(tx)
  
 
@@ -53,7 +53,7 @@ contract('DAO', function(accounts) {
         assert.equal(w.valueOf(), 1)
 
         // execute the proposal
-        await this.dao.executeProposal(proposal.address);
+        await this.mintreputationRecipe.executeProposal(proposal.address);
 
         // now accounts[1] should have 1413 tokens
         let newBalance = await this.reputation.reputationOf(accounts[1])
@@ -72,7 +72,7 @@ contract('DAO', function(accounts) {
         await proposal.vote(1);
 
         // execute the proposal
-        await this.dao.executeProposal(proposal.address);
+        await proposal.executeDecision();
 
         // the number of tokens of accounts[1] should remain unchanged
         // because the proposal was not registered
