@@ -13,18 +13,28 @@ contract Reputation is Ownable, SafeMath {
     uint256 public totalSupply;
 
     function Reputation() {
-        balances[msg.sender] = 1;
-        totalSupply  = 1;
+        balances[msg.sender] = 0;
+        totalSupply  = 0;
     }
 
     function reputationOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
     }
 
-    function mint(uint256 _amount, address _to) onlyOwner returns (bool) {
+    function mint(int256 _amount, address _to) onlyOwner returns (bool) {
         // create new tokens and add them to the given account
-        totalSupply = safeAdd(totalSupply, _amount);
-        balances[_to] = safeAdd(balances[_to], _amount);
+        uint absAmount;
+        if( _amount < 0 && _to != owner ) throw;
+        if( _amount >= 0 ) {
+            absAmount = uint(_amount);
+            totalSupply = safeAdd(totalSupply, absAmount);
+            balances[_to] = safeAdd(balances[_to], absAmount);
+        }
+        else {
+            absAmount = uint((-1)*_amount);
+            totalSupply = safeSub(totalSupply, absAmount);
+            balances[_to] = safeSub(balances[_to], absAmount);        
+        }
         return true;
     }
 
