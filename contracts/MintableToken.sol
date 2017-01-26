@@ -1,16 +1,21 @@
 pragma solidity ^0.4.4;
 
 
-import "./Token.sol";
+import "./zeppelin-solidity/token/StandardToken.sol";
+import "./zeppelin-solidity/Ownable.sol";
+import "./zeppelin-solidity/Killable.sol";
 
 
-contract MintableToken is Token { 
-    string public name = "SmartPool";
-    string public symbol = "SPT";
+contract MintableToken is StandardToken, Ownable, Killable { 
+    string public name;
+    string public symbol;
+    
+    uint public decimals = 18;
     
     function MintableToken( string _name, string _symbol ) {
         name = _name;
-        symbol = _symbol;
+        symbol = _symbol;        
+        totalSupply = 0;
     } 
 
     function mint(int256 _amount, address _to) onlyOwner returns (bool) {

@@ -20,16 +20,16 @@ contract ValueSystem is ValueSystemInterface { // is Ownable ? why?
     event RegisterScheme( address indexed _sender, address indexed _scheme );
     event UnregisterScheme( address indexed _sender, address indexed _scheme );    
     event GenericAction( address indexed _sender, address indexed _action, uint _param );
-    event OverrideGlobalConstraint( address indexed _sender, address indexed _newConstraint );    
+    event OverrideGlobalConstraint( address indexed _sender, address indexed _newConstraint );
+    event Fallback( address indexed _sender, uint _value );    
     
     // ctor
-    function ValueSystem( string name, string symbol ) {
-        nativeToken = new MintableToken(name, symbol);
+    function ValueSystem( string _name, string _symbol, address _genesisScheme ) {
+        nativeToken = new MintableToken(_name, _symbol);
         nativeReputation = new Reputation();
-        nativeReputation.mint(1, msg.sender);
+        nativeReputation.mint(0, msg.sender);
         
-        GenesisScheme genesisScheme = new GenesisScheme(nativeReputation, this);
-        schemes[genesisScheme] = true;
+        schemes[_genesisScheme] = true;
         
         globalConstraints = new GenesisGlobalConstraint();
     }
@@ -90,4 +90,8 @@ contract ValueSystem is ValueSystemInterface { // is Ownable ? why?
         // don't run post constraints
         return true;        
     }
+    
+    function() payable {
+        Fallback( msg.sender, msg.value );
+    }    
 }

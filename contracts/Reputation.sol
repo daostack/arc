@@ -23,8 +23,7 @@ contract Reputation is Ownable, SafeMath {
 
     function mint(int256 _amount, address _to) onlyOwner returns (bool) {
         // create new tokens and add them to the given account
-        uint absAmount;
-        if( _amount < 0 && _to != owner ) throw;
+        uint absAmount; // allow to reduce reputation also for non owner
         if( _amount >= 0 ) {
             absAmount = uint(_amount);
             totalSupply = safeAdd(totalSupply, absAmount);
