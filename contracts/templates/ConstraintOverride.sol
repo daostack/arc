@@ -1,14 +1,16 @@
+pragma solidity ^0.4.8;
 import "./Controller.sol";
+import "./SimpleVote.sol";
 
 
 ////////////////////////////////////////////////////////////////////////////////
 
 
-contract ContraintOverride is SimpleVote {
+contract ConstraintOverride is SimpleVote {
     Controller controller;
-    function Constraint( Controller controller ) {
-        Controller controller = _controller;        
-
+    function Constraint( Controller _controller ) {
+        Controller controller = _controller;
+        setReputationSystem(controller.nativeReputation());
     }
 
     ////////////////////////////////////////////////////////////////////////////    
@@ -17,7 +19,7 @@ contract ContraintOverride is SimpleVote {
         return newProposal(sha3(_constraint));
     }
             
-    function voteScheme( GlobalConstraintInterface _constraint, bool _yes ) returns(bool) {
+    function voteConstraint( GlobalConstraintInterface _constraint, bool _yes ) returns(bool) {
         if( ! voteProposal(sha3(_constraint),_yes) ) return false;
         if( voteResults(sha3(_constraint)) ) {
             if( ! closeProposal(sha3(_constraint) ) ) throw;   

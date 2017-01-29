@@ -1,8 +1,10 @@
+pragma solidity ^0.4.8;
 import "./Controller.sol";
+import "./SimpleVote.sol";
 
 
 contract GenesisGlobalConstraint is GlobalConstraintInterface {
-    ControllerInterface controller;
+    Controller controller;
     
     function setController( Controller _controller ) returns(bool) {
         controller = _controller;    
@@ -11,7 +13,7 @@ contract GenesisGlobalConstraint is GlobalConstraintInterface {
     function pre( address _scheme, uint _param ) returns(bool) { return true; }
     function post( address _scheme, uint _param ) returns(bool) {
         if( _param == uint(sha3("unregisterScheme")) ) {
-            if( ! controller.scheme(_scheme) ) return false;
+            if( ! controller.schemes(_scheme) ) return false;
         }
         
         return true;
@@ -41,7 +43,8 @@ contract GenesisScheme is SimpleVote {
         
         GenesisGlobalConstraint globalContraints = new GenesisGlobalConstraint();
         controller = new Controller( tokenName, tokenSymbol, this, globalContraints );
-        globalContraints.setController(controller);        
+        globalContraints.setController(controller);
+        setReputationSystem(controller.nativeReputation());
         
         for( uint i = 0 ; i < _founders.length ; i++ ) {
             Founder memory founder;
@@ -56,8 +59,8 @@ contract GenesisScheme is SimpleVote {
         // TODO - event
         Founder memory founder = founders[msg.sender];
         
-        if( ! controller.mintTokens( founder.tokens, msg.sender ) ) return throw;
-        if( ! controller.mintReputation( founder.reputation, msg.sender ) ) return throw;
+        if( ! controller.mintTokens( founder.tokens, msg.sender ) ) throw;
+        if( ! controller.mintReputation( founder.reputation, msg.sender ) ) throw;
         
         delete founders[msg.sender];
         

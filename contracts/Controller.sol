@@ -1,12 +1,21 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.8;
 
 import "./Reputation.sol";
 import "./MintableToken.sol";
-import "./SystemValueInterface.sol";
 
 
+contract GlobalConstraintInterface {
+    function pre( address _scheme, uint _param ) returns(bool); // TODO - why do we need param
+    function post( address _scheme, uint _param ) returns(bool);    
+}
 
-contract Controller is ControllerInterface { // is Ownable ? why?
+
+contract ActionInterface {
+    function action( uint _param ) returns(bool); // TODO - why do we need param
+}
+
+
+contract Controller { // is Ownable ? why?
     mapping(address=>bool) public schemes;
     // TODO - should be iterable? UI can use events
 
@@ -15,12 +24,25 @@ contract Controller is ControllerInterface { // is Ownable ? why?
     MintableToken    public nativeToken;
     Reputation       public nativeReputation;
     
+    event MintReputation( address indexed _sender, address indexed _beneficary, int256 _amount );
+    event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
+    event RegisterScheme( address indexed _sender, address indexed _scheme );
+    event UnregisterScheme( address indexed _sender, address indexed _scheme );    
+    event GenericAction( address indexed _sender, address indexed _action, uint _param );
+    event OverrideGlobalConstraint( address indexed _sender, address indexed _newConstraint );
+    
+    event SendEther( address indexed _sender, uint _amountInWei, address indexed _to );
+    event ExternalTokenTransfer(address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
+    event ExternalTokenTransferFrom(address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
+    event ExternalTokenApprove(address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
+
+    event Fallback(address indexed _sender, uint _value);  
         
     // ctor
     function Controller( string _name,
                          string _symbol,
                          address _genesisScheme,
-                         address _genesisGlobalContraints ) {
+                         GlobalConstraintInterface _genesisGlobalContraints ) {
         nativeToken = new MintableToken(_name, _symbol);
         nativeReputation = new Reputation();
         nativeReputation.mint(0, msg.sender);

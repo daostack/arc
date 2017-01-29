@@ -1,4 +1,4 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.8;
 /*
     Implements a simple static reputation storage
     in which reputation is managed by the owner of the contract
