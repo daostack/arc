@@ -3,9 +3,10 @@ pragma solidity ^0.4.4;
 import "./Reputation.sol";
 import "./MintableToken.sol";
 import "./SystemValueInterface.sol";
-import "./GenesisStubs.sol";
 
-contract ValueSystem is ValueSystemInterface { // is Ownable ? why?
+
+
+contract Controller is ControllerInterface { // is Ownable ? why?
     mapping(address=>bool) public schemes;
     // TODO - should be iterable? UI can use events
 
@@ -14,24 +15,19 @@ contract ValueSystem is ValueSystemInterface { // is Ownable ? why?
     MintableToken    public nativeToken;
     Reputation       public nativeReputation;
     
-    
-    event MintReputation( address indexed _sender, address indexed _beneficary, int256 _amount );
-    event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
-    event RegisterScheme( address indexed _sender, address indexed _scheme );
-    event UnregisterScheme( address indexed _sender, address indexed _scheme );    
-    event GenericAction( address indexed _sender, address indexed _action, uint _param );
-    event OverrideGlobalConstraint( address indexed _sender, address indexed _newConstraint );
-    event Fallback( address indexed _sender, uint _value );    
-    
+        
     // ctor
-    function ValueSystem( string _name, string _symbol, address _genesisScheme ) {
+    function Controller( string _name,
+                         string _symbol,
+                         address _genesisScheme,
+                         address _genesisGlobalContraints ) {
         nativeToken = new MintableToken(_name, _symbol);
         nativeReputation = new Reputation();
         nativeReputation.mint(0, msg.sender);
         
         schemes[_genesisScheme] = true;
         
-        globalConstraints = new GenesisGlobalConstraint();
+        globalConstraints = _genesisGlobalContraints;
     }
     
     modifier onlyRegisteredScheme() {
@@ -40,9 +36,9 @@ contract ValueSystem is ValueSystemInterface { // is Ownable ? why?
     }    
     
     modifier onlySubjectToConstraint( string func ) {
-        if( ! globalConstraints.pre(uint(sha3(func))) ) throw;
+        if( ! globalConstraints.pre(msg.sender, uint(sha3(func))) ) throw;
         _;
-        if( ! globalConstraints.post(uint(sha3(func))) ) throw;        
+        if( ! globalConstraints.post(msg.sender, uint(sha3(func)) ) ) throw;        
     }
 
     function mintReputation(int256 _amount, address _beneficary) 
@@ -91,7 +87,36 @@ contract ValueSystem is ValueSystemInterface { // is Ownable ? why?
         return true;        
     }
     
+    function sendEther( uint _amountInWei, address _to )
+    onlyRegisteredScheme onlySubjectToConstraint("sendEther")
+    returns(bool) {
+        SendEther( msg.sender, _amountInWei, _to );
+        if( ! _to.send(_amountInWei ) ) throw;
+        return true;        
+    }
+    
+    function externalTokentransfer(StandardToken _externalToken, address _to, uint _value)
+    onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransferExternal")
+    returns(bool) {
+        ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
+        return _externalToken.transfer( _to, _value );
+    }
+        
+    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value)
+    onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransferFrom")
+    returns(bool) {
+        ExternalTokenTransferFrom(msg.sender, _externalToken, _from, _to, _value);
+        return _externalToken.transferFrom( _from, _to, _value );
+    }
+    
+    function externalTokenApprove(StandardToken _externalToken, address _spender, uint _value)
+    onlyRegisteredScheme onlySubjectToConstraint("externalTokenApprove")
+    returns(bool) {
+        ExternalTokenApprove( msg.sender, _externalToken, _spender, _value );
+        return _externalToken.approve( _spender, _value );        
+    }
+            
     function() payable {
         Fallback( msg.sender, msg.value );
-    }    
+    }        
 }

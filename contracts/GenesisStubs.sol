@@ -1,7 +1,7 @@
 pragma solidity ^0.4.4;
 
 import "./zeppelin-solidity/SafeMath.sol";
-import "./SystemValueInterface.sol";
+import "./ControllerInterface.sol";
 import "./Reputation.sol";
 
 contract GenesisScheme is SafeMath {
@@ -47,7 +47,12 @@ contract GenesisScheme is SafeMath {
 ////////////////////////////////////////////////////////////////////////////////
 
 contract GenesisGlobalConstraint is GlobalConstraintInterface {
-    function pre( uint _param )  returns(bool) { return true; }
-    function post( uint _param ) returns(bool) { return true; }    
+    ControllerInterface controller;
+    function GenesisGlobalConstraint( ControllerInterface _controller ) {
+        controller = _controller;
+    } 
+    
+    function pre( address _scheme, uint _param )  returns(bool) { return true; }
+    function post( address _scheme, uint _param ) returns(bool) { return true; }    
 }
 
