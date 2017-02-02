@@ -1,9 +1,9 @@
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.7;
 
 
-import "./zeppelin-solidity/token/StandardToken.sol";
-import "./zeppelin-solidity/Ownable.sol";
-import "./zeppelin-solidity/Killable.sol";
+import "../zeppelin-solidity/token/StandardToken.sol";
+import "../zeppelin-solidity/Ownable.sol";
+import "../zeppelin-solidity/Killable.sol";
 
 
 contract MintableToken is StandardToken, Ownable, Killable { 

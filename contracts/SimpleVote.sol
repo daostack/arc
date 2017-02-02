@@ -1,5 +1,5 @@
-pragma solidity ^0.4.8;
-import "./Reputation.sol";
+pragma solidity ^0.4.7;
+import "./controller/Reputation.sol";
 
 contract SimpleVote is SafeMath {
     Reputation reputationSystem;

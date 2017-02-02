@@ -1,17 +1,17 @@
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.7;
 
 import "./Reputation.sol";
 import "./MintableToken.sol";
 
 
 contract GlobalConstraintInterface {
-    function pre( address _scheme, uint _param ) returns(bool); // TODO - why do we need param
-    function post( address _scheme, uint _param ) returns(bool);    
+    function pre( address _scheme, bytes _param ) returns(bool);
+    function post( address _scheme, bytes _param ) returns(bool);    
 }
 
 
 contract ActionInterface {
-    function action( uint _param ) returns(bool); // TODO - why do we need param
+    function action( bytes _param ) returns(bool);
 }
 
 
@@ -28,7 +28,7 @@ contract Controller { // is Ownable ? why?
     event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
     event RegisterScheme( address indexed _sender, address indexed _scheme );
     event UnregisterScheme( address indexed _sender, address indexed _scheme );    
-    event GenericAction( address indexed _sender, address indexed _action, uint _param );
+    event GenericAction( address indexed _sender, address indexed _action, bytes _param );
     event OverrideGlobalConstraint( address indexed _sender, address indexed _newConstraint );
     
     event SendEther( address indexed _sender, uint _amountInWei, address indexed _to );
@@ -36,6 +36,7 @@ contract Controller { // is Ownable ? why?
     event ExternalTokenTransferFrom(address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenApprove(address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
 
+    event TokenDisapprove( address indexed _sender, address _token, uint _value );
     event Fallback(address indexed _sender, uint _value);  
         
     // ctor
@@ -58,9 +59,9 @@ contract Controller { // is Ownable ? why?
     }    
     
     modifier onlySubjectToConstraint( string func ) {
-        if( ! globalConstraints.pre(msg.sender, uint(sha3(func))) ) throw;
+        if( ! globalConstraints.pre(msg.sender, bytes(func)) ) throw;
         _;
-        if( ! globalConstraints.post(msg.sender, uint(sha3(func)) ) ) throw;        
+        if( ! globalConstraints.post(msg.sender, bytes(func)) ) throw;        
     }
 
     function mintReputation(int256 _amount, address _beneficary) 
@@ -93,7 +94,7 @@ contract Controller { // is Ownable ? why?
         return true;
     }
     
-    function genericAction( ActionInterface _action, uint _param ) // TODO discuss name
+    function genericAction( ActionInterface _action, bytes _param ) // TODO discuss name
         onlyRegisteredScheme onlySubjectToConstraint("genericAction")
         returns(bool){    
         GenericAction( msg.sender, _action, _param );
@@ -117,7 +118,7 @@ contract Controller { // is Ownable ? why?
         return true;        
     }
     
-    function externalTokentransfer(StandardToken _externalToken, address _to, uint _value)
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
     onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransferExternal")
     returns(bool) {
         ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
@@ -137,6 +138,15 @@ contract Controller { // is Ownable ? why?
         ExternalTokenApprove( msg.sender, _externalToken, _spender, _value );
         return _externalToken.approve( _spender, _value );        
     }
+
+    // function in case someone approved a token to the contract and changed
+    // his mind. Can be called both for internal or external tokens.
+    
+    function tokenDisapprove(StandardToken _token, uint _value )
+    returns(bool) {
+        TokenDisapprove( msg.sender, _token, _value );
+        return _token.transferFrom( msg.sender,msg.sender, _value );        
+    }     
             
     function() payable {
         Fallback( msg.sender, msg.value );

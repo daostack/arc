@@ -1,5 +1,5 @@
-pragma solidity ^0.4.8;
-import "./Controller.sol";
+pragma solidity ^0.4.7;
+import "./controller/Controller.sol";
 import "./SimpleVote.sol";
 
 

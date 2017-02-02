@@ -1,11 +1,11 @@
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.7;
 /*
     Implements a simple static reputation storage
     in which reputation is managed by the owner of the contract
 */
 
-import "./zeppelin-solidity/Ownable.sol";
-import "./zeppelin-solidity/SafeMath.sol";
+import "../zeppelin-solidity/Ownable.sol";
+import "../zeppelin-solidity/SafeMath.sol";
 
 contract Reputation is Ownable, SafeMath {
 

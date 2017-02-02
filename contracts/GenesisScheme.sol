@@ -1,20 +1,25 @@
-pragma solidity ^0.4.8;
-import "./Controller.sol";
+pragma solidity ^0.4.7;
+import './controller/Controller.sol';
 import "./SimpleVote.sol";
 
 
 contract GenesisGlobalConstraint is GlobalConstraintInterface {
-    Controller controller;
+    Controller public controller;
     
     function setController( Controller _controller ) returns(bool) {
         controller = _controller;    
     }
         
-    function pre( address _scheme, uint _param ) returns(bool) { return true; }
-    function post( address _scheme, uint _param ) returns(bool) {
-        if( _param == uint(sha3("unregisterScheme")) ) {
-            if( ! controller.schemes(_scheme) ) return false;
+    function pre( address _scheme, bytes _param ) returns(bool) { return true; }
+    function post( address _scheme, bytes _param ) returns(bool) {
+        bytes memory unregisterSchemeString = "unregisterScheme";
+        
+        if( _param.length != unregisterSchemeString.length ) return true;
+        for( uint i = 0 ; i < _param.length ; i++ ) {
+            if( _param[i] != unregisterSchemeString[i] ) return true;
         }
+        
+        if( ! controller.schemes(_scheme) ) return false;
         
         return true;
     }
@@ -25,7 +30,7 @@ contract GenesisGlobalConstraint is GlobalConstraintInterface {
 
 
 contract GenesisScheme is SimpleVote {
-    Controller controller;
+    Controller public controller;
     
     struct Founder {
         int tokens;
