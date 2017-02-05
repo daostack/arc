@@ -51,6 +51,7 @@ contract GenesisScheme {
         controller = new Controller( tokenName, tokenSymbol, this, globalContraints );
         globalContraints.setController(controller);
         simpleVote = _simpleVote;
+        simpleVote.setOwner(this);        
         simpleVote.setReputationSystem(controller.nativeReputation());
         
         for( uint i = 0 ; i < _founders.length ; i++ ) {
@@ -82,7 +83,7 @@ contract GenesisScheme {
     }
             
     function voteScheme( address _scheme, bool _yes ) returns(bool) {
-        if( ! simpleVote.voteProposal(sha3(_scheme),_yes) ) return false;
+        if( ! simpleVote.voteProposal(sha3(_scheme),_yes, msg.sender) ) return false;
         if( simpleVote.voteResults(sha3(_scheme)) ) {
             if( ! simpleVote.closeProposal(sha3(_scheme) ) ) throw;
             if( controller.schemes(_scheme) ) {
