@@ -1,10 +1,11 @@
 pragma solidity ^0.4.7;
 import "./controller/Controller.sol";
-import "./SimpleVote.sol";
+import "./SimpleVoteInterface.sol";
 
-contract SimpleContribution is SimpleVote {
-    Controller controller;
-    uint       submissionFee;
+contract SimpleContribution {
+    Controller                 controller;
+    uint                       submissionFee;
+    SimpleVoteInterface public simpleVote; 
     
     struct ContributionData {
         bytes32 contributionDescription;
@@ -15,11 +16,14 @@ contract SimpleContribution is SimpleVote {
     
     mapping(bytes32=>ContributionData) contributions;
     
-    function SimpleContribution( Controller _controller, uint _submissionFee ) {
+    function SimpleContribution( Controller _controller,
+                                 uint       _submissionFee,
+                                 SimpleVoteInterface _simpleVote ) {
         controller = _controller;
         submissionFee = _submissionFee;
-        setOwner(this);
-        setReputationSystem(controller.nativeReputation());
+        simpleVote = _simpleVote;
+        simpleVote.setOwner(this);
+        simpleVote.setReputationSystem(controller.nativeReputation());
     }
     
         
@@ -43,15 +47,15 @@ contract SimpleContribution is SimpleVote {
                 
         contributions[contributionId] = data;
         
-        if( ! newProposal(contributionId) ) throw;
+        if( ! simpleVote.newProposal(contributionId) ) throw;
         
         return contributionId;
     }
     
     function voteContribution( bytes32 contributionId, bool _yes ) returns(bool) {
-        if( ! voteProposal(contributionId, _yes,msg.sender) ) throw;
-        if( voteResults(contributionId) ) {
-            if( ! closeProposal(contributionId) ) throw;
+        if( ! simpleVote.voteProposal(contributionId, _yes,msg.sender) ) throw;
+        if( simpleVote.voteResults(contributionId) ) {
+            if( ! simpleVote.closeProposal(contributionId) ) throw;
             ContributionData memory data = contributions[ contributionId];
             if( ! controller.mintReputation(data.reputationReward, data.beneficiary) ) throw;
             if( ! controller.mintTokens(data.tokenReward, data.beneficiary) ) throw;            

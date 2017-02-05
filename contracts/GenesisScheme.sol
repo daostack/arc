@@ -74,9 +74,7 @@ contract GenesisScheme {
         
         return true;                
     }
-    
-    
-    ///////////////////////////////////////////////////////////////////////////    
+        
 
     function proposeScheme( address _scheme ) returns(bool) {
         return simpleVote.newProposal(sha3(_scheme));
