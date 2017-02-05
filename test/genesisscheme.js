@@ -17,7 +17,7 @@ contract('GenesisScheme', function(accounts) {
                                               tokenForFounders,
                                               repForFounders,
                                               votingScheme.address,
-                                              {'start_gas':4900000} );
+                                              {'start_gas':4700000} );
         
         var controllerAddress = await genesis.controller();
         var controllerInstance = Controller.at(controllerAddress);

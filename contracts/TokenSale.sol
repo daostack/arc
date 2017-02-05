@@ -1,16 +1,16 @@
 pragma solidity ^0.4.7;
 import "./controller/Controller.sol";
 
-contract TokenRedemption {
+contract TokenSale {
     Controller controller;
-    function TokenRedemption( Controller _controller ) {
+    function TokenSale( Controller _controller ) {
         controller = _controller;
     }
     
-    function redeem( uint tokens ) returns(bool) {
-        if( ! controller.nativeToken().transferFrom(msg.sender,controller, tokens) ) throw;
-        if( ! controller.mintTokens(int(tokens) * -1, controller) ) throw;
+    function() payable {
+        if( ! controller.mintTokens(int(msg.value), msg.sender) ) throw;
+        if( ! controller.send(msg.value) ) throw;
         
-        return controller.sendEther(tokens, msg.sender);
+        // TODO event
     }
 }
