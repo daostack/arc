@@ -11,7 +11,7 @@ contract GlobalConstraintInterface {
 
 
 contract ActionInterface {
-    function action( bytes _param ) returns(bool);
+    function action( uint _param ) returns(bool);
 }
 
 
@@ -28,7 +28,7 @@ contract Controller { // is Ownable ? why?
     event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
     event RegisterScheme( address indexed _sender, address indexed _scheme );
     event UnregisterScheme( address indexed _sender, address indexed _scheme );    
-    event GenericAction( address indexed _sender, address indexed _action, bytes _param );
+    event GenericAction( address indexed _sender, address indexed _action, uint _param );
     event OverrideGlobalConstraint( address indexed _sender, address indexed _newConstraint );
     
     event SendEther( address indexed _sender, uint _amountInWei, address indexed _to );
@@ -94,11 +94,12 @@ contract Controller { // is Ownable ? why?
         return true;
     }
     
-    function genericAction( ActionInterface _action, bytes _param ) // TODO discuss name
+    function genericAction( ActionInterface _action, uint _param ) // TODO discuss name
         onlyRegisteredScheme onlySubjectToConstraint("genericAction")
         returns(bool){    
         GenericAction( msg.sender, _action, _param );
         return _action.delegatecall(bytes4(sha3("action(uint256)")), _param);
+        //return _action.action(_param);
     }
     
     function overrideGlobalConstraint( GlobalConstraintInterface _globaConstraint )
