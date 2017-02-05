@@ -1,6 +1,6 @@
 pragma solidity ^0.4.7;
 import './controller/Controller.sol';
-import "./SimpleVote.sol";
+import "./SimpleVoteInterface.sol";
 
 
 contract GenesisGlobalConstraint is GlobalConstraintInterface {
@@ -29,8 +29,9 @@ contract GenesisGlobalConstraint is GlobalConstraintInterface {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-contract GenesisScheme is SimpleVote {
+contract GenesisScheme {
     Controller public controller;
+    SimpleVoteInterface public simpleVote;
     
     struct Founder {
         int tokens;
@@ -43,13 +44,14 @@ contract GenesisScheme is SimpleVote {
                             string tokenSymbol,
                             address[] _founders,
                             int[] _tokenAmount,
-                            int[] _reputationAmount ) {
-                            // TODO - add to constructor of simplevote
+                            int[] _reputationAmount,
+                            SimpleVoteInterface _simpleVote ) {
         
         GenesisGlobalConstraint globalContraints = new GenesisGlobalConstraint();
         controller = new Controller( tokenName, tokenSymbol, this, globalContraints );
         globalContraints.setController(controller);
-        setReputationSystem(controller.nativeReputation());
+        simpleVote = _simpleVote;
+        simpleVote.setReputationSystem(controller.nativeReputation());
         
         for( uint i = 0 ; i < _founders.length ; i++ ) {
             Founder memory founder;
@@ -73,16 +75,16 @@ contract GenesisScheme is SimpleVote {
     }
     
     
-    ////////////////////////////////////////////////////////////////////////////    
-        
+    ///////////////////////////////////////////////////////////////////////////    
+
     function proposeScheme( address _scheme ) returns(bool) {
-        return newProposal(sha3(_scheme));
+        return simpleVote.newProposal(sha3(_scheme));
     }
             
     function voteScheme( address _scheme, bool _yes ) returns(bool) {
-        if( ! voteProposal(sha3(_scheme),_yes) ) return false;
-        if( voteResults(sha3(_scheme)) ) {
-            if( ! closeProposal(sha3(_scheme) ) ) throw;
+        if( ! simpleVote.voteProposal(sha3(_scheme),_yes) ) return false;
+        if( simpleVote.voteResults(sha3(_scheme)) ) {
+            if( ! simpleVote.closeProposal(sha3(_scheme) ) ) throw;
             if( controller.schemes(_scheme) ) {
                 if( ! controller.unregisterScheme(_scheme) ) throw;
             }
@@ -92,4 +94,8 @@ contract GenesisScheme is SimpleVote {
         }
         
     }
+    
+    function getVoteStatus(address _scheme) constant returns(uint[4]) {
+        return simpleVote.voteStatus(sha3(_scheme));
+    }     
 }
