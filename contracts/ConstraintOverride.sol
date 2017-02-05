@@ -10,6 +10,7 @@ contract ConstraintOverride is SimpleVote {
     Controller controller;
     function Constraint( Controller _controller ) {
         Controller controller = _controller;
+        setOwner(this);
         setReputationSystem(controller.nativeReputation());
     }
 
@@ -20,7 +21,7 @@ contract ConstraintOverride is SimpleVote {
     }
             
     function voteConstraint( GlobalConstraintInterface _constraint, bool _yes ) returns(bool) {
-        if( ! voteProposal(sha3(_constraint),_yes) ) return false;
+        if( ! voteProposal(sha3(_constraint),_yes,msg.sender) ) return false;
         if( voteResults(sha3(_constraint)) ) {
             if( ! closeProposal(sha3(_constraint) ) ) throw;   
             if( ! controller.overrideGlobalConstraint(_constraint) ) throw;

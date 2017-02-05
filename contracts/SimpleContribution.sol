@@ -18,6 +18,7 @@ contract SimpleContribution is SimpleVote {
     function SimpleContribution( Controller _controller, uint _submissionFee ) {
         controller = _controller;
         submissionFee = _submissionFee;
+        setOwner(this);
         setReputationSystem(controller.nativeReputation());
     }
     
@@ -48,7 +49,7 @@ contract SimpleContribution is SimpleVote {
     }
     
     function voteContribution( bytes32 contributionId, bool _yes ) returns(bool) {
-        if( ! voteProposal(contributionId, _yes) ) throw;
+        if( ! voteProposal(contributionId, _yes,msg.sender) ) throw;
         if( voteResults(contributionId) ) {
             if( ! closeProposal(contributionId) ) throw;
             ContributionData memory data = contributions[ contributionId];
