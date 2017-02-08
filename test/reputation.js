@@ -59,9 +59,11 @@ contract('Test Reputation', function(accounts) {
     it("check total reputation overflow", async function() {
         let rep = await Reputation.new();
         let BigNumber = require('bignumber.js');
-        let bigNum = ((new BigNumber(2)).toPower(255));
+        let bigNum = ((new BigNumber(2)).toPower(254));
 
-        let tx = await rep.mint(bigNum, accounts[0]);
+        await rep.mint(bigNum, accounts[0]);
+        await rep.mint(bigNum, accounts[0]);
+        await rep.mint(bigNum, accounts[0]);        
 
         let totalRepBefore = await rep.totalSupply();
 
