@@ -9,44 +9,23 @@ contract('GenesisScheme', function(accounts) {
         var tokenForFounders = [1,2,4,5];
         var repForFounders = [7,9,12,1];
         
-        let votingScheme = await SimpleVote.new();
-        
-        let genesis = await GenesisScheme.new("Shoes factory",
-                                              "SHOE",
-                                              founders,
-                                              tokenForFounders,
-                                              repForFounders,
-                                              votingScheme.address,
-                                              {'start_gas':4700000} );
-        
-        var controllerAddress = await genesis.controller();
-        var controllerInstance = Controller.at(controllerAddress);
-        
-        var reputationAddress = await controllerInstance.nativeReputation();
-        var reputationInstance = Reputation.at(reputationAddress);
-        
-        var tokenAddress = await controllerInstance.nativeToken();
-        var tokenInstance = MintableToken.at(tokenAddress); 
+        await helpers.setupController(this, founders, tokenForFounders, repForFounders)
                                                                                             
-        var i;
-        for (i = 0 ; i < founders.length ; i++ ) {
-           await genesis.collectFoundersShare({'from': founders[i]});
-        }
-        for (i = 0 ; i < founders.length ; i++ ) {
-            let rep = await reputationInstance.reputationOf(founders[i]); 
+        for (let i = 0 ; i < founders.length ; i++ ) {
+            let rep = await this.reputationInstance.reputationOf(founders[i]); 
             // let rep = await genesis.controller.nativeReputation().reputationOf(founders[i]);          
             assert.equal(rep.valueOf(), repForFounders[i], "founders reputation is not as expected");
             
-            let balance = await tokenInstance.balanceOf(founders[i]);
+            let balance = await this.tokenInstance.balanceOf(founders[i]);
             assert.equal(balance.valueOf(), tokenForFounders[i], "founders token is not as expected");
         }
         
         // check non founder
-        await genesis.collectFoundersShare({'from': accounts[4]});
-        let rep = await reputationInstance.reputationOf(accounts[4]);
+        await this.genesis.collectFoundersShare({'from': accounts[4]});
+        let rep = await this.reputationInstance.reputationOf(accounts[4]);
         assert.equal(rep.valueOf(), 0, "founders reputation is not as expected");
             
-        let balance = await tokenInstance.balanceOf(accounts[4]);
+        let balance = await this.tokenInstance.balanceOf(accounts[4]);
         assert.equal(balance.valueOf(), 0, "founders reputation is not as expected");
         
     });
@@ -54,23 +33,12 @@ contract('GenesisScheme', function(accounts) {
     it("try to remove genesis scheme", async function() {
         let votingScheme = await SimpleVote.new();
     
-        var founders = [accounts[0],accounts[1],accounts[2]];
-        var tokenForFounders = [1,2,4];
-        var repForFounders = [7,9,12];
-        let genesis = await GenesisScheme.new("Shoes factory",
-                                              "SHOE",
-                                              founders,
-                                              tokenForFounders,
-                                              repForFounders,
-                                              votingScheme.address,
-                                              {'start_gas':4900000} );
-
-        var i;
-        for (i = 0 ; i < founders.length ; i++ ) {
-           await genesis.collectFoundersShare({'from': founders[i]});
-        }
-
-        
+        let founders = [accounts[0],accounts[1],accounts[2]];
+        let tokenForFounders = [1,2,4];
+        let repForFounders = [7,9,12];
+        await helpers.setupController(this, founders, tokenForFounders, repForFounders)
+         
+        let genesis = this.genesis;
         var genesisAddress = genesis.address; //TODO
         // vote to remove it. The second vote will get majority and throw is expected
         await genesis.proposeScheme(genesisAddress,{'start_gas':4700000});

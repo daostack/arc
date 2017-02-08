@@ -8,49 +8,27 @@ contract('SimpleContribution', function(accounts) {
 
         let submissionFee = 1;
             
-        var founders = [accounts[0],accounts[1]];//,accounts[2]];
-        var tokenForFounders = [1,2,4];
-        var repForFounders = [7,9,12];
-        
-        let votingScheme = await SimpleVote.new();
-        
-        let genesis = await GenesisScheme.new("Shoes factory",
-                                              "SHOE",
-                                              founders,
-                                              tokenForFounders,
-                                              repForFounders,
-                                              votingScheme.address,
-                                              {'start_gas':4700000} );
-        
-        for (var i = 0 ; i < founders.length ; i++ ) {
-           await genesis.collectFoundersShare({'from': founders[i]});
-        }
-        
-        var controllerAddress = await genesis.controller();
-        var controllerInstance = Controller.at(controllerAddress);
-        
-        var reputationAddress = await controllerInstance.nativeReputation();
-        var reputationInstance = Reputation.at(reputationAddress);
-        
-        var tokenAddress = await controllerInstance.nativeToken();
-        var tokenInstance = MintableToken.at(tokenAddress); 
+        let founders = [accounts[0],accounts[1]];//,accounts[2]];
+        let tokenForFounders = [1,2,4];
+        let repForFounders = [7,9,12];
+        await helpers.setupController(this, founders, tokenForFounders, repForFounders)
         
         let contributionVotingScheme = await SimpleVote.new();
-        let contributionScheme = await SimpleContribution.new(controllerAddress,
+        let contributionScheme = await SimpleContribution.new(this.controllerAddress,
                                                               submissionFee,
                                                               contributionVotingScheme.address);
-        await genesis.proposeScheme(contributionScheme.address);
-        await genesis.voteScheme(contributionScheme.address, true, {from: founders[0]});
-        await genesis.voteScheme(contributionScheme.address, true, {from: founders[1]});
+        await this.genesis.proposeScheme(contributionScheme.address);
+        await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[0]});
+        await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[1]});
         
         
-        let balance0BeforeSubmission = await tokenInstance.balanceOf(founders[0]);
-        let reputation0BeforeSubmission = await reputationInstance.reputationOf(founders[0]);
+        let balance0BeforeSubmission = await this.tokenInstance.balanceOf(founders[0]);
+        let reputation0BeforeSubmission = await this.reputationInstance.reputationOf(founders[0]);
         
         // submit contribution - for that need to aprrove token first
         // approve token
-        await tokenInstance.approve(contributionScheme.address, submissionFee);
-        await tokenInstance.approve(contributionScheme.address, submissionFee);        
+        await this.tokenInstance.approve(contributionScheme.address, submissionFee);
+        await this.tokenInstance.approve(contributionScheme.address, submissionFee);        
         // submit contribution
         let askedTokens = 5;
         let askedReputation = 55;
@@ -70,8 +48,8 @@ contract('SimpleContribution', function(accounts) {
         await contributionScheme.voteContribution(contributionId,true,{'from':founders[1]});
         
         // see that submitter was paid
-        let balance0AfterSubmission = await tokenInstance.balanceOf(founders[0]);
-        let reputation0AfterSubmission = await reputationInstance.reputationOf(founders[0]);
+        let balance0AfterSubmission = await this.tokenInstance.balanceOf(founders[0]);
+        let reputation0AfterSubmission = await this.reputationInstance.reputationOf(founders[0]);
         
         assert.equal(parseInt(reputation0BeforeSubmission.valueOf()) + parseInt(askedReputation.valueOf()),
                      parseInt(reputation0AfterSubmission.valueOf()),

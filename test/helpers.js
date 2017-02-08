@@ -49,3 +49,33 @@ async function setupDAO(ctx) {
 }
 
 module.exports.setupDAO = setupDAO
+
+async function setupController(ctx, founders, tokenForFounders, repForFounders) {
+    let accounts = web3.eth.accounts;
+    
+    let votingScheme = await SimpleVote.new();
+    
+    let genesis = await GenesisScheme.new("Shoes factory",
+                                          "SHOE",
+                                          founders,
+                                          tokenForFounders,
+                                          repForFounders,
+                                          votingScheme.address,
+                                          {'start_gas':4700000} );
+    
+    for (var i = 0 ; i < founders.length ; i++ ) {
+       await genesis.collectFoundersShare({'from': founders[i]});
+    }
+    
+    ctx.genesis = genesis;
+    ctx.controllerAddress = await genesis.controller();
+    ctx.controllerInstance = Controller.at(ctx.controllerAddress);
+    
+    ctx.reputationAddress = await ctx.controllerInstance.nativeReputation();
+    ctx.reputationInstance = Reputation.at(ctx.reputationAddress);
+    
+    ctx.tokenAddress = await ctx.controllerInstance.nativeToken();
+    ctx.tokenInstance = MintableToken.at(ctx.tokenAddress);  
+}
+
+module.exports.setupController = setupController
