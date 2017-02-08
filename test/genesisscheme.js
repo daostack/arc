@@ -5,9 +5,9 @@ contract('GenesisScheme', function(accounts) {
     
     it("founders should get their share", async function() {    
         // create a value system
-        var founders = [accounts[0],accounts[1],accounts[2]];
-        var tokenForFounders = [1,2,4];
-        var repForFounders = [7,9,12];
+        var founders = [accounts[0],accounts[1],accounts[2],accounts[3]];
+        var tokenForFounders = [1,2,4,5];
+        var repForFounders = [7,9,12,1];
         
         let votingScheme = await SimpleVote.new();
         
