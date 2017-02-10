@@ -1,6 +1,6 @@
 pragma solidity ^0.4.7;
-import './controller/Controller.sol';
-import "./SimpleVoteInterface.sol";
+import '../controller/Controller.sol';
+import "../SimpleVoteInterface.sol";
 
 ////////////////////////////////////////////////////////////////////////////////
 

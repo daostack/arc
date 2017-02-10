@@ -1,5 +1,5 @@
 pragma solidity ^0.4.7;
-import "./controller/Controller.sol";
+import "../controller/Controller.sol";
 
 contract TokenSale {
     Controller controller;
