@@ -37,11 +37,13 @@ contract('SimpleContribution', function(accounts) {
         let contributionId = await contributionScheme.submitContribution.call("simple contribution testing",
                                                                               askedTokens,
                                                                               askedReputation,
+                                                                              founders[0],
                                                                               {'from':founders[0]});
         // do the same call onchain
         await contributionScheme.submitContribution("simple contribution testing",
                                                     askedTokens,
                                                     askedReputation,
+                                                    founders[0],
                                                     {'from':founders[0]});
 
         // vote on contribution. 2nd founder has majority

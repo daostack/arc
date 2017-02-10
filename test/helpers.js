@@ -50,8 +50,12 @@ async function setupDAO(ctx) {
 
 module.exports.setupDAO = setupDAO
 
-async function setupController(ctx, founders, tokenForFounders, repForFounders) {
+async function setupController(ctx, founders, tokenForFounders=[1, 2, 4], repForFounders=[7, 100, 12]) {
     let accounts = web3.eth.accounts;
+
+    if (founders == undefined) {
+        founders = [accounts[0],accounts[1],accounts[2]];
+    }
     
     let votingScheme = await SimpleVote.new();
     
@@ -66,6 +70,7 @@ async function setupController(ctx, founders, tokenForFounders, repForFounders) 
        await genesis.collectFoundersShare({'from': founders[i]});
     }
     
+    ctx.founders = founders
     ctx.genesis = genesis;
     ctx.controllerAddress = await genesis.controller();
     ctx.controllerInstance = Controller.at(ctx.controllerAddress);

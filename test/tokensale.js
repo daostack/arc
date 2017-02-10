@@ -1,5 +1,4 @@
 const helpers = require('./helpers')
-const assertJump = require('./zeppelin-solidity/helpers/assertJump');
 
 contract('TokenSale', function(accounts) {
     
