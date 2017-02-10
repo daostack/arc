@@ -79,3 +79,17 @@ async function setupController(ctx, founders, tokenForFounders, repForFounders) 
 }
 
 module.exports.setupController = setupController
+
+
+
+let outOfGasMessage = 'VM Exception while processing transaction: out of gas'
+module.exports.outOfGasMessage = outOfGasMessage
+
+module.exports.assertJumpOrOutOfGas = function(error) {
+    let condition = (
+        error.message == outOfGasMessage ||
+        error.message.search('invalid JUMP') > -1
+    ) 
+    assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error')
+}
+

@@ -5,25 +5,22 @@ contract('TokenSale', function(accounts) {
     
     it("simple scenario - buy tokens", async function() {    
         // create a value system
-        var founders = [accounts[0],accounts[1]];//,accounts[2]];
-        var tokenForFounders = [1,2,4];
-        var repForFounders = [7,9,12];
+        let founders = [accounts[0],accounts[1]];//,accounts[2]];
+        let tokenForFounders = [1,2,4];
+        let repForFounders = [7,9,12];
         
         await helpers.setupController(this, founders, tokenForFounders, repForFounders)
 
         let tokenSaleScheme = await TokenSale.new(this.controllerAddress);
         let tokenSaleAddress = tokenSaleScheme.address;
         
-        // try to buy tokens before approving
-        var fail = 100;
+        // buying tokens should fail, because the schema as not been approved yet
         try {
-          web3.eth.sendTransaction({'from':founders[1], 'to':tokenSaleAddress, 'value': web3.toWei(1, "ether")});
-          throw 'an error' // make sure that an error is thrown
+            await web3.eth.sendTransaction({'from':founders[1], 'to':tokenSaleAddress, 'value': web3.toWei(1, "ether")})
+            throw 'an error' // make sure that an error is thrown
         } catch(error) {
-            fail = 200;
+            helpers.assertJumpOrOutOfGas(error)
         }
-        
-        assert.equal(fail,200,"buying tokens should fail"); // todo make less ugly
         
         // vote to approve scheme
         await this.genesis.proposeScheme(tokenSaleAddress,{'start_gas':4700000});
@@ -42,19 +39,15 @@ contract('TokenSale', function(accounts) {
         // vote to remove scheme
         await this.genesis.proposeScheme(tokenSaleAddress,{'start_gas':4700000});
         await this.genesis.voteScheme(tokenSaleAddress, true, {'from': founders[1],'start_gas':4700000});
-        // try to buy tokens before approving
-        var fail = 100;
+
+        // buying tokens should fail because the scheme has been removed
         try {
-          web3.eth.sendTransaction({'from':founders[1], 'to':tokenSaleAddress, 'value': web3.toWei(1, "ether")});
-          throw 'an error' // make sure that an error is thrown
+            await web3.eth.sendTransaction({'from':founders[1], 'to':tokenSaleAddress, 'value': web3.toWei(1, "ether")})
+            throw 'an error' // make sure that an error is thrown
         } catch(error) {
-            fail = 200;
+            helpers.assertJumpOrOutOfGas(error)
         }
-        assert.equal(fail,200,"buying tokens should fail"); // todo make less ugly
-        
         assert.equal(balance0.valueOf(), tokenForFounders[0], "founder's 0 token is not as expected");
         assert.equal(balance1.valueOf(), tokenForFounders[1]  + 1000000000000000000, "founder's 1 token is not as expected");
-        
-                
     });
 });
