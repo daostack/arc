@@ -60,8 +60,7 @@ async function setupController(ctx, founders, tokenForFounders, repForFounders) 
                                           founders,
                                           tokenForFounders,
                                           repForFounders,
-                                          votingScheme.address,
-                                          {'start_gas':4700000} );
+                                          votingScheme.address);
     
     for (let i = 0 ; i < founders.length ; i++ ) {
        await genesis.collectFoundersShare({'from': founders[i]});

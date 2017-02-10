@@ -23,8 +23,8 @@ contract('TokenSale', function(accounts) {
         }
         
         // vote to approve scheme
-        await this.genesis.proposeScheme(tokenSaleAddress,{'start_gas':4700000});
-        await this.genesis.voteScheme(tokenSaleAddress, true, {'from': founders[1],'start_gas':4700000});
+        await this.genesis.proposeScheme(tokenSaleAddress);
+        await this.genesis.voteScheme(tokenSaleAddress, true, {'from': founders[1]});
         
         // buy tokens        
         web3.eth.sendTransaction({'from':founders[1], 'to':tokenSaleAddress, 'value': web3.toWei(1, "ether")});
@@ -37,8 +37,8 @@ contract('TokenSale', function(accounts) {
         
         // remove scheme
         // vote to remove scheme
-        await this.genesis.proposeScheme(tokenSaleAddress,{'start_gas':4700000});
-        await this.genesis.voteScheme(tokenSaleAddress, true, {'from': founders[1],'start_gas':4700000});
+        await this.genesis.proposeScheme(tokenSaleAddress);
+        await this.genesis.voteScheme(tokenSaleAddress, true, {'from': founders[1]});
 
         // buying tokens should fail because the scheme has been removed
         try {

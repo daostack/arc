@@ -15,8 +15,8 @@ contract('TokenSale', function(accounts) {
         let tokenSaleAddress = tokenSaleScheme.address;
                         
         // vote to approve ICO scheme        
-        await this.genesis.proposeScheme(tokenSaleAddress,{'start_gas':4700000});
-        await this.genesis.voteScheme(tokenSaleAddress, true, {'from': founders[1],'start_gas':4700000});
+        await this.genesis.proposeScheme(tokenSaleAddress);
+        await this.genesis.voteScheme(tokenSaleAddress, true, {'from': founders[1]});
         
         // buy tokens
         let value = web3.toWei(1, "ether");
@@ -27,11 +27,11 @@ contract('TokenSale', function(accounts) {
         // deploy withdraw scehem
         let withdrawContract = await WithdrawEtherFromOldController.new();
         // vote to approve scheme
-        await this.genesis.proposeScheme(withdrawContract.address,{'start_gas':4700000});
-        await this.genesis.voteScheme(withdrawContract.address, true, {'from': founders[1],'start_gas':4700000});
+        await this.genesis.proposeScheme(withdrawContract.address);
+        await this.genesis.voteScheme(withdrawContract.address, true, {'from': founders[1]});
 
         // withdraw ether
-        await withdrawContract.withdraw(this.controllerAddress,value,{'from':founders[0],'start_gas':4700000});
+        await withdrawContract.withdraw(this.controllerAddress,value,{'from':founders[0]});
                 
         let controllerBalanceAfter = await web3.eth.getBalance(this.controllerAddress);
         

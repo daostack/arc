@@ -41,14 +41,14 @@ contract('GenesisScheme', function(accounts) {
         let genesis = this.genesis;
         let genesisAddress = genesis.address; //TODO
         // vote to remove it. The second vote will get majority and throw is expected
-        await genesis.proposeScheme(genesisAddress,{'start_gas':4700000});
+        await genesis.proposeScheme(genesisAddress);
         let status = await genesis.getVoteStatus(genesisAddress); 
         
-        await genesis.voteScheme(genesisAddress, true, {'from': founders[0],'start_gas':4700000});
+        await genesis.voteScheme(genesisAddress, true, {'from': founders[0]});
         status = await genesis.getVoteStatus(genesisAddress); 
 
         try {
-            await genesis.voteScheme(genesisAddress, true, {'from': founders[1],'start_gas':4700000});
+            await genesis.voteScheme(genesisAddress, true, {'from': founders[1]});
             throw 'an error' // make sure that an error is thrown
         } catch(error) {
             // error is not thrown, because it _is_ actually possible to remove the scheme
