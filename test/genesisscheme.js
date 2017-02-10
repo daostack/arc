@@ -5,9 +5,9 @@ contract('GenesisScheme', function(accounts) {
     
     it("founders should get their share", async function() {    
         // create a value system
-        var founders = [accounts[0],accounts[1],accounts[2],accounts[3]];
-        var tokenForFounders = [1,2,4,5];
-        var repForFounders = [7,9,12,1];
+        let founders = [accounts[0],accounts[1],accounts[2],accounts[3]];
+        let tokenForFounders = [1,2,4,5];
+        let repForFounders = [7,9,12,1];
         
         await helpers.setupController(this, founders, tokenForFounders, repForFounders)
                                                                                             
@@ -39,13 +39,13 @@ contract('GenesisScheme', function(accounts) {
         await helpers.setupController(this, founders, tokenForFounders, repForFounders)
          
         let genesis = this.genesis;
-        var genesisAddress = genesis.address; //TODO
+        let genesisAddress = genesis.address; //TODO
         // vote to remove it. The second vote will get majority and throw is expected
         await genesis.proposeScheme(genesisAddress,{'start_gas':4700000});
-        var status = await genesis.getVoteStatus(genesisAddress); 
+        let status = await genesis.getVoteStatus(genesisAddress); 
         
         await genesis.voteScheme(genesisAddress, true, {'from': founders[0],'start_gas':4700000});
-        var status = await genesis.getVoteStatus(genesisAddress); 
+        status = await genesis.getVoteStatus(genesisAddress); 
 
         try {
             await genesis.voteScheme(genesisAddress, true, {'from': founders[1],'start_gas':4700000});

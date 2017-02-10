@@ -5,7 +5,7 @@ contract('TokenSale', function(accounts) {
     
     it("simple scenario - buy tokens", async function() {    
         // create a value system
-        var founders = [accounts[0],accounts[1]];//,accounts[2]];
+        let founders = [accounts[0],accounts[1]];//,accounts[2]];
         let tokenForFounders = [1,2,4];
         let repForFounders = [7,9,12];
         
