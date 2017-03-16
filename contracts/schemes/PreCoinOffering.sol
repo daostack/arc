@@ -5,44 +5,70 @@ import '../zeppelin-solidity/SafeMath.sol';
 
 contract PreCoinOffering is Ownable, SafeMath {
     Controller    controller;
-    uint          PRICE;
+    uint          cap;
+    uint          initPrice;
+    uint          priceSlope;
+    uint          totalRaised;
+    bool          isOpened;
 
-    mapping(bytes32=>bool) whiteListCodes;
+    event DonationRecived( address indexed _sender, int indexed _tokensAmount, uint _newPrice );
 
-    function PreCoinOffering( Controller _controller,
-                                address _owner,
-                                uint       _PRICE) {
+    // Constructor:
+    function PreCoinOffering( Controller  _controller,
+                                address   _owner,
+                                uint      _cap,
+                                uint      _initPrice,
+                                uint      _priceSlope) {
         controller = _controller;
         owner = _owner;
-        PRICE = _PRICE;
+        initPrice = _initPrice;
+        priceSlope = _priceSlope;
+        isOpened = true;
     }
 
-    function addCode(bytes32 _code) onlyOwner {
-        whiteListCodes[_code] = true;
-    }
-
+    // When either is sent to contract, buy tokens with it:
     function () payable {
-      if (msg.data.length==32)
-      buyTokens(bytes(msg.data));
+      donate();
     }
 
-    function buyTokens(bytes preHashedCode) payable returns(bool) {
-        // Check code is on the white list:
-        if (! whiteListCodes[sha3(preHashedCode)]) throw;
+    // Owner closes PCO:
+    function closePCO() onlyOwner {
+      isOpened = false;
+    }
 
-        // /create the tokens:
-        int tokens = int(safeMul(msg.value, getPrice()));
-        whiteListCodes[sha3(preHashedCode)] == false;
-        if(! controller.mintTokens(tokens, msg.sender)) {
-          whiteListCodes[sha3(preHashedCode)] == true;
-          return false;
+    // Buying tokens:
+    function donate() payable returns(int) {
+        // Check PCO is open:
+        if (! isOpened) throw;
+        // Check cap reached:
+        if (totalRaised < cap) throw;
+
+        uint incomingEther;
+        uint change;
+
+        // Compute how much tokens to buy:
+        if (msg.value > safeSub(cap,totalRaised)) {
+          incomingEther = safeSub(cap,totalRaised);
+        } else {
+          incomingEther = msg.value;
         }
-        return true;
+        int tokens = int(safeMul(incomingEther, getCurrectPrice()));
+
+        // Send ether to controller (to be avatar), mint, and send change to user:
+        if (! controller.send(incomingEther)) throw;
+        if(! controller.mintTokens(tokens, msg.sender)) throw;
+        if (change != 0)
+          if (! msg.sender.send(change)) throw;
+
+        // Update total raised, call event and return amount of tokens bought:
+        totalRaised += incomingEther;
+        DonationRecived(msg.sender, tokens, getCurrectPrice());
+        return tokens;
     }
 
     // replace this with any other price function
-    function getPrice() constant returns (uint){
-      return PRICE;
+    function getCurrectPrice() constant returns (uint){
+      return (initPrice + priceSlope*totalRaised);
     }
 
 }
