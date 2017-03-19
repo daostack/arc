@@ -5,24 +5,26 @@ import '../zeppelin-solidity/SafeMath.sol';
 
 contract PreCoinOffering is Ownable, SafeMath {
     Controller    controller;
-    uint          cap;
-    uint          initPrice;
-    uint          priceSlope;
-    uint          totalRaised;
+    int           cap;          // Cap in Eth
+    int           initPrice;    // Price represents Tokens per 1 Eth
+    int           finalPrice;
+    int           totalEthRaised;
+    int           priceSlope;   // Will usually be negative
     bool          isOpened;
 
-    event DonationRecived( address indexed _sender, int indexed _tokensAmount, uint _newPrice );
+    event DonationRecieved( address indexed _sender, int indexed _tokensAmount, uint _newPrice );
 
     // Constructor:
     function PreCoinOffering( Controller  _controller,
                                 address   _owner,
-                                uint      _cap,
-                                uint      _initPrice,
-                                uint      _priceSlope) {
+                                int       _cap,
+                                int       _initPrice,
+                                int       _finalPrice) {
         controller = _controller;
         owner = _owner;
         initPrice = _initPrice;
-        priceSlope = _priceSlope;
+        finalPrice = _finalPrice;
+        priceSlope = (finalPrice - initPrice)/cap;
         isOpened = true;
     }
 
@@ -41,18 +43,19 @@ contract PreCoinOffering is Ownable, SafeMath {
         // Check PCO is open:
         if (! isOpened) throw;
         // Check cap reached:
-        if (totalRaised < cap) throw;
+        if (totalEthRaised > cap) throw;
 
         uint incomingEther;
         uint change;
 
         // Compute how much tokens to buy:
-        if (msg.value > safeSub(cap,totalRaised)) {
-          incomingEther = safeSub(cap,totalRaised);
+        if (msg.value > safeSub(uint(cap),uint(totalEthRaised))) {
+          incomingEther = safeSub(uint(cap),uint(totalEthRaised));
+          change = safeSub(msg.value, uint(cap));
         } else {
           incomingEther = msg.value;
         }
-        int tokens = int(safeMul(incomingEther, getCurrectPrice()));
+        int tokens = int(safeMul(incomingEther, getCurrentPrice()));
 
         // Send ether to controller (to be avatar), mint, and send change to user:
         if (! controller.send(incomingEther)) throw;
@@ -61,14 +64,14 @@ contract PreCoinOffering is Ownable, SafeMath {
           if (! msg.sender.send(change)) throw;
 
         // Update total raised, call event and return amount of tokens bought:
-        totalRaised += incomingEther;
-        DonationRecived(msg.sender, tokens, getCurrectPrice());
+        totalEthRaised += int(incomingEther);
+        DonationRecieved(msg.sender, tokens, getCurrentPrice());
         return tokens;
     }
 
     // replace this with any other price function
-    function getCurrectPrice() constant returns (uint){
-      return (initPrice + priceSlope*totalRaised);
+    function getCurrentPrice() constant returns (uint){
+      return (uint(initPrice + priceSlope*totalEthRaised));
     }
 
 }
