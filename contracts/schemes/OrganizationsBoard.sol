@@ -9,14 +9,17 @@ contract OrganizationsBoard is Ownable {
     MintableToken   nativeToken;
     uint            fee;
 
-    mapping(address=>bool) public orgList;
+    mapping(address=>string) public orgList;
     mapping(bytes32=>bool) whiteList;
 
-    function OrganizationBoard(Controller _controller, uint _fee) {
+    event OrgAdded( address indexed _addrss, string indexed _orgName);
+
+    function OrganizationBoard(Controller _controller, uint _fee, string orgName) {
       controller = _controller;
       nativeToken = controller.nativeToken();
-      orgList[controller] = true;
+      orgList[controller] = orgName;
       fee = _fee;
+      OrgAdded(controller, orgName);
     }
 
     // Add a contract to the whitelist
@@ -24,7 +27,7 @@ contract OrganizationsBoard is Ownable {
       whiteList[bytecode] = true;
     }
 
-    function addOrg (Controller orgController) returns(bool) {
+    function addOrg (Controller orgController, string orgName) returns(bool) {
       // Not sure how to access the bytecode, made something up for now:
       /*if (! whiteList[sha3(GetCode.at(orgController))]) throw;*/
 
@@ -32,7 +35,8 @@ contract OrganizationsBoard is Ownable {
       if (nativeToken.balanceOf(msg.sender) < fee) throw;
 
       if (controller.mintTokens(-int(fee), msg.sender)) {
-        orgList[orgController] = true;
+        orgList[orgController] = orgName;
+        OrgAdded(orgController, orgName);
         return true;
       } else {
         return false;
