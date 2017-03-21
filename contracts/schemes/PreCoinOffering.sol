@@ -22,6 +22,7 @@ contract PreCoinOffering is Ownable, SafeMath {
                                 int       _finalPrice) {
         controller = _controller;
         owner = _owner;
+        cap = _cap;
         initPrice = _initPrice;
         finalPrice = _finalPrice;
         priceSlope = (finalPrice - initPrice)/cap;
@@ -70,7 +71,7 @@ contract PreCoinOffering is Ownable, SafeMath {
     }
 
     // replace this with any other price function
-    function getCurrentPrice() constant returns (uint){
+    function getCurrentPrice() returns (uint){
       return (uint(initPrice + priceSlope*totalEthRaised));
     }
 
