@@ -5,9 +5,9 @@ import '../controller/MintableToken.sol';
 import './GetCode.sol';
 
 contract OrganizationsBoard is Ownable {
-    Controller      controller;
-    MintableToken   nativeToken;
-    uint            fee;
+    Controller              controller;
+    MintableToken           nativeToken;
+    uint            public  fee;
 
     mapping(address=>string) public orgList;
     mapping(bytes32=>bool) whiteList;
