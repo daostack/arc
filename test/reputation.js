@@ -78,6 +78,6 @@ contract('Test Reputation', function(accounts) {
 
         let totalRepAfter = await rep.totalSupply();
             
-        assert( totalRepBefore.equals(totalRepAfter), "reputation should remain the same");
+        assert(totalRepBefore.equals(totalRepAfter), "reputation should remain the same");
     });
 });

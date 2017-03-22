@@ -31,10 +31,11 @@ contract Controller { // is Ownable ? why?
     event Fallback(address indexed _sender, uint _value);  
         
     // ctor
-    function Controller( string _name,
-                         string _symbol,
-                         address _genesisScheme
-                         ) {
+    function Controller(
+        string _name,
+        string _symbol,
+        address _genesisScheme)
+    {
         nativeToken = new MintableToken(_name, _symbol);
         nativeReputation = new Reputation();
         nativeReputation.mint(0, msg.sender);
@@ -43,10 +44,9 @@ contract Controller { // is Ownable ? why?
     }
     
     modifier onlyRegisteredScheme() {
-        if (! schemes[msg.sender]) throw;
+        if (!schemes[msg.sender]) throw;
         _;
     }    
-    
 
     function mintReputation(int256 _amount, address _beneficary) 
         onlyRegisteredScheme 
@@ -58,8 +58,8 @@ contract Controller { // is Ownable ? why?
     function mintTokens(int256 _amount, address _beneficary)
         onlyRegisteredScheme
         returns(bool){
-        MintTokens( msg.sender, _beneficary, _amount );
-        return nativeToken.mint(_amount, _beneficary);
+        MintTokens(msg.sender, _beneficary, _amount);
+        // return nativeToken.mint(_amount, _beneficary);
     }
     
     function registerScheme( address _scheme )
@@ -83,7 +83,6 @@ contract Controller { // is Ownable ? why?
         returns(bool){    
         GenericAction( msg.sender, _action, _param );
         return _action.delegatecall(bytes4(sha3("action(uint256)")), _param);
-        //return _action.action(_param);
     }
     
     

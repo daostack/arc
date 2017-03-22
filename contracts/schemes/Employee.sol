@@ -1,18 +1,30 @@
 pragma solidity ^0.4.7;
 import '../controller/Controller.sol';
 
+/*
+    Employee is a schema to pay an employee a monthly salary of reputation and tokens
+*/
 
 contract Employee {
-    Controller public controller;
-    address empAddress;
-    uint periodInMonths; // Month is taken is 4 weeks
-    int tokenSalary;
-    int repSalary;
-    uint salariesCollected;
 
-    function Employee(Controller _controller, address _empAddress, uint _startDate, uint _periodInMonths, int _tokenSalary, int _repSalary) {
+    Controller public controller;
+    address public beneficary;
+    uint public periodInMonths; // Month is taken is 4 weeks
+    int public tokenSalary;
+    int public repSalary;
+    uint public salariesCollected = 0;
+    uint public startDate;
+
+    function Employee(
+        Controller _controller,
+        address _beneficary,
+        uint _startDate,
+        uint _periodInMonths,
+        int _tokenSalary,
+        int _repSalary) 
+    {
         controller = _controller;
-        empAddress = _empAddress;
+        beneficary = _beneficary;
         startDate = _startDate;
         periodInMonths = _periodInMonths;
         tokenSalary = _tokenSalary;
@@ -20,19 +32,20 @@ contract Employee {
     }
 
     function collectSalary() returns(bool) {
-        if (msg.sender != empAddrss) throw;
+
         if (now < startDate) throw;
+        
+        // employee cannot collect more salaries than stipulated
         if (salariesCollected >= periodInMonths) throw;
 
-        // Pay:
-        if ((now - startDate) > 4 weeks * salariesCollected) {
-          salariesCollected += 1;
-          if(!controller.mintTokens(tokenSalary, msg.sender)) throw;
-          if(!controller.mintReputation(tokenSalary, msg.sender)) throw;
-          return true;
-        }
+        // employee cannot collect her salary before period has passed
+        if ((now - startDate) < 4 weeks * salariesCollected) throw;
 
-      // Too early to pay:
-      return false;
+        // Pay:
+        salariesCollected += 1;
+        if(!controller.mintTokens(tokenSalary, beneficary)) throw;
+        if(!controller.mintReputation(repSalary, beneficary)) throw;
+
+        return false;
     }
 }

@@ -13,7 +13,7 @@ contract PayAction is ActionInterface {
     
         address to = owner.payTo();
         uint amount = owner.amountToPay(); 
-        Pay( to, amount);
+        Pay(to, amount);
         if( ! to.send(amount) ) throw;
         
         return true;
