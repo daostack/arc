@@ -1,38 +1,38 @@
 pragma solidity ^0.4.7;
 import '../controller/Controller.sol';
 
+
 contract Employee {
-  Controller public controller;
-  address empAddrss;
-  uint startDate;
-  uint periodInMonths; // Month is taken is 4 weeks
-  int tokenSallery;
-  int repSallery;
-  uint salleriesColleted;
+    Controller public controller;
+    address empAddress;
+    uint periodInMonths; // Month is taken is 4 weeks
+    int tokenSalary;
+    int repSalary;
+    uint salariesCollected;
 
-  function Employee(Controller _controller, address _empAddrss, uint _startDate, uint _periodInMonths, int _tokenSallery, int _repSallery) {
-    controller = _controller;
-    empAddrss = _empAddrss;
-    startDate = _startDate;
-    periodInMonths = _periodInMonths;
-    tokenSallery = _tokenSallery;
-    repSallery = _repSallery;
-  }
-
-  function collectSallery() returns(bool) {
-    if (msg.sender != empAddrss) throw;
-    if (now < startDate) throw;
-    if (salleriesColleted >= periodInMonths) throw;
-
-    // Pay:
-    if ((now - startDate) > 4 weeks * salleriesColleted) {
-      salleriesColleted += 1;
-      if( ! controller.mintTokens( tokenSallery, msg.sender ) ) throw;
-      if( ! controller.mintReputation( repSallery, msg.sender ) ) throw;
-      return true;
+    function Employee(Controller _controller, address _empAddress, uint _startDate, uint _periodInMonths, int _tokenSalary, int _repSalary) {
+        controller = _controller;
+        empAddress = _empAddress;
+        startDate = _startDate;
+        periodInMonths = _periodInMonths;
+        tokenSalary = _tokenSalary;
+        repSalary = _repSalary;
     }
 
-    // Too early to pay:
-    return false;
-  }
+    function collectSalary() returns(bool) {
+        if (msg.sender != empAddrss) throw;
+        if (now < startDate) throw;
+        if (salariesCollected >= periodInMonths) throw;
+
+        // Pay:
+        if ((now - startDate) > 4 weeks * salariesCollected) {
+          salariesCollected += 1;
+          if(!controller.mintTokens(tokenSalary, msg.sender)) throw;
+          if(!controller.mintReputation(tokenSalary, msg.sender)) throw;
+          return true;
+        }
+
+      // Too early to pay:
+      return false;
+    }
 }

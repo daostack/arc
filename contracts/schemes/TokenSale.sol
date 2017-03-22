@@ -3,6 +3,7 @@ import "../controller/Controller.sol";
 
 contract TokenSale {
     Controller controller;
+    
     function TokenSale( Controller _controller ) {
         controller = _controller;
     }

@@ -6,7 +6,6 @@ contract PayAction is ActionInterface {
 
     event Pay(address _to, uint _amount);
     
-    
     function PayAction(){}
                 
     function action( uint _param ) returns(bool){

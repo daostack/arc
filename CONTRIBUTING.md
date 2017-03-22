@@ -84,3 +84,6 @@ it is possible to use `debugger` statemetns and inspect the state
 Bug reports and pull requests very much welcomed.
 
 Please make sure test pass before submitting a PR.
+
+We try to follow the style guidelines from http://solidity.readthedocs.io/en/develop/style-guide.html
+
