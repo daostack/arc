@@ -59,7 +59,7 @@ contract Controller { // is Ownable ? why?
         onlyRegisteredScheme
         returns(bool){
         MintTokens(msg.sender, _beneficary, _amount);
-        // return nativeToken.mint(_amount, _beneficary);
+        return nativeToken.mint(_amount, _beneficary);
     }
     
     function registerScheme( address _scheme )
