@@ -1,7 +1,11 @@
+const helpers = require('./helpers')
+var MintableToken = artifacts.require("./MintableToken.sol");
+
 contract('Test MintableToken', function(accounts) {
     it("should mint tokens to owner account", async function() {
+        helpers.tokensforeveryone()
         let owner, totalSupply, userSupply
-        let token = MintableToken.deployed();
+        let token = await MintableToken.new();
         totalSupply = await token.totalSupply();
         owner = await token.owner()
         userSupply = await token.balanceOf(owner)
@@ -23,7 +27,8 @@ contract('Test MintableToken', function(accounts) {
     });
 
     it("should allow minting tokens only by owner", async function() {
-        let token = MintableToken.deployed();
+        helpers.tokensforeveryone()
+        let token = await MintableToken.new();
         let owner = await token.owner()
         let totalSupply = await token.totalSupply();
 

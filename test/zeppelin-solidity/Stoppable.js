@@ -1,3 +1,6 @@
+
+var StoppableMock = artifacts.require("./StoppableMock.sol");
+
 contract('Stoppable', function(accounts) {
 
   it("can perform normal process in non-emergency", async function() {

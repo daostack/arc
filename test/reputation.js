@@ -1,5 +1,7 @@
 const assertJump = require('./zeppelin-solidity/helpers/assertJump');
 
+var Reputation = artifacts.require("./Reputation.sol");
+
 
 contract('Test Reputation', function(accounts) {
     it("test setting and getting reputation by the owner", async function() {

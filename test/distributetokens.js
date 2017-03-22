@@ -1,18 +1,20 @@
 const helpers = require('./helpers')
 
+var SimpleVote = artifacts.require("./SimpleVote.sol");
+var SimpleContribution = artifacts.require("./SimpleContribution.sol");
+
 contract('Proposal to distribute Tokens', function(accounts) {
     it("should respect basic sanity", async function() {
         let submissionFee = 0;
             
         await helpers.setupController(this)
-
         // set up a distribution scheme for minting tokens
 
         let contributionVotingScheme = await SimpleVote.new();
         let contributionScheme = await SimpleContribution.new(
             this.controllerAddress,
             submissionFee,
-            contributionVotingScheme.address,
+            contributionVotingScheme.address
             );
         // vote and accept the schema (founders[1] has the majority)
         await this.genesis.proposeScheme(contributionScheme.address);

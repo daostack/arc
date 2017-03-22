@@ -1,3 +1,12 @@
+
+var Controller = artifacts.require("./Controller.sol");
+var GenesisScheme = artifacts.require("./GenesisScheme.sol");
+var MintableToken = artifacts.require("./MintableToken.sol");
+// var Proposal = artifacts.require("./Proposal.sol");
+var Reputation = artifacts.require("./Reputation.sol");
+var SimpleVote = artifacts.require("./SimpleVote.sol");
+var SimpleContribution = artifacts.require("./SimpleContribution.sol");
+
 function getProposalAddress(tx) {
 
     // helper function that returns a proposal object from the ProposalCreated event 
@@ -50,11 +59,21 @@ async function setupDAO(ctx) {
 
 module.exports.setupDAO = setupDAO
 
+async function tokensforeveryone() {
+    let accounts = web3.eth.accounts;
+    for (let i=0; i < 10; i++) {
+        await web3.eth.sendTransaction({to: accounts[i], from: accounts[0], value: web3.toWei(0.1, "ether")})
+    }
+}
+
+module.exports.tokensforeveryone = tokensforeveryone
+
 async function setupController(ctx, founders, tokenForFounders=[1, 2, 4], repForFounders=[7, 100, 12]) {
     let accounts = web3.eth.accounts;
+    tokensforeveryone();
 
     if (founders == undefined) {
-        founders = [accounts[0],accounts[1],accounts[2]];
+        founders = [accounts[0], accounts[1], accounts[2]];
     }
     
     let votingScheme = await SimpleVote.new();
@@ -67,7 +86,8 @@ async function setupController(ctx, founders, tokenForFounders=[1, 2, 4], repFor
                                           votingScheme.address);
     
     for (let i = 0 ; i < founders.length ; i++ ) {
-       await genesis.collectFoundersShare({'from': founders[i]});
+        // send some ether to the founder so she can collect her share
+        await genesis.collectFoundersShare({'from': founders[i]});
     }
     
     ctx.founders = founders

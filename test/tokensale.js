@@ -1,5 +1,8 @@
 const helpers = require('./helpers')
 
+var TokenSale = artifacts.require("./TokenSale.sol");
+
+
 contract('TokenSale', function(accounts) {
     
     it("simple scenario - buy tokens", async function() {    

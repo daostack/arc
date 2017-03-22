@@ -1,4 +1,6 @@
 
+var Killable = artifacts.require("./Killable.sol");
+
 contract('Killable', function(accounts) {
   //from https://gist.github.com/xavierlepretre/88682e871f4ad07be4534ae560692ee6
   web3.eth.getTransactionReceiptMined = function (txnHash, interval) {
@@ -47,7 +49,7 @@ contract('Killable', function(accounts) {
     initBalance = web3.eth.getBalance(owner);
     kBalance = web3.eth.getBalance(killable.address);
     txnHash = await killable.kill({from: owner});
-    receiptMined = await web3.eth.getTransactionReceiptMined(txnHash);
+    // receiptMined = await web3.eth.getTransactionReceiptMined(txnHash);
     newBalance = web3.eth.getBalance(owner);
 
     assert.isTrue(newBalance > initBalance);
