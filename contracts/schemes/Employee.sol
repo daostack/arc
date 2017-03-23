@@ -1,38 +1,51 @@
 pragma solidity ^0.4.7;
 import '../controller/Controller.sol';
 
+/*
+    Employee is a schema to pay an employee a monthly salary of reputation and tokens
+*/
+
 contract Employee {
-  Controller public controller;
-  address empAddrss;
-  uint startDate;
-  uint periodInMonths; // Month is taken is 4 weeks
-  int tokenSallery;
-  int repSallery;
-  uint salleriesColleted;
 
-  function Employee(Controller _controller, address _empAddrss, uint _startDate, uint _periodInMonths, int _tokenSallery, int _repSallery) {
-    controller = _controller;
-    empAddrss = _empAddrss;
-    startDate = _startDate;
-    periodInMonths = _periodInMonths;
-    tokenSallery = _tokenSallery;
-    repSallery = _repSallery;
-  }
+    Controller public controller;
+    address public beneficary;
+    uint public periodInMonths; // Month is taken is 4 weeks
+    int public tokenSalary;
+    int public repSalary;
+    uint public salariesCollected = 0;
+    uint public startDate;
 
-  function collectSallery() returns(bool) {
-    if (msg.sender != empAddrss) throw;
-    if (now < startDate) throw;
-    if (salleriesColleted >= periodInMonths) throw;
-
-    // Pay:
-    if ((now - startDate) > 4 weeks * salleriesColleted) {
-      salleriesColleted += 1;
-      if( ! controller.mintTokens( tokenSallery, msg.sender ) ) throw;
-      if( ! controller.mintReputation( repSallery, msg.sender ) ) throw;
-      return true;
+    function Employee(
+        Controller _controller,
+        address _beneficary,
+        uint _startDate,
+        uint _periodInMonths,
+        int _tokenSalary,
+        int _repSalary) 
+    {
+        controller = _controller;
+        beneficary = _beneficary;
+        startDate = _startDate;
+        periodInMonths = _periodInMonths;
+        tokenSalary = _tokenSalary;
+        repSalary = _repSalary;
     }
 
-    // Too early to pay:
-    return false;
-  }
+    function collectSalary() returns(bool) {
+
+        if (now < startDate) throw;
+        
+        // employee cannot collect more salaries than stipulated
+        if (salariesCollected >= periodInMonths) throw;
+
+        // employee cannot collect her salary before period has passed
+        if ((now - startDate) < 4 weeks * salariesCollected) throw;
+
+        // Pay:
+        salariesCollected += 1;
+        if(!controller.mintTokens(tokenSalary, beneficary)) throw;
+        if(!controller.mintReputation(repSalary, beneficary)) throw;
+
+        return false;
+    }
 }

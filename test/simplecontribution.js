@@ -1,6 +1,9 @@
 const helpers = require('./helpers')
 const assertJump = require('./zeppelin-solidity/helpers/assertJump');
 
+var SimpleVote = artifacts.require("./SimpleVote.sol");
+var SimpleContribution = artifacts.require("./SimpleContribution.sol");
+
 
 contract('SimpleContribution', function(accounts) {
 

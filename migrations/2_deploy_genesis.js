@@ -46,7 +46,7 @@ module.exports = function(deployer) {
 		return Reputation.at(repAddrss)
 	}).then(function(inst) {
 		ReputationInst = inst;
-		return ReputationInst.reputationOf(web3.eth.accounts[0])
+		return ReputationInst.reputationOf(web3.eth.accounts[0]);
 	});
 
 };

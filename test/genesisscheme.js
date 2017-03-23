@@ -1,6 +1,8 @@
 const helpers = require('./helpers')
 const assertJump = require('./zeppelin-solidity/helpers/assertJump');
 
+var SimpleVote = artifacts.require("./SimpleVote.sol");
+
 contract('GenesisScheme', function(accounts) {
     
     it("founders should get their share", async function() {    

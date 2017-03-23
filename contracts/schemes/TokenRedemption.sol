@@ -1,8 +1,10 @@
 pragma solidity ^0.4.7;
 import "../controller/Controller.sol";
 
+
 contract TokenRedemption {
     Controller controller;
+    
     function TokenRedemption( Controller _controller ) {
         controller = _controller;
     }
