@@ -1,7 +1,7 @@
 pragma solidity ^0.4.7;
 import '../controller/Controller.sol';
-import '../zeppelin-solidity/Ownable.sol';
-import '../zeppelin-solidity/SafeMath.sol';
+import "zeppelin/contracts/ownership/Ownable.sol";
+import "zeppelin/contracts/SafeMath.sol";
 
 
 contract PreCoinOffering is Ownable, SafeMath {
