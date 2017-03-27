@@ -1,6 +1,5 @@
 const helpers = require('./helpers')
 
-var StandardTokenMock = artifacts.require("./StandardTokenMock.sol");
 var TokenSale = artifacts.require("./TokenSale.sol");
 var WithdrawEtherFromOldController = artifacts.require("./WithdrawEtherFromOldController.sol");
 
