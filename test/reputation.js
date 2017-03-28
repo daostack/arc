@@ -1,4 +1,4 @@
-const assertJump = require('./zeppelin-solidity/helpers/assertJump');
+const helpers = require('./helpers')
 
 var Reputation = artifacts.require("./Reputation.sol");
 
@@ -23,8 +23,15 @@ contract('Test Reputation', function(accounts) {
     it("check permissions", async function() {
         let rep = await Reputation.new();
         await rep.setReputation(1000, accounts[1]);
-        // this tx should have no effect
-        await rep.setReputation(1000, accounts[2], {from: accounts[2]});
+
+        // only the owner can call setReputation 
+        try {
+            await rep.setReputation(1000, accounts[2], {from: accounts[2]});
+            throw 'an error' // make sure that an error is thrown
+        } catch(error) {
+            helpers.assertJumpOrOutOfGas(error)
+        }
+
         let account0Rep = await rep.reputationOf(accounts[0]);    
         let account1Rep = await rep.reputationOf(accounts[1]);
         let account2Rep = await rep.reputationOf(accounts[2]);
@@ -73,7 +80,7 @@ contract('Test Reputation', function(accounts) {
           let tx2 = await rep.mint(bigNum, accounts[1]);
           throw 'an error' // make sure that an error is thrown
         } catch(error) {
-          assertJump(error);
+          helpers.assertJump(error);
         }
 
         let totalRepAfter = await rep.totalSupply();

@@ -1,9 +1,8 @@
 pragma solidity ^0.4.7;
 
-
-import "../zeppelin-solidity/token/StandardToken.sol";
-import "../zeppelin-solidity/Ownable.sol";
-import "../zeppelin-solidity/Killable.sol";
+import "zeppelin/contracts/token/StandardToken.sol";
+import "zeppelin/contracts/ownership/Ownable.sol";
+import "zeppelin/contracts/lifecycle/Killable.sol";
 
 
 contract MintableToken is StandardToken, Ownable, Killable {
@@ -31,7 +30,7 @@ contract MintableToken is StandardToken, Ownable, Killable {
             absAmount = uint((-1)*_amount);
             totalSupply = safeSub(totalSupply, absAmount);
             balances[_to] = safeSub(balances[_to], absAmount);
-        }
+        } 
         return true;
     }
 }

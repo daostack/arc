@@ -7,3 +7,4 @@ node_modules/
 NOTES.md
 test/play.js
 tmp/
+installed_contracts/

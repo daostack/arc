@@ -9,7 +9,8 @@
   "scripts": {
     "test": "truffle test",
     "testrpc": "pm2 start testrpc",
-    "start": "pm2 start truffle -- serve"
+    "start": "pm2 start truffle -- serve",
+    "install": "truffle install zeppelin"
   },
   "devDependencies": {
     "truffle-contract": "^1.1.10",

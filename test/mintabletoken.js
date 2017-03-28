@@ -1,7 +1,7 @@
 const helpers = require('./helpers')
 var MintableToken = artifacts.require("./MintableToken.sol");
 
-contract('Test MintableToken', function(accounts) {
+contract('MintableToken', function(accounts) {
     it("should mint tokens to owner account", async function() {
         helpers.tokensforeveryone()
         let owner, totalSupply, userSupply
@@ -32,8 +32,13 @@ contract('Test MintableToken', function(accounts) {
         let owner = await token.owner()
         let totalSupply = await token.totalSupply();
 
-        // the next call fails silently
-        await token.mint(1000, owner, {'from': accounts[1]})
+        // calling 'mint' as a non-owner throws an error
+        try {
+            await token.mint(1000, owner, {'from': accounts[1]})
+            throw 'an error';
+        } catch(error) {
+            helpers.assertJumpOrOutOfGas(error)
+        };
 
         // and so the supply of tokens should remain unchanged
         let newSupply = await token.totalSupply();

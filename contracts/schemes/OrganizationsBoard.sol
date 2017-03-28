@@ -1,6 +1,6 @@
 pragma solidity ^0.4.7;
 import '../controller/Controller.sol';
-import '../zeppelin-solidity/Ownable.sol';
+import "zeppelin/contracts/ownership/Ownable.sol";
 import '../controller/MintableToken.sol';
 import './GetCode.sol';
 
