@@ -40,7 +40,6 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
     }
 
     function uniqueId(bytes32 proposalId) constant returns (bytes32) {
-        // XXXX? the uniqueId depends on the msg.sender?
         return sha3(proposalId);
     }
 
