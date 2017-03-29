@@ -3,9 +3,10 @@ pragma solidity ^0.4.7;
 
 import "./controller/Reputation.sol";
 import "./SimpleVoteInterface.sol";
+import "zeppelin/contracts/ownership/Ownable.sol";
 
 
-contract SimpleVote is SafeMath, SimpleVoteInterface {
+contract SimpleVote is SafeMath, SimpleVoteInterface, Ownable {
 
     Reputation reputationSystem;
     address owner;
@@ -19,33 +20,25 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
         bool closed; // voting is closed
     }
 
-    function SimpleVote() {}
+    function SimpleVote() Ownable() {}
 
     mapping(bytes32=>Votes) proposals;
     event NewProposal( bytes32 _proposalId );
     event VoteProposal( address _voter, bytes32 _proposalId, bool _yes, uint _reputation );
     event CloseProposal( bytes32 _proposalId );
 
-    function uniqueId( bytes32 proposalId ) constant returns (bytes32) {
+    function uniqueId(bytes32 proposalId) constant returns (bytes32) {
         // XXXX? the uniqueId depends on the msg.sender?
         return sha3(msg.sender, proposalId);
     }
 
-    function setOwner( address _owner ) returns(bool){
-        // XXX: anyone can set the owner! (inherit from Owned)
-        if (owner != address(0)) throw;
-        owner = _owner;
-    }
-
-    function setReputationSystem(Reputation _reputationSystem) {
+    function setReputationSystem(Reputation _reputationSystem) onlyOwner {
         // do we really need to be able to change this?
-        if ( msg.sender != owner ) throw;
         reputationSystem = _reputationSystem;
     }
 
-    function closeProposal(bytes32 proposalId) returns(bool) {
+    function closeProposal(bytes32 proposalId) onlyOwner returns(bool) {
         // this function presumably is to free memory
-        if( msg.sender != owner ) throw;
         bytes32 id = uniqueId(proposalId);
 
         Votes votes = proposals[id];
@@ -58,8 +51,7 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
         return true;
     }
 
-    function newProposal( bytes32 proposalId ) returns(bool) {
-        if( msg.sender != owner ) throw;
+    function newProposal( bytes32 proposalId ) onlyOwner returns(bool) {
         bytes32 id = uniqueId(proposalId);
 
         Votes votes = proposals[id];
@@ -72,8 +64,7 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
         return true;
     }
 
-    function voteProposal(bytes32 proposalId, bool yes, address voter) returns(bool) {
-        if( msg.sender != owner ) throw;
+    function voteProposal(bytes32 proposalId, bool yes, address voter) onlyOwner returns(bool) {
         bytes32 id = uniqueId(proposalId);
 
         Votes votes = proposals[id];
@@ -104,9 +95,7 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
     // returns result of the vote: 
     //      true if the proposal passed
     //      false if the proposal has not passed (yet)
-    function voteResults(bytes32 proposalId) constant returns(bool) {
-
-        if (msg.sender != owner) throw;
+    function voteResults(bytes32 proposalId) constant onlyOwner returns(bool) {
         bytes32 id = uniqueId(proposalId);
 
         Votes votes = proposals[id];
