@@ -2,7 +2,6 @@
 var Controller = artifacts.require("./Controller.sol");
 var GenesisScheme = artifacts.require("./GenesisScheme.sol");
 var MintableToken = artifacts.require("./MintableToken.sol");
-// var Proposal = artifacts.require("./Proposal.sol");
 var Reputation = artifacts.require("./Reputation.sol");
 var SimpleVote = artifacts.require("./SimpleVote.sol");
 var SimpleContribution = artifacts.require("./SimpleContribution.sol");
