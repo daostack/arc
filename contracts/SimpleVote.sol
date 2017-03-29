@@ -6,11 +6,17 @@ import "./SimpleVoteInterface.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
 
 
-contract SimpleVote is SafeMath, SimpleVoteInterface, Ownable {
+contract SimpleVote is SafeMath, SimpleVoteInterface {
 
     Reputation reputationSystem;
     address owner;
 
+    modifier onlyOwner() {
+        if (msg.sender != owner) {
+          throw;
+        }
+        _;
+    }
     struct Votes {
         uint yes; // total 'yes' votes
         uint no; // total 'no' votes
@@ -20,16 +26,22 @@ contract SimpleVote is SafeMath, SimpleVoteInterface, Ownable {
         bool closed; // voting is closed
     }
 
-    function SimpleVote() Ownable() {}
+    function SimpleVote() {}
 
     mapping(bytes32=>Votes) proposals;
     event NewProposal( bytes32 _proposalId );
     event VoteProposal( address _voter, bytes32 _proposalId, bool _yes, uint _reputation );
     event CloseProposal( bytes32 _proposalId );
 
+   function setOwner(address newOwner) returns (bool) {
+        if (newOwner != address(0)) {
+            owner = newOwner;
+        }
+    }
+
     function uniqueId(bytes32 proposalId) constant returns (bytes32) {
         // XXXX? the uniqueId depends on the msg.sender?
-        return sha3(msg.sender, proposalId);
+        return sha3(proposalId);
     }
 
     function setReputationSystem(Reputation _reputationSystem) onlyOwner {
