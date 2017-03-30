@@ -5,20 +5,20 @@ import '../controller/MintableToken.sol';
 import './GetCode.sol';
 
 contract OrganizationsBoard is Ownable {
-    Controller              controller;
-    MintableToken           nativeToken;
+    Controller      public  controller;
+    MintableToken   public  nativeToken;
     uint            public  fee;
 
     mapping(address=>string) public orgList;
     mapping(bytes32=>bool) whiteList;
 
-    event OrgAdded( address indexed _addrss, string indexed _orgName);
+    event OrgAdded( address indexed _addrss, string _orgName); // indexed, for some reason can't index the name
 
-    function OrganizationBoard(Controller _controller, uint _fee, string orgName) {
+    function OrganizationsBoard(Controller _controller, uint _fee, string orgName) {
       controller = _controller;
       nativeToken = controller.nativeToken();
-      orgList[controller] = orgName;
       fee = _fee;
+      orgList[controller] = orgName;
       OrgAdded(controller, orgName);
     }
 
@@ -27,21 +27,20 @@ contract OrganizationsBoard is Ownable {
       whiteList[bytecode] = true;
     }
 
-    function addOrg (Controller orgController, string orgName) returns(bool) {
+    function addOrg (address orgControllerAddrss, string orgName) returns(bool) {
       // Not sure how to access the bytecode, made something up for now:
-      /*if (! whiteList[sha3(GetCode.at(orgController))]) throw;*/
+      // if (! whiteList[sha3(GetCode.at(orgController))]) throw;
 
       // Check there is enough in balance
       if (nativeToken.balanceOf(msg.sender) < fee) throw;
 
-      if (controller.mintTokens(-int(fee), msg.sender)) {
-        orgList[orgController] = orgName;
-        OrgAdded(orgController, orgName);
-        return true;
+      /*if (controller.mintTokens(-int(fee), msg.sender)) {*/
+        orgList[orgControllerAddrss] = orgName;
+        OrgAdded(orgControllerAddrss, orgName);
+        /*return true;
       } else {
         return false;
-      }
+      }*/
 
     }
-
 }
