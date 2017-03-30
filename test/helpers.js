@@ -2,7 +2,6 @@
 var Controller = artifacts.require("./Controller.sol");
 var GenesisScheme = artifacts.require("./GenesisScheme.sol");
 var MintableToken = artifacts.require("./MintableToken.sol");
-// var Proposal = artifacts.require("./Proposal.sol");
 var Reputation = artifacts.require("./Reputation.sol");
 var SimpleVote = artifacts.require("./SimpleVote.sol");
 var SimpleContribution = artifacts.require("./SimpleContribution.sol");
@@ -117,3 +116,6 @@ module.exports.assertJumpOrOutOfGas = function(error) {
     assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error')
 }
 
+module.exports.assertJump = function(error) {
+  assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned');
+}

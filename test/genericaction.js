@@ -1,7 +1,5 @@
 const helpers = require('./helpers')
-const assertJump = require('./zeppelin-solidity/helpers/assertJump');
 
-var StandardTokenMock = artifacts.require("./StandardTokenMock.sol");
 var TokenSale = artifacts.require("./TokenSale.sol");
 var WithdrawEtherFromOldController = artifacts.require("./WithdrawEtherFromOldController.sol");
 
