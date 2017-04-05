@@ -30,7 +30,15 @@ contract MintableToken is StandardToken, Ownable, Killable {
             absAmount = uint((-1)*_amount);
             totalSupply = safeSub(totalSupply, absAmount);
             balances[_to] = safeSub(balances[_to], absAmount);
-        } 
+        }
         return true;
+    }
+
+    function burn(uint256 _amount, address _from) onlyOwner returns (bool) {
+      // Burn tokens of a given account
+      if ( balances[_from] < _amount) throw;
+      balances[_from] = safeSub(balances[_from], _amount);
+      totalSupply = safeSub(totalSupply, _amount);
+      return true;
     }
 }

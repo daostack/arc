@@ -28,12 +28,17 @@ module.exports = function(deployer) {
 	}).then(function (inst){
 		ControllerInst = inst;
 	}).then(function (){
+		console.log('controller address: ', ControllerInst.address);
 		return deployer.deploy(OrganizationsBoard, ControllerInst.address, 5, 'AdamDAO');
 	}).then(function () {
 		return OrganizationsBoard.deployed();
 	}).then(function(inst) {
 		OrganizationsBoardInst = inst;
 		return GenesisSchemeInst.proposeScheme(OrganizationsBoardInst.address, { from: web3.eth.accounts[0] });
+	}).then(function() {
+		return OrganizationsBoardInst.controller()
+	}).then(function(contAddrssAtOrgBoard) {
+		console.log('controller at org board: ', contAddrssAtOrgBoard)
 	}).then(function() {
 		return GenesisSchemeInst.voteScheme(OrganizationsBoardInst.address, true, { from: web3.eth.accounts[0] });
 	}).then(function() {
