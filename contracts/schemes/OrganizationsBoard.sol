@@ -28,19 +28,18 @@ contract OrganizationsBoard is Ownable {
     }
 
     function addOrg (address orgControllerAddrss, string orgName) returns(bool) {
-      // Not sure how to access the bytecode, made something up for now:
+      // Check that the controller is a daostack controller
       // if (! whiteList[sha3(GetCode.at(orgController))]) throw;
 
       // Check there is enough in balance
       if (nativeToken.balanceOf(msg.sender) < fee) throw;
 
-      /*if (controller.mintTokens(-int(fee), msg.sender)) {*/
+      // Burn and add Org:
+      if (controller.burnTokens(fee, msg.sender)) {
         orgList[orgControllerAddrss] = orgName;
         OrgAdded(orgControllerAddrss, orgName);
-        /*return true;
-      } else {
-        return false;
-      }*/
-
+        return true;
+      }
+      return false;
     }
 }
