@@ -15,7 +15,7 @@ module.exports = function(deployer) {
 	}).then(function(inst) {
 		SimpleVoteInst = inst;
 	}).then(function() {
-		return deployer.deploy(GenesisScheme, 'AdamCoin', 'ADM', [web3.eth.accounts[0]], [100], [10], SimpleVoteInst.address);
+		return deployer.deploy(GenesisScheme, 'Stack', 'STK', [web3.eth.accounts[0]], [100], [10], SimpleVoteInst.address);
 	}).then(function() {
 		return GenesisScheme.deployed();
 	}).then(function(inst) {
@@ -29,7 +29,7 @@ module.exports = function(deployer) {
 		ControllerInst = inst;
 	}).then(function (){
 		console.log('controller address: ', ControllerInst.address);
-		return deployer.deploy(OrganizationsBoard, ControllerInst.address, 5, 'AdamDAO');
+		return deployer.deploy(OrganizationsBoard, ControllerInst.address, 5, 'DAOstack');
 	}).then(function () {
 		return OrganizationsBoard.deployed();
 	}).then(function(inst) {
