@@ -22,6 +22,10 @@ var price = 200;
 var periodInBlocks = 18000000;
 var capInWei = web3.toWei(cap);
 
+// Billboard Params
+var addToBillboardFee = 5;
+var billboardFeeInWei = web3.toWei(addToBillboardFee);
+
 module.exports = function(deployer) {
 	deployer.deploy(SimpleVote).then(function (){
 		return SimpleVote.deployed();
@@ -42,7 +46,7 @@ module.exports = function(deployer) {
 		ControllerInst = inst;
 	}).then(function (){
 		console.log('controller address: ', ControllerInst.address);
-		return deployer.deploy(OrganizationsBoard, ControllerInst.address, 5, 'DAOstack');
+		return deployer.deploy(OrganizationsBoard, ControllerInst.address, billboardFeeInWei, 'DAOstack');
 	}).then(function () {
 		return OrganizationsBoard.deployed();
 	}).then(function(inst) {
