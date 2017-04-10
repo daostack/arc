@@ -9,16 +9,22 @@ contract OrganizationsBoard is Ownable {
     MintableToken   public  nativeToken;
     uint            public  fee;
 
-    mapping(address=>string) public orgList;
+    struct organization {
+      string  name;
+      uint    totalPromotion;
+    }
+
+    mapping(address=>organization) public orgList;
     mapping(bytes32=>bool) whiteList;
 
     event OrgAdded( address indexed _addrss, string _orgName); // indexed, for some reason can't index the name
+    event Promotion( address indexed _addrss, uint _amount);
 
     function OrganizationsBoard(Controller _controller, uint _fee, string orgName) {
       controller = _controller;
       nativeToken = controller.nativeToken();
       fee = _fee;
-      orgList[controller] = orgName;
+      orgList[controller].name = orgName;
       OrgAdded(controller, orgName);
     }
 
@@ -36,10 +42,18 @@ contract OrganizationsBoard is Ownable {
 
       // Burn and add Org:
       if (controller.burnTokens(fee, msg.sender)) {
-        orgList[orgControllerAddrss] = orgName;
+        orgList[orgControllerAddrss].name = orgName;
         OrgAdded(orgControllerAddrss, orgName);
         return true;
       }
       return false;
+    }
+
+    function promoteOrg(address orgControllerAddrss, uint amountToBurn) returns(bool) {
+      if (controller.burnTokens(amountToBurn, msg.sender)) {
+        orgList[orgControllerAddrss].totalPromotion += amountToBurn;
+        Promotion(orgControllerAddrss, amountToBurn);
+        return true;
+      }
     }
 }
