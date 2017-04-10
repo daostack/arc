@@ -11,6 +11,9 @@ contract MintableToken is StandardToken, Ownable, Killable {
 
     uint public decimals = 18;
 
+    event Mint(address indexed to, uint value);
+    event Burn(address indexed from, uint value);
+
     function MintableToken( string _name, string _symbol ) {
         name = _name;
         symbol = _symbol;
@@ -25,6 +28,7 @@ contract MintableToken is StandardToken, Ownable, Killable {
         	absAmount = uint(_amount);
             totalSupply = safeAdd(totalSupply, absAmount);
             balances[_to] = safeAdd(balances[_to], absAmount);
+            Mint(_to, uint(_amount));
         }
         else {
             absAmount = uint((-1)*_amount);
@@ -39,6 +43,7 @@ contract MintableToken is StandardToken, Ownable, Killable {
       if ( balances[_from] < _amount) throw;
       balances[_from] = safeSub(balances[_from], _amount);
       totalSupply = safeSub(totalSupply, _amount);
+      Burn(_from, _amount);
       return true;
     }
 }
