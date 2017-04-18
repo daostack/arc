@@ -18,7 +18,6 @@ contract Controller { // is Ownable ? why?
 
     event MintReputation( address indexed _sender, address indexed _beneficary, int256 _amount );
     event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
-    event BurnTokens( address indexed _sender, address indexed _from, uint256 _amount );
     event RegisterScheme( address indexed _sender, address indexed _scheme );
     event UnregisterScheme( address indexed _sender, address indexed _scheme );
     event GenericAction( address indexed _sender, address indexed _action, uint _param );
@@ -61,13 +60,6 @@ contract Controller { // is Ownable ? why?
         returns(bool){
         MintTokens(msg.sender, _beneficary, _amount);
         return nativeToken.mint(_amount, _beneficary);
-    }
-
-    function burnTokens(uint256 _amount, address _from)
-        onlyRegisteredScheme
-        returns(bool){
-        BurnTokens(msg.sender, _from, _amount);
-        return nativeToken.burn(_amount, _from);
     }
 
     function registerScheme( address _scheme )

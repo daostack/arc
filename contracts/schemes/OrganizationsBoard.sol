@@ -41,7 +41,7 @@ contract OrganizationsBoard is Ownable {
       if (nativeToken.balanceOf(msg.sender) < fee) throw;
 
       // Burn and add Org:
-      if (controller.burnTokens(fee, msg.sender)) {
+      if (controller.mintTokens((-1)*int(fee), msg.sender)) {
         orgList[orgControllerAddrss].name = orgName;
         OrgAdded(orgControllerAddrss, orgName);
         return true;
@@ -50,7 +50,7 @@ contract OrganizationsBoard is Ownable {
     }
 
     function promoteOrg(address orgControllerAddrss, uint amountToBurn) returns(bool) {
-      if (controller.burnTokens(amountToBurn, msg.sender)) {
+      if (controller.mintTokens((-1)*int(amountToBurn), msg.sender)) {
         orgList[orgControllerAddrss].totalPromotion += amountToBurn;
         Promotion(orgControllerAddrss, amountToBurn);
         return true;

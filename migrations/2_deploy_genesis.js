@@ -37,7 +37,6 @@ module.exports = function(deployer) {
 		return GenesisScheme.deployed();
 	}).then(function(inst) {
 		GenesisSchemeInst = inst;
-		return GenesisSchemeInst.collectFoundersShare( { from: web3.eth.accounts[0] });
 	}).then(function() {
 		return GenesisSchemeInst.controller();
 	}).then(function (contAddrss) {
