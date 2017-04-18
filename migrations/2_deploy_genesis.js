@@ -17,9 +17,9 @@ var initToken = 100;
 var initTokenInWei = web3.toWei(initToken);
 
 // ICO parameters:
-var cap = 10000;
+var cap = 50;
 var price = 200;
-var periodInBlocks = 18000000;
+var periodInBlocks = 50000;
 var capInWei = web3.toWei(cap);
 
 // Billboard Params
