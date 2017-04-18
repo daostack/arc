@@ -13,6 +13,7 @@ var SimpleICOInst;
 
 // Founder parameters:
 var initRep = 10;
+var initRepInWei = web3.toWei(initRep);
 var initToken = 100;
 var initTokenInWei = web3.toWei(initToken);
 
@@ -32,7 +33,7 @@ module.exports = function(deployer) {
 	}).then(function(inst) {
 		SimpleVoteInst = inst;
 	}).then(function() {
-		return deployer.deploy(GenesisScheme, 'Stack', 'STK', [web3.eth.accounts[0]], [initTokenInWei], [initRep], SimpleVoteInst.address);
+		return deployer.deploy(GenesisScheme, 'Stack', 'STK', [web3.eth.accounts[0]], [initTokenInWei], [initRepInWei], SimpleVoteInst.address);
 	}).then(function() {
 		return GenesisScheme.deployed();
 	}).then(function(inst) {
