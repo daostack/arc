@@ -12,6 +12,9 @@ contract Reputation is Ownable, SafeMath {
 
     mapping (address => uint256) balances;
     uint256 public totalSupply;
+    uint public decimals = 18;
+    
+    event Mint(address indexed to, int256 value);
 
     function Reputation() {
         balances[msg.sender] = 0;
@@ -33,9 +36,10 @@ contract Reputation is Ownable, SafeMath {
         else {
             absAmount = uint((-1)*_amount);
             totalSupply = safeSub(totalSupply, absAmount);
-            balances[_to] = safeSub(balances[_to], absAmount);        
+            balances[_to] = safeSub(balances[_to], absAmount);
         }
         return true;
+        Mint(_to, _amount);
     }
 
     function setReputation(uint256 _amount, address _to) onlyOwner returns (bool) {
