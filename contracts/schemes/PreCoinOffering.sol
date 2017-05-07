@@ -1,5 +1,5 @@
-pragma solidity ^0.4.7;
-import '../controller/Controller.sol';
+pragma solidity ^0.4.11;
+import "../controller/Controller.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
 import "zeppelin/contracts/SafeMath.sol";
 
@@ -45,9 +45,9 @@ contract PreCoinOffering is Ownable, SafeMath {
     // Buying tokens:
     function donate() payable returns(int) {
         // Check PCO is open:
-        if (! isOpened) throw;
+        require(isOpened);
         // Check cap reached:
-        if (totalEthRaised > cap) throw;
+        require(totalEthRaised < cap);
 
         uint incomingEther;
         uint change;
@@ -62,10 +62,10 @@ contract PreCoinOffering is Ownable, SafeMath {
         int tokens = int(safeMul(incomingEther, getCurrentPrice()));
 
         // Send ether to controller (to be avatar), mint, and send change to user:
-        if (! controller.send(incomingEther)) throw;
-        if(! controller.mintTokens(tokens, msg.sender)) throw;
+        controller.transfer(incomingEther);
+        if(! controller.mintTokens(tokens, msg.sender)) revert();
         if (change != 0)
-            if (!msg.sender.send(change)) throw;
+            msg.sender.transfer(change);
 
         // Update total raised, call event and return amount of tokens bought:
         totalEthRaised += int(incomingEther);

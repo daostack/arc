@@ -1,21 +1,21 @@
-pragma solidity ^0.4.7;
+pragma solidity ^0.4.11;
 import "../controller/Controller.sol";
 import "../SimpleVoteInterface.sol";
 
 contract SimpleContribution {
     Controller                 controller;
     uint                       submissionFee;
-    SimpleVoteInterface public simpleVote; 
-    
+    SimpleVoteInterface public simpleVote;
+
     struct ContributionData {
         bytes32 contributionDescription;
         int     tokenReward;
         int     reputationReward;
         address beneficiary;
     }
-    
+
     mapping(bytes32=>ContributionData) contributions;
-    
+
     function SimpleContribution( Controller _controller,
                                  uint       _submissionFee,
                                  SimpleVoteInterface _simpleVote
@@ -31,9 +31,9 @@ contract SimpleContribution {
                                  int   _tokenReward,
                                  int   _reputationReward,
                                  address beneficiary) returns(bytes32) {
-        if( ! controller.nativeToken().transferFrom(msg.sender,controller, submissionFee) ) throw;
-        if( ! controller.mintTokens(-1*int(submissionFee), controller) ) throw;
-        
+        if( ! controller.nativeToken().transferFrom(msg.sender,controller, submissionFee) ) revert();
+        if( ! controller.mintTokens(-1*int(submissionFee), controller) ) revert();
+
         ContributionData memory data;
         data.contributionDescription = sha3(_contributionDesciption);
         data.tokenReward = _tokenReward;
@@ -44,7 +44,7 @@ contract SimpleContribution {
             data.beneficiary = beneficiary;
 
         }
-        
+
         // cannot sha3 directly a strucure. God knows why.
         bytes32 contributionId = sha3(data.contributionDescription,
                                       data.tokenReward,
@@ -52,19 +52,19 @@ contract SimpleContribution {
                                       data.beneficiary);
 
         contributions[contributionId] = data;
-        
-        if( ! simpleVote.newProposal(contributionId) ) throw;
-        
+
+        if( ! simpleVote.newProposal(contributionId) ) revert();
+
         return contributionId;
     }
 
     function voteContribution( bytes32 contributionId, bool _yes ) returns(bool) {
-        if( ! simpleVote.voteProposal(contributionId, _yes,msg.sender) ) throw;
+        if( ! simpleVote.voteProposal(contributionId, _yes,msg.sender) ) revert();
         if( simpleVote.voteResults(contributionId) ) {
-            if( ! simpleVote.closeProposal(contributionId) ) throw;
+            if( ! simpleVote.closeProposal(contributionId) ) revert();
             ContributionData memory data = contributions[ contributionId];
-            if( ! controller.mintReputation(data.reputationReward, data.beneficiary) ) throw;
-            if( ! controller.mintTokens(data.tokenReward, data.beneficiary) ) throw;            
+            if( ! controller.mintReputation(data.reputationReward, data.beneficiary) ) revert();
+            if( ! controller.mintTokens(data.tokenReward, data.beneficiary) ) revert();
         }
 
         return true;

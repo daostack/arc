@@ -1,4 +1,4 @@
-pragma solidity ^0.4.7;
+pragma solidity ^0.4.11;
 
 import "./Reputation.sol";
 import "./MintableToken.sol";
@@ -44,7 +44,7 @@ contract Controller { // is Ownable ? why?
     }
 
     modifier onlyRegisteredScheme() {
-        if (!schemes[msg.sender]) throw;
+        require(schemes[msg.sender]);
         _;
     }
 
@@ -90,7 +90,7 @@ contract Controller { // is Ownable ? why?
     onlyRegisteredScheme
     returns(bool) {
         SendEther( msg.sender, _amountInWei, _to );
-        if( ! _to.send(_amountInWei ) ) throw;
+        _to.transfer(_amountInWei );
         return true;
     }
 

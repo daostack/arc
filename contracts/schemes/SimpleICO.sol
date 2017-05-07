@@ -1,5 +1,5 @@
-pragma solidity ^0.4.7;
-import '../controller/Controller.sol';
+pragma solidity ^0.4.11;
+import "../controller/Controller.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
 import "zeppelin/contracts/SafeMath.sol";
 
@@ -50,11 +50,11 @@ contract SimpleICO is Ownable, SafeMath {
     // Donating ethers to get tokens:
     function donate() payable returns(uint) {
         // Check PCO is open:
-        if (! isOpen) throw;
+        require(isOpen);
         // Check cap reached:
-        if (totalEthRaised >= cap) throw;
+        require(totalEthRaised < cap);
         // Check time cap:
-        if (block.number > endBlock) throw;
+        require(block.number <= endBlock);
 
         uint incomingEther;
         uint change;
@@ -69,10 +69,10 @@ contract SimpleICO is Ownable, SafeMath {
         uint tokens = safeMul(incomingEther, getCurrentPrice());
 
         // Send ether to controller (to be avatar), mint, and send change to user:
-        if (! controller.send(incomingEther)) throw;
-        if(! controller.mintTokens(int(tokens), msg.sender)) throw;
+        controller.transfer(incomingEther);
+        if(! controller.mintTokens(int(tokens), msg.sender)) revert();
         if (change != 0)
-            if (!msg.sender.send(change)) throw;
+            msg.sender.transfer(change);
 
         // Update total raised, call event and return amount of tokens bought:
         totalEthRaised += incomingEther;

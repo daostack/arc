@@ -1,4 +1,4 @@
-pragma solidity ^0.4.7;
+pragma solidity ^0.4.11;
 import "../controller/Controller.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
 import "../controller/MintableToken.sol";
@@ -38,7 +38,7 @@ contract OrganizationsBoard is Ownable {
       // if (! whiteList[sha3(GetCode.at(orgController))]) throw;
 
       // Check there is enough in balance
-      if (nativeToken.balanceOf(msg.sender) < fee) throw;
+      require (nativeToken.balanceOf(msg.sender) >= fee);
 
       // Burn and add Org:
       if (controller.mintTokens((-1)*int(fee), msg.sender)) {

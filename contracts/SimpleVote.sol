@@ -1,4 +1,4 @@
-pragma solidity ^0.4.7;
+pragma solidity ^0.4.11;
 
 
 import "./controller/Reputation.sol";
@@ -12,9 +12,7 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
     address owner;
 
     modifier onlyOwner() {
-        if (msg.sender != owner) {
-          throw;
-        }
+        require(msg.sender == owner);
         _;
     }
     struct Votes {
@@ -22,7 +20,7 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
         uint no; // total 'no' votes
         mapping(address=>bool) voted; // people in this list have already voted
         // XXX: 'opened' at the moment is not really used (it is always true)
-        bool opened; // if the votes are 'opened' 
+        bool opened; // if the votes are 'opened'
         bool closed; // voting is closed
     }
 
@@ -91,8 +89,8 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
             votes.no = safeAdd(votes.no, reputation);
         }
 
-        // this is the actual voting rule: 
-        // the vote is closed if more than half of the voters voted yes, or more than 
+        // this is the actual voting rule:
+        // the vote is closed if more than half of the voters voted yes, or more than
         // half of the voters voted no.
         if( (votes.yes > totalReputation / 2) || (votes.no > totalReputation / 2  ) ) {
             votes.closed = true;
@@ -103,7 +101,7 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
         return true;
     }
 
-    // returns result of the vote: 
+    // returns result of the vote:
     //      true if the proposal passed
     //      false if the proposal has not passed (yet)
     function voteResults(bytes32 proposalId) constant onlyOwner returns(bool) {

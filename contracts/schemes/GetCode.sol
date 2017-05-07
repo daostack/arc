@@ -1,4 +1,4 @@
-pragma solidity ^0.4.7;
+pragma solidity ^0.4.11;
 
 library GetCode {
   function at(address _addr) internal returns (bytes o_code) {

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.7;
+pragma solidity ^0.4.11;
 /*
     Implements a simple static reputation storage
     in which reputation is managed by the owner of the contract
@@ -13,7 +13,7 @@ contract Reputation is Ownable, SafeMath {
     mapping (address => uint256) balances;
     uint256 public totalSupply;
     uint public decimals = 18;
-    
+
     event Mint(address indexed to, int256 value);
 
     function Reputation() {
@@ -38,8 +38,8 @@ contract Reputation is Ownable, SafeMath {
             totalSupply = safeSub(totalSupply, absAmount);
             balances[_to] = safeSub(balances[_to], absAmount);
         }
-        return true;
         Mint(_to, _amount);
+        return true;
     }
 
     function setReputation(uint256 _amount, address _to) onlyOwner returns (bool) {

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.7;
+pragma solidity ^0.4.11;
 
 import "zeppelin/contracts/token/StandardToken.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
@@ -22,7 +22,7 @@ contract MintableToken is StandardToken, Ownable, Killable {
     function mint(int256 _amount, address _to) onlyOwner returns (bool) {
     	// create new tokens and add them to the given account
     	uint absAmount;
-    	/*if( _amount < 0 && _to != owner ) throw; // Allowing burn for everyone, just for the demo.*/
+    	/*if ( _amount < 0 && _to != owner ) revert; // Allowing burn for everyone, just for the demo.*/
     	if( _amount >= 0 ) {
         	absAmount = uint(_amount);
             totalSupply = safeAdd(totalSupply, absAmount);

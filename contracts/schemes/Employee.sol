@@ -1,5 +1,5 @@
-pragma solidity ^0.4.7;
-import '../controller/Controller.sol';
+pragma solidity ^0.4.11;
+import "../controller/Controller.sol";
 
 /*
     Employee is a schema to pay an employee a monthly salary of reputation and tokens
@@ -21,7 +21,7 @@ contract Employee {
         uint _startDate,
         uint _periodInMonths,
         int _tokenSalary,
-        int _repSalary) 
+        int _repSalary)
     {
         controller = _controller;
         beneficary = _beneficary;
@@ -33,18 +33,18 @@ contract Employee {
 
     function collectSalary() returns(bool) {
 
-        if (now < startDate) throw;
-        
+        require(now >= startDate);
+
         // employee cannot collect more salaries than stipulated
-        if (salariesCollected >= periodInMonths) throw;
+        require(salariesCollected < periodInMonths);
 
         // employee cannot collect her salary before period has passed
-        if ((now - startDate) < 4 weeks * salariesCollected) throw;
+        require((now - startDate) > 4 weeks * salariesCollected);
 
         // Pay:
         salariesCollected += 1;
-        if(!controller.mintTokens(tokenSalary, beneficary)) throw;
-        if(!controller.mintReputation(repSalary, beneficary)) throw;
+        if(!controller.mintTokens(tokenSalary, beneficary)) revert();
+        if(!controller.mintReputation(repSalary, beneficary)) revert();
 
         return false;
     }
