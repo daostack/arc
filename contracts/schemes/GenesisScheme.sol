@@ -9,14 +9,15 @@ contract GenesisScheme {
     Controller public controller;
     SimpleVoteInterface public simpleVote;
 
-    function GenesisScheme( string tokenName,
+    function GenesisScheme( string orgName,
+                            string tokenName,
                             string tokenSymbol,
                             address[] _founders,
                             int[] _tokenAmount,
                             int[] _reputationAmount,
                             SimpleVoteInterface _simpleVote ) {
 
-        controller = new Controller( tokenName, tokenSymbol, this);
+        controller = new Controller( orgName, tokenName, tokenSymbol, this);
         simpleVote = _simpleVote;
         simpleVote.setOwner(this);
         simpleVote.setReputationSystem(controller.nativeReputation());

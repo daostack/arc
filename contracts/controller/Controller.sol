@@ -18,6 +18,7 @@ contract Controller { // is Ownable ? why?
     Reputation       public   nativeReputation;
     string           public   orgName;
     address          public   genesisAddress;
+    address          public   updatedController;
 
     event MintReputation( address indexed _sender, address indexed _beneficary, int256 _amount );
     event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
@@ -39,6 +40,7 @@ contract Controller { // is Ownable ? why?
         nativeToken = new MintableToken(_tknName, _tknSymbol);
         nativeReputation = new Reputation();
         genesisAddress = _genesisAddress;
+        orgName = _orgName;
     }
 
     modifier onlyGenesis() {

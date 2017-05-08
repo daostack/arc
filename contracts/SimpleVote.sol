@@ -50,7 +50,7 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
         // this function presumably is to free memory
         bytes32 id = uniqueId(proposalId);
 
-        Votes votes = proposals[id];
+        /*Votes votes = proposals[id];*/
 
         Votes memory emptyVotes;
         proposals[id] = emptyVotes; // cannot call delete

@@ -12,6 +12,7 @@ contract VotingMachine is SafeMath {
         uint no; // total 'no' votes
         uint absPrecReq; // should be not less than 50 usually
         mapping(address=>bool) voted; // people in this list have already voted
+        bool opened; // A flag that voting opened
         bool closed; // voting is closed
     }
 
@@ -32,21 +33,21 @@ contract VotingMachine is SafeMath {
     }
 
     function updateReputationToken() {
-      reputationSystem = controller.nativeReputation;
-      tokenSystem = controller.nativeToken;
+      reputationSystem = controller.nativeReputation();
+      tokenSystem = controller.nativeToken();
     }
 
     function proposeAbsoluteMajorityVote(uint absPrecReq) returns(bytes32) {
       /*require(controller.schemes(msg.sender)); // Do we want this?*/
       require(absPrecReq <= 100);
       AbsoluteMajorityVote memory absoluteMajorityVote;
-      bytes32 memory id;
+      bytes32 id;
       absoluteMajorityVote.owner = msg.sender;
-      absoluteMajorityVote.owner = msg.sender;
-      id = sha3(bytes(msg.sender) + bytes(now) + bytes(absPrecReq));
-      while (absoluteMajorityVoteProposals[id])
-        id = sha3(id + id);
-      simpleVoteProposals[id] = absoluteMajorityVote;
+      absoluteMajorityVote.opened = true;
+      id = sha3(bytes32(msg.sender)^bytes32(now)^bytes32(absPrecReq));
+      while (absoluteMajorityVoteProposals[id].opened)
+        id = sha3(id^id);
+      absoluteMajorityVoteProposals[id] = absoluteMajorityVote;
       NewProposal(id);
       return id;
     }
@@ -54,7 +55,7 @@ contract VotingMachine is SafeMath {
     function deleteAbsoluteMajorityVote(bytes32 proposalId) returns(bool) {
         require(msg.sender == absoluteMajorityVoteProposals[proposalId].owner);
         delete absoluteMajorityVoteProposals[proposalId];
-        CancellProposal(id);
+        CancellProposal(proposalId);
         return true;
     }
 
@@ -65,26 +66,26 @@ contract VotingMachine is SafeMath {
         if (msg.sender != vote.owner)
           voter = msg.sender;
 
-        if( votes.voted[voter] ) return false;
+        if( vote.voted[voter] ) return false;
 
         uint reputation = reputationSystem.reputationOf(voter);
         uint totalReputation = reputationSystem.totalSupply();
 
         if (yes) {
-            votes.yes = safeAdd(votes.yes, reputation);
+            vote.yes = safeAdd(vote.yes, reputation);
         } else {
-            votes.no = safeAdd(votes.no, reputation);
+            vote.no = safeAdd(vote.no, reputation);
         }
 
         // this is the actual voting rule:
         // the vote is closed if more than the absolute required voted yes, or more than
         // absolute required voted no.
-        if( (votes.yes > totalReputation*votes.absPrecReq/100) || (votes.no > totalReputation*votes.absPrecReq/100 ) ) {
-            votes.closed = true;
-            CloseProposal(id);
+        if( (vote.yes > totalReputation*vote.absPrecReq/100) || (vote.no > totalReputation*vote.absPrecReq/100 ) ) {
+            vote.closed = true;
+            CloseProposal(proposalId);
         }
 
-        VoteProposal(voter, id, yes, reputation);
+        VoteProposal(voter, proposalId, yes, reputation);
 
         return true;
     }
@@ -93,7 +94,7 @@ contract VotingMachine is SafeMath {
     //      true if the proposal passed
     //      false if the proposal has not passed (yet)
     function voteResults(bytes32 proposalId) constant returns(bool) {
-        Votes votes = proposals[proposalId];
+        AbsoluteMajorityVote votes = absoluteMajorityVoteProposals[proposalId];
 
         if ((votes.yes > votes.no) && votes.closed) {
             return true;
@@ -103,9 +104,9 @@ contract VotingMachine is SafeMath {
     }
 
     function voteStatus(bytes32 proposalId) constant returns(uint[3]) {
-        uint yes = proposals[id].yes;
-        uint no = proposals[id].no;
-        uint closed = proposals[id].closed ? 1 : 0;
+        uint yes = absoluteMajorityVoteProposals[proposalId].yes;
+        uint no = absoluteMajorityVoteProposals[proposalId].no;
+        uint closed = absoluteMajorityVoteProposals[proposalId].closed ? 1 : 0;
 
         return [yes, no, closed];
     }

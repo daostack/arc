@@ -1,10 +1,12 @@
 pragma solidity ^0.4.11;
 
 import "../controller/Controller.sol"; // Should change to controller intreface.
+import "./GenesisScheme.sol";
 
 contract Scheme {
-  Controller  public      controller;
-  bool        public      isRegistered;
+  Controller      public      controller;
+  GenesisScheme   public      genesis;
+  bool            public      isRegistered;
 
   event Registered (Controller _controller);
   event Unregistered (Controller _controller);
@@ -12,7 +14,8 @@ contract Scheme {
 
   function Scheme (Controller _controller) {
     controller = _controller;
-    controller.proposeScheme(this); // Maybe need to add here an address to collect fee from.
+    genesis = GenesisScheme(controller.genesisAddress());
+    genesis.proposeScheme(this); // Maybe need to add here an address to collect fee from.
   }
 
   function registered () onlyController {
@@ -25,13 +28,13 @@ contract Scheme {
   }
 
   function updateController () {
-    require(controller.updatedController); // Need to test if this is the right syntax.
-    controller = controller.updatedController;
+    require(controller.updatedController() != address(0)); // Need to test if this is the right syntax.
+    controller = Controller(controller.updatedController());
     controllerUpdate(controller);
   }
 
   modifier onlyController {
-    require(msg.sender == controller);
+    require(msg.sender == address(controller));
     _;
   }
 
