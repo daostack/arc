@@ -10,11 +10,14 @@ contract ActionInterface {
 
 
 contract Controller { // is Ownable ? why?
+
     mapping(address=>bool) public schemes;
     // TODO - should be iterable? UI can use events
 
-    MintableToken    public nativeToken;
-    Reputation       public nativeReputation;
+    MintableToken    public   nativeToken;
+    Reputation       public   nativeReputation;
+    string           public   orgName;
+    address          public   genesisAddress;
 
     event MintReputation( address indexed _sender, address indexed _beneficary, int256 _amount );
     event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
@@ -30,17 +33,17 @@ contract Controller { // is Ownable ? why?
     event TokenDisapprove( address indexed _sender, address _token, uint _value );
     event Fallback(address indexed _sender, uint _value);
 
-    // ctor
-    function Controller(
-        string _name,
-        string _symbol,
-        address _genesisScheme)
+    // This is a good constructor only for new organizations, need an improved one to support upgrade.
+    function Controller(string _orgName, string _tknName, string _tknSymbol, address _genesisAddress)
     {
-        nativeToken = new MintableToken(_name, _symbol);
+        nativeToken = new MintableToken(_tknName, _tknSymbol);
         nativeReputation = new Reputation();
-        nativeReputation.mint(0, msg.sender);
+        genesisAddress = _genesisAddress;
+    }
 
-        schemes[_genesisScheme] = true;
+    modifier onlyGenesis() {
+      require(msg.sender == genesisAddress);
+      _;
     }
 
     modifier onlyRegisteredScheme() {
@@ -48,31 +51,23 @@ contract Controller { // is Ownable ? why?
         _;
     }
 
-    function mintReputation(int256 _amount, address _beneficary)
-        onlyRegisteredScheme
-        returns(bool){
+    function mintReputation(int256 _amount, address _beneficary) onlyRegisteredScheme returns(bool){
         MintReputation(msg.sender, _beneficary, _amount);
         return nativeReputation.mint(_amount, _beneficary);
     }
 
-    function mintTokens(int256 _amount, address _beneficary)
-        onlyRegisteredScheme
-        returns(bool){
+    function mintTokens(int256 _amount, address _beneficary) onlyRegisteredScheme returns(bool){
         MintTokens(msg.sender, _beneficary, _amount);
         return nativeToken.mint(_amount, _beneficary);
     }
 
-    function registerScheme( address _scheme )
-        onlyRegisteredScheme
-        returns(bool){
+    function registerScheme( address _scheme ) onlyGenesis returns(bool){
         RegisterScheme(msg.sender, _scheme);
         schemes[_scheme] = true;
         return true;
     }
 
-    function unregisterScheme( address _scheme )
-        onlyRegisteredScheme
-        returns(bool){
+    function unregisterScheme( address _scheme ) onlyGenesis returns(bool){
         UnregisterScheme(msg.sender, _scheme);
         schemes[_scheme] = false;
         return true;
@@ -85,17 +80,13 @@ contract Controller { // is Ownable ? why?
         return _action.delegatecall(bytes4(sha3("action(uint256)")), _param);
     }
 
-
-    function sendEther( uint _amountInWei, address _to )
-    onlyRegisteredScheme
-    returns(bool) {
+    function sendEther( uint _amountInWei, address _to ) onlyRegisteredScheme returns(bool) {
         SendEther( msg.sender, _amountInWei, _to );
         _to.transfer(_amountInWei );
         return true;
     }
 
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
-    onlyRegisteredScheme
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value) onlyRegisteredScheme
     returns(bool) {
         ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
         return _externalToken.transfer( _to, _value );
