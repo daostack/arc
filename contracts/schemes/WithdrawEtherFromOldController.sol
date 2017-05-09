@@ -53,7 +53,7 @@ contract WithdrawEtherFromOldController {
         Withdraw(_oldController,msg.sender,_amount);
 
         // NOTE! this is a huge security breach. We implement it only for illustration
-        bytes memory input = new bytes(20 + 32);
+        /*bytes memory input = new bytes(20 + 32);*/
         //encodeValue(input,uint(msg.sender),0,20);
         //encodeValue(input,_amount,20,32);
 
