@@ -2,7 +2,6 @@ pragma solidity ^0.4.11;
 import "../controller/Controller.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
 import "../controller/MintableToken.sol";
-import "./GetCode.sol";
 
 contract OrganizationsBoard is Ownable {
     Controller      public  controller;
