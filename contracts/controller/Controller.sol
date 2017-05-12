@@ -8,17 +8,20 @@ contract ActionInterface {
     function action( uint _param ) returns(bool);
 }
 
+contract Controller {
+    struct scheme {
+      bool registered;
+      bool registeringScheme;
+    }
 
-contract Controller { // is Ownable ? why?
-
-    mapping(address=>bool) public schemes;
+    mapping(address=>scheme) public schemes;
     // TODO - should be iterable? UI can use events
 
-    MintableToken    public   nativeToken;
-    Reputation       public   nativeReputation;
-    string           public   orgName;
-    address          public   genesisAddress;
-    address          public   updatedController;
+    MintableToken   public   nativeToken;
+    Reputation      public   nativeReputation;
+    string          public   orgName;
+    address         public   upgradingScheme;
+    address         public   newController;
 
     event MintReputation( address indexed _sender, address indexed _beneficary, int256 _amount );
     event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
@@ -34,25 +37,37 @@ contract Controller { // is Ownable ? why?
     event TokenDisapprove( address indexed _sender, address _token, uint _value );
     event Fallback(address indexed _sender, uint _value);
 
-    // This is a good constructor only for new organizations, need an improved one to support upgrade.
-    function Controller(string _orgName, string _tknName, string _tknSymbol, address _genesisAddress)
+  // This is a good constructor only for new organizations, need an improved one to support upgrade.
+    function Controller(string _orgName,
+                         string _tknName,
+                         string _tknSymbol,
+                         address _registeringScheme,
+                         address _upgradingScheme)
     {
         nativeToken = new MintableToken(_tknName, _tknSymbol);
         nativeReputation = new Reputation();
-        genesisAddress = _genesisAddress;
+        registerScheme(_registeringScheme, true);
         orgName = _orgName;
+        upgradingScheme = _upgradingScheme;
     }
 
-    modifier onlyGenesis() {
-      require(msg.sender == genesisAddress);
-      _;
-    }
-
-    modifier onlyRegisteredScheme() {
-        require(schemes[msg.sender]);
+  // Modifieres:
+    modifier onlyRegisteringSchemes() {
+        require(schemes[msg.sender].registeringScheme);
         _;
     }
 
+    modifier onlyRegisteredScheme() {
+        require(schemes[msg.sender].registered);
+        _;
+    }
+
+    modifier onlyUpgradingScheme() {
+        require(msg.sender == upgradingScheme);
+        _;
+    }
+
+  // Minting:
     function mintReputation(int256 _amount, address _beneficary) onlyRegisteredScheme returns(bool){
         MintReputation(msg.sender, _beneficary, _amount);
         return nativeReputation.mint(_amount, _beneficary);
@@ -63,15 +78,41 @@ contract Controller { // is Ownable ? why?
         return nativeToken.mint(_amount, _beneficary);
     }
 
-    function registerScheme( address _scheme ) onlyGenesis returns(bool){
+  // Scheme registration and unregistration:
+    function registerScheme( address _scheme, bool canRegisterSchemes ) onlyRegisteringSchemes returns(bool){
         RegisterScheme(msg.sender, _scheme);
-        schemes[_scheme] = true;
+        schemes[_scheme].registered = true;
+        schemes[_scheme].registered = canRegisterSchemes;
         return true;
     }
 
-    function unregisterScheme( address _scheme ) onlyGenesis returns(bool){
+    function unregisterScheme( address _scheme ) onlyRegisteringSchemes returns(bool){
         UnregisterScheme(msg.sender, _scheme);
-        schemes[_scheme] = false;
+        delete schemes[_scheme];
+        return true;
+    }
+
+    function unregisterSelf() returns(bool){
+        delete schemes[msg.sender];
+        return true;
+    }
+
+    function isSchemeRegistered(address _scheme) returns(bool) {
+      return schemes[_scheme].registered;
+    }
+
+  // Upgrading:
+    function changeUpgradeScheme( address _newupgradingScheme ) onlyUpgradingScheme returns(bool) {
+        upgradingScheme = _newupgradingScheme;
+        return true;
+    }
+
+    function upgradeController( address _newController ) onlyUpgradingScheme returns(bool) {
+        require(newController == address(0));   // Do we want this?
+        require(_newController != address(0));
+        newController = _newController;
+        nativeToken.transferOwnership(_newController);
+        nativeReputation.transferOwnership(_newController);
         return true;
     }
 
