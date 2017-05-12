@@ -15,9 +15,10 @@ contract GenesisScheme {
                             address[] _founders,
                             int[] _tokenAmount,
                             int[] _reputationAmount,
+                            address _upgradinScheme,
                             SimpleVoteInterface _simpleVote ) {
 
-        controller = new Controller( orgName, tokenName, tokenSymbol, this);
+        controller = new Controller( orgName, tokenName, tokenSymbol, this, _upgradinScheme);
         simpleVote = _simpleVote;
         simpleVote.setOwner(this);
         simpleVote.setReputationSystem(controller.nativeReputation());
@@ -36,11 +37,11 @@ contract GenesisScheme {
         if( ! simpleVote.voteProposal(sha3(_scheme),_yes, msg.sender) ) return false;
         if( simpleVote.voteResults(sha3(_scheme)) ) {
             if( ! simpleVote.closeProposal(sha3(_scheme) ) ) revert();
-            if( controller.schemes(_scheme) ) {
+            if( controller.schemes(_scheme).registered ) {
                 if( ! controller.unregisterScheme(_scheme) ) revert();
             }
             else {
-                if( ! controller.registerScheme(_scheme) ) revert();
+                if( ! controller.registerScheme(_scheme, false) ) revert();
             }
         }
 
