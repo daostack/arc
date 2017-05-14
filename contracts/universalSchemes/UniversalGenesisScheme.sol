@@ -15,9 +15,11 @@ contract UniversalGenesisScheme {
                         address[] _founders,
                         int[] _foundersTokenAmount,
                         int[] _foundersReputationAmount,
+                        address _registeringScheme,
+                        bytes32 _registeringSchemeParams,
                         address _upgradinScheme) {
 
-        controller = new Controller( orgName, tokenName, tokenSymbol, this, _upgradinScheme);
+        controller = new Controller( orgName, tokenName, tokenSymbol, _registeringScheme, _registeringSchemeParams, _upgradinScheme);
         for( uint i = 0 ; i < _founders.length ; i++ ) {
             if( ! controller.mintTokens( _foundersTokenAmount[i], _founders[i] ) ) revert();
             if( ! controller.mintReputation( _foundersReputationAmount[i], _founders[i] ) ) revert();

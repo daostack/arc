@@ -10,8 +10,9 @@ contract ActionInterface {
 
 contract Controller {
     struct scheme {
-      bool registered;
-      bool registeringScheme;
+      bool      registered;
+      bool      registeringScheme;
+      bytes32   parametersHash;
     }
 
     mapping(address=>scheme) public schemes;
@@ -42,11 +43,12 @@ contract Controller {
                          string _tknName,
                          string _tknSymbol,
                          address _registeringScheme,
+                         bytes32 _registeringSchemeParams,
                          address _upgradingScheme)
     {
         nativeToken = new MintableToken(_tknName, _tknSymbol);
         nativeReputation = new Reputation();
-        registerScheme(_registeringScheme, true);
+        registerScheme(_registeringScheme, true, _registeringSchemeParams);
         orgName = _orgName;
         upgradingScheme = _upgradingScheme;
     }
@@ -79,10 +81,12 @@ contract Controller {
     }
 
   // Scheme registration and unregistration:
-    function registerScheme( address _scheme, bool canRegisterSchemes ) onlyRegisteringSchemes returns(bool){
+    function registerScheme( address _scheme, bool _registeringScheme, bytes32 _parametersHash)
+    onlyRegisteringSchemes returns(bool){
         RegisterScheme(msg.sender, _scheme);
         schemes[_scheme].registered = true;
-        schemes[_scheme].registered = canRegisterSchemes;
+        schemes[_scheme].registeringScheme = _registeringScheme;
+        schemes[_scheme].parametersHash = _parametersHash;
         return true;
     }
 
@@ -97,8 +101,12 @@ contract Controller {
         return true;
     }
 
-    function isSchemeRegistered(address _scheme) returns(bool) {
+    function isSchemeRegistered(address _scheme) constant returns(bool) {
       return schemes[_scheme].registered;
+    }
+
+    function getSchemeParameters(address _scheme) constant returns(bytes32) {
+      return schemes[_scheme].parametersHash;
     }
 
   // Upgrading:
