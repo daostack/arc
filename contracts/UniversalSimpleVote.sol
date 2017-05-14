@@ -37,7 +37,7 @@ contract UniversalSimpleVote is SafeMath {
       proposal.absPrecReq = _absPrecReq;
       id = sha3(bytes32(address(_reputationSystem))^bytes32(msg.sender)^bytes32(now)^bytes32(_absPrecReq));
       while (proposals[id].opened)
-        id = sha3(id^id);
+        id = sha3(id^sha3(id));
       proposals[id] = proposal;
       NewProposal(id, msg.sender, _reputationSystem, _absPrecReq);
       return id;
