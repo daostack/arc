@@ -30,7 +30,7 @@ contract UniversalSchemeRegister {
                                 constant returns(bytes32) {
       require(_precToRegister<=100);
       require(_precToRemoveSchem<=100);
-      return (sha3(sha3(sha3(_precToRegister)^bytes32(_precToRemoveSchem))^bytes32(address(_universalSimpleVote))));
+      return (sha3(_precToRegister, _precToRemoveSchem, _universalSimpleVote));
     }
 
     function checkParameterHashMatch(Controller _controller,
@@ -102,6 +102,7 @@ contract UniversalSchemeRegister {
             else {
                 if( ! _controller.registerScheme(proposal.scheme, proposal.isRegistering, proposal.parametersHash) ) revert();
             }
+            organizations[_controller].proposals[id].proposalType = 0;
         }
     }
 
