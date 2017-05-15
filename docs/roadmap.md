@@ -1,5 +1,5 @@
 
-# Roadmap for the DOAStack
+# Roadmap for the DAOStack
 
 DAOStack is: 
 
