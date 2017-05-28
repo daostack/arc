@@ -1,21 +1,30 @@
-var SimpleVote = artifacts.require('./SimpleVote.sol');
-var GenesisScheme = artifacts.require('./schemes/GenesisScheme.sol');
+// Imports:
+var UniversalSimpleVote = artifacts.require('./UniversalSimpleVote.sol');
+var UniversalSchemeRegister = artifacts.require('./schemes/UniversalSchemeRegister.sol');
+var UniversalSimpleContribution = artifacts.require('./schemes/UniversalSimpleContribution.sol');
 var OrganizationsBoard = artifacts.require('./schemes/OrganizationsBoard.sol');
 var Controller = artifacts.require('./schemes/controller/Controller.sol');
+var MintableToken = artifacts.require('./schemes/controller/MintableToken.sol');
 var Reputation = artifacts.require('./schemes/controller/Reputation.sol');
-var SimpleICO = artifacts.require('./schemes/SimpleICO.sol')
-var SimpleVoteInst;
-var GenesisSchemeInst;
+var SimpleICO = artifacts.require('./schemes/SimpleICO.sol');
+
+// Instances:
+var UniversalSimpleVoteInst;
+var UniversalGenesisSchemeInst;
+var UniversalSchemeRegisterIsnt;
+var UniversalSimpleContributionInst;
 var ControllerInst;
 var OrganizationsBoardInst;
 var ReputationInst;
+var MintableTokenInst;
 var SimpleICOInst;
 
-// Founder parameters:
-var initRep = 10;
-var initRepInWei = web3.toWei(initRep);
-var initToken = 100;
-var initTokenInWei = web3.toWei(initToken);
+// DAOstack ORG parameters:
+var tokenAddress;
+var reputationAddress;
+
+// Universal schemes fees:
+var UniversalSimpleContributionFee = web3.toWei(5);
 
 // ICO parameters:
 var cap = 50;
@@ -28,23 +37,46 @@ var addToBillboardFee = 5;
 var billboardFeeInWei = web3.toWei(addToBillboardFee);
 
 module.exports = function(deployer) {
-	deployer.deploy(SimpleVote).then(function (){
-		return SimpleVote.deployed();
-	}).then(function(inst) {
-		SimpleVoteInst = inst;
-	}).then(function() {
-		return deployer.deploy(GenesisScheme, 'Stack', 'STK', [web3.eth.accounts[0]], [initTokenInWei], [initRepInWei], SimpleVoteInst.address);
-	}).then(function() {
-		return GenesisScheme.deployed();
-	}).then(function(inst) {
-		GenesisSchemeInst = inst;
-	}).then(function() {
-		return GenesisSchemeInst.controller();
-	}).then(function (contAddrss) {
-		return Controller.at(contAddrss);
+
+
+// Create DAOstack:
+		return UniversalSchemeRegisterIsnt.parametersHash(schemeRegister, schemeRemove, UniversalSimpleVoteInst.address);
+	}).then(function(hashedParameters) {
+		return UniversalGenesisSchemeIsnt.forgeOrg(orgName, tokenName, tokenSymbol,
+			 																	founders, initTokenInWei, initRepInWei,
+																		 		UniversalSchemeRegisterIsnt.address, hashedParameters,
+																				UniversalSchemeRegisterIsnt.address); // Should build updating scheme!!!
+	}).then(function (returnedParams) {
+		return Controller.at(returnedParams.logs[0].args._controller);
 	}).then(function (inst){
 		ControllerInst = inst;
+		return ControllerInst.nativeToken();
+	}).then(function (address){
+		tokenAddress = address;
+		console.log('logging: ', ControllerInst.address)
+		return ControllerInst.nativeReputation();
+	}).then(function (address){
+		reputationAddress = address;
+
+// Set UniversalSchemeRegister nativeToken and register DAOstack to it:
+		UniversalSchemeRegisterIsnt.updateParameters(tokenAddress, UniversalRegisterFee, ControllerInst.address);
 	}).then(function (){
+		MintableTokenInst.approve(UniversalSchemeRegisterIsnt.address, UniversalRegisterFee);
+	}).then(function (){
+		UniversalSchemeRegisterIsnt.addOrUpdateOrg(ControllerInst.address, schemeRegister, schemeRemove, UniversalSimpleVote.address);
+
+
+// Deploy UniversalSimpleContribution:
+		return deployer.deploy(UniversalSimpleContribution, tokenAddress, UniversalSimpleContributionFee, ControllerInst.address);
+	}).then(function() {
+		return UniversalSimpleContribution.deployed();
+	}).then(function(inst) {
+		UniversalSimpleContributionIsnt = inst;
+
+// Register DAOstack to universal schemes:
+
+
+/*
 		console.log('controller address: ', ControllerInst.address);
 		return deployer.deploy(OrganizationsBoard, ControllerInst.address, billboardFeeInWei, 'DAOstack');
 	}).then(function () {
@@ -82,6 +114,7 @@ module.exports = function(deployer) {
 		return ControllerInst.schemes(SimpleICOInst.address);
 	}).then(function(isListed) {
 		console.log('is simple ICO board listed: ', isListed);
+		*/
 	});
 
 };

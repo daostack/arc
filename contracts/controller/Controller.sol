@@ -9,13 +9,13 @@ contract ActionInterface {
 }
 
 contract Controller {
-    struct scheme {
+    struct Scheme {
       bool      registered;
       bool      registeringScheme;
       bytes32   parametersHash;
     }
 
-    mapping(address=>scheme) public schemes;
+    mapping(address=>Scheme) public schemes;
     // TODO - should be iterable? UI can use events
 
     MintableToken   public   nativeToken;
@@ -42,13 +42,18 @@ contract Controller {
     function Controller(string _orgName,
                          string _tknName,
                          string _tknSymbol,
-                         address _registeringScheme,
+                         address _universalRegisteringScheme,
                          bytes32 _registeringSchemeParams,
                          address _upgradingScheme)
     {
         nativeToken = new MintableToken(_tknName, _tknSymbol);
         nativeReputation = new Reputation();
-        registerScheme(_registeringScheme, true, _registeringSchemeParams);
+        Scheme memory scheme;
+        scheme.registered = true;
+        scheme.registeringScheme = true;
+        scheme.parametersHash = _registeringSchemeParams;
+        schemes[_universalRegisteringScheme] = scheme;
+        RegisterScheme(msg.sender, _universalRegisteringScheme);
         orgName = _orgName;
         upgradingScheme = _upgradingScheme;
     }
@@ -83,10 +88,10 @@ contract Controller {
   // Scheme registration and unregistration:
     function registerScheme( address _scheme, bool _registeringScheme, bytes32 _parametersHash)
     onlyRegisteringSchemes returns(bool){
-        RegisterScheme(msg.sender, _scheme);
         schemes[_scheme].registered = true;
         schemes[_scheme].registeringScheme = _registeringScheme;
         schemes[_scheme].parametersHash = _parametersHash;
+        RegisterScheme(msg.sender, _scheme);
         return true;
     }
 

@@ -10,12 +10,10 @@ contract Scheme {
 
   event Registered (Controller _controller);
   event Unregistered (Controller _controller);
-  event controllerUpdate (Controller _controller);
+  event ControllerUpdate (Controller _controller);
 
   function Scheme (Controller _controller) {
     controller = _controller;
-    genesis = GenesisScheme(controller.genesisAddress());
-    genesis.proposeScheme(this); // Maybe need to add here an address to collect fee from.
   }
 
   function registered () onlyController {
@@ -30,7 +28,7 @@ contract Scheme {
   function updateController () {
     require(controller.updatedController() != address(0)); // Need to test if this is the right syntax.
     controller = Controller(controller.updatedController());
-    controllerUpdate(controller);
+    ControllerUpdate(controller);
   }
 
   modifier onlyController {

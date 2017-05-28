@@ -2,8 +2,9 @@ pragma solidity ^0.4.11;
 
 import "../controller/Controller.sol";  // Should change to controller intreface.
 import "../UniversalSimpleVoteInterface.sol";
+import "./UniversalScheme.sol";
 
-contract UniversalSchemeRegister {
+contract UniversalSchemeRegister is UniversalScheme {
     struct SchemeProposal {
       address scheme;
       bytes32 parametersHash;
@@ -21,35 +22,40 @@ contract UniversalSchemeRegister {
 
     mapping(address=>Organization) organizations;
 
-    function UniversalSchemeRegister( ) {
+    function UniversalSchemeRegister(StandardToken _nativeToken, uint _fee, address _benificiary) {
+      updateParameters(_nativeToken, _fee, _benificiary, bytes32(0));
     }
 
     function parametersHash(uint _precToRegister,
-                                uint _precToRemoveSchem,
+                                uint _precToRemove,
                                 UniversalSimpleVoteInterface _universalSimpleVote)
                                 constant returns(bytes32) {
       require(_precToRegister<=100);
-      require(_precToRemoveSchem<=100);
-      return (sha3(_precToRegister, _precToRemoveSchem, _universalSimpleVote));
+      require(_precToRemove<=100);
+      return (sha3(_precToRegister, _precToRemove, _universalSimpleVote));
     }
 
     function checkParameterHashMatch(Controller _controller,
                      uint _precToRegister,
-                     uint _precToRemoveSchem,
+                     uint _precToRemove,
                      UniversalSimpleVoteInterface _universalSimpleVote) constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_precToRegister,_precToRemoveSchem,_universalSimpleVote));
+       return (_controller.getSchemeParameters(this) == parametersHash(_precToRegister,_precToRemove,_universalSimpleVote));
     }
 
     function addOrUpdateOrg(Controller _controller,
                      uint _precToRegister,
-                     uint _precToRemoveSchem,
+                     uint _precToRemove,
                      UniversalSimpleVoteInterface _universalSimpleVote) {
+
+      // Pay fees for using scheme:
+      if( ! nativeToken.transferFrom(msg.sender, benificiary, fee) ) revert();
+
       require(_controller.isSchemeRegistered(this));
-      require(checkParameterHashMatch(_controller, _precToRegister, _precToRemoveSchem, _universalSimpleVote));
+      require(checkParameterHashMatch(_controller, _precToRegister, _precToRemove, _universalSimpleVote));
       Organization memory org;
       org.isRegistered = true;
       org.precToRegister = _precToRegister;
-      org.precToRemove = _precToRemoveSchem;
+      org.precToRemove = _precToRemove;
       org.simpleVote = _universalSimpleVote;
       organizations[_controller] = org;
     }

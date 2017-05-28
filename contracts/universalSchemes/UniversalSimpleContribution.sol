@@ -1,9 +1,10 @@
 pragma solidity ^0.4.11;
-import "../controller/Controller.sol"; // Should change to controller intreface.
-import "../UniversalSimpleVoteInterface.sol";
-import "zeppelin/contracts/token/StandardToken.sol";
 
-contract UniversalSimpleContribution {
+import "../controller/Controller.sol"; // Should change to intreface.
+import "../UniversalSimpleVoteInterface.sol";
+import "./UniversalScheme.sol";
+
+contract UniversalSimpleContribution is UniversalScheme {
 
     struct ContributionData {
       bytes32         contributionDescriptionHash;
@@ -18,43 +19,52 @@ contract UniversalSimpleContribution {
     struct Organization {
       bool isRegistered;
       uint precToApprove;
-      uint submissionFee;
+      uint orgNativeTokenFee;
+      uint schemeNatvieTokenFee;
       UniversalSimpleVoteInterface simpleVote;
       mapping(bytes32=>ContributionData) contributions;
     }
 
     mapping(address=>Organization) organizations;
 
-    function UniversalSimpleContribution() {
+    function UniversalSimpleContribution(StandardToken _nativeToken, uint _fee, address _benificiary) {
+      updateParameters(_nativeToken, _fee, _benificiary, bytes32(0));
     }
 
     function parametersHash(uint _precToApprove,
-                                uint _submissionFee,
+                                uint _orgNativeTokenFee,
+                                uint _schemeNatvieTokenFee,
                                 UniversalSimpleVoteInterface _universalSimpleVote)
                                 constant returns(bytes32) {
       require(_precToApprove<=100);
-      return (sha3(sha3(sha3(_precToApprove)^bytes32(_submissionFee))^bytes32(address(_universalSimpleVote))));
+      return (sha3(_precToApprove, _orgNativeTokenFee, _schemeNatvieTokenFee, _universalSimpleVote));
     }
 
     function checkParameterHashMatch(Controller _controller,
                      uint _precToApprove,
-                     uint _submissionFee,
+                     uint _orgNativeTokenFee,
+                     uint _schemeNatvieTokenFee,
                      UniversalSimpleVoteInterface _universalSimpleVote) constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_precToApprove,_submissionFee,_universalSimpleVote));
+       return (_controller.getSchemeParameters(this) == parametersHash(_precToApprove, _orgNativeTokenFee, _schemeNatvieTokenFee,_universalSimpleVote));
     }
 
     function addOrUpdateOrg(Controller _controller,
                      uint _precToApprove,
-                     uint _submissionFee,
+                     uint _orgNativeTokenFee,
+                     uint _schemeNatvieTokenFee,
                      UniversalSimpleVoteInterface _universalSimpleVote) {
         require(_controller.isSchemeRegistered(this));
-        require(checkParameterHashMatch(_controller, _precToApprove, _submissionFee, _universalSimpleVote));
-        Organization memory org;
+        require(checkParameterHashMatch(_controller, _precToApprove, _orgNativeTokenFee, _schemeNatvieTokenFee, _universalSimpleVote));
+
+        // Pay fees for using scheme:
+        if( ! nativeToken.transferFrom(msg.sender, benificiary, fee) ) revert();
+
+        Organization org = organizations[_controller];
         org.isRegistered = true;
         org.precToApprove = _precToApprove;
-        org.submissionFee = _submissionFee;
+        org.orgNativeTokenFee = _orgNativeTokenFee;
+        org.schemeNatvieTokenFee = _schemeNatvieTokenFee;
         org.simpleVote = _universalSimpleVote;
-        organizations[_controller] = org;
     }
 
     function submitContribution( Controller _controller,
@@ -68,8 +78,9 @@ contract UniversalSimpleContribution {
         Organization memory org = organizations[_controller];
         require(org.isRegistered);
 
-        /*if( ! controller.nativeToken().transferFrom(msg.sender, controller, submissionFee) ) revert();
-        if( ! controller.mintTokens(-1*int(submissionFee), controller) ) revert();*/
+        // Pay fees for submitting the contribution:
+        if( ! _controller.nativeToken().transferFrom(msg.sender, _controller, org.orgNativeTokenFee) ) revert();
+        if( ! nativeToken.transferFrom(msg.sender, _controller, org.schemeNatvieTokenFee) ) revert();
 
         ContributionData memory data;
         data.contributionDescriptionHash = sha3(_contributionDesciption);
