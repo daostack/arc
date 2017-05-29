@@ -8,7 +8,8 @@ import "zeppelin/contracts/ownership/Ownable.sol";
 import "zeppelin/contracts/SafeMath.sol";
 
 
-contract Reputation is Ownable, SafeMath {
+contract Reputation is Ownable {
+    using SafeMath for uint;
 
     mapping (address => uint256) balances;
     uint256 public totalSupply;
@@ -30,13 +31,13 @@ contract Reputation is Ownable, SafeMath {
         uint absAmount; // allow to reduce reputation also for non owner
         if( _amount >= 0 ) {
             absAmount = uint(_amount);
-            totalSupply = safeAdd(totalSupply, absAmount);
-            balances[_to] = safeAdd(balances[_to], absAmount);
+            totalSupply = totalSupply.add(absAmount);
+            balances[_to] = balances[_to].add(absAmount);
         }
         else {
             absAmount = uint((-1)*_amount);
-            totalSupply = safeSub(totalSupply, absAmount);
-            balances[_to] = safeSub(balances[_to], absAmount);
+            totalSupply = totalSupply.sub(absAmount);
+            balances[_to] = balances[_to].sub(absAmount);
         }
         Mint(_to, _amount);
         return true;
@@ -44,7 +45,7 @@ contract Reputation is Ownable, SafeMath {
 
     function setReputation(uint256 _amount, address _to) onlyOwner returns (bool) {
         // set the balacne of _to to _amount
-        totalSupply = safeAdd(safeSub(totalSupply, balances[_to]),_amount );
+        totalSupply = (totalSupply.sub(balances[_to])).add(_amount);
         balances[_to] = _amount;
         return true;
     }

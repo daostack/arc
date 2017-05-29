@@ -2,10 +2,13 @@ pragma solidity ^0.4.11;
 
 import "zeppelin/contracts/token/StandardToken.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
-import "zeppelin/contracts/lifecycle/Killable.sol";
+import "zeppelin/contracts/lifecycle/Destructible.sol";
+import "zeppelin/contracts/SafeMath.sol";
 
 
-contract MintableToken is StandardToken, Ownable, Killable {
+contract MintableToken is StandardToken, Ownable, Destructible {
+    using SafeMath for uint;
+
     string public name;
     string public symbol;
 
@@ -25,13 +28,13 @@ contract MintableToken is StandardToken, Ownable, Killable {
     	/*if ( _amount < 0 && _to != owner ) revert; // Allowing burn for everyone, just for the demo.*/
     	if( _amount >= 0 ) {
         	absAmount = uint(_amount);
-            totalSupply = safeAdd(totalSupply, absAmount);
-            balances[_to] = safeAdd(balances[_to], absAmount);
+            totalSupply = totalSupply.add(absAmount);
+            balances[_to] = balances[_to].add(absAmount);
       }
       else {
           absAmount = uint((-1)*_amount);
-          totalSupply = safeSub(totalSupply, absAmount);
-          balances[_to] = safeSub(balances[_to], absAmount);
+          totalSupply = totalSupply.sub(absAmount);
+          balances[_to] = balances[_to].sub(absAmount);
       }
       Mint(_to, _amount);
       return true;

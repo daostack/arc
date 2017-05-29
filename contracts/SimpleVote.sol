@@ -6,7 +6,8 @@ import "./SimpleVoteInterface.sol";
 import "zeppelin/contracts/ownership/Ownable.sol";
 
 
-contract SimpleVote is SafeMath, SimpleVoteInterface {
+contract SimpleVote is SimpleVoteInterface {
+    using SafeMath for uint;
 
     Reputation reputationSystem;
     address owner;
@@ -84,9 +85,9 @@ contract SimpleVote is SafeMath, SimpleVoteInterface {
         uint totalReputation = reputationSystem.totalSupply();
 
         if (yes) {
-            votes.yes = safeAdd(votes.yes, reputation);
+            votes.yes = reputation.add(votes.yes);
         } else {
-            votes.no = safeAdd(votes.no, reputation);
+            votes.no = reputation.add(votes.no);
         }
 
         // this is the actual voting rule:

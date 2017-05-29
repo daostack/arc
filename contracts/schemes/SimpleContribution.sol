@@ -31,8 +31,8 @@ contract SimpleContribution {
                                  int   _tokenReward,
                                  int   _reputationReward,
                                  address beneficiary) returns(bytes32) {
-        if( ! controller.nativeToken().transferFrom(msg.sender,controller, submissionFee) ) revert();
-        if( ! controller.mintTokens(-1*int(submissionFee), controller) ) revert();
+        controller.nativeToken().transferFrom(msg.sender,controller, submissionFee);
+        controller.mintTokens(-1*int(submissionFee), controller);
 
         ContributionData memory data;
         data.contributionDescription = sha3(_contributionDesciption);

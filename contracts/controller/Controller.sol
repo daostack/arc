@@ -98,21 +98,24 @@ contract Controller { // is Ownable ? why?
     onlyRegisteredScheme
     returns(bool) {
         ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
-        return _externalToken.transfer( _to, _value );
+        _externalToken.transfer( _to, _value );
+        return true;
     }
 
     function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value)
     onlyRegisteredScheme
     returns(bool) {
         ExternalTokenTransferFrom(msg.sender, _externalToken, _from, _to, _value);
-        return _externalToken.transferFrom( _from, _to, _value );
+        _externalToken.transferFrom( _from, _to, _value );
+        return true;
     }
 
     function externalTokenApprove(StandardToken _externalToken, address _spender, uint _value)
     onlyRegisteredScheme
     returns(bool) {
         ExternalTokenApprove( msg.sender, _externalToken, _spender, _value );
-        return _externalToken.approve( _spender, _value );
+        _externalToken.approve( _spender, _value );
+        return true;
     }
 
     // function in case someone approved a token to the contract and changed
@@ -121,7 +124,8 @@ contract Controller { // is Ownable ? why?
     function tokenDisapprove(StandardToken _token, uint _value )
     returns(bool) {
         TokenDisapprove( msg.sender, _token, _value );
-        return _token.transferFrom( msg.sender,msg.sender, _value );
+        _token.transferFrom( msg.sender,msg.sender, _value );
+        return true;
     }
 
     function() payable {
