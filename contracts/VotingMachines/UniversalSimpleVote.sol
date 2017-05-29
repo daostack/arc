@@ -21,12 +21,14 @@ contract UniversalSimpleVote is SafeMath {
     event EndProposal( bytes32 _proposalId );
     event CancellProposal( bytes32 _proposalId );
 
+    mapping(bytes32=>uint) proposalParameters;
     mapping(bytes32=>Proposal) proposals;
+
 
     function UniversalSimpleVote() {
     }
 
-    function propose(Reputation _reputationSystem, uint _absPrecReq) returns(bytes32) {
+    function propose(Controller _controller, bytes32 _proposalParameters) returns(bytes32) {
       // Do we want to make sure that proposing a proposal will be done only by registered schemes?
       require(_absPrecReq <= 100);
       Proposal memory proposal;
