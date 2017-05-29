@@ -4,13 +4,16 @@ import "./controller/Controller.sol";
 import "./controller/Reputation.sol";
 
 contract UniversalSimpleVote is SafeMath {
+    struct ProposalParameters {
+      Reputation reputationSystem;
+      uint absPrecReq; // Usuualy >= 50
+    }
 
     struct Proposal {
         address owner;
-        Reputation reputationSystem;
+        bytes32 parameters;
         uint yes; // total 'yes' proposals
         uint no; // total 'no' proposals
-        uint absPrecReq; // Usuualy >= 50
         mapping(address=>bool) voted; // people in this list have already voted
         bool opened; // A flag that voting opened
         bool ended; // voting had ended flag
@@ -21,12 +24,26 @@ contract UniversalSimpleVote is SafeMath {
     event EndProposal( bytes32 _proposalId );
     event CancellProposal( bytes32 _proposalId );
 
-    mapping(bytes32=>uint) proposalParameters;
+    mapping(bytes32=>ProposalParameters) proposalParameters;
     mapping(bytes32=>Proposal) proposals;
 
 
     function UniversalSimpleVote() {
     }
+
+    function setParameters(Reputation _reputationSystem, uint _absPrecReq) returns (bytes32) {
+      hashParameters(_reputationSystem, _absPrecReq);
+
+    }
+
+    function hashParameters(Reputation _reputationSystem, uint _absPrecReq) return (bytes32) {
+
+    }
+
+    function checkExistingParameters() {
+
+    }
+
 
     function propose(Controller _controller, bytes32 _proposalParameters) returns(bytes32) {
       // Do we want to make sure that proposing a proposal will be done only by registered schemes?
