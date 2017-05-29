@@ -6,9 +6,9 @@ import "zeppelin/contracts/token/StandardToken.sol"; // Should change to intrefa
 
 contract Registry {
   UniversalSimpleVoteInterface simpleVote;
-  uint _addPrec;
-  uint _removePrec;
-  uint _changeParamPrec;
+  uint addPrec;
+  uint removePrec;
+  uint changeParamPrec;
   StandardToken nativeToken;
   uint fee;
   address beneficiary;
@@ -29,14 +29,21 @@ contract Registry {
   }
 
   function proposeParameters() {
-    if( ! nativeToken.transferFrom(msg.sender, _controller, org.schemeNatvieTokenFee) ) revert();
+    // Pay fee:
+    if( ! nativeToken.transferFrom(msg.sender, _controller, fee) ) revert();
+
+
   }
 
   function prposeRecord() {
+    if( ! nativeToken.transferFrom(msg.sender, _controller, fee) ) revert();
 
   }
 
   function removeRecord() {
+    if( ! nativeToken.transferFrom(msg.sender, _controller, fee) ) revert();
 
   }
+
+
 }
