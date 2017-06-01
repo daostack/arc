@@ -10,7 +10,7 @@ contract TokenRedemption {
     }
 
     function redeem( uint tokens ) returns(bool) {
-        if( ! controller.nativeToken().transferFrom(msg.sender,controller, tokens) ) revert();
+        controller.nativeToken().transferFrom(msg.sender,controller, tokens);
         if( ! controller.mintTokens(int(tokens) * -1, controller) ) revert();
 
         return controller.sendEther(tokens, msg.sender);

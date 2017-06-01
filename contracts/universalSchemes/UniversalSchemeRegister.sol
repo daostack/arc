@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
-import "../controller/Controller.sol";  // Should change to controller intreface.
-import "../UniversalSimpleVoteInterface.sol";
+import "../controller/Controller.sol";
+import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
 contract UniversalSchemeRegister is UniversalScheme {
@@ -14,9 +14,9 @@ contract UniversalSchemeRegister is UniversalScheme {
 
     struct Organization {
       bool isRegistered;
-      uint precToRegister;
-      uint precToRemove;
-      UniversalSimpleVoteInterface simpleVote;
+      bytes32 voteRegisterParams;
+      bytes32 voteRemoveParams;
+      BoolVoteInterface boolVote;
       mapping(bytes32=>SchemeProposal) proposals;
     }
 
@@ -26,37 +26,35 @@ contract UniversalSchemeRegister is UniversalScheme {
       updateParameters(_nativeToken, _fee, _benificiary, bytes32(0));
     }
 
-    function parametersHash(uint _precToRegister,
-                                uint _precToRemove,
-                                UniversalSimpleVoteInterface _universalSimpleVote)
+    function parametersHash(bytes32 _voteRegisterParams,
+                                bytes32 _voteRemoveParams,
+                                BoolVoteInterface _boolVote)
                                 constant returns(bytes32) {
-      require(_precToRegister<=100);
-      require(_precToRemove<=100);
-      return (sha3(_precToRegister, _precToRemove, _universalSimpleVote));
+      return (sha3(_voteRegisterParams, _voteRemoveParams, _boolVote));
     }
 
     function checkParameterHashMatch(Controller _controller,
-                     uint _precToRegister,
-                     uint _precToRemove,
-                     UniversalSimpleVoteInterface _universalSimpleVote) constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_precToRegister,_precToRemove,_universalSimpleVote));
+                     bytes32 _voteRegisterParams,
+                     bytes32 _voteRemoveParams,
+                     BoolVoteInterface _boolVote) constant returns(bool) {
+       return (_controller.getSchemeParameters(this) == parametersHash(_voteRegisterParams,_voteRemoveParams,_boolVote));
     }
 
     function addOrUpdateOrg(Controller _controller,
-                     uint _precToRegister,
-                     uint _precToRemove,
-                     UniversalSimpleVoteInterface _universalSimpleVote) {
+                     bytes32 _voteRegisterParams,
+                     bytes32 _voteRemoveParams,
+                     BoolVoteInterface _boolVote) {
 
       // Pay fees for using scheme:
-      if( ! nativeToken.transferFrom(msg.sender, benificiary, fee) ) revert();
+      nativeToken.transferFrom(msg.sender, benificiary, fee);
 
       require(_controller.isSchemeRegistered(this));
-      require(checkParameterHashMatch(_controller, _precToRegister, _precToRemove, _universalSimpleVote));
+      require(checkParameterHashMatch(_controller, _voteRegisterParams, _voteRemoveParams, _boolVote));
       Organization memory org;
       org.isRegistered = true;
-      org.precToRegister = _precToRegister;
-      org.precToRemove = _precToRemove;
-      org.simpleVote = _universalSimpleVote;
+      org.voteRegisterParams = _voteRegisterParams;
+      org.voteRemoveParams = _voteRemoveParams;
+      org.boolVote = _boolVote;
       organizations[_controller] = org;
     }
 
@@ -65,11 +63,11 @@ contract UniversalSchemeRegister is UniversalScheme {
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         require(! _controller.isSchemeRegistered(_scheme)); // Check the controller does'nt already have the propded scheme.
         require(checkParameterHashMatch(_controller,
-                      org.precToRegister,
-                      org.precToRemove,
-                      org.simpleVote));
-        UniversalSimpleVoteInterface simpleVote = org.simpleVote;
-        bytes32 id = simpleVote.propose(_controller.nativeReputation(), org.precToRegister);
+                      org.voteRegisterParams,
+                      org.voteRemoveParams,
+                      org.boolVote));
+        BoolVoteInterface boolVote = org.boolVote;
+        bytes32 id = boolVote.propose(org.voteRegisterParams);
         if (org.proposals[id].proposalType != 0) revert();
         org.proposals[id].proposalType = 1;
         org.proposals[id].scheme = _scheme;
@@ -84,11 +82,11 @@ contract UniversalSchemeRegister is UniversalScheme {
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         require(_controller.isSchemeRegistered(_scheme)); // Check the scheme is registered in controller.
         require(checkParameterHashMatch(_controller,
-                      org.precToRegister,
-                      org.precToRemove,
-                      org.simpleVote));
-        UniversalSimpleVoteInterface simpleVote = org.simpleVote;
-        bytes32 id = simpleVote.propose(_controller.nativeReputation(), org.precToRemove);
+                      org.voteRegisterParams,
+                      org.voteRemoveParams,
+                      org.boolVote));
+        BoolVoteInterface boolVote = org.boolVote;
+        bytes32 id = boolVote.propose(org.voteRemoveParams);
         if (org.proposals[id].proposalType != 0) revert();
         org.proposals[id].proposalType = 2;
         org.proposals[id].scheme = _scheme;
@@ -97,11 +95,11 @@ contract UniversalSchemeRegister is UniversalScheme {
     }
 
     function voteScheme( Controller _controller, bytes32 id, bool _yes ) returns(bool) {
-        UniversalSimpleVoteInterface simpleVote = organizations[_controller].simpleVote;
-        if( ! simpleVote.vote(id, _yes, msg.sender) ) return false;
-        if( simpleVote.voteResults(id) ) {
+        BoolVoteInterface boolVote = organizations[_controller].boolVote;
+        if( ! boolVote.vote(id, _yes, msg.sender) ) return false;
+        if( boolVote.voteResults(id) ) {
             SchemeProposal memory proposal = organizations[_controller].proposals[id];
-            if( ! simpleVote.cancellProposel(id) ) revert();
+            if( ! boolVote.cancellProposel(id) ) revert();
             if( organizations[_controller].proposals[id].proposalType == 2 ) {
                 if( ! _controller.unregisterScheme(proposal.scheme) ) revert();
             }
@@ -113,7 +111,7 @@ contract UniversalSchemeRegister is UniversalScheme {
     }
 
     function getVoteStatus(Controller _controller, bytes32 id) constant returns(uint[3]) {
-        UniversalSimpleVoteInterface simpleVote = organizations[_controller].simpleVote;
-        return (simpleVote.voteStatus(id));
+        BoolVoteInterface boolVote = organizations[_controller].boolVote;
+        return (boolVote.voteStatus(id));
     }
 }

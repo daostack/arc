@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
-import "./controller/Controller.sol";  // Should change to controller intreface.
-import "./controller/Reputation.sol";
+import "../controller/Controller.sol";  // Should change to controller intreface.
+import "../controller/Reputation.sol";
 
 contract UniversalSimpleVoteInterface {
     function propose(Reputation _reputationSystem, uint _absPrecReq) returns(bytes32);

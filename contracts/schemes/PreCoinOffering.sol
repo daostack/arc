@@ -4,7 +4,9 @@ import "zeppelin/contracts/ownership/Ownable.sol";
 import "zeppelin/contracts/SafeMath.sol";
 
 
-contract PreCoinOffering is Ownable, SafeMath {
+contract PreCoinOffering is Ownable {
+    using SafeMath for uint;
+
     Controller    controller;
     int           cap;          // Cap in Eth
     int           initPrice;    // Price represents Tokens per 1 Eth
@@ -53,13 +55,13 @@ contract PreCoinOffering is Ownable, SafeMath {
         uint change;
 
         // Compute how much tokens to buy:
-        if (msg.value > safeSub(uint(cap), uint(totalEthRaised))) {
-            incomingEther = safeSub(uint(cap), uint(totalEthRaised));
-            change = safeSub(msg.value, uint(cap));
+        if (msg.value > (uint(cap)).sub(uint(totalEthRaised))) {
+            incomingEther = (uint(cap)).sub(uint(totalEthRaised));
+            change = (msg.value).sub(uint(cap));
         } else {
             incomingEther = msg.value;
         }
-        int tokens = int(safeMul(incomingEther, getCurrentPrice()));
+        int tokens = int(incomingEther.mul(getCurrentPrice()));
 
         // Send ether to controller (to be avatar), mint, and send change to user:
         controller.transfer(incomingEther);

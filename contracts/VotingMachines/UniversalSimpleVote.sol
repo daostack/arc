@@ -1,9 +1,11 @@
 pragma solidity ^0.4.11;
 
-import "./controller/Controller.sol";
-import "./controller/Reputation.sol";
+import "../controller/Controller.sol";
+import "../controller/Reputation.sol";
 
-contract UniversalSimpleVote is SafeMath {
+contract UniversalSimpleVote {
+    using SafeMath for uint;
+
     struct ProposalParameters {
       Reputation reputationSystem;
       uint absPrecReq; // Usuualy >= 50
@@ -24,41 +26,44 @@ contract UniversalSimpleVote is SafeMath {
     event EndProposal( bytes32 _proposalId );
     event CancellProposal( bytes32 _proposalId );
 
-    mapping(bytes32=>ProposalParameters) proposalParameters;
+    mapping(bytes32=>ProposalParameters) proposalsParameters;
     mapping(bytes32=>Proposal) proposals;
-
 
     function UniversalSimpleVote() {
     }
 
-    function setParameters(Reputation _reputationSystem, uint _absPrecReq) returns (bytes32) {
-      hashParameters(_reputationSystem, _absPrecReq);
-
-    }
-
-    function hashParameters(Reputation _reputationSystem, uint _absPrecReq) return (bytes32) {
-
-    }
-
-    function checkExistingParameters() {
-
-    }
-
-
-    function propose(Controller _controller, bytes32 _proposalParameters) returns(bytes32) {
-      // Do we want to make sure that proposing a proposal will be done only by registered schemes?
+    function setParameters(Reputation _reputationSystem, uint _absPrecReq) returns(bytes32) {
       require(_absPrecReq <= 100);
+      bytes32 hashedParameters = hashParameters(_reputationSystem, _absPrecReq);
+      proposalsParameters[hashedParameters].absPrecReq = _absPrecReq;
+      proposalsParameters[hashedParameters].reputationSystem = _reputationSystem;
+      return hashedParameters;
+    }
+
+    function hashParameters(Reputation _reputationSystem, uint _absPrecReq) constant returns(bytes32) {
+      return sha3(_reputationSystem, _absPrecReq);
+    }
+
+    function checkExistingParameters(bytes32 _proposalParameters) returns(bool) {
+      if (proposalsParameters[_proposalParameters].reputationSystem != address(0))
+        return true;
+      return false;
+    }
+
+
+    function propose(bytes32 _proposalParameters) returns(bytes32) {
+      // Do we want to make sure that proposing a proposal will be done only by registered schemes?
+      require(checkExistingParameters(_proposalParameters));
       Proposal memory proposal;
       bytes32 id;
-      proposal.reputationSystem = _reputationSystem;
+      proposal.parameters = _proposalParameters;
       proposal.owner = msg.sender;
       proposal.opened = true;
-      proposal.absPrecReq = _absPrecReq;
-      id = sha3(_reputationSystem, msg.sender, _absPrecReq);
+      id = sha3(msg.sender, _proposalParameters);
       while (proposals[id].opened)
         id = sha3(id^sha3(id));
       proposals[id] = proposal;
-      NewProposal(id, msg.sender, _reputationSystem, _absPrecReq);
+      NewProposal(id, msg.sender, proposalsParameters[_proposalParameters].reputationSystem, proposalsParameters[_proposalParameters].absPrecReq);
       return id;
     }
 
@@ -77,18 +82,19 @@ contract UniversalSimpleVote is SafeMath {
 
         if( proposal.voted[voter] ) return false;
 
-        uint reputation = proposal.reputationSystem.reputationOf(voter);
-        uint totalReputation = proposal.reputationSystem.totalSupply();
+        uint reputation = proposalsParameters[proposal.parameters].reputationSystem.reputationOf(voter);
+        uint totalReputation = proposalsParameters[proposal.parameters].reputationSystem.totalSupply();
+        uint absPrecReq = proposalsParameters[proposal.parameters].absPrecReq;
 
         if (yes) {
-            proposal.yes = safeAdd(proposal.yes, reputation);
+            proposal.yes = reputation.add(proposal.yes);
         } else {
-            proposal.no = safeAdd(proposal.no, reputation);
+            proposal.no = reputation.add(proposal.no);
         }
         VoteProposal(voter, id, yes, reputation);
 
         // this is the actual voting rule:
-        if( (proposal.yes > totalReputation*proposal.absPrecReq/100) || (proposal.no > totalReputation*proposal.absPrecReq/100 ) ) {
+        if( (proposal.yes > totalReputation*absPrecReq/100) || (proposal.no > totalReputation*absPrecReq/100 ) ) {
             proposal.ended = true;
             EndProposal(id);
         }

@@ -1,10 +1,7 @@
 pragma solidity ^0.4.11;
 
-import "./controller/Controller.sol";  // Should change to controller intreface.
-import "./controller/Reputation.sol";
-
 contract BoolVoteInterface {
-    function propose(Reputation _reputationSystem, bytes32 _proposalParameters) returns(bytes32);
+    function propose(bytes32 _proposalParameters) returns(bytes32);
 
     function cancellProposel(bytes32 id) returns(bool);
 

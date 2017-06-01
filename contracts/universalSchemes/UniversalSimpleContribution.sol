@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
-import "../controller/Controller.sol"; // Should change to intreface.
-import "../UniversalSimpleVoteInterface.sol";
+import "../controller/Controller.sol";
+import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
 contract UniversalSimpleContribution is UniversalScheme {
@@ -18,10 +18,10 @@ contract UniversalSimpleContribution is UniversalScheme {
 
     struct Organization {
       bool isRegistered;
-      uint precToApprove;
       uint orgNativeTokenFee;
       uint schemeNatvieTokenFee;
-      UniversalSimpleVoteInterface simpleVote;
+      bytes32 voteApproveParams;
+      BoolVoteInterface boolVote;
       mapping(bytes32=>ContributionData) contributions;
     }
 
@@ -31,40 +31,39 @@ contract UniversalSimpleContribution is UniversalScheme {
       updateParameters(_nativeToken, _fee, _benificiary, bytes32(0));
     }
 
-    function parametersHash(uint _precToApprove,
-                                uint _orgNativeTokenFee,
+    function parametersHash(uint _orgNativeTokenFee,
                                 uint _schemeNatvieTokenFee,
-                                UniversalSimpleVoteInterface _universalSimpleVote)
+                                bytes32 _voteApproveParams,
+                                BoolVoteInterface _boolVote)
                                 constant returns(bytes32) {
-      require(_precToApprove<=100);
-      return (sha3(_precToApprove, _orgNativeTokenFee, _schemeNatvieTokenFee, _universalSimpleVote));
+      return (sha3(_voteApproveParams, _orgNativeTokenFee, _schemeNatvieTokenFee, _boolVote));
     }
 
     function checkParameterHashMatch(Controller _controller,
-                     uint _precToApprove,
-                     uint _orgNativeTokenFee,
-                     uint _schemeNatvieTokenFee,
-                     UniversalSimpleVoteInterface _universalSimpleVote) constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_precToApprove, _orgNativeTokenFee, _schemeNatvieTokenFee,_universalSimpleVote));
+                               uint _orgNativeTokenFee,
+                               uint _schemeNatvieTokenFee,
+                               bytes32 _voteApproveParams,
+                               BoolVoteInterface _boolVote) constant returns(bool) {
+       return (_controller.getSchemeParameters(this) == parametersHash(_orgNativeTokenFee, _schemeNatvieTokenFee, _voteApproveParams,_boolVote));
     }
 
     function addOrUpdateOrg(Controller _controller,
-                     uint _precToApprove,
-                     uint _orgNativeTokenFee,
-                     uint _schemeNatvieTokenFee,
-                     UniversalSimpleVoteInterface _universalSimpleVote) {
+                               uint _orgNativeTokenFee,
+                               uint _schemeNatvieTokenFee,
+                               bytes32 _voteApproveParams,
+                               BoolVoteInterface _boolVote) {
         require(_controller.isSchemeRegistered(this));
-        require(checkParameterHashMatch(_controller, _precToApprove, _orgNativeTokenFee, _schemeNatvieTokenFee, _universalSimpleVote));
+        require(checkParameterHashMatch(_controller, _orgNativeTokenFee, _schemeNatvieTokenFee, _voteApproveParams, _boolVote));
 
         // Pay fees for using scheme:
-        if( ! nativeToken.transferFrom(msg.sender, benificiary, fee) ) revert();
+        nativeToken.transferFrom(msg.sender, benificiary, fee);
 
         Organization org = organizations[_controller];
         org.isRegistered = true;
-        org.precToApprove = _precToApprove;
+        org.voteApproveParams = _voteApproveParams;
         org.orgNativeTokenFee = _orgNativeTokenFee;
         org.schemeNatvieTokenFee = _schemeNatvieTokenFee;
-        org.simpleVote = _universalSimpleVote;
+        org.boolVote = _boolVote;
     }
 
     function submitContribution( Controller _controller,
@@ -79,8 +78,8 @@ contract UniversalSimpleContribution is UniversalScheme {
         require(org.isRegistered);
 
         // Pay fees for submitting the contribution:
-        if( ! _controller.nativeToken().transferFrom(msg.sender, _controller, org.orgNativeTokenFee) ) revert();
-        if( ! nativeToken.transferFrom(msg.sender, _controller, org.schemeNatvieTokenFee) ) revert();
+        _controller.nativeToken().transferFrom(msg.sender, _controller, org.orgNativeTokenFee);
+        nativeToken.transferFrom(msg.sender, _controller, org.schemeNatvieTokenFee);
 
         ContributionData memory data;
         data.contributionDescriptionHash = sha3(_contributionDesciption);
@@ -95,19 +94,19 @@ contract UniversalSimpleContribution is UniversalScheme {
           data.beneficiary = _beneficiary;
         }
 
-        UniversalSimpleVoteInterface simpleVote = org.simpleVote;
-        bytes32 contributionId = simpleVote.propose(_controller.nativeReputation(), org.precToApprove);
+        BoolVoteInterface boolVote = org.boolVote;
+        bytes32 contributionId = boolVote.propose(org.voteApproveParams);
 
         organizations[_controller].contributions[contributionId] = data;
         return contributionId;
     }
 
     function voteContribution( Controller _controller, bytes32 _contributionId, bool _yes ) returns(bool) {
-        UniversalSimpleVoteInterface simpleVote = organizations[_controller].simpleVote;
-        if( ! simpleVote.vote(_contributionId, _yes, msg.sender) ) return false;
-        if( simpleVote.voteResults(_contributionId) ) {
+        BoolVoteInterface boolVote = organizations[_controller].boolVote;
+        if( ! boolVote.vote(_contributionId, _yes, msg.sender) ) return false;
+        if( boolVote.voteResults(_contributionId) ) {
             ContributionData memory data = organizations[_controller].contributions[_contributionId];
-            if( ! simpleVote.cancellProposel(_contributionId) ) revert();
+            if( ! boolVote.cancellProposel(_contributionId) ) revert();
             if( ! _controller.mintReputation(int(data.reputationReward), data.beneficiary) ) revert();
             if( ! _controller.mintTokens(int(data.nativeTokenReward), data.beneficiary) ) revert();
             if( ! _controller.sendEther(data.ethReward, data.beneficiary) ) revert();

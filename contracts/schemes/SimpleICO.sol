@@ -4,7 +4,9 @@ import "zeppelin/contracts/ownership/Ownable.sol";
 import "zeppelin/contracts/SafeMath.sol";
 
 
-contract SimpleICO is Ownable, SafeMath {
+contract SimpleICO is Ownable {
+    using SafeMath for uint;
+
     Controller            controller;
     uint        public    cap;            // Cap in Eth
     uint        public    price;          // Price represents Tokens per 1 Eth
@@ -60,13 +62,13 @@ contract SimpleICO is Ownable, SafeMath {
         uint change;
 
         // Compute how much tokens to buy:
-        if ( msg.value > safeSub(cap, totalEthRaised) ) {
-            incomingEther = safeSub(cap, totalEthRaised);
-            change = safeSub(msg.value, incomingEther);
+        if ( msg.value > cap.sub(totalEthRaised) ) {
+            incomingEther = cap.sub(totalEthRaised);
+            change = (msg.value).sub(incomingEther);
         } else {
             incomingEther = msg.value;
         }
-        uint tokens = safeMul(incomingEther, getCurrentPrice());
+        uint tokens = incomingEther.mul(getCurrentPrice());
 
         // Send ether to controller (to be avatar), mint, and send change to user:
         controller.transfer(incomingEther);
