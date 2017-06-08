@@ -17,9 +17,13 @@ contract UniversalGenesisScheme {
                         int[] _foundersReputationAmount,
                         address _registeringScheme,
                         bytes32 _registeringSchemeParams,
-                        address _upgradinScheme) returns(address) {
+                        address _upgradingScheme,
+                        bytes32 _upgradingSchemeParams,
+                        address _globalConstraintScheme,
+                        bytes32 _globalConstraintsSchemeParams) returns(address) {
 
-        Controller controller = new Controller( orgName, tokenName, tokenSymbol, this, bytes32(0), _upgradinScheme);
+        Controller controller = new Controller( orgName, tokenName, tokenSymbol, this, bytes32(0),_upgradingScheme,
+                                          _upgradingSchemeParams, _globalConstraintScheme, _globalConstraintsSchemeParams);
 
         // Mint token and reputation for founders:
         for( uint i = 0 ; i < _founders.length ; i++ ) {

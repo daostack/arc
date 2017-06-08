@@ -2,16 +2,20 @@ pragma solidity ^0.4.11;
 
 import "./Reputation.sol";
 import "./MintableToken.sol";
-
+import "../globalConstraints/GlobalConstraintInterface.sol";
 
 contract ActionInterface {
     function action( uint _param ) returns(bool);
 }
 
 contract Controller {
+
+    string constant public version = "0.0.1";
+
     struct Scheme {
       bool      registered;
       bool      registeringScheme;
+      bool      upgradingScheme;
       bytes32   parametersHash;
     }
 
@@ -21,8 +25,13 @@ contract Controller {
     MintableToken   public   nativeToken;
     Reputation      public   nativeReputation;
     string          public   orgName;
-    address         public   upgradingScheme;
     address         public   newController;
+    address         public   upgradingScheme;
+    bytes32         public   upgradingSchemeParams;
+    address         public   globalConstraintScheme;
+    bytes32         public   globalConstraintsSchemeParams;
+    address[]       public   globalConstraints;
+    bytes32[]       public   globalConstraintsParams;
 
     event MintReputation( address indexed _sender, address indexed _beneficary, int256 _amount );
     event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
@@ -44,8 +53,12 @@ contract Controller {
                          string _tknSymbol,
                          address _universalRegisteringScheme,
                          bytes32 _registeringSchemeParams,
-                         address _upgradingScheme)
+                         address _upgradingScheme,
+                         bytes32 _upgradingSchemeParams,
+                         address _globalConstraintScheme,
+                         bytes32 _globalConstraintsSchemeParams)
     {
+        orgName = _orgName;
         nativeToken = new MintableToken(_tknName, _tknSymbol);
         nativeReputation = new Reputation();
         Scheme memory scheme;
@@ -54,8 +67,10 @@ contract Controller {
         scheme.parametersHash = _registeringSchemeParams;
         schemes[_universalRegisteringScheme] = scheme;
         RegisterScheme(msg.sender, _universalRegisteringScheme);
-        orgName = _orgName;
         upgradingScheme = _upgradingScheme;
+        upgradingSchemeParams = _upgradingSchemeParams;
+        globalConstraintScheme = _globalConstraintScheme;
+        globalConstraintsSchemeParams = _globalConstraintsSchemeParams;
     }
 
   // Modifieres:
@@ -69,25 +84,44 @@ contract Controller {
         _;
     }
 
+    modifier onlyGlobalConstraintScheme() {
+        require(msg.sender == globalConstraintScheme);
+        _;
+    }
+
     modifier onlyUpgradingScheme() {
         require(msg.sender == upgradingScheme);
         _;
     }
 
+    modifier onlySubjectToConstraint( string func ) {
+      for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
+        if (globalConstraints[cnt] != address(0))
+          require( (GlobalConstraintInterface(globalConstraints[cnt])).pre(msg.sender, globalConstraintsParams[cnt], bytes(func)) );
+      }
+      _;
+      for (cnt=0; cnt<globalConstraints.length; cnt++) {
+        if (globalConstraints[cnt] != address(0))
+          require( (GlobalConstraintInterface(globalConstraints[cnt])).post(msg.sender, globalConstraintsParams[cnt], bytes(func)) );
+      }
+    }
+
   // Minting:
-    function mintReputation(int256 _amount, address _beneficary) onlyRegisteredScheme returns(bool){
+    function mintReputation(int256 _amount, address _beneficary)
+      onlyRegisteredScheme onlySubjectToConstraint("mintReputation") returns(bool){
         MintReputation(msg.sender, _beneficary, _amount);
         return nativeReputation.mint(_amount, _beneficary);
     }
 
-    function mintTokens(int256 _amount, address _beneficary) onlyRegisteredScheme returns(bool){
+    function mintTokens(int256 _amount, address _beneficary)
+    onlyRegisteredScheme onlySubjectToConstraint("mintTokens") returns(bool){
         MintTokens(msg.sender, _beneficary, _amount);
         return nativeToken.mint(_amount, _beneficary);
     }
 
   // Scheme registration and unregistration:
     function registerScheme( address _scheme, bool _registeringScheme, bytes32 _parametersHash)
-    onlyRegisteringSchemes returns(bool){
+    onlyRegisteringSchemes onlySubjectToConstraint("registerScheme") returns(bool){
         schemes[_scheme].registered = true;
         schemes[_scheme].registeringScheme = _registeringScheme;
         schemes[_scheme].parametersHash = _parametersHash;
@@ -95,13 +129,14 @@ contract Controller {
         return true;
     }
 
-    function unregisterScheme( address _scheme ) onlyRegisteringSchemes returns(bool){
+    function unregisterScheme( address _scheme )
+    onlyRegisteringSchemes onlySubjectToConstraint("unregisterScheme") returns(bool){
         UnregisterScheme(msg.sender, _scheme);
         delete schemes[_scheme];
         return true;
     }
 
-    function unregisterSelf() returns(bool){
+    function unregisterSelf() onlySubjectToConstraint("unregisterSelf") returns(bool){
         delete schemes[msg.sender];
         return true;
     }
@@ -114,13 +149,39 @@ contract Controller {
       return schemes[_scheme].parametersHash;
     }
 
+  // Globol Contraints:
+    function addGlobalConstraint (address _globalConstraint, bytes32 _params)
+    onlyGlobalConstraintScheme onlySubjectToConstraint("addGlobalConstraint") returns(bool) {
+        globalConstraints.push(_globalConstraint);
+        globalConstraintsParams.push(_params);
+        return true;
+    }
+
+    function removeGlobalConstraint (address _globalConstraint)
+    onlyGlobalConstraintScheme onlySubjectToConstraint("removeGlobalConstraint") returns(bool) {
+      for (uint cnt=0; cnt< globalConstraints.length; cnt++) {
+        if (globalConstraints[cnt] == _globalConstraint) {
+          globalConstraints[cnt] = address(0);
+          return true;
+        }
+      }
+    }
+
+    function changeGlobalConstraintScheme( address _newGlobalConstraintScheme )
+    onlyGlobalConstraintScheme onlySubjectToConstraint("changeGlobalConstraintScheme") returns(bool) {
+        globalConstraintScheme = _newGlobalConstraintScheme;
+        return true;
+    }
+
   // Upgrading:
-    function changeUpgradeScheme( address _newupgradingScheme ) onlyUpgradingScheme returns(bool) {
+    function changeUpgradeScheme( address _newupgradingScheme )
+    onlyUpgradingScheme returns(bool) {
         upgradingScheme = _newupgradingScheme;
         return true;
     }
 
-    function upgradeController( address _newController ) onlyUpgradingScheme returns(bool) {
+    function upgradeController( address _newController )
+    onlyUpgradingScheme returns(bool) {
         require(newController == address(0));   // Do we want this?
         require(_newController != address(0));
         newController = _newController;
@@ -130,36 +191,34 @@ contract Controller {
     }
 
     function genericAction( ActionInterface _action, uint _param ) // TODO discuss name
-        onlyRegisteredScheme
-        returns(bool){
+    onlyRegisteredScheme onlySubjectToConstraint("genericAction") returns(bool){
         GenericAction( msg.sender, _action, _param );
         return _action.delegatecall(bytes4(sha3("action(uint256)")), _param);
     }
 
-    function sendEther( uint _amountInWei, address _to ) onlyRegisteredScheme returns(bool) {
+    function sendEther( uint _amountInWei, address _to )
+    onlyRegisteredScheme onlySubjectToConstraint("sendEther") returns(bool) {
         SendEther( msg.sender, _amountInWei, _to );
         _to.transfer(_amountInWei );
         return true;
     }
 
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value) onlyRegisteredScheme
-    returns(bool) {
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
+    onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransfer") returns(bool) {
         ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
         _externalToken.transfer( _to, _value );
         return true;
     }
 
     function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value)
-    onlyRegisteredScheme
-    returns(bool) {
+    onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransferFrom") returns(bool) {
         ExternalTokenTransferFrom(msg.sender, _externalToken, _from, _to, _value);
         _externalToken.transferFrom( _from, _to, _value );
         return true;
     }
 
     function externalTokenApprove(StandardToken _externalToken, address _spender, uint _value)
-    onlyRegisteredScheme
-    returns(bool) {
+    onlyRegisteredScheme onlySubjectToConstraint("externalTokenApprove") returns(bool) {
         ExternalTokenApprove( msg.sender, _externalToken, _spender, _value );
         _externalToken.approve( _spender, _value );
         return true;
@@ -169,7 +228,7 @@ contract Controller {
     // his mind. Can be called both for internal or external tokens.
 
     function tokenDisapprove(StandardToken _token, uint _value )
-    returns(bool) {
+    onlySubjectToConstraint("tokenDisapprove") returns(bool) {
         TokenDisapprove( msg.sender, _token, _value );
         _token.transferFrom( msg.sender,msg.sender, _value );
         return true;
