@@ -1,5 +1,6 @@
 // Imports:
 var UniversalSimpleVote = artifacts.require('./UniversalSimpleVote.sol');
+var UniversalUpgradeScheme = artifacts.require('./UniversalUpgradeScheme.sol');
 var UniversalGenesisScheme = artifacts.require('./schemes/UniversalGenesisScheme.sol');
 var UniversalSchemeRegister = artifacts.require('./schemes/UniversalSchemeRegister.sol');
 var UniversalSimpleContribution = artifacts.require('./schemes/UniversalSimpleContribution.sol');
@@ -11,6 +12,7 @@ var SimpleICO = artifacts.require('./schemes/SimpleICO.sol');
 
 // Instances:
 var UniversalSimpleVoteInst;
+var UniversalUpgradeSchemeInst;
 var UniversalGenesisSchemeInst;
 var UniversalSchemeRegisterIsnt;
 var UniversalSimpleContributionInst;
@@ -61,6 +63,13 @@ module.exports = function(deployer) {
 		UniversalSimpleVoteInst = inst;
 	}).then(function() {
 
+	// Deploy UniversalUpgrade:
+		deployer.deploy(UniversalUpgradeScheme).then(function (){
+			return UniversalUpgradeScheme.deployed();
+		}).then(function(inst) {
+			UniversalUpgradeSchemeInst = inst;
+		}).then(function() {
+
 // Deploy UniversalGenesisScheme:
 		return deployer.deploy(UniversalGenesisScheme);
 	}).then(function() {
@@ -83,7 +92,8 @@ module.exports = function(deployer) {
 		return UniversalGenesisSchemeIsnt.forgeOrg(orgName, tokenName, tokenSymbol,
 			 																	founders, initTokenInWei, initRepInWei,
 																		 		UniversalSchemeRegisterIsnt.address, hashedParameters,
-																				UniversalSchemeRegisterIsnt.address); // Should build updating scheme!!!
+																				UniversalUpgradeScheme.address, hashedParameters,
+																				UniversalGenesisSchemeIsnt.address, hashedParameters);
 	}).then(function (returnedParams) {
 		return Controller.at(returnedParams.logs[0].args._controller);
 	}).then(function (inst){

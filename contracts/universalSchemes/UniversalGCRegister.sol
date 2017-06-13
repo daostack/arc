@@ -72,7 +72,6 @@ contract UniversalGCRegister is UniversalScheme {
     function proposeToRemoveGC(Controller _controller, address _gc) returns(bytes32) {
         Organization org = organizations[_controller];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(_controller.isSchemeRegistered(_gc)); // Check the scheme is registered in controller.
         require(checkParameterHashMatch(_controller,
                       org.voteRegisterParams,
                       org.boolVote));
@@ -94,7 +93,7 @@ contract UniversalGCRegister is UniversalScheme {
             if( organizations[_controller].proposals[id].proposalType == 2 ) {
                 if( ! _controller.removeGlobalConstraint(proposal.gc) ) revert();
             }
-            else {
+            if( organizations[_controller].proposals[id].proposalType == 1 ) {
                 if( ! _controller.addGlobalConstraint(proposal.gc, proposal.parametersHash) ) revert();
             }
             organizations[_controller].proposals[id].proposalType = 0;

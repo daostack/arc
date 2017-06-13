@@ -103,7 +103,7 @@ contract UniversalSchemeRegister is UniversalScheme {
             if( organizations[_controller].proposals[id].proposalType == 2 ) {
                 if( ! _controller.unregisterScheme(proposal.scheme) ) revert();
             }
-            else {
+            if( organizations[_controller].proposals[id].proposalType == 1 ) {
                 if( ! _controller.registerScheme(proposal.scheme, proposal.isRegistering, proposal.parametersHash) ) revert();
             }
             organizations[_controller].proposals[id].proposalType = 0;

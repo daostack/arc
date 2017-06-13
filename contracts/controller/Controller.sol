@@ -174,9 +174,10 @@ contract Controller {
     }
 
   // Upgrading:
-    function changeUpgradeScheme( address _newupgradingScheme )
+    function changeUpgradeScheme( address _newupgradingScheme, bytes32 _newParams )
     onlyUpgradingScheme returns(bool) {
         upgradingScheme = _newupgradingScheme;
+        upgradingSchemeParams = _newParams;
         return true;
     }
 
