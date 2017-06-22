@@ -108,7 +108,7 @@ contract UniversalSimpleContribution is UniversalScheme {
             ContributionData memory data = organizations[_controller].contributions[_contributionId];
             if( ! boolVote.cancellProposel(_contributionId) ) revert();
             if( ! _controller.mintReputation(int(data.reputationReward), data.beneficiary) ) revert();
-            if( ! _controller.mintTokens(int(data.nativeTokenReward), data.beneficiary) ) revert();
+            if( ! _controller.mintTokens(data.nativeTokenReward, data.beneficiary ) ) revert();
             if( ! _controller.sendEther(data.ethReward, data.beneficiary) ) revert();
             if (data.externalToken != address(0))
             if( ! _controller.externalTokenTransfer(data.externalToken, data.beneficiary, data.externalTokenReward) ) revert();

@@ -72,7 +72,7 @@ contract SimpleICO is Ownable {
 
         // Send ether to controller (to be avatar), mint, and send change to user:
         controller.transfer(incomingEther);
-        if(! controller.mintTokens(int(tokens), msg.sender)) revert();
+        if(! controller.mintTokens(tokens, msg.sender)) revert();
         if (change != 0)
             msg.sender.transfer(change);
 

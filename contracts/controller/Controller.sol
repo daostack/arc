@@ -1,12 +1,9 @@
 pragma solidity ^0.4.11;
 
+import "./Avatar.sol";
 import "./Reputation.sol";
 import "./MintableToken.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
-
-contract ActionInterface {
-    function action( uint _param ) returns(bool);
-}
 
 contract Controller {
 
@@ -15,52 +12,48 @@ contract Controller {
     struct Scheme {
       bool      registered;
       bool      registeringScheme;
-      bool      upgradingScheme;
       bytes32   parametersHash;
     }
 
     mapping(address=>Scheme) public schemes;
-    // TODO - should be iterable? UI can use events
 
+    Avatar          public   avatar;
     MintableToken   public   nativeToken;
     Reputation      public   nativeReputation;
-    string          public   orgName;
     address         public   newController;
     address         public   upgradingScheme;
     bytes32         public   upgradingSchemeParams;
-    address         public   globalConstraintScheme;
+    address         public   globalConstraintsScheme;
     bytes32         public   globalConstraintsSchemeParams;
     address[]       public   globalConstraints;
     bytes32[]       public   globalConstraintsParams;
 
     event MintReputation( address indexed _sender, address indexed _beneficary, int256 _amount );
-    event MintTokens( address indexed _sender, address indexed _beneficary, int256 _amount );
+    event MintTokens( address indexed _sender, address indexed _beneficary, uint256 _amount );
     event RegisterScheme( address indexed _sender, address indexed _scheme );
     event UnregisterScheme( address indexed _sender, address indexed _scheme );
     event GenericAction( address indexed _sender, address indexed _action, uint _param );
 
     event SendEther( address indexed _sender, uint _amountInWei, address indexed _to );
+    event ReceiveEther(address indexed _sender, uint _value);
     event ExternalTokenTransfer(address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
     event ExternalTokenTransferFrom(address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenApprove(address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
 
-    event TokenDisapprove( address indexed _sender, address _token, uint _value );
-    event Fallback(address indexed _sender, uint _value);
-
   // This is a good constructor only for new organizations, need an improved one to support upgrade.
-    function Controller(string _orgName,
-                         string _tknName,
-                         string _tknSymbol,
+    function Controller(Avatar         _avatar,
+                         MintableToken _nativeToken,
+                         Reputation    _nativeReputation,
                          address _universalRegisteringScheme,
                          bytes32 _registeringSchemeParams,
                          address _upgradingScheme,
                          bytes32 _upgradingSchemeParams,
-                         address _globalConstraintScheme,
+                         address _globalConstraintsScheme,
                          bytes32 _globalConstraintsSchemeParams)
     {
-        orgName = _orgName;
-        nativeToken = new MintableToken(_tknName, _tknSymbol);
-        nativeReputation = new Reputation();
+        avatar = _avatar;
+        nativeToken = _nativeToken;
+        nativeReputation = _nativeReputation;
         Scheme memory scheme;
         scheme.registered = true;
         scheme.registeringScheme = true;
@@ -69,7 +62,7 @@ contract Controller {
         RegisterScheme(msg.sender, _universalRegisteringScheme);
         upgradingScheme = _upgradingScheme;
         upgradingSchemeParams = _upgradingSchemeParams;
-        globalConstraintScheme = _globalConstraintScheme;
+        globalConstraintsScheme = _globalConstraintsScheme;
         globalConstraintsSchemeParams = _globalConstraintsSchemeParams;
     }
 
@@ -84,8 +77,8 @@ contract Controller {
         _;
     }
 
-    modifier onlyGlobalConstraintScheme() {
-        require(msg.sender == globalConstraintScheme);
+    modifier onlyglobalConstraintsScheme() {
+        require(msg.sender == globalConstraintsScheme);
         _;
     }
 
@@ -94,15 +87,15 @@ contract Controller {
         _;
     }
 
-    modifier onlySubjectToConstraint( string func ) {
+    modifier onlySubjectToConstraint( bytes32 func ) {
+      /*for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
+        if (globalConstraints[cnt] != address(0))
+        require( (GlobalConstraintInterface(globalConstraints[cnt])).pre(msg.sender, globalConstraintsParams[cnt], func) );
+      }*/
+      _;
       for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
         if (globalConstraints[cnt] != address(0))
-          require( (GlobalConstraintInterface(globalConstraints[cnt])).pre(msg.sender, globalConstraintsParams[cnt], bytes(func)) );
-      }
-      _;
-      for (cnt=0; cnt<globalConstraints.length; cnt++) {
-        if (globalConstraints[cnt] != address(0))
-          require( (GlobalConstraintInterface(globalConstraints[cnt])).post(msg.sender, globalConstraintsParams[cnt], bytes(func)) );
+        require( (GlobalConstraintInterface(globalConstraints[cnt])).post(msg.sender, globalConstraintsParams[cnt], func) );
       }
     }
 
@@ -113,7 +106,7 @@ contract Controller {
         return nativeReputation.mint(_amount, _beneficary);
     }
 
-    function mintTokens(int256 _amount, address _beneficary)
+    function mintTokens(uint256 _amount, address _beneficary)
     onlyRegisteredScheme onlySubjectToConstraint("mintTokens") returns(bool){
         MintTokens(msg.sender, _beneficary, _amount);
         return nativeToken.mint(_amount, _beneficary);
@@ -136,7 +129,7 @@ contract Controller {
         return true;
     }
 
-    function unregisterSelf() onlySubjectToConstraint("unregisterSelf") returns(bool){
+    function unregisterSelf() returns(bool){
         delete schemes[msg.sender];
         return true;
     }
@@ -151,14 +144,14 @@ contract Controller {
 
   // Globol Contraints:
     function addGlobalConstraint (address _globalConstraint, bytes32 _params)
-    onlyGlobalConstraintScheme onlySubjectToConstraint("addGlobalConstraint") returns(bool) {
+    onlyglobalConstraintsScheme returns(bool) {
         globalConstraints.push(_globalConstraint);
         globalConstraintsParams.push(_params);
         return true;
     }
 
     function removeGlobalConstraint (address _globalConstraint)
-    onlyGlobalConstraintScheme onlySubjectToConstraint("removeGlobalConstraint") returns(bool) {
+    onlyglobalConstraintsScheme returns(bool) {
       for (uint cnt=0; cnt< globalConstraints.length; cnt++) {
         if (globalConstraints[cnt] == _globalConstraint) {
           globalConstraints[cnt] = address(0);
@@ -167,9 +160,10 @@ contract Controller {
       }
     }
 
-    function changeGlobalConstraintScheme( address _newGlobalConstraintScheme )
-    onlyGlobalConstraintScheme onlySubjectToConstraint("changeGlobalConstraintScheme") returns(bool) {
-        globalConstraintScheme = _newGlobalConstraintScheme;
+    function changeGlobalConstraintsScheme( address _newGlobalConstraintsScheme,  bytes32 _newGlobalConstraintsSchemeParams)
+    onlyglobalConstraintsScheme returns(bool) {
+        globalConstraintsScheme = _newGlobalConstraintsScheme;
+        globalConstraintsSchemeParams = _newGlobalConstraintsSchemeParams;
         return true;
     }
 
@@ -186,35 +180,37 @@ contract Controller {
         require(newController == address(0));   // Do we want this?
         require(_newController != address(0));
         newController = _newController;
+        avatar.transferOwnership(_newController);
         nativeToken.transferOwnership(_newController);
         nativeReputation.transferOwnership(_newController);
         return true;
     }
 
+  // External actions:
     function genericAction( ActionInterface _action, uint _param ) // TODO discuss name
     onlyRegisteredScheme onlySubjectToConstraint("genericAction") returns(bool){
         GenericAction( msg.sender, _action, _param );
-        return _action.delegatecall(bytes4(sha3("action(uint256)")), _param);
+        return avatar.genericAction(_action, _param);
     }
 
     function sendEther( uint _amountInWei, address _to )
     onlyRegisteredScheme onlySubjectToConstraint("sendEther") returns(bool) {
         SendEther( msg.sender, _amountInWei, _to );
-        _to.transfer(_amountInWei );
+        avatar.sendEther(_amountInWei, _to);
         return true;
     }
 
     function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
     onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransfer") returns(bool) {
         ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
-        _externalToken.transfer( _to, _value );
+        avatar.externalTokenTransfer(_externalToken, _to, _value);
         return true;
     }
 
     function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value)
     onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransferFrom") returns(bool) {
         ExternalTokenTransferFrom(msg.sender, _externalToken, _from, _to, _value);
-        _externalToken.transferFrom( _from, _to, _value );
+        avatar.externalTokenTransferFrom(_externalToken, _from, _to, _value);
         return true;
     }
 
@@ -225,17 +221,8 @@ contract Controller {
         return true;
     }
 
-    // function in case someone approved a token to the contract and changed
-    // his mind. Can be called both for internal or external tokens.
-
-    function tokenDisapprove(StandardToken _token, uint _value )
-    onlySubjectToConstraint("tokenDisapprove") returns(bool) {
-        TokenDisapprove( msg.sender, _token, _value );
-        _token.transferFrom( msg.sender,msg.sender, _value );
-        return true;
-    }
-
     function() payable {
-        Fallback( msg.sender, msg.value );
+        ReceiveEther( msg.sender, msg.value );
+        avatar.transfer(msg.value);
     }
 }

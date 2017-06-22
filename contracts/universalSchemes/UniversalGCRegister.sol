@@ -35,7 +35,7 @@ contract UniversalGCRegister is UniversalScheme {
     function checkParameterHashMatch(Controller _controller,
                      bytes32 _voteRegisterParams,
                      BoolVoteInterface _boolVote) constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_voteRegisterParams, _boolVote));
+       return (_controller.globalConstraintsSchemeParams() == parametersHash(_voteRegisterParams, _boolVote));
     }
 
     function addOrUpdateOrg(Controller _controller,
@@ -46,11 +46,11 @@ contract UniversalGCRegister is UniversalScheme {
       nativeToken.transferFrom(msg.sender, benificiary, fee);
 
       require(checkParameterHashMatch(_controller, _voteRegisterParams, _boolVote));
-      Organization memory org;
+      /*Organization memory org;
       org.isRegistered = true;
       org.voteRegisterParams = _voteRegisterParams;
       org.boolVote = _boolVote;
-      organizations[_controller] = org;
+      organizations[_controller] = org;*/
     }
 
     function proposeGC(Controller _controller, address _gc, bytes32 _parametersHash) returns(bytes32) {

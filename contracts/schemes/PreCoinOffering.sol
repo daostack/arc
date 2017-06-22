@@ -8,22 +8,22 @@ contract PreCoinOffering is Ownable {
     using SafeMath for uint;
 
     Controller    controller;
-    int           cap;          // Cap in Eth
-    int           initPrice;    // Price represents Tokens per 1 Eth
-    int           finalPrice;
-    int           totalEthRaised;
-    int           priceSlope;   // Will usually be negative
+    uint          cap;          // Cap in Eth
+    uint          initPrice;    // Price represents Tokens per 1 Eth
+    uint          finalPrice;
+    uint          totalEthRaised;
+    uint          priceSlope;   // Will usually be negative
     bool          isOpened;
 
-    event DonationRecieved( address indexed _sender, int indexed _tokensAmount, uint _newPrice );
+    event DonationRecieved( address indexed _sender, uint indexed _tokensAmount, uint _newPrice );
 
     // Constructor:
     function PreCoinOffering(
         Controller  _controller,
         address   _owner,
-        int       _cap,
-        int       _initPrice,
-        int       _finalPrice)
+        uint      _cap,
+        uint      _initPrice,
+        uint      _finalPrice)
     {
         controller = _controller;
         owner = _owner;
@@ -45,7 +45,7 @@ contract PreCoinOffering is Ownable {
     }
 
     // Buying tokens:
-    function donate() payable returns(int) {
+    function donate() payable returns(uint) {
         // Check PCO is open:
         require(isOpened);
         // Check cap reached:
@@ -55,13 +55,13 @@ contract PreCoinOffering is Ownable {
         uint change;
 
         // Compute how much tokens to buy:
-        if (msg.value > (uint(cap)).sub(uint(totalEthRaised))) {
-            incomingEther = (uint(cap)).sub(uint(totalEthRaised));
-            change = (msg.value).sub(uint(cap));
+        if (msg.value > (cap).sub(totalEthRaised)) {
+            incomingEther = (cap).sub(totalEthRaised);
+            change = (msg.value).sub(cap);
         } else {
             incomingEther = msg.value;
         }
-        int tokens = int(incomingEther.mul(getCurrentPrice()));
+        uint tokens = incomingEther.mul(getCurrentPrice());
 
         // Send ether to controller (to be avatar), mint, and send change to user:
         controller.transfer(incomingEther);
@@ -70,13 +70,13 @@ contract PreCoinOffering is Ownable {
             msg.sender.transfer(change);
 
         // Update total raised, call event and return amount of tokens bought:
-        totalEthRaised += int(incomingEther);
+        totalEthRaised += incomingEther;
         DonationRecieved(msg.sender, tokens, getCurrentPrice());
         return tokens;
     }
 
     // replace this with any other price function
     function getCurrentPrice() returns (uint){
-      return (uint(initPrice + priceSlope*totalEthRaised));
+      return (initPrice + priceSlope*totalEthRaised);
     }
 }

@@ -9,8 +9,8 @@ contract Employee {
 
     Controller public controller;
     address public beneficary;
-    uint public periodInMonths; // Month is taken is 4 weeks
-    int public tokenSalary;
+    uint public periodInMonths; // Month is taken as 4 weeks
+    uint public tokenSalary;
     int public repSalary;
     uint public salariesCollected = 0;
     uint public startDate;
@@ -20,7 +20,7 @@ contract Employee {
         address _beneficary,
         uint _startDate,
         uint _periodInMonths,
-        int _tokenSalary,
+        uint _tokenSalary,
         int _repSalary)
     {
         controller = _controller;

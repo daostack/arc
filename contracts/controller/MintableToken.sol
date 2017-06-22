@@ -14,7 +14,7 @@ contract MintableToken is StandardToken, Ownable, Destructible {
 
     uint public decimals = 18;
 
-    event Mint(address indexed to, int256 value);
+    event Mint(address indexed to, uint256 value);
 
     function MintableToken( string _name, string _symbol ) {
         name = _name;
@@ -22,20 +22,10 @@ contract MintableToken is StandardToken, Ownable, Destructible {
         totalSupply = 0;
     }
 
-    function mint(int256 _amount, address _to) onlyOwner returns (bool) {
+    function mint(uint256 _amount, address _to) onlyOwner returns (bool) {
     	// create new tokens and add them to the given account
-    	uint absAmount;
-    	/*if ( _amount < 0 && _to != owner ) revert; // Allowing burn for everyone, just for the demo.*/
-    	if( _amount >= 0 ) {
-        	absAmount = uint(_amount);
-            totalSupply = totalSupply.add(absAmount);
-            balances[_to] = balances[_to].add(absAmount);
-      }
-      else {
-          absAmount = uint((-1)*_amount);
-          totalSupply = totalSupply.sub(absAmount);
-          balances[_to] = balances[_to].sub(absAmount);
-      }
+      totalSupply = totalSupply.add(_amount);
+      balances[_to] = balances[_to].add(_amount);
       Mint(_to, _amount);
       return true;
     }

@@ -1,29 +1,42 @@
 pragma solidity ^0.4.11;
 
+import "../controller/Avatar.sol";
+import "../controller/Reputation.sol";
+import "../controller/MintableToken.sol";
 import "../controller/Controller.sol";
 
 contract UniversalGenesisScheme {
+    MintableToken nativeToken;
+    Reputation nativeReputation;
+    Avatar avatar;
+
+    mapping(address=>address) owners;
 
     event NewOrg (address _controller);
 
     function UniversalGenesisScheme( ) {
     }
 
-    function forgeOrg (string orgName,
-                        string tokenName,
-                        string tokenSymbol,
+    function forgeOrg (bytes32 _orgName,
+                        string _tokenName,
+                        string _tokenSymbol,
                         address[] _founders,
-                        int[] _foundersTokenAmount,
-                        int[] _foundersReputationAmount,
-                        address _registeringScheme,
-                        bytes32 _registeringSchemeParams,
-                        address _upgradingScheme,
-                        bytes32 _upgradingSchemeParams,
-                        address _globalConstraintScheme,
-                        bytes32 _globalConstraintsSchemeParams) returns(address) {
+                        uint[] _foundersTokenAmount,
+                        int[] _foundersReputationAmount) returns(address) {
 
-        Controller controller = new Controller( orgName, tokenName, tokenSymbol, this, bytes32(0),_upgradingScheme,
-                                          _upgradingSchemeParams, _globalConstraintScheme, _globalConstraintsSchemeParams);
+        // Create Token, Reputation and Avatar:
+        nativeToken = new MintableToken(_tokenName, _tokenSymbol);
+        nativeReputation = new Reputation();
+        avatar =  new Avatar(_orgName, nativeToken, nativeReputation);
+
+        // Create Controller:
+        Controller controller = new Controller(avatar, nativeToken, nativeReputation, this, bytes32(0),
+                                                  this, bytes32(0), this, bytes32(0));
+
+        // Transfer ownership:
+        avatar.transferOwnership(controller);
+        nativeToken.transferOwnership(controller);
+        nativeReputation.transferOwnership(controller);
 
         // Mint token and reputation for founders:
         for( uint i = 0 ; i < _founders.length ; i++ ) {
@@ -31,11 +44,28 @@ contract UniversalGenesisScheme {
             if( ! controller.mintReputation( _foundersReputationAmount[i], _founders[i] ) ) revert();
         }
 
-        // register the registering scheme and remove this scheme.
-        controller.registerScheme( _registeringScheme, true, _registeringSchemeParams );
-        controller.unregisterScheme( this );
+        owners[msg.sender] = controller;
 
         NewOrg (address(controller));
         return (address(controller));
+    }
+
+    function listInitialSchemes (Controller _controller,
+                                  address _registeringScheme,
+                                  address _upgradingScheme,
+                                  address _globalConstraintsScheme,
+                                  bytes32 _registeringSchemeParams,
+                                  bytes32 _upgradingSchemeParams,
+                                  bytes32 _globalConstraintsSchemeParams) {
+        require(owners[msg.sender] == address(_controller));
+
+        // Remove record:
+        delete owners[_controller];
+
+        // register the registering scheme and remove this scheme.
+        _controller.registerScheme( _registeringScheme, true, _registeringSchemeParams );
+        _controller.changeUpgradeScheme(_upgradingScheme, _upgradingSchemeParams);
+        _controller.changeGlobalConstraintsScheme(_globalConstraintsScheme, _globalConstraintsSchemeParams);
+        _controller.unregisterScheme( this );
     }
 }
