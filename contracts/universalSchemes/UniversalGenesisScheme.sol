@@ -27,11 +27,11 @@ contract UniversalGenesisScheme {
      * @param _orgName The name of the new organization
      * @param _tokenName The name of the token associated with the organization
      * @param _tokenSymbol The symbol of the token
-     * @param _founders A list of addresses of the founders of the organization 
-     * @param _foundersTokenAmount A list of amount of tokens that the founders 
-     *  receiv in the new organization 
-     * @param _foundersReputationAmount A list of amount of reputation that the 
-     *   founders  receive in the new organization
+     * @param _founders An array with the addresses of the founders of the organization 
+     * @param _foundersTokenAmount An array of amount of tokens that the founders 
+     *  receive in the new organization 
+     * @param _foundersReputationAmount An array of amount of reputation that the 
+     *   founders receive in the new organization
      *
      * @return The address of the Controller
      */
@@ -79,6 +79,7 @@ contract UniversalGenesisScheme {
         require(owners[msg.sender] == address(_controller));
 
         // Remove record:
+        // TODO: this must be wron, given that we previousely required owners[msg.sender]
         delete owners[_controller];
 
         // register the registering scheme and remove this scheme.

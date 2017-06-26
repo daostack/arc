@@ -16,7 +16,7 @@ before_install:
   - sudo apt-get install geth -y -qq
 
 install:
-  - npm install
+  - yarn install
   - npm run testrpc
 
 notifications:

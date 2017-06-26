@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 import "../VotingMachines/BoolVoteInterface.sol";
 import "../universalSchemes/UniversalScheme.sol";
-import "zeppelin/contracts/token/StandardToken.sol";
+import "/zeppelin/contracts/token/StandardToken.sol";
 
 contract Registry {
   struct Proposal {

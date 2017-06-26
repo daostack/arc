@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
-import "zeppelin/contracts/ownership/Ownable.sol";
-import "zeppelin/contracts/token/StandardToken.sol";
+import "/zeppelin/contracts/ownership/Ownable.sol";
+import "/zeppelin/contracts/token/StandardToken.sol";
 
 contract UniversalScheme is Ownable {
   StandardToken     public      nativeToken;

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-import "zeppelin/contracts/token/StandardToken.sol";
+import "/zeppelin/contracts/token/StandardToken.sol";
 
 contract TokenCap {
   struct Parameters {

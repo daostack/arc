@@ -1,9 +1,9 @@
 pragma solidity ^0.4.11;
 
-import "zeppelin/contracts/token/StandardToken.sol";
-import "zeppelin/contracts/ownership/Ownable.sol";
-import "zeppelin/contracts/lifecycle/Destructible.sol";
-import "zeppelin/contracts/SafeMath.sol";
+import "/zeppelin/contracts/token/StandardToken.sol";
+import "/zeppelin/contracts/ownership/Ownable.sol";
+import "/zeppelin/contracts/lifecycle/Destructible.sol";
+import "/zeppelin/contracts/SafeMath.sol";
 
 
 contract MintableToken is StandardToken, Ownable, Destructible {
