@@ -1,13 +1,13 @@
-
+/**
+    helpers for tests
+*/
 var Controller = artifacts.require("./Controller.sol");
-var GenesisScheme = artifacts.require("./GenesisScheme.sol");
+var UniversalGenesisScheme = artifacts.require("./UniversalGenesisScheme.sol");
 var MintableToken = artifacts.require("./MintableToken.sol");
 var Reputation = artifacts.require("./Reputation.sol");
-var SimpleVote = artifacts.require("./SimpleVote.sol");
-var SimpleContribution = artifacts.require("./SimpleContribution.sol");
 
-function getProposalAddress(tx) {
 
+export function getProposalAddress(tx) {
     // helper function that returns a proposal object from the ProposalCreated event 
     // in the logs of tx
     assert.equal(tx.logs[0].event, 'ProposalCreated')
@@ -15,100 +15,59 @@ function getProposalAddress(tx) {
     return proposalAddress
 
 }
-function getProposal(tx) {
+
+
+export function getProposal(tx) {
     return Proposal.at(getProposalAddress(tx))
 }
 
-module.exports.getProposal = getProposal
-module.exports.getProposalAddress = getProposalAddress
 
-async function setupDAO(ctx) {
-    // set up a DAO from scratch
-    // (this procedure should be simplified)
-
-    let reputation = await Reputation.new()
-    await reputation.setReputation(1000, web3.eth.accounts[0]);
-    let token = await MintableToken.new()
-    let dao = await DAO.new(reputation.address, token.address);
-    await token.transferOwnership(dao.address)
-    await reputation.transferOwnership(dao.address)
-
-    let minttokensRecipe = await ProposalMintTokensRecipe.new(dao.address)
-    await dao.registerRecipe(minttokensRecipe.address)
-
-    let mintreputationRecipe = await ProposalMintReputationRecipe.new(dao.address)
-    await dao.registerRecipe(mintreputationRecipe.address)
-
-    // we finished configuring the DAO, we can now transfer ownership to itself
-    await dao.transferOwnership(dao.address)
- 
-    // make variables available in the context
-    ctx.token = token
-    ctx.reputation = reputation
-    ctx.dao = dao
-    ctx.minttokensRecipe = minttokensRecipe
-    ctx.mintreputationRecipe = mintreputationRecipe
-
-    // next statement makes truffle return more data with transactions, 
-    // and can be removed once a new version of truffle comes out)
-    DAO.next_gen = true
-    ProposalMintTokensRecipe.next_gen = true
-    ProposalMintReputationRecipe.next_gen = true
-}
-
-module.exports.setupDAO = setupDAO
-
-async function tokensforeveryone() {
+export async function etherForEveryone() {
+    // give all web3.eth.accounts some ether
     let accounts = web3.eth.accounts;
     for (let i=0; i < 10; i++) {
         await web3.eth.sendTransaction({to: accounts[i], from: accounts[0], value: web3.toWei(0.1, "ether")})
     }
 }
 
-module.exports.tokensforeveryone = tokensforeveryone
 
-async function setupController(ctx, founders, tokenForFounders=[1, 2, 4], repForFounders=[7, 100, 12]) {
+export async function forgeOrganization(ctx, founders, tokenForFounders=[1, 2, 4], repForFounders=[7, 100, 12]) {
     let accounts = web3.eth.accounts;
     tokensforeveryone();
 
     if (founders == undefined) {
         founders = [accounts[0], accounts[1], accounts[2]];
     }
+    const universalGenesisScheme = await UniversalGenesisScheme.new()
+    const tx = await universalGenesisScheme.forgeOrg(
+        "Shoes factory",
+        "Shoes",
+        "SHO",
+        founders,
+        tokenForFounders,
+        repForFounders,
+    );
+   
+    ctx.founders = founders;
+    ctx.universalGenesisScheme = universalGenesisScheme;
+    // get the address of the controll from the logs
+    const log = tx.logs[0];
+    assert.equal(log.event, 'NewOrg');
+    ctx.controllerAddress = log.args._controller;
+    ctx.controller = Controller.at(ctx.controllerAddress);
     
-    let votingScheme = await SimpleVote.new();
+    // ctx.reputationAddress = await ctx.controllerInstance.nativeReputation();
+    // ctx.reputationInstance = Reputation.at(ctx.reputationAddress);
     
-    let genesis = await GenesisScheme.new("Shoes factory",
-                                          "SHOE",
-                                          founders,
-                                          tokenForFounders,
-                                          repForFounders,
-                                          votingScheme.address);
-    
-    for (let i = 0 ; i < founders.length ; i++ ) {
-        // send some ether to the founder so she can collect her share
-        await genesis.collectFoundersShare({'from': founders[i]});
-    }
-    
-    ctx.founders = founders
-    ctx.genesis = genesis;
-    ctx.controllerAddress = await genesis.controller();
-    ctx.controllerInstance = Controller.at(ctx.controllerAddress);
-    
-    ctx.reputationAddress = await ctx.controllerInstance.nativeReputation();
-    ctx.reputationInstance = Reputation.at(ctx.reputationAddress);
-    
-    ctx.tokenAddress = await ctx.controllerInstance.nativeToken();
-    ctx.tokenInstance = MintableToken.at(ctx.tokenAddress);  
+    // ctx.tokenAddress = await ctx.controllerInstance.nativeToken();
+    // ctx.tokenInstance = MintableToken.at(ctx.tokenAddress);  
 }
 
-module.exports.setupController = setupController
+
+export const outOfGasMessage = 'VM Exception while processing transaction: out of gas'
 
 
-
-let outOfGasMessage = 'VM Exception while processing transaction: out of gas'
-module.exports.outOfGasMessage = outOfGasMessage
-
-module.exports.assertJumpOrOutOfGas = function(error) {
+export function assertJumpOrOutOfGas(error) {
     let condition = (
         error.message == outOfGasMessage ||
         error.message.search('invalid JUMP') > -1
@@ -116,6 +75,7 @@ module.exports.assertJumpOrOutOfGas = function(error) {
     assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error')
 }
 
-module.exports.assertJump = function(error) {
+
+export function assertJump(error) {
   assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned');
 }

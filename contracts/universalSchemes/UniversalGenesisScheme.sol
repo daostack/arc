@@ -5,6 +5,11 @@ import "../controller/Reputation.sol";
 import "../controller/MintableToken.sol";
 import "../controller/Controller.sol";
 
+/**
+ * @title Universal Genesis Scheme
+ * @dev A contract to create Organizations
+ */
+
 contract UniversalGenesisScheme {
     MintableToken nativeToken;
     Reputation nativeReputation;
@@ -16,6 +21,20 @@ contract UniversalGenesisScheme {
 
     function UniversalGenesisScheme( ) {
     }
+
+    /**
+     * @dev Create a new organization
+     * @param _orgName The name of the new organization
+     * @param _tokenName The name of the token associated with the organization
+     * @param _tokenSymbol The symbol of the token
+     * @param _founders A list of addresses of the founders of the organization 
+     * @param _foundersTokenAmount A list of amount of tokens that the founders 
+     *  receiv in the new organization 
+     * @param _foundersReputationAmount A list of amount of reputation that the 
+     *   founders  receive in the new organization
+     *
+     * @return The address of the Controller
+     */
 
     function forgeOrg (bytes32 _orgName,
                         string _tokenName,

@@ -8,3 +8,5 @@ NOTES.md
 test/play.js
 tmp/
 installed_contracts/
+yarn.lock
+remarks.md
