@@ -5,16 +5,11 @@ These contracts are tested using the truffle framework
 
 ## Installation
 
-Make sure you have a recent version of node.js and npm:
+Make sure you have a recent version of node.js and yarn.
 
-    npm install -g npm
-    sudo npm cache clean -f
-    sudo npm install -g n
-    sudo n stable
+Install the software:
 
-Now you are ready to install doastack:
-
-    npm install 
+    yarn install 
 
 
 ## Run tests
