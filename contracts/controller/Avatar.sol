@@ -3,8 +3,8 @@ pragma solidity ^0.4.11;
 import "./Controller.sol";
 import "./Reputation.sol";
 import "./MintableToken.sol";
-import "/zeppelin/contracts/ownership/Ownable.sol";
-import "/zeppelin/contracts/token/StandardToken.sol";
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "zeppelin-solidity/contracts/token/StandardToken.sol";
 
 contract ActionInterface {
     function action( uint _param ) returns(bool);

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 import "../controller/Controller.sol";
-import "/zeppelin/contracts/ownership/Ownable.sol";
-import "/zeppelin/contracts/SafeMath.sol";
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "zeppelin-solidity/contracts/SafeMath.sol";
 
 
 contract SimpleICO is Ownable {
