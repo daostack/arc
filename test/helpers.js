@@ -72,7 +72,15 @@ export function assertJumpOrOutOfGas(error) {
         error.message == outOfGasMessage ||
         error.message.search('invalid JUMP') > -1
     ) 
-    assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error')
+    assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error:' + error.message);
+}
+
+
+export function assertVMException(error) {
+    let condition = (
+        error.message.search('VM Exception') > -1
+    ) 
+    assert.isTrue(condition, 'Expected a VM Exception, got this instead:' + error.message);
 }
 
 

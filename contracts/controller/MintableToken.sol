@@ -6,6 +6,14 @@ import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
 import "zeppelin-solidity/contracts/SafeMath.sol";
 
 
+
+/**
+ * @title Mintable token
+ * @dev ERC20 Token, with mintable token creation
+ * @dev Issue: * https://github.com/OpenZeppelin/zeppelin-solidity/issues/120
+ * Based on code by TokenMarketNet: https://github.com/TokenMarketNet/ico/blob/master/contracts/MintableToken.sol
+ */
+
 contract MintableToken is StandardToken, Ownable, Destructible {
     using SafeMath for uint;
 
