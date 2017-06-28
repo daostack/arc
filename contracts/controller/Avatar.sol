@@ -10,6 +10,9 @@ contract ActionInterface {
     function action( uint _param ) returns(bool);
 }
 
+/**
+ * @title An Avatar holds tokens, reputation and ether for a controller
+ */
 contract Avatar is Ownable {
   bytes32         public   orgName;
   MintableToken   public   nativeToken;

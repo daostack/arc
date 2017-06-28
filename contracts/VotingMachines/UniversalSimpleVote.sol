@@ -8,14 +8,14 @@ contract UniversalSimpleVote {
 
     struct ProposalParameters {
       Reputation reputationSystem;
-      uint absPrecReq; // Usuualy >= 50
+      uint absPrecReq; // Usually >= 50
     }
 
     struct Proposal {
         address owner;
         bytes32 parameters;
-        uint yes; // total 'yes' proposals
-        uint no; // total 'no' proposals
+        uint yes; // total 'yes' votes
+        uint no; // total 'no' votes
         mapping(address=>bool) voted; // people in this list have already voted
         bool opened; // A flag that voting opened
         bool ended; // voting had ended flag

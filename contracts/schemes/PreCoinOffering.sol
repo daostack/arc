@@ -34,14 +34,14 @@ contract PreCoinOffering is Ownable {
         isOpened = true;
     }
 
-    // When either is sent to contract, buy tokens with it:
+    // When Ether is sent to contract, buy tokens with it:
     function () payable {
-          donate();
+        donate();
     }
 
     // Owner closes PCO:
     function closePCO() onlyOwner {
-          isOpened = false;
+        isOpened = false;
     }
 
     // Buying tokens:

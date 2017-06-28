@@ -69,6 +69,10 @@ contract UniversalGenesisScheme {
         return (address(controller));
     }
 
+    /**
+     * @dev  register some initial schemes
+     */
+
     function listInitialSchemes (Controller _controller,
                                   address _registeringScheme,
                                   address _upgradingScheme,
@@ -79,7 +83,7 @@ contract UniversalGenesisScheme {
         require(owners[msg.sender] == address(_controller));
 
         // Remove record:
-        // TODO: this must be wron, given that we previousely required owners[msg.sender]
+        // TODO: this must be wrong, given that we previousely required owners[msg.sender]
         delete owners[_controller];
 
         // register the registering scheme and remove this scheme.

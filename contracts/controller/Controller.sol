@@ -5,6 +5,11 @@ import "./Reputation.sol";
 import "./MintableToken.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
 
+/**
+ * @title Controller contract
+ * @dev A controller controls its own and other tokens, and is piloted by a reputation
+ * system. It is subject to a number of constraints that determine its behavior
+ */
 contract Controller {
 
     string constant public version = "0.0.1";
@@ -20,11 +25,17 @@ contract Controller {
     Avatar          public   avatar;
     MintableToken   public   nativeToken;
     Reputation      public   nativeReputation;
+    // newController will point to the new controller after the present controller is upgraded
     address         public   newController;
+    // upgradeScheme and upgradingSchemeParams determine the conditions under which the controller 
+    // can be upgraded
     address         public   upgradingScheme;
     bytes32         public   upgradingSchemeParams;
+    // globalConstraintsScheme and globalConstraintsParams determine the conditions under 
+    // which globalConstraints can be set
     address         public   globalConstraintsScheme;
     bytes32         public   globalConstraintsSchemeParams;
+    // globalConstraints that determine pre- and post-conditions for all actions on the controller
     address[]       public   globalConstraints;
     bytes32[]       public   globalConstraintsParams;
 
@@ -40,7 +51,7 @@ contract Controller {
     event ExternalTokenTransferFrom(address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenApprove(address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
 
-  // This is a good constructor only for new organizations, need an improved one to support upgrade.
+    // This is a good constructor only for new organizations, need an improved one to support upgrade.
     function Controller(Avatar         _avatar,
                          MintableToken _nativeToken,
                          Reputation    _nativeReputation,
@@ -66,7 +77,7 @@ contract Controller {
         globalConstraintsSchemeParams = _globalConstraintsSchemeParams;
     }
 
-  // Modifieres:
+    // Modifiers:
     modifier onlyRegisteringSchemes() {
         require(schemes[msg.sender].registeringScheme);
         _;
@@ -99,7 +110,7 @@ contract Controller {
       }
     }
 
-  // Minting:
+    // Minting:
     function mintReputation(int256 _amount, address _beneficary)
       onlyRegisteredScheme onlySubjectToConstraint("mintReputation") returns(bool){
         MintReputation(msg.sender, _beneficary, _amount);
@@ -112,7 +123,7 @@ contract Controller {
         return nativeToken.mint(_amount, _beneficary);
     }
 
-  // Scheme registration and unregistration:
+    // Scheme registration and unregistration:
     function registerScheme( address _scheme, bool _registeringScheme, bytes32 _parametersHash)
     onlyRegisteringSchemes onlySubjectToConstraint("registerScheme") returns(bool){
         schemes[_scheme].registered = true;
@@ -142,7 +153,7 @@ contract Controller {
       return schemes[_scheme].parametersHash;
     }
 
-  // Globol Contraints:
+    // Global Contraints:
     function addGlobalConstraint (address _globalConstraint, bytes32 _params)
     onlyglobalConstraintsScheme returns(bool) {
         globalConstraints.push(_globalConstraint);
