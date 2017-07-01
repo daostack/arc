@@ -89,7 +89,7 @@ contract UniversalGCRegister is UniversalScheme {
         if( ! boolVote.vote(id, _yes, msg.sender) ) return false;
         if( boolVote.voteResults(id) ) {
             gcProposal memory proposal = organizations[_controller].proposals[id];
-            if( ! boolVote.cancellProposel(id) ) revert();
+            if( ! boolVote.cancelProposal(id) ) revert();
             if( organizations[_controller].proposals[id].proposalType == 2 ) {
                 if( ! _controller.removeGlobalConstraint(proposal.gc) ) revert();
             }

@@ -14,10 +14,11 @@ contract Controller {
 
     string constant public version = "0.0.1";
 
+    // TODO: "registered" is always true - remove it?
     struct Scheme {
-      bool      registered;
-      bool      registeringScheme;
-      bytes32   parametersHash;
+      bool      registered; // TODO: rename isRegistered
+      bool      registeringScheme; // TODO: rename isRegisteringScheme
+      bytes32   parametersHash; // a hash "configuration" of the scheme
     }
 
     mapping(address=>Scheme) public schemes;

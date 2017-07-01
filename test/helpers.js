@@ -1,19 +1,20 @@
 /**
     helpers for tests
 */
-var Controller = artifacts.require("./Controller.sol");
-var UniversalGenesisScheme = artifacts.require("./UniversalGenesisScheme.sol");
-var MintableToken = artifacts.require("./MintableToken.sol");
-var Reputation = artifacts.require("./Reputation.sol");
+const Controller = artifacts.require("./Controller.sol");
+const UniversalGenesisScheme = artifacts.require("./UniversalGenesisScheme.sol");
+const UniversalSchemeRegister = artifacts.require("./UniversalSchemeRegister.sol");
+const MintableToken = artifacts.require("./MintableToken.sol");
+const BasicToken = artifacts.require("./BasicToken.sol");
+const Reputation = artifacts.require("./Reputation.sol");
 
 
 export function getProposalAddress(tx) {
     // helper function that returns a proposal object from the ProposalCreated event 
     // in the logs of tx
     assert.equal(tx.logs[0].event, 'ProposalCreated')
-    let proposalAddress = tx.logs[0].args.proposaladdress
+    const proposalAddress = tx.logs[0].args.proposaladdress
     return proposalAddress
-
 }
 
 
@@ -31,15 +32,26 @@ export async function etherForEveryone() {
 }
 
 
-export async function forgeOrganization(ctx, founders, tokenForFounders=[1, 2, 4], repForFounders=[7, 100, 12]) {
+async function createSchemeRegister() {
+    // tokenAddress = 
+
+    // return UniversalSchemeRegister.new(tokenAddress, fee, beneficary);
+}
+
+export async function forgeOrganization(
+    ctx, 
+    founders, 
+    tokenForFounders=[1, 2, 4], 
+    repForFounders=[7, 100, 12]
+    ) {
     let accounts = web3.eth.accounts;
     etherForEveryone();
 
     if (founders == undefined) {
         founders = [accounts[0], accounts[1], accounts[2]];
     }
-    const universalGenesisScheme = await UniversalGenesisScheme.new()
-    const tx = await universalGenesisScheme.forgeOrg(
+    const universalGenesisSchemeInst = await UniversalGenesisScheme.new()
+    const tx = await universalGenesisSchemeInst.forgeOrg(
         "Shoes factory",
         "Shoes",
         "SHO",
@@ -49,18 +61,20 @@ export async function forgeOrganization(ctx, founders, tokenForFounders=[1, 2, 4
     );
    
     ctx.founders = founders;
-    ctx.universalGenesisScheme = universalGenesisScheme;
+    ctx.universalGenesisScheme = universalGenesisSchemeInst;
     // get the address of the controll from the logs
     const log = tx.logs[0];
-    assert.equal(log.event, 'NewOrg');
     ctx.controllerAddress = log.args._controller;
     ctx.controller = Controller.at(ctx.controllerAddress);
     
-    // ctx.reputationAddress = await ctx.controllerInstance.nativeReputation();
-    // ctx.reputationInstance = Reputation.at(ctx.reputationAddress);
-    
-    // ctx.tokenAddress = await ctx.controllerInstance.nativeToken();
-    // ctx.tokenInstance = MintableToken.at(ctx.tokenAddress);  
+    // return universalGenesisSchemeInst.setInitialSchemes(
+    //     ctx.controllerAddress,
+    //     UniversalSchemeRegisterIsnt.address,
+    //     UniversalUpgradeSchemeInst.address,
+    //     UniversalGCRegisterInst.address,
+    //     schemeRegisterParams,
+    //     schemeUpgradeParams,
+    //     schemeGCRegisterParams);
     return ctx.controller;
 }
 

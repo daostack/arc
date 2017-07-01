@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 contract BoolVoteInterface {
     function propose(bytes32 _proposalParameters) returns(bytes32);
 
-    function cancellProposel(bytes32 id) returns(bool);
+    function cancelProposal(bytes32 id) returns(bool);
 
     function vote(bytes32 id, bool yes, address voter) returns(bool);
 

@@ -24,7 +24,7 @@ contract UniversalSimpleVote {
     event NewProposal( bytes32 _proposalId, address owner, Reputation _reputationSystem, uint absPrecReq);
     event VoteProposal( address _voter, bytes32 _proposalId, bool _yes, uint _reputation );
     event EndProposal( bytes32 _proposalId );
-    event CancellProposal( bytes32 _proposalId );
+    event CancelProposal(bytes32 _proposalId);
 
     mapping(bytes32=>ProposalParameters) proposalsParameters;
     mapping(bytes32=>Proposal) proposals;
@@ -50,7 +50,6 @@ contract UniversalSimpleVote {
       return false;
     }
 
-
     function propose(bytes32 _proposalParameters) returns(bytes32) {
       // Do we want to make sure that proposing a proposal will be done only by registered schemes?
       require(checkExistingParameters(_proposalParameters));
@@ -60,6 +59,7 @@ contract UniversalSimpleVote {
       proposal.owner = msg.sender;
       proposal.opened = true;
       id = sha3(msg.sender, _proposalParameters);
+      // this basically gives a a random id.
       while (proposals[id].opened)
         id = sha3(id^sha3(id));
       proposals[id] = proposal;
@@ -67,10 +67,10 @@ contract UniversalSimpleVote {
       return id;
     }
 
-    function cancellProposel(bytes32 id) returns(bool) {
+    function cancelProposal(bytes32 id) returns(bool) {
         require(msg.sender == proposals[id].owner);
         delete proposals[id];
-        CancellProposal(id);
+        CancelProposal(id);
         return true;
     }
 

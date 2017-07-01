@@ -106,7 +106,7 @@ contract UniversalSimpleContribution is UniversalScheme {
         if( ! boolVote.vote(_contributionId, _yes, msg.sender) ) return false;
         if( boolVote.voteResults(_contributionId) ) {
             ContributionData memory data = organizations[_controller].contributions[_contributionId];
-            if( ! boolVote.cancellProposel(_contributionId) ) revert();
+            if( ! boolVote.cancelProposal(_contributionId) ) revert();
             if( ! _controller.mintReputation(int(data.reputationReward), data.beneficiary) ) revert();
             if( ! _controller.mintTokens(data.nativeTokenReward, data.beneficiary ) ) revert();
             if( ! _controller.sendEther(data.ethReward, data.beneficiary) ) revert();
