@@ -45,117 +45,58 @@ var schemeUpgradeParams;
 // Universal schemes fees:
 var UniversalRegisterFee = web3.toWei(5);
 
-module.exports = function(deployer) {
+module.exports = async function(deployer) {
+    // Deploy UniversalGenesisScheme:
+    // apparently we must wrap the first deploy call in a then to avoid 
+    // what seem to be race conditions during deployment
+    // await deployer.deploy(UniversalGenesisScheme)
+    deployer.deploy(UniversalGenesisScheme).then(async function(){
 
-// Deploy UniversalGenesisScheme:
-	deployer.deploy(UniversalGenesisScheme).then(function (){
-		return UniversalGenesisScheme.deployed();
-	}).then(function(inst) {
-		UniversalGenesisSchemeIsnt = inst;
-	}).then(function() {
+        UniversalGenesisSchemeIsnt = await UniversalGenesisScheme.deployed();
+        // Create DAOstack:
+        returnedParams = await UniversalGenesisSchemeIsnt.forgeOrg(orgName, tokenName, tokenSymbol, founders,
+            initTokenInWei, initRepInWei);
+        ControllerInst = await Controller.at(returnedParams.logs[0].args._controller);
+        tokenAddress = await ControllerInst.nativeToken();
+        reputationAddress = await ControllerInst.nativeReputation();
+        MintableTokenInst = await MintableToken.at(tokenAddress);
+        avatarAddress = await ControllerInst.avatar();
+        AvatarInst = await Avatar.at(avatarAddress);
+        await deployer.deploy(UniversalSimpleVote);
+        // Deploy UniversalSimpleVote:
+        UniversalSimpleVoteInst = await UniversalSimpleVote.deployed();
+        // Deploy UniversalSchemeRegister:
+        await deployer.deploy(UniversalSchemeRegister, tokenAddress, UniversalRegisterFee, avatarAddress);
+        UniversalSchemeRegisterIsnt = await UniversalSchemeRegister.deployed();
+        // Deploy UniversalUpgrade:
+        await deployer.deploy(UniversalUpgradeScheme, tokenAddress, UniversalRegisterFee, avatarAddress);
+        UniversalUpgradeSchemeInst = await UniversalUpgradeScheme.deployed();
+        // Deploy UniversalGCScheme register:
+        await deployer.deploy(UniversalGCRegister, tokenAddress, UniversalRegisterFee, avatarAddress);
+        UniversalGCRegisterInst = await UniversalGCRegister.deployed();
+        // Voting parameters and schemes params:
+        voteParametersHash = await UniversalSimpleVoteInst.hashParameters(reputationAddress, votePrec);
+        schemeRegisterParams = await UniversalSchemeRegisterIsnt.parametersHash(voteParametersHash, voteParametersHash, UniversalSimpleVoteInst.address);
+        schemeGCRegisterParams = await UniversalGCRegisterInst.parametersHash(voteParametersHash, UniversalSimpleVoteInst.address);
+        schemeUpgradeParams = await UniversalUpgradeSchemeInst.parametersHash(voteParametersHash, UniversalSimpleVoteInst.address);
+        // set DAOstack initial schmes:
+        await UniversalGenesisSchemeIsnt.setInitialSchemes(
+            ControllerInst.address,
+            UniversalSchemeRegisterIsnt.address,
+            UniversalUpgradeSchemeInst.address,
+            UniversalGCRegisterInst.address,
+            schemeRegisterParams,
+            schemeUpgradeParams,
+            schemeGCRegisterParams);
 
-// Create DAOstack:
-		return UniversalGenesisSchemeIsnt.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-																				initTokenInWei, initRepInWei);
-	}).then(function (returnedParams) {
-		return Controller.at(returnedParams.logs[0].args._controller);
-	}).then(function (inst){
-		ControllerInst = inst;
-		return ControllerInst.nativeToken();
-	}).then(function (address){
-		tokenAddress = address;
-		console.log('logging, controller address: ', ControllerInst.address)
-		return ControllerInst.nativeReputation();
-	}).then(function (address){
-		reputationAddress = address;
-	}).then(function (){
-		return MintableToken.at(tokenAddress);
-	}).then(function (inst){
-		MintableTokenInst = inst;
-	}).then(function (){
-		return ControllerInst.avatar();
-	}).then(function (address){
-		avatarAddress = address;
-		return Avatar.at(avatarAddress);
-	}).then(function (inst){
-		AvatarInst = inst;
-	}).then(function (){
-
-// Deploy UniversalSimpleVote:
-		return deployer.deploy(UniversalSimpleVote);
-	}).then(function() {
-    return UniversalSimpleVote.deployed();
-  }).then(function(inst) {
-		UniversalSimpleVoteInst = inst;
-	}).then(function() {
-
-// Deploy UniversalSchemeRegister:
-		return deployer.deploy(UniversalSchemeRegister, tokenAddress, UniversalRegisterFee, avatarAddress);
-	}).then(function() {
-		return UniversalSchemeRegister.deployed();
-	}).then(function(inst) {
-		UniversalSchemeRegisterIsnt = inst;
-	}).then(function() {
-
-// Deploy UniversalUpgrade:
-		return deployer.deploy(UniversalUpgradeScheme, tokenAddress, UniversalRegisterFee, avatarAddress);
-	}).then(function() {
-		return UniversalUpgradeScheme.deployed();
-	}).then(function(inst) {
-		UniversalUpgradeSchemeInst = inst;
-	}).then(function() {
-
-// Deploy UniversalGCScheme register:
-		return deployer.deploy(UniversalGCRegister, tokenAddress, UniversalRegisterFee, avatarAddress);
-	}).then(function() {
-		return UniversalGCRegister.deployed();
-	}).then(function(inst) {
-		UniversalGCRegisterInst = inst;
-	}).then(function() {
-
-// Voting parameters and schemes params:
-		return UniversalSimpleVoteInst.hashParameters(reputationAddress, votePrec);
-	}).then(function(hash) {
-		voteParametersHash = hash;
-	}).then(function() {
-		return UniversalSchemeRegisterIsnt.parametersHash(voteParametersHash, voteParametersHash, UniversalSimpleVoteInst.address);
-	}).then(function(hashedParameters) {
-		schemeRegisterParams = hashedParameters;
-		return UniversalGCRegisterInst.parametersHash(voteParametersHash, UniversalSimpleVoteInst.address);
-	}).then(function(hashedParameters) {
-		schemeGCRegisterParams = hashedParameters;
-		return UniversalUpgradeSchemeInst.parametersHash(voteParametersHash, UniversalSimpleVoteInst.address);
-	}).then(function(hashedParameters) {
-		schemeUpgradeParams = hashedParameters;
-	}).then(function() {
-
-// List DAOstack initial schmes:
-	return UniversalGenesisSchemeIsnt.setInitialSchemes(ControllerInst.address,
-																												UniversalSchemeRegisterIsnt.address,
-																												UniversalUpgradeSchemeInst.address,
-																												UniversalGCRegisterInst.address,
-																												schemeRegisterParams,
-																												schemeUpgradeParams,
-																												schemeGCRegisterParams);
-	}).then(function (){
-
-// Set UniversalSchemeRegister nativeToken and register DAOstack to it:
-		return MintableTokenInst.approve(UniversalSchemeRegisterIsnt.address, UniversalRegisterFee);
-	}).then(function (){
-		return UniversalSchemeRegisterIsnt.addOrUpdateOrg(ControllerInst.address, voteParametersHash, voteParametersHash, UniversalSimpleVote.address);
-
-	}).then(function (){
-// Set UniversalGCScheme nativeToken and register DAOstack to it:
-		return MintableTokenInst.approve(UniversalGCRegisterInst.address, UniversalRegisterFee);
-	}).then(function (){
-		return UniversalGCRegisterInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, UniversalSimpleVote.address);
-	}).then(function (){
-
-// Set UniversalUpgradeScheme nativeToken and register DAOstack to it:
-		return MintableTokenInst.approve(UniversalUpgradeSchemeInst.address, UniversalRegisterFee);
-	}).then(function (){
-		return UniversalUpgradeSchemeInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, UniversalSimpleVote.address);
-
-	});
-
+        // Set UniversalSchemeRegister nativeToken and register DAOstack to it:
+        await MintableTokenInst.approve(UniversalSchemeRegisterIsnt.address, UniversalRegisterFee);
+        await UniversalSchemeRegisterIsnt.addOrUpdateOrg(ControllerInst.address, voteParametersHash, voteParametersHash, UniversalSimpleVote.address);
+        await MintableTokenInst.approve(UniversalGCRegisterInst.address, UniversalRegisterFee);
+        await UniversalGCRegisterInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, UniversalSimpleVote.address);
+        // Set UniversalUpgradeScheme nativeToken and register DAOstack to it:
+        await MintableTokenInst.approve(UniversalUpgradeSchemeInst.address, UniversalRegisterFee);
+        await UniversalUpgradeSchemeInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, UniversalSimpleVote.address);
+        return;
+    })
 };
