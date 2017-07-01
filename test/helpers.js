@@ -33,7 +33,7 @@ export async function etherForEveryone() {
 
 export async function forgeOrganization(ctx, founders, tokenForFounders=[1, 2, 4], repForFounders=[7, 100, 12]) {
     let accounts = web3.eth.accounts;
-    tokensforeveryone();
+    etherForEveryone();
 
     if (founders == undefined) {
         founders = [accounts[0], accounts[1], accounts[2]];
@@ -61,6 +61,7 @@ export async function forgeOrganization(ctx, founders, tokenForFounders=[1, 2, 4
     
     // ctx.tokenAddress = await ctx.controllerInstance.nativeToken();
     // ctx.tokenInstance = MintableToken.at(ctx.tokenAddress);  
+    return ctx.controller;
 }
 
 

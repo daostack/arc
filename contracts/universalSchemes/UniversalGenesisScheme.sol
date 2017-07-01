@@ -15,7 +15,7 @@ contract UniversalGenesisScheme {
     Reputation nativeReputation;
     Avatar avatar;
 
-    mapping(address=>address) owners;
+    mapping(address=>address) locks;
 
     event NewOrg (address _controller);
 
@@ -36,12 +36,14 @@ contract UniversalGenesisScheme {
      * @return The address of the Controller
      */
 
-    function forgeOrg (bytes32 _orgName,
-                        string _tokenName,
-                        string _tokenSymbol,
-                        address[] _founders,
-                        uint[] _foundersTokenAmount,
-                        int[] _foundersReputationAmount) returns(address) {
+    function forgeOrg (
+        bytes32 _orgName,
+        string _tokenName,
+        string _tokenSymbol,
+        address[] _founders,
+        uint[] _foundersTokenAmount,
+        int[] _foundersReputationAmount
+    ) returns(address) {
 
         // Create Token, Reputation and Avatar:
         nativeToken = new MintableToken(_tokenName, _tokenSymbol);
@@ -63,7 +65,7 @@ contract UniversalGenesisScheme {
             if( ! controller.mintReputation( _foundersReputationAmount[i], _founders[i] ) ) revert();
         }
 
-        owners[msg.sender] = controller;
+        locks[controller] = msg.sender;
 
         NewOrg (address(controller));
         return (address(controller));
@@ -73,23 +75,26 @@ contract UniversalGenesisScheme {
      * @dev  register some initial schemes
      */
 
-    function listInitialSchemes (Controller _controller,
-                                  address _registeringScheme,
-                                  address _upgradingScheme,
-                                  address _globalConstraintsScheme,
-                                  bytes32 _registeringSchemeParams,
-                                  bytes32 _upgradingSchemeParams,
-                                  bytes32 _globalConstraintsSchemeParams) {
-        require(owners[msg.sender] == address(_controller));
+    function setInitialSchemes (
+        Controller _controller,
+        address _registeringScheme,
+        address _upgradingScheme,
+        address _globalConstraintsScheme,
+        bytes32 _registeringSchemeParams,
+        bytes32 _upgradingSchemeParams,
+        bytes32 _globalConstraintsSchemeParams
+    ) {
+        require(locks[address(_controller)] == msg.sender);
 
-        // Remove record:
-        // TODO: this must be wrong, given that we previousely required owners[msg.sender]
-        delete owners[_controller];
 
         // register the registering scheme and remove this scheme.
-        _controller.registerScheme( _registeringScheme, true, _registeringSchemeParams );
+        _controller.registerScheme(_registeringScheme, true, _registeringSchemeParams);
         _controller.changeUpgradeScheme(_upgradingScheme, _upgradingSchemeParams);
         _controller.changeGlobalConstraintsScheme(_globalConstraintsScheme, _globalConstraintsSchemeParams);
-        _controller.unregisterScheme( this );
+        _controller.unregisterScheme(this);
+
+        // Remove lock:
+        delete locks[_controller];
+        return;
     }
 }

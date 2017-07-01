@@ -130,7 +130,7 @@ module.exports = function(deployer) {
 	}).then(function() {
 
 // List DAOstack initial schmes:
-	return UniversalGenesisSchemeIsnt.listInitialSchemes(ControllerInst.address,
+	return UniversalGenesisSchemeIsnt.setInitialSchemes(ControllerInst.address,
 																												UniversalSchemeRegisterIsnt.address,
 																												UniversalUpgradeSchemeInst.address,
 																												UniversalGCRegisterInst.address,
