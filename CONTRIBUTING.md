@@ -41,6 +41,6 @@ For solidity, we are following the style guide here: http://solidity.readthedocs
 
 if you run tests with:
 
-    node debug ./node_modules/truffle/cli.js test
+    node debug ./node_modules/truffle/build/cli.bundled.js test
 
 it is possible to use `debugger` statemetns and inspect the state
