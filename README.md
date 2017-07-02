@@ -18,3 +18,11 @@ Gradually, bit by bit, we aim to build the first decentralized corporation, an a
 Contributions and pull requests are very welcome. Check out [The DAOStack roadmap](docs/roadmap.md), and join us on [Slack](daostack.slack.com).
 
 If you want to contribute to the code, check out  [CONTRIBUTING.md](CONTRIBUTING.md).
+
+# Installation
+
+```
+yarn
+(in separate window: testrpc)
+truffle test
+```
