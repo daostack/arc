@@ -18,15 +18,18 @@ These contracts are tested using the truffle framework
 Make sure you have a recent version of [node.js](https://nodejs.org/) (7.6 and above) and [yarn](https://yarnpkg.com) package manager.
 
 Installation of dependencies. After cloning the repository run:
+
     yarn
 
 
 ## Run tests
 
 To run the test locally use a local blockchain using testrpc, just run:
+
     testrpc
 
 On a second terminal, run the tests:
+
     truffle test
 
 
