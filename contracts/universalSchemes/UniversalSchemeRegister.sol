@@ -86,7 +86,7 @@ contract UniversalSchemeRegister is UniversalScheme {
     ) {
         // Pay fees for using scheme
         // TODO: do not call at all if fee is 0 to save gas
-        nativeToken.transferFrom(msg.sender, benificiary, fee);
+        nativeToken.transferFrom(msg.sender, beneficiary, fee);
 
         // TODO: this would be cleared if it looked something like:
         // _controller.isRegisteredScheme(this, hash(configuration))

@@ -6,24 +6,24 @@ import "./UniversalScheme.sol";
 
 contract UniversalGCRegister is UniversalScheme {
     struct gcProposal {
-      address gc;
-      bytes32 parametersHash;
-      uint proposalType; // 1: add a GC, 2: remove a GC.
+        address gc;
+        bytes32 parametersHash;
+        uint proposalType; // 1: add a GC, 2: remove a GC.
     }
 
     struct Organization {
-      bool isRegistered;
-      bytes32 voteRegisterParams;
-      bytes32 voteRemoveParams;
-      BoolVoteInterface boolVote;
-      mapping(bytes32=>gcProposal) proposals;
-      mapping(address=>bytes32) removeParams;
+        bool isRegistered;
+        bytes32 voteRegisterParams;
+        bytes32 voteRemoveParams;
+        BoolVoteInterface boolVote;
+        mapping(bytes32=>gcProposal) proposals;
+        mapping(address=>bytes32) removeParams;
     }
 
     mapping(address=>Organization) organizations;
 
-    function UniversalGCRegister(StandardToken _nativeToken, uint _fee, address _benificiary) {
-      updateParameters(_nativeToken, _fee, _benificiary, bytes32(0));
+    function UniversalGCRegister(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
     function parametersHash(bytes32 _voteRegisterParams,
@@ -43,7 +43,7 @@ contract UniversalGCRegister is UniversalScheme {
                      BoolVoteInterface _boolVote) {
 
       // Pay fees for using scheme:
-      nativeToken.transferFrom(msg.sender, benificiary, fee);
+      nativeToken.transferFrom(msg.sender, beneficiary, fee);
 
       require(checkParameterHashMatch(_controller, _voteRegisterParams, _boolVote));
       /*Organization memory org;

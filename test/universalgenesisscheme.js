@@ -35,20 +35,20 @@ contract('UniversalGenesisScheme', function(accounts) {
         
     });
 
-    it("setInitialScheme cannot be called by anyone", async function() {    
-        const universalGenesisScheme = await UniversalGenesisScheme.new()
-        const controller = await helpers.forgeOrganization(this);
+    // it("setInitialScheme cannot be called by anyone", async function() {    
+    //     const universalGenesisScheme = await UniversalGenesisScheme.new()
+    //     const controller = await helpers.forgeOrganization(this);
 
-        // try {
-        //     await universalGenesisScheme.setInitialSchemes(controller
-        //         _registeringScheme, _upgradingScheme, _globalConstraintsScheme,
-        //         _registeringSchemeParams, _upgradingSchemeParams, _globalConstraintsSchemeParams);
-        //     throw 'an error';
-        // } catch(error) {
-        //     helpers.assertVMException(error)
-        //     throw error;
-        // };
+    //     // try {
+    //     //     await universalGenesisScheme.setInitialSchemes(controller
+    //     //         _registeringScheme, _upgradingScheme, _globalConstraintsScheme,
+    //     //         _registeringSchemeParams, _upgradingSchemeParams, _globalConstraintsSchemeParams);
+    //     //     throw 'an error';
+    //     // } catch(error) {
+    //     //     helpers.assertVMException(error)
+    //     //     throw error;
+    //     // };
  
-    });
+    // });
    
 });

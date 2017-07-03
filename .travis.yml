@@ -5,7 +5,7 @@ dist: trusty
 language: node_js
 
 node_js:
-  - "7.7.3"
+  - "7.10.0"
 
 before_install:
   - sudo apt-get update -qq
@@ -17,6 +17,7 @@ before_install:
 
 install:
   - yarn install
+  - rm -r contracts/zeppelin
   - yarn run testrpc
   - truffle version
 
