@@ -20,12 +20,12 @@ contract UniversalUpgradeScheme is UniversalScheme {
 
     mapping(address=>Organization) organizations;
 
-    function UniversalUpgradeScheme(StandardToken _nativeToken, uint _fee, address _benificiary) {
-      updateParameters(_nativeToken, _fee, _benificiary, bytes32(0));
+    function UniversalUpgradeScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
     function parametersHash(bytes32 _voteParams, BoolVoteInterface _boolVote) constant returns(bytes32) {
-      return (sha3(_voteParams, _boolVote));
+        return (sha3(_voteParams, _boolVote));
     }
 
     function checkParameterHashMatch(Controller _controller, bytes32 _voteParams,
@@ -36,7 +36,7 @@ contract UniversalUpgradeScheme is UniversalScheme {
     function addOrUpdateOrg(Controller _controller, bytes32 _voteParams, BoolVoteInterface _boolVote) {
 
       // Pay fees for using scheme:
-      nativeToken.transferFrom(msg.sender, benificiary, fee);
+      nativeToken.transferFrom(msg.sender, beneficiary, fee);
 
       require(_controller.upgradingScheme() == address(this));
       require(checkParameterHashMatch(_controller, _voteParams, _boolVote));

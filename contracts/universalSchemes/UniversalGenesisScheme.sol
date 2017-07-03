@@ -84,8 +84,9 @@ contract UniversalGenesisScheme {
         bytes32 _upgradingSchemeParams,
         bytes32 _globalConstraintsSchemeParams
     ) {
+        // this action can only be executed by the account that holds the lock
+        // for this controller
         require(locks[address(_controller)] == msg.sender);
-
 
         // register the registering scheme and remove this scheme.
         _controller.registerScheme(_registeringScheme, true, _registeringSchemeParams);

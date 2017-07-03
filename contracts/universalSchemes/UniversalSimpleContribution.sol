@@ -27,8 +27,8 @@ contract UniversalSimpleContribution is UniversalScheme {
 
     mapping(address=>Organization) organizations;
 
-    function UniversalSimpleContribution(StandardToken _nativeToken, uint _fee, address _benificiary) {
-      updateParameters(_nativeToken, _fee, _benificiary, bytes32(0));
+    function UniversalSimpleContribution(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+      updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
     function parametersHash(uint _orgNativeTokenFee,
@@ -56,7 +56,7 @@ contract UniversalSimpleContribution is UniversalScheme {
         require(checkParameterHashMatch(_controller, _orgNativeTokenFee, _schemeNatvieTokenFee, _voteApproveParams, _boolVote));
 
         // Pay fees for using scheme:
-        nativeToken.transferFrom(msg.sender, benificiary, fee);
+        nativeToken.transferFrom(msg.sender, beneficiary, fee);
 
         Organization org = organizations[_controller];
         org.isRegistered = true;
