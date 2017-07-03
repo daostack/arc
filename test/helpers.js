@@ -4,6 +4,9 @@
 const Controller = artifacts.require("./Controller.sol");
 const UniversalGenesisScheme = artifacts.require("./UniversalGenesisScheme.sol");
 const UniversalSchemeRegister = artifacts.require("./UniversalSchemeRegister.sol");
+const UniversalUpgradeScheme = artifacts.require("./UniversalUpgradeScheme.sol");
+const UniversalSimpleVote = artifacts.require("./UniversalSimpleVote.sol");
+const UniversalGCRegister = artifacts.require("./UniversalGCRegister.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
 const BasicToken = artifacts.require("./BasicToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
@@ -33,18 +36,36 @@ export async function etherForEveryone() {
 
 
 async function createSchemeRegister() {
-    // tokenAddress = 
-
-    // return UniversalSchemeRegister.new(tokenAddress, fee, beneficary);
+    const token = await BasicToken.new();
+    const fee = 3;
+    const beneficary = web3.eth.accounts[1];
+    return UniversalSchemeRegister.new(token.address, fee, beneficary);
 }
+
+
+async function createUpgradeScheme() {
+    const token = await BasicToken.new();
+    const fee = 3;
+    const beneficary = web3.eth.accounts[1];
+    return UniversalUpgradeScheme.new(token.address, fee, beneficary);
+}
+
+
+async function createGCRegister() {
+    const token = await BasicToken.new();
+    const fee = 3;
+    const beneficary = web3.eth.accounts[1];
+    return UniversalGCRegister.new(token.address, fee, beneficary);
+}
+
 
 export async function forgeOrganization(
     ctx, 
     founders, 
     tokenForFounders=[1, 2, 4], 
     repForFounders=[7, 100, 12]
-    ) {
-    let accounts = web3.eth.accounts;
+) {
+    const accounts = web3.eth.accounts;
     etherForEveryone();
 
     if (founders == undefined) {
@@ -65,16 +86,32 @@ export async function forgeOrganization(
     // get the address of the controll from the logs
     const log = tx.logs[0];
     ctx.controllerAddress = log.args._controller;
-    ctx.controller = Controller.at(ctx.controllerAddress);
-    
-    // return universalGenesisSchemeInst.setInitialSchemes(
-    //     ctx.controllerAddress,
-    //     UniversalSchemeRegisterIsnt.address,
-    //     UniversalUpgradeSchemeInst.address,
-    //     UniversalGCRegisterInst.address,
-    //     schemeRegisterParams,
-    //     schemeUpgradeParams,
-    //     schemeGCRegisterParams);
+    const controller = await Controller.at(ctx.controllerAddress);
+    ctx.controller = controller;
+
+    const universalSchemeRegisterInst = await createSchemeRegister();
+    const universalUpgradeSchemeInst = await createUpgradeScheme(); 
+    const universalGCRegisterInst = await createGCRegister();
+    const universalSimpleVoteInst = await UniversalSimpleVote.new();
+
+    const tokenAddress = await controller.nativeToken();
+    const reputationAddress = await controller.nativeReputation();
+
+    const votePrec = 50;
+    const voteParametersHash = await universalSimpleVoteInst.hashParameters(reputationAddress, votePrec);
+    const schemeRegisterParams = await universalSchemeRegisterInst.parametersHash(voteParametersHash, voteParametersHash, universalSimpleVoteInst.address);
+    const schemeGCRegisterParams = await universalGCRegisterInst.parametersHash(voteParametersHash, universalSimpleVoteInst.address);
+    const schemeUpgradeParams = await universalUpgradeSchemeInst.parametersHash(voteParametersHash, universalSimpleVoteInst.address);
+ 
+    await universalGenesisSchemeInst.setInitialSchemes(
+        ctx.controllerAddress,
+        universalSchemeRegisterInst.address,
+        universalUpgradeSchemeInst.address,
+        universalGCRegisterInst.address,
+        schemeRegisterParams,
+        schemeUpgradeParams,
+        schemeGCRegisterParams
+    );
     return ctx.controller;
 }
 
