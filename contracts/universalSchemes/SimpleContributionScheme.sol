@@ -8,7 +8,7 @@ import "./UniversalScheme.sol";
  * @title A scheme for proposing and rewarding contributions to an organization
  */
 
-contract UniversalSimpleContribution is UniversalScheme {
+contract SimpleContributionScheme is UniversalScheme {
 
     /**
      * @dev the data of the contribution
@@ -37,7 +37,7 @@ contract UniversalSimpleContribution is UniversalScheme {
     /**
      * @dev the constructor takes a token address, fee and beneficiary 
      */ 
-    function UniversalSimpleContribution(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+    function SimpleContributionScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
       updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 

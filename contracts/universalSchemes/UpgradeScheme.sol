@@ -4,7 +4,7 @@ import "../controller/Controller.sol";
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
-contract UniversalUpgradeScheme is UniversalScheme {
+contract UpgradeScheme is UniversalScheme {
     struct UpgradeProposal {
       address newContOrScheme;
       bytes32 params;
@@ -20,7 +20,7 @@ contract UniversalUpgradeScheme is UniversalScheme {
 
     mapping(address=>Organization) organizations;
 
-    function UniversalUpgradeScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+    function UpgradeScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 

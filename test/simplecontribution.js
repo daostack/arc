@@ -1,7 +1,7 @@
 const helpers = require('./helpers')
 
 // var UniversalSimpleVote = artifacts.require("./UniversalSimpleVote.sol");
-const UniversalSimpleContribution = artifacts.require('./UniversalSimpleContribution.sol');
+const SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
 const UniversalSimpleVote = artifacts.require('./UniversalSimpleVote.sol');
 const MintableToken = artifacts.require('./MintableToken.sol');
 
@@ -13,6 +13,11 @@ contract('SimpleContribution', function(accounts) {
         const repForFounders = [99, 1];
         const controller = await helpers.forgeOrganization({founders, repForFounders}, this);// the schemeregister is fx
     	const schemeRegistrar = this.schemeregistrar;
+
+    	// check if indeed the registrar is registered
+    	const isSchemeRegistered = await controller.isSchemeRegistered(schemeRegistrar.address);
+
+    	assert.equal(isSchemeRegistered, true);
 
     	// we creaet a SimpleContributionScheme
     	const reputationAddress = await controller.nativeReputation();
@@ -36,9 +41,10 @@ contract('SimpleContribution', function(accounts) {
 
     	// temporary test to see if we can pay the fee
     	const beneficiary = await schemeRegistrar.beneficiary();
-    	await schemeRegistrarToken.transfer(beneficiary, fee.toNumber());
-    	return;
+
+    	await schemeRegistrarToken.approve(schemeRegistrar.address, fee.toNumber());
     	// add the organisation to the schemeregistrar
+    	return
 	    await schemeRegistrar.addOrUpdateOrg(
 	    	controller.address,
 	    	votingParams, // conditions for adding a scheme
@@ -46,8 +52,9 @@ contract('SimpleContribution', function(accounts) {
 	    	votingMachine.address
 	    );
 
+	    return
     	// get the hash of the parameters from the simpleContributionScheme
-    	const contributionScheme = await UniversalSimpleContribution.new(
+    	const contributionScheme = await SimpleContributionScheme.new(
     		tokenAddress,
     		1,
     		founders[0],

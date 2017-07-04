@@ -1,10 +1,10 @@
 const helpers = require('./helpers')
 
-var UniversalGenesisScheme = artifacts.require("./UniversalGenesisScheme.sol");
+var GenesisScheme = artifacts.require("./GenesisScheme.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 
-contract('UniversalGenesisScheme', function(accounts) {
+contract('GenesisScheme', function(accounts) {
 
     it("founders should get their share in reputation and tokens", async function() {    
         // create an organization
@@ -36,11 +36,11 @@ contract('UniversalGenesisScheme', function(accounts) {
     });
 
     // it("setInitialScheme cannot be called by anyone", async function() {    
-    //     const universalGenesisScheme = await UniversalGenesisScheme.new()
+    //     const GenesisScheme = await GenesisScheme.new()
     //     const controller = await helpers.forgeOrganization(this);
 
     //     // try {
-    //     //     await universalGenesisScheme.setInitialSchemes(controller
+    //     //     await GenesisScheme.setInitialSchemes(controller
     //     //         _registeringScheme, _upgradingScheme, _globalConstraintsScheme,
     //     //         _registeringSchemeParams, _upgradingSchemeParams, _globalConstraintsSchemeParams);
     //     //     throw 'an error';

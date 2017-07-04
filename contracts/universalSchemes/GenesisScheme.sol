@@ -6,11 +6,10 @@ import "../controller/MintableToken.sol";
 import "../controller/Controller.sol";
 
 /**
- * @title Universal Genesis Scheme
- * @dev A contract to create Organizations
+ * @title Genesis Scheme that creates organizations
  */
 
-contract UniversalGenesisScheme {
+contract GenesisScheme {
     MintableToken nativeToken;
     Reputation nativeReputation;
     Avatar avatar;
@@ -19,7 +18,7 @@ contract UniversalGenesisScheme {
 
     event NewOrg (address _controller);
 
-    function UniversalGenesisScheme( ) {
+    function GenesisScheme( ) {
     }
 
     /**

@@ -1,6 +1,6 @@
 const helpers = require('./helpers')
 
-var UniversalGenesisScheme = artifacts.require("./UniversalGenesisScheme.sol");
+var GenesisScheme = artifacts.require("./GenesisScheme.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 

@@ -73,7 +73,7 @@ contract SchemeRegistrar is UniversalScheme {
 
     /**
      * @dev add or update an organisation to this register. 
-     * @dev the sender must pay a fee to call this function
+     * @dev the sender pays a fee (in nativeToken) for using this function, and must approve it before calling the transaction
      * @param _controller the address of the organization
      * @param _voteRegisterParams a hash representing the conditions for registering new schemes
      * @param _voteRemoveParams a hash representing the conditions under which a schema can be removed
@@ -88,7 +88,7 @@ contract SchemeRegistrar is UniversalScheme {
         // Pay fees for using scheme
         // TODO: do not call at all if fee is 0 to save gas
         nativeToken.transferFrom(msg.sender, beneficiary, fee);
-        
+
         // TODO: this would be cleared if it looked something like:
         // _controller.isRegisteredScheme(this, hash(configuration))
         // or even:
@@ -98,6 +98,7 @@ contract SchemeRegistrar is UniversalScheme {
 
         // we require that the current register is registered as a scheme in the organization
         require(_controller.isSchemeRegistered(this));
+        return
         // check if indeed the parameters given here are those registered at the controller
         require(checkParameterHashMatch(_controller, _voteRegisterParams, _voteRemoveParams, _boolVote));
 

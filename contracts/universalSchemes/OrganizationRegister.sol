@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 import "../controller/Controller.sol";
 import "./UniversalScheme.sol";
 
-contract UniversalOrgRegistry is UniversalScheme {
+contract OrganizationRegister is UniversalScheme {
 
     struct Organization {
         bool isRegistered;
@@ -18,7 +18,7 @@ contract UniversalOrgRegistry is UniversalScheme {
     event OrgAdded( address indexed _registry, address indexed _org);
     event Promotion( address indexed _registry, address indexed _org, uint _amount);
 
-    function UniversalOrgRegistry(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+    function OrganizationRegister(StandardToken _nativeToken, uint _fee, address _beneficiary) {
       updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
