@@ -99,7 +99,7 @@ contract UniversalGCRegister is UniversalScheme {
         return id;
     }
 
-    // Voting a GC, also handels the execuation when vote is over:
+    // Voting a GC, also handle the execuation when vote is over:
     function voteGC( Controller _controller, bytes32 id, bool _yes ) returns(bool) {
         BoolVoteInterface boolVote = organizations[_controller].boolVote;
         if( ! boolVote.vote(id, _yes, msg.sender) ) return false;
