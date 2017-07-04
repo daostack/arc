@@ -40,6 +40,9 @@ contract UniversalSimpleVote {
       return hashedParameters;
     }
 
+    /**
+     * @dev hashParameters returns a hash of the given parameters
+     */
     function hashParameters(Reputation _reputationSystem, uint _absPrecReq) constant returns(bytes32) {
       return sha3(_reputationSystem, _absPrecReq);
     }

@@ -9,9 +9,9 @@ contract('UniversalGenesisScheme', function(accounts) {
     it("founders should get their share in reputation and tokens", async function() {    
         // create an organization
         const founders = [accounts[0], accounts[1], accounts[2], accounts[3]];
-        const tokenForFounders = [1, 2, 3, 5];
+        const tokensForFounders = [1, 2, 3, 5];
         const repForFounders = [8, 13, 21, 34];
-        const controller = await helpers.forgeOrganization(this, founders, tokenForFounders, repForFounders)
+        const controller = await helpers.forgeOrganization({founders, tokensForFounders, repForFounders}, this);
         
         const reputationAddress = await controller.nativeReputation();
         const reputationInstance = Reputation.at(reputationAddress);
@@ -24,7 +24,7 @@ contract('UniversalGenesisScheme', function(accounts) {
             assert.equal(rep.valueOf(), repForFounders[i], "founder's reputation is not as expected");
             
             let balance = await tokenInstance.balanceOf(founders[i]);
-            assert.equal(balance.valueOf(), tokenForFounders[i], "founder's token is not as expected");
+            assert.equal(balance.valueOf(), tokensForFounders[i], "founder's token is not as expected");
         }
         
         // check that a non-founder as no reputation or tokens

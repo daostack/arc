@@ -4,7 +4,6 @@ const MintableToken = artifacts.require("./MintableToken.sol");
 
 contract('MintableToken', function(accounts) {
     it("should mint tokens to owner account", async function() {
-        return;
         helpers.etherForEveryone()
 
         let owner, totalSupply, userSupply

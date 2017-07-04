@@ -4,7 +4,7 @@ import "../controller/Controller.sol";
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
-contract UniversalGCRegister is UniversalScheme {
+contract GlobalConstraintRegistrar is UniversalScheme {
     struct gcProposal {
         address gc;
         bytes32 parametersHash;
@@ -22,7 +22,7 @@ contract UniversalGCRegister is UniversalScheme {
 
     mapping(address=>Organization) organizations;
 
-    function UniversalGCRegister(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+    function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 

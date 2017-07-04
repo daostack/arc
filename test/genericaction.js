@@ -9,10 +9,10 @@
 //     it("simple scenario - buy tokens", async function() {    
 //         // create a value system
 //         let founders = [accounts[0],accounts[1]];//,accounts[2]];
-//         let tokenForFounders = [1,2,4];
+//         let tokensForFounders = [1,2,4];
 //         let repForFounders = [7,9,12];
         
-//         await helpers.setupController(this, founders, tokenForFounders, repForFounders)
+//         await helpers.setupController(this, founders, tokensForFounders, repForFounders)
 
 //         let tokenSaleScheme = await TokenSale.new(this.controllerAddress);
 //         let tokenSaleAddress = tokenSaleScheme.address;

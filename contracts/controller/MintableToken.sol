@@ -24,7 +24,7 @@ contract MintableToken is StandardToken, Ownable, Destructible {
 
     event Mint(address indexed to, uint256 value);
 
-    function MintableToken( string _name, string _symbol ) {
+    function MintableToken(string _name, string _symbol) {
         name = _name;
         symbol = _symbol;
         totalSupply = 0;

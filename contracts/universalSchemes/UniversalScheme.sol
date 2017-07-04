@@ -13,13 +13,15 @@ contract UniversalScheme is Ownable {
   event Unregistered (address _controller);
   event ControllerUpdate (address _controller);
 
-  function updateParameters(StandardToken _nativeToken,
-                              uint _fee,
-                              address _beneficiary,
-                              bytes32 _hashedParameters) onlyOwner {
-    nativeToken = _nativeToken;
-    fee = _fee;
-    beneficiary = _beneficiary;
-    hashedParameters = _hashedParameters;
+  function updateParameters(
+      StandardToken _nativeToken,
+      uint _fee,
+      address _beneficiary,
+      bytes32 _hashedParameters
+  ) onlyOwner {
+      nativeToken = _nativeToken;
+      fee = _fee;
+      beneficiary = _beneficiary;
+      hashedParameters = _hashedParameters;
   }
 }

@@ -1,8 +1,8 @@
 // Imports:
 var UniversalSimpleVote = artifacts.require('./UniversalSimpleVote.sol');
 var UniversalGenesisScheme = artifacts.require('./schemes/UniversalGenesisScheme.sol');
-var UniversalSchemeRegister = artifacts.require('./schemes/UniversalSchemeRegister.sol');
-var UniversalGCRegister = artifacts.require('./schemes/UniversalGCRegister.sol');
+var SchemeRegistrar = artifacts.require('./schemes/SchemeRegistrar.sol');
+var GlobalConstraintRegistrar = artifacts.require('./schemes/GlobalConstraintRegistrar.sol');
 var UniversalUpgradeScheme = artifacts.require('./UniversalUpgradeScheme.sol');
 var Controller = artifacts.require('./schemes/controller/Controller.sol');
 var MintableToken = artifacts.require('./schemes/controller/MintableToken.sol');
@@ -12,7 +12,7 @@ var Avatar = artifacts.require('./schemes/controller/Avatar.sol');
 // Instances:
 var UniversalSimpleVoteInst;
 var UniversalGenesisSchemeInst;
-var UniversalSchemeRegisterIsnt;
+var schemeRegistrarInst;
 var UniversalGCRegisterInst;
 var UniversalUpgradeSchemeInst;
 var ControllerInst;
@@ -65,33 +65,33 @@ module.exports = async function(deployer) {
         await deployer.deploy(UniversalSimpleVote);
         // Deploy UniversalSimpleVote:
         UniversalSimpleVoteInst = await UniversalSimpleVote.deployed();
-        // Deploy UniversalSchemeRegister:
-        await deployer.deploy(UniversalSchemeRegister, tokenAddress, UniversalRegisterFee, avatarAddress);
-        UniversalSchemeRegisterIsnt = await UniversalSchemeRegister.deployed();
+        // Deploy SchemeRegistrar:
+        await deployer.deploy(SchemeRegistrar, tokenAddress, UniversalRegisterFee, avatarAddress);
+        schemeRegistrarInst = await SchemeRegistrar.deployed();
         // Deploy UniversalUpgrade:
         await deployer.deploy(UniversalUpgradeScheme, tokenAddress, UniversalRegisterFee, avatarAddress);
         UniversalUpgradeSchemeInst = await UniversalUpgradeScheme.deployed();
         // Deploy UniversalGCScheme register:
-        await deployer.deploy(UniversalGCRegister, tokenAddress, UniversalRegisterFee, avatarAddress);
-        UniversalGCRegisterInst = await UniversalGCRegister.deployed();
+        await deployer.deploy(GlobalConstraintRegistrar, tokenAddress, UniversalRegisterFee, avatarAddress);
+        UniversalGCRegisterInst = await GlobalConstraintRegistrar.deployed();
         // Voting parameters and schemes params:
         voteParametersHash = await UniversalSimpleVoteInst.hashParameters(reputationAddress, votePrec);
-        schemeRegisterParams = await UniversalSchemeRegisterIsnt.parametersHash(voteParametersHash, voteParametersHash, UniversalSimpleVoteInst.address);
+        schemeRegisterParams = await schemeRegistrarInst.parametersHash(voteParametersHash, voteParametersHash, UniversalSimpleVoteInst.address);
         schemeGCRegisterParams = await UniversalGCRegisterInst.parametersHash(voteParametersHash, UniversalSimpleVoteInst.address);
         schemeUpgradeParams = await UniversalUpgradeSchemeInst.parametersHash(voteParametersHash, UniversalSimpleVoteInst.address);
         // set DAOstack initial schmes:
         await UniversalGenesisSchemeIsnt.setInitialSchemes(
             ControllerInst.address,
-            UniversalSchemeRegisterIsnt.address,
+            schemeRegistrarInst.address,
             UniversalUpgradeSchemeInst.address,
             UniversalGCRegisterInst.address,
             schemeRegisterParams,
             schemeUpgradeParams,
             schemeGCRegisterParams);
 
-        // Set UniversalSchemeRegister nativeToken and register DAOstack to it:
-        await MintableTokenInst.approve(UniversalSchemeRegisterIsnt.address, UniversalRegisterFee);
-        await UniversalSchemeRegisterIsnt.addOrUpdateOrg(ControllerInst.address, voteParametersHash, voteParametersHash, UniversalSimpleVote.address);
+        // Set SchemeRegistrar nativeToken and register DAOstack to it:
+        await MintableTokenInst.approve(schemeRegistrarInst.address, UniversalRegisterFee);
+        await schemeRegistrarInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, voteParametersHash, UniversalSimpleVote.address);
         await MintableTokenInst.approve(UniversalGCRegisterInst.address, UniversalRegisterFee);
         await UniversalGCRegisterInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, UniversalSimpleVote.address);
         // Set UniversalUpgradeScheme nativeToken and register DAOstack to it:

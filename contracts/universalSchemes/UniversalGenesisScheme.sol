@@ -35,7 +35,6 @@ contract UniversalGenesisScheme {
      *
      * @return The address of the Controller
      */
-
     function forgeOrg (
         bytes32 _orgName,
         string _tokenName,

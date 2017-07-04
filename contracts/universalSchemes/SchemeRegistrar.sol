@@ -13,7 +13,7 @@ import "./UniversalScheme.sol";
 // TODO: perhaps rename to "Registrar", since (apart from tracking proposals) does not 
 // really keep a register of anything at all
 
-contract UniversalSchemeRegister is UniversalScheme {
+contract SchemeRegistrar is UniversalScheme {
 
     // a SchemeProposal is a  proposal to add or remove a scheme to/from the register
     struct SchemeProposal {
@@ -42,7 +42,7 @@ contract UniversalSchemeRegister is UniversalScheme {
      * @param _fee the fee to pay
      * @param _beneficiary to whom the fee is payed
      */
-    function UniversalSchemeRegister(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+    function SchemeRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
@@ -72,7 +72,8 @@ contract UniversalSchemeRegister is UniversalScheme {
     }
 
     /**
-     * @dev add or update an organisation to this register
+     * @dev add or update an organisation to this register. 
+     * @dev the sender must pay a fee to call this function
      * @param _controller the address of the organization
      * @param _voteRegisterParams a hash representing the conditions for registering new schemes
      * @param _voteRemoveParams a hash representing the conditions under which a schema can be removed
@@ -87,7 +88,7 @@ contract UniversalSchemeRegister is UniversalScheme {
         // Pay fees for using scheme
         // TODO: do not call at all if fee is 0 to save gas
         nativeToken.transferFrom(msg.sender, beneficiary, fee);
-
+        
         // TODO: this would be cleared if it looked something like:
         // _controller.isRegisteredScheme(this, hash(configuration))
         // or even:
@@ -103,6 +104,7 @@ contract UniversalSchemeRegister is UniversalScheme {
         // now update the organization in the organizations mapping
         Organization memory org;
         org.isRegistered = true;
+        // TODO: this information should be stored on the controller, just as in the other cases
         org.voteRegisterParams = _voteRegisterParams;
         org.voteRemoveParams = _voteRemoveParams;
         org.boolVote = _boolVote;
@@ -116,14 +118,18 @@ contract UniversalSchemeRegister is UniversalScheme {
      * @param _parametersHash a hash of the configuration of the _scheme 
      * @param _isRegistering a boolean represent if the scheme is a registering scheme
      *      that can register other schemes
+     *
+     * @dev NB: not only proposes the vote, but also votes for it
      */
+    // TODO: check if we cannot derive isRegistering from the _scheme itself
+
     function proposeScheme(
         Controller _controller,
         address _scheme, 
         bytes32 _parametersHash,
         bool _isRegistering
     ) returns(bytes32) {
-        // Check org is registred to use this universal scheme (??)
+        // Check org is registred to use this universal scheme
         Organization org = organizations[_controller];
         require(org.isRegistered); 
 
@@ -134,7 +140,7 @@ contract UniversalSchemeRegister is UniversalScheme {
             org.voteRemoveParams,
             org.boolVote
         ));
-        // Check if the controller does'nt already have the propded scheme.
+        // Check if the controller does'nt already have the proposed scheme.
         require(! _controller.isSchemeRegistered(_scheme));
 
         // propose 

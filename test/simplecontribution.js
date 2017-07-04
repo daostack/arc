@@ -1,18 +1,74 @@
-// const helpers = require('./helpers')
+const helpers = require('./helpers')
 
 // var UniversalSimpleVote = artifacts.require("./UniversalSimpleVote.sol");
+const UniversalSimpleContribution = artifacts.require('./UniversalSimpleContribution.sol');
+const UniversalSimpleVote = artifacts.require('./UniversalSimpleVote.sol');
+const MintableToken = artifacts.require('./MintableToken.sol');
 
+contract('SimpleContribution', function(accounts) {
 
-// contract('SimpleContribution', function(accounts) {
+    it("Propose and accept a contribution (in progress)", async function(){
+    	const founders = [accounts[0], accounts[1]];
+        // const tokensForFounders = [1, 2, 3, 5];
+        const repForFounders = [99, 1];
+        const controller = await helpers.forgeOrganization({founders, repForFounders}, this);// the schemeregister is fx
+    	const schemeRegistrar = this.schemeregistrar;
 
-//     it("SimpleContribution scheme -> approve --> submitContribution --> submission fee", async function(){
+    	// we creaet a SimpleContributionScheme
+    	const reputationAddress = await controller.nativeReputation();
+    	const tokenAddress = await controller.nativeToken();
 
-//         let submissionFee = 1;
-            
-//         let founders = [accounts[0],accounts[1]];//,accounts[2]];
-//         let tokenForFounders = [1,2,4];
-//         let repForFounders = [7,9,12];
-//         await helpers.setupController(this, founders, tokenForFounders, repForFounders)
+    	const votingMachine = await UniversalSimpleVote.new(); 
+    	const votingParams = await votingMachine.hashParameters(
+    		reputationAddress,
+    		50, // percentage that counts as a majority
+    	)
+
+    	// check if we have tokens in the schemeregistrar for adding an organization
+    	const schemeRegistrarTokenAddress = await schemeRegistrar.nativeToken();
+    	const schemeRegistrarToken = await MintableToken.at(schemeRegistrarTokenAddress);
+    	const ourBalance = await schemeRegistrarToken.balanceOf(accounts[0]);
+    	const fee = await schemeRegistrar.fee();
+
+    	if (ourBalance.toNumber() < fee.toNumber()) {
+    		throw Error('Your balance is too low to pay the fee for adding an organization. Balance: ' +  ourBalance.valueOf() + 'fee: '  + fee)
+    	}
+
+    	// temporary test to see if we can pay the fee
+    	const beneficiary = await schemeRegistrar.beneficiary();
+    	await schemeRegistrarToken.transfer(beneficiary, fee.toNumber());
+    	return;
+    	// add the organisation to the schemeregistrar
+	    await schemeRegistrar.addOrUpdateOrg(
+	    	controller.address,
+	    	votingParams, // conditions for adding a scheme
+	    	votingParams, // conditions for removing a scheme
+	    	votingMachine.address
+	    );
+
+    	// get the hash of the parameters from the simpleContributionScheme
+    	const contributionScheme = await UniversalSimpleContribution.new(
+    		tokenAddress,
+    		1,
+    		founders[0],
+    	);
+
+    	const contributionSchemeParams = await contributionScheme.hashParameters(
+    		3, // fee for the organisation?
+    		3, // fee for the token?
+    		votingParams,
+    		votingMachine.address,
+		)
+    	// and we propose to add the contribution scheme to controller
+    	await schemeregistrar.proposeScheme(
+    		controller.address,
+    		contributionScheme.address,
+    		contributionSchemeParams,
+    		false, // isRegistering
+    		);
+	
+    	return
+
         
 //         let contributionVotingScheme = await UniversalSimpleVote.new();
 //         let contributionScheme = await SimpleContribution.new(this.controllerAddress,
@@ -62,7 +118,6 @@
 //         assert.equal(parseInt(balance0BeforeSubmission.valueOf()) + parseInt(askedTokens) - parseInt(submissionFee),
 //                      parseInt(balance0AfterSubmission.valueOf()),
 //                      "contributer tokens are not as expected");                     
-//     });
-
-// });
+    });
+});
 

@@ -3,12 +3,11 @@
 */
 const Controller = artifacts.require("./Controller.sol");
 const UniversalGenesisScheme = artifacts.require("./UniversalGenesisScheme.sol");
-const UniversalSchemeRegister = artifacts.require("./UniversalSchemeRegister.sol");
+const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 const UniversalUpgradeScheme = artifacts.require("./UniversalUpgradeScheme.sol");
 const UniversalSimpleVote = artifacts.require("./UniversalSimpleVote.sol");
-const UniversalGCRegister = artifacts.require("./UniversalGCRegister.sol");
+const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
-const BasicToken = artifacts.require("./BasicToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 
 
@@ -35,16 +34,17 @@ export async function etherForEveryone() {
 }
 
 
-async function createSchemeRegister() {
-    const token = await BasicToken.new();
+export async function createSchemeRegistrar() {
+    const token = await MintableToken.new('schemeregistrartoken', 'SRT');
+    await token.mint(1000 * Math.pow(10, 18), web3.eth.accounts[0]);
     const fee = 3;
     const beneficary = web3.eth.accounts[1];
-    return UniversalSchemeRegister.new(token.address, fee, beneficary);
+    return SchemeRegistrar.new(token.address, fee, beneficary);
 }
 
 
 async function createUpgradeScheme() {
-    const token = await BasicToken.new();
+    const token = await MintableToken.new('upgradeSchemeToken', 'UST');
     const fee = 3;
     const beneficary = web3.eth.accounts[1];
     return UniversalUpgradeScheme.new(token.address, fee, beneficary);
@@ -52,36 +52,38 @@ async function createUpgradeScheme() {
 
 
 async function createGCRegister() {
-    const token = await BasicToken.new();
+    const token = await MintableToken.new('gcregistertoken', 'GCT');
     const fee = 3;
     const beneficary = web3.eth.accounts[1];
-    return UniversalGCRegister.new(token.address, fee, beneficary);
+    return GlobalConstraintRegistrar.new(token.address, fee, beneficary);
 }
 
 
 export async function forgeOrganization(
+    opts = {},
     ctx, 
-    founders, 
-    tokenForFounders=[1, 2, 4], 
-    repForFounders=[7, 100, 12]
 ) {
-    const accounts = web3.eth.accounts;
     etherForEveryone();
-
-    if (founders == undefined) {
-        founders = [accounts[0], accounts[1], accounts[2]];
+    const accounts = web3.eth.accounts;
+    const defaults = {
+        founders: [accounts[0], accounts[1], accounts[2]],
+        tokensForFounders: [1, 2, 3],
+        repForFounders: [5, 8, 13],
     }
+
+    const options = Object.assign({}, defaults, opts);
+
     const universalGenesisSchemeInst = await UniversalGenesisScheme.new()
     const tx = await universalGenesisSchemeInst.forgeOrg(
         "Shoes factory",
         "Shoes",
         "SHO",
-        founders,
-        tokenForFounders,
-        repForFounders,
+        options.founders,
+        options.tokensForFounders,
+        options.repForFounders,
     );
    
-    ctx.founders = founders;
+    ctx.founders = options.founders;
     ctx.universalGenesisScheme = universalGenesisSchemeInst;
     // get the address of the controll from the logs
     const log = tx.logs[0];
@@ -89,7 +91,7 @@ export async function forgeOrganization(
     const controller = await Controller.at(ctx.controllerAddress);
     ctx.controller = controller;
 
-    const universalSchemeRegisterInst = await createSchemeRegister();
+    const universalSchemeRegisterInst = await createSchemeRegistrar();
     const universalUpgradeSchemeInst = await createUpgradeScheme(); 
     const universalGCRegisterInst = await createGCRegister();
     const universalSimpleVoteInst = await UniversalSimpleVote.new();
@@ -112,6 +114,7 @@ export async function forgeOrganization(
         schemeUpgradeParams,
         schemeGCRegisterParams
     );
+    ctx.schemeregistrar = universalSchemeRegisterInst;
     return ctx.controller;
 }
 

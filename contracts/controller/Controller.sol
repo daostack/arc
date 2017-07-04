@@ -53,16 +53,17 @@ contract Controller {
     event ExternalTokenApprove(address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
 
     // This is a good constructor only for new organizations, need an improved one to support upgrade.
-    function Controller(Avatar         _avatar,
-                         MintableToken _nativeToken,
-                         Reputation    _nativeReputation,
-                         address _universalRegisteringScheme,
-                         bytes32 _registeringSchemeParams,
-                         address _upgradingScheme,
-                         bytes32 _upgradingSchemeParams,
-                         address _globalConstraintsScheme,
-                         bytes32 _globalConstraintsSchemeParams)
-    {
+    function Controller(
+        Avatar _avatar,
+        MintableToken _nativeToken,
+        Reputation    _nativeReputation,
+        address _universalRegisteringScheme,
+        bytes32 _registeringSchemeParams,
+        address _upgradingScheme,
+        bytes32 _upgradingSchemeParams,
+        address _globalConstraintsScheme,
+        bytes32 _globalConstraintsSchemeParams
+    ) {
         avatar = _avatar;
         nativeToken = _nativeToken;
         nativeReputation = _nativeReputation;
@@ -99,7 +100,7 @@ contract Controller {
         _;
     }
 
-    modifier onlySubjectToConstraint( bytes32 func ) {
+    modifier onlySubjectToConstraint(bytes32 func) {
       /*for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
         if (globalConstraints[cnt] != address(0))
         require( (GlobalConstraintInterface(globalConstraints[cnt])).pre(msg.sender, globalConstraintsParams[cnt], func) );
@@ -126,7 +127,7 @@ contract Controller {
 
     // Scheme registration and unregistration:
     function registerScheme( address _scheme, bool _registeringScheme, bytes32 _parametersHash)
-    onlyRegisteringSchemes onlySubjectToConstraint("registerScheme") returns(bool){
+        onlyRegisteringSchemes onlySubjectToConstraint("registerScheme") returns(bool){
         schemes[_scheme].registered = true;
         schemes[_scheme].registeringScheme = _registeringScheme;
         schemes[_scheme].parametersHash = _parametersHash;

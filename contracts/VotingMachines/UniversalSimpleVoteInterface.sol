@@ -1,4 +1,5 @@
 pragma solidity ^0.4.11;
+/* TODO: delete this file if it is not used anywhere */
 
 import "../controller/Controller.sol";  // Should change to controller intreface.
 import "../controller/Reputation.sol";

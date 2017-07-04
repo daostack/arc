@@ -4,8 +4,15 @@ import "../controller/Controller.sol";
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
+/**
+ * @title A scheme for proposing and rewarding contributions to an organization
+ */
+
 contract UniversalSimpleContribution is UniversalScheme {
 
+    /**
+     * @dev the data of the contribution
+     */
     struct ContributionData {
       bytes32         contributionDescriptionHash;
       uint            nativeTokenReward;
@@ -19,7 +26,7 @@ contract UniversalSimpleContribution is UniversalScheme {
     struct Organization {
       bool isRegistered;
       uint orgNativeTokenFee;
-      uint schemeNatvieTokenFee;
+      uint schemeNativeTokenFee;
       bytes32 voteApproveParams;
       BoolVoteInterface boolVote;
       mapping(bytes32=>ContributionData) contributions;
@@ -27,33 +34,51 @@ contract UniversalSimpleContribution is UniversalScheme {
 
     mapping(address=>Organization) organizations;
 
+    /**
+     * @dev the constructor takes a token address, fee and beneficiary 
+     */ 
     function UniversalSimpleContribution(StandardToken _nativeToken, uint _fee, address _beneficiary) {
       updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
-    function parametersHash(uint _orgNativeTokenFee,
-                                uint _schemeNatvieTokenFee,
-                                bytes32 _voteApproveParams,
-                                BoolVoteInterface _boolVote)
-                                constant returns(bytes32) {
-      return (sha3(_voteApproveParams, _orgNativeTokenFee, _schemeNatvieTokenFee, _boolVote));
+    /**
+     * @dev return a hash of the given parameters
+     * @param _orgNativeTokenFee ???
+     * @param _schemeNativeTokenFee ???
+     * @param _voteApproveParams parameters for the voting machine used to approve a contribution
+     * @param _boolVote the voting machine used to approve a contribution
+     * @return a hash of the parameters
+     */
+    // TODO: invert order of _voteApproveParams and _boolVote
+    // TODO: document where the two fees are used, and what for
+    function hashParameters(
+        uint _orgNativeTokenFee,
+        uint _schemeNativeTokenFee,
+        bytes32 _voteApproveParams,
+        BoolVoteInterface _boolVote
+    ) constant returns(bytes32) {
+        return (sha3(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _boolVote));
     }
 
-    function checkParameterHashMatch(Controller _controller,
-                               uint _orgNativeTokenFee,
-                               uint _schemeNatvieTokenFee,
-                               bytes32 _voteApproveParams,
-                               BoolVoteInterface _boolVote) constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_orgNativeTokenFee, _schemeNatvieTokenFee, _voteApproveParams,_boolVote));
+    function checkParameterHashMatch(
+        Controller _controller,
+        uint _orgNativeTokenFee,
+        uint _schemeNativeTokenFee,
+        bytes32 _voteApproveParams,
+        BoolVoteInterface _boolVote
+    ) constant returns(bool) {
+        return (_controller.getSchemeParameters(this) == hashParameters(_orgNativeTokenFee, _schemeNativeTokenFee, _voteApproveParams,_boolVote));
     }
 
-    function addOrUpdateOrg(Controller _controller,
-                               uint _orgNativeTokenFee,
-                               uint _schemeNatvieTokenFee,
-                               bytes32 _voteApproveParams,
-                               BoolVoteInterface _boolVote) {
+    function addOrUpdateOrg(
+        Controller _controller,
+        uint _orgNativeTokenFee,
+        uint _schemeNativeTokenFee,
+        bytes32 _voteApproveParams,
+        BoolVoteInterface _boolVote
+    ) {
         require(_controller.isSchemeRegistered(this));
-        require(checkParameterHashMatch(_controller, _orgNativeTokenFee, _schemeNatvieTokenFee, _voteApproveParams, _boolVote));
+        require(checkParameterHashMatch(_controller, _orgNativeTokenFee, _schemeNativeTokenFee, _voteApproveParams, _boolVote));
 
         // Pay fees for using scheme:
         nativeToken.transferFrom(msg.sender, beneficiary, fee);
@@ -62,24 +87,26 @@ contract UniversalSimpleContribution is UniversalScheme {
         org.isRegistered = true;
         org.voteApproveParams = _voteApproveParams;
         org.orgNativeTokenFee = _orgNativeTokenFee;
-        org.schemeNatvieTokenFee = _schemeNatvieTokenFee;
+        org.schemeNativeTokenFee = _schemeNativeTokenFee;
         org.boolVote = _boolVote;
     }
 
-    function submitContribution( Controller _controller,
-                                  string          _contributionDesciption,
-                                  uint            _nativeTokenReward,
-                                  uint            _reputationReward,
-                                  uint            _ethReward,
-                                  StandardToken   _externalToken,
-                                  uint            _externalTokenReward,
-                                  address         _beneficiary) returns(bytes32) {
+    function submitContribution(
+        Controller _controller,
+        string _contributionDesciption,
+        uint _nativeTokenReward,
+        uint _reputationReward,
+        uint _ethReward,
+        StandardToken _externalToken,
+        uint _externalTokenReward,
+        address _beneficiary
+    ) returns(bytes32) {
         Organization memory org = organizations[_controller];
         require(org.isRegistered);
 
         // Pay fees for submitting the contribution:
         _controller.nativeToken().transferFrom(msg.sender, _controller, org.orgNativeTokenFee);
-        nativeToken.transferFrom(msg.sender, _controller, org.schemeNatvieTokenFee);
+        nativeToken.transferFrom(msg.sender, _controller, org.schemeNativeTokenFee);
 
         ContributionData memory data;
         data.contributionDescriptionHash = sha3(_contributionDesciption);
@@ -101,7 +128,8 @@ contract UniversalSimpleContribution is UniversalScheme {
         return contributionId;
     }
 
-    function voteContribution( Controller _controller, bytes32 _contributionId, bool _yes ) returns(bool) {
+    function voteContribution(
+        Controller _controller, bytes32 _contributionId, bool _yes ) returns(bool) {
         BoolVoteInterface boolVote = organizations[_controller].boolVote;
         if( ! boolVote.vote(_contributionId, _yes, msg.sender) ) return false;
         if( boolVote.voteResults(_contributionId) ) {
