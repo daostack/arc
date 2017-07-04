@@ -18,6 +18,7 @@ contract UniversalGCRegister is UniversalScheme {
         bytes32 removeParams; // Voting parameters for removing this GC.
     }
 
+    // Struct holding the data for each organization
     struct Organization {
         bool isRegistered;
         bytes32 voteRegisterParams; // The voting parameters for adding a GC.
@@ -29,7 +30,7 @@ contract UniversalGCRegister is UniversalScheme {
     // A mapping from thr organization (controller) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
 
-
+    // Constructor, updating the initial prarmeters:
     function UniversalGCRegister(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
