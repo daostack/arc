@@ -11,8 +11,9 @@ contract('SimpleContribution', function(accounts) {
     	const founders = [accounts[0], accounts[1]];
         // const tokensForFounders = [1, 2, 3, 5];
         const repForFounders = [99, 1];
-        const controller = await helpers.forgeOrganization({founders, repForFounders}, this);// the schemeregister is fx
-    	const schemeRegistrar = this.schemeregistrar;
+        const org = await helpers.forgeOrganization({founders, repForFounders});// the schemeregister is fx
+        const controller = org.controller;
+    	const schemeRegistrar = org.schemeregistrar;
 
     	// check if indeed the registrar is registered
     	const isSchemeRegistered = await controller.isSchemeRegistered(schemeRegistrar.address);

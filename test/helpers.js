@@ -10,6 +10,8 @@ const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar
 const MintableToken = artifacts.require("./MintableToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 
+import { daostack } from '../lib/daostack.js';
+
 
 export function getProposalAddress(tx) {
     // helper function that returns a proposal object from the ProposalCreated event 
@@ -34,88 +36,24 @@ export async function etherForEveryone() {
 }
 
 
-export async function createSchemeRegistrar() {
-    const token = await MintableToken.new('schemeregistrartoken', 'SRT');
-    await token.mint(1000 * Math.pow(10, 18), web3.eth.accounts[0]);
-    const fee = 3;
-    const beneficary = web3.eth.accounts[1];
-    return SchemeRegistrar.new(token.address, fee, beneficary);
+export function createSchemeRegistrar() {
+    return daostack.createSchemeRegistrar();
+}
+
+function createUpgradeScheme() {
+    return daostack.createUpgradeScheme();
 }
 
 
-async function createUpgradeScheme() {
-    const token = await MintableToken.new('upgradeSchemeToken', 'UST');
-    const fee = 3;
-    const beneficary = web3.eth.accounts[1];
-    return UpgradeScheme.new(token.address, fee, beneficary);
+function createGCRegister() {
+    return daostack.createGCRegister();
 }
 
 
-async function createGCRegister() {
-    const token = await MintableToken.new('gcregistertoken', 'GCT');
-    const fee = 3;
-    const beneficary = web3.eth.accounts[1];
-    return GlobalConstraintRegistrar.new(token.address, fee, beneficary);
-}
-
-
-export async function forgeOrganization(
-    opts = {},
-    ctx, 
-) {
-    etherForEveryone();
-    const accounts = web3.eth.accounts;
-    const defaults = {
-        founders: [accounts[0], accounts[1], accounts[2]],
-        tokensForFounders: [1, 2, 3],
-        repForFounders: [5, 8, 13],
-    }
-
-    const options = Object.assign({}, defaults, opts);
-
-    const universalGenesisSchemeInst = await GenesisScheme.new()
-    const tx = await universalGenesisSchemeInst.forgeOrg(
-        "Shoes factory",
-        "Shoes",
-        "SHO",
-        options.founders,
-        options.tokensForFounders,
-        options.repForFounders,
-    );
-   
-    ctx.founders = options.founders;
-    ctx.GenesisScheme = universalGenesisSchemeInst;
-    // get the address of the controll from the logs
-    const log = tx.logs[0];
-    ctx.controllerAddress = log.args._controller;
-    const controller = await Controller.at(ctx.controllerAddress);
-    ctx.controller = controller;
-
-    const schemeRegistrarInst = await createSchemeRegistrar();
-    const universalUpgradeSchemeInst = await createUpgradeScheme(); 
-    const universalGCRegisterInst = await createGCRegister();
-    const simpleVoteInst = await UniversalSimpleVote.new();
-
-    const tokenAddress = await controller.nativeToken();
-    const reputationAddress = await controller.nativeReputation();
-
-    const votePrec = 50;
-    const voteParametersHash = await simpleVoteInst.hashParameters(reputationAddress, votePrec);
-    const schemeRegisterParams = await schemeRegistrarInst.parametersHash(voteParametersHash, voteParametersHash, simpleVoteInst.address);
-    const schemeGCRegisterParams = await universalGCRegisterInst.parametersHash(voteParametersHash, simpleVoteInst.address);
-    const schemeUpgradeParams = await universalUpgradeSchemeInst.parametersHash(voteParametersHash, simpleVoteInst.address);
- 
-    await universalGenesisSchemeInst.setInitialSchemes(
-        ctx.controllerAddress,
-        schemeRegistrarInst.address,
-        universalUpgradeSchemeInst.address,
-        universalGCRegisterInst.address,
-        schemeRegisterParams,
-        schemeUpgradeParams,
-        schemeGCRegisterParams
-    );
-    ctx.schemeregistrar = schemeRegistrarInst;
-    return ctx.controller;
+export async function forgeOrganization(opts = {}) {
+    await etherForEveryone();
+    const org = await daostack.forgeOrganization(opts);
+    return org;
 }
 
 

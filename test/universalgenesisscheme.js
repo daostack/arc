@@ -11,7 +11,8 @@ contract('GenesisScheme', function(accounts) {
         const founders = [accounts[0], accounts[1], accounts[2], accounts[3]];
         const tokensForFounders = [1, 2, 3, 5];
         const repForFounders = [8, 13, 21, 34];
-        const controller = await helpers.forgeOrganization({founders, tokensForFounders, repForFounders}, this);
+        const organization = await helpers.forgeOrganization({founders, tokensForFounders, repForFounders});
+        const controller = organization.controller;
         
         const reputationAddress = await controller.nativeReputation();
         const reputationInstance = Reputation.at(reputationAddress);
@@ -34,21 +35,4 @@ contract('GenesisScheme', function(accounts) {
         assert.equal(balance.valueOf(), 0, "founders reputation is not as expected");
         
     });
-
-    // it("setInitialScheme cannot be called by anyone", async function() {    
-    //     const GenesisScheme = await GenesisScheme.new()
-    //     const controller = await helpers.forgeOrganization(this);
-
-    //     // try {
-    //     //     await GenesisScheme.setInitialSchemes(controller
-    //     //         _registeringScheme, _upgradingScheme, _globalConstraintsScheme,
-    //     //         _registeringSchemeParams, _upgradingSchemeParams, _globalConstraintsSchemeParams);
-    //     //     throw 'an error';
-    //     // } catch(error) {
-    //     //     helpers.assertVMException(error)
-    //     //     throw error;
-    //     // };
- 
-    // });
-   
 });
