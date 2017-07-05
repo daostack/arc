@@ -10,9 +10,6 @@ import "./UniversalScheme.sol";
  * @dev The SchemeRegistrar is used for registering and unregistering schemes at organizations
  */
 
-// TODO: perhaps rename to "Registrar", since (apart from tracking proposals) does not 
-// really keep a register of anything at all
-
 contract SchemeRegistrar is UniversalScheme {
 
     // a SchemeProposal is a  proposal to add or remove a scheme to/from the register
@@ -50,7 +47,7 @@ contract SchemeRegistrar is UniversalScheme {
     /**
      * @dev create an Id for an organization. The parameters are those for adding
      * an organization
-     * 
+     *
      */
     function parametersHash(
         bytes32 _voteRegisterParams,
@@ -61,7 +58,7 @@ contract SchemeRegistrar is UniversalScheme {
     }
 
     // check if the current register is registered on the given controller
-    // with the given parameters 
+    // with the given parameters
     function checkParameterHashMatch(
         Controller _controller,
         bytes32 _voteRegisterParams,
@@ -72,7 +69,7 @@ contract SchemeRegistrar is UniversalScheme {
     }
 
     /**
-     * @dev add or update an organisation to this register. 
+     * @dev add or update an organisation to this register.
      * @dev the sender pays a fee (in nativeToken) for using this function, and must approve it before calling the transaction
      * @param _controller the address of the organization
      * @param _voteRegisterParams a hash representing the conditions for registering new schemes
@@ -116,7 +113,7 @@ contract SchemeRegistrar is UniversalScheme {
      * @dev propose a vote to register a scheme in the current register
      * @param _controller the address of the organization
      * @param _scheme the address of the scheme to be approved
-     * @param _parametersHash a hash of the configuration of the _scheme 
+     * @param _parametersHash a hash of the configuration of the _scheme
      * @param _isRegistering a boolean represent if the scheme is a registering scheme
      *      that can register other schemes
      *
@@ -126,13 +123,13 @@ contract SchemeRegistrar is UniversalScheme {
 
     function proposeScheme(
         Controller _controller,
-        address _scheme, 
+        address _scheme,
         bytes32 _parametersHash,
         bool _isRegistering
     ) returns(bytes32) {
         // Check org is registred to use this universal scheme
         Organization org = organizations[_controller];
-        require(org.isRegistered); 
+        require(org.isRegistered);
 
         // check if the configuration of the current scheme matches that of the controller
         require(checkParameterHashMatch(
@@ -144,7 +141,7 @@ contract SchemeRegistrar is UniversalScheme {
         // Check if the controller does'nt already have the proposed scheme.
         require(! _controller.isSchemeRegistered(_scheme));
 
-        // propose 
+        // propose
         BoolVoteInterface boolVote = org.boolVote;
         bytes32 id = boolVote.propose(org.voteRegisterParams);
 
@@ -192,7 +189,7 @@ contract SchemeRegistrar is UniversalScheme {
      * @param _proposalId the id of the proposal
      * @param _yes a boolean representing a yes or no vote
      */
-    // NB: the decisive vote will pay for gas costs for (un)registering the scheme in question 
+    // NB: the decisive vote will pay for gas costs for (un)registering the scheme in question
     // TODO: security: we are not checking here if the registeration on the controller of the present register has changed
     // since we propossed the vote
     function voteScheme(Controller _controller, bytes32 _proposalId, bool _yes) returns(bool) {
@@ -222,7 +219,7 @@ contract SchemeRegistrar is UniversalScheme {
     }
 
     /**
-     * @dev get the status of the vote 
+     * @dev get the status of the vote
      * @return [yes, no, ended]
      */
     function getVoteStatus(Controller _controller, bytes32 id) constant returns(uint[3]) {
