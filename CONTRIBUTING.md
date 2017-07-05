@@ -7,32 +7,33 @@ Please make sure test pass before submitting a PR.
 
 We try to follow the style guidelines from http://solidity.readthedocs.io/en/develop/style-guide.html
 
+The development id done on unix based systems.  
+
 # Testing
 
 These contracts are tested using the truffle framework
 
 ## Installation
 
-Make sure you have a recent version of node.js and yarn.
+Make sure you have a recent version of [node.js](https://nodejs.org/) (7.6 and above) and [yarn](https://yarnpkg.com) package manager.
 
-Install the software:
+Installation of dependencies. After cloning the repository run:
 
-    yarn install 
+    yarn
 
 
 ## Run tests
 
-Start testrpc
+To run the test locally use a local blockchain using testrpc, just run:
 
     testrpc
 
-And in another window, run the tests:
-    
-    cd daostack
+On a second terminal, run the tests:
+
     truffle test
 
 
-# Style 
+# Style
 
 For solidity, we are following the style guide here: http://solidity.readthedocs.io/en/develop/style-guide.html
 

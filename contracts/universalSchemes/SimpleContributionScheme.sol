@@ -6,25 +6,27 @@ import "./UniversalScheme.sol";
 
 /**
  * @title A scheme for proposing and rewarding contributions to an organization
+ * @dev An agent can ask an organization to recognize a contribution and reward
+ * him with token, reputation, ether or any combination.
  */
 
-contract SimpleContributionScheme is UniversalScheme {
 
-    /**
-     * @dev the data of the contribution
-     */
+contract SimpleContributionScheme is UniversalScheme {
+    // A struct holding the data for a contribution proposal
     struct ContributionData {
-      bytes32         contributionDescriptionHash;
-      uint            nativeTokenReward;
-      uint            reputationReward;
+      bytes32         contributionDescriptionHash; // Hash of contributtion document.
+      uint            nativeTokenReward; // Reward asked in the native token of the organization.
+      uint            reputationReward; // Organization reputation reward requested.
       uint            ethReward;
       StandardToken   externalToken;
       uint            externalTokenReward;
       address         beneficiary;
     }
 
+    // Struct holding the data for each organization
     struct Organization {
       bool isRegistered;
+      // A contibution fee can be in the organization token or the scheme token or a combination
       uint orgNativeTokenFee;
       uint schemeNativeTokenFee;
       bytes32 voteApproveParams;
@@ -32,6 +34,7 @@ contract SimpleContributionScheme is UniversalScheme {
       mapping(bytes32=>ContributionData) contributions;
     }
 
+    // A mapping from thr organization (controller) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
 
     /**
@@ -91,6 +94,7 @@ contract SimpleContributionScheme is UniversalScheme {
         org.boolVote = _boolVote;
     }
 
+    // Sumitting a proposal for a reward against a contribution:
     function submitContribution(
         Controller _controller,
         string _contributionDesciption,
@@ -128,6 +132,7 @@ contract SimpleContributionScheme is UniversalScheme {
         return contributionId;
     }
 
+    // Voting on a contribution and also handle the execuation when vote is over: 
     function voteContribution(
         Controller _controller, bytes32 _contributionId, bool _yes ) returns(bool) {
         BoolVoteInterface boolVote = organizations[_controller].boolVote;
