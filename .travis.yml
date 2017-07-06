@@ -16,9 +16,9 @@ before_install:
   - sudo apt-get install geth -y -qq
 
 install:
+  - yarn add truffle@beta
   - yarn install
-  - rm -rf contracts/zeppelin # remove any remainign artifacts from a previous build
-  - npm install -g truffle-expect truffle-config web3 # workaround bug in truffle https://github.com/trufflesuite/truffle/issues/383
+  - rm -rf contracts/zeppelin # remove any remaining artifacts from a previous build
   - yarn run testrpc
   - truffle version
 
