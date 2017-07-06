@@ -17,7 +17,7 @@ before_install:
 
 install:
   - yarn install
-  - rm -r contracts/zeppelin
+  - rm -rf contracts/zeppelin
   - yarn run testrpc
   - truffle version
 
