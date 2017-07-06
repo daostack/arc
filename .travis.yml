@@ -17,12 +17,8 @@ before_install:
 
 install:
   - yarn install
-<<<<<<< Updated upstream
-  - rm -rf contracts/zeppelin
-=======
-  - rm -r contracts/zeppelin
+  - rm -rf contracts/zeppelin # remove any remainign artifacts from a previous build
   - npm install -g truffle-expect truffle-config web3 # workaround bug in truffle https://github.com/trufflesuite/truffle/issues/383
->>>>>>> Stashed changes
   - yarn run testrpc
   - truffle version
 
