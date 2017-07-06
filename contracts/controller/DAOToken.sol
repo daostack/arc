@@ -12,7 +12,7 @@ contract DAOToken is MintableToken {
     using SafeMath for uint;
 
     event TokenLock(address indexed user, uint value);
-    event Burn(address indexed user, uint value);
+    event Burn(uint value);
 
     struct Lock {
       uint lockedAmount;
@@ -66,6 +66,7 @@ contract DAOToken is MintableToken {
     // The token contract should not hold its own tokens, allow anyont to burn its balance:
     function burnContractToken() {
       totalSupply = totalSupply.sub(balances[this]);
+      Burn(balances[this]);
       balances[this] = 0;
     }
 
