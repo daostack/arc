@@ -16,7 +16,6 @@ before_install:
   - sudo apt-get install geth -y -qq
 
 install:
-  - yarn add truffle@beta
   - yarn install
   - rm -rf contracts/zeppelin # remove any remaining artifacts from a previous build
   - yarn run testrpc
