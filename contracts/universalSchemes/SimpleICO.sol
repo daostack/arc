@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 import "../controller/Controller.sol";
 import "./UniversalScheme.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "zeppelin-solidity/contracts/SafeMath.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
 
 
