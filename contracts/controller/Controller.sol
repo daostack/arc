@@ -40,8 +40,8 @@ contract Controller {
     address[]       public   globalConstraints;
     bytes32[]       public   globalConstraintsParams;
 
-    event MintReputation( address indexed _sender, address indexed _beneficary, int256 _amount );
-    event MintTokens( address indexed _sender, address indexed _beneficary, uint256 _amount );
+    event MintReputation( address indexed _sender, address indexed _beneficiary, int256 _amount );
+    event MintTokens( address indexed _sender, address indexed _beneficiary, uint256 _amount );
     event RegisterScheme( address indexed _sender, address indexed _scheme );
     event UnregisterScheme( address indexed _sender, address indexed _scheme );
     event GenericAction( address indexed _sender, address indexed _action, uint _param );
@@ -113,16 +113,16 @@ contract Controller {
     }
 
     // Minting:
-    function mintReputation(int256 _amount, address _beneficary)
+    function mintReputation(int256 _amount, address _beneficiary)
       onlyRegisteredScheme onlySubjectToConstraint("mintReputation") returns(bool){
-        MintReputation(msg.sender, _beneficary, _amount);
-        return nativeReputation.mint(_amount, _beneficary);
+        MintReputation(msg.sender, _beneficiary, _amount);
+        return nativeReputation.mint(_amount, _beneficiary);
     }
 
-    function mintTokens(uint256 _amount, address _beneficary)
+    function mintTokens(uint256 _amount, address _beneficiary)
     onlyRegisteredScheme onlySubjectToConstraint("mintTokens") returns(bool){
-        MintTokens(msg.sender, _beneficary, _amount);
-        return nativeToken.mint(_amount, _beneficary);
+        MintTokens(msg.sender, _beneficiary, _amount);
+        return nativeToken.mint(_amount, _beneficiary);
     }
 
     // Scheme registration and unregistration:

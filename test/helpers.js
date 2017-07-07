@@ -36,10 +36,6 @@ export async function etherForEveryone() {
 }
 
 
-export function createSchemeRegistrar() {
-    return daostack.createSchemeRegistrar();
-}
-
 function createUpgradeScheme() {
     return daostack.createUpgradeScheme();
 }
