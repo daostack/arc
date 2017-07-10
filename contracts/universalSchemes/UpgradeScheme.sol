@@ -25,7 +25,7 @@ contract UpgradeScheme is UniversalScheme {
       mapping(bytes32=>UpgradeProposal) proposals;
     }
 
-    // A mapping from thr organization (controller) address to the saved data of the organization:
+    // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
 
     // Constructor, updating the initial prarmeters:
@@ -39,76 +39,78 @@ contract UpgradeScheme is UniversalScheme {
     }
 
     // Check that the parameters listed match the ones in the controller:
-    function checkParameterHashMatch(Controller _controller, bytes32 _voteParams,
+    function checkParameterHashMatch(Avatar _avatar, bytes32 _voteParams,
                      BoolVoteInterface _boolVote) constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_voteParams, _boolVote));
+       Controller controller = Controller(_avatar.owner());
+       return (controller.getSchemeParameters(this) == parametersHash(_voteParams, _boolVote));
     }
 
     // Adding an organization to the universal scheme:
-    function addOrUpdateOrg(Controller _controller, bytes32 _voteParams, BoolVoteInterface _boolVote) {
+    function addOrUpdateOrg(Avatar _avatar, bytes32 _voteParams, BoolVoteInterface _boolVote) {
 
       // Pay fees for using scheme:
       nativeToken.transferFrom(msg.sender, beneficiary, fee);
 
-      /*require(_controller.upgradingScheme() == address(this));*/ // Can't do at the moment. ToDo.
-      require(checkParameterHashMatch(_controller, _voteParams, _boolVote));
+      /*require(_controller.upgradingScheme() == address(this));*/ // No need, execution will just fail.
+      require(checkParameterHashMatch(_avatar, _voteParams, _boolVote));
       Organization memory org;
       org.isRegistered = true;
       org.voteParams = _voteParams;
       org.boolVote = _boolVote;
-      organizations[_controller] = org;
+      organizations[_avatar] = org;
     }
 
     // Propose an update of the controller:
-    function proposeUpdate(Controller _controller, address _newController) returns(bytes32) {
-        Organization org = organizations[_controller];
+    function proposeUpdate(Avatar _avatar, address _newController) returns(bytes32) {
+        Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(checkParameterHashMatch(_controller, org.voteParams, org.boolVote));
+        require(checkParameterHashMatch(_avatar, org.voteParams, org.boolVote));
         BoolVoteInterface boolVote = org.boolVote;
         bytes32 id = boolVote.propose(org.voteParams);
         if (org.proposals[id].proposalType != 0) revert();
         org.proposals[id].proposalType = 1;
         org.proposals[id].newContOrScheme = _newController;
-        voteScheme(_controller, id, true);
+        voteScheme(_avatar, id, true);
         return id;
     }
 
     // Propose to replace this schme by another updating schme:
-    function proposeChangeUpdateScheme(Controller _controller, address _scheme, bytes32 _params) returns(bytes32) {
-        Organization org = organizations[_controller];
+    function proposeChangeUpdateScheme(Avatar _avatar, address _scheme, bytes32 _params) returns(bytes32) {
+        Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(checkParameterHashMatch(_controller, org.voteParams, org.boolVote));
+        require(checkParameterHashMatch(_avatar, org.voteParams, org.boolVote));
         BoolVoteInterface boolVote = org.boolVote;
         bytes32 id = boolVote.propose(org.voteParams);
         if (org.proposals[id].proposalType != 0) revert();
         org.proposals[id].proposalType = 2;
         org.proposals[id].newContOrScheme = _scheme;
         org.proposals[id].params = _params;
-        voteScheme(_controller, id, true);
+        voteScheme(_avatar, id, true);
         return id;
     }
 
     // Vote on one of the proposals, also handles execution:
-    function voteScheme( Controller _controller, bytes32 id, bool _yes ) returns(bool) {
-        BoolVoteInterface boolVote = organizations[_controller].boolVote;
+    function voteScheme( Avatar _avatar, bytes32 id, bool _yes ) returns(bool) {
+        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
         if( ! boolVote.vote(id, _yes, msg.sender) ) return false;
         if( boolVote.voteResults(id) ) {
-            UpgradeProposal memory proposal = organizations[_controller].proposals[id];
+            UpgradeProposal memory proposal = organizations[_avatar].proposals[id];
             if( ! boolVote.cancelProposal(id) ) revert();
-            if( organizations[_controller].proposals[id].proposalType == 2 ) {
-                bytes4 permissions = _controller.getSchemePermissions(this);
-                if( ! _controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions) ) revert();
-                if( ! _controller.unregisterSelf() ) revert();
+            Controller controller = Controller(_avatar.owner());
+            if( organizations[_avatar].proposals[id].proposalType == 2 ) {
+                bytes4 permissions = controller.getSchemePermissions(this);
+                if( ! controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions) ) revert();
+                if( ! controller.unregisterSelf() ) revert();
             }
-            if( organizations[_controller].proposals[id].proposalType == 1 ) {
-                if( ! _controller.upgradeController(proposal.newContOrScheme) ) revert();
+            if( organizations[_avatar].proposals[id].proposalType == 1 ) {
+                if( ! controller.upgradeController(proposal.newContOrScheme) ) revert();
             }
-            organizations[_controller].proposals[id].proposalType = 0;
+            organizations[_avatar].proposals[id].proposalType = 0;
         }
     }
 
-    function getVoteStatus(Controller _controller, bytes32 id) constant returns(uint[3]) {
-        BoolVoteInterface boolVote = organizations[_controller].boolVote;
+    function getVoteStatus(Avatar _avatar, bytes32 id) constant returns(uint[3]) {
+        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
         return (boolVote.voteStatus(id));
     }
 }

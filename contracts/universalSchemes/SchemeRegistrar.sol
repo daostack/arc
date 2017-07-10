@@ -1,6 +1,7 @@
 pragma solidity ^0.4.11;
 
 import "../controller/Controller.sol";
+import "../controller/Avatar.sol";
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 

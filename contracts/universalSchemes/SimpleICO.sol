@@ -1,6 +1,7 @@
 pragma solidity ^0.4.11;
 
 import "../controller/Controller.sol";
+import "../controller/Avatar.sol";
 import "./UniversalScheme.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -11,12 +12,12 @@ import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
  * @title An avatar contract for ICO.
  * @dev Allow people to donate by simply sending ether to an address.
  */
-contract AvatarContractICO is Destructible {
-  Controller public organization; // The organization address (currently controller)
+contract MirrorContractICO is Destructible {
+  Avatar public organization; // The organization address (the avatar)
   SimpleICO public simpleICO;  // The ICO contract address
 
   // Contstructor, setting the organization and ICO scheme:
-  function AvatarContractICO(Controller _organization, SimpleICO _simpleICO) {
+  function MirrorContractICO(Avatar _organization, SimpleICO _simpleICO) {
     organization = _organization;
     simpleICO = _simpleICO;
   }
@@ -53,7 +54,7 @@ contract SimpleICO is UniversalScheme {
       bool isRegistered;
     }
 
-    // A mapping from thr organization (controller) address to the saved data of the organization:
+    // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) public organizations;
 
     event DonationRecieved( address indexed organization, address indexed _beneficiary, uint _incomingEther  ,uint indexed _tokensAmount );
@@ -70,20 +71,20 @@ contract SimpleICO is UniversalScheme {
     }
 
     // Check that the parameters listed match the ones in the controller:
-    function checkParameterHashMatch(Controller _controller, uint _cap, uint _price, uint _startBlock,
+    function checkParameterHashMatch(Avatar _avatar, uint _cap, uint _price, uint _startBlock,
                             uint _endBlock, address _etherAddress, address _admin) constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_cap, _price, _startBlock, _endBlock, _etherAddress, _admin));
+        Controller controller = Controller(_avatar.owner());
+       return (controller.getSchemeParameters(this) == parametersHash(_cap, _price, _startBlock, _endBlock, _etherAddress, _admin));
     }
 
     // Adding an organization to the universal scheme, and opens an ICO for it:
-    function addOrgOpenICO(Controller _controller, uint _cap, uint _price, uint _startBlock,
+    function addOrgOpenICO(Avatar _avatar, uint _cap, uint _price, uint _startBlock,
                             uint _endBlock, address _etherAddress, address _admin) {
 
       // Pay fees for using scheme:
       nativeToken.transferFrom(msg.sender, beneficiary, fee);
 
-      require(_controller.isSchemeRegistered(this) == true);
-      require(checkParameterHashMatch(_controller, _cap, _price, _startBlock, _endBlock,
+      require(checkParameterHashMatch(_avatar, _cap, _price, _startBlock, _endBlock,
                                           _etherAddress, _admin));
 
       // Set the organization data:
@@ -95,9 +96,9 @@ contract SimpleICO is UniversalScheme {
       org.endBlock = _endBlock;
       org.etherAddress = _etherAddress;
       org.admin = _admin;
-      org.avatarContractICO = new AvatarContractICO(_controller, this);
+      org.avatarContractICO = new MirrorContractICO(_avatar, this);
       org.isOpen = true;
-      organizations[_controller] = org;
+      organizations[_avatar] = org;
     }
 
     // If someone accidentally send ether to the contract, revert;
@@ -106,20 +107,20 @@ contract SimpleICO is UniversalScheme {
     }
 
     // Admin can halt ICO:
-    function haltICO(address _controller) {
-        require(msg.sender == organizations[_controller].admin);
-        organizations[_controller].isOpen = false;
+    function haltICO(address _avatar) {
+        require(msg.sender == organizations[_avatar].admin);
+        organizations[_avatar].isOpen = false;
     }
 
     // Admin can reopen ICO:
-    function resumeICO(address _controller) {
-        require(msg.sender == organizations[_controller].admin);
-        organizations[_controller].isOpen = true;
+    function resumeICO(address _avatar) {
+        require(msg.sender == organizations[_avatar].admin);
+        organizations[_avatar].isOpen = true;
     }
 
     // Donating ethers to get tokens:
-    function donate(Controller _controller, address _beneficiary) payable returns(uint) {
-        Organization org = organizations[_controller];
+    function donate(Avatar _avatar, address _beneficiary) payable returns(uint) {
+        Organization org = organizations[_avatar];
 
         // Check PCO is open:
         require(org.isOpen);
@@ -142,13 +143,14 @@ contract SimpleICO is UniversalScheme {
 
         // Send ether to the defined address, mint, and send change to beneficiary:
         org.etherAddress.transfer(incomingEther);
-        if(! _controller.mintTokens(tokens, msg.sender)) revert();
+        Controller controller = Controller(_avatar.owner());
+        if(! controller.mintTokens(tokens, msg.sender)) revert();
         if (change != 0)
             _beneficiary.transfer(change);
 
         // Update total raised, call event and return amount of tokens bought:
         org.totalEthRaised += incomingEther;
-        DonationRecieved(_controller, _beneficiary, incomingEther, tokens);
+        DonationRecieved(_avatar, _beneficiary, incomingEther, tokens);
         return tokens;
     }
 }
