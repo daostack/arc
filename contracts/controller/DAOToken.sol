@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 /*import "zeppelin-solidity/contracts/token/MintableToken.sol";*/ // ToDo, Build on zeppelin contrcat.
 import "./MintableToken.sol";
-import "zeppelin-solidity/contracts/SafeMath.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
  * @title DAOToken, base on zeppelin contract.
@@ -41,7 +41,7 @@ contract DAOToken is MintableToken {
     }
 
     // Rewriting the function to check for locking and burn tokens of the contract itself:
-    function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) {
+    function transfer(address _to, uint _value) {
       // Check for locking:
       if (lockBalances[msg.sender].releaseBlock > block.number)
         require(balances[msg.sender].sub(_value) >= lockBalances[msg.sender].lockedAmount);
