@@ -18,7 +18,14 @@ contract GenesisScheme {
 
     event NewOrg (address _controller);
 
+    address[] addressArray;
+    bytes32[] bytes32Array;
+    bytes4[] bytes4Array;
+
     function GenesisScheme( ) {
+      addressArray.push(address(this));
+      bytes32Array.push(bytes32(0));
+      bytes4Array.push(bytes4(0xF));
     }
 
     /**
@@ -26,10 +33,10 @@ contract GenesisScheme {
      * @param _orgName The name of the new organization
      * @param _tokenName The name of the token associated with the organization
      * @param _tokenSymbol The symbol of the token
-     * @param _founders An array with the addresses of the founders of the organization 
-     * @param _foundersTokenAmount An array of amount of tokens that the founders 
-     *  receive in the new organization 
-     * @param _foundersReputationAmount An array of amount of reputation that the 
+     * @param _founders An array with the addresses of the founders of the organization
+     * @param _foundersTokenAmount An array of amount of tokens that the founders
+     *  receive in the new organization
+     * @param _foundersReputationAmount An array of amount of reputation that the
      *   founders receive in the new organization
      *
      * @return The address of the Controller
@@ -49,9 +56,7 @@ contract GenesisScheme {
         avatar =  new Avatar(_orgName, nativeToken, nativeReputation);
 
         // Create Controller:
-        Controller controller = new Controller(avatar, nativeToken, nativeReputation, this, bytes32(0),
-                                                  this, bytes32(0), this, bytes32(0));
-
+        Controller controller = new Controller(avatar, nativeToken, nativeReputation, addressArray, bytes32Array, bytes4Array);
         // Transfer ownership:
         avatar.transferOwnership(controller);
         nativeToken.transferOwnership(controller);
@@ -73,27 +78,19 @@ contract GenesisScheme {
      * @dev  register some initial schemes
      */
 
-    function setInitialSchemes (
-        Controller _controller,
-        address _registeringScheme,
-        address _upgradingScheme,
-        address _globalConstraintsScheme,
-        bytes32 _registeringSchemeParams,
-        bytes32 _upgradingSchemeParams,
-        bytes32 _globalConstraintsSchemeParams
-    ) {
+    function setInitialSchemes (Controller _controller, address[] _schemes, bytes32[] _params, bytes4[] _permissions) {
         // this action can only be executed by the account that holds the lock
         // for this controller
         require(locks[address(_controller)] == msg.sender);
 
-        // register the registering scheme and remove this scheme.
-        _controller.registerScheme(_registeringScheme, true, _registeringSchemeParams);
-        _controller.changeUpgradeScheme(_upgradingScheme, _upgradingSchemeParams);
-        _controller.changeGlobalConstraintsScheme(_globalConstraintsScheme, _globalConstraintsSchemeParams);
+        // register initial schemes:
+        for( uint i = 0 ; i < _schemes.length ; i++ )
+          _controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
+
+        // Unregister self:
         _controller.unregisterScheme(this);
 
         // Remove lock:
         delete locks[_controller];
-        return;
     }
 }

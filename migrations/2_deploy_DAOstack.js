@@ -47,7 +47,7 @@ var UniversalRegisterFee = web3.toWei(5);
 
 module.exports = async function(deployer) {
     // Deploy GenesisScheme:
-    // apparently we must wrap the first deploy call in a then to avoid 
+    // apparently we must wrap the first deploy call in a then to avoid
     // what seem to be race conditions during deployment
     // await deployer.deploy(GenesisScheme)
     deployer.deploy(GenesisScheme).then(async function(){
@@ -56,6 +56,7 @@ module.exports = async function(deployer) {
         // Create DAOstack:
         returnedParams = await genesisSchemeInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
             initTokenInWei, initRepInWei);
+
         ControllerInst = await Controller.at(returnedParams.logs[0].args._controller);
         tokenAddress = await ControllerInst.nativeToken();
         reputationAddress = await ControllerInst.nativeReputation();
@@ -63,6 +64,7 @@ module.exports = async function(deployer) {
         avatarAddress = await ControllerInst.avatar();
         AvatarInst = await Avatar.at(avatarAddress);
         await deployer.deploy(UniversalSimpleVote);
+
         // Deploy UniversalSimpleVote:
         simpleVoteInst = await UniversalSimpleVote.deployed();
         // Deploy SchemeRegistrar:
@@ -79,24 +81,25 @@ module.exports = async function(deployer) {
         schemeRegisterParams = await schemeRegistrarInst.parametersHash(voteParametersHash, voteParametersHash, simpleVoteInst.address);
         schemeGCRegisterParams = await UniversalGCRegisterInst.parametersHash(voteParametersHash, simpleVoteInst.address);
         schemeUpgradeParams = await UniversalUpgradeSchemeInst.parametersHash(voteParametersHash, simpleVoteInst.address);
+
+        // Paying fees:
+        await MintableTokenInst.approve(schemeRegistrarInst.address, UniversalRegisterFee);
+        await MintableTokenInst.approve(UniversalGCRegisterInst.address, UniversalRegisterFee);
+        await MintableTokenInst.approve(UniversalUpgradeSchemeInst.address, UniversalRegisterFee);
+
+        var schemesArray = [schemeRegistrarInst.address, UniversalGCRegisterInst.address, UniversalUpgradeSchemeInst.address];
+        var paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams];
+        var permissionArray = [3, 5, 9];
+
+
         // set DAOstack initial schmes:
-        await genesisSchemeInst.setInitialSchemes(
-            ControllerInst.address,
-            schemeRegistrarInst.address,
-            UniversalUpgradeSchemeInst.address,
-            UniversalGCRegisterInst.address,
-            schemeRegisterParams,
-            schemeUpgradeParams,
-            schemeGCRegisterParams);
+        await genesisSchemeInst.setInitialSchemes(ControllerInst.address, schemesArray, paramsArray, permissionArray);
 
         // Set SchemeRegistrar nativeToken and register DAOstack to it:
-        await MintableTokenInst.approve(schemeRegistrarInst.address, UniversalRegisterFee);
         await schemeRegistrarInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, voteParametersHash, simpleVoteInst.address);
-        await MintableTokenInst.approve(UniversalGCRegisterInst.address, UniversalRegisterFee);
         await UniversalGCRegisterInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, simpleVoteInst.address);
-        // Set UpgradeScheme nativeToken and register DAOstack to it:
-        await MintableTokenInst.approve(UniversalUpgradeSchemeInst.address, UniversalRegisterFee);
         await UniversalUpgradeSchemeInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, simpleVoteInst.address);
+
         return;
     })
 };

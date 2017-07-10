@@ -41,7 +41,7 @@ contract UpgradeScheme is UniversalScheme {
     // Check that the parameters listed match the ones in the controller:
     function checkParameterHashMatch(Controller _controller, bytes32 _voteParams,
                      BoolVoteInterface _boolVote) constant returns(bool) {
-       return (_controller.upgradingSchemeParams() == parametersHash(_voteParams, _boolVote));
+       return (_controller.getSchemeParameters(this) == parametersHash(_voteParams, _boolVote));
     }
 
     // Adding an organization to the universal scheme:
@@ -50,7 +50,7 @@ contract UpgradeScheme is UniversalScheme {
       // Pay fees for using scheme:
       nativeToken.transferFrom(msg.sender, beneficiary, fee);
 
-      require(_controller.upgradingScheme() == address(this));
+      /*require(_controller.upgradingScheme() == address(this));*/ // Can't do at the moment. ToDo.
       require(checkParameterHashMatch(_controller, _voteParams, _boolVote));
       Organization memory org;
       org.isRegistered = true;
@@ -96,7 +96,9 @@ contract UpgradeScheme is UniversalScheme {
             UpgradeProposal memory proposal = organizations[_controller].proposals[id];
             if( ! boolVote.cancelProposal(id) ) revert();
             if( organizations[_controller].proposals[id].proposalType == 2 ) {
-                if( ! _controller.changeUpgradeScheme(proposal.newContOrScheme, proposal.params) ) revert();
+                bytes4 permissions = _controller.getSchemePermissions(this);
+                if( ! _controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions) ) revert();
+                if( ! _controller.unregisterSelf() ) revert();
             }
             if( organizations[_controller].proposals[id].proposalType == 1 ) {
                 if( ! _controller.upgradeController(proposal.newContOrScheme) ) revert();

@@ -205,14 +205,13 @@ contract SchemeRegistrar is UniversalScheme {
 
             // if our proposal is of type2, we unregister the schem in question
             if (organizations[_controller].proposals[_proposalId].proposalType == 2 ) {
-                if(!_controller.unregisterScheme(proposal.scheme)) {
-                  revert();
-                }
+                if(!_controller.unregisterScheme(proposal.scheme)) revert();
             }
             if (organizations[_controller].proposals[_proposalId].proposalType == 1 ) {
-                if (!_controller.registerScheme(proposal.scheme, proposal.isRegistering, proposal.parametersHash)) {
-                  revert();
-                }
+                if (proposal.isRegistering == false)
+                  if (!_controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) revert();
+                else
+                  if (!_controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) revert();
             }
             organizations[_controller].proposals[_proposalId].proposalType = 0;
         }

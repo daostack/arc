@@ -45,7 +45,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     function checkParameterHashMatch(Controller _controller,
                      bytes32 _voteRegisterParams,
                      BoolVoteInterface _boolVote) constant returns(bool) {
-       return (_controller.globalConstraintsSchemeParams() == parametersHash(_voteRegisterParams, _boolVote));
+       return (_controller.getSchemeParameters(this) == parametersHash(_voteRegisterParams, _boolVote));
     }
 
     // Adding an organization to the universal scheme:
