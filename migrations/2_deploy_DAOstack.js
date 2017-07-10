@@ -64,7 +64,6 @@ module.exports = async function(deployer) {
         avatarAddress = await ControllerInst.avatar();
         AvatarInst = await Avatar.at(avatarAddress);
         await deployer.deploy(UniversalSimpleVote);
-
         // Deploy UniversalSimpleVote:
         simpleVoteInst = await UniversalSimpleVote.deployed();
         // Deploy SchemeRegistrar:
@@ -76,6 +75,7 @@ module.exports = async function(deployer) {
         // Deploy UniversalGCScheme register:
         await deployer.deploy(GlobalConstraintRegistrar, tokenAddress, UniversalRegisterFee, avatarAddress);
         UniversalGCRegisterInst = await GlobalConstraintRegistrar.deployed();
+
         // Voting parameters and schemes params:
         voteParametersHash = await simpleVoteInst.hashParameters(reputationAddress, votePrec);
         schemeRegisterParams = await schemeRegistrarInst.parametersHash(voteParametersHash, voteParametersHash, simpleVoteInst.address);
@@ -91,15 +91,16 @@ module.exports = async function(deployer) {
         var paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams];
         var permissionArray = [3, 5, 9];
 
-
         // set DAOstack initial schmes:
         await genesisSchemeInst.setInitialSchemes(ControllerInst.address, schemesArray, paramsArray, permissionArray);
 
         // Set SchemeRegistrar nativeToken and register DAOstack to it:
-        await schemeRegistrarInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, voteParametersHash, simpleVoteInst.address);
-        await UniversalGCRegisterInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, simpleVoteInst.address);
+        await schemeRegistrarInst.addOrUpdateOrg(AvatarInst.address, voteParametersHash, voteParametersHash, simpleVoteInst.address);
+        await UniversalGCRegisterInst.addOrUpdateOrg(AvatarInst.address, voteParametersHash, simpleVoteInst.address);
         await UniversalUpgradeSchemeInst.addOrUpdateOrg(ControllerInst.address, voteParametersHash, simpleVoteInst.address);
+        /*
 
         return;
+        */
     })
 };

@@ -3,6 +3,7 @@ pragma solidity ^0.4.11;
 import "../controller/Controller.sol";
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
+import "../controller/Avatar.sol";
 
 /**
  * @title A scheme to manage global constaintg for organizations
@@ -27,7 +28,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         mapping(address=>bytes32) removeParams; // A mapping that saves the parameters for removing each GC.
     }
 
-    // A mapping from thr organization (controller) address to the saved data of the organization:
+    // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
 
     function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) {
@@ -42,33 +43,34 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
 
     // Check that the parameters listed match the ones in the controller:
-    function checkParameterHashMatch(Controller _controller,
+    function checkParameterHashMatch(Avatar _avatar,
                      bytes32 _voteRegisterParams,
                      BoolVoteInterface _boolVote) constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_voteRegisterParams, _boolVote));
+       Controller controller = Controller(_avatar.owner());
+       return (controller.getSchemeParameters(this) == parametersHash(_voteRegisterParams, _boolVote));
     }
 
     // Adding an organization to the universal scheme:
-    function addOrUpdateOrg(Controller _controller,
+    function addOrUpdateOrg(Avatar _avatar,
                      bytes32 _voteRegisterParams,
                      BoolVoteInterface _boolVote) {
 
       // Pay fees for using scheme:
       nativeToken.transferFrom(msg.sender, beneficiary, fee);
 
-      require(checkParameterHashMatch(_controller, _voteRegisterParams, _boolVote));
+      require(checkParameterHashMatch(_avatar, _voteRegisterParams, _boolVote));
       Organization memory org;
       org.isRegistered = true;
       org.voteRegisterParams = _voteRegisterParams;
       org.boolVote = _boolVote;
-      organizations[_controller] = org;
+      organizations[_avatar] = org;
     }
 
     // Proposing to add a new GC:
-    function proposeGC(Controller _controller, address _gc, bytes32 _parametersHash, bytes32 _removeParams) returns(bytes32) {
-        Organization org = organizations[_controller];
+    function proposeGC(Avatar _avatar, address _gc, bytes32 _parametersHash, bytes32 _removeParams) returns(bytes32) {
+        Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(checkParameterHashMatch(_controller,
+        require(checkParameterHashMatch(_avatar,
                       org.voteRegisterParams,
                       org.boolVote));
         BoolVoteInterface boolVote = org.boolVote;
@@ -78,15 +80,15 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         org.proposals[id].gc = _gc;
         org.proposals[id].parametersHash = _parametersHash;
         org.proposals[id].removeParams = _removeParams;
-        voteGC(_controller, id, true);
+        voteGC(_avatar, id, true);
         return id;
     }
 
     // Proposing to remove a new GC:
-    function proposeToRemoveGC(Controller _controller, address _gc) returns(bytes32) {
-        Organization org = organizations[_controller];
+    function proposeToRemoveGC(Avatar _avatar, address _gc) returns(bytes32) {
+        Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(checkParameterHashMatch(_controller,
+        require(checkParameterHashMatch(_avatar,
                       org.voteRegisterParams,
                       org.boolVote));
         BoolVoteInterface boolVote = org.boolVote;
@@ -94,30 +96,31 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         if (org.proposals[id].proposalType != 0) revert();
         org.proposals[id].proposalType = 2;
         org.proposals[id].gc = _gc;
-        voteGC(_controller, id, true);
+        voteGC(_avatar, id, true);
         return id;
     }
 
     // Voting a GC, also handle the execuation when vote is over:
-    function voteGC( Controller _controller, bytes32 id, bool _yes ) returns(bool) {
-        BoolVoteInterface boolVote = organizations[_controller].boolVote;
+    function voteGC( Avatar _avatar, bytes32 id, bool _yes ) returns(bool) {
+        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
         if( ! boolVote.vote(id, _yes, msg.sender) ) return false;
         if( boolVote.voteResults(id) ) {
-            gcProposal memory proposal = organizations[_controller].proposals[id];
+            Controller controller = Controller(_avatar.owner());
+            gcProposal memory proposal = organizations[_avatar].proposals[id];
             if( ! boolVote.cancelProposal(id) ) revert();
-            if( organizations[_controller].proposals[id].proposalType == 2 ) {
-                if( ! _controller.removeGlobalConstraint(proposal.gc) ) revert();
+            if( organizations[_avatar].proposals[id].proposalType == 2 ) {
+                if( ! controller.removeGlobalConstraint(proposal.gc) ) revert();
             }
-            if( organizations[_controller].proposals[id].proposalType == 1 ) {
-                if( ! _controller.addGlobalConstraint(proposal.gc, proposal.parametersHash) ) revert();
+            if( organizations[_avatar].proposals[id].proposalType == 1 ) {
+                if( ! controller.addGlobalConstraint(proposal.gc, proposal.parametersHash) ) revert();
             }
-            organizations[_controller].proposals[id].proposalType = 0;
+            organizations[_avatar].proposals[id].proposalType = 0;
         }
     }
 
     // Check the status of a vote:
-    function getVoteStatus(Controller _controller, bytes32 id) constant returns(uint[3]) {
-        BoolVoteInterface boolVote = organizations[_controller].boolVote;
+    function getVoteStatus(Avatar _avatar, bytes32 id) constant returns(uint[3]) {
+        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
         return (boolVote.voteStatus(id));
     }
 }

@@ -30,6 +30,7 @@ contract SchemeRegistrar is UniversalScheme {
         mapping(bytes32=>SchemeProposal) proposals;
     }
 
+    // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
 
 
@@ -60,24 +61,25 @@ contract SchemeRegistrar is UniversalScheme {
     // check if the current register is registered on the given controller
     // with the given parameters
     function checkParameterHashMatch(
-        Controller _controller,
+        Avatar _avatar,
         bytes32 _voteRegisterParams,
         bytes32 _voteRemoveParams,
         BoolVoteInterface _boolVote
     ) private constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_voteRegisterParams,_voteRemoveParams,_boolVote));
+       Controller contoller = Controller(_avatar.owner());
+       return (contoller.getSchemeParameters(this) == parametersHash(_voteRegisterParams,_voteRemoveParams,_boolVote));
     }
 
     /**
      * @dev add or update an organisation to this register.
      * @dev the sender pays a fee (in nativeToken) for using this function, and must approve it before calling the transaction
-     * @param _controller the address of the organization
+     * @param _avatar the address of the organization
      * @param _voteRegisterParams a hash representing the conditions for registering new schemes
      * @param _voteRemoveParams a hash representing the conditions under which a schema can be removed
      * @param _boolVote a voting machine used for voting to add or delete schemes
      */
     function addOrUpdateOrg(
-        Controller _controller,
+        Avatar _avatar,
         bytes32 _voteRegisterParams,
         bytes32 _voteRemoveParams,
         BoolVoteInterface _boolVote
@@ -93,11 +95,8 @@ contract SchemeRegistrar is UniversalScheme {
         // or abstract it in a local:
         //   validateOrganization(Organization org)
 
-        // we require that the current register is registered as a scheme in the organization
-        require(_controller.isSchemeRegistered(this));
-        return
         // check if indeed the parameters given here are those registered at the controller
-        require(checkParameterHashMatch(_controller, _voteRegisterParams, _voteRemoveParams, _boolVote));
+        require(checkParameterHashMatch(_avatar, _voteRegisterParams, _voteRemoveParams, _boolVote));
 
         // now update the organization in the organizations mapping
         Organization memory org;
@@ -106,12 +105,12 @@ contract SchemeRegistrar is UniversalScheme {
         org.voteRegisterParams = _voteRegisterParams;
         org.voteRemoveParams = _voteRemoveParams;
         org.boolVote = _boolVote;
-        organizations[_controller] = org;
+        organizations[_avatar] = org;
     }
 
     /**
      * @dev propose a vote to register a scheme in the current register
-     * @param _controller the address of the organization
+     * @param _avatar the address of the organization
      * @param _scheme the address of the scheme to be approved
      * @param _parametersHash a hash of the configuration of the _scheme
      * @param _isRegistering a boolean represent if the scheme is a registering scheme
@@ -122,24 +121,25 @@ contract SchemeRegistrar is UniversalScheme {
     // TODO: check if we cannot derive isRegistering from the _scheme itself
 
     function proposeScheme(
-        Controller _controller,
+        Avatar _avatar,
         address _scheme,
         bytes32 _parametersHash,
         bool _isRegistering
     ) returns(bytes32) {
         // Check org is registred to use this universal scheme
-        Organization org = organizations[_controller];
+        Organization org = organizations[_avatar];
         require(org.isRegistered);
 
         // check if the configuration of the current scheme matches that of the controller
         require(checkParameterHashMatch(
-            _controller,
+            _avatar,
             org.voteRegisterParams,
             org.voteRemoveParams,
             org.boolVote
         ));
         // Check if the controller does'nt already have the proposed scheme.
-        require(! _controller.isSchemeRegistered(_scheme));
+        Controller controller = Controller(_avatar.owner());
+        require(! controller.isSchemeRegistered(_scheme));
 
         // propose
         BoolVoteInterface boolVote = org.boolVote;
@@ -152,23 +152,22 @@ contract SchemeRegistrar is UniversalScheme {
         org.proposals[id].parametersHash = _parametersHash;
         org.proposals[id].isRegistering = _isRegistering;
         // vote for this proposal
-        voteScheme(_controller, id, true);
+        voteScheme(_avatar, id, true);
         return id;
     }
 
     /**
      * @dev propose to remove a scheme for a controller
-     * @param _controller the address of the controller from which we want to remove a scheme
+     * @param _avatar the address of the controller from which we want to remove a scheme
      * @param _scheme the address of the scheme we want to remove
      *
      * NB: not only registers the proposal, but also votes for it
      */
-    function proposeToRemoveScheme(Controller _controller, address _scheme) returns(bytes32) {
-        Organization org = organizations[_controller];
+    function proposeToRemoveScheme(Avatar _avatar, address _scheme) returns(bytes32) {
+        Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(_controller.isSchemeRegistered(_scheme)); // Check the scheme is registered in controller.
         require(checkParameterHashMatch(
-            _controller,
+            _avatar,
             org.voteRegisterParams,
             org.voteRemoveParams,
             org.boolVote
@@ -179,41 +178,41 @@ contract SchemeRegistrar is UniversalScheme {
         org.proposals[proposalId].proposalType = 2;
         org.proposals[proposalId].scheme = _scheme;
         // vote for this proposal
-        voteScheme(_controller, proposalId, true);
+        voteScheme(_avatar, proposalId, true);
         return proposalId;
     }
 
     /**
      * @dev vote to register or unregister a scheme of a controller
-     * @param _controller address of the controller
+     * @param _avatar address of the controller
      * @param _proposalId the id of the proposal
      * @param _yes a boolean representing a yes or no vote
      */
     // NB: the decisive vote will pay for gas costs for (un)registering the scheme in question
     // TODO: security: we are not checking here if the registeration on the controller of the present register has changed
     // since we propossed the vote
-    function voteScheme(Controller _controller, bytes32 _proposalId, bool _yes) returns(bool) {
-        BoolVoteInterface boolVote = organizations[_controller].boolVote;
+    function voteScheme(Avatar _avatar, bytes32 _proposalId, bool _yes) returns(bool) {
+        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
         if (! boolVote.vote(_proposalId, _yes, msg.sender)) return false;
         if (boolVote.voteResults(_proposalId)) { // true if the vote has passed
 
             // get the contents of the proposal
-            SchemeProposal memory proposal = organizations[_controller].proposals[_proposalId];
+            SchemeProposal memory proposal = organizations[_avatar].proposals[_proposalId];
 
             // cancel the proposal
             if (!boolVote.cancelProposal(_proposalId)) revert();
-
+            Controller controller = Controller(_avatar.owner());
             // if our proposal is of type2, we unregister the schem in question
-            if (organizations[_controller].proposals[_proposalId].proposalType == 2 ) {
-                if(!_controller.unregisterScheme(proposal.scheme)) revert();
+            if (organizations[_avatar].proposals[_proposalId].proposalType == 2 ) {
+                if(!controller.unregisterScheme(proposal.scheme)) revert();
             }
-            if (organizations[_controller].proposals[_proposalId].proposalType == 1 ) {
+            if (organizations[_avatar].proposals[_proposalId].proposalType == 1 ) {
                 if (proposal.isRegistering == false)
-                  if (!_controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) revert();
+                  if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) revert();
                 else
-                  if (!_controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) revert();
+                  if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) revert();
             }
-            organizations[_controller].proposals[_proposalId].proposalType = 0;
+            organizations[_avatar].proposals[_proposalId].proposalType = 0;
         }
     }
 
@@ -221,8 +220,8 @@ contract SchemeRegistrar is UniversalScheme {
      * @dev get the status of the vote
      * @return [yes, no, ended]
      */
-    function getVoteStatus(Controller _controller, bytes32 id) constant returns(uint[3]) {
-        BoolVoteInterface boolVote = organizations[_controller].boolVote;
+    function getVoteStatus(Avatar _avatar, bytes32 id) constant returns(uint[3]) {
+        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
         return (boolVote.voteStatus(id));
     }
 }

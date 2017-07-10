@@ -9,9 +9,9 @@ contract UniversalScheme is Ownable {
   address           public      beneficiary;
   bytes32           public      hashedParameters; // For other parameters.
 
-  event Registered (address _controller);
-  event Unregistered (address _controller);
-  event ControllerUpdate (address _controller);
+  event Registered (address _avatar);
+  event Unregistered (address _avatar);
+  event ControllerUpdate (address _avatar);
 
   function updateParameters(
       StandardToken _nativeToken,

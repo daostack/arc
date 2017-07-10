@@ -1,6 +1,7 @@
 pragma solidity ^0.4.11;
 
 import "../controller/Controller.sol";
+import "../controller/Avatar.sol";
 import "./UniversalScheme.sol";
 
 /**
@@ -19,7 +20,7 @@ contract OrganizationRegister is UniversalScheme {
         mapping(address=>uint) registry;
     }
 
-    // A mapping from thr organization (controller) address to the saved data of the organization:
+    // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
 
     event OrgAdded( address indexed _registry, address indexed _org);
@@ -37,28 +38,29 @@ contract OrganizationRegister is UniversalScheme {
     }
 
     // Check that the parameters listed match the ones in the controller:
-    function checkParameterHashMatch(Controller _controller, StandardToken _token, uint _fee, address _beneficiary)
+    function checkParameterHashMatch(Avatar _avatar, StandardToken _token, uint _fee, address _beneficiary)
                               constant returns(bool) {
-       return (_controller.getSchemeParameters(this) == parametersHash(_token, _fee, _beneficiary));
+       Controller controller = Controller(_avatar.owner());
+       return (controller.getSchemeParameters(this) == parametersHash(_token, _fee, _beneficiary));
     }
 
     // Adding an organization to the universal scheme:
-    function addOrUpdateOrg(Controller _controller, StandardToken _token, uint _fee, address _beneficiary) {
+    function addOrUpdateOrg(Avatar _avatar, StandardToken _token, uint _fee, address _beneficiary) {
         // Pay fees for using scheme:
         nativeToken.transferFrom(msg.sender, _beneficiary, _fee);
 
-        require(checkParameterHashMatch(_controller, _token, _fee, _beneficiary));
+        require(checkParameterHashMatch(_avatar, _token, _fee, _beneficiary));
         Organization memory org;
         org.isRegistered = true;
         org.token = _token;
         org.fee = _fee;
         org.beneficiary = _beneficiary;
-        organizations[_controller] = org;
+        organizations[_avatar] = org;
     }
 
     // Adding or promoting an organization on the registry.
-    function addOrPromoteOrg(Controller _controller, address _record, uint _amount) {
-        Organization org = organizations[_controller];
+    function addOrPromoteOrg(Avatar _avatar, address _record, uint _amount) {
+        Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
 
         // Pay promotion, if the org was not listed the minimum is the fee:
@@ -66,8 +68,8 @@ contract OrganizationRegister is UniversalScheme {
 
         org.token.transferFrom(msg.sender, org.beneficiary, _amount);
         if (org.registry[_record] == 0)
-            OrgAdded(_controller, _record);
+            OrgAdded(_avatar, _record);
         org.registry[_record] += _amount;
-        Promotion(_controller, _record, _amount);
+        Promotion(_avatar, _record, _amount);
     }
 }
