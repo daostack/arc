@@ -134,7 +134,7 @@ contract Controller {
     function unregisterScheme( address _scheme )
     onlyRegisteringSchemes onlySubjectToConstraint("unregisterScheme") returns(bool){
         // Check the unregistering scheme has enough permissions:
-        require(schemes[_scheme].permissions&(~schemes[msg.sender].permissions) == bytes4(0));
+        require(bytes4(15)&(schemes[_scheme].permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
         // Unregister:
         UnregisterScheme(msg.sender, _scheme);
