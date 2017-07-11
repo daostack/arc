@@ -102,7 +102,7 @@ module.exports = async function(deployer) {
           permissionArray);
 
         // Set SchemeRegistrar nativeToken and register DAOstack to it:
-        await schemeRegistrarInst.addOrUpdateOrg(AvatarInst.address, voteParametersHash, voteParametersHash, simpleVoteInst.address);
+        await schemeRegistrarInst.addOrUpdateOrg(AvatarInst.address);
         await UniversalGCRegisterInst.addOrUpdateOrg(AvatarInst.address, voteParametersHash, simpleVoteInst.address);
         await UniversalUpgradeSchemeInst.addOrUpdateOrg(AvatarInst.address, voteParametersHash, simpleVoteInst.address);
 

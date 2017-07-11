@@ -10,7 +10,8 @@ contract('SimpleContribution', function(accounts) {
     it("Propose and accept a contribution (in progress)", async function(){
     	const founders = [accounts[0], accounts[1]];
       const repForFounders = [99, 1];
-      const org = await helpers.forgeOrganization({founders, repForFounders});// the schemeregister is fx
+      return
+      const org = await helpers.forgeOrganization({founders, repForFounders});
       const avatar = org.avatar;
       const controller = org.controller;
     	const schemeRegistrar = org.schemeregistrar;
@@ -51,12 +52,15 @@ contract('SimpleContribution', function(accounts) {
       const simpleContributionFeeToken = await contributionScheme.nativeToken();
 
       // check if we our organization is registered
-      const isOrganizationRegistered = await schemeRegistrar.isRegistered(avatar.address);
-      assert.equal(isOrganizationRegistered, true);
 
       // check if parametes are known in the voging machine
       const  paramsRegisteredOnVotingMachine = await votingMachine.checkExistingParameters(votingParams);
       assert.equal(paramsRegisteredOnVotingMachine, true)
+
+      const isOrganizationRegistered = await schemeRegistrar.isRegistered(avatar.address);
+      assert.equal(isOrganizationRegistered, true);
+      const orgAtSchemeRegistrarVoteRegisterParams = await schemeRegistrar.getOrg(avatar.address);
+      assert.equal(orgAtSchemeRegistrarVoteRegisterParams, votingParams);
 
       return
 

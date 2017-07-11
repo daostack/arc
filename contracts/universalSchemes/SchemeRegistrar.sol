@@ -69,9 +69,7 @@ contract SchemeRegistrar is UniversalScheme {
         return paramsHash;
     }
 
-    function getParametersHashFromController(
-        Avatar _avatar
-    ) private constant returns(bytes32) {
+    function getParametersFromController(Avatar _avatar) private constant returns(bytes32) {
        Controller controller = Controller(_avatar.owner());
        return controller.getSchemeParameters(this);
     }
@@ -80,13 +78,11 @@ contract SchemeRegistrar is UniversalScheme {
      * @dev the sender pays a fee (in nativeToken) for using this function, and must approve it before calling the transaction
      * @param _avatar the address of the organization
      */
-    function addOrUpdateOrg(
-        Avatar _avatar
-    ) {
+    function addOrUpdateOrg(Avatar _avatar) {
         // Pay fees for using scheme
-        // TODO: do not call at all if fee is 0 to save gas
-        nativeToken.transferFrom(msg.sender, beneficiary, fee);
-
+        if (fee > 0) {
+          nativeToken.transferFrom(_avatar, beneficiary, fee);
+        }
         // TODO: should we check if the current registrar is registered already on the controller?
         /*require(checkParameterHashMatch(_avatar, _voteRegisterParams, _voteRemoveParams, _boolVote));*/
 
@@ -131,7 +127,7 @@ contract SchemeRegistrar is UniversalScheme {
         require(!controller.isSchemeRegistered(_scheme));
 
         // propose
-        Parameters controllerParams = parameters[getParametersHashFromController(_avatar)];
+        Parameters controllerParams = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = controllerParams.boolVote;
         bytes32 proposalId = boolVote.propose(controllerParams.voteRegisterParams);
 
@@ -163,7 +159,7 @@ contract SchemeRegistrar is UniversalScheme {
         // Check if the orgazation is registred to use this universal scheme.
         require(org.isRegistered);
 
-        bytes32 paramsHash = getParametersHashFromController(_avatar);
+        bytes32 paramsHash = getParametersFromController(_avatar);
         Parameters params = parameters[paramsHash];
 
         BoolVoteInterface boolVote = params.boolVote;
