@@ -87,7 +87,7 @@ contract SchemeRegistrar is UniversalScheme {
      * @dev the sender pays a fee (in nativeToken) for using this function, and must approve it before calling the transaction
      * @param _avatar the address of the organization
      */
-    function addOrUpdateOrg(Avatar _avatar) {
+    function registerOrganization(Avatar _avatar) {
         // Pay fees for using scheme
         if (fee > 0) {
           nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -139,7 +139,6 @@ contract SchemeRegistrar is UniversalScheme {
         Parameters controllerParams = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = controllerParams.boolVote;
         bytes32 proposalId = boolVote.propose(controllerParams.voteRegisterParams);
-
         if (org.proposals[proposalId].proposalType != 0) {
           revert();
         }

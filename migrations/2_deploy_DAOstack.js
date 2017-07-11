@@ -108,9 +108,9 @@ module.exports = async function(deployer) {
           permissionArray);
 
         // Set SchemeRegistrar nativeToken and register DAOstack to it:
-        await schemeRegistrarInst.addOrUpdateOrg(AvatarInst.address);
-        await globalConstraintRegistrarInst.addOrUpdateOrg(AvatarInst.address);
-        await upgradeSchemeInst.addOrUpdateOrg(AvatarInst.address);
+        await schemeRegistrarInst.registerOrganization(AvatarInst.address);
+        await globalConstraintRegistrarInst.registerOrganization(AvatarInst.address);
+        await upgradeSchemeInst.registerOrganization(AvatarInst.address);
 
         return;
     })

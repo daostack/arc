@@ -96,13 +96,7 @@ contract SimpleContributionScheme is UniversalScheme {
        return controller.getSchemeParameters(this);
     }
 
-    function addOrUpdateOrg(
-        Avatar _avatar,
-        uint _orgNativeTokenFee,
-        uint _schemeNativeTokenFee,
-        bytes32 _voteApproveParams,
-        BoolVoteInterface _boolVote
-    ) {
+    function registerOrganization(Avatar _avatar) {
           // Pay fees for using scheme
           if (fee > 0) {
             nativeToken.transferFrom(_avatar, beneficiary, fee);

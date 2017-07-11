@@ -44,13 +44,13 @@ contract UniversalSimpleVote {
      * @dev hashParameters returns a hash of the given parameters
      */
     function hashParameters(Reputation _reputationSystem, uint _absPrecReq) constant returns(bytes32) {
-      return sha3(_reputationSystem, _absPrecReq);
+        return sha3(_reputationSystem, _absPrecReq);
     }
 
     function checkExistingParameters(bytes32 _proposalParameters) constant returns(bool) {
-      if (proposalsParameters[_proposalParameters].reputationSystem != address(0))
-        return true;
-      return false;
+        if (proposalsParameters[_proposalParameters].reputationSystem != address(0))
+            return true;
+        return false;
     }
 
     /**
@@ -59,20 +59,20 @@ contract UniversalSimpleVote {
      * NB: the parameters need to be first reigstered in the proposalsParameters mapping using setParameters
      */
    function propose(bytes32 _proposalParameters) returns(bytes32) {
-      // Do we want to make sure that proposing a proposal will be done only by registered schemes?
-      require(checkExistingParameters(_proposalParameters));
-      Proposal memory proposal;
-      bytes32 id;
-      proposal.parameters = _proposalParameters;
-      proposal.owner = msg.sender;
-      proposal.opened = true;
-      id = sha3(msg.sender, _proposalParameters);
-      // this basically gives a arbitrary id.
-      while (proposals[id].opened)
-        id = sha3(id^sha3(id));
-      proposals[id] = proposal;
-      NewProposal(id, msg.sender, proposalsParameters[_proposalParameters].reputationSystem, proposalsParameters[_proposalParameters].absPrecReq);
-      return id;
+        // Do we want to make sure that proposing a proposal will be done only by registered schemes?
+        require(checkExistingParameters(_proposalParameters));
+        Proposal memory proposal;
+        bytes32 id;
+        proposal.parameters = _proposalParameters;
+        proposal.owner = msg.sender;
+        proposal.opened = true;
+        id = sha3(msg.sender, _proposalParameters);
+        // this basically gives a arbitrary id.
+        while (proposals[id].opened)
+          id = sha3(id^sha3(id));
+        proposals[id] = proposal;
+        NewProposal(id, msg.sender, proposalsParameters[_proposalParameters].reputationSystem, proposalsParameters[_proposalParameters].absPrecReq);
+        return id;
     }
 
     function cancelProposal(bytes32 id) returns(bool) {

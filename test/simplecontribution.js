@@ -10,7 +10,6 @@ contract('SimpleContribution', function(accounts) {
     it("Propose and accept a contribution (in progress)", async function(){
     	const founders = [accounts[0], accounts[1]];
       const repForFounders = [99, 1];
-      return
       const org = await helpers.forgeOrganization({founders, repForFounders});
       const avatar = org.avatar;
       const controller = org.controller;
@@ -41,7 +40,7 @@ contract('SimpleContribution', function(accounts) {
     		founders[0],
     	);
 
-    	const contributionSchemeParams = await contributionScheme.hashParameters(
+    	const contributionSchemeParams = await contributionScheme.getParametersHash(
     		0, // fee for the organisation?
     		0, // fee for the token?
     		votingParams,
@@ -51,19 +50,17 @@ contract('SimpleContribution', function(accounts) {
       const simpleContributionFee = await contributionScheme.fee();
       const simpleContributionFeeToken = await contributionScheme.nativeToken();
 
-      // check if we our organization is registered
 
       // check if parametes are known in the voging machine
-      const  paramsRegisteredOnVotingMachine = await votingMachine.checkExistingParameters(votingParams);
+      const paramsRegisteredOnVotingMachine = await votingMachine.checkExistingParameters(votingParams);
       assert.equal(paramsRegisteredOnVotingMachine, true)
 
+      // check if we our organization is registered
       const isOrganizationRegistered = await schemeRegistrar.isRegistered(avatar.address);
       assert.equal(isOrganizationRegistered, true);
-      const orgAtSchemeRegistrarVoteRegisterParams = await schemeRegistrar.getOrg(avatar.address);
-      assert.equal(orgAtSchemeRegistrarVoteRegisterParams, votingParams);
 
       return
-
+      // TODO: finish writing this test
     	let tx = await schemeRegistrar.proposeScheme(
     		avatar.address,
     		contributionScheme.address,
