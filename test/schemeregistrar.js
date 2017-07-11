@@ -7,7 +7,7 @@ import { daostack } from '../lib/daostack.js';
 
 contract('SchemeRegistrar', function(accounts) {
 
-  it("the daostack.createSchemeRegistrar function should work as expected", async function() {
+  it("the daostack.createSchemeRegistrar function should work as expected with default values", async function() {
     // create a schemeRegistrar
     const registrar = await daostack.createSchemeRegistrar();
 
@@ -24,7 +24,7 @@ contract('SchemeRegistrar', function(accounts) {
     assert.equal(balance.valueOf(), 1000 * Math.pow(10, 18))
   });
 
-  it("the daostack.createSchemeRegistrar function should work as expected", async function() {
+  it("the daostack.createSchemeRegistrar function should work as expected with non-default values", async function() {
     // create a schemeRegistrar, passing some options
     const token = await MintableToken.new();
 
@@ -34,12 +34,13 @@ contract('SchemeRegistrar', function(accounts) {
         beneficiary: accounts[1]
     });
 
-    // because the registrar is constructed without a token address, it should have
-    // created a new MintableToken - we check if it works as expected
+    // check if registrar indeed uses the specified token
     const tokenAddress = await registrar.nativeToken();
     assert.equal(tokenAddress, token.address);
+    // check if the fee is as specified
     const fee = await registrar.fee();
     assert.equal(fee, 3e18);
+    // check if the beneficiary is as specified
     const beneficiary = await registrar.beneficiary();
     assert.equal(beneficiary, accounts[1]);
   });

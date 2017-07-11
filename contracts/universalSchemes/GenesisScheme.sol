@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^1.4.11;
 
 import "../controller/Avatar.sol";
 import "../controller/Reputation.sol";
@@ -39,7 +39,7 @@ contract GenesisScheme {
      * @param _foundersReputationAmount An array of amount of reputation that the
      *   founders receive in the new organization
      *
-     * @return The address of the avatar of the controller 
+     * @return The address of the avatar of the controller
      */
     function forgeOrg (
         bytes32 _orgName,
