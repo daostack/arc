@@ -76,7 +76,7 @@ contract SchemeRegistrar is UniversalScheme {
     /**
      * @dev add or update an organisation to this register.
      * @dev the sender pays a fee (in nativeToken) for using this function, and must approve it before calling the transaction
-     * @param _avatar the address of the organization
+     * @param _avatar the address of the avatar of organization
      * @param _voteRegisterParams a hash representing the conditions for registering new schemes
      * @param _voteRemoveParams a hash representing the conditions under which a schema can be removed
      * @param _boolVote a voting machine used for voting to add or delete schemes
@@ -90,7 +90,6 @@ contract SchemeRegistrar is UniversalScheme {
         // Pay fees for using scheme
         // TODO: do not call at all if fee is 0 to save gas
         nativeToken.transferFrom(_avatar, beneficiary, fee);
-
         // TODO: this would be cleared if it looked something like:
         // _controller.isRegisteredScheme(this, hash(configuration))
         // or even:
@@ -111,6 +110,10 @@ contract SchemeRegistrar is UniversalScheme {
         organizations[_avatar] = org;
     }
 
+    function isRegistered(address _avatar) constant returns(bool) {
+      return organizations[_avatar].isRegistered;
+    }
+
     /**
      * @dev propose a vote to register a scheme in the current register
      * @param _avatar the address of the organization
@@ -118,7 +121,9 @@ contract SchemeRegistrar is UniversalScheme {
      * @param _parametersHash a hash of the configuration of the _scheme
      * @param _isRegistering a boolean represent if the scheme is a registering scheme
      *      that can register other schemes
-     *
+     * @param _tokenFee a token that will be used to pay any fees needed for registering the avatar
+     * @param _fee the fee to be paid
+     * @return a proposal Id
      * @dev NB: not only proposes the vote, but also votes for it
      */
     // TODO: check if we cannot derive isRegistering from the _scheme itself
@@ -134,7 +139,6 @@ contract SchemeRegistrar is UniversalScheme {
         // Check org is registred to use this universal scheme
         Organization org = organizations[_avatar];
         require(org.isRegistered);
-
         // check if the configuration of the current scheme matches that of the controller
         require(checkParameterHashMatch(
             _avatar,
@@ -144,23 +148,24 @@ contract SchemeRegistrar is UniversalScheme {
         ));
         // Check if the controller does'nt already have the proposed scheme.
         Controller controller = Controller(_avatar.owner());
-        require(! controller.isSchemeRegistered(_scheme));
+        require(!controller.isSchemeRegistered(_scheme));
 
         // propose
         BoolVoteInterface boolVote = org.boolVote;
-        bytes32 id = boolVote.propose(org.voteRegisterParams);
+        bytes32 proposalId = boolVote.propose(org.voteRegisterParams);
+        return sha3('REMOVE THIS');
 
-        if (org.proposals[id].proposalType != 0) revert();
+        if (org.proposals[proposalId].proposalType != 0) revert();
 
-        org.proposals[id].proposalType = 1;
-        org.proposals[id].scheme = _scheme;
-        org.proposals[id].parametersHash = _parametersHash;
-        org.proposals[id].isRegistering = _isRegistering;
-        org.proposals[id].tokenFee = _tokenFee;
-        org.proposals[id].fee = _fee;
+        org.proposals[proposalId].proposalType = 1;
+        org.proposals[proposalId].scheme = _scheme;
+        org.proposals[proposalId].parametersHash = _parametersHash;
+        org.proposals[proposalId].isRegistering = _isRegistering;
+        org.proposals[proposalId].tokenFee = _tokenFee;
+        org.proposals[proposalId].fee = _fee;
         // vote for this proposal
-        voteScheme(_avatar, id, true);
-        return id;
+        voteScheme(_avatar, proposalId, true);
+        return proposalId;
     }
 
     /**
@@ -181,7 +186,9 @@ contract SchemeRegistrar is UniversalScheme {
         ));
         BoolVoteInterface boolVote = org.boolVote;
         bytes32 proposalId = boolVote.propose(org.voteRemoveParams);
-        if (org.proposals[proposalId].proposalType != 0) revert();
+        if (org.proposals[proposalId].proposalType != 0) {
+          revert();
+        }
         org.proposals[proposalId].proposalType = 2;
         org.proposals[proposalId].scheme = _scheme;
         // vote for this proposal

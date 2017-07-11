@@ -39,7 +39,7 @@ contract GenesisScheme {
      * @param _foundersReputationAmount An array of amount of reputation that the
      *   founders receive in the new organization
      *
-     * @return The address of the Controller
+     * @return The address of the avatar of the controller 
      */
     function forgeOrg (
         bytes32 _orgName,

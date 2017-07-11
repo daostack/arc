@@ -47,13 +47,18 @@ contract UniversalSimpleVote {
       return sha3(_reputationSystem, _absPrecReq);
     }
 
-    function checkExistingParameters(bytes32 _proposalParameters) returns(bool) {
+    function checkExistingParameters(bytes32 _proposalParameters) constant returns(bool) {
       if (proposalsParameters[_proposalParameters].reputationSystem != address(0))
         return true;
       return false;
     }
 
-    function propose(bytes32 _proposalParameters) returns(bytes32) {
+    /**
+     * @dev register a new proposal with the given parameters.
+     * @param _proposalParameters defined the parameters of the voting machine used for this proposal
+     * NB: the parameters need to be first reigstered in the proposalsParameters mapping using setParameters
+     */
+   function propose(bytes32 _proposalParameters) returns(bytes32) {
       // Do we want to make sure that proposing a proposal will be done only by registered schemes?
       require(checkExistingParameters(_proposalParameters));
       Proposal memory proposal;
@@ -62,7 +67,7 @@ contract UniversalSimpleVote {
       proposal.owner = msg.sender;
       proposal.opened = true;
       id = sha3(msg.sender, _proposalParameters);
-      // this basically gives a a random id.
+      // this basically gives a arbitrary id.
       while (proposals[id].opened)
         id = sha3(id^sha3(id));
       proposals[id] = proposal;

@@ -9,16 +9,14 @@ contract('SimpleContribution', function(accounts) {
 
     it("Propose and accept a contribution (in progress)", async function(){
     	const founders = [accounts[0], accounts[1]];
-        // const tokensForFounders = [1, 2, 3, 5];
-        const repForFounders = [99, 1];
-        const org = await helpers.forgeOrganization({founders, repForFounders});// the schemeregister is fx
-        const avatar = org.avatar;
-        const controller = org.controller;
+      const repForFounders = [99, 1];
+      const org = await helpers.forgeOrganization({founders, repForFounders});// the schemeregister is fx
+      const avatar = org.avatar;
+      const controller = org.controller;
     	const schemeRegistrar = org.schemeregistrar;
 
     	// check if indeed the registrar is registered
     	const isSchemeRegistered = await controller.isSchemeRegistered(schemeRegistrar.address);
-
     	assert.equal(isSchemeRegistered, true);
 
     	// we creaet a SimpleContributionScheme
@@ -30,32 +28,12 @@ contract('SimpleContribution', function(accounts) {
     		reputationAddress,
     		50, // percentage that counts as a majority
     	)
-
-    	// check if we have tokens in the schemeregistrar for adding an organization
-    	const schemeRegistrarTokenAddress = await schemeRegistrar.nativeToken();
-    	const schemeRegistrarToken = await MintableToken.at(schemeRegistrarTokenAddress);
-    	const ourBalance = await schemeRegistrarToken.balanceOf(accounts[0]);
-    	const fee = await schemeRegistrar.fee();
-
-    	if (ourBalance.toNumber() < fee.toNumber()) {
-    		throw Error('Your balance is too low to pay the fee for adding an organization. Balance: ' +  ourBalance.valueOf() + 'fee: '  + fee)
-    	}
-
-    	// temporary test to see if we can pay the fee
-    	const beneficiary = await schemeRegistrar.beneficiary();
-
-    	await schemeRegistrarToken.approve(schemeRegistrar.address, fee.toNumber());
-    	// add the organisation to the schemeregistrar
-    	return
-	    await schemeRegistrar.addOrUpdateOrg(
-	    	controller.address,
-	    	votingParams, // conditions for adding a scheme
-	    	votingParams, // conditions for removing a scheme
-	    	votingMachine.address
-	    );
-
-	    return
-    	// get the hash of the parameters from the simpleContributionScheme
+      // we also register the parameters with the voting machine
+    	await votingMachine.setParameters(
+    		reputationAddress,
+    		50, // percentage that counts as a majority
+    	)
+        // create a contribution Scheme
     	const contributionScheme = await SimpleContributionScheme.new(
     		tokenAddress,
     		1,
@@ -63,15 +41,26 @@ contract('SimpleContribution', function(accounts) {
     	);
 
     	const contributionSchemeParams = await contributionScheme.hashParameters(
-    		3, // fee for the organisation?
-    		3, // fee for the token?
+    		0, // fee for the organisation?
+    		0, // fee for the token?
     		votingParams,
     		votingMachine.address,
-		)
+		  )
     	// and we propose to add the contribution scheme to controller
       const simpleContributionFee = await contributionScheme.fee();
       const simpleContributionFeeToken = await contributionScheme.nativeToken();
-    	await schemeregistrar.proposeScheme(
+
+      // check if we our organization is registered
+      const isOrganizationRegistered = await schemeRegistrar.isRegistered(avatar.address);
+      assert.equal(isOrganizationRegistered, true);
+
+      // check if parametes are known in the voging machine
+      const  paramsRegisteredOnVotingMachine = await votingMachine.checkExistingParameters(votingParams);
+      assert.equal(paramsRegisteredOnVotingMachine, true)
+
+      return
+
+    	let tx = await schemeRegistrar.proposeScheme(
     		avatar.address,
     		contributionScheme.address,
     		contributionSchemeParams,
@@ -81,13 +70,11 @@ contract('SimpleContribution', function(accounts) {
     		);
 
     	return
+      const proposalId = tx.logs[0].proposalId
+      await schemeRegistrar.voteScheme(avatar.address, proposalId, true);
 
 
-//         let contributionVotingScheme = await UniversalSimpleVote.new();
-//         let contributionScheme = await SimpleContribution.new(this.controllerAddress,
-//                                                               submissionFee,
-//                                                               contributionVotingScheme.address);
-//         await this.genesis.proposeScheme(contributionScheme.address);
+
 //         await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[0]});
 //         await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[1]});
 
