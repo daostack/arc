@@ -38,11 +38,40 @@ contract SimpleContributionScheme is UniversalScheme {
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
 
+    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+    struct Parameters {
+        uint orgNativeTokenFee;
+        bytes32 voteApproveParams;
+        uint schemeNativeTokenFee;
+        BoolVoteInterface boolVote;
+    }
+    mapping(bytes32=>Parameters) parameters;
+
+
     /**
      * @dev the constructor takes a token address, fee and beneficiary
      */
     function SimpleContributionScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
       updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
+    }
+
+    /**
+     * @dev hash the parameters, save them if necessary, and return the hash value
+     */
+    function setParameters(
+        uint _orgNativeTokenFee,
+        uint _schemeNativeTokenFee,
+        bytes32 _voteApproveParams,
+        BoolVoteInterface _boolVote
+    ) returns(bytes32) {
+        bytes32 paramsHash = getParametersHash(_orgNativeTokenFee, _schemeNativeTokenFee, _voteApproveParams, _boolVote);
+        if (parameters[paramsHash].boolVote != address(0))  {
+            parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
+            parameters[paramsHash].schemeNativeTokenFee = _schemeNativeTokenFee;
+            parameters[paramsHash].voteApproveParams = _voteApproveParams;
+            parameters[paramsHash].boolVote = _boolVote;
+        }
+        return paramsHash;
     }
 
     /**
@@ -53,26 +82,18 @@ contract SimpleContributionScheme is UniversalScheme {
      * @param _boolVote the voting machine used to approve a contribution
      * @return a hash of the parameters
      */
-    // TODO: invert order of _voteApproveParams and _boolVote
-    // TODO: document where the two fees are used, and what for
-    function hashParameters(
+    function getParametersHash(
         uint _orgNativeTokenFee,
         uint _schemeNativeTokenFee,
-        bytes32 _voteApproveParams,
-        BoolVoteInterface _boolVote
+       bytes32 _voteApproveParams,
+         BoolVoteInterface _boolVote
     ) constant returns(bytes32) {
         return (sha3(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _boolVote));
     }
 
-    function checkParameterHashMatch(
-        Avatar _avatar,
-        uint _orgNativeTokenFee,
-        uint _schemeNativeTokenFee,
-        bytes32 _voteApproveParams,
-        BoolVoteInterface _boolVote
-    ) constant returns(bool) {
-        Controller controller = Controller(_avatar.owner());
-        return (controller.getSchemeParameters(this) == hashParameters(_orgNativeTokenFee, _schemeNativeTokenFee, _voteApproveParams,_boolVote));
+    function getParametersFromController(Avatar _avatar) private constant returns(bytes32) {
+       Controller controller = Controller(_avatar.owner());
+       return controller.getSchemeParameters(this);
     }
 
     function addOrUpdateOrg(
@@ -82,17 +103,17 @@ contract SimpleContributionScheme is UniversalScheme {
         bytes32 _voteApproveParams,
         BoolVoteInterface _boolVote
     ) {
-        require(checkParameterHashMatch(_avatar, _orgNativeTokenFee, _schemeNativeTokenFee, _voteApproveParams, _boolVote));
+          // Pay fees for using scheme
+          if (fee > 0) {
+            nativeToken.transferFrom(_avatar, beneficiary, fee);
+          }
+          // TODO: should we check if the current registrar is registered already on the controller?
+          /*require(checkParameterHashMatch(_avatar, _voteRegisterParams, _voteRemoveParams, _boolVote));*/
 
-        // Pay fees for using scheme:
-        nativeToken.transferFrom(_avatar, beneficiary, fee);
-
-        Organization org = organizations[_avatar];
-        org.isRegistered = true;
-        org.voteApproveParams = _voteApproveParams;
-        org.orgNativeTokenFee = _orgNativeTokenFee;
-        org.schemeNativeTokenFee = _schemeNativeTokenFee;
-        org.boolVote = _boolVote;
+          // update the organization in the organizations mapping
+          Organization memory org;
+          org.isRegistered = true;
+          organizations[_avatar] = org;
     }
 
     // Sumitting a proposal for a reward against a contribution:
@@ -106,12 +127,17 @@ contract SimpleContributionScheme is UniversalScheme {
         uint _externalTokenReward,
         address _beneficiary
     ) returns(bytes32) {
-        Organization memory org = organizations[_avatar];
-        require(org.isRegistered);
+        require(organizations[_avatar].isRegistered);
+
+        /*bytes32 paramsHash = getParametersFromController(_avatar);*/
+        Parameters controllerParams = parameters[getParametersFromController(_avatar)];
 
         // Pay fees for submitting the contribution:
-        _avatar.nativeToken().transferFrom(msg.sender, _avatar, org.orgNativeTokenFee);
-        nativeToken.transferFrom(msg.sender, _avatar, org.schemeNativeTokenFee);
+        _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
+        nativeToken.transferFrom(msg.sender, _avatar, controllerParams.schemeNativeTokenFee);
+
+        BoolVoteInterface boolVote = controllerParams.boolVote;
+        bytes32 contributionId = boolVote.propose(controllerParams.voteApproveParams);
 
         ContributionData memory data;
         data.contributionDescriptionHash = sha3(_contributionDesciption);
@@ -121,34 +147,45 @@ contract SimpleContributionScheme is UniversalScheme {
         data.externalToken = _externalToken;
         data.externalTokenReward = _externalTokenReward;
         if (_beneficiary == address(0)){
-          data.beneficiary = msg.sender;
+            data.beneficiary = msg.sender;
         } else {
-          data.beneficiary = _beneficiary;
+            data.beneficiary = _beneficiary;
         }
-
-        BoolVoteInterface boolVote = org.boolVote;
-        bytes32 contributionId = boolVote.propose(org.voteApproveParams);
-
         organizations[_avatar].contributions[contributionId] = data;
+
         return contributionId;
     }
 
     // Voting on a contribution and also handle the execuation when vote is over:
     function voteContribution(
         Avatar _avatar, bytes32 _contributionId, bool _yes ) returns(bool) {
-        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
-        if( ! boolVote.vote(_contributionId, _yes, msg.sender) ) return false;
-        if( boolVote.voteResults(_contributionId) ) {
+        bytes32 paramsHash = getParametersFromController(_avatar);
+        Parameters controllerParams = parameters[paramsHash];
+        BoolVoteInterface boolVote = controllerParams.boolVote;
+
+        if (!boolVote.vote(_contributionId, _yes, msg.sender)) {
+          return false;
+        }
+
+        if (boolVote.voteResults(_contributionId) ) {
             ContributionData memory data = organizations[_avatar].contributions[_contributionId];
-            if( ! boolVote.cancelProposal(_contributionId) ) revert();
+            if ( ! boolVote.cancelProposal(_contributionId) ) revert();
             Controller controller = Controller(_avatar.owner());
-            if( ! controller.mintReputation(int(data.reputationReward), data.beneficiary) ) revert();
-            if( ! controller.mintTokens(data.nativeTokenReward, data.beneficiary ) ) revert();
-            if( ! controller.sendEther(data.ethReward, data.beneficiary) ) revert();
-            if (data.externalToken != address(0))
-            if( ! controller.externalTokenTransfer(data.externalToken, data.beneficiary, data.externalTokenReward) ) revert();
+            if (!controller.mintReputation(int(data.reputationReward), data.beneficiary)) {
+                revert();
+            }
+            if (!controller.mintTokens(data.nativeTokenReward, data.beneficiary)) {
+                revert();
+            }
+            if (!controller.sendEther(data.ethReward, data.beneficiary)) {
+                revert();
+            }
+            if (data.externalToken != address(0)) {
+              if (!controller.externalTokenTransfer(data.externalToken, data.beneficiary, data.externalTokenReward)) {
+                  revert();
+              }
+            }
         }
         return true;
     }
-
 }
