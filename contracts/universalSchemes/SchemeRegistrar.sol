@@ -55,17 +55,26 @@ contract SchemeRegistrar is UniversalScheme {
     /**
      * @dev hash the parameters, save them if necessary, and return the hash value
      */
-    function parametersHash(
+    function setParameters(
         bytes32 _voteRegisterParams,
         bytes32 _voteRemoveParams,
         BoolVoteInterface _boolVote
-    ) constant returns(bytes32) {
-        bytes32 paramsHash = (sha3(_voteRegisterParams, _voteRemoveParams, _boolVote));
+    ) returns(bytes32) {
+        bytes32 paramsHash = getParametersHash(_voteRegisterParams, _voteRemoveParams, _boolVote);
         if (parameters[paramsHash].boolVote != address(0))  {
             parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
             parameters[paramsHash].voteRemoveParams = _voteRemoveParams;
             parameters[paramsHash].boolVote = _boolVote;
         }
+        return paramsHash;
+    }
+
+    function getParametersHash(
+        bytes32 _voteRegisterParams,
+        bytes32 _voteRemoveParams,
+        BoolVoteInterface _boolVote
+        ) constant returns(bytes32) {
+        bytes32 paramsHash = (sha3(_voteRegisterParams, _voteRemoveParams, _boolVote));
         return paramsHash;
     }
 
