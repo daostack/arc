@@ -13,7 +13,7 @@ var Avatar = artifacts.require('./schemes/controller/Avatar.sol');
 var simpleVoteInst;
 var UniversalGenesisSchemeInst;
 var schemeRegistrarInst;
-var UniversalGCRegisterInst;
+var globalConstraintRegistrarInst;
 var UniversalUpgradeSchemeInst;
 var ControllerInst;
 var OrganizationsBoardInst;
@@ -75,19 +75,23 @@ module.exports = async function(deployer) {
         UniversalUpgradeSchemeInst = await UpgradeScheme.deployed();
         // Deploy UniversalGCScheme register:
         await deployer.deploy(GlobalConstraintRegistrar, tokenAddress, UniversalRegisterFee, avatarAddress);
-        UniversalGCRegisterInst = await GlobalConstraintRegistrar.deployed();
+        globalConstraintRegistrarInst = await GlobalConstraintRegistrar.deployed();
 
         // Voting parameters and schemes params:
         voteParametersHash = await simpleVoteInst.hashParameters(reputationAddress, votePrec);
+
         await schemeRegistrarInst.setParameters(voteParametersHash, voteParametersHash, simpleVoteInst.address);
         schemeRegisterParams = await schemeRegistrarInst.getParametersHash(voteParametersHash, voteParametersHash, simpleVoteInst.address);
-        schemeGCRegisterParams = await UniversalGCRegisterInst.parametersHash(voteParametersHash, simpleVoteInst.address);
+
+        await globalConstraintRegistrarInst.setParameters(reputationAddress, votePrec);
+        schemeGCRegisterParams = await globalConstraintRegistrarInst.getParametersHash(reputationAddress, votePrec);
+
         schemeUpgradeParams = await UniversalUpgradeSchemeInst.parametersHash(voteParametersHash, simpleVoteInst.address);
 
         // Transferring tokens to org to pay fees:
         await MintableTokenInst.transfer(AvatarInst.address, 3*UniversalRegisterFee);
 
-        var schemesArray = [schemeRegistrarInst.address, UniversalGCRegisterInst.address, UniversalUpgradeSchemeInst.address];
+        var schemesArray = [schemeRegistrarInst.address, globalConstraintRegistrarInst.address, UniversalUpgradeSchemeInst.address];
         var paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams];
         var permissionArray = [3, 5, 9];
         var tokenArray = [tokenAddress, tokenAddress, tokenAddress];
@@ -104,7 +108,7 @@ module.exports = async function(deployer) {
 
         // Set SchemeRegistrar nativeToken and register DAOstack to it:
         await schemeRegistrarInst.addOrUpdateOrg(AvatarInst.address);
-        await UniversalGCRegisterInst.addOrUpdateOrg(AvatarInst.address, voteParametersHash, simpleVoteInst.address);
+        await globalConstraintRegistrarInst.addOrUpdateOrg(AvatarInst.address);
         await UniversalUpgradeSchemeInst.addOrUpdateOrg(AvatarInst.address, voteParametersHash, simpleVoteInst.address);
 
         return;

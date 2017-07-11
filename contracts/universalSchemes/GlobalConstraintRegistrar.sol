@@ -31,51 +31,67 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
 
+    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+    struct Parameters {
+        bytes32 voteRegisterParams;
+        BoolVoteInterface boolVote;
+    }
+    mapping(bytes32=>Parameters) parameters;
+
+
     function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
-    // The format of the hashing of the parameters:
-    function parametersHash(bytes32 _voteRegisterParams,
-                                BoolVoteInterface _boolVote)
-                                constant returns(bytes32) {
-      return (sha3(_voteRegisterParams, _boolVote));
+    /**
+     * @dev hash the parameters, save them if necessary, and return the hash value
+     */
+    function setParameters(
+        bytes32 _voteRegisterParams,
+        BoolVoteInterface _boolVote
+    ) returns(bytes32) {
+        bytes32 paramsHash = getParametersHash(_voteRegisterParams, _boolVote);
+        if (parameters[paramsHash].boolVote != address(0))  {
+            parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
+            parameters[paramsHash].boolVote = _boolVote;
+        }
+        return paramsHash;
     }
 
-    // Check that the parameters listed match the ones in the controller:
-    function checkParameterHashMatch(Avatar _avatar,
-                     bytes32 _voteRegisterParams,
-                     BoolVoteInterface _boolVote) constant returns(bool) {
+    function getParametersHash(
+        bytes32 _voteRegisterParams,
+        BoolVoteInterface _boolVote
+    ) constant returns(bytes32) {
+        bytes32 paramsHash = (sha3(_voteRegisterParams, _boolVote));
+        return paramsHash;
+    }
+
+    function getParametersFromController(Avatar _avatar) private constant returns(Parameters) {
        Controller controller = Controller(_avatar.owner());
-       return (controller.getSchemeParameters(this) == parametersHash(_voteRegisterParams, _boolVote));
+       return parameters[controller.getSchemeParameters(this)];
     }
 
     // Adding an organization to the universal scheme:
-    function addOrUpdateOrg(Avatar _avatar,
-                     bytes32 _voteRegisterParams,
-                     BoolVoteInterface _boolVote) {
-
+    function addOrUpdateOrg(Avatar _avatar) {
       // Pay fees for using scheme:
       nativeToken.transferFrom(_avatar, beneficiary, fee);
-
-      require(checkParameterHashMatch(_avatar, _voteRegisterParams, _boolVote));
       Organization memory org;
       org.isRegistered = true;
-      org.voteRegisterParams = _voteRegisterParams;
-      org.boolVote = _boolVote;
       organizations[_avatar] = org;
     }
 
     // Proposing to add a new GC:
     function proposeGC(Avatar _avatar, address _gc, bytes32 _parametersHash, bytes32 _removeParams) returns(bytes32) {
         Organization org = organizations[_avatar];
+        Parameters memory params = getParametersFromController(_avatar);
+
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(checkParameterHashMatch(_avatar,
-                      org.voteRegisterParams,
-                      org.boolVote));
-        BoolVoteInterface boolVote = org.boolVote;
-        bytes32 id = boolVote.propose(org.voteRegisterParams);
-        if (org.proposals[id].proposalType != 0) revert();
+
+        BoolVoteInterface boolVote = params.boolVote;
+        bytes32 id = boolVote.propose(params.voteRegisterParams);
+        if (org.proposals[id].proposalType != 0) {
+          revert();
+        }
         org.proposals[id].proposalType = 1;
         org.proposals[id].gc = _gc;
         org.proposals[id].parametersHash = _parametersHash;
@@ -87,11 +103,9 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // Proposing to remove a new GC:
     function proposeToRemoveGC(Avatar _avatar, address _gc) returns(bytes32) {
         Organization org = organizations[_avatar];
+        Parameters memory params = getParametersFromController(_avatar);
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(checkParameterHashMatch(_avatar,
-                      org.voteRegisterParams,
-                      org.boolVote));
-        BoolVoteInterface boolVote = org.boolVote;
+        BoolVoteInterface boolVote = params.boolVote;
         bytes32 id = boolVote.propose(org.removeParams[_gc]);
         if (org.proposals[id].proposalType != 0) revert();
         org.proposals[id].proposalType = 2;
@@ -102,9 +116,10 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
     // Voting a GC, also handle the execuation when vote is over:
     function voteGC( Avatar _avatar, bytes32 id, bool _yes ) returns(bool) {
-        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
-        if( ! boolVote.vote(id, _yes, msg.sender) ) return false;
-        if( boolVote.voteResults(id) ) {
+        Parameters memory params = getParametersFromController(_avatar);
+        BoolVoteInterface boolVote = params.boolVote;
+        if ( ! boolVote.vote(id, _yes, msg.sender) ) return false;
+        if ( boolVote.voteResults(id) ) {
             Controller controller = Controller(_avatar.owner());
             gcProposal memory proposal = organizations[_avatar].proposals[id];
             if( ! boolVote.cancelProposal(id) ) revert();
@@ -120,7 +135,8 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
     // Check the status of a vote:
     function getVoteStatus(Avatar _avatar, bytes32 id) constant returns(uint[3]) {
-        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
+        Parameters memory params = getParametersFromController(_avatar);
+        BoolVoteInterface boolVote = params.boolVote;
         return (boolVote.voteStatus(id));
     }
 }

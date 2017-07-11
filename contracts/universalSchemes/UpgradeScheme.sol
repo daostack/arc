@@ -30,13 +30,24 @@ contract UpgradeScheme is UniversalScheme {
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
 
+    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+    struct Parameters {
+        bytes32 voteParams;
+        BoolVoteInterface boolVote;
+    }
+    mapping(bytes32=>Parameters) parameters;
+
+
     // Constructor, updating the initial prarmeters:
     function UpgradeScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
     // The format of the hashing of the parameters:
-    function parametersHash(bytes32 _voteParams, BoolVoteInterface _boolVote) constant returns(bytes32) {
+    function parametersHash(
+        bytes32 _voteParams,
+        BoolVoteInterface _boolVote
+        ) constant returns(bytes32) {
         return (sha3(_voteParams, _boolVote));
     }
 
