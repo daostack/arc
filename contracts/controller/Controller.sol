@@ -220,7 +220,7 @@ contract Controller {
     function externalTokenApprove(StandardToken _externalToken, address _spender, uint _value)
     onlyRegisteredScheme onlySubjectToConstraint("externalTokenApprove") returns(bool) {
         ExternalTokenApprove( msg.sender, _externalToken, _spender, _value );
-        _externalToken.approve( _spender, _value );
+        avatar.externalTokenApprove(_externalToken, _spender, _value );
         return true;
     }
 

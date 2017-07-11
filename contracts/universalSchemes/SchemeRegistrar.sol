@@ -19,6 +19,8 @@ contract SchemeRegistrar is UniversalScheme {
         bytes32 parametersHash;
         uint proposalType; // 1: add a schme, 2: remove a scheme.
         bool isRegistering;
+        StandardToken tokenFee;
+        uint fee;
     }
 
     // For each organization, the register records the proposals made for this
@@ -87,7 +89,7 @@ contract SchemeRegistrar is UniversalScheme {
     ) {
         // Pay fees for using scheme
         // TODO: do not call at all if fee is 0 to save gas
-        nativeToken.transferFrom(msg.sender, beneficiary, fee);
+        nativeToken.transferFrom(_avatar, beneficiary, fee);
 
         // TODO: this would be cleared if it looked something like:
         // _controller.isRegisteredScheme(this, hash(configuration))
@@ -125,7 +127,9 @@ contract SchemeRegistrar is UniversalScheme {
         Avatar _avatar,
         address _scheme,
         bytes32 _parametersHash,
-        bool _isRegistering
+        bool _isRegistering,
+        StandardToken _tokenFee,
+        uint _fee
     ) returns(bytes32) {
         // Check org is registred to use this universal scheme
         Organization org = organizations[_avatar];
@@ -152,6 +156,8 @@ contract SchemeRegistrar is UniversalScheme {
         org.proposals[id].scheme = _scheme;
         org.proposals[id].parametersHash = _parametersHash;
         org.proposals[id].isRegistering = _isRegistering;
+        org.proposals[id].tokenFee = _tokenFee;
+        org.proposals[id].fee = _fee;
         // vote for this proposal
         voteScheme(_avatar, id, true);
         return id;
@@ -208,6 +214,8 @@ contract SchemeRegistrar is UniversalScheme {
                 if(!controller.unregisterScheme(proposal.scheme)) revert();
             }
             if (organizations[_avatar].proposals[_proposalId].proposalType == 1 ) {
+                if (proposal.fee != 0 )
+                  if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) revert();
                 if (proposal.isRegistering == false)
                   if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) revert();
                 else

@@ -16,7 +16,7 @@ contract GenesisScheme {
 
     mapping(address=>address) locks;
 
-    event NewOrg (address _controller);
+    event NewOrg (address _avatar);
 
     address[] addressArray;
     bytes32[] bytes32Array;
@@ -68,29 +68,39 @@ contract GenesisScheme {
             if( ! controller.mintReputation( _foundersReputationAmount[i], _founders[i] ) ) revert();
         }
 
-        locks[controller] = msg.sender;
+        locks[avatar] = msg.sender;
 
-        NewOrg (address(controller));
-        return (address(controller));
+        NewOrg (address(avatar));
+        return (address(avatar));
     }
 
     /**
      * @dev  register some initial schemes
      */
 
-    function setInitialSchemes (Controller _controller, address[] _schemes, bytes32[] _params, bytes4[] _permissions) {
+    function setInitialSchemes (
+        Avatar _avatar,
+        address[] _schemes,
+        bytes32[] _params,
+        StandardToken[] _token,
+        uint[] _fee,
+        bytes4[] _permissions
+    ) {
         // this action can only be executed by the account that holds the lock
         // for this controller
-        require(locks[address(_controller)] == msg.sender);
+        require(locks[address(_avatar)] == msg.sender);
 
         // register initial schemes:
-        for( uint i = 0 ; i < _schemes.length ; i++ )
-          _controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
+        Controller controller = Controller(_avatar.owner());
+        for( uint i = 0 ; i < _schemes.length ; i++ ) {
+          controller.externalTokenApprove(_token[i], _schemes[i], _fee[i]);
+          controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
+        }
 
         // Unregister self:
-        _controller.unregisterScheme(this);
+        controller.unregisterScheme(this);
 
         // Remove lock:
-        delete locks[_controller];
+        delete locks[_avatar];
     }
 }

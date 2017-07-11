@@ -7,7 +7,7 @@ import { daostack } from '../lib/daostack.js';
 
 contract('SchemeRegistrar', function(accounts) {
 
-  it("the daostack.createSchemeRegistrar function should work as expected", async function() {    
+  it("the daostack.createSchemeRegistrar function should work as expected", async function() {
     // create a schemeRegistrar
     const registrar = await daostack.createSchemeRegistrar();
 
@@ -24,7 +24,7 @@ contract('SchemeRegistrar', function(accounts) {
     assert.equal(balance.valueOf(), 1000 * Math.pow(10, 18))
   });
 
-  it("the daostack.createSchemeRegistrar function should work as expected", async function() {    
+  it("the daostack.createSchemeRegistrar function should work as expected", async function() {
     // create a schemeRegistrar, passing some options
     const token = await MintableToken.new();
 
