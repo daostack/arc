@@ -43,33 +43,43 @@ contract UpgradeScheme is UniversalScheme {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
-    // The format of the hashing of the parameters:
-    function parametersHash(
+    /**
+     * @dev hash the parameters, save them if necessary, and return the hash value
+     */
+    function setParameters(
         bytes32 _voteParams,
         BoolVoteInterface _boolVote
-        ) constant returns(bytes32) {
-        return (sha3(_voteParams, _boolVote));
+    ) returns(bytes32) {
+        bytes32 paramsHash = getParametersHash(_voteParams, _boolVote);
+        if (parameters[paramsHash].boolVote != address(0))  {
+            parameters[paramsHash].voteParams = _voteParams;
+            parameters[paramsHash].boolVote = _boolVote;
+        }
+        return paramsHash;
     }
 
-    // Check that the parameters listed match the ones in the controller:
-    function checkParameterHashMatch(Avatar _avatar, bytes32 _voteParams,
-                     BoolVoteInterface _boolVote) constant returns(bool) {
-       Controller controller = Controller(_avatar.owner());
-       return (controller.getSchemeParameters(this) == parametersHash(_voteParams, _boolVote));
+    function getParametersHash(
+        bytes32 _voteParams,
+        BoolVoteInterface _boolVote
+    ) constant returns(bytes32) {
+        bytes32 paramsHash = (sha3(_voteParams, _boolVote));
+        return paramsHash;
     }
+
+    function getParametersFromController(Avatar _avatar) private constant returns(Parameters) {
+       Controller controller = Controller(_avatar.owner());
+       return parameters[controller.getSchemeParameters(this)];
+    }
+
 
     // Adding an organization to the universal scheme:
-    function addOrUpdateOrg(Avatar _avatar, bytes32 _voteParams, BoolVoteInterface _boolVote) {
+    function addOrUpdateOrg(Avatar _avatar) {
 
       // Pay fees for using scheme:
       nativeToken.transferFrom(_avatar, beneficiary, fee);
 
-      /*require(_controller.upgradingScheme() == address(this));*/ // No need, execution will just fail.
-      require(checkParameterHashMatch(_avatar, _voteParams, _boolVote));
       Organization memory org;
       org.isRegistered = true;
-      org.voteParams = _voteParams;
-      org.boolVote = _boolVote;
       organizations[_avatar] = org;
     }
 
@@ -77,10 +87,12 @@ contract UpgradeScheme is UniversalScheme {
     function proposeUpgrade(Avatar _avatar, address _newController) returns(bytes32) {
         Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(checkParameterHashMatch(_avatar, org.voteParams, org.boolVote));
-        BoolVoteInterface boolVote = org.boolVote;
-        bytes32 id = boolVote.propose(org.voteParams);
-        if (org.proposals[id].proposalType != 0) revert();
+        Parameters memory params = getParametersFromController(_avatar);
+        BoolVoteInterface boolVote = params.boolVote;
+        bytes32 id = boolVote.propose(params.voteParams);
+        if (org.proposals[id].proposalType != 0) {
+            revert();
+        }
         org.proposals[id].proposalType = 1;
         org.proposals[id].newContOrScheme = _newController;
         voteScheme(_avatar, id, true);
@@ -98,10 +110,11 @@ contract UpgradeScheme is UniversalScheme {
         returns(bytes32)
     {
         Organization org = organizations[_avatar];
+        Parameters memory params = getParametersFromController(_avatar);
+
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        require(checkParameterHashMatch(_avatar, org.voteParams, org.boolVote));
-        BoolVoteInterface boolVote = org.boolVote;
-        bytes32 id = boolVote.propose(org.voteParams);
+        BoolVoteInterface boolVote = params.boolVote;
+        bytes32 id = boolVote.propose(params.voteParams);
         if (org.proposals[id].proposalType != 0) revert();
         org.proposals[id].proposalType = 2;
         org.proposals[id].newContOrScheme = _scheme;
@@ -114,7 +127,8 @@ contract UpgradeScheme is UniversalScheme {
 
     // Vote on one of the proposals, also handles execution:
     function voteScheme( Avatar _avatar, bytes32 id, bool _yes ) returns(bool) {
-        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
+        Parameters memory params = getParametersFromController(_avatar);
+        BoolVoteInterface boolVote = params.boolVote;
         if( ! boolVote.vote(id, _yes, msg.sender) ) return false;
         if( boolVote.voteResults(id) ) {
             UpgradeProposal memory proposal = organizations[_avatar].proposals[id];
@@ -135,7 +149,8 @@ contract UpgradeScheme is UniversalScheme {
     }
 
     function getVoteStatus(Avatar _avatar, bytes32 id) constant returns(uint[3]) {
-        BoolVoteInterface boolVote = organizations[_avatar].boolVote;
+        Parameters memory params = getParametersFromController(_avatar);
+        BoolVoteInterface boolVote = params.boolVote;
         return (boolVote.voteStatus(id));
     }
 }
