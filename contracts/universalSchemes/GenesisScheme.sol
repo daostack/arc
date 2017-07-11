@@ -84,8 +84,9 @@ contract GenesisScheme {
         require(locks[address(_controller)] == msg.sender);
 
         // register initial schemes:
-        for( uint i = 0 ; i < _schemes.length ; i++ )
-          _controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
+        for (uint i = 0; i < _schemes.length; i++) {
+            _controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
+        }
 
         // Unregister self:
         _controller.unregisterScheme(this);
