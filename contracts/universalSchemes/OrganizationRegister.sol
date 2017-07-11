@@ -47,7 +47,7 @@ contract OrganizationRegister is UniversalScheme {
     // Adding an organization to the universal scheme:
     function addOrUpdateOrg(Avatar _avatar, StandardToken _token, uint _fee, address _beneficiary) {
         // Pay fees for using scheme:
-        nativeToken.transferFrom(msg.sender, _beneficiary, _fee);
+        nativeToken.transferFrom(_avatar, _beneficiary, _fee);
 
         require(checkParameterHashMatch(_avatar, _token, _fee, _beneficiary));
         Organization memory org;

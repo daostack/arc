@@ -5,8 +5,8 @@ import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
 /**
- * @title A schme to manage the update of an organization.
- * @dev The schme is used to update the controller of an organization to a new controller.
+ * @title A schme to manage the upgrade of an organization.
+ * @dev The schme is used to upgrade the controller of an organization to a new controller.
  */
 
 contract UpgradeScheme is UniversalScheme {
@@ -15,6 +15,8 @@ contract UpgradeScheme is UniversalScheme {
       address newContOrScheme;
       bytes32 params;
       uint proposalType; // 1: Upgrade controller, 2: change upgrade scheme.
+      StandardToken tokenFee;
+      uint fee;
     }
 
     // Struct holding the data for each organization
@@ -49,7 +51,7 @@ contract UpgradeScheme is UniversalScheme {
     function addOrUpdateOrg(Avatar _avatar, bytes32 _voteParams, BoolVoteInterface _boolVote) {
 
       // Pay fees for using scheme:
-      nativeToken.transferFrom(msg.sender, beneficiary, fee);
+      nativeToken.transferFrom(_avatar, beneficiary, fee);
 
       /*require(_controller.upgradingScheme() == address(this));*/ // No need, execution will just fail.
       require(checkParameterHashMatch(_avatar, _voteParams, _boolVote));
@@ -60,8 +62,8 @@ contract UpgradeScheme is UniversalScheme {
       organizations[_avatar] = org;
     }
 
-    // Propose an update of the controller:
-    function proposeUpdate(Avatar _avatar, address _newController) returns(bytes32) {
+    // Propose an upgrade of the controller:
+    function proposeUpgrade(Avatar _avatar, address _newController) returns(bytes32) {
         Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         require(checkParameterHashMatch(_avatar, org.voteParams, org.boolVote));
@@ -74,8 +76,16 @@ contract UpgradeScheme is UniversalScheme {
         return id;
     }
 
-    // Propose to replace this schme by another updating schme:
-    function proposeChangeUpdateScheme(Avatar _avatar, address _scheme, bytes32 _params) returns(bytes32) {
+    // Propose to replace this schme by another upgrading schme:
+    function proposeChangeUpgradingScheme(
+        Avatar _avatar,
+        address _scheme,
+        bytes32 _params,
+        StandardToken _tokenFee,
+        uint _fee
+    )
+        returns(bytes32)
+    {
         Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         require(checkParameterHashMatch(_avatar, org.voteParams, org.boolVote));
@@ -85,6 +95,8 @@ contract UpgradeScheme is UniversalScheme {
         org.proposals[id].proposalType = 2;
         org.proposals[id].newContOrScheme = _scheme;
         org.proposals[id].params = _params;
+        org.proposals[id].tokenFee = _tokenFee;
+        org.proposals[id].fee = _fee;
         voteScheme(_avatar, id, true);
         return id;
     }
@@ -99,11 +111,13 @@ contract UpgradeScheme is UniversalScheme {
             Controller controller = Controller(_avatar.owner());
             if( organizations[_avatar].proposals[id].proposalType == 2 ) {
                 bytes4 permissions = controller.getSchemePermissions(this);
+                if (proposal.fee != 0 )
+                  if (!controller.externalTokenApprove(proposal.tokenFee, proposal.newContOrScheme, proposal.fee)) revert();
                 if( ! controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions) ) revert();
                 if( ! controller.unregisterSelf() ) revert();
             }
-            if( organizations[_avatar].proposals[id].proposalType == 1 ) {
-                if( ! controller.upgradeController(proposal.newContOrScheme) ) revert();
+              if( organizations[_avatar].proposals[id].proposalType == 1 ) {
+                  if( ! controller.upgradeController(proposal.newContOrScheme) ) revert();
             }
             organizations[_avatar].proposals[id].proposalType = 0;
         }

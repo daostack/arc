@@ -85,7 +85,7 @@ contract SimpleContributionScheme is UniversalScheme {
         require(checkParameterHashMatch(_avatar, _orgNativeTokenFee, _schemeNativeTokenFee, _voteApproveParams, _boolVote));
 
         // Pay fees for using scheme:
-        nativeToken.transferFrom(msg.sender, beneficiary, fee);
+        nativeToken.transferFrom(_avatar, beneficiary, fee);
 
         Organization org = organizations[_avatar];
         org.isRegistered = true;

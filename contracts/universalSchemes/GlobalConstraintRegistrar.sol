@@ -56,7 +56,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
                      BoolVoteInterface _boolVote) {
 
       // Pay fees for using scheme:
-      nativeToken.transferFrom(msg.sender, beneficiary, fee);
+      nativeToken.transferFrom(_avatar, beneficiary, fee);
 
       require(checkParameterHashMatch(_avatar, _voteRegisterParams, _boolVote));
       Organization memory org;

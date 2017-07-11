@@ -82,7 +82,7 @@ contract SimpleICO is UniversalScheme {
                             uint _endBlock, address _etherAddress, address _admin) {
 
       // Pay fees for using scheme:
-      nativeToken.transferFrom(msg.sender, beneficiary, fee);
+      nativeToken.transferFrom(_avatar, beneficiary, fee);
 
       require(checkParameterHashMatch(_avatar, _cap, _price, _startBlock, _endBlock,
                                           _etherAddress, _admin));

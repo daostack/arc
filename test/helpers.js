@@ -14,7 +14,7 @@ import { daostack } from '../lib/daostack.js';
 
 
 export function getProposalAddress(tx) {
-    // helper function that returns a proposal object from the ProposalCreated event 
+    // helper function that returns a proposal object from the ProposalCreated event
     // in the logs of tx
     assert.equal(tx.logs[0].event, 'ProposalCreated')
     const proposalAddress = tx.logs[0].args.proposaladdress
@@ -60,7 +60,7 @@ export function assertJumpOrOutOfGas(error) {
     let condition = (
         error.message == outOfGasMessage ||
         error.message.search('invalid JUMP') > -1
-    ) 
+    )
     assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error:' + error.message);
 }
 
@@ -68,7 +68,7 @@ export function assertJumpOrOutOfGas(error) {
 export function assertVMException(error) {
     let condition = (
         error.message.search('VM Exception') > -1
-    ) 
+    )
     assert.isTrue(condition, 'Expected a VM Exception, got this instead:' + error.message);
 }
 

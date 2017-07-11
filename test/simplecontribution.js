@@ -12,6 +12,7 @@ contract('SimpleContribution', function(accounts) {
         // const tokensForFounders = [1, 2, 3, 5];
         const repForFounders = [99, 1];
         const org = await helpers.forgeOrganization({founders, repForFounders});// the schemeregister is fx
+        const avatar = org.avatar;
         const controller = org.controller;
     	const schemeRegistrar = org.schemeregistrar;
 
@@ -24,7 +25,7 @@ contract('SimpleContribution', function(accounts) {
     	const reputationAddress = await controller.nativeReputation();
     	const tokenAddress = await controller.nativeToken();
 
-    	const votingMachine = await UniversalSimpleVote.new(); 
+    	const votingMachine = await UniversalSimpleVote.new();
     	const votingParams = await votingMachine.hashParameters(
     		reputationAddress,
     		50, // percentage that counts as a majority
@@ -68,16 +69,20 @@ contract('SimpleContribution', function(accounts) {
     		votingMachine.address,
 		)
     	// and we propose to add the contribution scheme to controller
+      const simpleContributionFee = await contributionScheme.fee();
+      const simpleContributionFeeToken = await contributionScheme.nativeToken();
     	await schemeregistrar.proposeScheme(
-    		controller.address,
+    		avatar.address,
     		contributionScheme.address,
     		contributionSchemeParams,
     		false, // isRegistering
+        simpleContributionFeeToken,
+        simpleContributionFee
     		);
-	
+
     	return
 
-        
+
 //         let contributionVotingScheme = await UniversalSimpleVote.new();
 //         let contributionScheme = await SimpleContribution.new(this.controllerAddress,
 //                                                               submissionFee,
@@ -85,19 +90,19 @@ contract('SimpleContribution', function(accounts) {
 //         await this.genesis.proposeScheme(contributionScheme.address);
 //         await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[0]});
 //         await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[1]});
-        
-        
+
+
 //         let balance0BeforeSubmission = await this.tokenInstance.balanceOf(founders[0]);
 //         let reputation0BeforeSubmission = await this.reputationInstance.reputationOf(founders[0]);
-        
+
 //         // submit contribution - for that need to aprrove token first
 //         // approve token
 //         await this.tokenInstance.approve(contributionScheme.address, submissionFee);
-//         await this.tokenInstance.approve(contributionScheme.address, submissionFee);        
+//         await this.tokenInstance.approve(contributionScheme.address, submissionFee);
 //         // submit contribution
 //         let askedTokens = 5;
 //         let askedReputation = 55;
-        
+
 //         // do the first call ofchain in order to get the return value (instead of tx)
 //         let contributionId = await contributionScheme.submitContribution.call("simple contribution testing",
 //                                                                               askedTokens,
@@ -113,19 +118,18 @@ contract('SimpleContribution', function(accounts) {
 
 //         // vote on contribution. 2nd founder has majority
 //         await contributionScheme.voteContribution(contributionId,true,{'from':founders[1]});
-        
+
 //         // see that submitter was paid
 //         let balance0AfterSubmission = await this.tokenInstance.balanceOf(founders[0]);
 //         let reputation0AfterSubmission = await this.reputationInstance.reputationOf(founders[0]);
-        
+
 //         assert.equal(parseInt(reputation0BeforeSubmission.valueOf()) + parseInt(askedReputation.valueOf()),
 //                      parseInt(reputation0AfterSubmission.valueOf()),
 //                      "contributer reputation are not as expected");
-        
-        
+
+
 //         assert.equal(parseInt(balance0BeforeSubmission.valueOf()) + parseInt(askedTokens) - parseInt(submissionFee),
 //                      parseInt(balance0AfterSubmission.valueOf()),
-//                      "contributer tokens are not as expected");                     
+//                      "contributer tokens are not as expected");
     });
 });
-
