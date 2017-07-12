@@ -1,5 +1,7 @@
 pragma solidity ^0.4.11;
 
+import "../controller/Controller.sol";
+import "../controller/Avatar.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/token/StandardToken.sol";
 
@@ -23,5 +25,10 @@ contract UniversalScheme is Ownable {
       fee = _fee;
       beneficiary = _beneficiary;
       hashedParameters = _hashedParameters;
+  }
+
+  function getParametersFromController(Avatar _avatar) internal constant returns(bytes32) {
+     Controller controller = Controller(_avatar.owner());
+     return controller.getSchemeParameters(this);
   }
 }

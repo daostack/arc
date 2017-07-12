@@ -1,6 +1,5 @@
 pragma solidity ^0.4.11;
 
-import "../controller/Controller.sol";
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
@@ -66,12 +65,6 @@ contract UpgradeScheme is UniversalScheme {
         return paramsHash;
     }
 
-    function getParametersFromController(Avatar _avatar) private constant returns(Parameters) {
-       Controller controller = Controller(_avatar.owner());
-       return parameters[controller.getSchemeParameters(this)];
-    }
-
-
     // Adding an organization to the universal scheme:
     function registerOrganization(Avatar _avatar) {
 
@@ -87,7 +80,7 @@ contract UpgradeScheme is UniversalScheme {
     function proposeUpgrade(Avatar _avatar, address _newController) returns(bytes32) {
         Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
-        Parameters memory params = getParametersFromController(_avatar);
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = params.boolVote;
         bytes32 id = boolVote.propose(params.voteParams);
         if (org.proposals[id].proposalType != 0) {
@@ -110,7 +103,7 @@ contract UpgradeScheme is UniversalScheme {
         returns(bytes32)
     {
         Organization org = organizations[_avatar];
-        Parameters memory params = getParametersFromController(_avatar);
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
 
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         BoolVoteInterface boolVote = params.boolVote;
@@ -127,7 +120,7 @@ contract UpgradeScheme is UniversalScheme {
 
     // Vote on one of the proposals, also handles execution:
     function voteScheme( Avatar _avatar, bytes32 id, bool _yes ) returns(bool) {
-        Parameters memory params = getParametersFromController(_avatar);
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = params.boolVote;
         if( ! boolVote.vote(id, _yes, msg.sender) ) return false;
         if( boolVote.voteResults(id) ) {
@@ -149,7 +142,7 @@ contract UpgradeScheme is UniversalScheme {
     }
 
     function getVoteStatus(Avatar _avatar, bytes32 id) constant returns(uint[3]) {
-        Parameters memory params = getParametersFromController(_avatar);
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = params.boolVote;
         return (boolVote.voteStatus(id));
     }

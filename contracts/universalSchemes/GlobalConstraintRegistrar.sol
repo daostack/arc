@@ -1,9 +1,7 @@
 pragma solidity ^0.4.11;
 
-import "../controller/Controller.sol";
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
-import "../controller/Avatar.sol";
 
 /**
  * @title A scheme to manage global constaintg for organizations
@@ -66,11 +64,6 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         return paramsHash;
     }
 
-    function getParametersFromController(Avatar _avatar) private constant returns(Parameters) {
-       Controller controller = Controller(_avatar.owner());
-       return parameters[controller.getSchemeParameters(this)];
-    }
-
     // Adding an organization to the universal scheme:
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
@@ -83,7 +76,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // Proposing to add a new GC:
     function proposeGC(Avatar _avatar, address _gc, bytes32 _parametersHash, bytes32 _removeParams) returns(bytes32) {
         Organization org = organizations[_avatar];
-        Parameters memory params = getParametersFromController(_avatar);
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
 
         require(org.isRegistered); // Check org is registred to use this universal scheme.
 
@@ -103,7 +96,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // Proposing to remove a new GC:
     function proposeToRemoveGC(Avatar _avatar, address _gc) returns(bytes32) {
         Organization org = organizations[_avatar];
-        Parameters memory params = getParametersFromController(_avatar);
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         BoolVoteInterface boolVote = params.boolVote;
         bytes32 id = boolVote.propose(org.removeParams[_gc]);
@@ -116,7 +109,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
     // Voting a GC, also handle the execuation when vote is over:
     function voteGC( Avatar _avatar, bytes32 id, bool _yes ) returns(bool) {
-        Parameters memory params = getParametersFromController(_avatar);
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = params.boolVote;
         if ( ! boolVote.vote(id, _yes, msg.sender) ) return false;
         if ( boolVote.voteResults(id) ) {
@@ -135,7 +128,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
     // Check the status of a vote:
     function getVoteStatus(Avatar _avatar, bytes32 id) constant returns(uint[3]) {
-        Parameters memory params = getParametersFromController(_avatar);
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = params.boolVote;
         return (boolVote.voteStatus(id));
     }

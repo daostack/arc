@@ -1,7 +1,5 @@
 pragma solidity ^0.4.11;
 
-import "../controller/Controller.sol";
-import "../controller/Avatar.sol";
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
@@ -89,11 +87,6 @@ contract SimpleContributionScheme is UniversalScheme {
          BoolVoteInterface _boolVote
     ) constant returns(bytes32) {
         return (sha3(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _boolVote));
-    }
-
-    function getParametersFromController(Avatar _avatar) private constant returns(bytes32) {
-       Controller controller = Controller(_avatar.owner());
-       return controller.getSchemeParameters(this);
     }
 
     function registerOrganization(Avatar _avatar) {

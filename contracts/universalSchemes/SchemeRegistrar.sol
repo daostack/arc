@@ -1,7 +1,5 @@
 pragma solidity ^0.4.11;
 
-import "../controller/Controller.sol";
-import "../controller/Avatar.sol";
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
@@ -78,10 +76,6 @@ contract SchemeRegistrar is UniversalScheme {
         return paramsHash;
     }
 
-    function getParametersFromController(Avatar _avatar) private constant returns(bytes32) {
-       Controller controller = Controller(_avatar.owner());
-       return controller.getSchemeParameters(this);
-    }
     /**
      * @dev add or update an organisation to this register.
      * @dev the sender pays a fee (in nativeToken) for using this function, and must approve it before calling the transaction
