@@ -12,7 +12,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // The struct that holds the information of a global constraint proposed to be added or removed.
     struct gcProposal {
         address gc; // The address of the global contraint contract.
-        bytes32 parametersHash; // Parameters for global constraint.
+        bytes32 params; // Parameters for global constraint.
         uint proposalType; // 1: add a GC, 2: remove a GC.
         bytes32 removeParams; // Voting parameters for removing this GC.
     }
@@ -77,22 +77,22 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
 
     // Proposing to add a new GC:
-    function proposeGC(Avatar _avatar, address _gc, bytes32 _parametersHash, bytes32 _removeParams) returns(bytes32) {
+    function proposeGC(Avatar _avatar, address _gc, bytes32 _params, bytes32 _removeParams) returns(bytes32) {
         Organization org = organizations[_avatar];
         Parameters memory params = parameters[getParametersFromController(_avatar)];
 
         require(org.isRegistered); // Check org is registred to use this universal scheme.
 
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 id = boolVote.propose(params.voteRegisterParams);
+        bytes32 id = boolVote.propose(params.voteRegisterParams, _avatar, ExecutableInterface(this));
         if (org.proposals[id].proposalType != 0) {
           revert();
         }
         org.proposals[id].proposalType = 1;
         org.proposals[id].gc = _gc;
-        org.proposals[id].parametersHash = _parametersHash;
+        org.proposals[id].params = _params;
         org.proposals[id].removeParams = _removeParams;
-        voteGC(_avatar, id, true);
+        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
         return id;
     }
 
@@ -102,37 +102,41 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 id = boolVote.propose(org.removeParams[_gc]);
+        bytes32 id = boolVote.propose(org.removeParams[_gc], _avatar, ExecutableInterface(this));
         if (org.proposals[id].proposalType != 0) revert();
         org.proposals[id].proposalType = 2;
         org.proposals[id].gc = _gc;
-        voteGC(_avatar, id, true);
+        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
         return id;
     }
 
-    // Voting a GC, also handle the execuation when vote is over:
-    function voteGC( Avatar _avatar, bytes32 id, bool _yes ) returns(bool) {
-        Parameters memory params = parameters[getParametersFromController(_avatar)];
-        BoolVoteInterface boolVote = params.boolVote;
-        if ( ! boolVote.vote(id, _yes, msg.sender) ) return false;
-        if ( boolVote.voteResults(id) ) {
-            Controller controller = Controller(_avatar.owner());
-            gcProposal memory proposal = organizations[_avatar].proposals[id];
-            if( ! boolVote.cancelProposal(id) ) revert();
-            if( organizations[_avatar].proposals[id].proposalType == 2 ) {
-                if( ! controller.removeGlobalConstraint(proposal.gc) ) revert();
-            }
-            if( organizations[_avatar].proposals[id].proposalType == 1 ) {
-                if( ! controller.addGlobalConstraint(proposal.gc, proposal.parametersHash) ) revert();
-            }
-            organizations[_avatar].proposals[id].proposalType = 0;
-        }
-    }
+    /**
+     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+     * @param _id the ID of the voting in the voting machine
+     * @param _avatar address of the controller
+     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
+     */
+    function execute(bytes32 _id, address _avatar, int _param) returns(bool) {
+      // Check if vote was successful:
+      if (_param != 1 ) {
+        delete organizations[_avatar].proposals[_id];
+        return true;
+      }
+      // Check the caller is indeed the voting machine:
+      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
+      // Define controller and get the parmas:
+      Controller controller = Controller(Avatar(_avatar).owner());
+      gcProposal proposal = organizations[_avatar].proposals[_id];
 
-    // Check the status of a vote:
-    function getVoteStatus(Avatar _avatar, bytes32 id) constant returns(uint[3]) {
-        Parameters memory params = parameters[getParametersFromController(_avatar)];
-        BoolVoteInterface boolVote = params.boolVote;
-        return (boolVote.voteStatus(id));
+      // Adding a GC
+      if( proposal.proposalType == 1 ) {
+          if( ! controller.addGlobalConstraint(proposal.gc, proposal.params) ) revert();
+      }
+      // Removing a GC
+      if( proposal.proposalType == 2 ) {
+          if( ! controller.removeGlobalConstraint(proposal.gc) ) revert();
+      }
+      delete organizations[_avatar].proposals[_id];
+      return true;
     }
 }

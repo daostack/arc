@@ -8,11 +8,11 @@ import "./UniversalScheme.sol";
  * @dev The schme is used to upgrade the controller of an organization to a new controller.
  */
 
-contract UpgradeScheme is UniversalScheme {
+contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     // Details of an upgrade proposal:
     struct UpgradeProposal {
-      address newContOrScheme;
-      bytes32 params;
+      address newContOrScheme; // Either the new conroller we upgrade to, or the new upgrading scheme.
+      bytes32 params; // Params for the new upgrading scheme.
       uint proposalType; // 1: Upgrade controller, 2: change upgrade scheme.
       StandardToken tokenFee;
       uint fee;
@@ -21,8 +21,6 @@ contract UpgradeScheme is UniversalScheme {
     // Struct holding the data for each organization
     struct Organization {
       bool isRegistered;
-      bytes32 voteParams;
-      BoolVoteInterface boolVote;
       mapping(bytes32=>UpgradeProposal) proposals;
     }
 
@@ -50,7 +48,7 @@ contract UpgradeScheme is UniversalScheme {
         BoolVoteInterface _boolVote
     ) returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_voteParams, _boolVote);
-        if (parameters[paramsHash].boolVote != address(0))  {
+        if (parameters[paramsHash].boolVote != address(0)) {
             parameters[paramsHash].voteParams = _voteParams;
             parameters[paramsHash].boolVote = _boolVote;
         }
@@ -67,7 +65,6 @@ contract UpgradeScheme is UniversalScheme {
 
     // Adding an organization to the universal scheme:
     function registerOrganization(Avatar _avatar) {
-
       // Pay fees for using scheme:
       if (fee > 0)
         nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -75,6 +72,7 @@ contract UpgradeScheme is UniversalScheme {
       Organization memory org;
       org.isRegistered = true;
       organizations[_avatar] = org;
+      orgRegistered(_avatar);
     }
 
     // Propose an upgrade of the controller:
@@ -83,13 +81,13 @@ contract UpgradeScheme is UniversalScheme {
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 id = boolVote.propose(params.voteParams);
+        bytes32 id = boolVote.propose(params.voteParams, _avatar, ExecutableInterface(this));
         if (org.proposals[id].proposalType != 0) {
             revert();
         }
         org.proposals[id].proposalType = 1;
         org.proposals[id].newContOrScheme = _newController;
-        voteScheme(_avatar, id, true);
+        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
         return id;
     }
 
@@ -108,43 +106,50 @@ contract UpgradeScheme is UniversalScheme {
 
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 id = boolVote.propose(params.voteParams);
+        bytes32 id = boolVote.propose(params.voteParams, _avatar, ExecutableInterface(this));
         if (org.proposals[id].proposalType != 0) revert();
         org.proposals[id].proposalType = 2;
         org.proposals[id].newContOrScheme = _scheme;
         org.proposals[id].params = _params;
         org.proposals[id].tokenFee = _tokenFee;
         org.proposals[id].fee = _fee;
-        voteScheme(_avatar, id, true);
+        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
         return id;
     }
 
-    // Vote on one of the proposals, also handles execution:
-    function voteScheme( Avatar _avatar, bytes32 id, bool _yes ) returns(bool) {
-        Parameters memory params = parameters[getParametersFromController(_avatar)];
-        BoolVoteInterface boolVote = params.boolVote;
-        if( ! boolVote.vote(id, _yes, msg.sender) ) return false;
-        if( boolVote.voteResults(id) ) {
-            UpgradeProposal memory proposal = organizations[_avatar].proposals[id];
-            if( ! boolVote.cancelProposal(id) ) revert();
-            Controller controller = Controller(_avatar.owner());
-            if( organizations[_avatar].proposals[id].proposalType == 2 ) {
-                bytes4 permissions = controller.getSchemePermissions(this);
-                if (proposal.fee != 0 )
-                  if (!controller.externalTokenApprove(proposal.tokenFee, proposal.newContOrScheme, proposal.fee)) revert();
-                if( ! controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions) ) revert();
-                if( ! controller.unregisterSelf() ) revert();
-            }
-              if( organizations[_avatar].proposals[id].proposalType == 1 ) {
-                  if( ! controller.upgradeController(proposal.newContOrScheme) ) revert();
-            }
-            organizations[_avatar].proposals[id].proposalType = 0;
-        }
-    }
 
-    function getVoteStatus(Avatar _avatar, bytes32 id) constant returns(uint[3]) {
-        Parameters memory params = parameters[getParametersFromController(_avatar)];
-        BoolVoteInterface boolVote = params.boolVote;
-        return (boolVote.voteStatus(id));
+    /**
+     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+     * @param _id the ID of the voting in the voting machine
+     * @param _avatar address of the controller
+     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
+     */
+    function execute(bytes32 _id, address _avatar, int _param) returns(bool) {
+      // Check if vote was successful:
+      if (_param != 1 ) {
+        delete organizations[_avatar].proposals[_id];
+        return true;
+      }
+      // Check the caller is indeed the voting machine:
+      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
+      // Define controller and get the parmas:
+      Controller controller = Controller(Avatar(_avatar).owner());
+      UpgradeProposal proposal = organizations[_avatar].proposals[_id];
+
+      // Upgrading controller:
+      if (proposal.proposalType == 1) {
+        if( ! controller.upgradeController(proposal.newContOrScheme) ) revert();
+      }
+
+      // Changing upgrade scheme:
+      if (proposal.proposalType == 2) {
+        bytes4 permissions = controller.getSchemePermissions(this);
+        if (proposal.fee != 0 )
+          if (!controller.externalTokenApprove(proposal.tokenFee, proposal.newContOrScheme, proposal.fee)) revert();
+        if( ! controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions) ) revert();
+        if( ! controller.unregisterSelf() ) revert();
+      }
+      delete organizations[_avatar].proposals[_id];
+      return true;
     }
 }

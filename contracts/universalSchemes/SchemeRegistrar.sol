@@ -13,7 +13,7 @@ contract SchemeRegistrar is UniversalScheme {
 
     // a SchemeProposal is a  proposal to add or remove a scheme to/from the an orgaization
     struct SchemeProposal {
-        address scheme;
+        address scheme; // 
         bytes32 parametersHash;
         uint proposalType; // 1: add a schme, 2: remove a scheme.
         bool isRegistering;
@@ -133,20 +133,20 @@ contract SchemeRegistrar is UniversalScheme {
         // propose
         Parameters controllerParams = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = controllerParams.boolVote;
-        bytes32 proposalId = boolVote.propose(controllerParams.voteRegisterParams);
-        if (org.proposals[proposalId].proposalType != 0) {
+        bytes32 id = boolVote.propose(controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this));
+        if (org.proposals[id].proposalType != 0) {
           revert();
         }
 
-        org.proposals[proposalId].proposalType = 1;
-        org.proposals[proposalId].scheme = _scheme;
-        org.proposals[proposalId].parametersHash = _parametersHash;
-        org.proposals[proposalId].isRegistering = _isRegistering;
-        org.proposals[proposalId].tokenFee = _tokenFee;
-        org.proposals[proposalId].fee = _fee;
+        org.proposals[id].proposalType = 1;
+        org.proposals[id].scheme = _scheme;
+        org.proposals[id].parametersHash = _parametersHash;
+        org.proposals[id].isRegistering = _isRegistering;
+        org.proposals[id].tokenFee = _tokenFee;
+        org.proposals[id].fee = _fee;
         // vote for this proposal
-        voteScheme(_avatar, proposalId, true);
-        return proposalId;
+        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+        return id;
     }
 
     /**
@@ -166,67 +166,51 @@ contract SchemeRegistrar is UniversalScheme {
         Parameters params = parameters[paramsHash];
 
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 proposalId = boolVote.propose(params.voteRemoveParams);
-        if (org.proposals[proposalId].proposalType != 0) {
+        bytes32 id = boolVote.propose(params.voteRemoveParams, _avatar, ExecutableInterface(this));
+        if (org.proposals[id].proposalType != 0) {
           revert();
         }
-        org.proposals[proposalId].proposalType = 2;
-        org.proposals[proposalId].scheme = _scheme;
-        org.proposals[proposalId].boolVote = boolVote;
+        org.proposals[id].proposalType = 2;
+        org.proposals[id].scheme = _scheme;
+        org.proposals[id].boolVote = boolVote;
         // vote for this proposal
-        voteScheme(_avatar, proposalId, true);
-        return proposalId;
+        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+        return id;
     }
 
     /**
-     * @dev vote to register or unregister a scheme of a controller
+     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+     * @param _id the ID of the voting in the voting machine
      * @param _avatar address of the controller
-     * @param _proposalId the id of the proposal
-     * @param _yes a boolean representing a yes or no vote
+     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
      */
-    // NB: the decisive vote will pay for gas costs for (un)registering the scheme in question
-    // TODO: security: we are not checking here if the registeration on the controller of the present register has changed
-    // since we propossed the vote
-    function voteScheme(Avatar _avatar, bytes32 _proposalId, bool _yes) returns(bool) {
+    function execute(bytes32 _id, address _avatar, int _param) returns(bool) {
+      // Check if vote was successful:
+      if (_param != 1 ) {
+        delete organizations[_avatar].proposals[_id];
+        return true;
+      }
+      // Check the caller is indeed the voting machine:
+      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
+      // Define controller and get the parmas:
+      Controller controller = Controller(Avatar(_avatar).owner());
+      SchemeProposal proposal = organizations[_avatar].proposals[_id];
 
-        // get the contents of the proposal
-        SchemeProposal memory proposal = organizations[_avatar].proposals[_proposalId];
-        BoolVoteInterface boolVote = proposal.boolVote;
-        if (!boolVote.vote(_proposalId, _yes, msg.sender)) {
-            return false;
-        }
+      // Add a scheme:
+      if( proposal.proposalType == 1 )  {
+          if (proposal.fee != 0 )
+            if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) revert();
+          if (proposal.isRegistering == false)
+            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) revert();
+          else
+            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) revert();
+      }
 
-        if (boolVote.voteResults(_proposalId)) { // true if the vote has passed
-            // cancel the proposal
-            if (!boolVote.cancelProposal(_proposalId)) {
-              revert();
-            }
-            Controller controller = Controller(_avatar.owner());
-            // if our proposal is of type2, we unregister the schem in question
-            if (organizations[_avatar].proposals[_proposalId].proposalType == 2 ) {
-                if(!controller.unregisterScheme(proposal.scheme)) revert();
-            }
-            if (organizations[_avatar].proposals[_proposalId].proposalType == 1 ) {
-                if (proposal.fee != 0 )
-                  if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) revert();
-                if (proposal.isRegistering == false)
-                  if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) revert();
-                else
-                  if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) revert();
-            }
-            organizations[_avatar].proposals[_proposalId].proposalType = 0;
-        }
+      // Remove a scheme:
+      if( proposal.proposalType == 2 ) {
+          if(!controller.unregisterScheme(proposal.scheme)) revert();
+      }
+      delete organizations[_avatar].proposals[_id];
+      return true;
     }
-
-    /**
-     * @dev get the status of the vote
-     * @param _avatar is the avatar of the organisation it is registered atproposal
-     * @param _proposalId is the id of a proposal
-     * @return [yes, no, ended]
-     */
-    function getVoteStatus(Avatar _avatar, bytes32 _proposalId) constant returns(uint[3]) {
-        BoolVoteInterface boolVote = organizations[_avatar].proposals[_proposalId].boolVote;
-        return (boolVote.voteStatus(_proposalId));
-    }
-
 }

@@ -19,19 +19,20 @@ contract SimpleVote {
         uint yes; // total 'yes' votes
         uint no; // total 'no' votes
         mapping(address=>int) voted; // save the amount of reputation voted by an agent (positive sign is yes, negatice is no)
+        bool opened; // voting opened flag
         bool ended; // voting had ended flag
     }
 
-    event NewProposal( uint _proposalId, address _owner, bytes32 _paramsHash);
-    event CancelProposal(uint _proposalId);
-    event EndProposal( uint _proposalId, bool _yes );
-    event VoteProposal( address _voter, uint _proposalId, bool _yes, uint _reputation);
-    event CancelVoting(address _voter, uint _proposalId);
+    uint proposalsCnt;
+
+    event NewProposal( bytes32 _proposalId, address _owner, bytes32 _paramsHash);
+    event CancelProposal(bytes32 _proposalId);
+    event EndProposal( bytes32 _proposalId, bool _yes );
+    event VoteProposal( address _voter, bytes32 _proposalId, bool _yes, uint _reputation);
+    event CancelVoting(address _voter, bytes32 _proposalId);
 
     mapping(bytes32=>Parameters) parameters;  // A mapping from hashes to parameters
-    mapping(uint=>Proposal) proposals; // Mapping from the ID of the proposal to the proposal itself.
-
-    uint proposalsIdCnt; // Counter that counts the number of proposals.
+    mapping(bytes32=>Proposal) proposals; // Mapping from the ID of the proposal to the proposal itself.
 
     function UniversalSimpleVote() {
     }
@@ -60,9 +61,13 @@ contract SimpleVote {
      * @param _avatar an address to be sent on execuation.
      * @param _executable This contract will be executed when vote is over.
      */
-   function propose(bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(uint) {
+   function propose(bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
         // Check params exist:
         require(parameters[_paramsHash].reputationSystem != address(0));
+
+        // Generate a unique ID:
+        bytes32 id = sha3(this, proposalsCnt);
+        proposalsCnt++;
 
         // Open proposal:
         Proposal memory proposal;
@@ -70,21 +75,22 @@ contract SimpleVote {
         proposal.avatar = _avatar;
         proposal.executable = _executable;
         proposal.owner = msg.sender;
-        proposals[proposalsIdCnt] = proposal;
-        NewProposal(proposalsIdCnt, msg.sender, _paramsHash);
-        return proposalsIdCnt++;
+        proposal.opened = true;
+        proposals[id] = proposal;
+        NewProposal(id, msg.sender, _paramsHash);
+        return id;
     }
 
-    function cancelProposal(uint id) returns(bool) {
+    function cancelProposal(bytes32 id) returns(bool) {
         require(msg.sender == proposals[id].owner);
         delete proposals[id];
         CancelProposal(id);
         return true;
     }
 
-    function vote(uint id, bool yes, address voter) returns(bool) {
+    function vote(bytes32 id, bool yes, address voter) returns(bool) {
         Proposal proposal = proposals[id];
-        require(proposalsIdCnt > id); // Check the proposal exists
+        require(proposal.opened); // Check the proposal exists
         require(! proposal.ended); // Check the voting is not finished
 
         // The owner of the vote can vote in anyones name. Others can only vote for themselves.
@@ -107,10 +113,10 @@ contract SimpleVote {
         return true;
     }
 
-    function cancelVoting(uint id) {
+    function cancelVoting(bytes32 id) {
       Proposal proposal = proposals[id];
       // Check vote is open:
-      require(proposalsIdCnt > id);
+      require(proposal.opened);
       require(! proposal.ended);
 
       int vote = proposal.voted[msg.sender];
@@ -122,7 +128,7 @@ contract SimpleVote {
       CancelVoting(msg.sender, id);
     }
 
-    function checkVoteEnded(uint id) returns(bool) {
+    function checkVoteEnded(bytes32 id) returns(bool) {
       Proposal proposal = proposals[id];
       require(! proposal.ended);
       uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
@@ -143,7 +149,7 @@ contract SimpleVote {
       return false;
     }
 
-    function voteStatus(uint id) constant returns(uint[3]) {
+    function voteStatus(bytes32 id) constant returns(uint[3]) {
         uint yes = proposals[id].yes;
         uint no = proposals[id].no;
         uint ended = proposals[id].ended ? 1 : 0;
