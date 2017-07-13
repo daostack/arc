@@ -89,7 +89,8 @@ contract UniversalSimpleVote {
         require(msg.sender == proposal.owner);
 
         if( proposal.voted[voter] ) return false;
-
+        proposal.voted[voter] = true;
+        
         uint reputation = proposalsParameters[proposal.parameters].reputationSystem.reputationOf(voter);
         uint totalReputation = proposalsParameters[proposal.parameters].reputationSystem.totalSupply();
         uint absPrecReq = proposalsParameters[proposal.parameters].absPrecReq;
