@@ -69,7 +69,8 @@ contract UpgradeScheme is UniversalScheme {
     function registerOrganization(Avatar _avatar) {
 
       // Pay fees for using scheme:
-      nativeToken.transferFrom(_avatar, beneficiary, fee);
+      if (fee > 0)
+        nativeToken.transferFrom(_avatar, beneficiary, fee);
 
       Organization memory org;
       org.isRegistered = true;

@@ -67,10 +67,13 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // Adding an organization to the universal scheme:
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
-      nativeToken.transferFrom(_avatar, beneficiary, fee);
+      if (fee > 0)
+        nativeToken.transferFrom(_avatar, beneficiary, fee);
+
       Organization memory org;
       org.isRegistered = true;
       organizations[_avatar] = org;
+      orgRegistered(_avatar);
     }
 
     // Proposing to add a new GC:

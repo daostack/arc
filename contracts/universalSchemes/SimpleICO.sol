@@ -1,7 +1,5 @@
 pragma solidity ^0.4.11;
 
-import "../controller/Controller.sol";
-import "../controller/Avatar.sol";
 import "./UniversalScheme.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -42,20 +40,27 @@ contract SimpleICO is UniversalScheme {
 
     // Struct holding the data for each organization
     struct Organization {
-      uint cap; // Cap in Eth
-      uint price; // Price represents Tokens per 1 Eth
-      uint startBlock;
-      uint endBlock;
-      address etherAddress; // all funds received will be transffered to this address.
-      address admin; // The admin can halt or resume ICO.
+      bytes32 paramsHash; // Save the parameters approved by the org to open the ICO, so reules of ICO will not change.
       address avatarContractICO; // Avatar is a contract for users that want to send eth without calling a funciton.
       uint totalEthRaised;
-      bool isOpen;
+      bool isHalted; // The admin of the ICO can halt the ICO at any time, and also resume it.
       bool isRegistered;
     }
 
-    // A mapping from thr organization (Avatar) address to the saved data of the organization:
+    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+    struct Parameters {
+        uint cap; // Cap in Eth
+        uint price; // Price represents Tokens per 1 Eth
+        uint startBlock;
+        uint endBlock;
+        address etherAddress; // all funds received will be transffered to this address.
+        address admin; // The admin can halt or resume ICO.
+    }
+
+    // A mapping from the organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) public organizations;
+
+    mapping(bytes32=>Parameters) parameters;
 
     event DonationRecieved( address indexed organization, address indexed _beneficiary, uint _incomingEther  ,uint indexed _tokensAmount );
 
@@ -64,85 +69,112 @@ contract SimpleICO is UniversalScheme {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
+
+    /**
+     * @dev hash the parameters, save them if necessary, and return the hash value
+     */
+    function setParameters(
+      uint _cap,
+      uint _price,
+      uint _startBlock,
+      uint _endBlock,
+      address _etherAddress,
+      address _admin)  returns(bytes32) {
+        bytes32 paramsHash = getParametersHash(_cap, _price, _startBlock, _endBlock, _etherAddress, _admin);
+        if (parameters[paramsHash].cap != 0)  {
+            parameters[paramsHash].cap = _cap;
+            parameters[paramsHash].price = _price;
+            parameters[paramsHash].startBlock = _startBlock;
+            parameters[paramsHash].endBlock = _endBlock;
+            parameters[paramsHash].etherAddress = _etherAddress;
+            parameters[paramsHash].admin = _admin;
+        }
+        return paramsHash;
+    }
+
     // The format of the hashing of the parameters:
-    function parametersHash(uint _cap, uint _price, uint _startBlock, uint _endBlock,
-                            address _etherAddress, address _admin) constant returns(bytes32) {
+    function getParametersHash(
+      uint _cap,
+      uint _price,
+      uint _startBlock,
+      uint _endBlock,
+      address _etherAddress,
+      address _admin) constant returns(bytes32) {
         return (sha3(_cap, _price, _startBlock, _endBlock, _etherAddress, _admin));
     }
 
-    // Check that the parameters listed match the ones in the controller:
-    function checkParameterHashMatch(Avatar _avatar, uint _cap, uint _price, uint _startBlock,
-                            uint _endBlock, address _etherAddress, address _admin) constant returns(bool) {
-        Controller controller = Controller(_avatar.owner());
-       return (controller.getSchemeParameters(this) == parametersHash(_cap, _price, _startBlock, _endBlock, _etherAddress, _admin));
-    }
-
     // Adding an organization to the universal scheme, and opens an ICO for it:
-    function addOrgOpenICO(Avatar _avatar, uint _cap, uint _price, uint _startBlock,
-                            uint _endBlock, address _etherAddress, address _admin) {
-
+    function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
-      nativeToken.transferFrom(_avatar, beneficiary, fee);
+      if (fee > 0)
+        nativeToken.transferFrom(_avatar, beneficiary, fee);
 
-      require(checkParameterHashMatch(_avatar, _cap, _price, _startBlock, _endBlock,
-                                          _etherAddress, _admin));
+      // Check there is no ongoing ICO:
+      require(! isActiveICO(_avatar));
 
       // Set the organization data:
       Organization memory org;
       org.isRegistered = true;
-      org.cap = _cap;
-      org.price = _price;
-      org.startBlock = _startBlock;
-      org.endBlock = _endBlock;
-      org.etherAddress = _etherAddress;
-      org.admin = _admin;
+      org.paramsHash = getParametersFromController(_avatar);
+      require(parameters[org.paramsHash].cap != 0);
       org.avatarContractICO = new MirrorContractICO(_avatar, this);
-      org.isOpen = true;
       organizations[_avatar] = org;
+      orgRegistered(_avatar);
     }
 
-    // If someone accidentally send ether to the contract, revert;
+    // If someone accidentally sends ether to this contract, revert;
     function () {
         revert();
     }
 
     // Admin can halt ICO:
     function haltICO(address _avatar) {
-        require(msg.sender == organizations[_avatar].admin);
-        organizations[_avatar].isOpen = false;
+        require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
+        organizations[_avatar].isHalted = true;
     }
 
     // Admin can reopen ICO:
     function resumeICO(address _avatar) {
-        require(msg.sender == organizations[_avatar].admin);
-        organizations[_avatar].isOpen = true;
+        require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
+        organizations[_avatar].isHalted = false;
+    }
+
+    // Check if an ICO is active (halted is still considered active)
+    function isActiveICO(address _avatar) constant returns(bool) {
+        Organization org = organizations[_avatar];
+        Parameters params = parameters[org.paramsHash];
+        if (! org.isRegistered) return false;
+        if (org.totalEthRaised >= params.cap) return false;
+        if (block.number >= params.endBlock) return false;
+        if (block.number <= params.startBlock) return false;
+        return true;
     }
 
     // Donating ethers to get tokens:
     function donate(Avatar _avatar, address _beneficiary) payable returns(uint) {
         Organization org = organizations[_avatar];
+        Parameters params = parameters[org.paramsHash];
 
-        // Check PCO is open:
-        require(org.isOpen);
-        // Check cap reached:
-        require(org.totalEthRaised < org.cap);
-        // Check time cap:
-        require(block.number <= org.endBlock);
+        // Check ICO is active:
+        require(isActiveICO(_avatar));
+
+        // Check ICO is not halted:
+        require(! org.isHalted);
 
         uint incomingEther;
         uint change;
 
         // Compute how much tokens to buy:
-        if ( msg.value > (org.cap).sub(org.totalEthRaised) ) {
-            incomingEther = (org.cap).sub(org.totalEthRaised);
+        if ( msg.value > (params.cap).sub(org.totalEthRaised) ) {
+            incomingEther = (params.cap).sub(org.totalEthRaised);
             change = (msg.value).sub(incomingEther);
         } else {
             incomingEther = msg.value;
         }
-        uint tokens = incomingEther.mul(org.price);
+        uint tokens = incomingEther.mul(params.price);
 
         // Send ether to the defined address, mint, and send change to beneficiary:
-        org.etherAddress.transfer(incomingEther);
+        params.etherAddress.transfer(incomingEther);
         Controller controller = Controller(_avatar.owner());
         if(! controller.mintTokens(tokens, msg.sender)) revert();
         if (change != 0)
