@@ -1,8 +1,8 @@
 const helpers = require('./helpers')
 
-// var UniversalSimpleVote = artifacts.require("./UniversalSimpleVote.sol");
+
 const SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
-const UniversalSimpleVote = artifacts.require('./UniversalSimpleVote.sol');
+const SimpleVote = artifacts.require('./SimpleVote.sol');
 const MintableToken = artifacts.require('./MintableToken.sol');
 
 contract('SimpleContribution', function(accounts) {
@@ -23,8 +23,8 @@ contract('SimpleContribution', function(accounts) {
     	const reputationAddress = await controller.nativeReputation();
     	const tokenAddress = await controller.nativeToken();
 
-    	const votingMachine = await UniversalSimpleVote.new();
-    	const votingParams = await votingMachine.hashParameters(
+    	const votingMachine = await SimpleVote.new();
+    	const votingParams = await votingMachine.getParametersHash(
     		reputationAddress,
     		50, // percentage that counts as a majority
     	)
@@ -49,11 +49,6 @@ contract('SimpleContribution', function(accounts) {
     	// and we propose to add the contribution scheme to controller
       const simpleContributionFee = await contributionScheme.fee();
       const simpleContributionFeeToken = await contributionScheme.nativeToken();
-
-
-      // check if parametes are known in the voging machine
-      const paramsRegisteredOnVotingMachine = await votingMachine.checkExistingParameters(votingParams);
-      assert.equal(paramsRegisteredOnVotingMachine, true)
 
       // check if we our organization is registered
       const isOrganizationRegistered = await schemeRegistrar.isRegistered(avatar.address);
