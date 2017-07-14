@@ -1,9 +1,9 @@
 import { Organization } from '../lib/organization.js';
 const helpers = require('./helpers')
 
-// var UniversalSimpleVote = artifacts.require("./UniversalSimpleVote.sol");
+
 const SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
-const UniversalSimpleVote = artifacts.require('./UniversalSimpleVote.sol');
+const SimpleVote = artifacts.require('./SimpleVote.sol');
 const MintableToken = artifacts.require('./MintableToken.sol');
 
 contract('SimpleContribution', function(accounts) {
@@ -35,8 +35,7 @@ contract('SimpleContribution', function(accounts) {
 
     	// const votingMachine = await UniversalSimpleVote.new();
       const votingMachine = org.votingMachine;
-
-    	const votingParams = await votingMachine.hashParameters(
+    	const votingParams = await votingMachine.getParametersHash(
     		reputationAddress,
     		50, // percentage that counts as a majority
     	)
@@ -65,10 +64,6 @@ contract('SimpleContribution', function(accounts) {
       const simpleContributionFee = await contributionScheme.fee();
       const simpleContributionFeeToken = await contributionScheme.nativeToken();
 
-      // check if parametes are known in the voging machine
-      const paramsRegisteredOnVotingMachine = await votingMachine.checkExistingParameters(votingParams);
-      assert.equal(paramsRegisteredOnVotingMachine, true)
-
       // check if we our organization is registered
       const isOrganizationRegistered = await schemeRegistrar.isRegistered(avatar.address);
       assert.equal(isOrganizationRegistered, true);
@@ -84,7 +79,8 @@ contract('SimpleContribution', function(accounts) {
 
     	return
       const proposalId = tx.logs[0].proposalId
-      await schemeRegistrar.voteScheme(avatar.address, proposalId, true);
+      await votingMachine.vote(proposalId, true, accounts[0]);
+      // await schemeRegistrar.voteScheme(avatar.address, proposalId, true);
 
 
 //         await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[0]});

@@ -1,7 +1,5 @@
 pragma solidity ^0.4.11;
 
-import "../controller/Controller.sol";
-import "../controller/Avatar.sol";
 import "./UniversalScheme.sol";
 
 /**
@@ -14,14 +12,19 @@ contract OrganizationRegister is UniversalScheme {
     // Struct holding the data for each organization
     struct Organization {
         bool isRegistered;
-        uint fee;
-        StandardToken token;
-        address beneficiary;
         mapping(address=>uint) registry;
+    }
+
+    struct Parameters {
+      uint fee;
+      StandardToken token;
+      address beneficiary;
     }
 
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) organizations;
+
+    mapping(bytes32=>Parameters) parameters;
 
     event OrgAdded( address indexed _registry, address indexed _org);
     event Promotion( address indexed _registry, address indexed _org, uint _amount);
@@ -31,42 +34,46 @@ contract OrganizationRegister is UniversalScheme {
       updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
+    /**
+     * @dev hash the parameters, save them if necessary, and return the hash value
+     */
+    function setParameters(StandardToken _token, uint _fee, address _beneficiary) returns(bytes32) {
+      bytes32 paramsHash = getParametersHash(_token, _fee, _beneficiary);
+      if (parameters[paramsHash].token == address(0)) {
+        parameters[paramsHash].token = _token;
+        parameters[paramsHash].fee = _fee;
+        parameters[paramsHash].beneficiary = _beneficiary;
+      }
+      return paramsHash;
+    }
+
     // The format of the hashing of the parameters:
-    function parametersHash(StandardToken _token, uint _fee, address _beneficiary)
+    function getParametersHash(StandardToken _token, uint _fee, address _beneficiary)
                               constant returns(bytes32) {
       return (sha3(_token, _fee, _beneficiary));
     }
 
-    // Check that the parameters listed match the ones in the controller:
-    function checkParameterHashMatch(Avatar _avatar, StandardToken _token, uint _fee, address _beneficiary)
-                              constant returns(bool) {
-       Controller controller = Controller(_avatar.owner());
-       return (controller.getSchemeParameters(this) == parametersHash(_token, _fee, _beneficiary));
-    }
-
     // Adding an organization to the universal scheme:
-    function registerOrganization(Avatar _avatar, StandardToken _token, uint _fee, address _beneficiary) {
+    function registerOrganization(Avatar _avatar) {
         // Pay fees for using scheme:
-        nativeToken.transferFrom(_avatar, _beneficiary, _fee);
+        if (fee > 0)
+          nativeToken.transferFrom(_avatar, beneficiary, fee);
 
-        require(checkParameterHashMatch(_avatar, _token, _fee, _beneficiary));
         Organization memory org;
         org.isRegistered = true;
-        org.token = _token;
-        org.fee = _fee;
-        org.beneficiary = _beneficiary;
         organizations[_avatar] = org;
     }
 
     // Adding or promoting an organization on the registry.
     function addOrPromoteOrg(Avatar _avatar, address _record, uint _amount) {
         Organization org = organizations[_avatar];
+        Parameters params = parameters[getParametersFromController(_avatar)];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
 
         // Pay promotion, if the org was not listed the minimum is the fee:
-        if ((org.registry[_record] == 0) && (_amount < org.fee) ) revert();
+        if ((org.registry[_record] == 0) && (_amount < params.fee) ) revert();
 
-        org.token.transferFrom(msg.sender, org.beneficiary, _amount);
+        params.token.transferFrom(msg.sender, params.beneficiary, _amount);
         if (org.registry[_record] == 0)
             OrgAdded(_avatar, _record);
         org.registry[_record] += _amount;

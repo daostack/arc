@@ -1,5 +1,5 @@
 // Imports:
-var UniversalSimpleVote = artifacts.require('./UniversalSimpleVote.sol');
+var SimpleVote = artifacts.require('./SimpleVote.sol');
 var GenesisScheme = artifacts.require('./schemes/GenesisScheme.sol');
 var SchemeRegistrar = artifacts.require('./schemes/SchemeRegistrar.sol');
 var GlobalConstraintRegistrar = artifacts.require('./schemes/GlobalConstraintRegistrar.sol');
@@ -64,9 +64,9 @@ module.exports = async function(deployer) {
         tokenAddress = await ControllerInst.nativeToken();
         reputationAddress = await ControllerInst.nativeReputation();
         MintableTokenInst = await MintableToken.at(tokenAddress);
-        await deployer.deploy(UniversalSimpleVote);
-        // Deploy UniversalSimpleVote:
-        simpleVoteInst = await UniversalSimpleVote.deployed();
+        await deployer.deploy(SimpleVote);
+        // Deploy SimpleVote:
+        simpleVoteInst = await SimpleVote.deployed();
         // Deploy SchemeRegistrar:
         await deployer.deploy(SchemeRegistrar, tokenAddress, UniversalRegisterFee, avatarAddress);
         schemeRegistrarInst = await SchemeRegistrar.deployed();
@@ -78,7 +78,7 @@ module.exports = async function(deployer) {
         globalConstraintRegistrarInst = await GlobalConstraintRegistrar.deployed();
 
         // Voting parameters and schemes params:
-        voteParametersHash = await simpleVoteInst.hashParameters(reputationAddress, votePrec);
+        voteParametersHash = await simpleVoteInst.getParametersHash(reputationAddress, votePrec);
 
         await schemeRegistrarInst.setParameters(voteParametersHash, voteParametersHash, simpleVoteInst.address);
         schemeRegisterParams = await schemeRegistrarInst.getParametersHash(voteParametersHash, voteParametersHash, simpleVoteInst.address);

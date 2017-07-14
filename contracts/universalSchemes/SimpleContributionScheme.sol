@@ -12,25 +12,20 @@ import "./UniversalScheme.sol";
 
 contract SimpleContributionScheme is UniversalScheme {
     // A struct holding the data for a contribution proposal
-    struct ContributionData {
-      bytes32         contributionDescriptionHash; // Hash of contributtion document.
-      uint            nativeTokenReward; // Reward asked in the native token of the organization.
-      uint            reputationReward; // Organization reputation reward requested.
-      uint            ethReward;
-      StandardToken   externalToken;
-      uint            externalTokenReward;
-      address         beneficiary;
+    struct ContributionProposal {
+      bytes32 contributionDescriptionHash; // Hash of contributtion document.
+      uint nativeTokenReward; // Reward asked in the native token of the organization.
+      uint reputationReward; // Organization reputation reward requested.
+      uint ethReward;
+      StandardToken externalToken;
+      uint externalTokenReward;
+      address beneficiary;
     }
 
     // Struct holding the data for each organization
     struct Organization {
       bool isRegistered;
-      // A contibution fee can be in the organization token or the scheme token or a combination
-      uint orgNativeTokenFee;
-      uint schemeNativeTokenFee;
-      bytes32 voteApproveParams;
-      BoolVoteInterface boolVote;
-      mapping(bytes32=>ContributionData) contributions;
+      mapping(bytes32=>ContributionProposal) proposals;
     }
 
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
@@ -38,6 +33,7 @@ contract SimpleContributionScheme is UniversalScheme {
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
+        // A contibution fee can be in the organization token or the scheme token or a combination
         uint orgNativeTokenFee;
         bytes32 voteApproveParams;
         uint schemeNativeTokenFee;
@@ -89,9 +85,9 @@ contract SimpleContributionScheme is UniversalScheme {
 
     function registerOrganization(Avatar _avatar) {
           // Pay fees for using scheme
-          if (fee > 0) {
+          if (fee > 0)
             nativeToken.transferFrom(_avatar, beneficiary, fee);
-          }
+
           // TODO: should we check if the current registrar is registered already on the controller?
           /*require(checkParameterHashMatch(_avatar, _voteRegisterParams, _voteRemoveParams, _boolVote));*/
 
@@ -99,6 +95,7 @@ contract SimpleContributionScheme is UniversalScheme {
           Organization memory org;
           org.isRegistered = true;
           organizations[_avatar] = org;
+          orgRegistered(_avatar);
     }
 
     // Sumitting a proposal for a reward against a contribution:
@@ -122,55 +119,52 @@ contract SimpleContributionScheme is UniversalScheme {
         nativeToken.transferFrom(msg.sender, _avatar, controllerParams.schemeNativeTokenFee);
 
         BoolVoteInterface boolVote = controllerParams.boolVote;
-        bytes32 contributionId = boolVote.propose(controllerParams.voteApproveParams);
+        bytes32 contributionId = boolVote.propose(controllerParams.voteApproveParams, _avatar, ExecutableInterface(this));
 
-        ContributionData memory data;
-        data.contributionDescriptionHash = sha3(_contributionDesciption);
-        data.nativeTokenReward = _nativeTokenReward;
-        data.reputationReward = _reputationReward;
-        data.ethReward = _ethReward;
-        data.externalToken = _externalToken;
-        data.externalTokenReward = _externalTokenReward;
+        ContributionProposal memory proposal;
+        proposal.contributionDescriptionHash = sha3(_contributionDesciption);
+        proposal.nativeTokenReward = _nativeTokenReward;
+        proposal.reputationReward = _reputationReward;
+        proposal.ethReward = _ethReward;
+        proposal.externalToken = _externalToken;
+        proposal.externalTokenReward = _externalTokenReward;
         if (_beneficiary == address(0)){
-            data.beneficiary = msg.sender;
+            proposal.beneficiary = msg.sender;
         } else {
-            data.beneficiary = _beneficiary;
+            proposal.beneficiary = _beneficiary;
         }
-        organizations[_avatar].contributions[contributionId] = data;
+        organizations[_avatar].proposals[contributionId] = proposal;
 
         return contributionId;
     }
 
-    // Voting on a contribution and also handle the execuation when vote is over:
-    function voteContribution(
-        Avatar _avatar, bytes32 _contributionId, bool _yes ) returns(bool) {
-        bytes32 paramsHash = getParametersFromController(_avatar);
-        Parameters controllerParams = parameters[paramsHash];
-        BoolVoteInterface boolVote = controllerParams.boolVote;
-
-        if (!boolVote.vote(_contributionId, _yes, msg.sender)) {
-          return false;
-        }
-
-        if (boolVote.voteResults(_contributionId) ) {
-            ContributionData memory data = organizations[_avatar].contributions[_contributionId];
-            if ( ! boolVote.cancelProposal(_contributionId) ) revert();
-            Controller controller = Controller(_avatar.owner());
-            if (!controller.mintReputation(int(data.reputationReward), data.beneficiary)) {
-                revert();
-            }
-            if (!controller.mintTokens(data.nativeTokenReward, data.beneficiary)) {
-                revert();
-            }
-            if (!controller.sendEther(data.ethReward, data.beneficiary)) {
-                revert();
-            }
-            if (data.externalToken != address(0)) {
-              if (!controller.externalTokenTransfer(data.externalToken, data.beneficiary, data.externalTokenReward)) {
-                  revert();
-              }
-            }
-        }
+    /**
+     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+     * @param _id the ID of the voting in the voting machine
+     * @param _avatar address of the controller
+     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
+     */
+    function execute(bytes32 _id, address _avatar, int _param) returns(bool) {
+      // Check if vote was successful:
+      if (_param != 1 ) {
+        delete organizations[_avatar].proposals[_id];
         return true;
+      }
+      // Check the caller is indeed the voting machine:
+      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
+      // Define controller and get the parmas:
+      Controller controller = Controller(Avatar(_avatar).owner());
+      ContributionProposal proposal = organizations[_avatar].proposals[_id];
+
+      // Giving away the funds:
+      if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) revert();
+      if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) revert();
+      if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) revert();
+      if (proposal.externalToken != address(0)) {
+        if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward))
+            revert();
+      }
+      delete organizations[_avatar].proposals[_id];
+      return true;
     }
 }
