@@ -49,10 +49,8 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         BoolVoteInterface _boolVote
     ) returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_voteRegisterParams, _boolVote);
-        if (parameters[paramsHash].boolVote != address(0))  {
-            parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
-            parameters[paramsHash].boolVote = _boolVote;
-        }
+        parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
+        parameters[paramsHash].boolVote = _boolVote;
         return paramsHash;
     }
 

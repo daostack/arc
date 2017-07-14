@@ -16,6 +16,7 @@ contract('SimpleContribution', function(accounts) {
       const avatar = org.avatar;
       const controller = org.controller;
     	const schemeRegistrar = org.schemeregistrar;
+      let tx;
 
     	// check if indeed the registrar is registered as a scheme on  the controller
     	const isSchemeRegistered = await controller.isSchemeRegistered(schemeRegistrar.address);
@@ -40,10 +41,12 @@ contract('SimpleContribution', function(accounts) {
     		50, // percentage that counts as a majority
     	)
       // we also register the parameters with the voting machine
-    	await votingMachine.setParameters(
+    	tx = await votingMachine.setParameters(
     		reputationAddress,
     		50, // percentage that counts as a majority
     	)
+
+
 
       // create a contribution Scheme
     	const contributionScheme = await SimpleContributionScheme.new(
@@ -70,7 +73,7 @@ contract('SimpleContribution', function(accounts) {
       const isOrganizationRegistered = await schemeRegistrar.isRegistered(avatar.address);
       assert.equal(isOrganizationRegistered, true);
 
-    	let tx = await schemeRegistrar.proposeScheme(
+    	tx = await schemeRegistrar.proposeScheme(
     		avatar.address,
     		contributionScheme.address,
     		contributionSchemeParams,
@@ -79,7 +82,6 @@ contract('SimpleContribution', function(accounts) {
         simpleContributionFee
     		);
 
-      console.log(tx.logs);
     	return
       const proposalId = tx.logs[0].proposalId
       await schemeRegistrar.voteScheme(avatar.address, proposalId, true);

@@ -10,6 +10,8 @@ contract('Organization', function(accounts) {
 
     it("New Organization constructor", async function(){
       const organization = await Organization.new({});
+      // an organization has an avatar
+      
     });
 
 });

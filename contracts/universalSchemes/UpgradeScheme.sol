@@ -50,10 +50,8 @@ contract UpgradeScheme is UniversalScheme {
         BoolVoteInterface _boolVote
     ) returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_voteParams, _boolVote);
-        if (parameters[paramsHash].boolVote != address(0))  {
-            parameters[paramsHash].voteParams = _voteParams;
-            parameters[paramsHash].boolVote = _boolVote;
-        }
+        parameters[paramsHash].voteParams = _voteParams;
+        parameters[paramsHash].boolVote = _boolVote;
         return paramsHash;
     }
 

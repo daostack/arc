@@ -63,12 +63,10 @@ contract SimpleContributionScheme is UniversalScheme {
         BoolVoteInterface _boolVote
     ) returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_orgNativeTokenFee, _schemeNativeTokenFee, _voteApproveParams, _boolVote);
-        if (parameters[paramsHash].boolVote != address(0))  {
-            parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
-            parameters[paramsHash].schemeNativeTokenFee = _schemeNativeTokenFee;
-            parameters[paramsHash].voteApproveParams = _voteApproveParams;
-            parameters[paramsHash].boolVote = _boolVote;
-        }
+        parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
+        parameters[paramsHash].schemeNativeTokenFee = _schemeNativeTokenFee;
+        parameters[paramsHash].voteApproveParams = _voteApproveParams;
+        parameters[paramsHash].boolVote = _boolVote;
         return paramsHash;
     }
 
