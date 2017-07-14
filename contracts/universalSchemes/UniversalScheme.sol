@@ -27,6 +27,9 @@ contract UniversalScheme is Ownable {
       hashedParameters = _hashedParameters;
   }
 
+  /**
+   *  @dev get the parameters for the current scheme from the controller
+   */
   function getParametersFromController(Avatar _avatar) internal constant returns(bytes32) {
      Controller controller = Controller(_avatar.owner());
      return controller.getSchemeParameters(this);

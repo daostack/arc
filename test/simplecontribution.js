@@ -1,3 +1,4 @@
+import { Organization } from '../lib/organization.js';
 const helpers = require('./helpers')
 
 // var UniversalSimpleVote = artifacts.require("./UniversalSimpleVote.sol");
@@ -9,21 +10,31 @@ contract('SimpleContribution', function(accounts) {
 
     it("Propose and accept a contribution (in progress)", async function(){
     	const founders = [accounts[0], accounts[1]];
-      const repForFounders = [99, 1];
+      const repForFounders = [30, 70];
       const org = await helpers.forgeOrganization({founders, repForFounders});
+      // const org = await Organization.new({founders, repForFounders});
       const avatar = org.avatar;
       const controller = org.controller;
     	const schemeRegistrar = org.schemeregistrar;
 
-    	// check if indeed the registrar is registered
+    	// check if indeed the registrar is registered as a scheme on  the controller
     	const isSchemeRegistered = await controller.isSchemeRegistered(schemeRegistrar.address);
     	assert.equal(isSchemeRegistered, true);
+
+      // TODO: check if the controller is registered (has paid the fee)
+      // const isControllerRegistered = await schemeRegistrar.isRegistered(org.avatar.address);
+    	// assert.equal(isControllerRegistered, true);
+
+      // TODO: check if the configuration parameters of the controller are known on the registrar
+
 
     	// we creaet a SimpleContributionScheme
     	const reputationAddress = await controller.nativeReputation();
     	const tokenAddress = await controller.nativeToken();
 
-    	const votingMachine = await UniversalSimpleVote.new();
+    	// const votingMachine = await UniversalSimpleVote.new();
+      const votingMachine = org.votingMachine;
+
     	const votingParams = await votingMachine.hashParameters(
     		reputationAddress,
     		50, // percentage that counts as a majority
@@ -33,7 +44,8 @@ contract('SimpleContribution', function(accounts) {
     		reputationAddress,
     		50, // percentage that counts as a majority
     	)
-        // create a contribution Scheme
+
+      // create a contribution Scheme
     	const contributionScheme = await SimpleContributionScheme.new(
     		tokenAddress,
     		1,
@@ -50,7 +62,6 @@ contract('SimpleContribution', function(accounts) {
       const simpleContributionFee = await contributionScheme.fee();
       const simpleContributionFeeToken = await contributionScheme.nativeToken();
 
-
       // check if parametes are known in the voging machine
       const paramsRegisteredOnVotingMachine = await votingMachine.checkExistingParameters(votingParams);
       assert.equal(paramsRegisteredOnVotingMachine, true)
@@ -59,8 +70,6 @@ contract('SimpleContribution', function(accounts) {
       const isOrganizationRegistered = await schemeRegistrar.isRegistered(avatar.address);
       assert.equal(isOrganizationRegistered, true);
 
-      return
-      // TODO: finish writing this test
     	let tx = await schemeRegistrar.proposeScheme(
     		avatar.address,
     		contributionScheme.address,
@@ -70,10 +79,10 @@ contract('SimpleContribution', function(accounts) {
         simpleContributionFee
     		);
 
+      console.log(tx.logs);
     	return
       const proposalId = tx.logs[0].proposalId
       await schemeRegistrar.voteScheme(avatar.address, proposalId, true);
-
 
 
 //         await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[0]});

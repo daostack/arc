@@ -8,6 +8,6 @@ contract Debug {
     event PrintString(string msg);
     event PrintUint(uint msg);
     event PrintBytes(bytes msg);
+    event PrintBytes32(bytes32 msg);
     event PrintBool(bool msg);
 }
- 

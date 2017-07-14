@@ -11,6 +11,7 @@ const MintableToken = artifacts.require("./MintableToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 
 import { daostack } from '../lib/daostack.js';
+import { Organization } from '../lib/organization.js';
 
 
 export function getProposalAddress(tx) {
@@ -42,7 +43,8 @@ function createUpgradeScheme() {
 
 export async function forgeOrganization(opts = {}) {
     await etherForEveryone();
-    const org = await daostack.forgeOrganization(opts);
+    // const org = await daostack.forgeOrganization(opts);
+    const org = await Organization.new(opts);
     return org;
 }
 

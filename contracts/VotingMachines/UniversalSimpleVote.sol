@@ -3,6 +3,7 @@ pragma solidity ^0.4.11;
 import "../controller/Controller.sol";
 import "../controller/Reputation.sol";
 
+
 contract UniversalSimpleVote {
     using SafeMath for uint;
 
@@ -21,9 +22,9 @@ contract UniversalSimpleVote {
         bool ended; // voting had ended flag
     }
 
-    event NewProposal( bytes32 _proposalId, address owner, Reputation _reputationSystem, uint absPrecReq);
-    event VoteProposal( address _voter, bytes32 _proposalId, bool _yes, uint _reputation );
-    event EndProposal( bytes32 _proposalId );
+    event NewProposal(bytes32 _proposalId, address owner, Reputation _reputationSystem, uint absPrecReq);
+    event VoteProposal(address _voter, bytes32 _proposalId, bool _yes, uint _reputation);
+    event EndProposal(bytes32 _proposalId);
     event CancelProposal(bytes32 _proposalId);
 
     mapping(bytes32=>ProposalParameters) proposalsParameters;
@@ -82,13 +83,19 @@ contract UniversalSimpleVote {
         return true;
     }
 
+    /**
+     * @dev vote for the proposal
+     *
+     */
     function vote(bytes32 id, bool yes, address voter) returns(bool) {
         Proposal proposal = proposals[id];
         require(proposal.opened);
-        require(! proposal.ended);
+        require(!proposal.ended);
         require(msg.sender == proposal.owner);
 
-        if( proposal.voted[voter] ) return false;
+        if( proposal.voted[voter] ) {
+            return false;
+        }
 
         uint reputation = proposalsParameters[proposal.parameters].reputationSystem.reputationOf(voter);
         uint totalReputation = proposalsParameters[proposal.parameters].reputationSystem.totalSupply();
@@ -102,7 +109,7 @@ contract UniversalSimpleVote {
         VoteProposal(voter, id, yes, reputation);
 
         // this is the actual voting rule:
-        if( (proposal.yes > totalReputation*absPrecReq/100) || (proposal.no > totalReputation*absPrecReq/100 ) ) {
+        if ((proposal.yes > totalReputation*absPrecReq/100) || (proposal.no > totalReputation*absPrecReq/100)) {
             proposal.ended = true;
             EndProposal(id);
         }

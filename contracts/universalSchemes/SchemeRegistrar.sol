@@ -59,11 +59,9 @@ contract SchemeRegistrar is UniversalScheme {
         BoolVoteInterface _boolVote
     ) returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_voteRegisterParams, _voteRemoveParams, _boolVote);
-        if (parameters[paramsHash].boolVote != address(0))  {
-            parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
-            parameters[paramsHash].voteRemoveParams = _voteRemoveParams;
-            parameters[paramsHash].boolVote = _boolVote;
-        }
+        parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
+        parameters[paramsHash].voteRemoveParams = _voteRemoveParams;
+        parameters[paramsHash].boolVote = _boolVote;
         return paramsHash;
     }
 
@@ -100,9 +98,9 @@ contract SchemeRegistrar is UniversalScheme {
     }
 
     /**
-     * @dev propose a vote to register a scheme in the current register
-     * @param _avatar the address of the organization
-     * @param _scheme the address of the scheme to be approved
+     * @dev create a proposal to register a scheme
+     * @param _avatar the address of the organization the scheme will be registered for
+     * @param _scheme the address of the scheme to be registered
      * @param _parametersHash a hash of the configuration of the _scheme
      * @param _isRegistering a boolean represent if the scheme is a registering scheme
      *      that can register other schemes
@@ -112,7 +110,6 @@ contract SchemeRegistrar is UniversalScheme {
      * @dev NB: not only proposes the vote, but also votes for it
      */
     // TODO: check if we cannot derive isRegistering from the _scheme itself
-
     function proposeScheme(
         Avatar _avatar,
         address _scheme,
@@ -131,12 +128,16 @@ contract SchemeRegistrar is UniversalScheme {
 
         // propose
         Parameters controllerParams = parameters[getParametersFromController(_avatar)];
+
         BoolVoteInterface boolVote = controllerParams.boolVote;
+
         bytes32 proposalId = boolVote.propose(controllerParams.voteRegisterParams);
+
         if (org.proposals[proposalId].proposalType != 0) {
           revert();
         }
 
+        org.proposals[proposalId].boolVote = boolVote;
         org.proposals[proposalId].proposalType = 1;
         org.proposals[proposalId].scheme = _scheme;
         org.proposals[proposalId].parametersHash = _parametersHash;
@@ -184,8 +185,6 @@ contract SchemeRegistrar is UniversalScheme {
      * @param _yes a boolean representing a yes or no vote
      */
     // NB: the decisive vote will pay for gas costs for (un)registering the scheme in question
-    // TODO: security: we are not checking here if the registeration on the controller of the present register has changed
-    // since we propossed the vote
     function voteScheme(Avatar _avatar, bytes32 _proposalId, bool _yes) returns(bool) {
 
         // get the contents of the proposal
@@ -194,7 +193,6 @@ contract SchemeRegistrar is UniversalScheme {
         if (!boolVote.vote(_proposalId, _yes, msg.sender)) {
             return false;
         }
-
         if (boolVote.voteResults(_proposalId)) { // true if the vote has passed
             // cancel the proposal
             if (!boolVote.cancelProposal(_proposalId)) {
@@ -215,6 +213,7 @@ contract SchemeRegistrar is UniversalScheme {
             }
             organizations[_avatar].proposals[_proposalId].proposalType = 0;
         }
+        return true;
     }
 
     /**
