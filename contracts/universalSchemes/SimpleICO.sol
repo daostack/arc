@@ -176,7 +176,7 @@ contract SimpleICO is UniversalScheme {
         // Send ether to the defined address, mint, and send change to beneficiary:
         params.etherAddress.transfer(incomingEther);
         Controller controller = Controller(_avatar.owner());
-        if(! controller.mintTokens(tokens, msg.sender)) revert();
+        if(! controller.mintTokens(tokens, _beneficiary)) revert();
         if (change != 0)
             _beneficiary.transfer(change);
 
