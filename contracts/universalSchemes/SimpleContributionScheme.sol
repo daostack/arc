@@ -159,13 +159,13 @@ contract SimpleContributionScheme is UniversalScheme {
      */
     function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
       // Check the caller is indeed the voting machine:
+      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
       // Check if vote was successful:
       if (_param != 1) {
         delete proposals[_proposalId];
         return true;
       }
 
-      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
       // Define controller and get the parmas:
       ContributionProposal proposal = proposals[_proposalId];
 

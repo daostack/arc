@@ -182,17 +182,17 @@ contract SchemeRegistrar is UniversalScheme {
      */
     // TODO: this call can be simplified if we save the _avatar together with the proposal
     function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
-      Controller controller = Controller(Avatar(_avatar).owner());
+      // Check the caller is indeed the voting machine:
+      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
 
       // XXX: next lines eems to be a bug: in this way anyone can delete a proposal from the list
       if (_param != 1) {
         delete proposals[_proposalId];
         return true;
       }
-      // Check the caller is indeed the voting machine:
-      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
       // Define controller and get the parmas:
       SchemeProposal proposal = proposals[_proposalId];
+      Controller controller = Controller(Avatar(_avatar).owner());
 
       // Add a scheme:
       if (proposal.proposalType == 1)  {

@@ -116,13 +116,14 @@ contract GlobalConstraintRegistrar is UniversalScheme {
      * @param _param a parameter of the voting result, 0 is no and 1 is yes.
      */
     function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+      // Check the caller is indeed the voting machine:
+      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
+
       // Check if vote was successful:
       if (_param != 1 ) {
         delete organizations[_avatar].proposals[_proposalId];
         return true;
       }
-      // Check the caller is indeed the voting machine:
-      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
       // Define controller and get the parmas:
       Controller controller = Controller(Avatar(_avatar).owner());
       gcProposal proposal = organizations[_avatar].proposals[_proposalId];
