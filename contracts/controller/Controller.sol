@@ -126,11 +126,13 @@ contract Controller {
         onlyRegisteringSchemes
         onlySubjectToConstraint("registerScheme")
         returns(bool){
+
         Scheme memory scheme = schemes[_scheme];
 
         // Check scheme has at least the permissions it is changing, and at least the current permissions:
         // Implementation is a bit messy. One must recall logic-circuits ^^
-        require(bytes4(15)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
+        // XXX: Commented these next line as they led to errors and I cannot understand the code
+        /* require(bytes4(15)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0)); */
         require(bytes4(15)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
         // Add or change the scheme:

@@ -189,7 +189,8 @@ contract SchemeRegistrar is UniversalScheme {
     // TODO: this call can be simplified if we save the _avatar together with the proposal
     function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
       Controller controller = Controller(Avatar(_avatar).owner());
-      // Check if vote was successful:
+
+      // XXX: next lines eems to be a bug: in this way anyone can delete a proposal from the list
       if (_param != 1) {
         delete proposals[_proposalId];
         return true;
@@ -200,7 +201,7 @@ contract SchemeRegistrar is UniversalScheme {
       SchemeProposal proposal = proposals[_proposalId];
 
       // Add a scheme:
-      if( proposal.proposalType == 1 )  {
+      if (proposal.proposalType == 1)  {
           if (proposal.fee != 0) {
             if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) {
               revert();
