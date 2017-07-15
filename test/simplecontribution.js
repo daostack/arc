@@ -25,7 +25,6 @@ contract('SimpleContribution', function(accounts) {
     	// check if indeed the registrar is registered as a scheme on  the controller
     	const isSchemeRegistered = await controller.isSchemeRegistered(schemeRegistrar.address);
     	assert.equal(isSchemeRegistered, true);
-      console.log('x');
 
       // TODO: check if the controller is registered (has paid the fee)
       // const isControllerRegistered = await schemeRegistrar.isRegistered(org.avatar.address);
@@ -85,7 +84,6 @@ contract('SimpleContribution', function(accounts) {
 
       // check if we our organization is registered
       const orgFromSchemeRegistrar = await schemeRegistrar.organizations(avatar.address);
-      console.log(orgFromSchemeRegistrar);
       assert.equal(orgFromSchemeRegistrar, true);
 
     	tx = await schemeRegistrar.proposeScheme(
@@ -177,7 +175,6 @@ contract('SimpleContribution', function(accounts) {
         accounts[2], // address _beneficiary
       );
 
-      return 
       // console.log(tx.logs);
       const contributionId = tx.logs[0].args.proposalId;
       // let us vote for it (is there a way to get the votingmachine from the contributionScheme?)
@@ -192,13 +189,13 @@ contract('SimpleContribution', function(accounts) {
       // 3. bytes32 paramsHash;
       // 4. uint yes; // total 'yes' votes
       // 5. uint no; // total 'no' votes
-      // 6.mapping(address=>int) voted; // save the amount of reputation voted by an agent (positive sign is yes, negatice is no)
-      // 7. bool opened; // voting opened flag
-      // 8. bool ended; // voting had ended flag
-      // the prposal must be opened, but not ended
-      assert.ok(proposal[7]); // proposal.opened is true
-      assert.notOk(proposal[8]); // proposal.Ended is false
-      tx = await votingMachine.vote(contributionId, true, founders[0], {from: founders[1]});
+      // MAPPING is skipped in the reutnr value...
+      // X.mapping(address=>int) voted; // save the amount of reputation voted by an agent (positive sign is yes, negatice is no)
+      // 6. bool opened; // voting opened flag
+      // 7. bool ended; // voting had ended flag
+      assert.isOk(proposal[6]); // proposal.opened is true
+      assert.notOk(proposal[7]); // proposal.Ended is false
+      tx = await votingMachine.vote(contributionId, true, founders[0], {from: founders[0]});
 
       // and this is the majority vote (which will also call execute)
       // tx = await votingMachine.vote(contributionId, true, founders[1], {from: founders[1]});
