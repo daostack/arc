@@ -5,12 +5,15 @@ const helpers = require('./helpers')
 const SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
 const SimpleVote = artifacts.require('./SimpleVote.sol');
 const MintableToken = artifacts.require('./MintableToken.sol');
+const Avatar = artifacts.require('./Avatar.sol');
+const Controller = artifacts.require('./Controller.sol');
 
 contract('SimpleContribution', function(accounts) {
 
     it("Propose and accept a contribution (in progress)", async function(){
     	const founders = [accounts[0], accounts[1]];
       const repForFounders = [30, 70];
+      const testSettings = await helpers.settingsForTest();
       const org = await helpers.forgeOrganization({founders, repForFounders});
       // const org = await Organization.new({founders, repForFounders});
       const avatar = org.avatar;
@@ -45,8 +48,6 @@ contract('SimpleContribution', function(accounts) {
     		50, // percentage that counts as a majority
     	)
 
-
-
       // create a contribution Scheme
     	const contributionScheme = await SimpleContributionScheme.new(
     		tokenAddress,
@@ -77,14 +78,36 @@ contract('SimpleContribution', function(accounts) {
         simpleContributionFee
     		);
 
+      const proposalId = tx.logs[0].args.proposalId;
+
+      // // see if the schemeRegistrar has the correct persmissions
+      // let tmp;
+      // // print some info about the schemeregistrar
+      // console.log('This is what the controller knows of the schemeRegistrar (params and permissions)')
+      // tmp = await controller.schemes(schemeRegistrar.address);
+      // console.log(tmp);
+      //
+      // console.log('This is what the votingMachine knows of the current proposal (owner, avatar, executable, ...)')
+      // tmp = await votingMachine.proposals(proposalId);
+      // console.log(tmp);
+      //
+      // console.log('this is the avatar')
+      // tmp = await Avatar.at(tmp[1]);
+      // // console.log(tmp);
+      // console.log('This is the adress of the controller (=owner ofhte avatar)');
+      // tmp = await tmp.owner();
+      // console.log(tmp);
+      // console.log('compare the address of the original controller and that of the owner of the avatar of the proposal')
+      // console.log(tmp)
+      // console.log(controller.address)
+      //
+      // console.log('This is what the schemeRegistrar knows of the current proposal')
+      // tmp = await schemeRegistrar.proposals(proposalId);
+      // console.log(tmp);
+      // this will vote-and-execute
+      tx = await votingMachine.vote(proposalId, true, founders[1], {from: founders[1]});
+      console.log(tx.logs);
     	return
-      const proposalId = tx.logs[0].proposalId
-      await votingMachine.vote(proposalId, true, accounts[0]);
-      // await schemeRegistrar.voteScheme(avatar.address, proposalId, true);
-
-
-//         await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[0]});
-//         await this.genesis.voteScheme(contributionScheme.address, true, {from: founders[1]});
 
 
 //         let balance0BeforeSubmission = await this.tokenInstance.balanceOf(founders[0]);

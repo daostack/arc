@@ -12,6 +12,7 @@ const Reputation = artifacts.require("./Reputation.sol");
 
 import { daostack } from '../lib/daostack.js';
 import { Organization } from '../lib/organization.js';
+import { getSettings } from '../lib/settings.js';
 
 
 export function getProposalAddress(tx) {
@@ -44,8 +45,13 @@ function createUpgradeScheme() {
 export async function forgeOrganization(opts = {}) {
     await etherForEveryone();
     // const org = await daostack.forgeOrganization(opts);
-    const org = await Organization.new(opts);
-    return org;
+    const defaults = {
+      orgName: 'something',
+      tokenName: 'token name',
+      tokenSymbol: 'TST',
+    }
+    const options = Object.assign({}, defaults, opts);
+    return daostack.forgeOrganization(opts);
 }
 
 
@@ -60,7 +66,6 @@ export function assertJumpOrOutOfGas(error) {
     assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error:' + error.message);
 }
 
-
 export function assertVMException(error) {
     let condition = (
         error.message.search('VM Exception') > -1
@@ -72,3 +77,8 @@ export function assertVMException(error) {
 export function assertJump(error) {
   assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned');
 }
+
+export function settingsForTest() {
+    // return settings used for testing
+    return getSettings();
+  }
