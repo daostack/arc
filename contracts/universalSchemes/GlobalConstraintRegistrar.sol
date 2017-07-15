@@ -27,14 +27,14 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
 
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) organizations;
+    mapping(address=>Organization) public organizations;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
         bytes32 voteRegisterParams;
         BoolVoteInterface boolVote;
     }
-    mapping(bytes32=>Parameters) parameters;
+    mapping(bytes32=>Parameters) public parameters;
 
 
     function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) {

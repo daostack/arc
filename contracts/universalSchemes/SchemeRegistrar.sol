@@ -94,10 +94,6 @@ contract SchemeRegistrar is UniversalScheme {
         orgRegistered(_avatar);
     }
 
-    function isRegistered(address _avatar) constant returns(bool) {
-      return organizations[_avatar].isRegistered;
-    }
-
     /**
      * @dev create a proposal to register a scheme
      * @param _avatar the address of the organization the scheme will be registered for

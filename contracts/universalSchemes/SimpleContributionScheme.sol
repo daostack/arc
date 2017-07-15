@@ -22,6 +22,8 @@ contract SimpleContributionScheme is UniversalScheme {
       address beneficiary;
     }
 
+    mapping(bytes32=>ContributionProposal) public proposals;
+
     // Struct holding the data for each organization
     struct Organization {
       bool isRegistered;
@@ -29,7 +31,7 @@ contract SimpleContributionScheme is UniversalScheme {
     }
 
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) organizations;
+    mapping(address=>Organization) public organizations;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
@@ -39,9 +41,9 @@ contract SimpleContributionScheme is UniversalScheme {
         uint schemeNativeTokenFee;
         BoolVoteInterface boolVote;
     }
-    mapping(bytes32=>Parameters) parameters;
+    mapping(bytes32=>Parameters) public parameters;
 
-
+    event LogNewProposal(bytes32 proposalId);
     /**
      * @dev the constructor takes a token address, fee and beneficiary
      */
@@ -98,7 +100,17 @@ contract SimpleContributionScheme is UniversalScheme {
           orgRegistered(_avatar);
     }
 
-    // Sumitting a proposal for a reward against a contribution:
+    /**
+     * @dev Submit a proposal for a reward for a contribution:
+     * @param _avatar Avatar of the organization that the contribution was made for
+     * @param _contributionDesciption A description of the contribution
+     * @param _nativeTokenReward The amount of tokens requested
+     * @param _reputationReward The amount of rewards requested
+     * @param _ethReward Amount of ETH requested
+     * @param _externalToken Address of external token, if reward is requested there
+     * @param _externalTokenReward Amount of extenral tokens requested
+     * @param _beneficiary Who gets the rewards
+     */
     function submitContribution(
         Avatar _avatar,
         string _contributionDesciption,
@@ -110,9 +122,8 @@ contract SimpleContributionScheme is UniversalScheme {
         address _beneficiary
     ) returns(bytes32) {
         require(organizations[_avatar].isRegistered);
-
-        /*bytes32 paramsHash = getParametersFromController(_avatar);*/
         Parameters controllerParams = parameters[getParametersFromController(_avatar)];
+
 
         // Pay fees for submitting the contribution:
         _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
@@ -133,30 +144,33 @@ contract SimpleContributionScheme is UniversalScheme {
         } else {
             proposal.beneficiary = _beneficiary;
         }
-        organizations[_avatar].proposals[contributionId] = proposal;
+        proposals[contributionId] = proposal;
+
+        LogNewProposal(contributionId);
 
         return contributionId;
     }
 
     /**
      * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-     * @param _id the ID of the voting in the voting machine
+     * @param _proposalId the ID of the voting in the voting machine
      * @param _avatar address of the controller
      * @param _param a parameter of the voting result, 0 is no and 1 is yes.
      */
-    function execute(bytes32 _id, address _avatar, int _param) returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
       // Check if vote was successful:
-      if (_param != 1 ) {
-        delete organizations[_avatar].proposals[_id];
+      // TODO: this seems a security problem
+      if (_param != 1) {
+        delete proposals[_proposalId];
         return true;
       }
       // Check the caller is indeed the voting machine:
       require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
       // Define controller and get the parmas:
-      Controller controller = Controller(Avatar(_avatar).owner());
-      ContributionProposal proposal = organizations[_avatar].proposals[_id];
+      ContributionProposal proposal = proposals[_proposalId];
 
-      // Giving away the funds:
+      // pay the funds:
+      Controller controller = Controller(Avatar(_avatar).owner());
       if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) revert();
       if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) revert();
       if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) revert();
@@ -164,7 +178,7 @@ contract SimpleContributionScheme is UniversalScheme {
         if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward))
             revert();
       }
-      delete organizations[_avatar].proposals[_id];
+      delete proposals[_proposalId];
       return true;
     }
 }

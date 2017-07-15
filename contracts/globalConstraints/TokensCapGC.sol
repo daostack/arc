@@ -15,7 +15,7 @@ contract TokenCap {
   }
 
   // Mapping from the hash of the parameters to the parameters themselves:
-  mapping (bytes32=>Parameters) params;
+  mapping (bytes32=>Parameters) public params;
 
   function TokenCap() {
 

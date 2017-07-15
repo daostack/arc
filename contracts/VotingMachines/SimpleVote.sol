@@ -106,7 +106,9 @@ contract SimpleVote {
           voter = msg.sender;
 
         // if this voter has already voted for the proposal, just ignore
-        if (proposal.voted[voter] != 0) return false;
+        if (proposal.voted[voter] != 0) {
+            return false;
+        }
 
         uint reputation = parameters[proposal.paramsHash].reputationSystem.reputationOf(voter);
 
