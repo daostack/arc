@@ -189,8 +189,6 @@ contract SchemeRegistrar is UniversalScheme {
     // TODO: this call can be simplified if we save the _avatar together with the proposal
     function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
       Controller controller = Controller(Avatar(_avatar).owner());
-      /*controller.donothing();*/
-      return true; // XXX remove me
       // Check if vote was successful:
       if (_param != 1) {
         delete proposals[_proposalId];
