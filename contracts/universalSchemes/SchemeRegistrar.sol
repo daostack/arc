@@ -3,7 +3,6 @@ pragma solidity ^0.4.11;
 import "../VotingMachines/BoolVoteInterface.sol";
 import "./UniversalScheme.sol";
 
-
 /**
  * @title A registrar for Schemes for organizations
  * @dev The SchemeRegistrar is used for registering and unregistering schemes at organizations
@@ -22,15 +21,14 @@ contract SchemeRegistrar is UniversalScheme {
         BoolVoteInterface boolVote; // the voting machine used for this proposal
     }
 
+    mapping(bytes32=>SchemeProposal) public proposals;
+
     // For each organization, the registrar records the proposals made for this organization
-    // TODO: perhaps more straightforward to have a proposals mapping directly on the curent contract,
-    // and have a reference to the controller as part of the SchemProposal struct
     struct Organization {
         bool isRegistered;
-        mapping(bytes32=>SchemeProposal) proposals;
     }
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) organizations;
+    mapping(address=>Organization) public organizations;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
@@ -38,7 +36,9 @@ contract SchemeRegistrar is UniversalScheme {
         bytes32 voteRemoveParams;
         BoolVoteInterface boolVote;
     }
-    mapping(bytes32=>Parameters) parameters;
+    mapping(bytes32=>Parameters) public parameters;
+
+    event LogNewProposal(bytes32 proposalId);
 
     /**
      * @dev The constructor
@@ -131,20 +131,23 @@ contract SchemeRegistrar is UniversalScheme {
         Parameters controllerParams = parameters[getParametersFromController(_avatar)];
 
         BoolVoteInterface boolVote = controllerParams.boolVote;
-        bytes32 id = boolVote.propose(controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this));
-        if (org.proposals[id].proposalType != 0) {
+        bytes32 proposalId = boolVote.propose(controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this));
+        if (proposals[proposalId].proposalType != 0) {
           revert();
         }
-        org.proposals[id].boolVote = boolVote;
-        org.proposals[id].proposalType = 1;
-        org.proposals[id].scheme = _scheme;
-        org.proposals[id].parametersHash = _parametersHash;
-        org.proposals[id].isRegistering = _isRegistering;
-        org.proposals[id].tokenFee = _tokenFee;
-        org.proposals[id].fee = _fee;
+        proposals[proposalId].boolVote = boolVote;
+        proposals[proposalId].proposalType = 1;
+        proposals[proposalId].scheme = _scheme;
+        proposals[proposalId].parametersHash = _parametersHash;
+        proposals[proposalId].isRegistering = _isRegistering;
+        proposals[proposalId].tokenFee = _tokenFee;
+        proposals[proposalId].fee = _fee;
+
         // vote for this proposal
-        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
-        return id;
+        boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+
+        LogNewProposal(proposalId);
+        return proposalId;
     }
 
     /**
@@ -164,50 +167,65 @@ contract SchemeRegistrar is UniversalScheme {
         Parameters params = parameters[paramsHash];
 
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 id = boolVote.propose(params.voteRemoveParams, _avatar, ExecutableInterface(this));
-        if (org.proposals[id].proposalType != 0) {
+        bytes32 proposalId = boolVote.propose(params.voteRemoveParams, _avatar, ExecutableInterface(this));
+        if (proposals[proposalId].proposalType != 0) {
           revert();
         }
-        org.proposals[id].proposalType = 2;
-        org.proposals[id].scheme = _scheme;
-        org.proposals[id].boolVote = boolVote;
+        proposals[proposalId].proposalType = 2;
+        proposals[proposalId].scheme = _scheme;
+        proposals[proposalId].boolVote = boolVote;
         // vote for this proposal
-        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
-        return id;
+        boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+        return proposalId;
     }
 
     /**
-     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-     * @param _id the ID of the voting in the voting machine
+     * @dev execute a  proposal
+     * This method can only be called by the voting machine in which the vote is held.
+     * @param _proposalId the ID of the proposal in the voting machine
      * @param _avatar address of the controller
+     * @param _param identifies the action to be taken
      */
-    function execute(bytes32 _id, address _avatar, int _param) returns(bool) {
+    // TODO: this call can be simplified if we save the _avatar together with the proposal
+    function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+      Controller controller = Controller(Avatar(_avatar).owner());
+      /*controller.donothing();*/
+      return true; // XXX remove me
       // Check if vote was successful:
-      if (_param != 1 ) {
-        delete organizations[_avatar].proposals[_id];
+      if (_param != 1) {
+        delete proposals[_proposalId];
         return true;
       }
       // Check the caller is indeed the voting machine:
       require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
       // Define controller and get the parmas:
-      Controller controller = Controller(Avatar(_avatar).owner());
-      SchemeProposal proposal = organizations[_avatar].proposals[_id];
+      SchemeProposal proposal = proposals[_proposalId];
 
       // Add a scheme:
       if( proposal.proposalType == 1 )  {
-          if (proposal.fee != 0 )
-            if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) revert();
-          if (proposal.isRegistering == false)
-            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) revert();
-          else
-            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) revert();
+          if (proposal.fee != 0) {
+            if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) {
+              revert();
+            }
+          }
+          if (proposal.isRegistering == false) {
+            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
+              revert();
+            }
+          } else {
+            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
+              revert();
+            }
+          }
       }
-
       // Remove a scheme:
       if( proposal.proposalType == 2 ) {
-          if(!controller.unregisterScheme(proposal.scheme)) revert();
+          if(!controller.unregisterScheme(proposal.scheme)) {
+            revert();
+          }
       }
-      delete organizations[_avatar].proposals[_id];
+
+      delete proposals[_proposalId];
       return true;
     }
 }

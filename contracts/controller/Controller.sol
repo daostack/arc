@@ -5,6 +5,8 @@ import "./Reputation.sol";
 import "./MintableToken.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
 
+
+
 /**
  * @title Controller contract
  * @dev A controller controls its own and other tokens, and is piloted by a reputation
@@ -114,9 +116,16 @@ contract Controller {
         return nativeToken.mint(_amount, _beneficiary);
     }
 
-    // Scheme registration and unregistration:
-    function registerScheme( address _scheme, bytes32 _paramsHash, bytes4 _permissions)
-    onlyRegisteringSchemes onlySubjectToConstraint("registerScheme") returns(bool){
+    /**
+     * @dev register a scheme
+     * @param _scheme the address of the scheme
+     * @param _paramsHash a hashed configuration of the usage of the scheme
+     * @param _permissions the permissions the new scheme will have
+     */
+    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions)
+        onlyRegisteringSchemes
+        onlySubjectToConstraint("registerScheme")
+        returns(bool){
         Scheme memory scheme = schemes[_scheme];
 
         // Check scheme has at least the permissions it is changing, and at least the current permissions:
