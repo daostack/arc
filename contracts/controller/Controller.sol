@@ -210,29 +210,25 @@ contract Controller {
     function sendEther( uint _amountInWei, address _to )
     onlyRegisteredScheme onlySubjectToConstraint("sendEther") returns(bool) {
         SendEther( msg.sender, _amountInWei, _to );
-        avatar.sendEther(_amountInWei, _to);
-        return true;
+        return avatar.sendEther(_amountInWei, _to);
     }
 
     function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
     onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransfer") returns(bool) {
         ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
-        avatar.externalTokenTransfer(_externalToken, _to, _value);
-        return true;
+        return avatar.externalTokenTransfer(_externalToken, _to, _value);
     }
 
     function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value)
     onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransferFrom") returns(bool) {
         ExternalTokenTransferFrom(msg.sender, _externalToken, _from, _to, _value);
-        avatar.externalTokenTransferFrom(_externalToken, _from, _to, _value);
-        return true;
+        return avatar.externalTokenTransferFrom(_externalToken, _from, _to, _value);
     }
 
     function externalTokenApprove(StandardToken _externalToken, address _spender, uint _value)
     onlyRegisteredScheme onlySubjectToConstraint("externalTokenApprove") returns(bool) {
         ExternalTokenApprove( msg.sender, _externalToken, _spender, _value );
-        avatar.externalTokenApprove(_externalToken, _spender, _value );
-        return true;
+        return avatar.externalTokenApprove(_externalToken, _spender, _value );
     }
 
     // Do not allow mistaken calls:

@@ -159,7 +159,7 @@ contract SimpleContributionScheme is UniversalScheme {
      */
     function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
       // Check if vote was successful:
-      // TODO: this seems a security problem
+      // TODO: next lines allow anyone to delete a proposal from the list, which seems a security problem
       if (_param != 1) {
         delete proposals[_proposalId];
         return true;
@@ -171,12 +171,20 @@ contract SimpleContributionScheme is UniversalScheme {
 
       // pay the funds:
       Controller controller = Controller(Avatar(_avatar).owner());
-      if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) revert();
-      if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) revert();
-      if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) revert();
-      if (proposal.externalToken != address(0)) {
-        if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward))
-            revert();
+      if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) {
+          revert();
+      }
+      if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) {
+          revert();
+      }
+      if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) {
+          revert();
+      }
+      
+      if (proposal.externalToken != address(0) && proposal.externalTokenReward > 0) {
+          if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward)) {
+              revert();
+          }
       }
       delete proposals[_proposalId];
       return true;

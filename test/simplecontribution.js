@@ -181,7 +181,6 @@ contract('SimpleContribution', function(accounts) {
       // this is a minority vote for 'yes'
       // check preconditions for the vote
       proposal = await votingMachine.proposals(contributionId);
-      console.log(proposal);
       // a propsoal has the following structure
       // 0. address owner;
       // 1. address avatar;
@@ -197,8 +196,10 @@ contract('SimpleContribution', function(accounts) {
       assert.notOk(proposal[7]); // proposal.Ended is false
       tx = await votingMachine.vote(contributionId, true, founders[0], {from: founders[0]});
 
-      // and this is the majority vote (which will also call execute)
-      // tx = await votingMachine.vote(contributionId, true, founders[1], {from: founders[1]});
+      // and this is the majority vote (which will also call execute on the executable
+      // first we check if our executable (proposal[2]) is indeed the contributionScheme
+      assert.equal(proposal[2], contributionScheme.address);
+      tx = await votingMachine.vote(contributionId, true, founders[1], {from: founders[1]});
 
       console.log('DONE!')
     	return

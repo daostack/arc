@@ -38,36 +38,41 @@ contract Avatar is Ownable {
       return _action.delegatecall(bytes4(sha3("action(uint256)")), _param);
   }
 
-  function sendEther( uint _amountInWei, address _to ) onlyOwner {
-      SendEther( _amountInWei, _to );
-      _to.transfer(_amountInWei );
+  function sendEther( uint _amountInWei, address _to ) onlyOwner returns(bool) {
+      _to.transfer(_amountInWei);
+      SendEther(_amountInWei, _to);
+      return true;
   }
 
   function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
-  onlyOwner {
+      onlyOwner returns(bool) {
       ExternalTokenTransfer(_externalToken, _to, _value);
-      _externalToken.transfer( _to, _value );
+      _externalToken.transfer(_to, _value);
+      return true;
   }
 
   function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value)
-  onlyOwner {
+      onlyOwner returns(bool) {
       ExternalTokenTransferFrom(_externalToken, _from, _to, _value);
       _externalToken.transferFrom( _from, _to, _value );
+      return true;
   }
 
   function externalTokenApprove(StandardToken _externalToken, address _spender, uint _value)
-  onlyOwner {
-      ExternalTokenApprove(_externalToken, _spender, _value );
-      _externalToken.approve( _spender, _value );
+      onlyOwner returns(bool) {
+      ExternalTokenApprove(_externalToken, _spender, _value);
+      _externalToken.approve(_spender, _value);
+      return true;
   }
 
-  function tokenDisapprove(StandardToken _token, uint _value ) onlyOwner {
-      TokenDisapprove(_token, _value );
-      _token.transferFrom( msg.sender,msg.sender, _value );
+  function tokenDisapprove(StandardToken _token, uint _value ) onlyOwner returns(bool) {
+      TokenDisapprove(_token, _value);
+      _token.transferFrom( msg.sender,msg.sender, _value);
+      return true;
   }
 
   function() payable {
-      ReceiveEther( msg.sender, msg.value );
+      ReceiveEther(msg.sender, msg.value);
   }
 
 }
