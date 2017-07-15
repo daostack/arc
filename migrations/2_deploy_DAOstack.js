@@ -108,6 +108,7 @@ module.exports = async function(deployer) {
           permissionArray);
 
         // Set SchemeRegistrar nativeToken and register DAOstack to it:
+        // TODO: how can this work without having the fees?
         await schemeRegistrarInst.registerOrganization(AvatarInst.address);
         await globalConstraintRegistrarInst.registerOrganization(AvatarInst.address);
         await upgradeSchemeInst.registerOrganization(AvatarInst.address);

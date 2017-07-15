@@ -119,7 +119,7 @@ contract SimpleICO is UniversalScheme {
       require(parameters[org.paramsHash].cap != 0);
       org.avatarContractICO = new MirrorContractICO(_avatar, this);
       organizations[_avatar] = org;
-      orgRegistered(_avatar);
+      LogOrgRegistered(_avatar);
     }
 
     // If someone accidentally sends ether to this contract, revert;

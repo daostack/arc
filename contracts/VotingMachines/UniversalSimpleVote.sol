@@ -63,23 +63,23 @@ contract UniversalSimpleVote {
         // Do we want to make sure that proposing a proposal will be done only by registered schemes?
         require(checkExistingParameters(_proposalParameters));
         Proposal memory proposal;
-        bytes32 id;
+        bytes32 proposalId;
         proposal.parameters = _proposalParameters;
         proposal.owner = msg.sender;
         proposal.opened = true;
-        id = sha3(msg.sender, _proposalParameters);
+        proposalId = sha3(msg.sender, _proposalParameters);
         // this basically gives a arbitrary id.
-        while (proposals[id].opened)
-          id = sha3(id^sha3(id));
-        proposals[id] = proposal;
-        NewProposal(id, msg.sender, proposalsParameters[_proposalParameters].reputationSystem, proposalsParameters[_proposalParameters].absPrecReq);
-        return id;
+        while (proposals[proposalId].opened)
+          proposalId = sha3(proposalId^sha3(proposalId));
+        proposals[proposalId] = proposal;
+        NewProposal(proposalId, msg.sender, proposalsParameters[_proposalParameters].reputationSystem, proposalsParameters[_proposalParameters].absPrecReq);
+        return proposalId;
     }
 
-    function cancelProposal(bytes32 id) returns(bool) {
-        require(msg.sender == proposals[id].owner);
-        delete proposals[id];
-        CancelProposal(id);
+    function cancelProposal(bytes32 proposalId) returns(bool) {
+        require(msg.sender == proposals[proposalId].owner);
+        delete proposals[proposalId];
+        CancelProposal(proposalId);
         return true;
     }
 
@@ -87,8 +87,8 @@ contract UniversalSimpleVote {
      * @dev vote for the proposal
      *
      */
-    function vote(bytes32 id, bool yes, address voter) returns(bool) {
-        Proposal proposal = proposals[id];
+    function vote(bytes32 proposalId, bool yes, address voter) returns(bool) {
+        Proposal proposal = proposals[proposalId];
         require(proposal.opened);
         require(!proposal.ended);
         require(msg.sender == proposal.owner);
@@ -106,12 +106,12 @@ contract UniversalSimpleVote {
         } else {
             proposal.no = reputation.add(proposal.no);
         }
-        VoteProposal(voter, id, yes, reputation);
+        VoteProposal(voter, proposalId, yes, reputation);
 
         // this is the actual voting rule:
         if ((proposal.yes > totalReputation*absPrecReq/100) || (proposal.no > totalReputation*absPrecReq/100)) {
             proposal.ended = true;
-            EndProposal(id);
+            EndProposal(proposalId);
         }
         return true;
     }
@@ -119,8 +119,8 @@ contract UniversalSimpleVote {
     // returns result of the proposal:
     //      true if the proposal passed
     //      false if the proposal has not passed (yet)
-    function voteResults(bytes32 id) constant returns(bool) {
-        Proposal proposal = proposals[id];
+    function voteResults(bytes32 proposalId) constant returns(bool) {
+        Proposal proposal = proposals[proposalId];
 
         if (proposal.ended && (proposal.yes > proposal.no)) {
             return true;
@@ -129,10 +129,10 @@ contract UniversalSimpleVote {
         }
     }
 
-    function voteStatus(bytes32 id) constant returns(uint[3]) {
-        uint yes = proposals[id].yes;
-        uint no = proposals[id].no;
-        uint ended = proposals[id].ended ? 1 : 0;
+    function voteStatus(bytes32 proposalId) constant returns(uint[3]) {
+        uint yes = proposals[proposalId].yes;
+        uint no = proposals[proposalId].no;
+        uint ended = proposals[proposalId].ended ? 1 : 0;
 
         return [yes, no, ended];
     }

@@ -65,16 +65,17 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // Adding an organization to the universal scheme:
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
-      if (fee > 0)
+      if (fee > 0) {
         nativeToken.transferFrom(_avatar, beneficiary, fee);
+      }
 
       Organization memory org;
       org.isRegistered = true;
       organizations[_avatar] = org;
-      orgRegistered(_avatar);
+      LogOrgRegistered(_avatar);
     }
 
-    // Proposing to add a new GC:
+    // Proposing to add a new global constraint:
     function proposeGC(Avatar _avatar, address _gc, bytes32 _params, bytes32 _removeParams) returns(bytes32) {
         Organization org = organizations[_avatar];
         Parameters memory params = parameters[getParametersFromController(_avatar)];
@@ -82,16 +83,16 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         require(org.isRegistered); // Check org is registred to use this universal scheme.
 
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 id = boolVote.propose(params.voteRegisterParams, _avatar, ExecutableInterface(this));
-        if (org.proposals[id].proposalType != 0) {
+        bytes32 proposalId = boolVote.propose(params.voteRegisterParams, _avatar, ExecutableInterface(this));
+        if (org.proposals[proposalId].proposalType != 0) {
           revert();
         }
-        org.proposals[id].proposalType = 1;
-        org.proposals[id].gc = _gc;
-        org.proposals[id].params = _params;
-        org.proposals[id].removeParams = _removeParams;
-        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
-        return id;
+        org.proposals[proposalId].proposalType = 1;
+        org.proposals[proposalId].gc = _gc;
+        org.proposals[proposalId].params = _params;
+        org.proposals[proposalId].removeParams = _removeParams;
+        boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+        return proposalId;
     }
 
     // Proposing to remove a new GC:
@@ -100,31 +101,31 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 id = boolVote.propose(org.removeParams[_gc], _avatar, ExecutableInterface(this));
-        if (org.proposals[id].proposalType != 0) revert();
-        org.proposals[id].proposalType = 2;
-        org.proposals[id].gc = _gc;
-        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
-        return id;
+        bytes32 proposalId = boolVote.propose(org.removeParams[_gc], _avatar, ExecutableInterface(this));
+        if (org.proposals[proposalId].proposalType != 0) revert();
+        org.proposals[proposalId].proposalType = 2;
+        org.proposals[proposalId].gc = _gc;
+        boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+        return proposalId;
     }
 
     /**
      * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-     * @param _id the ID of the voting in the voting machine
+     * @param _proposalId the ID of the voting in the voting machine
      * @param _avatar address of the controller
      * @param _param a parameter of the voting result, 0 is no and 1 is yes.
      */
-    function execute(bytes32 _id, address _avatar, int _param) returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
       // Check if vote was successful:
       if (_param != 1 ) {
-        delete organizations[_avatar].proposals[_id];
+        delete organizations[_avatar].proposals[_proposalId];
         return true;
       }
       // Check the caller is indeed the voting machine:
       require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
       // Define controller and get the parmas:
       Controller controller = Controller(Avatar(_avatar).owner());
-      gcProposal proposal = organizations[_avatar].proposals[_id];
+      gcProposal proposal = organizations[_avatar].proposals[_proposalId];
 
       // Adding a GC
       if( proposal.proposalType == 1 ) {
@@ -134,7 +135,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
       if( proposal.proposalType == 2 ) {
           if( ! controller.removeGlobalConstraint(proposal.gc) ) revert();
       }
-      delete organizations[_avatar].proposals[_id];
+      delete organizations[_avatar].proposals[_proposalId];
       return true;
     }
 }

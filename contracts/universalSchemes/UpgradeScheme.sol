@@ -70,7 +70,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
       Organization memory org;
       org.isRegistered = true;
       organizations[_avatar] = org;
-      orgRegistered(_avatar);
+      LogOrgRegistered(_avatar);
     }
 
     // Propose an upgrade of the controller:
@@ -79,14 +79,14 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 id = boolVote.propose(params.voteParams, _avatar, ExecutableInterface(this));
-        if (org.proposals[id].proposalType != 0) {
+        bytes32 proposalId = boolVote.propose(params.voteParams, _avatar, ExecutableInterface(this));
+        if (org.proposals[proposalId].proposalType != 0) {
             revert();
         }
-        org.proposals[id].proposalType = 1;
-        org.proposals[id].newContOrScheme = _newController;
-        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
-        return id;
+        org.proposals[proposalId].proposalType = 1;
+        org.proposals[proposalId].newContOrScheme = _newController;
+        boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+        return proposalId;
     }
 
     // Propose to replace this schme by another upgrading schme:
@@ -104,35 +104,35 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
 
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         BoolVoteInterface boolVote = params.boolVote;
-        bytes32 id = boolVote.propose(params.voteParams, _avatar, ExecutableInterface(this));
-        if (org.proposals[id].proposalType != 0) revert();
-        org.proposals[id].proposalType = 2;
-        org.proposals[id].newContOrScheme = _scheme;
-        org.proposals[id].params = _params;
-        org.proposals[id].tokenFee = _tokenFee;
-        org.proposals[id].fee = _fee;
-        boolVote.vote(id, true, msg.sender); // Automatically votes `yes` in the name of the opener.
-        return id;
+        bytes32 proposalId = boolVote.propose(params.voteParams, _avatar, ExecutableInterface(this));
+        if (org.proposals[proposalId].proposalType != 0) revert();
+        org.proposals[proposalId].proposalType = 2;
+        org.proposals[proposalId].newContOrScheme = _scheme;
+        org.proposals[proposalId].params = _params;
+        org.proposals[proposalId].tokenFee = _tokenFee;
+        org.proposals[proposalId].fee = _fee;
+        boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+        return proposalId;
     }
 
 
     /**
      * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-     * @param _id the ID of the voting in the voting machine
+     * @param _proposalId the ID of the voting in the voting machine
      * @param _avatar address of the controller
      * @param _param a parameter of the voting result, 0 is no and 1 is yes.
      */
-    function execute(bytes32 _id, address _avatar, int _param) returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
       // Check if vote was successful:
       if (_param != 1 ) {
-        delete organizations[_avatar].proposals[_id];
+        delete organizations[_avatar].proposals[_proposalId];
         return true;
       }
       // Check the caller is indeed the voting machine:
       require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
       // Define controller and get the parmas:
       Controller controller = Controller(Avatar(_avatar).owner());
-      UpgradeProposal proposal = organizations[_avatar].proposals[_id];
+      UpgradeProposal proposal = organizations[_avatar].proposals[_proposalId];
 
       // Upgrading controller:
       if (proposal.proposalType == 1) {
@@ -147,7 +147,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         if( ! controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions) ) revert();
         if( ! controller.unregisterSelf() ) revert();
       }
-      delete organizations[_avatar].proposals[_id];
+      delete organizations[_avatar].proposals[_proposalId];
       return true;
     }
 }

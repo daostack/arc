@@ -11,7 +11,7 @@ contract UniversalScheme is Ownable {
   address           public      beneficiary;
   bytes32           public      hashedParameters; // For other parameters.
 
-  event orgRegistered (address _avatar);
+  event LogOrgRegistered (address _avatar);
 
   function updateParameters(
       StandardToken _nativeToken,

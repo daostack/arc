@@ -97,7 +97,7 @@ contract SimpleContributionScheme is UniversalScheme {
           Organization memory org;
           org.isRegistered = true;
           organizations[_avatar] = org;
-          orgRegistered(_avatar);
+          LogOrgRegistered(_avatar);
     }
 
     /**
@@ -158,13 +158,13 @@ contract SimpleContributionScheme is UniversalScheme {
      * @param _param a parameter of the voting result, 0 is no and 1 is yes.
      */
     function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+      // Check the caller is indeed the voting machine:
       // Check if vote was successful:
-      // TODO: next lines allow anyone to delete a proposal from the list, which seems a security problem
       if (_param != 1) {
         delete proposals[_proposalId];
         return true;
       }
-      // Check the caller is indeed the voting machine:
+
       require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
       // Define controller and get the parmas:
       ContributionProposal proposal = proposals[_proposalId];
@@ -180,7 +180,7 @@ contract SimpleContributionScheme is UniversalScheme {
       if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) {
           revert();
       }
-      
+
       if (proposal.externalToken != address(0) && proposal.externalTokenReward > 0) {
           if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward)) {
               revert();

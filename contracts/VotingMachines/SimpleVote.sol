@@ -34,7 +34,7 @@ contract SimpleVote {
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
 
-    function UniversalSimpleVote() {
+    function SimpleVote() {
     }
 
     /**
@@ -66,7 +66,7 @@ contract SimpleVote {
         require(parameters[_paramsHash].reputationSystem != address(0));
 
         // Generate a unique ID:
-        bytes32 id = sha3(this, proposalsCnt);
+        bytes32 proposalId = sha3(this, proposalsCnt);
         proposalsCnt++;
 
         // Open proposal:
@@ -76,15 +76,15 @@ contract SimpleVote {
         proposal.executable = _executable;
         proposal.owner = msg.sender;
         proposal.opened = true;
-        proposals[id] = proposal;
-        NewProposal(id, msg.sender, _paramsHash);
-        return id;
+        proposals[proposalId] = proposal;
+        NewProposal(proposalId, msg.sender, _paramsHash);
+        return proposalId;
     }
 
-    function cancelProposal(bytes32 id) returns(bool) {
-        require(msg.sender == proposals[id].owner);
-        delete proposals[id];
-        CancelProposal(id);
+    function cancelProposal(bytes32 proposalId) returns(bool) {
+        require(msg.sender == proposals[proposalId].owner);
+        delete proposals[proposalId];
+        CancelProposal(proposalId);
         return true;
     }
 
@@ -125,8 +125,8 @@ contract SimpleVote {
         return true;
     }
 
-    function cancelVoting(bytes32 id) {
-      Proposal proposal = proposals[id];
+    function cancelVoting(bytes32 proposalId) {
+      Proposal proposal = proposals[proposalId];
       // Check vote is open:
       require(proposal.opened);
       require(!proposal.ended);
@@ -137,7 +137,7 @@ contract SimpleVote {
       else
         proposal.yes = (proposal.no).sub(uint((-1)*vote));
       proposal.voted[msg.sender] = 0;
-      CancelVoting(msg.sender, id);
+      CancelVoting(msg.sender, proposalId);
     }
 
     /**
@@ -148,6 +148,7 @@ contract SimpleVote {
      * is supposed to check exactly that
      */
     // TODO: perhaps rename to checkOutcomeAndExecute or something similar
+    // TODO: do we want to delete the vote from the proposals mapping?
     function checkVoteEnded(bytes32 _proposalId) returns(bool) {
       Proposal proposal = proposals[_proposalId];
       require(!proposal.ended);

@@ -81,17 +81,15 @@ contract SchemeRegistrar is UniversalScheme {
      */
     function registerOrganization(Avatar _avatar) {
         // Pay fees for using scheme
-        if (fee > 0)
+        if (fee > 0) {
           nativeToken.transferFrom(_avatar, beneficiary, fee);
-
-        // TODO: should we check if the current registrar is registered already on the controller?
-        /*require(checkParameterHashMatch(_avatar, _voteRegisterParams, _voteRemoveParams, _boolVote));*/
+        }
 
         // update the organization in the organizations mapping
         Organization memory org;
         org.isRegistered = true;
         organizations[_avatar] = org;
-        orgRegistered(_avatar);
+        LogOrgRegistered(_avatar);
     }
 
     /**
