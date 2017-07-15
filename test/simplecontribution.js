@@ -16,12 +16,10 @@ contract('SimpleContribution', function(accounts) {
     let params, paramsHash, tx, proposal;
   	const founders = [accounts[0], accounts[1]];
     const repForFounders = [30, 70];
-    const testSettings = await helpers.settingsForTest();
     const org = await helpers.forgeOrganization({founders, repForFounders});
     const avatar = org.avatar;
     const controller = org.controller;
-  	const schemeRegistrar = org.schemeregistrar;
-
+  	const schemeRegistrar = org.schemeRegistrar;
   	// check if indeed the registrar is registered as a scheme on  the controller
   	const isSchemeRegistered = await controller.isSchemeRegistered(schemeRegistrar.address);
   	assert.equal(isSchemeRegistered, true);
