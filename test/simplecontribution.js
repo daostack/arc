@@ -1,5 +1,5 @@
 import { Organization } from '../lib/organization.js';
-const helpers = require('./helpers')
+const helpers = require('./helpers');
 
 
 const SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
@@ -10,9 +10,9 @@ const Controller = artifacts.require('./Controller.sol');
 const NULL_ADDRESS = helpers.NULL_ADDRESS;
 
 
-contract('SimpleContribution', function(accounts) {
+contract('SimpleContribution scheme', function(accounts) {
 
-  it("Propose and accept a contribution (in progress)", async function(){
+  it("Propose and accept a contribution - complete workflow", async function(){
     let params, paramsHash, tx, proposal;
   	const founders = [accounts[0], accounts[1]];
     const repForFounders = [30, 70];
@@ -39,12 +39,12 @@ contract('SimpleContribution', function(accounts) {
   	const votingParams = await votingMachine.getParametersHash(
   		reputationAddress,
   		50, // percentage that counts as a majority
-  	)
+  	);
     // we also register the parameters with the voting machine
   	tx = await votingMachine.setParameters(
   		reputationAddress,
   		50, // percentage that counts as a majority
-  	)
+  	);
 
     // create a contribution Scheme
   	const contributionScheme = await SimpleContributionScheme.new(
@@ -70,7 +70,7 @@ contract('SimpleContribution', function(accounts) {
       0, // fee for the token?
       votingParams,
       votingMachine.address,
-    )
+    );
 
     params = await contributionScheme.parameters(contributionSchemeParamsHash);
     assert.notEqual(params[3], '0x0000000000000000000000000000000000000000');
@@ -128,7 +128,7 @@ contract('SimpleContribution', function(accounts) {
     // console.log('schemeFromController [paramsHash, permissions]');
     // console.log(schemeFromController);
     // we expect to have only the first bit set (it is a registered scheme without nay particular permissions)
-    assert.equal(schemeFromController[1], '0x00000001')
+    assert.equal(schemeFromController[1], '0x00000001');
 
 
     //  Our organization is not registered with the contribution scheme yet at this point
@@ -210,5 +210,5 @@ contract('SimpleContribution', function(accounts) {
     // TODO: no payments have been made. Write another test for that.
 
     console.log('DONE!');
-  })
+  });
 });
