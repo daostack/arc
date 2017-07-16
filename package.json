@@ -20,6 +20,7 @@
     "eslint": "^4.2.0",
     "ethereumjs-testrpc": "^3.0.0",
     "pm2": "^1.1.3",
+    "promisify": "^0.0.3",
     "pug": "^2.0.0-rc.1",
     "solc": "^0.3.5",
     "solc-cli": "^0.3.0",
@@ -45,5 +46,6 @@
     "url": "https://github.com/daostack/daostack/issues"
   },
   "homepage": "https://github.com/daostack/daostack",
-  "dependencies": {}
+  "dependencies": {
+  }
 }

@@ -1,4 +1,4 @@
-const helpers = require('./helpers')
+const helpers = require('./helpers');
 
 var GenesisScheme = artifacts.require("./GenesisScheme.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
@@ -17,11 +17,11 @@ contract('SchemeRegistrar', function(accounts) {
     const token = await MintableToken.at(tokenAddress);
     const accounts = web3.eth.accounts;
     let balance;
-    balance = await token.balanceOf(accounts[0])
-    assert.equal(balance.valueOf(), 0)
+    balance = await token.balanceOf(accounts[0]);
+    assert.equal(balance.valueOf(), 0);
     await token.mint(1000 * Math.pow(10, 18), web3.eth.accounts[0]);
-    balance = await token.balanceOf(accounts[0])
-    assert.equal(balance.valueOf(), 1000 * Math.pow(10, 18))
+    balance = await token.balanceOf(accounts[0]);
+    assert.equal(balance.valueOf(), 1000 * Math.pow(10, 18));
   });
 
   it("the daostack.createSchemeRegistrar function should work as expected with non-default values", async function() {

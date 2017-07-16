@@ -5,6 +5,7 @@ import "../controller/Avatar.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/token/StandardToken.sol";
 
+
 contract UniversalScheme is Ownable {
   StandardToken     public      nativeToken;
   uint              public      fee;

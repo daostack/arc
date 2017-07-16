@@ -37,16 +37,15 @@ contract Controller {
     address[]       public   globalConstraints;
     bytes32[]       public   globalConstraintsParams;
 
-    event MintReputation( address indexed _sender, address indexed _beneficiary, int256 _amount );
-    event MintTokens( address indexed _sender, address indexed _beneficiary, uint256 _amount );
-    event RegisterScheme( address indexed _sender, address indexed _scheme );
-    event UnregisterScheme( address indexed _sender, address indexed _scheme );
-    event GenericAction( address indexed _sender, address indexed _action, uint _param );
-
-    event SendEther( address indexed _sender, uint _amountInWei, address indexed _to );
-    event ExternalTokenTransfer(address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
-    event ExternalTokenTransferFrom(address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
-    event ExternalTokenApprove(address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
+    event MintReputation (address indexed _sender, address indexed _beneficiary, int256 _amount);
+    event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
+    event RegisterScheme (address indexed _sender, address indexed _scheme);
+    event UnregisterScheme (address indexed _sender, address indexed _scheme);
+    event GenericAction (address indexed _sender, address indexed _action, uint _param);
+    event SendEther (address indexed _sender, uint _amountInWei, address indexed _to);
+    event ExternalTokenTransfer (address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
+    event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
+    event ExternalTokenApprove (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
 
     // This is a good constructor only for new organizations, need an improved one to support upgrade.
     function Controller(
@@ -62,7 +61,7 @@ contract Controller {
         nativeReputation = _nativeReputation;
 
         // Register the schemes:
-        for( uint i = 0 ; i < _schemes.length ; i++ ) {
+        for (uint i = 0; i < _schemes.length; i++) {
           schemes[_schemes[i]].paramsHash = _params[i];
           schemes[_schemes[i]].permissions = _permissions[i];
           RegisterScheme(msg.sender, _schemes[i]);
