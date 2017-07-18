@@ -22,20 +22,20 @@ contract Controller {
                           // All 0: Not registered,
                           // 1st bit: Registered,
                           // 2nd bit: Registraring scheme,
-                          // 3th bit: Global contraint scheme,
+                          // 3th bit: Global constraint scheme,
                           // 4rd bit: Upgrading scheme.
     }
 
     mapping(address=>Scheme) public schemes;
 
-    Avatar          public   avatar;
-    MintableToken   public   nativeToken;
-    Reputation      public   nativeReputation;
+    Avatar public avatar;
+    MintableToken public nativeToken;
+    Reputation public nativeReputation;
     // newController will point to the new controller after the present controller is upgraded
-    address         public   newController;
+    address public newController;
     // globalConstraints that determine pre- and post-conditions for all actions on the controller
-    address[]       public   globalConstraints;
-    bytes32[]       public   globalConstraintsParams;
+    address[] public globalConstraints;
+    bytes32[] public globalConstraintsParams;
 
     event MintReputation (address indexed _sender, address indexed _beneficiary, int256 _amount);
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
@@ -46,6 +46,7 @@ contract Controller {
     event ExternalTokenTransfer (address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
     event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenApprove (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
+    event LogAddGlobalConstraint(address _globalcontraint, bytes32 _params);
 
     // This is a good constructor only for new organizations, need an improved one to support upgrade.
     function Controller(
@@ -158,28 +159,33 @@ contract Controller {
     }
 
     function isSchemeRegistered(address _scheme) constant returns(bool) {
-      return (schemes[_scheme].permissions != 0);
+        return (schemes[_scheme].permissions != 0);
     }
 
     function getSchemeParameters(address _scheme) constant returns(bytes32) {
-      return schemes[_scheme].paramsHash;
+        return schemes[_scheme].paramsHash;
     }
 
     function getSchemePermissions(address _scheme) constant returns(bytes4) {
-      return schemes[_scheme].permissions;
+        return schemes[_scheme].permissions;
     }
 
     // Global Contraints:
-    function addGlobalConstraint (address _globalConstraint, bytes32 _params)
-    onlyGlobalConstraintsScheme returns(bool) {
+    function globalConstraintsCount() constant returns(uint) {
+        return globalConstraints.length;
+    }
+
+    function addGlobalConstraint(address _globalConstraint, bytes32 _params)
+        onlyGlobalConstraintsScheme returns(bool) {
         globalConstraints.push(_globalConstraint);
         globalConstraintsParams.push(_params);
+        LogAddGlobalConstraint(_globalConstraint, _params);
         return true;
     }
 
     function removeGlobalConstraint (address _globalConstraint)
-    onlyGlobalConstraintsScheme returns(bool) {
-      for (uint cnt=0; cnt< globalConstraints.length; cnt++) {
+      onlyGlobalConstraintsScheme returns(bool) {
+      for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
         if (globalConstraints[cnt] == _globalConstraint) {
           globalConstraints[cnt] = address(0);
           return true;
@@ -187,9 +193,9 @@ contract Controller {
       }
     }
 
-  // Upgrading:
+    // Upgrading:
     function upgradeController( address _newController )
-    onlyUpgradingScheme returns(bool) {
+      onlyUpgradingScheme returns(bool) {
         require(newController == address(0));   // Do we want this?
         require(_newController != address(0));
         newController = _newController;

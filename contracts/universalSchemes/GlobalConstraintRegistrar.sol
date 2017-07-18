@@ -36,7 +36,6 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
     mapping(bytes32=>Parameters) public parameters;
 
-
     function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
@@ -63,6 +62,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
 
     // Adding an organization to the universal scheme:
+    // TODO: probably we want to define registerOrganization and isRegistered in UniversalScheme
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
       if (fee > 0) {
@@ -75,15 +75,26 @@ contract GlobalConstraintRegistrar is UniversalScheme {
       LogOrgRegistered(_avatar);
     }
 
-    // Proposing to add a new global constraint:
-    function proposeGC(Avatar _avatar, address _gc, bytes32 _params, bytes32 _removeParams) returns(bytes32) {
+    function isRegistered(Avatar _avatar) constant returns(bool) {
+      return organizations[_avatar].isRegistered;
+    }
+
+    /**
+     * @dev propose to add a new global constraint:
+     * @param _avatar the avatar of the organization that the constraint is proposed for
+     * @param _gc the address of the global constraint that is being proposed
+     * @param _params the parameters for the global contraint
+     * @param _removeParams the conditions (on the voting machine) for removing this global constraint
+     */
+    // TODO: do some checks on _removeParams - it is very easy to make a mistake and not be able to remove the GC
+    function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _removeParams) returns(bytes32) {
+        require(isRegistered(_avatar)); // Check org is registered to use this universal scheme.
         Organization org = organizations[_avatar];
-        Parameters memory params = parameters[getParametersFromController(_avatar)];
+        Parameters memory votingParams = parameters[getParametersFromController(_avatar)];
 
-        require(org.isRegistered); // Check org is registred to use this universal scheme.
+        BoolVoteInterface boolVote = votingParams.boolVote;
+        bytes32 proposalId = boolVote.propose(votingParams.voteRegisterParams, _avatar, ExecutableInterface(this));
 
-        BoolVoteInterface boolVote = params.boolVote;
-        bytes32 proposalId = boolVote.propose(params.voteRegisterParams, _avatar, ExecutableInterface(this));
         if (org.proposals[proposalId].proposalType != 0) {
           revert();
         }

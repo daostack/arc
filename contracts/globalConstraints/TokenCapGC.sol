@@ -7,7 +7,7 @@ import "zeppelin-solidity/contracts/token/StandardToken.sol";
  * @dev A simple global contraint to cap the number of tokens.
  */
 
-contract TokensCapGC {
+contract TokenCapGC {
   // A set of parameters, on which the cap will be checked:
   struct Parameters {
     StandardToken token;
@@ -17,8 +17,7 @@ contract TokensCapGC {
   // Mapping from the hash of the parameters to the parameters themselves:
   mapping (bytes32=>Parameters) public params;
 
-  function TokensCapGC() {
-
+  function TokenCapGC() {
   }
 
   // Adding a new set of parameters:
@@ -35,12 +34,12 @@ contract TokensCapGC {
   }
 
   // This global contraint only checks the state after the action, so here we just return true:
-  function pre( address , bytes32 , bytes  ) returns(bool) {
+  function pre(address, bytes32, bytes) returns(bool) {
     return true;
   }
 
   // Checking the cap:
-  function post( address , bytes32 _paramsHash, bytes  ) returns(bool) {
+  function post(address, bytes32 _paramsHash, bytes) returns(bool) {
     if ( params[_paramsHash].token.totalSupply() > params[_paramsHash].cap)
       return false;
     return true;

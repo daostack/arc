@@ -54,7 +54,6 @@ export async function forgeOrganization(opts = {}) {
     const options = Object.assign({}, defaults, opts);
     // add this there to eat some dog food
     return Organization.new(options);
-    // return daostack.forgeOrganization(options);
 }
 
 
