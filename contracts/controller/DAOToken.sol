@@ -41,11 +41,12 @@ contract DAOToken is MintableToken {
     }
 
     // Rewriting the function to check for locking and burn tokens of the contract itself:
-    function transfer(address _to, uint _value) {
+    function transfer(address _to, uint _value) returns(bool) {
       // Check for locking:
       if (lockBalances[msg.sender].releaseBlock > block.number)
         require(balances[msg.sender].sub(_value) >= lockBalances[msg.sender].lockedAmount);
 
+      // TODO: return the result of transfer
       super.transfer(_to, _value);
 
       if (_to == address(this))
@@ -53,22 +54,24 @@ contract DAOToken is MintableToken {
     }
 
     // Rewriting the function to check for locking and burn tokens of the contract itself:
-    function transferFrom(address _from, address _to, uint _value) {
+    function transferFrom(address _from, address _to, uint _value) returns(bool) {
       // Check for locking:
       if (lockBalances[_from].releaseBlock > block.number)
         require(balances[_from].sub(_value) >= lockBalances[_from].lockedAmount);
 
+      // TODO: return the result of transferFrom
       super.transferFrom(_from, _to, _value);
 
-      if (_to == address(this))
+      if (_to == address(this)) {
         burnContractToken();
+      }
     }
 
     // The token contract should not hold its own tokens, allow anyont to burn its balance:
     function burnContractToken() {
       totalSupply = totalSupply.sub(balances[this]);
-      Burn(balances[this]);
       balances[this] = 0;
+      Burn(balances[this]);
     }
 
 }

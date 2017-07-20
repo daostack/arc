@@ -10,13 +10,14 @@ import { getValueFromLogs } from '../lib/utils.js';
 import { daostack } from '../lib/daostack.js';
 
 contract('createGlobalConstraintRegistrar', function(accounts) {
+  let tx;
 
   before(function() {
     helpers.etherForEveryone();
   });
 
   it("should be able to put contraints on the total amount of mintable token [IN PROGRESS]", async function() {
-    let tx;
+
     const options = {
       orgName: 'something',
       tokenName: 'token name',
@@ -25,6 +26,8 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
       repForFounders: [1, 29, 70],
     };
     const organization = await Organization.new(options);
+
+
     const gcr = organization.globalConstraintRegistrar;
     // check if our organization is registered on the gcr
     assert.equal(await gcr.isRegistered(organization.avatar.address), true);
