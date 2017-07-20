@@ -38,8 +38,6 @@ contract SchemeRegistrar is UniversalScheme {
     }
     mapping(bytes32=>Parameters) public parameters;
 
-    event LogNewProposal(bytes32 proposalId);
-
     /**
      * @dev The constructor
      * @param _nativeToken a Token that is used for paying fees for registering

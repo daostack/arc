@@ -6,7 +6,6 @@ import "./MintableToken.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
 
 
-
 /**
  * @title Controller contract
  * @dev A controller controls its own and other tokens, and is piloted by a reputation
@@ -20,10 +19,10 @@ contract Controller {
       bytes32 paramsHash; // a hash "configuration" of the scheme
       bytes4 permissions; // A bitwise flags of permissions,
                           // All 0: Not registered,
-                          // 1st bit: Registered,
-                          // 2nd bit: Registraring scheme,
-                          // 3th bit: Global constraint scheme,
-                          // 4rd bit: Upgrading scheme.
+                          // 1st bit: Flag if the scheme is registered,
+                          // 2nd bit: Scheme can register other schemes
+                          // 3th bit: Scheme can add/remove global constraints
+                          // 4rd bit: Scheme can upgrade the controller
     }
 
     mapping(address=>Scheme) public schemes;
@@ -46,7 +45,7 @@ contract Controller {
     event ExternalTokenTransfer (address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
     event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenApprove (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
-    event LogAddGlobalConstraint(address _globalcontraint, bytes32 _params);
+    event LogAddGlobalConstraint(address _globalconstraint, bytes32 _params);
 
     // This is a good constructor only for new organizations, need an improved one to support upgrade.
     function Controller(
@@ -63,9 +62,9 @@ contract Controller {
 
         // Register the schemes:
         for (uint i = 0; i < _schemes.length; i++) {
-          schemes[_schemes[i]].paramsHash = _params[i];
-          schemes[_schemes[i]].permissions = _permissions[i];
-          RegisterScheme(msg.sender, _schemes[i]);
+            schemes[_schemes[i]].paramsHash = _params[i];
+            schemes[_schemes[i]].permissions = _permissions[i];
+            RegisterScheme(msg.sender, _schemes[i]);
         }
     }
 
@@ -76,7 +75,8 @@ contract Controller {
     }
 
     modifier onlyRegisteringSchemes() {
-        require(uint(schemes[msg.sender].permissions) > 1);
+        /*require(uint(schemes[msg.sender].permissions) > 1);*/
+        require(schemes[msg.sender].permissions&bytes4(2) == bytes4(2));
         _;
     }
 
@@ -90,7 +90,7 @@ contract Controller {
         _;
     }
 
-    // ToDo: Constraints are commented due to gas issues, must fix.
+    // TODO: XXX: Constraints are commented due to gas issues, must fix.
     modifier onlySubjectToConstraint(bytes32 func) {
       /*for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
         if (globalConstraints[cnt] != address(0))
@@ -105,13 +105,19 @@ contract Controller {
 
     // Minting:
     function mintReputation(int256 _amount, address _beneficiary)
-      onlyRegisteredScheme onlySubjectToConstraint("mintReputation") returns(bool){
+        onlyRegisteredScheme
+        onlySubjectToConstraint("mintReputation")
+        returns(bool)
+    {
         MintReputation(msg.sender, _beneficiary, _amount);
         return nativeReputation.mint(_amount, _beneficiary);
     }
 
     function mintTokens(uint256 _amount, address _beneficiary)
-    onlyRegisteredScheme onlySubjectToConstraint("mintTokens") returns(bool){
+        onlyRegisteredScheme
+        onlySubjectToConstraint("mintTokens")
+        returns(bool)
+    {
         MintTokens(msg.sender, _beneficiary, _amount);
         return nativeToken.mint(_amount, _beneficiary);
     }
@@ -132,7 +138,7 @@ contract Controller {
         // Check scheme has at least the permissions it is changing, and at least the current permissions:
         // Implementation is a bit messy. One must recall logic-circuits ^^
         // XXX: Commented these next line as they led to errors and I cannot understand the code
-        /* require(bytes4(15)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0)); */
+        require(bytes4(15)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
         require(bytes4(15)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
         // Add or change the scheme:
@@ -143,7 +149,10 @@ contract Controller {
     }
 
     function unregisterScheme( address _scheme )
-    onlyRegisteringSchemes onlySubjectToConstraint("unregisterScheme") returns(bool){
+        onlyRegisteringSchemes
+        onlySubjectToConstraint("unregisterScheme")
+        returns(bool)
+    {
         // Check the unregistering scheme has enough permissions:
         require(bytes4(15)&(schemes[_scheme].permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
@@ -176,7 +185,8 @@ contract Controller {
     }
 
     function addGlobalConstraint(address _globalConstraint, bytes32 _params)
-        onlyGlobalConstraintsScheme returns(bool) {
+        onlyGlobalConstraintsScheme
+        returns(bool) {
         globalConstraints.push(_globalConstraint);
         globalConstraintsParams.push(_params);
         LogAddGlobalConstraint(_globalConstraint, _params);
@@ -184,18 +194,21 @@ contract Controller {
     }
 
     function removeGlobalConstraint (address _globalConstraint)
-      onlyGlobalConstraintsScheme returns(bool) {
-      for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
-        if (globalConstraints[cnt] == _globalConstraint) {
-          globalConstraints[cnt] = address(0);
-          return true;
+        onlyGlobalConstraintsScheme
+        returns(bool)
+    {
+        for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
+            if (globalConstraints[cnt] == _globalConstraint) {
+                globalConstraints[cnt] = address(0);
+                return true;
+            }
         }
-      }
     }
 
     // Upgrading:
-    function upgradeController( address _newController )
-      onlyUpgradingScheme returns(bool) {
+    function upgradeController(address _newController)
+        onlyUpgradingScheme returns(bool)
+    {
         require(newController == address(0));   // Do we want this?
         require(_newController != address(0));
         newController = _newController;
@@ -205,39 +218,65 @@ contract Controller {
         return true;
     }
 
-  // External actions:
-    function genericAction( ActionInterface _action, uint _param ) // TODO discuss name
-    onlyRegisteredScheme onlySubjectToConstraint("genericAction") returns(bool){
+    // External actions:
+    function genericAction(ActionInterface _action, uint _param)
+        onlyRegisteredScheme
+        onlySubjectToConstraint("genericAction")
+        returns(bool)
+    {
         GenericAction( msg.sender, _action, _param );
         return avatar.genericAction(_action, _param);
     }
 
-    function sendEther( uint _amountInWei, address _to )
-    onlyRegisteredScheme onlySubjectToConstraint("sendEther") returns(bool) {
+    /**
+     * @dev send some ether
+     * @param _amountInWei the amount of ether (in Wei) to send
+     * @param _to address of the beneficary
+     */
+    function sendEther(uint _amountInWei, address _to)
+        onlyRegisteredScheme
+        onlySubjectToConstraint("sendEther")
+        returns(bool)
+    {
         SendEther( msg.sender, _amountInWei, _to );
         return avatar.sendEther(_amountInWei, _to);
     }
 
+    /**
+     * @dev send some amount of arbitrary ERC20 Tokens
+     * @param _externalToken the address of the Token Contract
+     * @param _to address of the beneficary
+     * @param _value the amount of ether (in Wei) to send
+     */
     function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
-    onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransfer") returns(bool) {
+        onlyRegisteredScheme
+        onlySubjectToConstraint("externalTokenTransfer")
+        returns(bool)
+    {
         ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
         return avatar.externalTokenTransfer(_externalToken, _to, _value);
     }
 
     function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value)
-    onlyRegisteredScheme onlySubjectToConstraint("externalTokenTransferFrom") returns(bool) {
+        onlyRegisteredScheme
+        onlySubjectToConstraint("externalTokenTransferFrom")
+        returns(bool)
+    {
         ExternalTokenTransferFrom(msg.sender, _externalToken, _from, _to, _value);
         return avatar.externalTokenTransferFrom(_externalToken, _from, _to, _value);
     }
 
     function externalTokenApprove(StandardToken _externalToken, address _spender, uint _value)
-    onlyRegisteredScheme onlySubjectToConstraint("externalTokenApprove") returns(bool) {
+        onlyRegisteredScheme
+        onlySubjectToConstraint("externalTokenApprove")
+        returns(bool)
+    {
         ExternalTokenApprove( msg.sender, _externalToken, _spender, _value );
         return avatar.externalTokenApprove(_externalToken, _spender, _value );
     }
 
     // Do not allow mistaken calls:
     function() {
-      revert();
+        revert();
     }
 }

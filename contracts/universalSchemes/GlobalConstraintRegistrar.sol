@@ -17,6 +17,8 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         bytes32 removeParams; // Voting parameters for removing this GC.
     }
 
+    mapping(bytes32=>gcProposal) public proposals;
+
     // Struct holding the data for each organization
     struct Organization {
         bool isRegistered;
@@ -89,20 +91,20 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // TODO: do some checks on _removeParams - it is very easy to make a mistake and not be able to remove the GC
     function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _removeParams) returns(bytes32) {
         require(isRegistered(_avatar)); // Check org is registered to use this universal scheme.
-        Organization org = organizations[_avatar];
         Parameters memory votingParams = parameters[getParametersFromController(_avatar)];
 
         BoolVoteInterface boolVote = votingParams.boolVote;
         bytes32 proposalId = boolVote.propose(votingParams.voteRegisterParams, _avatar, ExecutableInterface(this));
 
-        if (org.proposals[proposalId].proposalType != 0) {
+        if (proposals[proposalId].proposalType != 0) {
           revert();
         }
-        org.proposals[proposalId].proposalType = 1;
-        org.proposals[proposalId].gc = _gc;
-        org.proposals[proposalId].params = _params;
-        org.proposals[proposalId].removeParams = _removeParams;
+        proposals[proposalId].proposalType = 1;
+        proposals[proposalId].gc = _gc;
+        proposals[proposalId].params = _params;
+        proposals[proposalId].removeParams = _removeParams;
         boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+        LogNewProposal(proposalId);
         return proposalId;
     }
 
@@ -113,9 +115,9 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         BoolVoteInterface boolVote = params.boolVote;
         bytes32 proposalId = boolVote.propose(org.removeParams[_gc], _avatar, ExecutableInterface(this));
-        if (org.proposals[proposalId].proposalType != 0) revert();
-        org.proposals[proposalId].proposalType = 2;
-        org.proposals[proposalId].gc = _gc;
+        if (proposals[proposalId].proposalType != 0) revert();
+        proposals[proposalId].proposalType = 2;
+        proposals[proposalId].gc = _gc;
         boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
     }
@@ -132,22 +134,27 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
       // Check if vote was successful:
       if (_param != 1 ) {
-        delete organizations[_avatar].proposals[_proposalId];
+        delete proposals[_proposalId];
         return true;
       }
       // Define controller and get the parmas:
       Controller controller = Controller(Avatar(_avatar).owner());
-      gcProposal proposal = organizations[_avatar].proposals[_proposalId];
+      gcProposal proposal = proposals[_proposalId];
 
       // Adding a GC
-      if( proposal.proposalType == 1 ) {
-          if( ! controller.addGlobalConstraint(proposal.gc, proposal.params) ) revert();
+      if (proposal.proposalType == 1) {
+          if (!controller.addGlobalConstraint(proposal.gc, proposal.params)) {
+            revert();
+          }
       }
+
       // Removing a GC
-      if( proposal.proposalType == 2 ) {
-          if( ! controller.removeGlobalConstraint(proposal.gc) ) revert();
+      if (proposal.proposalType == 2) {
+          if (!controller.removeGlobalConstraint(proposal.gc)) {
+            revert();
+          }
       }
-      delete organizations[_avatar].proposals[_proposalId];
+      delete proposals[_proposalId];
       return true;
     }
 }

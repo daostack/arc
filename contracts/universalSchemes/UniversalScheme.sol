@@ -13,7 +13,8 @@ contract UniversalScheme is Ownable {
   bytes32           public      hashedParameters; // For other parameters.
 
   event LogOrgRegistered (address _avatar);
-
+  event LogNewProposal(bytes32 proposalId);
+  
   function updateParameters(
       StandardToken _nativeToken,
       uint _fee,

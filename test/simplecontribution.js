@@ -191,11 +191,11 @@ contract('SimpleContribution scheme', function(accounts) {
     // 7. bool ended; // voting had ended flag
     assert.isOk(proposal[6]); // proposal.opened is true
     assert.notOk(proposal[7]); // proposal.Ended is false
-    tx = await votingMachine.vote(contributionId, true, founders[0], {from: founders[0]});
-
-    // and this is the majority vote (which will also call execute on the executable
     // first we check if our executable (proposal[2]) is indeed the contributionScheme
     assert.equal(proposal[2], contributionScheme.address);
+
+    tx = await votingMachine.vote(contributionId, true, founders[0], {from: founders[0]});
+    // and this is the majority vote (which will also call execute on the executable
     tx = await votingMachine.vote(contributionId, true, founders[1], {from: founders[1]});
 
     // check if proposal was deleted from contribution Scheme

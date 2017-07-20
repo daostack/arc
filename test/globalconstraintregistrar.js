@@ -6,6 +6,7 @@ const MintableToken = artifacts.require("./MintableToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const TokenCapGC = artifacts.require("./TokenCapGC.sol");
 
+import { getValueFromLogs } from '../lib/utils.js';
 import { daostack } from '../lib/daostack.js';
 
 contract('createGlobalConstraintRegistrar', function(accounts) {
@@ -15,10 +16,13 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
   });
 
   it("should be able to put contraints on the total amount of mintable token [IN PROGRESS]", async function() {
+    let tx;
     const options = {
       orgName: 'something',
       tokenName: 'token name',
       tokenSymbol: 'TST',
+      founders: [web3.eth.accounts[0], web3.eth.accounts[1], web3.eth.accounts[2]],
+      repForFounders: [1, 29, 70],
     };
     const organization = await Organization.new(options);
     const gcr = organization.globalConstraintRegistrar;
@@ -29,22 +33,27 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
   	assert.equal(await organization.controller.isSchemeRegistered(gcr.address), true);
 
     // Organization.new standardly registers one global constraint
-    // XXX: how can this be 32??
-    assert.equal((await organization.controller.globalConstraintsCount()).toNumber(), 32);
+    assert.equal((await organization.controller.globalConstraintsCount()).toNumber(), 0);
 
     // create a new global constraint - a TokenCapGC instance
     const tokenCapGC = await TokenCapGC.new();
     // register paramets for setting a cap on the nativeToken of our organization of 21 million
     await tokenCapGC.setParameters(organization.token.address, 21e9);
-    const tokenCapGCHash = await tokenCapGC.getParametersHash(organization.token.address, 21e9);
+    const tokenCapGCParamsHash = await tokenCapGC.getParametersHash(organization.token.address, 21e9);
     // next line needs some real hash for the conditions for removing this scheme
-    const votingMachineHash = tokenCapGCHash;
+    const votingMachineHash = tokenCapGCParamsHash;
 
     // to propose a global constraint we need to make sure the relevant hashes are registered
     // in the right places:
     const parametersForGCR = await organization.controller.getSchemeParameters(gcr.address);
     // parametersForVotingInGCR are (voteRegisterParams (a hash) and boolVote)
     const parametersForVotingInGCR = await gcr.parameters(parametersForGCR);
+
+    // the info we just got consists of paramsHash and permissions
+    const gcrPermissionsOnOrg = await organization.controller.getSchemePermissions(gcr.address);
+    console.log('gcrPermissionsOnOrg');
+    console.log(gcrPermissionsOnOrg);
+
 
     // the voting machine used in this GCR is the same as the voting machine of the organization
     assert.equal(organization.votingMachine.address, parametersForVotingInGCR[1]);
@@ -54,15 +63,29 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
 
     const msg = "These parameters are not known the voting machine...";
     assert.notEqual(voteRegisterParams[0], '0x0000000000000000000000000000000000000000', msg);
-    await gcr.proposeGlobalConstraint(organization.avatar.address, tokenCapGC.address, tokenCapGCHash, votingMachineHash);
-    return;
-    //
-    return;
+    tx = await gcr.proposeGlobalConstraint(organization.avatar.address, tokenCapGC.address, tokenCapGCParamsHash, votingMachineHash);
+
+    // check if the proposal is known on the GlobalConstraintRegistrar
+    const proposalId = getValueFromLogs(tx, 'proposalId');
+    const proposal = await gcr.proposals(proposalId);
+    // the proposal looks like gc-address, params, proposaltype, removeParams
+    assert.equal(proposal[0], tokenCapGC.address);
+
+    // TODO: the voting machine should be taken from the address at parametersForVotingInGCR[1]
+    const votingMachine = organization.votingMachine;
+    // first vote (minority)
+    tx = await votingMachine.vote(proposalId, true, web3.eth.accounts[1], {from: web3.eth.accounts[1]});
+    // and this is the majority vote (which will also call execute on the executable
+    tx = await votingMachine.vote(proposalId, true, web3.eth.accounts[2], {from: web3.eth.accounts[2]});
+
+    // at this point, our global constrait has been registered at the organization
+    assert.equal((await organization.controller.globalConstraintsCount()).toNumber(), 1);
     // get the first global constraint
     const gc = await organization.controller.globalConstraints(0);
     const params = await organization.controller.globalConstraintsParams(0);
     // see which global constraints are satisfied
-    assert.equal(gcs, 'xxx');
+    assert.equal(gc, tokenCapGC.address);
+    assert.equal(params, tokenCapGCParamsHash);
 
   });
 
