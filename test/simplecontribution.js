@@ -14,34 +14,26 @@ contract('SimpleContribution scheme', function(accounts) {
 
   it("Propose and accept a contribution - complete workflow", async function(){
     let params, paramsHash, tx, proposal;
-  	const founders = [accounts[0], accounts[1]];
-    const repForFounders = [30, 70];
-    const org = await helpers.forgeOrganization({founders, repForFounders});
+
+    const org = await helpers.forgeOrganization({
+      founders: [accounts[0], accounts[1]],
+      repForFounders: [30, 70],
+    });
+
     const avatar = org.avatar;
     const controller = org.controller;
-  	const schemeRegistrar = org.schemeRegistrar;
-  	// check if indeed the registrar is registered as a scheme on  the controller
-  	const isSchemeRegistered = await controller.isSchemeRegistered(schemeRegistrar.address);
-  	assert.equal(isSchemeRegistered, true);
-
-    // TODO: check if the controller is registered (has paid the fee)
-    // const isControllerRegistered = await schemeRegistrar.isRegistered(org.avatar.address);
-  	// assert.equal(isControllerRegistered, true);
-
-    // TODO: check if the configuration parameters of the controller are known on the registrar
-
+  	const schemeRegistrar = await org.schemeRegistrar();
 
   	// we creaet a SimpleContributionScheme
   	const reputationAddress = await controller.nativeReputation();
   	const tokenAddress = await controller.nativeToken();
-
     const votingMachine = org.votingMachine;
   	const votingParams = await votingMachine.getParametersHash(
   		reputationAddress,
   		50, // percentage that counts as a majority
   	);
     // we also register the parameters with the voting machine
-  	tx = await votingMachine.setParameters(
+  	await votingMachine.setParameters(
   		reputationAddress,
   		50, // percentage that counts as a majority
   	);
@@ -50,7 +42,7 @@ contract('SimpleContribution scheme', function(accounts) {
   	const contributionScheme = await SimpleContributionScheme.new(
   		tokenAddress,
   		0, // register with 0 fee
-  		founders[0],
+  		accounts[0],
   	);
 
     const contributionSchemeParamsHash = await contributionScheme.getParametersHash(
@@ -114,13 +106,14 @@ contract('SimpleContribution scheme', function(accounts) {
     // console.log('compare the address of the original controller and that of the owner of the avatar of the proposal')
     // console.log(tmp)
     // console.log(controller.address)
+
     //
     // console.log('This is what the schemeRegistrar knows of the current proposal')
     // tmp = await schemeRegistrar.proposals(proposalId);
     // console.log(tmp);
 
     // this will vote-and-execute
-    tx = await votingMachine.vote(proposalId, true, founders[1], {from: founders[1]});
+    tx = await votingMachine.vote(proposalId, true, accounts[1], {from: accounts[1]});
     // console.log(tx.logs);
 
     // now our scheme should be registered on the controller
@@ -129,7 +122,6 @@ contract('SimpleContribution scheme', function(accounts) {
     // console.log(schemeFromController);
     // we expect to have only the first bit set (it is a registered scheme without nay particular permissions)
     assert.equal(schemeFromController[1], '0x00000001');
-
 
     //  Our organization is not registered with the contribution scheme yet at this point
     let orgFromContributionScheme = await contributionScheme.organizations(avatar.address);
@@ -194,9 +186,9 @@ contract('SimpleContribution scheme', function(accounts) {
     // first we check if our executable (proposal[2]) is indeed the contributionScheme
     assert.equal(proposal[2], contributionScheme.address);
 
-    tx = await votingMachine.vote(contributionId, true, founders[0], {from: founders[0]});
+    tx = await votingMachine.vote(contributionId, true, accounts[0], {from: accounts[0]});
     // and this is the majority vote (which will also call execute on the executable
-    tx = await votingMachine.vote(contributionId, true, founders[1], {from: founders[1]});
+    tx = await votingMachine.vote(contributionId, true, accounts[1], {from: accounts[1]});
 
     // check if proposal was deleted from contribution Scheme
     proposal = await contributionScheme.proposals(contributionId);

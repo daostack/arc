@@ -17,7 +17,7 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
   });
 
   it("should be able to put contraints on the total amount of mintable token [IN PROGRESS]", async function() {
-
+    // creatorganization
     const options = {
       orgName: 'something',
       tokenName: 'token name',
@@ -27,16 +27,15 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
     };
     const organization = await Organization.new(options);
 
-
+    // do some sanity checks on the globalconstriantregistrar
     const gcr = organization.globalConstraintRegistrar;
     // check if our organization is registered on the gcr
     assert.equal(await gcr.isRegistered(organization.avatar.address), true);
-
   	// check if indeed the registrar is registered as a scheme on  the controller
   	assert.equal(await organization.controller.isSchemeRegistered(gcr.address), true);
-
-    // Organization.new standardly registers one global constraint
+    // Organization.new standardly registers no global constraints
     assert.equal((await organization.controller.globalConstraintsCount()).toNumber(), 0);
+
 
     // create a new global constraint - a TokenCapGC instance
     const tokenCapGC = await TokenCapGC.new();
@@ -56,7 +55,6 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
     const gcrPermissionsOnOrg = await organization.controller.getSchemePermissions(gcr.address);
     console.log('gcrPermissionsOnOrg');
     console.log(gcrPermissionsOnOrg);
-
 
     // the voting machine used in this GCR is the same as the voting machine of the organization
     assert.equal(organization.votingMachine.address, parametersForVotingInGCR[1]);
