@@ -1,8 +1,7 @@
 import { Organization } from '../lib/organization.js';
+import { SimpleContributionScheme } from '../lib/contributionscheme.js';
 const helpers = require('./helpers');
 
-
-const SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
 const SimpleVote = artifacts.require('./SimpleVote.sol');
 const MintableToken = artifacts.require('./MintableToken.sol');
 const Avatar = artifacts.require('./Avatar.sol');
@@ -18,6 +17,7 @@ contract('SimpleContribution scheme', function(accounts) {
     const org = await helpers.forgeOrganization({
       founders: [accounts[0], accounts[1]],
       repForFounders: [30, 70],
+      tokensForFounders: [30, 70],
     });
 
     const avatar = org.avatar;
@@ -114,12 +114,9 @@ contract('SimpleContribution scheme', function(accounts) {
 
     // this will vote-and-execute
     tx = await votingMachine.vote(proposalId, true, accounts[1], {from: accounts[1]});
-    // console.log(tx.logs);
 
     // now our scheme should be registered on the controller
     const schemeFromController = await controller.schemes(contributionScheme.address);
-    // console.log('schemeFromController [paramsHash, permissions]');
-    // console.log(schemeFromController);
     // we expect to have only the first bit set (it is a registered scheme without nay particular permissions)
     assert.equal(schemeFromController[1], '0x00000001');
 
@@ -201,6 +198,5 @@ contract('SimpleContribution scheme', function(accounts) {
 
     // TODO: no payments have been made. Write another test for that.
 
-    console.log('DONE!');
   });
 });

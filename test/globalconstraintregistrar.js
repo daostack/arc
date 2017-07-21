@@ -24,6 +24,7 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
       tokenSymbol: 'TST',
       founders: [web3.eth.accounts[0], web3.eth.accounts[1], web3.eth.accounts[2]],
       repForFounders: [1, 29, 70],
+      tokensForFounders: [1, 2, 3],
     };
     const organization = await Organization.new(options);
 
@@ -53,8 +54,6 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
 
     // the info we just got consists of paramsHash and permissions
     const gcrPermissionsOnOrg = await organization.controller.getSchemePermissions(gcr.address);
-    console.log('gcrPermissionsOnOrg');
-    console.log(gcrPermissionsOnOrg);
 
     // the voting machine used in this GCR is the same as the voting machine of the organization
     assert.equal(organization.votingMachine.address, parametersForVotingInGCR[1]);

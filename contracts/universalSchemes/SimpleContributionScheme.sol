@@ -76,11 +76,12 @@ contract SimpleContributionScheme is UniversalScheme {
      * @param _boolVote the voting machine used to approve a contribution
      * @return a hash of the parameters
      */
+    // TODO: clarify what these fees are.
     function getParametersHash(
         uint _orgNativeTokenFee,
         uint _schemeNativeTokenFee,
-       bytes32 _voteApproveParams,
-         BoolVoteInterface _boolVote
+        bytes32 _voteApproveParams,
+        BoolVoteInterface _boolVote
     ) constant returns(bytes32) {
         return (sha3(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _boolVote));
     }
