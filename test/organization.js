@@ -18,7 +18,7 @@ contract('Organization', function(accounts) {
     assert.ok(organization.avatar, 'Organization must have an avatar defined');
   });
 
-  it("can be instantiated with 'at' if it was already deployed (TO DO)", async function(){
+  it("can be instantiated with 'at' if it was already deployed", async function(){
     // first create an organization
     const org1 = await Organization.new({
       orgName: 'Skynet',
@@ -27,7 +27,6 @@ contract('Organization', function(accounts) {
     });
     // then instantiate it with .at
     const org2 = await Organization.at(org1.avatar.address);
-    return;
 
     // check if the two orgs are indeed the same
     assert.equal(org1.avatar.address, org2.avatar.address);
