@@ -89,6 +89,10 @@ contract SchemeRegistrar is UniversalScheme {
         organizations[_avatar] = org;
         LogOrgRegistered(_avatar);
     }
+    
+    function isRegistered(Avatar _avatar) constant returns(bool) {
+      return organizations[_avatar].isRegistered;
+    }
 
     /**
      * @dev create a proposal to register a scheme
