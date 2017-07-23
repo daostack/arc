@@ -34,8 +34,10 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     }
     mapping(bytes32=>Parameters) parameters;
 
-
-    // Constructor, updating the initial prarmeters:
+	
+	/**
+     * @dev the constructor takes a token address, fee and beneficiary
+     */
     function UpgradeScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
@@ -52,7 +54,10 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         parameters[paramsHash].boolVote = _boolVote;
         return paramsHash;
     }
-
+	
+	/**
+	 * @dev return a hash of the given parameters
+	 */
     function getParametersHash(
         bytes32 _voteParams,
         BoolVoteInterface _boolVote
@@ -60,8 +65,11 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         bytes32 paramsHash = (sha3(_voteParams, _boolVote));
         return paramsHash;
     }
-
-    // Adding an organization to the universal scheme:
+	
+	/**
+	 * @dev registering an organization to the univarsal scheme
+	 * @param _avatar avatar of the organization
+	 */
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
       if (fee > 0)
@@ -72,8 +80,13 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
       organizations[_avatar] = org;
       LogOrgRegistered(_avatar);
     }
-
-    // Propose an upgrade of the controller:
+	
+	/**
+	 * @dev porpose an upgrade of the organization's controller
+	 * @param _avatar avatar of the organization
+	 * @param _newController address of the new controller that is being porposed
+	 * @return an id which represents the porposal
+	 */
     function proposeUpgrade(Avatar _avatar, address _newController) returns(bytes32) {
         Organization org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
@@ -88,7 +101,16 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
     }
-
+	
+	/**
+	 * @dev porpose to replace this schme by another upgrading schme
+	 * @param _avatar avatar of the organization
+	 * @param _scheme address of the new upgrading scheme
+	 * @param _params ??? 
+	 * @param _tokenFee ???
+	 * @param _fee ???
+	 * @return an id which represents the porposal
+	 */
     // Propose to replace this schme by another upgrading schme:
     function proposeChangeUpgradingScheme(
         Avatar _avatar,

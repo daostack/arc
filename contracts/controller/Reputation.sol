@@ -1,12 +1,13 @@
 pragma solidity ^0.4.11;
-/*
-    Implements a simple static reputation storage
-    in which reputation is managed by the owner of the contract
-*/
 
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
+/**
+ * @title Simple static reputation storage
+ * @dev The reputation is represented by the owner of the contract
+ * which is usually the controller's address
+ */
 
 contract Reputation is Ownable {
     using SafeMath for uint;
@@ -16,16 +17,30 @@ contract Reputation is Ownable {
     uint public decimals = 18;
 
     event Mint(address indexed to, int256 value);
-
+	
+	/**
+     * @dev the constructor initiate a reputation system with no supply at all
+     */
     function Reputation() {
         balances[msg.sender] = 0;
         totalSupply  = 0;
     }
 
+	/**
+     * @dev return the reputation amount of a given owner
+     * @param _owner an address of the owner which we want to get his reputation
+     */
     function reputationOf(address _owner) constant returns (uint256 balance) {
         return balances[_owner];
     }
-
+	
+	/**
+     * @dev adding/reducing reputation of a given address, updating the total supply,
+	 * and triggering an event of the operation
+	 * @param _amount the reputation amount to be added/reduced
+	 * @param _to the address which we gives/takes reputation amount
+	 * @return bool which represents a successful of the function
+     */
     function mint(int256 _amount, address _to) onlyOwner returns (bool) {
         // create new tokens and add them to the given account
         uint absAmount; // allow to reduce reputation also for non owner
@@ -42,7 +57,13 @@ contract Reputation is Ownable {
         Mint(_to, _amount);
         return true;
     }
-
+	
+	/**
+     * @dev setting reputation amount for a given address, updating the total supply as well
+	 * @param _amount the new reputation amount to be setted
+	 * @param _to the address which we set it's reputation amount
+	 * @return bool which represents a success
+     */
     function setReputation(uint256 _amount, address _to) onlyOwner returns (bool) {
         // set the balacne of _to to _amount
         totalSupply = (totalSupply.sub(balances[_to])).add(_amount);
