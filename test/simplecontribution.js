@@ -1,12 +1,11 @@
 import { Organization } from '../lib/organization.js';
 import { SimpleContributionScheme } from '../lib/contributionscheme.js';
-const helpers = require('./helpers');
+import * as helpers from './helpers';
 
 const SimpleVote = artifacts.require('./SimpleVote.sol');
 const MintableToken = artifacts.require('./MintableToken.sol');
 const Avatar = artifacts.require('./Avatar.sol');
 const Controller = artifacts.require('./Controller.sol');
-const NULL_ADDRESS = helpers.NULL_ADDRESS;
 
 
 contract('SimpleContribution scheme', function(accounts) {
@@ -189,7 +188,7 @@ contract('SimpleContribution scheme', function(accounts) {
 
     // check if proposal was deleted from contribution Scheme
     proposal = await contributionScheme.proposals(contributionId);
-    assert.equal(proposal[0], NULL_ADDRESS);
+    assert.equal(proposal[0], helpers.NULL_HASH);
 
     // check if proposal was deleted from voting machine
     proposal = await votingMachine.proposals(contributionId);

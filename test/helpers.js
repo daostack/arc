@@ -14,7 +14,8 @@ import { daostack } from '../lib/daostack.js';
 import { Organization } from '../lib/organization.js';
 import { getSettings } from '../lib/settings.js';
 
-export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000000000000000000000000000';
+export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
+export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export function getProposalAddress(tx) {
     // helper function that returns a proposal object from the ProposalCreated event

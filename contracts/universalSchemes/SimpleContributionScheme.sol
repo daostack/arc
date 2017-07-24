@@ -11,6 +11,7 @@ import "./UniversalScheme.sol";
 
 
 contract SimpleContributionScheme is UniversalScheme {
+    
     // A struct holding the data for a contribution proposal
     struct ContributionProposal {
       bytes32 contributionDescriptionHash; // Hash of contributtion document.
