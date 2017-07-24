@@ -114,5 +114,5 @@ module.exports = async function(deployer) {
         await upgradeSchemeInst.registerOrganization(AvatarInst.address);
 
         return;
-    })
+    });
 };

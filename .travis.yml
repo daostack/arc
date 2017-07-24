@@ -21,5 +21,8 @@ install:
   - yarn run testrpc
   - truffle version
 
+script:
+  - yarn run test
+  - yarn run lint
 notifications:
   slack: daostack:fGuaFPsiQiV5mgmzRcSzbYqw

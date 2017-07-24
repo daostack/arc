@@ -9,7 +9,8 @@
   "scripts": {
     "test": "truffle test",
     "testrpc": "pm2 start testrpc",
-    "start": "pm2 start truffle -- serve"
+    "start": "pm2 start truffle -- serve",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",

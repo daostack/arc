@@ -1,6 +1,6 @@
 const helpers = require('./helpers');
 
-var GenesisScheme = artifacts.require("./GenesisScheme.sol");
+const GenesisScheme = artifacts.require("./GenesisScheme.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 import { daostack } from '../lib/daostack.js';

@@ -1,4 +1,4 @@
-const helpers = require('./helpers')
+const helpers = require('./helpers');
 
 var GenesisScheme = artifacts.require("./GenesisScheme.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");

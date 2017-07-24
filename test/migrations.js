@@ -1,4 +1,4 @@
-const helpers = require('./helpers')
+const helpers = require('./helpers');
 
 const GenesisScheme = artifacts.require('./GenesisScheme.sol');
 const GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.sol');
