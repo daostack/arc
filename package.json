@@ -10,7 +10,8 @@
     "test": "truffle test",
     "testrpc": "pm2 start testrpc",
     "start": "pm2 start truffle -- serve",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "solium": "solium --dir ."
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
@@ -47,5 +48,7 @@
     "url": "https://github.com/daostack/daostack/issues"
   },
   "homepage": "https://github.com/daostack/daostack",
-  "dependencies": {}
+  "dependencies": {
+    "solium": "^0.5.4"
+  }
 }

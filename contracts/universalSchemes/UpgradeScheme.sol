@@ -150,31 +150,31 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
      * @param _param a parameter of the voting result, 0 is no and 1 is yes.
      */
     function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
-      // Check the caller is indeed the voting machine:
-      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
-      // Check if vote was successful:
-      if (_param != 1 ) {
+        // Check the caller is indeed the voting machine:
+        require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
+        // Check if vote was successful:
+        if (_param != 1 ) {
+            delete organizations[_avatar].proposals[_proposalId];
+            return true;
+        }
+        // Define controller and get the parmas:
+        Controller controller = Controller(Avatar(_avatar).owner());
+        UpgradeProposal proposal = organizations[_avatar].proposals[_proposalId];
+
+        // Upgrading controller:
+        if (proposal.proposalType == 1) {
+            if( ! controller.upgradeController(proposal.newContOrScheme) ) revert();
+        }
+
+        // Changing upgrade scheme:
+        if (proposal.proposalType == 2) {
+              bytes4 permissions = controller.getSchemePermissions(this);
+              if (proposal.fee != 0 )
+                if (!controller.externalTokenApprove(proposal.tokenFee, proposal.newContOrScheme, proposal.fee)) revert();
+            if( ! controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions) ) revert();
+            if( ! controller.unregisterSelf() ) revert();
+        }
         delete organizations[_avatar].proposals[_proposalId];
         return true;
-      }
-      // Define controller and get the parmas:
-      Controller controller = Controller(Avatar(_avatar).owner());
-      UpgradeProposal proposal = organizations[_avatar].proposals[_proposalId];
-
-      // Upgrading controller:
-      if (proposal.proposalType == 1) {
-        if( ! controller.upgradeController(proposal.newContOrScheme) ) revert();
-      }
-
-      // Changing upgrade scheme:
-      if (proposal.proposalType == 2) {
-        bytes4 permissions = controller.getSchemePermissions(this);
-        if (proposal.fee != 0 )
-          if (!controller.externalTokenApprove(proposal.tokenFee, proposal.newContOrScheme, proposal.fee)) revert();
-        if( ! controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions) ) revert();
-        if( ! controller.unregisterSelf() ) revert();
-      }
-      delete organizations[_avatar].proposals[_proposalId];
-      return true;
     }
 }
