@@ -34,8 +34,8 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     }
     mapping(bytes32=>Parameters) parameters;
 
-	
-	/**
+
+    /**
      * @dev the constructor takes a token address, fee and beneficiary
      */
     function UpgradeScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
@@ -54,10 +54,10 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         parameters[paramsHash].boolVote = _boolVote;
         return paramsHash;
     }
-	
-	/**
-	 * @dev return a hash of the given parameters
-	 */
+
+    /**
+     * @dev return a hash of the given parameters
+     */
     function getParametersHash(
         bytes32 _voteParams,
         BoolVoteInterface _boolVote
@@ -65,11 +65,16 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         bytes32 paramsHash = (sha3(_voteParams, _boolVote));
         return paramsHash;
     }
-	
-	/**
-	 * @dev registering an organization to the univarsal scheme
-	 * @param _avatar avatar of the organization
-	 */
+
+    function isRegistered(Avatar _avatar) constant returns(bool) {
+      return organizations[_avatar].isRegistered;
+    }
+
+
+    /**
+     * @dev registering an organization to the univarsal scheme
+     * @param _avatar avatar of the organization
+     */
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
       if (fee > 0)
@@ -80,7 +85,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
       organizations[_avatar] = org;
       LogOrgRegistered(_avatar);
     }
-	
+
 	/**
 	 * @dev porpose an upgrade of the organization's controller
 	 * @param _avatar avatar of the organization
@@ -101,12 +106,12 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
     }
-	
+
 	/**
 	 * @dev porpose to replace this schme by another upgrading schme
 	 * @param _avatar avatar of the organization
 	 * @param _scheme address of the new upgrading scheme
-	 * @param _params ??? 
+	 * @param _params ???
 	 * @param _tokenFee ???
 	 * @param _fee ???
 	 * @return an id which represents the porposal

@@ -32,10 +32,15 @@ contract('Organization', function(accounts) {
     assert.equal(org1.avatar.address, org2.avatar.address);
     assert.equal(org1.orgName, org2.orgName);
     assert.equal(org1.orgToken, org2.orgToken);
-    assert.equal(org1.schemeRegistrar.address, org2.schemeRegistrar.address);
-    assert.equal(org1.upgradeScheme.address, org2.upgradeScheme.address);
-    assert.equal(org1.globalConstraintRegistrar.addresss, org2.globalConstraintRegistrar.adddress);
-    assert.equal(org1.otherSchemes, org2.otherSchemes);
-  });
+    const schemeRegistrar1 = await org1.schemeRegistrar();
+    const schemeRegistrar2 = await org2.schemeRegistrar();
+    assert.equal(schemeRegistrar1.address, schemeRegistrar2.address);
+    const upgradeScheme1 = await org1.upgradeScheme();
+    const upgradeScheme2 = await org2.upgradeScheme();
+    assert.equal(upgradeScheme1.address, upgradeScheme2.address);
+    const globalConstraintRegistrar1 = await org1.globalConstraintRegistrar();
+    const globalConstraintRegistrar2 = await org2.globalConstraintRegistrar();
+    assert.equal(globalConstraintRegistrar1.address, globalConstraintRegistrar2.address);
 
+  });
 });

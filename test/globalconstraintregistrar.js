@@ -29,14 +29,13 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
     const organization = await Organization.new(options);
 
     // do some sanity checks on the globalconstriantregistrar
-    const gcr = organization.globalConstraintRegistrar;
+    const gcr = await organization.globalConstraintRegistrar();
     // check if our organization is registered on the gcr
     assert.equal(await gcr.isRegistered(organization.avatar.address), true);
   	// check if indeed the registrar is registered as a scheme on  the controller
   	assert.equal(await organization.controller.isSchemeRegistered(gcr.address), true);
     // Organization.new standardly registers no global constraints
     assert.equal((await organization.controller.globalConstraintsCount()).toNumber(), 0);
-
 
     // create a new global constraint - a TokenCapGC instance
     const tokenCapGC = await TokenCapGC.new();
