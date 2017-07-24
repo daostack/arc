@@ -14,7 +14,6 @@ contract Reputation is Ownable {
 
     mapping (address => uint256) balances;
     uint256 public totalSupply;
-    uint public decimals = 18;
 
     event Mint(address indexed to, int256 value);
 	
@@ -58,16 +57,4 @@ contract Reputation is Ownable {
         return true;
     }
 	
-	/**
-     * @dev setting reputation amount for a given address, updating the total supply as well
-	 * @param _amount the new reputation amount to be setted
-	 * @param _to the address which we set it's reputation amount
-	 * @return bool which represents a success
-     */
-    function setReputation(uint256 _amount, address _to) onlyOwner returns (bool) {
-        // set the balacne of _to to _amount
-        totalSupply = (totalSupply.sub(balances[_to])).add(_amount);
-        balances[_to] = _amount;
-        return true;
-    }
 }
