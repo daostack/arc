@@ -1,13 +1,14 @@
 // Imports:
-var SimpleVote = artifacts.require('./SimpleVote.sol');
-var GenesisScheme = artifacts.require('./schemes/GenesisScheme.sol');
-var SchemeRegistrar = artifacts.require('./schemes/SchemeRegistrar.sol');
-var GlobalConstraintRegistrar = artifacts.require('./schemes/GlobalConstraintRegistrar.sol');
-var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
+var Avatar = artifacts.require('./schemes/controller/Avatar.sol');
 var Controller = artifacts.require('./schemes/controller/Controller.sol');
+var GenesisScheme = artifacts.require('./schemes/GenesisScheme.sol');
+var GlobalConstraintRegistrar = artifacts.require('./schemes/GlobalConstraintRegistrar.sol');
 var MintableToken = artifacts.require('./schemes/controller/MintableToken.sol');
 var Reputation = artifacts.require('./schemes/controller/Reputation.sol');
-var Avatar = artifacts.require('./schemes/controller/Avatar.sol');
+var SchemeRegistrar = artifacts.require('./schemes/SchemeRegistrar.sol');
+var SimpleVote = artifacts.require('./SimpleVote.sol');
+var SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
+var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 
 // Instances:
 var simpleVoteInst;
@@ -113,6 +114,8 @@ module.exports = async function(deployer) {
         await globalConstraintRegistrarInst.registerOrganization(AvatarInst.address);
         await upgradeSchemeInst.registerOrganization(AvatarInst.address);
 
-        return;
     });
+
+    // also deploy a SimpleContributionScheme for general use
+    deployer.deploy(SimpleContributionScheme);
 };
