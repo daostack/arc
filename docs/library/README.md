@@ -1,6 +1,13 @@
 
 # DAOSTACK library
 
+Work in progress.
+
+## API
+
+[Organization](Organization.md)
+
+## Example Session
 [next examples are not all working yet, but this is what is should/could look like]
 
     import { Organization } from '/path/to/daostack.js';
