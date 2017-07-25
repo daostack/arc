@@ -8,6 +8,10 @@ const MintableToken = artifacts.require('./MintableToken.sol');
 
 contract('Organization', function(accounts) {
 
+  before(function() {
+    helpers.etherForEveryone();
+  });
+
   it("can be created with 'new' using default settings", async function(){
     const organization = await Organization.new({
       orgName: 'Skynet',
@@ -42,5 +46,24 @@ contract('Organization', function(accounts) {
     const globalConstraintRegistrar2 = await org2.globalConstraintRegistrar();
     assert.equal(globalConstraintRegistrar1.address, globalConstraintRegistrar2.address);
 
+  });
+  //
+  it("has a working proposeScheme function [TO DO]", async function(){
+  //   const organization = await Organization.new({
+  //     orgName: 'Skynet',
+  //     tokenName: 'Tokens of skynet',
+  //     tokenSymbol: 'SNT'
+  //   });
+  //   //
+  //   // await organization.proposeScheme({
+  //   //   schemeType: 'SimpleICO',
+  //   //   cap: 100, // uint cap; // Cap in Eth
+  //   //   price: .001, // uint price; // Price represents Tokens per 1 Eth
+  //   //   startBlock: 5,// uint startBlock;
+  //   //   endBlock: 10, // uint endBlock;
+  //   //   admin: accounts[3], // address admin; // The admin can halt or resume ICO.
+  //   //   etherAddress: accounts[4], // address etherAddress; // all funds received will be transffered to this address.
+  //   //
+  //   // });
   });
 });

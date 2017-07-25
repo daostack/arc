@@ -10,6 +10,10 @@ const Controller = artifacts.require('./Controller.sol');
 
 contract('SimpleContribution scheme', function(accounts) {
 
+  before(function() {
+    helpers.etherForEveryone();
+  });
+
   it("Propose and accept a contribution - complete workflow", async function(){
     let params, paramsHash, tx, proposal;
 
@@ -21,35 +25,35 @@ contract('SimpleContribution scheme', function(accounts) {
 
     const avatar = org.avatar;
     const controller = org.controller;
-  	const schemeRegistrar = await org.schemeRegistrar();
+    const schemeRegistrar = await org.schemeRegistrar();
 
-  	// we creaet a SimpleContributionScheme
-  	const reputationAddress = await controller.nativeReputation();
-  	const tokenAddress = await controller.nativeToken();
+    // we creaet a SimpleContributionScheme
+    const reputationAddress = await controller.nativeReputation();
+    const tokenAddress = await controller.nativeToken();
     const votingMachine = org.votingMachine;
-  	const votingParams = await votingMachine.getParametersHash(
-  		reputationAddress,
-  		50, // percentage that counts as a majority
-  	);
+    const votingParams = await votingMachine.getParametersHash(
+      reputationAddress,
+      50, // percentage that counts as a majority
+    );
     // we also register the parameters with the voting machine
-  	await votingMachine.setParameters(
-  		reputationAddress,
-  		50, // percentage that counts as a majority
-  	);
+    await votingMachine.setParameters(
+      reputationAddress,
+      50, // percentage that counts as a majority
+    );
 
     // create a contribution Scheme
-  	const contributionScheme = await SimpleContributionScheme.new(
-  		tokenAddress,
-  		0, // register with 0 fee
-  		accounts[0],
-  	);
+    const contributionScheme = await SimpleContributionScheme.new(
+      tokenAddress,
+      0, // register with 0 fee
+      accounts[0],
+    );
 
     const contributionSchemeParamsHash = await contributionScheme.getParametersHash(
-  		0, // fee for the organisation?
-  		0, // fee for the token?
-  		votingParams,
-  		votingMachine.address,
-	  );
+      0, // fee for the organisation?
+      0, // fee for the token?
+      votingParams,
+      votingMachine.address,
+    );
 
     // these parameters are not registered yet at this point
     params = await contributionScheme.parameters(contributionSchemeParamsHash);
@@ -66,7 +70,7 @@ contract('SimpleContribution scheme', function(accounts) {
     params = await contributionScheme.parameters(contributionSchemeParamsHash);
     assert.notEqual(params[3], '0x0000000000000000000000000000000000000000');
 
-  	// and we propose to add the contribution scheme to controller
+    // and we propose to add the contribution scheme to controller
     const simpleContributionFee = await contributionScheme.fee();
     const simpleContributionFeeToken = await contributionScheme.nativeToken();
 
@@ -74,42 +78,16 @@ contract('SimpleContribution scheme', function(accounts) {
     const orgFromSchemeRegistrar = await schemeRegistrar.organizations(avatar.address);
     assert.equal(orgFromSchemeRegistrar, true);
 
-  	tx = await schemeRegistrar.proposeScheme(
-  		avatar.address,
-  		contributionScheme.address,
-  		contributionSchemeParamsHash,
-  		false, // isRegistering
+    tx = await schemeRegistrar.proposeScheme(
+      avatar.address,
+      contributionScheme.address,
+      contributionSchemeParamsHash,
+      false, // isRegistering
       simpleContributionFeeToken,
       simpleContributionFee
-  		);
+      );
 
     const proposalId = tx.logs[0].args.proposalId;
-
-    // // see if the schemeRegistrar has the correct persmissions
-    // let tmp;
-    // // print some info about the schemeregistrar
-    // console.log('This is what the controller knows of the schemeRegistrar (params and permissions)')
-    // tmp = await controller.schemes(schemeRegistrar.address);
-    // console.log(tmp);
-    //
-    // console.log('This is what the votingMachine knows of the current proposal (owner, avatar, executable, ...)')
-    // tmp = await votingMachine.proposals(proposalId);
-    // console.log(tmp);
-    //
-    // console.log('this is the avatar')
-    // tmp = await Avatar.at(tmp[1]);
-    // // console.log(tmp);
-    // console.log('This is the adress of the controller (=owner ofhte avatar)');
-    // tmp = await tmp.owner();
-    // console.log(tmp);
-    // console.log('compare the address of the original controller and that of the owner of the avatar of the proposal')
-    // console.log(tmp)
-    // console.log(controller.address)
-
-    //
-    // console.log('This is what the schemeRegistrar knows of the current proposal')
-    // tmp = await schemeRegistrar.proposals(proposalId);
-    // console.log(tmp);
 
     // this will vote-and-execute
     tx = await votingMachine.vote(proposalId, true, accounts[1], {from: accounts[1]});
