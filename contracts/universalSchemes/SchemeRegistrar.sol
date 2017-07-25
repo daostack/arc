@@ -89,7 +89,7 @@ contract SchemeRegistrar is UniversalScheme {
         organizations[_avatar] = org;
         LogOrgRegistered(_avatar);
     }
-    
+
     function isRegistered(Avatar _avatar) constant returns(bool) {
       return organizations[_avatar].isRegistered;
     }
@@ -107,6 +107,8 @@ contract SchemeRegistrar is UniversalScheme {
      * @dev NB: not only proposes the vote, but also votes for it
      */
     // TODO: check if we cannot derive isRegistering from the _scheme itself
+    // TODO: simplify this by removing the _tokenFee and fee params, which can be derived from
+    // the scheme (i.e. are equal to _scheme.fee() and scheme.somethingToken())
     function proposeScheme(
         Avatar _avatar,
         address _scheme,

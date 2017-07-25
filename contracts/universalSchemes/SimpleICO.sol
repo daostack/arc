@@ -48,6 +48,7 @@ contract SimpleICO is UniversalScheme {
     }
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+    // TODO: rename "etherAddress" to "beneficiary", in line with the other contracts
     struct Parameters {
         uint cap; // Cap in Eth
         uint price; // Price represents Tokens per 1 Eth
@@ -62,24 +63,23 @@ contract SimpleICO is UniversalScheme {
 
     mapping(bytes32=>Parameters) parameters;
 
-    event DonationRecieved( address indexed organization, address indexed _beneficiary, uint _incomingEther  ,uint indexed _tokensAmount );
+    event DonationReceived( address indexed organization, address indexed _beneficiary, uint _incomingEther  ,uint indexed _tokensAmount );
 
     // Constructor, updating the initial prarmeters:
     function SimpleICO(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
-
     /**
      * @dev hash the parameters, save them if necessary, and return the hash value
      */
     function setParameters(
-      uint _cap,
-      uint _price,
-      uint _startBlock,
-      uint _endBlock,
-      address _etherAddress,
-      address _admin)  returns(bytes32) {
+        uint _cap,
+        uint _price,
+        uint _startBlock,
+        uint _endBlock,
+        address _etherAddress,
+        address _admin)  returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_cap, _price, _startBlock, _endBlock, _etherAddress, _admin);
         if (parameters[paramsHash].cap != 0)  {
             parameters[paramsHash].cap = _cap;
@@ -176,13 +176,16 @@ contract SimpleICO is UniversalScheme {
         // Send ether to the defined address, mint, and send change to beneficiary:
         params.etherAddress.transfer(incomingEther);
         Controller controller = Controller(_avatar.owner());
-        if(! controller.mintTokens(tokens, _beneficiary)) revert();
-        if (change != 0)
+        if (!controller.mintTokens(tokens, _beneficiary)) {
+            revert();
+        }
+        if (change != 0) {
             _beneficiary.transfer(change);
+        }
 
         // Update total raised, call event and return amount of tokens bought:
         org.totalEthRaised += incomingEther;
-        DonationRecieved(_avatar, _beneficiary, incomingEther, tokens);
+        DonationReceived(_avatar, _beneficiary, incomingEther, tokens);
         return tokens;
     }
 }

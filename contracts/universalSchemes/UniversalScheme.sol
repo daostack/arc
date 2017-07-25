@@ -7,14 +7,14 @@ import "zeppelin-solidity/contracts/token/StandardToken.sol";
 
 
 contract UniversalScheme is Ownable {
-  StandardToken     public      nativeToken;
-  uint              public      fee;
-  address           public      beneficiary;
-  bytes32           public      hashedParameters; // For other parameters.
+  StandardToken public nativeToken;
+  uint public fee;
+  address public beneficiary;
+  bytes32 public hashedParameters; // For other parameters.
 
   event LogOrgRegistered (address _avatar);
   event LogNewProposal(bytes32 proposalId);
-  
+
   function updateParameters(
       StandardToken _nativeToken,
       uint _fee,
