@@ -11,7 +11,7 @@ import "./UniversalScheme.sol";
 
 
 contract SimpleContributionScheme is UniversalScheme {
-    
+
     // A struct holding the data for a contribution proposal
     struct ContributionProposal {
       bytes32 contributionDescriptionHash; // Hash of contributtion document.
@@ -124,8 +124,7 @@ contract SimpleContributionScheme is UniversalScheme {
         address _beneficiary
     ) returns(bytes32) {
         require(organizations[_avatar].isRegistered);
-        Parameters controllerParams = parameters[getParametersFromController(_avatar)];
-
+        Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
         // Pay fees for submitting the contribution:
         _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
@@ -160,35 +159,35 @@ contract SimpleContributionScheme is UniversalScheme {
      * @param _param a parameter of the voting result, 0 is no and 1 is yes.
      */
     function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
-      // Check the caller is indeed the voting machine:
-      require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
-      // Check if vote was successful:
-      if (_param != 1) {
+        // Check the caller is indeed the voting machine:
+        require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
+        // Check if vote was successful:
+        if (_param != 1) {
+            delete proposals[_proposalId];
+            return true;
+        }
+
+        // Define controller and get the parmas:
+        ContributionProposal memory proposal = proposals[_proposalId];
+
+        // pay the funds:
+        Controller controller = Controller(Avatar(_avatar).owner());
+        if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) {
+            revert();
+        }
+        if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) {
+            revert();
+        }
+        if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) {
+            revert();
+        }
+
+        if (proposal.externalToken != address(0) && proposal.externalTokenReward > 0) {
+            if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward)) {
+                revert();
+            }
+        }
         delete proposals[_proposalId];
         return true;
-      }
-
-      // Define controller and get the parmas:
-      ContributionProposal proposal = proposals[_proposalId];
-
-      // pay the funds:
-      Controller controller = Controller(Avatar(_avatar).owner());
-      if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) {
-          revert();
-      }
-      if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) {
-          revert();
-      }
-      if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) {
-          revert();
-      }
-
-      if (proposal.externalToken != address(0) && proposal.externalTokenReward > 0) {
-          if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward)) {
-              revert();
-          }
-      }
-      delete proposals[_proposalId];
-      return true;
     }
 }

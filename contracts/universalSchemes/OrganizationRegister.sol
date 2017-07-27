@@ -38,26 +38,27 @@ contract OrganizationRegister is UniversalScheme {
      * @dev hash the parameters, save them if necessary, and return the hash value
      */
     function setParameters(StandardToken _token, uint _fee, address _beneficiary) returns(bytes32) {
-      bytes32 paramsHash = getParametersHash(_token, _fee, _beneficiary);
-      if (parameters[paramsHash].token == address(0)) {
-        parameters[paramsHash].token = _token;
-        parameters[paramsHash].fee = _fee;
-        parameters[paramsHash].beneficiary = _beneficiary;
-      }
-      return paramsHash;
+        bytes32 paramsHash = getParametersHash(_token, _fee, _beneficiary);
+        if (parameters[paramsHash].token == address(0)) {
+          parameters[paramsHash].token = _token;
+          parameters[paramsHash].fee = _fee;
+          parameters[paramsHash].beneficiary = _beneficiary;
+        }
+        return paramsHash;
     }
 
     // The format of the hashing of the parameters:
     function getParametersHash(StandardToken _token, uint _fee, address _beneficiary)
                               constant returns(bytes32) {
-      return (sha3(_token, _fee, _beneficiary));
+        return (sha3(_token, _fee, _beneficiary));
     }
 
     // Adding an organization to the universal scheme:
     function registerOrganization(Avatar _avatar) {
         // Pay fees for using scheme:
-        if (fee > 0)
+        if (fee > 0) {
           nativeToken.transferFrom(_avatar, beneficiary, fee);
+        }
 
         Organization memory org;
         org.isRegistered = true;
@@ -66,8 +67,8 @@ contract OrganizationRegister is UniversalScheme {
 
     // Adding or promoting an organization on the registry.
     function addOrPromoteOrg(Avatar _avatar, address _record, uint _amount) {
-        Organization org = organizations[_avatar];
-        Parameters params = parameters[getParametersFromController(_avatar)];
+        Organization storage org = organizations[_avatar];
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
 
         // Pay promotion, if the org was not listed the minimum is the fee:

@@ -141,8 +141,8 @@ contract SimpleICO is UniversalScheme {
 
     // Check if an ICO is active (halted is still considered active)
     function isActiveICO(address _avatar) constant returns(bool) {
-        Organization org = organizations[_avatar];
-        Parameters params = parameters[org.paramsHash];
+        Organization memory org = organizations[_avatar];
+        Parameters memory params = parameters[org.paramsHash];
         if (! org.isRegistered) return false;
         if (org.totalEthRaised >= params.cap) return false;
         if (block.number >= params.endBlock) return false;
@@ -152,8 +152,8 @@ contract SimpleICO is UniversalScheme {
 
     // Donating ethers to get tokens:
     function donate(Avatar _avatar, address _beneficiary) payable returns(uint) {
-        Organization org = organizations[_avatar];
-        Parameters params = parameters[org.paramsHash];
+        Organization memory org = organizations[_avatar];
+        Parameters memory params = parameters[org.paramsHash];
 
         // Check ICO is active:
         require(isActiveICO(_avatar));

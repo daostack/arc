@@ -117,7 +117,7 @@ contract SchemeRegistrar is UniversalScheme {
         StandardToken _tokenFee,
         uint _fee
     ) returns(bytes32) {
-        Organization org = organizations[_avatar];
+        Organization memory org = organizations[_avatar];
         // Check if org is registered to use this universal scheme
         require(org.isRegistered);
 
@@ -126,7 +126,7 @@ contract SchemeRegistrar is UniversalScheme {
         require(!controller.isSchemeRegistered(_scheme));
 
         // propose
-        Parameters controllerParams = parameters[getParametersFromController(_avatar)];
+        Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
         BoolVoteInterface boolVote = controllerParams.boolVote;
         bytes32 proposalId = boolVote.propose(controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this));
@@ -156,13 +156,13 @@ contract SchemeRegistrar is UniversalScheme {
      * NB: not only registers the proposal, but also votes for it
      */
     function proposeToRemoveScheme(Avatar _avatar, address _scheme) returns(bytes32) {
-        Organization org = organizations[_avatar];
+        Organization memory org = organizations[_avatar];
 
         // Check if the orgazation is registred to use this universal scheme.
         require(org.isRegistered);
 
         bytes32 paramsHash = getParametersFromController(_avatar);
-        Parameters params = parameters[paramsHash];
+        Parameters memory params = parameters[paramsHash];
 
         BoolVoteInterface boolVote = params.boolVote;
         bytes32 proposalId = boolVote.propose(params.voteRemoveParams, _avatar, ExecutableInterface(this));
@@ -189,13 +189,12 @@ contract SchemeRegistrar is UniversalScheme {
       // Check the caller is indeed the voting machine:
       require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
 
-      // XXX: next lines eems to be a bug: in this way anyone can delete a proposal from the list
       if (_param != 1) {
         delete proposals[_proposalId];
         return true;
       }
       // Define controller and get the parmas:
-      SchemeProposal proposal = proposals[_proposalId];
+      SchemeProposal memory proposal = proposals[_proposalId];
       Controller controller = Controller(Avatar(_avatar).owner());
 
       // Add a scheme:

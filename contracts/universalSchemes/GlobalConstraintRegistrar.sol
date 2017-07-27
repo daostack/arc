@@ -10,21 +10,21 @@ import "./UniversalScheme.sol";
 contract GlobalConstraintRegistrar is UniversalScheme {
 
     // The struct that holds the information of a global constraint proposed to be added or removed.
-    struct gcProposal {
+    struct GCProposal {
         address gc; // The address of the global contraint contract.
         bytes32 params; // Parameters for global constraint.
         uint proposalType; // 1: add a GC, 2: remove a GC.
         bytes32 removeParams; // Voting parameters for removing this GC.
     }
 
-    mapping(bytes32=>gcProposal) public proposals;
+    mapping(bytes32=>GCProposal) public proposals;
 
     // Struct holding the data for each organization
     struct Organization {
         bool isRegistered;
         bytes32 voteRegisterParams; // The voting parameters for adding a GC.
         BoolVoteInterface boolVote; // The voting machine in which the voting takes place.
-        mapping(bytes32=>gcProposal) proposals; // A mapping from the proposal ID to the proposal itself.
+        mapping(bytes32=>GCProposal) proposals; // A mapping from the proposal ID to the proposal itself.
         mapping(address=>bytes32) removeParams; // A mapping that saves the parameters for removing each GC.
     }
 
@@ -110,7 +110,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
     // Proposing to remove a new GC:
     function proposeToRemoveGC(Avatar _avatar, address _gc) returns(bytes32) {
-        Organization org = organizations[_avatar];
+        Organization storage org = organizations[_avatar];
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         BoolVoteInterface boolVote = params.boolVote;
@@ -139,7 +139,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
       }
       // Define controller and get the parmas:
       Controller controller = Controller(Avatar(_avatar).owner());
-      gcProposal proposal = proposals[_proposalId];
+      GCProposal memory proposal = proposals[_proposalId];
 
       // Adding a GC
       if (proposal.proposalType == 1) {

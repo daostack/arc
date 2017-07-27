@@ -97,7 +97,7 @@ contract SimpleVote {
      */
     // TODO: perhaps split in "vote" (without voter argument), and "voteFor" (owner votes for someone else)
     function vote(bytes32 proposalId, bool yes, address voter) returns(bool) {
-        Proposal proposal = proposals[proposalId];
+        Proposal storage proposal = proposals[proposalId];
         require(proposal.opened); // Check the proposal exists
         require(!proposal.ended); // Check the voting is not finished
 
@@ -126,18 +126,18 @@ contract SimpleVote {
     }
 
     function cancelVoting(bytes32 proposalId) {
-      Proposal proposal = proposals[proposalId];
-      // Check vote is open:
-      require(proposal.opened);
-      require(!proposal.ended);
+        Proposal storage proposal = proposals[proposalId];
+        // Check vote is open:
+        require(proposal.opened);
+        require(!proposal.ended);
 
-      int vote = proposal.voted[msg.sender];
-      if (vote > 0)
-        proposal.yes = (proposal.yes).sub(uint(vote));
-      else
-        proposal.yes = (proposal.no).sub(uint((-1)*vote));
-      proposal.voted[msg.sender] = 0;
-      CancelVoting(msg.sender, proposalId);
+        int vote = proposal.voted[msg.sender];
+        if (vote > 0)
+          proposal.yes = (proposal.yes).sub(uint(vote));
+        else
+          proposal.yes = (proposal.no).sub(uint((-1)*vote));
+        proposal.voted[msg.sender] = 0;
+        CancelVoting(msg.sender, proposalId);
     }
 
     /**
@@ -150,7 +150,7 @@ contract SimpleVote {
     // TODO: perhaps rename to checkOutcomeAndExecute or something similar
     // TODO: do we want to delete the vote from the proposals mapping?
     function checkVoteEnded(bytes32 _proposalId) returns(bool) {
-      Proposal proposal = proposals[_proposalId];
+      Proposal memory proposal = proposals[_proposalId];
       require(!proposal.ended);
       uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
       uint absPrecReq = parameters[proposal.paramsHash].absPrecReq;

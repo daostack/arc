@@ -94,7 +94,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
    * @return an id which represents the porposal
    */
     function proposeUpgrade(Avatar _avatar, address _newController) returns(bytes32) {
-        Organization org = organizations[_avatar];
+        Organization memory org = organizations[_avatar];
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         BoolVoteInterface boolVote = params.boolVote;
@@ -127,7 +127,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     )
         returns(bytes32)
     {
-        Organization org = organizations[_avatar];
+        Organization memory org = organizations[_avatar];
         Parameters memory params = parameters[getParametersFromController(_avatar)];
 
         require(org.isRegistered); // Check org is registred to use this universal scheme.
@@ -161,7 +161,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         }
         // Define controller and get the parmas:
         Controller controller = Controller(Avatar(_avatar).owner());
-        UpgradeProposal proposal = proposals[_proposalId];
+        UpgradeProposal memory proposal = proposals[_proposalId];
 
         // Upgrading controller:
         if (proposal.proposalType == 1) {
