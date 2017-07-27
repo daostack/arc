@@ -18,9 +18,18 @@ contract('SimpleContribution scheme', function(accounts) {
     let params, paramsHash, tx, proposal;
 
     const org = await helpers.forgeOrganization({
-      founders: [accounts[0], accounts[1]],
-      repForFounders: [30, 70],
-      tokensForFounders: [30, 70],
+      founders: [
+        {
+          address: accounts[0],
+          tokens: 30,
+          reputation: 30,
+        },
+        {
+          address: accounts[1],
+          tokens: 70,
+          reputation: 70,
+        },
+      ]
     });
 
     const avatar = org.avatar;

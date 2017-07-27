@@ -18,13 +18,28 @@ contract('createGlobalConstraintRegistrar', function(accounts) {
 
   it("should be able to put contraints on the total amount of mintable token [IN PROGRESS]", async function() {
     // creatorganization
+    const founders = [
+      {
+        address: web3.eth.accounts[0],
+        reputation: 1,
+        tokens: 1,
+      },
+      {
+        address: web3.eth.accounts[1],
+        reputation: 29,
+        tokens: 2,
+      },
+      {
+        address: web3.eth.accounts[2],
+        reputation: 70,
+        tokens: 3,
+      },
+    ];
     const options = {
       orgName: 'something',
       tokenName: 'token name',
       tokenSymbol: 'TST',
-      founders: [web3.eth.accounts[0], web3.eth.accounts[1], web3.eth.accounts[2]],
-      repForFounders: [1, 29, 70],
-      tokensForFounders: [1, 2, 3],
+      founders
     };
     const organization = await Organization.new(options);
 

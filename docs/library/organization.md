@@ -9,18 +9,17 @@ the Blockchain. The function returns an `Organization` instance.
       orgName: 'Name of organization', // string, required, name of organization
       tokenName: 'xx', // string, required, name of organization's token
       tokenSymbol: 'xxx', // string, required, symbol of organization's token
-      founders: // an array of founders, default is empty array 
+      founders: // an array of founders, default is empty array
         [
          { address:  '0x124...',
            tokens: 3.14, // how many tokens will be created and given to this founder
            reputation: 1234, // how much reputaiton will be created and given to this founder
          }
         ],  
-      
-      
+
+
     })
 
-See
 
 ## at
 
@@ -42,4 +41,3 @@ type of scheme that is registered.
       admin: accounts[3], // address admin; // The admin can halt or resume ICO.
       etherAddress: accounts[4], // address etherAddress; // all funds received will be transffered to this address.
     });
-    

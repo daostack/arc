@@ -15,13 +15,23 @@ contract('UpgradeScheme', function(accounts) {
   });
 
   it('upgrade should work as expected', async function() {
+    const founders = [
+      {
+        address: accounts[0],
+        reputation: 30,
+        tokens: 30,
+      },
+      {
+        address: accounts[1],
+        reputation: 70,
+        tokens: 70,
+      }
+    ];
     const organization = await Organization.new({
       orgName: 'Skynet',
       tokenName: 'Tokens of skynet',
       tokenSymbol: 'SNT',
-      founders: [accounts[0], accounts[1]],
-      repForFounders: [30, 70],
-      tokensForFounders: [30, 70],
+      founders,
     });
 
     const upgradeScheme = await organization.upgradeScheme();
