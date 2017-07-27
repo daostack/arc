@@ -37,9 +37,9 @@ contract SimpleContributionScheme is UniversalScheme {
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
         // A contibution fee can be in the organization token or the scheme token or a combination
-        uint orgNativeTokenFee;
+        uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
         bytes32 voteApproveParams;
-        uint schemeNativeTokenFee;
+        uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
         BoolVoteInterface boolVote;
     }
     mapping(bytes32=>Parameters) public parameters;
@@ -71,13 +71,13 @@ contract SimpleContributionScheme is UniversalScheme {
 
     /**
      * @dev return a hash of the given parameters
-     * @param _orgNativeTokenFee ???
-     * @param _schemeNativeTokenFee ???
+     * @param _orgNativeTokenFee the fee for submitting a contribution in organizations native token
+     * @param _schemeNativeTokenFee the fee for submitting a contribution if paied in schemes native token
      * @param _voteApproveParams parameters for the voting machine used to approve a contribution
      * @param _boolVote the voting machine used to approve a contribution
      * @return a hash of the parameters
      */
-    // TODO: clarify what these fees are.
+    // TODO: These fees are messy. Better to have a _fee and _feeToken pair, just as in some other contract (which one?) with some sane default
     function getParametersHash(
         uint _orgNativeTokenFee,
         uint _schemeNativeTokenFee,

@@ -63,7 +63,7 @@ contract SimpleICO is UniversalScheme {
 
     mapping(bytes32=>Parameters) parameters;
 
-    event DonationReceived( address indexed organization, address indexed _beneficiary, uint _incomingEther  ,uint indexed _tokensAmount );
+    event DonationReceived(address indexed organization, address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
 
     // Constructor, updating the initial prarmeters:
     function SimpleICO(StandardToken _nativeToken, uint _fee, address _beneficiary) {
@@ -106,11 +106,12 @@ contract SimpleICO is UniversalScheme {
     // Adding an organization to the universal scheme, and opens an ICO for it:
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
-      if (fee > 0)
+      if (fee > 0) {
         nativeToken.transferFrom(_avatar, beneficiary, fee);
+      }
 
       // Check there is no ongoing ICO:
-      require(! isActiveICO(_avatar));
+      require(!isActiveICO(_avatar));
 
       // Set the organization data:
       Organization memory org;
@@ -159,7 +160,7 @@ contract SimpleICO is UniversalScheme {
         require(isActiveICO(_avatar));
 
         // Check ICO is not halted:
-        require(! org.isHalted);
+        require(!org.isHalted);
 
         uint incomingEther;
         uint change;

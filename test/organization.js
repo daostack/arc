@@ -70,7 +70,21 @@ contract('Organization', function(accounts) {
     assert.notEqual(proposalId, helpers.NULL_HASH);
 
   });
-  it("has a working proposeScheme function for ContributionScheme [TODO]", async function(){
+  it("has a working proposeScheme function for ContributionScheme [IN PROGRESS]", async function(){
+    const organization = await Organization.new({
+      orgName: 'Skynet',
+      tokenName: 'Tokens of skynet',
+      tokenSymbol: 'SNT'
+    });
+
+    const proposalId = await organization.proposeScheme({
+      schemeType: 'SimpleContributionScheme',
+    });
+    //
+    assert.isOk(proposalId);
+    assert.notEqual(proposalId, helpers.NULL_HASH);
+
+    // TODO: test with non-default settings
 
   });
   it("has a working proposeScheme function for UpdateScheme [TODO]", async function(){
