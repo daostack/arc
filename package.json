@@ -26,7 +26,7 @@
     "pug": "^2.0.0-rc.1",
     "solc": "^0.3.5",
     "solc-cli": "^0.3.0",
-    "truffle": "^3.4.5",
+    "truffle": "^3.4.6",
     "zeppelin-solidity": "^1.1.0"
   },
   "repository": {
