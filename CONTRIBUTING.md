@@ -30,13 +30,20 @@ To run the test locally use a local blockchain using testrpc, just run:
 
 On a second terminal, run the tests:
 
-    truffle test
+    yarn run test
 
 
 # Style
 
 For solidity, we are following the style guide here: http://solidity.readthedocs.io/en/develop/style-guide.html
 
+A Solidity linter (solium is installed, which can be run with:
+
+    yarn run solium
+
+Code should survive Javascript linting as well:
+
+    yarn run lint
 
 # Breakpoints
 

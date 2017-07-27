@@ -5,7 +5,7 @@ Work in progress.
 
 ## API
 
-[Organization](Organization.md)
+[Organization](organization.md)
 
 ## Example Session
 [next examples are not all working yet, but this is what is should/could look like]
@@ -47,7 +47,7 @@ We can use our schemeRegistrar to propose to add a new Scheme - say one for maki
     const contributionScheme = ContributionScheme.at('0x12345abc');
 
     const proposalId = await organization.proposeScheme({
-      scheme: contributionScheme,
+      scheme: 'ContributionScheme',
       params: {
         orgNativeTokenFee: 0, // ??
         schemeNativeTokenFee: 0, // ??
