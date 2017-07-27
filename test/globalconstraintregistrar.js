@@ -9,7 +9,7 @@ const TokenCapGC = artifacts.require("./TokenCapGC.sol");
 import { getValueFromLogs } from '../lib/utils.js';
 import { daostack } from '../lib/daostack.js';
 
-contract('createGlobalConstraintRegistrar', function(accounts) {
+contract('GlobalConstraintRegistrar', function(accounts) {
   let tx;
 
   before(function() {

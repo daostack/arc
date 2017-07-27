@@ -16,21 +16,20 @@ contract('SimpleContribution scheme', function(accounts) {
 
   it("Propose and accept a contribution - complete workflow", async function(){
     let params, paramsHash, tx, proposal;
+    const founders = [
+      {
+        address: accounts[0],
+        tokens: 30,
+        reputation: 30,
+      },
+      {
+        address: accounts[1],
+        tokens: 70,
+        reputation: 70,
+      },
+    ];
 
-    const org = await helpers.forgeOrganization({
-      founders: [
-        {
-          address: accounts[0],
-          tokens: 30,
-          reputation: 30,
-        },
-        {
-          address: accounts[1],
-          tokens: 70,
-          reputation: 70,
-        },
-      ]
-    });
+    const org = await helpers.forgeOrganization({founders});
 
     const avatar = org.avatar;
     const controller = org.controller;

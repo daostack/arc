@@ -1,6 +1,6 @@
 
 import { Organization } from '../lib/organization.js';
-const helpers = require('./helpers');
+import * as helpers from './helpers';
 
 // var UniversalSimpleVote = artifacts.require("./UniversalSimpleVote.sol");
 const SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
@@ -48,7 +48,7 @@ contract('Organization', function(accounts) {
 
   });
 
-  it("has a working proposeScheme function [TO DO]", async function(){
+  it("has a working proposeScheme function for SimpleICO", async function(){
 
     const organization = await Organization.new({
       orgName: 'Skynet',
@@ -56,7 +56,7 @@ contract('Organization', function(accounts) {
       tokenSymbol: 'SNT'
     });
 
-    await organization.proposeScheme({
+    const proposalId = await organization.proposeScheme({
       schemeType: 'SimpleICO',
       cap: 100, // uint cap; // Cap in Eth
       price: .001, // uint price; // Price represents Tokens per 1 Eth
@@ -65,5 +65,15 @@ contract('Organization', function(accounts) {
       admin: accounts[3], // address admin; // The admin can halt or resume ICO.
       etherAddress: accounts[4], // address etherAddress; // all funds received will be transffered to this address.
     });
+    //
+    assert.isOk(proposalId);
+    assert.notEqual(proposalId, helpers.NULL_HASH);
+
+  });
+  it("has a working proposeScheme function for ContributionScheme [TODO]", async function(){
+
+  });
+  it("has a working proposeScheme function for UpdateScheme [TODO]", async function(){
+
   });
 });
