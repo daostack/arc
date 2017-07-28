@@ -34,4 +34,5 @@ contract UniversalScheme is Ownable {
      Controller controller = Controller(_avatar.owner());
      return controller.getSchemeParameters(this);
   }
+
 }

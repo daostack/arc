@@ -1,6 +1,6 @@
-# Organization api
+# Organization API
 
-## new
+## new()
 
 `Organization.new` will deploy a new organization with a standard configuration to
 the Blockchain. The function returns an `Organization` instance.
@@ -9,25 +9,40 @@ the Blockchain. The function returns an `Organization` instance.
       orgName: 'Name of organization', // string, required, name of organization
       tokenName: 'xx', // string, required, name of organization's token
       tokenSymbol: 'xxx', // string, required, symbol of organization's token
-      founders: // an array of founders, default is empty array
-        [
-         { address:  '0x124...',
-           tokens: 3.14, // how many tokens will be created and given to this founder
-           reputation: 1234, // how much reputaiton will be created and given to this founder
-         }
-        ],  
 
+      // an array of founders, default is empty array
+      founders: [
+       { address:  '0x124...',
+         tokens: 3.14, // how many tokens will be created and given to this founder
+         reputation: 1234, // how much reputaiton will be created and given to this founder
+       }
+      ],  
 
+      // schemes is an array of schemes; default looks as follows:  
+      schemes: [
+        {
+          schemeType: 'SchemeRegistrar',
+          schemeAddress: settings.schemeRegistrar,
+        },
+        {
+          schemeType: 'UpgradeScheme',
+          schemeAddress: settings.upgradeScheme,
+        },
+        {
+          schemeType: 'GlobalConstraintRegistrar',
+          schemeAddress: settings.globalConstraintRegistrar,
+        },
+      ],
     })
 
 
-## at
+## at()
 
 Usage:
 
     Organization.at('0x12345')
 
-## proposeScheme
+## proposeScheme()
 
 Propose to register a new scheme to an existing organization. The parameters depend on the
 type of scheme that is registered.
@@ -61,5 +76,4 @@ With all possible options:
       votePrec: 50, // percentage conditions under which a contribution is accepted, default is 50
       orgNativeTokenFee: 0, // fee that is to be paid for proposing a contribution
       schemeTokenFee: 0, // fee that is to be paid for proposing a contribution
-
     });
