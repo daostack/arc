@@ -36,6 +36,7 @@ These are the options to propose to adopt the SimpleICO scheme:
 
     organization.proposeScheme({
       schemeType: 'SimpleICO',
+      schemeAddres: '0x1245', // address of the scheme to use; default is settings.simpleICO
       cap: 100, // uint cap; // Cap in Eth
       price: .001, // uint price; // Price represents Tokens per 1 Eth
       startBlock: 5,// uint startBlock;
@@ -55,9 +56,10 @@ With all possible options:
 
     const proposalId = await organization.proposeScheme({
       schemeType: 'SimpleContributionScheme',
+      schemeAddres: '0x1245', // address of the scheme to use; default is settings.simpleContributionScheme
       boolVote: organization.votingMachine, // votingMachine used to accept or reject contributions, default is organizaiton.votingMAchine
       votePrec: 50, // percentage conditions under which a contribution is accepted, default is 50
       orgNativeTokenFee: 0, // fee that is to be paid for proposing a contribution
       schemeTokenFee: 0, // fee that is to be paid for proposing a contribution
-      
+
     });

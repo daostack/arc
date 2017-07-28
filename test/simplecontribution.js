@@ -36,18 +36,8 @@ contract('SimpleContribution scheme', function(accounts) {
     const schemeRegistrar = await org.schemeRegistrar();
 
     // we creaet a SimpleContributionScheme
-    const reputationAddress = await controller.nativeReputation();
     const tokenAddress = await controller.nativeToken();
     const votingMachine = org.votingMachine;
-    const votingParams = await votingMachine.getParametersHash(
-      reputationAddress,
-      50, // percentage that counts as a majority
-    );
-    // we also register the parameters with the voting machine
-    await votingMachine.setParameters(
-      reputationAddress,
-      50, // percentage that counts as a majority
-    );
 
     // create a contribution Scheme
     const contributionScheme = await SimpleContributionScheme.new(
@@ -56,47 +46,11 @@ contract('SimpleContribution scheme', function(accounts) {
       accounts[0],
     );
 
-    const contributionSchemeParamsHash = await contributionScheme.getParametersHash(
-      0, // fee for the organisation?
-      0, // fee for the token?
-      votingParams,
-      votingMachine.address,
-    );
-
-    // these parameters are not registered yet at this point
-    params = await contributionScheme.parameters(contributionSchemeParamsHash);
-    assert.equal(params[3], '0x0000000000000000000000000000000000000000');
-
-    // register the parameters are registers in the contribution scheme
-    await contributionScheme.setParameters(
-      0, // fee for the organisation?
-      0, // fee for the token?
-      votingParams,
-      votingMachine.address,
-    );
-
-    params = await contributionScheme.parameters(contributionSchemeParamsHash);
-    assert.notEqual(params[3], '0x0000000000000000000000000000000000000000');
-
-    // and we propose to add the contribution scheme to controller
-    const simpleContributionFee = await contributionScheme.fee();
-    const simpleContributionFeeToken = await contributionScheme.nativeToken();
-
-    // check if we our organization is registered
-    const orgFromSchemeRegistrar = await schemeRegistrar.organizations(avatar.address);
-    assert.equal(orgFromSchemeRegistrar, true);
-
-    tx = await schemeRegistrar.proposeScheme(
-      avatar.address,
-      contributionScheme.address,
-      contributionSchemeParamsHash,
-      false, // isRegistering
-      simpleContributionFeeToken,
-      simpleContributionFee
-      );
-
-    const proposalId = tx.logs[0].args.proposalId;
-
+    // propose a SimpleContributionScheme
+    const proposalId = await org.proposeScheme({
+      schemeType: 'SimpleContributionScheme',
+      schemeAddress: contributionScheme.address,
+    });
     // this will vote-and-execute
     tx = await votingMachine.vote(proposalId, true, accounts[1], {from: accounts[1]});
 
@@ -130,9 +84,9 @@ contract('SimpleContribution scheme', function(accounts) {
     paramsHash = await controller.getSchemeParameters(contributionScheme.address);
     // params are: uint orgNativeTokenFee; bytes32 voteApproveParams; uint schemeNativeTokenFee;         BoolVoteInterface boolVote;
     params = await contributionScheme.parameters(paramsHash);
-    // console.log('Parameters on contribution Scheme: ', params);
     // check if they are not trivial - the 4th item should be a valid boolVote address
     assert.notEqual(params[3], '0x0000000000000000000000000000000000000000');
+    assert.equal(params[3], votingMachine.address);
 
     // now we can propose a contribution
     tx = await contributionScheme.submitContribution(
@@ -184,4 +138,39 @@ contract('SimpleContribution scheme', function(accounts) {
     // TODO: no payments have been made. Write another test for that.
 
   });
+
+
+  it('Can set and get parameters', async function() {
+      let params;
+
+      // create a contribution Scheme
+      const contributionScheme = await SimpleContributionScheme.new(
+        helpers.SOME_ADDRESS,
+        0, // register with 0 fee
+        accounts[0],
+      );
+
+      const contributionSchemeParamsHash = await contributionScheme.getParametersHash(
+        0,
+        0,
+        helpers.SOME_HASH,
+        helpers.SOME_ADDRESS,
+      );
+
+      // these parameters are not registered yet at this point
+      params = await contributionScheme.parameters(contributionSchemeParamsHash);
+      assert.equal(params[3], '0x0000000000000000000000000000000000000000');
+
+      // register the parameters are registers in the contribution scheme
+      await contributionScheme.setParameters(
+        0,
+        0,
+        helpers.SOME_HASH,
+        helpers.SOME_ADDRESS,
+      );
+
+      params = await contributionScheme.parameters(contributionSchemeParamsHash);
+      assert.notEqual(params[3], '0x0000000000000000000000000000000000000000');
+
+    });
 });

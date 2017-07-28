@@ -27,11 +27,9 @@ export function getProposalAddress(tx) {
     return proposalAddress;
 }
 
-
 export function getProposal(tx) {
     return Proposal.at(getProposalAddress(tx));
 }
-
 
 export async function etherForEveryone() {
     // give all web3.eth.accounts some ether
