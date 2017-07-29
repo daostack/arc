@@ -1,32 +1,40 @@
 const helpers = require('./helpers');
 import { getValueFromLogs } from '../lib/utils.js';
 
-var SimpleVote = artifacts.require("./SimpleVote.sol");
-var Reputation = artifacts.require("./Reputation.sol");
-var ExecutableTest = artifacts.require("./ExecutableTest.sol");
+const SimpleVote = artifacts.require("./SimpleVote.sol");
+const Reputation = artifacts.require("./Reputation.sol");
+const ExecutableTest = artifacts.require("./ExecutableTest.sol");
+
+let reputation, simpleVote, executable, accounts;
+
+
+const setupSimpleVote = async function() {
+  accounts = web3.eth.accounts;
+  simpleVote = await SimpleVote.new();
+  executable = await ExecutableTest.new();
+
+  // set up a reputaiton system
+  reputation = await Reputation.new();
+  await reputation.mint(20, accounts[0]);
+  await reputation.mint(10, accounts[1]);
+  await reputation.mint(70, accounts[2]);
+
+  // register some parameters
+  await simpleVote.setParameters(reputation.address, 50);
+  const paramsHash = await simpleVote.getParametersHash(reputation.address, 50);
+
+  return simpleVote;
+};
+
 
 contract('SimpleVote', function(accounts) {
 
-    before(function(){
-    });
 
     it("should work", async function() {
-      const accounts = web3.eth.accounts;
-      const simpleVote = await SimpleVote.new();
-      const executable = await ExecutableTest.new();
-
-      // set up a reputaiton system
-      const reputation = await Reputation.new();
-      await reputation.mint(20, accounts[0]);
-      await reputation.mint(10, accounts[1]);
-      await reputation.mint(70, accounts[2]);
-
-    // register some parameters
-      await simpleVote.setParameters(reputation.address, 50);
-      const paramsHash = await simpleVote.getParametersHash(reputation.address, 50);
+      simpleVote = await setupSimpleVote();
 
       // propose a vote
-      // TODO: have some executable contract to test with that raises an event
+      const paramsHash = await simpleVote.getParametersHash(reputation.address, 50);
       let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address);
       const proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
@@ -77,6 +85,7 @@ contract('SimpleVote', function(accounts) {
     });
 
     it("the vote function should behave as expected [TO DO]", async function() {
+      simpleVote = await setupSimpleVote();
       // test different values for the '_voter' arg: i.e. empty, null address, voter != sender, voter == owner, etc
       // simpleVote.vote(..., voter)
       // await simpleVote.vote(proposalId, true, accounts[1]);
