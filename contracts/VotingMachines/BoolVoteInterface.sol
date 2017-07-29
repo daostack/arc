@@ -11,7 +11,7 @@ contract BoolVoteInterface {
 
     function cancelVoting(uint _proposalId);
 
-    function checkVoteEnded(uint _proposalId) returns(bool);
+    function executeProposal(uint _proposalId) returns(bool);
 
     function voteStatus(bytes32 _proposalId) constant returns(uint[3]);
 }

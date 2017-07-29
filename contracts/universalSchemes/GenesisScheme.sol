@@ -1,9 +1,9 @@
 pragma solidity ^0.4.11;
 
 import "../controller/Avatar.sol";
-import "../controller/Reputation.sol";
-import "../controller/MintableToken.sol";
 import "../controller/Controller.sol";
+import "../controller/MintableToken.sol";
+import "../controller/Reputation.sol";
 
 /**
  * @title Genesis Scheme that creates organizations

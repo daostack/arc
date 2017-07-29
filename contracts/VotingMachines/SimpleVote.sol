@@ -7,8 +7,8 @@ contract SimpleVote {
     using SafeMath for uint;
 
     struct Parameters {
-      Reputation reputationSystem;
-      uint absPrecReq; // Usually >= 50
+        Reputation reputationSystem;
+        uint absPrecReq; // Usually >= 50
     }
 
     struct Proposal {
@@ -58,7 +58,7 @@ contract SimpleVote {
     /**
      * @dev register a new proposal with the given parameters.
      * @param _paramsHash defined the parameters of the voting machine used for this proposal
-     * @param _avatar an address to be sent on execuation.
+     * @param _avatar an address to be sent as the payload to the _executable contract.
      * @param _executable This contract will be executed when vote is over.
      */
    function propose(bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
@@ -102,8 +102,9 @@ contract SimpleVote {
         require(!proposal.ended); // Check the voting is not finished
 
         // The owner of the vote can vote in anyones name. Others can only vote for themselves.
-        if (msg.sender != proposal.owner)
+        if (msg.sender != proposal.owner) {
           voter = msg.sender;
+        }
 
         // if this voter has already voted for the proposal, just ignore
         if (proposal.voted[voter] != 0) {
@@ -121,54 +122,59 @@ contract SimpleVote {
         }
         VoteProposal(voter, proposalId, yes, reputation);
         // execute the proposal if this vote was decisive:
-        checkVoteEnded(proposalId);
+        executeProposal(proposalId);
         return true;
     }
 
-    function cancelVoting(bytes32 proposalId) {
-        Proposal storage proposal = proposals[proposalId];
+    /**
+     * @dev cancel your vote
+     * @param _proposalId id of the proposal
+     */
+    function cancelVote(bytes32 _proposalId) {
+        Proposal storage proposal = proposals[_proposalId];
         // Check vote is open:
         require(proposal.opened);
         require(!proposal.ended);
 
         int vote = proposal.voted[msg.sender];
-        if (vote > 0)
-          proposal.yes = (proposal.yes).sub(uint(vote));
-        else
-          proposal.yes = (proposal.no).sub(uint((-1)*vote));
+
+        if (vote > 0) {
+            proposal.yes = (proposal.yes).sub(uint(vote));
+        } else {
+            proposal.yes = (proposal.no).sub(uint((-1)*vote));
+        }
         proposal.voted[msg.sender] = 0;
-        CancelVoting(msg.sender, proposalId);
+        CancelVoting(msg.sender, _proposalId);
     }
 
     /**
      * @dev check if the proposal has been decided, and if so, execute the proposal
      * @param _proposalId the id of the proposal
-     * NB: does not just check, but executes as well
-     * NB:  throws an error if proposal.ended is true, which seems excessive for something that
-     * is supposed to check exactly that
      */
-    // TODO: perhaps rename to checkOutcomeAndExecute or something similar
     // TODO: do we want to delete the vote from the proposals mapping?
-    function checkVoteEnded(bytes32 _proposalId) returns(bool) {
-      Proposal memory proposal = proposals[_proposalId];
-      require(!proposal.ended);
-      uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
-      uint absPrecReq = parameters[proposal.paramsHash].absPrecReq;
+    function executeProposal(bytes32 _proposalId) returns(bool) {
+        Proposal memory proposal = proposals[_proposalId];
 
-      // this is the actual voting rule:
-      if( (proposal.yes > totalReputation*absPrecReq/100) || (proposal.no > totalReputation*absPrecReq/100 ) ) {
-          proposal.ended = true;
-          if (proposal.yes > proposal.no) {
-            proposal.executable.execute(_proposalId, proposal.avatar, 1);
-            EndProposal(_proposalId, true);
-          }
-          else {
-            proposal.executable.execute(_proposalId, proposal.avatar, 0);
-            EndProposal(_proposalId, false);
-          }
-          return true;
-      }
-      return false;
+        require(!proposal.ended);
+
+        uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
+        uint absPrecReq = parameters[proposal.paramsHash].absPrecReq;
+
+        // this is the actual voting rule:
+        if( (proposal.yes > (totalReputation*absPrecReq/100)) || (proposal.no > (totalReputation*absPrecReq/100))) {
+            proposal.ended = true;
+            proposals[_proposalId] = proposal;
+            if (proposal.yes > proposal.no) {
+                proposal.executable.execute(_proposalId, proposal.avatar, 1);
+                EndProposal(_proposalId, true);
+            }
+            else {
+                proposal.executable.execute(_proposalId, proposal.avatar, 0);
+                EndProposal(_proposalId, false);
+            }
+            return true;
+        }
+        return false;
     }
 
     function voteStatus(bytes32 _proposalId) constant returns(uint[3]) {
@@ -177,5 +183,16 @@ contract SimpleVote {
         uint ended = proposals[_proposalId].ended ? 1 : 0;
 
         return [yes, no, ended];
+    }
+
+    /**
+     * @dev voteInfo returns the amount of reputation of the user committed to this proposal
+     * @param _proposalId the ID of the proposal
+     * @param _voter the address of the voter
+     * @return amount of reputation committed by _voter to _proposalId
+     * a negative value means the user has voted no
+     */
+    function voteInfo(bytes32 _proposalId, address _voter) constant returns(int) {
+        return proposals[_proposalId].voted[_voter];
     }
 }

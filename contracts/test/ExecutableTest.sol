@@ -1,0 +1,12 @@
+pragma solidity ^0.4.11;
+
+import "./Debug.sol";
+import "../universalSchemes/ExecutableInterface.sol";
+
+
+contract ExecutableTest is ExecutableInterface, Debug {
+
+    function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+          LogBytes32(_proposalId);
+    }
+}
