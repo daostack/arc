@@ -39,22 +39,38 @@ export async function etherForEveryone() {
     }
 }
 
-
 function createUpgradeScheme() {
     return daostack.createUpgradeScheme();
 }
 
 export async function forgeOrganization(opts = {}) {
-    await etherForEveryone();
-    // const org = await daostack.forgeOrganization(opts);
-    const defaults = {
-      orgName: 'something',
-      tokenName: 'token name',
-      tokenSymbol: 'TST',
-    };
-    const options = Object.assign({}, defaults, opts);
-    // add this there to eat some dog food
-    return Organization.new(options);
+  const founders = [
+    {
+      address: web3.eth.accounts[0],
+      reputation: 1,
+      tokens: 1,
+    },
+    {
+      address: web3.eth.accounts[1],
+      reputation: 29,
+      tokens: 2,
+    },
+    {
+      address: web3.eth.accounts[2],
+      reputation: 70,
+      tokens: 3,
+    },
+  ];
+  const defaults = {
+    orgName: 'something',
+    tokenName: 'token name',
+    tokenSymbol: 'TST',
+    founders
+  };
+
+  const options = Object.assign(defaults, opts);
+  // add this there to eat some dog food
+  return Organization.new(options);
 }
 
 
