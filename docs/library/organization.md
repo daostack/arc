@@ -21,15 +21,15 @@ the Blockchain. The function returns an `Organization` instance.
       // schemes is an array of schemes; default looks as follows:  
       schemes: [
         {
-          schemeType: 'SchemeRegistrar',
+          contract: 'SchemeRegistrar',
           schemeAddress: settings.schemeRegistrar,
         },
         {
-          schemeType: 'UpgradeScheme',
+          contract: 'UpgradeScheme',
           schemeAddress: settings.upgradeScheme,
         },
         {
-          schemeType: 'GlobalConstraintRegistrar',
+          contract: 'GlobalConstraintRegistrar',
           schemeAddress: settings.globalConstraintRegistrar,
         },
       ],
@@ -50,7 +50,7 @@ type of scheme that is registered.
 These are the options to propose to adopt the SimpleICO scheme:
 
     organization.proposeScheme({
-      schemeType: 'SimpleICO',
+      contract: 'SimpleICO',
       schemeAddres: '0x1245', // address of the scheme to use; default is settings.simpleICO
       cap: 100, // uint cap; // Cap in Eth
       price: .001, // uint price; // Price represents Tokens per 1 Eth
@@ -63,14 +63,14 @@ These are the options to propose to adopt the SimpleICO scheme:
 While the options to adopt the SimpleContributionScheme are simply:
 
     organization.proposeScheme({
-      schemeType: 'SimpleContributionScheme',
+      contract: 'SimpleContributionScheme',
     });
 
 With all possible options:
 
 
     const proposalId = await organization.proposeScheme({
-      schemeType: 'SimpleContributionScheme',
+      contract: 'SimpleContributionScheme',
       schemeAddres: '0x1245', // address of the scheme to use; default is settings.simpleContributionScheme
       boolVote: organization.votingMachine, // votingMachine used to accept or reject contributions, default is organizaiton.votingMAchine
       votePrec: 50, // percentage conditions under which a contribution is accepted, default is 50

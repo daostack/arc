@@ -3,8 +3,8 @@ const helpers = require('./helpers');
 import { Organization } from '../lib/organization.js';
 import { GlobalConstraintRegistrar } from '../lib/globalconstraintregistrar.js';
 
-const MintableToken = artifacts.require("./MintableToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
+const MintableToken = artifacts.require("./MintableToken.sol");
 const TokenCapGC = artifacts.require("./TokenCapGC.sol");
 
 import { getValueFromLogs } from '../lib/utils.js';

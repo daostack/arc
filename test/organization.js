@@ -57,7 +57,7 @@ contract('Organization', function(accounts) {
     });
 
     const proposalId = await organization.proposeScheme({
-      schemeType: 'SimpleICO',
+      contract: 'SimpleICO',
       cap: 100, // uint cap; // Cap in Eth
       price: .001, // uint price; // Price represents Tokens per 1 Eth
       startBlock: 5, // uint startBlock;
@@ -78,7 +78,7 @@ contract('Organization', function(accounts) {
     });
 
     const proposalId = await organization.proposeScheme({
-      schemeType: 'SimpleContributionScheme',
+      contract: 'SimpleContributionScheme',
     });
     //
     assert.isOk(proposalId);
