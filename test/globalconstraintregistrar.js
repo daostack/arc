@@ -144,7 +144,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     assert.equal(beneficiary, accounts[1]);
   });
 
-  it('should be settable on the Organization object [IN PROGRESS]', async function(){
+  it('proposalGlobalConstraint should work on the Organization object [IN PROGRESS]', async function(){
     // creatorganization
     const founders = [
       {
@@ -172,28 +172,32 @@ contract('GlobalConstraintRegistrar', function(accounts) {
 
     const organization = await Organization.new(options);
 
-
     let proposalId;
+
     proposalId = await organization.proposeGlobalConstraint({
       contract: 'TokenCapGC',
       params: {
         cap: 21e9, // is the cap
       },
     });
-
-    // XXX: finish this test
-    return;
     assert.isOk(proposalId);
+
+    const tokenCapGC = await TokenCapGC.new();
+    const tokenCapGCParamsHash = await tokenCapGC.setParameters(organization.token.address, 3000);
 
     proposalId = await organization.proposeGlobalConstraint({
       address: tokenCapGC.address,
       paramsHash: tokenCapGCParamsHash,
     });
 
+    assert.isOk(proposalId);
+
     proposalId = await organization.proposeGlobalConstraint({
       contract: 'TokenCapGC',
       paramsHash: tokenCapGCParamsHash,
     });
+
+    assert.isOk(proposalId);
 
     proposalId = await organization.proposeGlobalConstraint({
       contract: 'TokenCapGC',
@@ -202,5 +206,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
         cap: 21e9, // is the cap
       },
     });
+    
+    assert.isOk(proposalId);
   });
 });

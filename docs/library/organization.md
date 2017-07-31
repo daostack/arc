@@ -52,12 +52,14 @@ These are the options to propose to adopt the SimpleICO scheme:
     organization.proposeScheme({
       contract: 'SimpleICO',
       schemeAddres: '0x1245', // address of the scheme to use; default is settings.simpleICO
-      cap: 100, // uint cap; // Cap in Eth
-      price: .001, // uint price; // Price represents Tokens per 1 Eth
-      startBlock: 5,// uint startBlock;
-      endBlock: 10, // uint endBlock;
-      admin: accounts[3], // address admin; // The admin can halt or resume ICO.
-      etherAddress: accounts[4], // address etherAddress; // all funds received will be transffered to this address.
+      params: {
+        cap: 100, // uint cap; // Cap in Eth
+        price: .001, // uint price; // Price represents Tokens per 1 Eth
+        startBlock: 5,// uint startBlock;
+        endBlock: 10, // uint endBlock;
+        admin: accounts[3], // address admin; // The admin can halt or resume ICO.
+        etherAddress: accounts[4], // address etherAddress; // all funds received will be transffered to this address.
+      }
     });
 
 While the options to adopt the SimpleContributionScheme are simply:
@@ -72,10 +74,12 @@ With all possible options:
     const proposalId = await organization.proposeScheme({
       contract: 'SimpleContributionScheme',
       schemeAddres: '0x1245', // address of the scheme to use; default is settings.simpleContributionScheme
-      boolVote: organization.votingMachine, // votingMachine used to accept or reject contributions, default is organizaiton.votingMAchine
-      votePrec: 50, // percentage conditions under which a contribution is accepted, default is 50
-      orgNativeTokenFee: 0, // fee that is to be paid for proposing a contribution
-      schemeTokenFee: 0, // fee that is to be paid for proposing a contribution
+      params: {
+        boolVote: organization.votingMachine, // votingMachine used to accept or reject contributions, default is organizaiton.votingMAchine
+        votePrec: 50, // percentage conditions under which a contribution is accepted, default is 50
+        orgNativeTokenFee: 0, // fee that is to be paid for proposing a contribution
+        schemeTokenFee: 0, // fee that is to be paid for proposing a contribution
+      }
     });
 
 ## proposeGlobalConstraint()
