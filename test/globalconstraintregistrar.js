@@ -182,16 +182,6 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     });
     assert.isOk(proposalId);
 
-    const tokenCapGC = await TokenCapGC.new();
-    const tokenCapGCParamsHash = await tokenCapGC.setParameters(organization.token.address, 3000);
-
-    proposalId = await organization.proposeGlobalConstraint({
-      address: tokenCapGC.address,
-      paramsHash: tokenCapGCParamsHash,
-    });
-
-    assert.isOk(proposalId);
-
     proposalId = await organization.proposeGlobalConstraint({
       contract: 'TokenCapGC',
       paramsHash: tokenCapGCParamsHash,
@@ -202,11 +192,24 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     proposalId = await organization.proposeGlobalConstraint({
       contract: 'TokenCapGC',
       params: {
-        token: organization.nativeToken(), // is the default
-        cap: 21e9, // is the cap
+        token: organization.token.address, // is the default
+        cap: 1234, // is the cap
       },
     });
-    
+
     assert.isOk(proposalId);
+
+    // we can also register an 'anonymous' constraint
+    const tokenCapGC = await TokenCapGC.new();
+    const tokenCapGCParamsHash = await tokenCapGC.setParameters(organization.token.address, 3000);
+
+    proposalId = await organization.proposeGlobalConstraint({
+      address: tokenCapGC.address,
+      paramsHash: tokenCapGCParamsHash,
+    });
+
+    assert.isOk(proposalId);
+
+
   });
 });
