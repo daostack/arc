@@ -77,3 +77,34 @@ With all possible options:
       orgNativeTokenFee: 0, // fee that is to be paid for proposing a contribution
       schemeTokenFee: 0, // fee that is to be paid for proposing a contribution
     });
+
+## proposeGlobalConstraint()
+
+Proposing a global constraint is simple:
+
+    const proposalId = await organization.proposeGlobalConstraint({
+      contract: 'TokenCapGC',
+      params: {
+        cap: 21e9, // is the cap
+      },
+    })
+
+Here are some other valid invocations:
+
+    const proposalId = await organization.proposeGlobalConstraint({
+      address: tokenCapGC.address,
+      paramsHash: tokenCapGCParamsHash,
+    })
+
+    const proposalId = await organization.proposeGlobalConstraint({
+      contract: 'TokenCapGC',
+      paramsHash: tokenCapGCParamsHash,
+    })
+
+    const proposalId = await organization.proposeGlobalConstraint({
+      contract: 'TokenCapGC',
+      params: {
+        token: organization.nativeToken(), // is the default
+        cap: 21e9, // is the cap
+      },
+    })

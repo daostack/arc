@@ -1,6 +1,7 @@
 const helpers = require('./helpers');
 
 import { Organization } from '../lib/organization.js';
+import { GlobalConstraintRegistrar } from '../lib/globalconstraintregistrar.js';
 
 const MintableToken = artifacts.require("./MintableToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
@@ -41,6 +42,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
       tokenSymbol: 'TST',
       founders
     };
+
     const organization = await Organization.new(options);
 
     // do some sanity checks on the globalconstriantregistrar
@@ -49,6 +51,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     assert.equal(await gcr.isRegistered(organization.avatar.address), true);
   	// check if indeed the registrar is registered as a scheme on  the controller
   	assert.equal(await organization.controller.isSchemeRegistered(gcr.address), true);
+
     // Organization.new standardly registers no global constraints
     assert.equal((await organization.controller.globalConstraintsCount()).toNumber(), 0);
 
@@ -57,6 +60,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     // register paramets for setting a cap on the nativeToken of our organization of 21 million
     await tokenCapGC.setParameters(organization.token.address, 21e9);
     const tokenCapGCParamsHash = await tokenCapGC.getParametersHash(organization.token.address, 21e9);
+
     // next line needs some real hash for the conditions for removing this scheme
     const votingMachineHash = tokenCapGCParamsHash;
 
@@ -103,11 +107,11 @@ contract('GlobalConstraintRegistrar', function(accounts) {
 
   });
 
-  it("the daostack.createGlobalConstraintRegistrar function should work as expected with the default parameters", async function() {
+  it("the GlobalConstraintRegistrar.new() functioshould work as expected with the default parameters", async function() {
     // create a schemeRegistrar
-    const registrar = await daostack.createGlobalConstraintRegistrar();
+    const registrar = await GlobalConstraintRegistrar.new();
 
-    // because the registrar is constructed without a token address, it should have
+    // because the regin strar is constructed without a token address, it should have
     // created a new MintableToken - we check if it works as expected
     const tokenAddress = await registrar.nativeToken();
     const token = await MintableToken.at(tokenAddress);
@@ -120,11 +124,11 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     assert.equal(balance.valueOf(), 1000 * Math.pow(10, 18));
   });
 
-  it("the daostack.createGlobalConstraintRegistrar function should work as expected with specific parameters", async function() {
+  it("the GlobalConstraintRegistrar.new() function should work as expected with specific parameters", async function() {
     // create a schemeRegistrar, passing some options
     const token = await MintableToken.new();
 
-    const registrar = await daostack.createGlobalConstraintRegistrar({
+    const registrar = await GlobalConstraintRegistrar.new({
         tokenAddress:token.address,
         fee: 3e18,
         beneficiary: accounts[1]
@@ -138,5 +142,63 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     assert.equal(fee, 3e18);
     const beneficiary = await registrar.beneficiary();
     assert.equal(beneficiary, accounts[1]);
+  });
+
+  it('should be settable on the Organization object [IN PROGRESS]', async function(){
+    // creatorganization
+    const founders = [
+      {
+        address: web3.eth.accounts[0],
+        reputation: 1,
+        tokens: 1,
+      },
+      {
+        address: web3.eth.accounts[1],
+        reputation: 29,
+        tokens: 2,
+      },
+      {
+        address: web3.eth.accounts[2],
+        reputation: 70,
+        tokens: 3,
+      },
+    ];
+    const options = {
+      orgName: 'something',
+      tokenName: 'token name',
+      tokenSymbol: 'TST',
+      founders
+    };
+
+    const organization = await Organization.new(options);
+    let proposalId;
+    proposalId = await organization.proposeGlobalConstraint({
+      contract: 'TokenCapGC',
+      params: {
+        cap: 21e9, // is the cap
+      },
+    });
+
+    // XXX: finish this test
+    return;
+    assert.isOk(proposalId);
+
+    proposalId = await organization.proposeGlobalConstraint({
+      address: tokenCapGC.address,
+      paramsHash: tokenCapGCParamsHash,
+    });
+
+    proposalId = await organization.proposeGlobalConstraint({
+      contract: 'TokenCapGC',
+      paramsHash: tokenCapGCParamsHash,
+    });
+
+    proposalId = await organization.proposeGlobalConstraint({
+      contract: 'TokenCapGC',
+      params: {
+        token: organization.nativeToken(), // is the default
+        cap: 21e9, // is the cap
+      },
+    });
   });
 });

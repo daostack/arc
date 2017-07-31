@@ -9,6 +9,7 @@ var SchemeRegistrar = artifacts.require('./schemes/SchemeRegistrar.sol');
 var SimpleICO = artifacts.require('./SimpleICO.sol');
 var SimpleVote = artifacts.require('./SimpleVote.sol');
 var SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
+var TokenCapGC = artifacts.require('./TokenCapGC.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 
 // Instances:
@@ -120,4 +121,5 @@ module.exports = async function(deployer) {
     });
 
     deployer.deploy(SimpleContributionScheme);
+    deployer.deploy(TokenCapGC);
 };
