@@ -171,6 +171,8 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     };
 
     const organization = await Organization.new(options);
+
+
     let proposalId;
     proposalId = await organization.proposeGlobalConstraint({
       contract: 'TokenCapGC',
