@@ -11,10 +11,35 @@ import { getValueFromLogs } from '../lib/utils.js';
 import { daostack } from '../lib/daostack.js';
 
 contract('GlobalConstraintRegistrar', function(accounts) {
-  let tx;
+  let tx, proposalId;
 
   before(function() {
     helpers.etherForEveryone();
+  });
+
+  it("should register and enforce a global constraint", async function() {
+    const organization = await helpers.forgeOrganization();
+
+    proposalId = await organization.proposeGlobalConstraint({
+      contract: 'TokenCapGC',
+      params: {
+        cap: 3141, // is the cap
+      },
+    });
+
+    // serveral users now cast their vote
+    await organization.vote(proposalId, true, {from: web3.eth.accounts[0]});
+    // next is decisive vote: the proposal will be executed
+    await organization.vote(proposalId, true, {from: web3.eth.accounts[2]});
+
+    // now the tokencap is enforced: up to 3141 tokens
+    // minting 1111 tokens should be fine
+    // TODO: this is complex: we must create a proposal to mint these tokens and accept that
+    // proposalId = await organization.proposeScheme('ContributionScheme');
+    // await organization.vote(proposalId, true, {from: web3.eth.accounts[2]});
+
+    // minting 9999 tokens should be out
+
   });
 
   it("should satisfy a number of basic checks", async function() {
@@ -58,7 +83,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     tx = await gcr.proposeGlobalConstraint(organization.avatar.address, tokenCapGC.address, tokenCapGCParamsHash, votingMachineHash);
 
     // check if the proposal is known on the GlobalConstraintRegistrar
-    const proposalId = getValueFromLogs(tx, 'proposalId');
+    proposalId = getValueFromLogs(tx, 'proposalId');
     const proposal = await gcr.proposals(proposalId);
     // the proposal looks like gc-address, params, proposaltype, removeParams
     assert.equal(proposal[0], tokenCapGC.address);
@@ -79,7 +104,6 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     // see which global constraints are satisfied
     assert.equal(gc, tokenCapGC.address);
     assert.equal(params, tokenCapGCParamsHash);
-
   });
 
   it("the GlobalConstraintRegistrar.new() functioshould work as expected with the default parameters", async function() {
@@ -113,9 +137,8 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     assert.equal(beneficiary, accounts[1]);
   });
 
-  it('proposalGlobalConstraint should work on the Organization object [IN PROGRESS]', async function(){
+  it('organisation.proposalGlobalConstraint() should accept different parameters', async function(){
     const organization = await helpers.forgeOrganization();
-    let proposalId;
 
     proposalId = await organization.proposeGlobalConstraint({
       contract: 'TokenCapGC',

@@ -47,7 +47,7 @@ We can use our schemeRegistrar to propose to add a new Scheme - say one for maki
     const contributionScheme = ContributionScheme.at('0x12345abc');
 
     const proposalId = await organization.proposeScheme({
-      scheme: 'ContributionScheme',
+      contract: 'ContributionScheme',
       params: {
         orgNativeTokenFee: 0, // ??
         schemeNativeTokenFee: 0, // ??
@@ -62,7 +62,7 @@ We can use our schemeRegistrar to propose to add a new Scheme - say one for maki
 
 I.e. using only default values, this will look like:
 
-    const proposalId = await organization.proposeScheme({ scheme: contributionScheme});
+    const proposalId = await organization.proposeScheme({ contract: 'ContributionScheme'});
 
 Proposing a scheme will do lots of checkes, set parameters in various places, register things here and there.
 

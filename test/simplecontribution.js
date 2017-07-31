@@ -49,7 +49,7 @@ contract('SimpleContribution scheme', function(accounts) {
     // propose a SimpleContributionScheme
     const proposalId = await org.proposeScheme({
       contract: 'SimpleContributionScheme',
-      schemeAddress: contributionScheme.address,
+      address: contributionScheme.address,
     });
     // this will vote-and-execute
     tx = await votingMachine.vote(proposalId, true, accounts[1], {from: accounts[1]});
