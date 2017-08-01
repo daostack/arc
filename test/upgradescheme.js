@@ -34,7 +34,7 @@ contract('UpgradeScheme', function(accounts) {
       founders,
     });
 
-    const upgradeScheme = await organization.upgradeScheme();
+    const upgradeScheme = await organization.scheme('UpgradeScheme');
     const settings = await getSettings();
     const votingMachine = SimpleVote.at(settings.votingMachine);
 

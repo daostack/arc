@@ -9,13 +9,25 @@ const Controller = artifacts.require('./Controller.sol');
 
 
 contract('SimpleContribution scheme', function(accounts) {
+  let params, paramsHash, tx, proposal, proposalId;
 
   before(function() {
     helpers.etherForEveryone();
   });
 
   it("Propose and accept a contribution - complete workflow", async function(){
-    let params, paramsHash, tx, proposal;
+    const organization = await helpers.forgeOrganization();
+    proposalId = await organization.proposeScheme({contract: 'SimpleContributionScheme' });
+    // vote with the majority and accept the proposal
+    organization.vote(proposalId, true, {from: accounts[2]});
+    // we can now submit a contribution
+  // organization.submitContribution()
+
+
+
+  });
+
+  it("Propose and accept a contribution - with some intermediate checks", async function(){
     const founders = [
       {
         address: accounts[0],
@@ -33,7 +45,7 @@ contract('SimpleContribution scheme', function(accounts) {
 
     const avatar = org.avatar;
     const controller = org.controller;
-    const schemeRegistrar = await org.schemeRegistrar();
+    const schemeRegistrar = await org.scheme('SchemeRegistrar');
 
     // we creaet a SimpleContributionScheme
     const tokenAddress = await controller.nativeToken();
@@ -47,7 +59,7 @@ contract('SimpleContribution scheme', function(accounts) {
     );
 
     // propose a SimpleContributionScheme
-    const proposalId = await org.proposeScheme({
+    proposalId = await org.proposeScheme({
       contract: 'SimpleContributionScheme',
       address: contributionScheme.address,
     });
@@ -138,7 +150,6 @@ contract('SimpleContribution scheme', function(accounts) {
     // TODO: no payments have been made. Write another test for that.
 
   });
-
 
   it('Can set and get parameters', async function() {
       let params;

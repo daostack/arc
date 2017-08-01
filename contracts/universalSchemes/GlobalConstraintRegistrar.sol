@@ -77,7 +77,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
       LogOrgRegistered(_avatar);
     }
 
-    function isRegistered(Avatar _avatar) constant returns(bool) {
+    function isRegistered(address _avatar) constant returns(bool) {
       return organizations[_avatar].isRegistered;
     }
 

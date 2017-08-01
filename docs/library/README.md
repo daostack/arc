@@ -28,17 +28,27 @@ Usually, organizations will have a number of Schemes registered with the organiz
 
     organization.schemes() // return an array of Scheme objects
 
+This will return an array:
+
+    [
+      {
+        contract: SchemeRegistrar,
+        address: 0x12345,
+      },
+      ...
+    ]
+
 the function takes an argument:
 
-    organization.schemes('SchemeRegistrar') // return schemes that can register other schemes
-    organization.schemes('UpdateScheme') // return schemes that can update the controller
-    organization.schemes('GlobalConstraintRegistrar') // return schemes that register global constraints
-
-because (almost always) there will be only one single SchemeRegistrar (or UpdateScheme, etc),
+Because (almost always) there will be only one single SchemeRegistrar (or UpgradeScheme, etc),
 for each of these types we have a convenient function that will return the single registered scheme
 (or an error if there is no such scheme, or if there is more than 1):
 
-    const schemeRegistrar = organization.schemeRegistrar();
+
+    organization.scheme('SchemeRegistrar'); // return the scheme official daostack schemeregistrar
+    organization.scheme('UpgradeScheme');
+    organization.scheme('GlobalConstraintRegistrar');
+
 
 This function will also check if all preconditions for using the scheme are fulfilled.
 

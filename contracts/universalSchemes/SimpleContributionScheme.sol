@@ -190,4 +190,9 @@ contract SimpleContributionScheme is UniversalScheme {
         delete proposals[_proposalId];
         return true;
     }
+
+    function isRegistered(address _avatar) constant returns(bool) {
+      return organizations[_avatar].isRegistered;
+    }
+
 }

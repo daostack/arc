@@ -67,7 +67,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         return paramsHash;
     }
 
-    function isRegistered(Avatar _avatar) constant returns(bool) {
+    function isRegistered(address _avatar) constant returns(bool) {
       return organizations[_avatar].isRegistered;
     }
 

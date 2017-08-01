@@ -90,39 +90,40 @@ contract SimpleVote {
 
     /**
      * @dev Vote for a proposal
-     * @param voter used in case the vote is cast for someone else
+     * @param _voter used in case the vote is cast for someone else
      * @return true in case of success
      * throws if proposal is not opened or if it is ended
      * NB: executes the proposal if a decision has been reached
      */
     // TODO: perhaps split in "vote" (without voter argument), and "voteFor" (owner votes for someone else)
-    function vote(bytes32 proposalId, bool yes, address voter) returns(bool) {
-        Proposal storage proposal = proposals[proposalId];
+    function vote(bytes32 _proposalId, bool _yes, address _voter) returns(bool) {
+        Proposal storage proposal = proposals[_proposalId];
+
         require(proposal.opened); // Check the proposal exists
         require(!proposal.ended); // Check the voting is not finished
 
         // The owner of the vote can vote in anyones name. Others can only vote for themselves.
         if (msg.sender != proposal.owner) {
-          voter = msg.sender;
+            _voter = msg.sender;
         }
 
         // if this voter has already voted for the proposal, just ignore
-        if (proposal.voted[voter] != 0) {
+        if (proposal.voted[_voter] != 0) {
             return false;
         }
 
-        uint reputation = parameters[proposal.paramsHash].reputationSystem.reputationOf(voter);
+        uint reputation = parameters[proposal.paramsHash].reputationSystem.reputationOf(_voter);
 
-        if (yes) {
+        if (_yes) {
             proposal.yes = reputation.add(proposal.yes);
-            proposal.voted[voter] = int(reputation);
+            proposal.voted[_voter] = int(reputation);
         } else {
             proposal.no = reputation.add(proposal.no);
-            proposal.voted[voter] = (-1)*int(reputation);
+            proposal.voted[_voter] = (-1)*int(reputation);
         }
-        VoteProposal(voter, proposalId, yes, reputation);
+        VoteProposal(_voter, _proposalId, _yes, reputation);
         // execute the proposal if this vote was decisive:
-        executeProposal(proposalId);
+        executeProposal(_proposalId);
         return true;
     }
 

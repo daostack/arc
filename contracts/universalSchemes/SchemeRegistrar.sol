@@ -90,7 +90,7 @@ contract SchemeRegistrar is UniversalScheme {
         LogOrgRegistered(_avatar);
     }
 
-    function isRegistered(Avatar _avatar) constant returns(bool) {
+    function isRegistered(address _avatar) constant returns(bool) {
       return organizations[_avatar].isRegistered;
     }
 
@@ -200,24 +200,24 @@ contract SchemeRegistrar is UniversalScheme {
       // Add a scheme:
       if (proposal.proposalType == 1)  {
           if (proposal.fee != 0) {
-            if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) {
-              revert();
-            }
+              if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) {
+                  revert();
+              }
           }
           if (proposal.isRegistering == false) {
-            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
-              revert();
-            }
+              if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
+                  revert();
+              }
           } else {
-            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
-              revert();
-            }
+              if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
+                  revert();
+              }
           }
       }
       // Remove a scheme:
       if( proposal.proposalType == 2 ) {
           if(!controller.unregisterScheme(proposal.scheme)) {
-            revert();
+              revert();
           }
       }
 

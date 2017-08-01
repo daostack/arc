@@ -38,7 +38,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     // proposalId = await organization.proposeScheme('ContributionScheme');
     // await organization.vote(proposalId, true, {from: web3.eth.accounts[2]});
 
-    // minting 9999 tokens should be out
+  // minting 9999 tokens should be out
 
   });
 
@@ -46,7 +46,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     const organization = await helpers.forgeOrganization();
 
     // do some sanity checks on the globalconstriantregistrar
-    const gcr = await organization.globalConstraintRegistrar();
+    const gcr = await organization.scheme('GlobalConstraintRegistrar');
     // check if our organization is registered on the gcr
     assert.equal(await gcr.isRegistered(organization.avatar.address), true);
   	// check if indeed the registrar is registered as a scheme on  the controller
