@@ -42,6 +42,32 @@ Usage:
 
     Organization.at('0x12345')
 
+## schemes() and scheme()
+
+Usually, organizations will have a number of Schemes registered with the organization:
+
+    organization.schemes() // return an array of Scheme objects
+
+This will return an array:
+
+    [
+      {
+        contract: SchemeRegistrar,
+        address: 0x12345,
+      },
+      ...
+    ]
+
+Because (almost always) there will be only one single SchemeRegistrar (or UpgradeScheme, etc),
+for each of these types we have a convenient function that will return the single registered scheme
+(or an error if there is no such scheme, or if there is more than 1):
+
+
+    organization.scheme('SchemeRegistrar'); // return the scheme official daostack schemeregistrar
+    organization.scheme('UpgradeScheme');
+    organization.scheme('GlobalConstraintRegistrar');
+
+
 ## proposeScheme()
 
 Propose to register a new scheme to an existing organization. The parameters depend on the

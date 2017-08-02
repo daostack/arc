@@ -38,8 +38,6 @@ This will return an array:
       ...
     ]
 
-the function takes an argument:
-
 Because (almost always) there will be only one single SchemeRegistrar (or UpgradeScheme, etc),
 for each of these types we have a convenient function that will return the single registered scheme
 (or an error if there is no such scheme, or if there is more than 1):
@@ -49,8 +47,6 @@ for each of these types we have a convenient function that will return the singl
     organization.scheme('UpgradeScheme');
     organization.scheme('GlobalConstraintRegistrar');
 
-
-This function will also check if all preconditions for using the scheme are fulfilled.
 
 We can use our schemeRegistrar to propose to add a new Scheme - say one for making contributions:
 
