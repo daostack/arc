@@ -112,3 +112,10 @@ Here are some other valid invocations:
         cap: 21e9, // is the cap
       },
     })
+
+## vote()
+
+The vote function can be used for voting on the `organization.votingMachine`.
+
+    organization.vote(proposalId, true);
+    organization.vote(proposalId, false);
