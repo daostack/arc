@@ -5,6 +5,7 @@ pragma solidity ^0.4.4;
 */
 contract Debug {
     event LogAddress(address msg);
+    event LogInt(int msg);
     event LogString(string msg);
     event LogUint(uint msg);
     event LogBytes(bytes msg);
