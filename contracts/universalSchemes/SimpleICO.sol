@@ -48,13 +48,12 @@ contract SimpleICO is UniversalScheme {
     }
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
-    // TODO: rename "etherAddress" to "beneficiary", in line with the other contracts
     struct Parameters {
         uint cap; // Cap in Eth
         uint price; // Price represents Tokens per 1 Eth
         uint startBlock;
         uint endBlock;
-        address etherAddress; // all funds received will be transffered to this address.
+        address beneficiary; // all funds received will be transffered to this address.
         address admin; // The admin can halt or resume ICO.
     }
 
@@ -78,15 +77,15 @@ contract SimpleICO is UniversalScheme {
         uint _price,
         uint _startBlock,
         uint _endBlock,
-        address _etherAddress,
+        address _beneficiary,
         address _admin)  returns(bytes32) {
-        bytes32 paramsHash = getParametersHash(_cap, _price, _startBlock, _endBlock, _etherAddress, _admin);
+        bytes32 paramsHash = getParametersHash(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin);
         if (parameters[paramsHash].cap != 0)  {
             parameters[paramsHash].cap = _cap;
             parameters[paramsHash].price = _price;
             parameters[paramsHash].startBlock = _startBlock;
             parameters[paramsHash].endBlock = _endBlock;
-            parameters[paramsHash].etherAddress = _etherAddress;
+            parameters[paramsHash].beneficiary = _beneficiary;
             parameters[paramsHash].admin = _admin;
         }
         return paramsHash;
@@ -98,9 +97,9 @@ contract SimpleICO is UniversalScheme {
       uint _price,
       uint _startBlock,
       uint _endBlock,
-      address _etherAddress,
+      address _beneficiary,
       address _admin) constant returns(bytes32) {
-        return (sha3(_cap, _price, _startBlock, _endBlock, _etherAddress, _admin));
+        return (sha3(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin));
     }
 
     // Adding an organization to the universal scheme, and opens an ICO for it:
@@ -175,7 +174,7 @@ contract SimpleICO is UniversalScheme {
         uint tokens = incomingEther.mul(params.price);
 
         // Send ether to the defined address, mint, and send change to beneficiary:
-        params.etherAddress.transfer(incomingEther);
+        params.beneficiary.transfer(incomingEther);
         Controller controller = Controller(_avatar.owner());
         if (!controller.mintTokens(tokens, _beneficiary)) {
             revert();

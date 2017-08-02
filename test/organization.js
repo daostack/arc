@@ -83,7 +83,7 @@ contract('Organization', function(accounts) {
       startBlock: 5, // uint startBlock;
       endBlock: 10, // uint endBlock;
       admin: accounts[3], // address admin; // The admin can halt or resume ICO.
-      etherAddress: accounts[4], // address etherAddress; // all funds received will be transffered to this address.
+      beneficiary: accounts[4], // address beneficiary; // all funds received will be transffered to this address.
     });
     //
     assert.isOk(proposalId);
