@@ -19,6 +19,7 @@ contract SchemeRegistrar is UniversalScheme {
         StandardToken tokenFee;
         uint fee;
         BoolVoteInterface boolVote; // the voting machine used for this proposal
+        bool autoRegister;
     }
 
     mapping(bytes32=>SchemeProposal) public proposals;
@@ -115,7 +116,8 @@ contract SchemeRegistrar is UniversalScheme {
         bytes32 _parametersHash,
         bool _isRegistering,
         StandardToken _tokenFee,
-        uint _fee
+        uint _fee,
+        bool _autoRegister
     ) returns(bytes32) {
         Organization memory org = organizations[_avatar];
         // Check if org is registered to use this universal scheme
@@ -140,6 +142,7 @@ contract SchemeRegistrar is UniversalScheme {
         proposals[proposalId].isRegistering = _isRegistering;
         proposals[proposalId].tokenFee = _tokenFee;
         proposals[proposalId].fee = _fee;
+        proposals[proposalId].autoRegister = _autoRegister;
 
         // vote for this proposal
         boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
@@ -201,17 +204,20 @@ contract SchemeRegistrar is UniversalScheme {
       if (proposal.proposalType == 1)  {
           if (proposal.fee != 0) {
               if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) {
-                  revert();
+                revert();
               }
           }
           if (proposal.isRegistering == false) {
               if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
-                  revert();
+                revert();
               }
           } else {
               if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
-                  revert();
+                revert();
               }
+          }
+          if (proposal.autoRegister) {
+            UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
           }
       }
       // Remove a scheme:
