@@ -25,6 +25,11 @@ contract Controller {
                           // 4rd bit: Scheme can upgrade the controller
     }
 
+    struct GlobalConstraint {
+      address gcAddress;
+      bytes32 params;
+    }
+
     mapping(address=>Scheme) public schemes;
 
     Avatar public avatar;
@@ -33,8 +38,9 @@ contract Controller {
     // newController will point to the new controller after the present controller is upgraded
     address public newController;
     // globalConstraints that determine pre- and post-conditions for all actions on the controller
-    address[] public globalConstraints;
-    bytes32[] public globalConstraintsParams;
+    GlobalConstraint[] public globalConstraints;
+    /*address[] public globalConstraints;
+    bytes32[] public globalConstraintsParams;*/
 
     event MintReputation (address indexed _sender, address indexed _beneficiary, int256 _amount);
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
@@ -137,7 +143,6 @@ contract Controller {
 
         // Check scheme has at least the permissions it is changing, and at least the current permissions:
         // Implementation is a bit messy. One must recall logic-circuits ^^
-        // XXX: Commented these next line as they led to errors and I cannot understand the code
         require(bytes4(15)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
         require(bytes4(15)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
@@ -187,8 +192,10 @@ contract Controller {
     function addGlobalConstraint(address _globalConstraint, bytes32 _params)
         onlyGlobalConstraintsScheme
         returns(bool) {
-        globalConstraints.push(_globalConstraint);
-        globalConstraintsParams.push(_params);
+        GlobalConstraint memory gc;
+        gc.gcAddress = _globalConstraint;
+        gc.params = _params;
+        globalConstraints.push(gc);
         LogAddGlobalConstraint(_globalConstraint, _params);
         return true;
     }
@@ -198,8 +205,8 @@ contract Controller {
         returns(bool)
     {
         for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
-            if (globalConstraints[cnt] == _globalConstraint) {
-                globalConstraints[cnt] = address(0);
+            if (globalConstraints[cnt].gcAddress == _globalConstraint) {
+                globalConstraints[cnt].gcAddress = address(0);
                 return true;
             }
         }
