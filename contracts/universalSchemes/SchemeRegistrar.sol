@@ -79,7 +79,7 @@ contract SchemeRegistrar is UniversalScheme {
      */
     function registerOrganization(Avatar _avatar) {
         // Pay fees for using scheme
-        if (fee > 0) {
+        if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
           nativeToken.transferFrom(_avatar, beneficiary, fee);
         }
 

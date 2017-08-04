@@ -105,7 +105,7 @@ contract SimpleICO is UniversalScheme {
     // Adding an organization to the universal scheme, and opens an ICO for it:
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
-      if (fee > 0) {
+      if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
         nativeToken.transferFrom(_avatar, beneficiary, fee);
       }
 

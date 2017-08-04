@@ -67,7 +67,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // TODO: probably we want to define registerOrganization and isRegistered in UniversalScheme
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
-      if (fee > 0) {
+      if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
         nativeToken.transferFrom(_avatar, beneficiary, fee);
       }
 
