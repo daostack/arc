@@ -3,7 +3,7 @@ const helpers = require('./helpers');
 var Reputation = artifacts.require("./Reputation.sol");
 
 
-contract('Test Reputation', function(accounts) {
+contract('Reputation', function(accounts) {
     it("test setting and getting reputation by the owner", async function() {
         let value;
         let reputation = await Reputation.new();

@@ -14,21 +14,21 @@ contract SimpleContributionScheme is UniversalScheme {
 
     // A struct holding the data for a contribution proposal
     struct ContributionProposal {
-      bytes32 contributionDescriptionHash; // Hash of contributtion document.
-      uint nativeTokenReward; // Reward asked in the native token of the organization.
-      uint reputationReward; // Organization reputation reward requested.
-      uint ethReward;
-      StandardToken externalToken;
-      uint externalTokenReward;
-      address beneficiary;
+        bytes32 contributionDescriptionHash; // Hash of contributtion document.
+        uint nativeTokenReward; // Reward asked in the native token of the organization.
+        uint reputationReward; // Organization reputation reward requested.
+        uint ethReward;
+        StandardToken externalToken;
+        uint externalTokenReward;
+        address beneficiary;
     }
 
     mapping(bytes32=>ContributionProposal) public proposals;
 
     // Struct holding the data for each organization
     struct Organization {
-      bool isRegistered;
-      mapping(bytes32=>ContributionProposal) proposals;
+        bool isRegistered;
+        mapping(bytes32=>ContributionProposal) proposals;
     }
 
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
@@ -36,10 +36,10 @@ contract SimpleContributionScheme is UniversalScheme {
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
-      uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
-      bytes32 voteApproveParams;
-      uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
-      BoolVoteInterface boolVote;
+        uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
+        bytes32 voteApproveParams;
+        uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
+        BoolVoteInterface boolVote;
     }
         // A contibution fee can be in the organization token or the scheme token or a combination
     mapping(bytes32=>Parameters) public parameters;
@@ -49,7 +49,12 @@ contract SimpleContributionScheme is UniversalScheme {
      * @dev the constructor takes a token address, fee and beneficiary
      */
     function SimpleContributionScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
-      updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
+        updateParameters(
+            _nativeToken,
+            _fee,
+            _beneficiary,
+            bytes32(0)
+        );
     }
 
     /**
@@ -62,7 +67,12 @@ contract SimpleContributionScheme is UniversalScheme {
         BoolVoteInterface _boolVote
     ) returns(bytes32)
     {
-        bytes32 paramsHash = getParametersHash(_orgNativeTokenFee, _schemeNativeTokenFee, _voteApproveParams, _boolVote);
+        bytes32 paramsHash = getParametersHash(
+            _orgNativeTokenFee,
+            _schemeNativeTokenFee,
+            _voteApproveParams,
+            _boolVote
+        );
         parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
         parameters[paramsHash].schemeNativeTokenFee = _schemeNativeTokenFee;
         parameters[paramsHash].voteApproveParams = _voteApproveParams;
@@ -90,19 +100,19 @@ contract SimpleContributionScheme is UniversalScheme {
     }
 
     function registerOrganization(Avatar _avatar) {
-          // Pay fees for using scheme
-          if ((fee > 0) && (!organizations[_avatar].isRegistered)) {
+        // Pay fees for using scheme
+        if ((fee > 0) && (!organizations[_avatar].isRegistered)) {
             nativeToken.transferFrom(_avatar, beneficiary, fee);
-          }
+        }
 
-          // TODO: should we check if the current registrar is registered already on the controller?
-          /*require(checkParameterHashMatch(_avatar, _voteRegisterParams, _voteRemoveParams, _boolVote));*/
+        // TODO: should we check if the current registrar is registered already on the controller?
+        /*require(checkParameterHashMatch(_avatar, _voteRegisterParams, _voteRemoveParams, _boolVote));*/
 
-          // update the organization in the organizations mapping
-          Organization memory org;
-          org.isRegistered = true;
-          organizations[_avatar] = org;
-          LogOrgRegistered(_avatar);
+        // update the organization in the organizations mapping
+        Organization memory org;
+        org.isRegistered = true;
+        organizations[_avatar] = org;
+        LogOrgRegistered(_avatar);
     }
 
     /**

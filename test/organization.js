@@ -78,12 +78,14 @@ contract('Organization', function(accounts) {
 
     proposalId = await organization.proposeScheme({
       contract: 'SimpleICO',
-      cap: 100, // uint cap; // Cap in Eth
-      price: .001, // uint price; // Price represents Tokens per 1 Eth
-      startBlock: 5, // uint startBlock;
-      endBlock: 10, // uint endBlock;
-      admin: accounts[3], // address admin; // The admin can halt or resume ICO.
-      beneficiary: accounts[4], // address beneficiary; // all funds received will be transffered to this address.
+      params: {
+        cap: 100, // uint cap; // Cap in Eth
+        price: .001, // uint price; // Price represents Tokens per 1 Eth
+        startBlock: 5, // uint startBlock;
+        endBlock: 10, // uint endBlock;
+        admin: accounts[3], // address admin; // The admin can halt or resume ICO.
+        beneficiary: accounts[4], // address beneficiary; // all funds received will be transffered to this address.
+      }
     });
     //
     assert.isOk(proposalId);

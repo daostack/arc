@@ -36,6 +36,12 @@ contract('SimpleContribution scheme', function(accounts) {
     // now vote with a majority account and accept this contribution
     organization.vote(proposalId, true, {from: accounts[2]});
 
+    // TODO: check that the proposal is indeed accepted
+  });
+
+  it("submit and accept a contribution - complete workflow with payments [TODO]", async function(){
+    // TODO: write a similar test as the previous one, but with all different forms of payment
+
   });
 
   it("submit and accept a contribution - using the ABI Contract", async function(){
