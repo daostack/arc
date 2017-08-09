@@ -83,6 +83,7 @@ for example, we'd like 101 organization tokens for writing documentation:
       organization: organization,
       description: 'Documentation for daostack',
       nativeTokenReward: 101,
+      beneficiary: '0x1234...',
     });
 
 Again, we can vote for it (directly on the organization? that would be nice:)

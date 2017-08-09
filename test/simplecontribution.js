@@ -6,6 +6,7 @@ const SimpleVote = artifacts.require('./SimpleVote.sol');
 const MintableToken = artifacts.require('./MintableToken.sol');
 const Avatar = artifacts.require('./Avatar.sol');
 const Controller = artifacts.require('./Controller.sol');
+const SoliditySimpleContributionScheme = artifacts.require("./SimpleContributionScheme.sol");
 
 
 contract('SimpleContribution scheme', function(accounts) {
@@ -15,30 +16,29 @@ contract('SimpleContribution scheme', function(accounts) {
     helpers.etherForEveryone();
   });
 
-  it("Submit and accept a contribution - complete workflow [IN PROGRESS]", async function(){
+  it("submit and accept a contribution - complete workflow", async function(){
     const organization = await helpers.forgeOrganization();
     proposalId = await organization.proposeScheme({contract: 'SimpleContributionScheme' });
     // vote with the majority and accept the proposal
     organization.vote(proposalId, true, {from: accounts[2]});
-    // register the organization on the contribution scheme
+
     const scheme = await organization.scheme('SimpleContributionScheme');
+
+    // register the organization on the contribution scheme
     await scheme.registerOrganization(organization.avatar.address);
 
     // we can now submit a contribution
-    await scheme.submitContribution(
-      organization.avatar.address,  // Avatar _avatar,
-      'A new contribution', // string _contributionDesciption,
-      0, // uint _nativeTokenReward,
-      0, // uint _reputationReward,
-      0, // uint _ethReward,
-      // organization.token.address, //  StandardToken _externalToken,
-      '0x0008e8314d3f08fd072e06b6253d62ed526038a0', // StandardToken _externalToken, we provide some arbitrary address
-      0, // uint _externalTokenReward,
-      web3.eth.accounts[1], // address _beneficiary
-    );
+    proposalId = await scheme.submitContribution({
+      avatar: organization.avatar.address,  // Avatar _avatar,
+      description: 'A new contribution', // string _contributionDesciption,
+      beneficiary: web3.eth.accounts[1], // address _beneficiary
+    });
+    // now vote with a majority account and accept this contribution
+    organization.vote(proposalId, true, {from: accounts[2]});
+
   });
 
-  it("Submit and accept a contribution - with some intermediate checks", async function(){
+  it("submit and accept a contribution - using the ABI Contract", async function(){
     const founders = [
       {
         address: accounts[0],
@@ -63,7 +63,7 @@ contract('SimpleContribution scheme', function(accounts) {
     const votingMachine = org.votingMachine;
 
     // create a contribution Scheme
-    const contributionScheme = await SimpleContributionScheme.new(
+    const contributionScheme = await SoliditySimpleContributionScheme.new(
       tokenAddress,
       0, // register with 0 fee
       accounts[0],
