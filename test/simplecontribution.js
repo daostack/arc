@@ -1,5 +1,5 @@
 import { Organization } from '../lib/organization.js';
-import { SimpleContributionScheme } from '../lib/contributionscheme.js';
+import { SimpleContributionScheme } from '../lib/simplecontributionscheme.js';
 import * as helpers from './helpers';
 
 const SimpleVote = artifacts.require('./SimpleVote.sol');
@@ -9,25 +9,36 @@ const Controller = artifacts.require('./Controller.sol');
 
 
 contract('SimpleContribution scheme', function(accounts) {
-  let params, paramsHash, tx, proposal, proposalId;
+  let params, paramsHash, tx, proposal, proposalId, settings;
 
   before(function() {
     helpers.etherForEveryone();
   });
 
-  it("Propose and accept a contribution - complete workflow", async function(){
+  it("Submit and accept a contribution - complete workflow [IN PROGRESS]", async function(){
     const organization = await helpers.forgeOrganization();
     proposalId = await organization.proposeScheme({contract: 'SimpleContributionScheme' });
     // vote with the majority and accept the proposal
     organization.vote(proposalId, true, {from: accounts[2]});
+    // register the organization on the contribution scheme
+    const scheme = await organization.scheme('SimpleContributionScheme');
+    await scheme.registerOrganization(organization.avatar.address);
+
     // we can now submit a contribution
-  // organization.submitContribution()
-
-
-
+    await scheme.submitContribution(
+      organization.avatar.address,  // Avatar _avatar,
+      'A new contribution', // string _contributionDesciption,
+      0, // uint _nativeTokenReward,
+      0, // uint _reputationReward,
+      0, // uint _ethReward,
+      // organization.token.address, //  StandardToken _externalToken,
+      '0x0008e8314d3f08fd072e06b6253d62ed526038a0', // StandardToken _externalToken, we provide some arbitrary address
+      0, // uint _externalTokenReward,
+      web3.eth.accounts[1], // address _beneficiary
+    );
   });
 
-  it("Propose and accept a contribution - with some intermediate checks", async function(){
+  it("Submit and accept a contribution - with some intermediate checks", async function(){
     const founders = [
       {
         address: accounts[0],
@@ -73,8 +84,6 @@ contract('SimpleContribution scheme', function(accounts) {
 
     //  Our organization is not registered with the contribution scheme yet at this point
     let orgFromContributionScheme = await contributionScheme.organizations(avatar.address);
-    // console.log('orgFromContributionScheme');
-    // console.log(orgFromContributionScheme);
     assert.equal(orgFromContributionScheme, false);
 
     // check if we have the fee to register the contribution
