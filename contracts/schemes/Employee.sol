@@ -8,7 +8,7 @@ import "../controller/Controller.sol";
 contract Employee {
 
     Controller public controller;
-    address public beneficary;
+    address public beneficiary;
     uint public periodInMonths; // Month is taken as 4 weeks
     uint public tokenSalary;
     int public repSalary;
@@ -17,14 +17,14 @@ contract Employee {
 
     function Employee(
         Controller _controller,
-        address _beneficary,
+        address _beneficiary,
         uint _startDate,
         uint _periodInMonths,
         uint _tokenSalary,
         int _repSalary)
     {
         controller = _controller;
-        beneficary = _beneficary;
+        beneficiary = _beneficiary;
         startDate = _startDate;
         periodInMonths = _periodInMonths;
         tokenSalary = _tokenSalary;
@@ -43,8 +43,8 @@ contract Employee {
 
         // Pay:
         salariesCollected += 1;
-        if(!controller.mintTokens(tokenSalary, beneficary)) revert();
-        if(!controller.mintReputation(repSalary, beneficary)) revert();
+        if(!controller.mintTokens(tokenSalary, beneficiary)) revert();
+        if(!controller.mintReputation(repSalary, beneficiary)) revert();
 
         return false;
     }
