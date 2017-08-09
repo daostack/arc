@@ -87,4 +87,18 @@ contract('Test Reputation', function(accounts) {
 
         assert(totalRepBefore.equals(totalRepAfter), "reputation should remain the same");
     });
+
+    it("test subtracting reputation", async function() {
+        let value;
+        let reputation = await Reputation.new();
+
+        await reputation.mint(1500, accounts[1]);
+        await reputation.mint(-500, accounts[1]);
+
+        value = await reputation.reputationOf(accounts[1]);
+        let totalRep = await rep.totalSupply();
+
+        assert.equal(value.valueOf(), 1000);
+        assert.equal(totalRep.valueOf(), 1000);
+    });
 });
