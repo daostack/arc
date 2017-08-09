@@ -49,7 +49,8 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     function setParameters(
         bytes32 _voteParams,
         BoolVoteInterface _boolVote
-    ) returns(bytes32) {
+    ) returns(bytes32) 
+    {
         bytes32 paramsHash = getParametersHash(_voteParams, _boolVote);
         parameters[paramsHash].voteParams = _voteParams;
         parameters[paramsHash].boolVote = _boolVote;
@@ -62,7 +63,8 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     function getParametersHash(
         bytes32 _voteParams,
         BoolVoteInterface _boolVote
-    ) constant returns(bytes32) {
+    ) constant returns(bytes32) 
+    {
         bytes32 paramsHash = (sha3(_voteParams, _boolVote));
         return paramsHash;
     }

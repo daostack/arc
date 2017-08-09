@@ -26,7 +26,9 @@ contract MirrorContractICO is Destructible {
     require(msg.value != 0);
 
     // Return ether if couln't donate.
-    if (simpleICO.donate.value(msg.value)(organization, msg.sender) == 0) revert();
+    if (simpleICO.donate.value(msg.value)(organization, msg.sender) == 0) {
+      revert();
+    }
   }
 }
 
@@ -78,9 +80,10 @@ contract SimpleICO is UniversalScheme {
         uint _startBlock,
         uint _endBlock,
         address _beneficiary,
-        address _admin)  returns(bytes32) {
+        address _admin)  returns(bytes32)
+    {
         bytes32 paramsHash = getParametersHash(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin);
-        if (parameters[paramsHash].cap != 0)  {
+        if (parameters[paramsHash].cap != 0) {
             parameters[paramsHash].cap = _cap;
             parameters[paramsHash].price = _price;
             parameters[paramsHash].startBlock = _startBlock;
@@ -98,7 +101,8 @@ contract SimpleICO is UniversalScheme {
       uint _startBlock,
       uint _endBlock,
       address _beneficiary,
-      address _admin) constant returns(bytes32) {
+      address _admin) constant returns(bytes32)
+    {
         return (sha3(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin));
     }
 
@@ -143,10 +147,18 @@ contract SimpleICO is UniversalScheme {
     function isActiveICO(address _avatar) constant returns(bool) {
         Organization memory org = organizations[_avatar];
         Parameters memory params = parameters[org.paramsHash];
-        if (! org.isRegistered) return false;
-        if (org.totalEthRaised >= params.cap) return false;
-        if (block.number >= params.endBlock) return false;
-        if (block.number <= params.startBlock) return false;
+        if (! org.isRegistered) {
+          return false;
+        }
+        if (org.totalEthRaised >= params.cap) {
+          return false;
+        }
+        if (block.number >= params.endBlock) { 
+          return false;
+        }
+        if (block.number <= params.startBlock) { 
+          return false;
+        }
         return true;
     }
 

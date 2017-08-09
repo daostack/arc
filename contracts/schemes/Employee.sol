@@ -21,8 +21,7 @@ contract Employee {
         uint _startDate,
         uint _periodInMonths,
         uint _tokenSalary,
-        int _repSalary)
-    {
+        int _repSalary) {
         controller = _controller;
         beneficiary = _beneficiary;
         startDate = _startDate;
@@ -43,8 +42,12 @@ contract Employee {
 
         // Pay:
         salariesCollected += 1;
-        if(!controller.mintTokens(tokenSalary, beneficiary)) revert();
-        if(!controller.mintReputation(repSalary, beneficiary)) revert();
+        if(!controller.mintTokens(tokenSalary, beneficiary)) {
+            revert();
+        }
+        if(!controller.mintReputation(repSalary, beneficiary)) { 
+            revert();
+        }
 
         return false;
     }

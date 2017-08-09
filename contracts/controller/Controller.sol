@@ -114,7 +114,7 @@ contract Controller {
         onlyRegisteredScheme
         onlySubjectToConstraint("mintReputation")
         returns(bool)
-    {
+        {
         MintReputation(msg.sender, _beneficiary, _amount);
         return nativeReputation.mint(_amount, _beneficiary);
     }
@@ -137,7 +137,8 @@ contract Controller {
     function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions)
         onlyRegisteringSchemes
         onlySubjectToConstraint("registerScheme")
-        returns(bool){
+        returns(bool)
+        {
 
         Scheme memory scheme = schemes[_scheme];
 
@@ -167,7 +168,7 @@ contract Controller {
         return true;
     }
 
-    function unregisterSelf() returns(bool){
+    function unregisterSelf() returns(bool) {
         delete schemes[msg.sender];
         return true;
     }
@@ -191,7 +192,8 @@ contract Controller {
 
     function addGlobalConstraint(address _globalConstraint, bytes32 _params)
         onlyGlobalConstraintsScheme
-        returns(bool) {
+        returns(bool) 
+        {
         GlobalConstraint memory gc;
         gc.gcAddress = _globalConstraint;
         gc.params = _params;
