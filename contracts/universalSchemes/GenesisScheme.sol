@@ -64,10 +64,10 @@ contract GenesisScheme {
 
         // Mint token and reputation for founders:
         for( uint i = 0 ; i < _founders.length ; i++ ) {
-            if(!controller.mintTokens( _foundersTokenAmount[i], _founders[i])) {
+            if(!controller.mintTokens(_foundersTokenAmount[i], _founders[i])) {
                 revert();
             }
-            if(!controller.mintReputation( _foundersReputationAmount[i], _founders[i])) {
+            if(!controller.mintReputation(_foundersReputationAmount[i], _founders[i])) {
                 revert();
             }
         }
@@ -81,7 +81,6 @@ contract GenesisScheme {
     /**
      * @dev  register some initial schemes
      */
-
     function setInitialSchemes (
         Avatar _avatar,
         address[] _schemes,

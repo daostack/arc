@@ -36,12 +36,12 @@ contract SimpleContributionScheme is UniversalScheme {
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
-        // A contibution fee can be in the organization token or the scheme token or a combination
-        uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
-        bytes32 voteApproveParams;
-        uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
-        BoolVoteInterface boolVote;
+      uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
+      bytes32 voteApproveParams;
+      uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
+      BoolVoteInterface boolVote;
     }
+        // A contibution fee can be in the organization token or the scheme token or a combination
     mapping(bytes32=>Parameters) public parameters;
 
     event LogNewProposal(bytes32 proposalId);
@@ -89,10 +89,10 @@ contract SimpleContributionScheme is UniversalScheme {
 
     function registerOrganization(Avatar _avatar) {
           // Pay fees for using scheme
-          if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
+          if ((fee > 0) && (!organizations[_avatar].isRegistered)) {
             nativeToken.transferFrom(_avatar, beneficiary, fee);
           }
-          
+
           // TODO: should we check if the current registrar is registered already on the controller?
           /*require(checkParameterHashMatch(_avatar, _voteRegisterParams, _voteRemoveParams, _boolVote));*/
 
@@ -125,11 +125,16 @@ contract SimpleContributionScheme is UniversalScheme {
         address _beneficiary
     ) returns(bytes32) {
         require(organizations[_avatar].isRegistered);
+
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
         // Pay fees for submitting the contribution:
-        _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
-        nativeToken.transferFrom(msg.sender, _avatar, controllerParams.schemeNativeTokenFee);
+        if (controllerParams.schemeNativeTokenFee > 0) {
+            _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
+        }
+        if (controllerParams.schemeNativeTokenFee > 0) {
+            nativeToken.transferFrom(msg.sender, _avatar, controllerParams.schemeNativeTokenFee);
+        }
 
         BoolVoteInterface boolVote = controllerParams.boolVote;
         bytes32 contributionId = boolVote.propose(controllerParams.voteApproveParams, _avatar, ExecutableInterface(this));

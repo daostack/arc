@@ -93,12 +93,12 @@ contract SimpleICO is UniversalScheme {
 
     // The format of the hashing of the parameters:
     function getParametersHash(
-      uint _cap,
-      uint _price,
-      uint _startBlock,
-      uint _endBlock,
-      address _beneficiary,
-      address _admin) constant returns(bytes32) {
+        uint _cap,
+        uint _price,
+        uint _startBlock,
+        uint _endBlock,
+        address _beneficiary,
+        address _admin) constant returns(bytes32) {
         return (sha3(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin));
     }
 
@@ -143,7 +143,7 @@ contract SimpleICO is UniversalScheme {
     function isActiveICO(address _avatar) constant returns(bool) {
         Organization memory org = organizations[_avatar];
         Parameters memory params = parameters[org.paramsHash];
-        if (! org.isRegistered) return false;
+        if (!org.isRegistered) return false;
         if (org.totalEthRaised >= params.cap) return false;
         if (block.number >= params.endBlock) return false;
         if (block.number <= params.startBlock) return false;
