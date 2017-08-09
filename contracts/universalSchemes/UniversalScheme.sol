@@ -21,7 +21,8 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface { //
       uint _fee,
       address _beneficiary,
       bytes32 _hashedParameters
-  ) onlyOwner {
+  ) onlyOwner
+  {
       nativeToken = _nativeToken;
       fee = _fee;
       beneficiary = _beneficiary;

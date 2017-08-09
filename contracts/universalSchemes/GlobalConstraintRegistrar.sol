@@ -48,7 +48,8 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     function setParameters(
         bytes32 _voteRegisterParams,
         BoolVoteInterface _boolVote
-    ) returns(bytes32) {
+    ) returns(bytes32)
+    {
         bytes32 paramsHash = getParametersHash(_voteRegisterParams, _boolVote);
         parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
         parameters[paramsHash].boolVote = _boolVote;
@@ -58,7 +59,8 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     function getParametersHash(
         bytes32 _voteRegisterParams,
         BoolVoteInterface _boolVote
-    ) constant returns(bytes32) {
+    ) constant returns(bytes32)
+    {
         bytes32 paramsHash = (sha3(_voteRegisterParams, _boolVote));
         return paramsHash;
     }
@@ -115,7 +117,9 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         require(org.isRegistered); // Check org is registred to use this universal scheme.
         BoolVoteInterface boolVote = params.boolVote;
         bytes32 proposalId = boolVote.propose(org.removeParams[_gc], _avatar, ExecutableInterface(this));
-        if (proposals[proposalId].proposalType != 0) revert();
+        if (proposals[proposalId].proposalType != 0) {
+          revert();
+        }
         proposals[proposalId].proposalType = 2;
         proposals[proposalId].gc = _gc;
         boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.

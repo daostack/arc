@@ -60,7 +60,8 @@ contract SimpleContributionScheme is UniversalScheme {
         uint _schemeNativeTokenFee,
         bytes32 _voteApproveParams,
         BoolVoteInterface _boolVote
-    ) returns(bytes32) {
+    ) returns(bytes32)
+    {
         bytes32 paramsHash = getParametersHash(_orgNativeTokenFee, _schemeNativeTokenFee, _voteApproveParams, _boolVote);
         parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
         parameters[paramsHash].schemeNativeTokenFee = _schemeNativeTokenFee;
@@ -83,7 +84,8 @@ contract SimpleContributionScheme is UniversalScheme {
         uint _schemeNativeTokenFee,
         bytes32 _voteApproveParams,
         BoolVoteInterface _boolVote
-    ) constant returns(bytes32) {
+    ) constant returns(bytes32)
+    {
         return (sha3(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _boolVote));
     }
 
@@ -123,7 +125,8 @@ contract SimpleContributionScheme is UniversalScheme {
         StandardToken _externalToken,
         uint _externalTokenReward,
         address _beneficiary
-    ) returns(bytes32) {
+    ) returns(bytes32)
+    {
         require(organizations[_avatar].isRegistered);
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
@@ -141,7 +144,7 @@ contract SimpleContributionScheme is UniversalScheme {
         proposal.ethReward = _ethReward;
         proposal.externalToken = _externalToken;
         proposal.externalTokenReward = _externalTokenReward;
-        if (_beneficiary == address(0)){
+        if (_beneficiary == address(0)) {
             proposal.beneficiary = msg.sender;
         } else {
             proposal.beneficiary = _beneficiary;

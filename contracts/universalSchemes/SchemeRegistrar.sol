@@ -56,7 +56,8 @@ contract SchemeRegistrar is UniversalScheme {
         bytes32 _voteRegisterParams,
         bytes32 _voteRemoveParams,
         BoolVoteInterface _boolVote
-    ) returns(bytes32) {
+    ) returns(bytes32)
+    {
         bytes32 paramsHash = getParametersHash(_voteRegisterParams, _voteRemoveParams, _boolVote);
         parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
         parameters[paramsHash].voteRemoveParams = _voteRemoveParams;
@@ -68,7 +69,8 @@ contract SchemeRegistrar is UniversalScheme {
         bytes32 _voteRegisterParams,
         bytes32 _voteRemoveParams,
         BoolVoteInterface _boolVote
-        ) constant returns(bytes32) {
+        ) constant returns(bytes32)
+    {
         bytes32 paramsHash = (sha3(_voteRegisterParams, _voteRemoveParams, _boolVote));
         return paramsHash;
     }
@@ -118,7 +120,8 @@ contract SchemeRegistrar is UniversalScheme {
         StandardToken _tokenFee,
         uint _fee,
         bool _autoRegister
-    ) returns(bytes32) {
+    ) returns(bytes32)
+    {
         Organization memory org = organizations[_avatar];
         // Check if org is registered to use this universal scheme
         require(org.isRegistered);
@@ -201,7 +204,7 @@ contract SchemeRegistrar is UniversalScheme {
       Controller controller = Controller(Avatar(_avatar).owner());
 
       // Add a scheme:
-      if (proposal.proposalType == 1)  {
+      if (proposal.proposalType == 1) {
           if (proposal.fee != 0) {
               if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) {
                 revert();

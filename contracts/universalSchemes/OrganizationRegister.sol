@@ -49,7 +49,8 @@ contract OrganizationRegister is UniversalScheme {
 
     // The format of the hashing of the parameters:
     function getParametersHash(StandardToken _token, uint _fee, address _beneficiary)
-                              constant returns(bytes32) {
+                              constant returns(bytes32)
+    {
         return (sha3(_token, _fee, _beneficiary));
     }
 
@@ -72,7 +73,9 @@ contract OrganizationRegister is UniversalScheme {
         require(org.isRegistered); // Check org is registred to use this universal scheme.
 
         // Pay promotion, if the org was not listed the minimum is the fee:
-        if ((org.registry[_record] == 0) && (_amount < params.fee) ) revert();
+        if ((org.registry[_record] == 0) && (_amount < params.fee) ) {
+            revert();
+        }
 
         params.token.transferFrom(msg.sender, params.beneficiary, _amount);
         if (org.registry[_record] == 0)

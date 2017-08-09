@@ -48,7 +48,8 @@ contract GenesisScheme {
         address[] _founders,
         uint[] _foundersTokenAmount,
         int[] _foundersReputationAmount
-    ) returns(address) {
+    ) returns(address)
+    {
 
         // Create Token, Reputation and Avatar:
         nativeToken = new MintableToken(_tokenName, _tokenSymbol);
