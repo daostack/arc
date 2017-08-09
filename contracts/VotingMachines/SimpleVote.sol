@@ -168,8 +168,7 @@ contract SimpleVote {
             if (proposal.yes > proposal.no) {
                 proposal.executable.execute(_proposalId, proposal.avatar, 1);
                 EndProposal(_proposalId, true);
-            }
-            else {
+            } else {
                 proposal.executable.execute(_proposalId, proposal.avatar, 0);
                 EndProposal(_proposalId, false);
             }
