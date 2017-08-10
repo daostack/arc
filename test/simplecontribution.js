@@ -1,16 +1,10 @@
-import { Organization } from '../lib/organization.js';
 import { SimpleContributionScheme } from '../lib/simplecontributionscheme.js';
 import * as helpers from './helpers';
 
-const SimpleVote = artifacts.require('./SimpleVote.sol');
-const MintableToken = artifacts.require('./MintableToken.sol');
-const Avatar = artifacts.require('./Avatar.sol');
-const Controller = artifacts.require('./Controller.sol');
 const SoliditySimpleContributionScheme = artifacts.require("./SimpleContributionScheme.sol");
 
-
 contract('SimpleContribution scheme', function(accounts) {
-  let params, paramsHash, tx, proposal, proposalId, settings;
+  let params, paramsHash, tx, proposal, proposalId;
 
   before(function() {
     helpers.etherForEveryone();
@@ -62,7 +56,6 @@ contract('SimpleContribution scheme', function(accounts) {
 
     const avatar = org.avatar;
     const controller = org.controller;
-    const schemeRegistrar = await org.scheme('SchemeRegistrar');
 
     // we creaet a SimpleContributionScheme
     const tokenAddress = await controller.nativeToken();

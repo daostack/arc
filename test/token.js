@@ -1,5 +1,3 @@
-const helpers = require('./helpers');
-
 var MintableToken = artifacts.require("./MintableToken.sol");
 
 contract('Test Token', function(accounts) {

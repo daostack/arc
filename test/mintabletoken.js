@@ -3,6 +3,7 @@ const helpers = require('./helpers');
 const MintableToken = artifacts.require("./MintableToken.sol");
 
 contract('MintableToken', function(accounts) {
+
     it("should mint tokens to owner account", async function() {
         helpers.etherForEveryone();
 
@@ -40,7 +41,7 @@ contract('MintableToken', function(accounts) {
             throw 'an error';
         } catch(error) {
             helpers.assertVMException(error);
-        };
+        }
 
         // and so the supply of tokens should remain unchanged
         let newSupply = await token.totalSupply();

@@ -17,7 +17,7 @@ class SimpleContributionScheme extends ExtendTruffleContract(SoliditySimpleContr
 }
 
 
-contract('ExtendTruffleContract', function(accounts) {
+contract('ExtendTruffleContract', function() {
 
   it("Must have sane inheritance", async function(){
     let x;

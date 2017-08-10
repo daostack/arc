@@ -1,8 +1,5 @@
-const helpers = require('./helpers');
-
-const GenesisScheme = artifacts.require("./GenesisScheme.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
-const Reputation = artifacts.require("./Reputation.sol");
+
 import { daostack } from '../lib/daostack.js';
 
 contract('SchemeRegistrar', function(accounts) {

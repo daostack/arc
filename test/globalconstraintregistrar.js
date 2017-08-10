@@ -1,14 +1,11 @@
 const helpers = require('./helpers');
 
-import { Organization } from '../lib/organization.js';
 import { GlobalConstraintRegistrar } from '../lib/globalconstraintregistrar.js';
 
-const Reputation = artifacts.require("./Reputation.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
 const TokenCapGC = artifacts.require("./TokenCapGC.sol");
 
 import { getValueFromLogs } from '../lib/utils.js';
-import { daostack } from '../lib/daostack.js';
 
 contract('GlobalConstraintRegistrar', function(accounts) {
   let tx, proposalId;
@@ -49,8 +46,8 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     const gcr = await organization.scheme('GlobalConstraintRegistrar');
     // check if our organization is registered on the gcr
     assert.equal(await gcr.isRegistered(organization.avatar.address), true);
-  	// check if indeed the registrar is registered as a scheme on  the controller
-  	assert.equal(await organization.controller.isSchemeRegistered(gcr.address), true);
+    // check if indeed the registrar is registered as a scheme on  the controller
+    assert.equal(await organization.controller.isSchemeRegistered(gcr.address), true);
     // Organization.new standardly registers no global constraints
     assert.equal((await organization.controller.globalConstraintsCount()).toNumber(), 0);
 
@@ -70,7 +67,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     const parametersForVotingInGCR = await gcr.parameters(parametersForGCR);
 
     // the info we just got consists of paramsHash and permissions
-    const gcrPermissionsOnOrg = await organization.controller.getSchemePermissions(gcr.address);
+    // const gcrPermissionsOnOrg = await organization.controller.getSchemePermissions(gcr.address);
 
     // the voting machine used in this GCR is the same as the voting machine of the organization
     assert.equal(organization.votingMachine.address, parametersForVotingInGCR[1]);
@@ -98,12 +95,12 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     // at this point, our global constrait has been registered at the organization
     assert.equal((await organization.controller.globalConstraintsCount()).toNumber(), 1);
     return;
-    // get the first global constraint
-    const gc = await organization.controller.globalConstraints(0);
-    const params = await organization.controller.globalConstraintsParams(0);
-    // see which global constraints are satisfied
-    assert.equal(gc, tokenCapGC.address);
-    assert.equal(params, tokenCapGCParamsHash);
+    // // get the first global constraint
+    // const gc = await organization.controller.globalConstraints(0);
+    // const params = await organization.controller.globalConstraintsParams(0);
+    // // see which global constraints are satisfied
+    // assert.equal(gc, tokenCapGC.address);
+    // assert.equal(params, tokenCapGCParamsHash);
   });
 
   it("the GlobalConstraintRegistrar.new() functioshould work as expected with the default parameters", async function() {

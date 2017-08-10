@@ -2,9 +2,6 @@ import * as helpers from './helpers';
 import { Organization } from '../lib/organization.js';
 import { getSettings } from '../lib/settings.js';
 import { getValueFromLogs } from '../lib/utils.js';
-const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
-const MintableToken = artifacts.require("./MintableToken.sol");
-const Reputation = artifacts.require("./Reputation.sol");
 const Controller = artifacts.require("./Controller.sol");
 const SimpleVote = artifacts.require('./SimpleVote.sol');
 

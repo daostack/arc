@@ -1,16 +1,6 @@
 /**
     helpers for tests
 */
-const Controller = artifacts.require("./Controller.sol");
-const GenesisScheme = artifacts.require("./GenesisScheme.sol");
-const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
-const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
-const SimpleVote = artifacts.require("./SimpleVote.sol");
-const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar.sol");
-const MintableToken = artifacts.require("./MintableToken.sol");
-const Reputation = artifacts.require("./Reputation.sol");
-
-import { daostack } from '../lib/daostack.js';
 import { Organization } from '../lib/organization.js';
 import { getSettings } from '../lib/settings.js';
 
@@ -39,9 +29,6 @@ export async function etherForEveryone() {
     }
 }
 
-function createUpgradeScheme() {
-    return daostack.createUpgradeScheme();
-}
 
 export async function forgeOrganization(opts = {}) {
   const founders = [

@@ -2,9 +2,6 @@
 import { Organization } from '../lib/organization.js';
 import * as helpers from './helpers';
 
-// var UniversalSimpleVote = artifacts.require("./UniversalSimpleVote.sol");
-import { SimpleContributionScheme } from   '../lib/simplecontributionscheme.js';
-const MintableToken = artifacts.require('./MintableToken.sol');
 
 contract('Organization', function(accounts) {
   let organization, proposalId;

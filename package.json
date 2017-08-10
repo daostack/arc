@@ -21,6 +21,11 @@
     "babel-register": "^6.24.1",
     "default-options": "^1.0.0",
     "eslint": "^4.2.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "ethereumjs-testrpc": "^3.0.0",
     "pm2": "^1.1.3",
     "promisify": "^0.0.3",
@@ -50,6 +55,5 @@
     "url": "https://github.com/daostack/daostack/issues"
   },
   "homepage": "https://github.com/daostack/daostack",
-  "dependencies": {
-  }
+  "dependencies": {}
 }

@@ -21,7 +21,7 @@ const setupSimpleVote = async function() {
 
   // register some parameters
   await simpleVote.setParameters(reputation.address, 50);
-  const paramsHash = await simpleVote.getParametersHash(reputation.address, 50);
+  await simpleVote.getParametersHash(reputation.address, 50);
 
   return simpleVote;
 };
@@ -86,13 +86,13 @@ contract('SimpleVote', function(accounts) {
 
     it("the vote function should behave as expected [TO DO]", async function() {
       simpleVote = await setupSimpleVote();
-      
+
       // propose a vote
       const paramsHash = await simpleVote.getParametersHash(reputation.address, 50);
       let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address);
       const proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
-      
+
       // lets try to vote twice
       let proposalInfo;
       const rep1 = await reputation.reputationOf(accounts[1]);
@@ -101,7 +101,7 @@ contract('SimpleVote', function(accounts) {
       proposalInfo = await simpleVote.proposals(proposalId);
       // total 'yes' supposed to be equal to the voter's reputation, and not doubled (because we tried to vote twice).
       assert.equal(proposalInfo[4].toNumber(), rep1.toNumber());
-      
+
       // test different values for the '_voter' arg: i.e. empty, null address, voter != sender, voter == owner, etc
       // simpleVote.vote(..., voter)
       // await simpleVote.vote(proposalId, true, accounts[1]);

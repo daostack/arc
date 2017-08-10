@@ -1,6 +1,5 @@
 const helpers = require('./helpers');
 
-var GenesisScheme = artifacts.require("./GenesisScheme.sol");
 const MintableToken = artifacts.require("./MintableToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 

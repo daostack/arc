@@ -1,9 +1,7 @@
 const helpers = require('./helpers');
 
-var SimpleICO = artifacts.require("./SimpleICO.sol");
 
-
-contract('SimpleICO', function(accounts) {
+contract('SimpleICO', function() {
 
   before(function() {
     helpers.etherForEveryone();
