@@ -107,9 +107,16 @@ contract SimpleVote {
             _voter = msg.sender;
         }
 
-        // if this voter has already voted for the proposal, just ignore
+        // if this voter has already voted for the proposal, check if he wants to change his choice. If it's the same choice, ignore.
         if (proposal.voted[_voter] != 0) {
-            return false;
+            if (_yes == true && proposal.voted[_voter] > 0) {
+                return false;
+            }
+            if (_yes == false && proposal.voted[_voter] < 0) {
+                return false;
+            }
+            
+            cancelVote(_proposalId);
         }
 
         uint reputation = parameters[proposal.paramsHash].reputationSystem.reputationOf(_voter);
@@ -142,7 +149,7 @@ contract SimpleVote {
         if (vote > 0) {
             proposal.yes = (proposal.yes).sub(uint(vote));
         } else {
-            proposal.yes = (proposal.no).sub(uint((-1)*vote));
+            proposal.no = (proposal.no).sub(uint((-1)*vote));
         }
         proposal.voted[msg.sender] = 0;
         CancelVoting(msg.sender, _proposalId);
