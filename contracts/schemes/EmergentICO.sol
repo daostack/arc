@@ -10,7 +10,7 @@ import "../controller/Controller.sol";
  * The ICO is splitted into batches, each batch has its own rate.
  * The rate decrese exponentially, according to a geometric series.
  * The sale is not based on first come first served, rather there are periods.
- * All investors in the same period split get the same rate, and get pro-rata share.
+ * All investors in the same period get the same rate, and get pro-rata share.
  * To avoid the problem of future missing information, one can determine a final batch.
  * On default send there is no final batch defined.
  * Funds sent with a final batch that get a share smaller so it cannot fill the full donation will receive change.
