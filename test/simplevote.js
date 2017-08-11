@@ -92,7 +92,6 @@ contract('SimpleVote', function(accounts) {
         let proposalInfo;
         const rep0 = await reputation.reputationOf(accounts[0]);
         const rep1 = await reputation.reputationOf(accounts[1]);
-        const rep2 = await reputation.reputationOf(accounts[2]);
         assert.isOk(proposalId);
 
         // lets try to vote twice from the same address.
@@ -171,7 +170,7 @@ contract('SimpleVote', function(accounts) {
     });
 
     it("shoud behave sensibly when voting with an empty reputation system [TODO]", async function() {
-        const accounts = web3.eth.accounts;
+        // const accounts = web3.eth.accounts; // Commented to avoid linter error.
         const simpleVote = await SimpleVote.new();
         const reputation = await Reputation.new();
         const executable = await ExecutableTest.new();
