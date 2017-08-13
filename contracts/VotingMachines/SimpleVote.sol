@@ -102,7 +102,7 @@ contract SimpleVote {
         require(proposal.opened); // Check the proposal exists
         require(!proposal.ended); // Check the voting is not finished
 
-        // The owner of the vote can vote in anyones name. Others can only vote for themselves.
+        // The owner of the proposal can vote in anyones name. Others can only vote for themselves.
         if (msg.sender != proposal.owner) {
             _voter = msg.sender;
         }
@@ -143,6 +143,11 @@ contract SimpleVote {
         // Check vote is open:
         require(proposal.opened);
         require(!proposal.ended);
+
+        // The owner of the proposal can cancell vote in anyones name. Others can only cancell vote for themselves.
+        if (msg.sender != proposal.owner) {
+            _voter = msg.sender;
+        }
 
         int vote = proposal.voted[_voter];
 
