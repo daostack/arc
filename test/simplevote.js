@@ -225,7 +225,7 @@ contract('SimpleVote', function (accounts) {
 
         const proposalId = tx.logs[0].args._proposalId
 
-        await simpleVote.vote(proposalId, true, accounts[1])
+        await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[1] })
 
         const [yes1, no1, ended1] = await simpleVote.voteStatus(proposalId)
 
@@ -233,7 +233,7 @@ contract('SimpleVote', function (accounts) {
         assert.equal(no1.toNumber(), 0, 'wrong "no" count')
         assert.equal(ended1.toNumber(), 0, 'wrong "ended"')
 
-        await simpleVote.vote(proposalId, true, accounts[1]);
+        await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[1] });
 
         const [yes2, no2, ended2] = await simpleVote.voteStatus(proposalId)
 
@@ -257,7 +257,7 @@ contract('SimpleVote', function (accounts) {
 
         const proposalId = tx.logs[0].args._proposalId
 
-        await simpleVote.vote(proposalId, false, accounts[1])
+        await simpleVote.vote(proposalId, false, accounts[1], { from: accounts[1] })
 
         const [yes1, no1, ended1] = await simpleVote.voteStatus(proposalId)
 
@@ -265,7 +265,7 @@ contract('SimpleVote', function (accounts) {
         assert.equal(no1.toNumber(), 20, 'wrong "no" count')
         assert.equal(ended1.toNumber(), 0, 'wrong "ended"')
 
-        await simpleVote.vote(proposalId, false, accounts[1]);
+        await simpleVote.vote(proposalId, false, accounts[1], { from: accounts[1] });
 
         const [yes2, no2, ended2] = await simpleVote.voteStatus(proposalId)
 
@@ -273,39 +273,136 @@ contract('SimpleVote', function (accounts) {
         assert.equal(no1.toNumber(), no2.toNumber())
         assert.equal(ended1.toNumber(), ended2.toNumber())
     });
+    describe("as _not_ proposal owner - vote for myself", async function () {
 
-    it('vote "yes" then vote "no" should register "no"', async function () {
-        const simpleVote = await SimpleVote.new()
-        const reputation = await Reputation.new()
-        const executable = await ExecutableTest.new()
+        it('vote "yes" then vote "no" should register "no"', async function () {
+            const simpleVote = await SimpleVote.new()
+            const reputation = await Reputation.new()
+            const executable = await ExecutableTest.new()
 
-        await reputation.mint(20, accounts[1])
-        await reputation.mint(40, accounts[2])
+            await reputation.mint(20, accounts[1])
+            await reputation.mint(40, accounts[2])
 
-        await simpleVote.setParameters(reputation.address, 50)
+            await simpleVote.setParameters(reputation.address, 50)
 
-        const paramsHash = await simpleVote.getParametersHash(reputation.address, 50)
-        let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address)
+            const paramsHash = await simpleVote.getParametersHash(reputation.address, 50)
+            let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address)
 
-        const proposalId = tx.logs[0].args._proposalId
+            const proposalId = tx.logs[0].args._proposalId
 
-        await simpleVote.vote(proposalId, true, accounts[1])
+            await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[1] })
 
-        const [yes1, no1, ended1] = await simpleVote.voteStatus(proposalId)
+            const [yes1, no1, ended1] = await simpleVote.voteStatus(proposalId)
 
-        assert.equal(yes1.toNumber(), 20, 'wrong "yes" count')
-        assert.equal(no1.toNumber(), 0, 'wrong "no" count')
-        assert.equal(ended1.toNumber(), 0, 'wrong "ended"')
+            assert.equal(yes1.toNumber(), 20, 'wrong "yes" count')
+            assert.equal(no1.toNumber(), 0, 'wrong "no" count')
+            assert.equal(ended1.toNumber(), 0, 'wrong "ended"')
 
-        await simpleVote.vote(proposalId, false, accounts[1]);
+            await simpleVote.vote(proposalId, false, accounts[1], { from: accounts[1] });
 
-        const [yes2, no2, ended2] = await simpleVote.voteStatus(proposalId)
+            const [yes2, no2, ended2] = await simpleVote.voteStatus(proposalId)
 
-        console.log(yes2, no2, ended2);
+            assert.equal(yes2.toNumber(), 0, 'wrong "yes" count')
+            assert.equal(no2.toNumber(), 20, 'wrong "no" count')
+            assert.equal(ended2.toNumber(), 0, 'wrong "ended"')
+        });
 
-        assert.equal(yes2.toNumber(), 0, 'wrong "yes" count')
-        assert.equal(no2.toNumber(), 20, 'wrong "no" count')
-        assert.equal(ended2.toNumber(), 0, 'wrong "ended"')
+        it('vote "no" then vote "yes" should register "yes"', async function () {
+            const simpleVote = await SimpleVote.new()
+            const reputation = await Reputation.new()
+            const executable = await ExecutableTest.new()
+
+            await reputation.mint(20, accounts[1])
+            await reputation.mint(40, accounts[2])
+
+            await simpleVote.setParameters(reputation.address, 50)
+
+            const paramsHash = await simpleVote.getParametersHash(reputation.address, 50)
+            let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address)
+
+            const proposalId = tx.logs[0].args._proposalId
+
+            await simpleVote.vote(proposalId, false, accounts[1], { from: accounts[1] })
+
+            const [yes1, no1, ended1] = await simpleVote.voteStatus(proposalId)
+
+            assert.equal(yes1.toNumber(), 0, 'wrong "yes" count')
+            assert.equal(no1.toNumber(), 20, 'wrong "no" count')
+            assert.equal(ended1.toNumber(), 0, 'wrong "ended"')
+
+            await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[1] });
+
+            const [yes2, no2, ended2] = await simpleVote.voteStatus(proposalId)
+
+            assert.equal(yes2.toNumber(), 20, 'wrong "yes" count')
+            assert.equal(no2.toNumber(), 0, 'wrong "no" count')
+            assert.equal(ended2.toNumber(), 0, 'wrong "ended"')
+        });
     });
 
+    describe("as proposal owner - vote for another user", async function () {
+        it('vote "yes" then vote "no" should register "no"', async function () {
+            const simpleVote = await SimpleVote.new()
+            const reputation = await Reputation.new()
+            const executable = await ExecutableTest.new()
+
+            await reputation.mint(20, accounts[1])
+            await reputation.mint(40, accounts[2])
+
+            await simpleVote.setParameters(reputation.address, 50)
+
+            const paramsHash = await simpleVote.getParametersHash(reputation.address, 50)
+            let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address)
+
+            const proposalId = tx.logs[0].args._proposalId
+
+            await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[0] })
+
+            const [yes1, no1, ended1] = await simpleVote.voteStatus(proposalId)
+
+            assert.equal(yes1.toNumber(), 20, 'wrong "yes" count')
+            assert.equal(no1.toNumber(), 0, 'wrong "no" count')
+            assert.equal(ended1.toNumber(), 0, 'wrong "ended"')
+
+            await simpleVote.vote(proposalId, false, accounts[1], { from: accounts[0] });
+
+            const [yes2, no2, ended2] = await simpleVote.voteStatus(proposalId)
+
+            assert.equal(yes2.toNumber(), 0, 'wrong "yes" count')
+            assert.equal(no2.toNumber(), 20, 'wrong "no" count')
+            assert.equal(ended2.toNumber(), 0, 'wrong "ended"')
+        });
+
+        it('vote "no" then vote "yes" should register "yes"', async function () {
+            const simpleVote = await SimpleVote.new()
+            const reputation = await Reputation.new()
+            const executable = await ExecutableTest.new()
+
+            await reputation.mint(20, accounts[1])
+            await reputation.mint(40, accounts[2])
+
+            await simpleVote.setParameters(reputation.address, 50)
+
+            const paramsHash = await simpleVote.getParametersHash(reputation.address, 50)
+            let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address)
+
+            const proposalId = tx.logs[0].args._proposalId
+
+            await simpleVote.vote(proposalId, false, accounts[1], { from: accounts[0] })
+
+            const [yes1, no1, ended1] = await simpleVote.voteStatus(proposalId)
+
+            assert.equal(yes1.toNumber(), 0, 'wrong "yes" count')
+            assert.equal(no1.toNumber(), 20, 'wrong "no" count')
+            assert.equal(ended1.toNumber(), 0, 'wrong "ended"')
+
+            await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[0] });
+
+            const [yes2, no2, ended2] = await simpleVote.voteStatus(proposalId)
+
+            assert.equal(yes2.toNumber(), 20, 'wrong "yes" count')
+            assert.equal(no2.toNumber(), 0, 'wrong "no" count')
+            assert.equal(ended2.toNumber(), 0, 'wrong "ended"')
+        });
+    });
 });
