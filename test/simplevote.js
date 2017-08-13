@@ -406,7 +406,7 @@ contract('SimpleVote', function (accounts) {
         });
     });
 
-    it('cannot vote for another user"', async function () {
+    it('cannot vote for another user', async function () {
         const simpleVote = await SimpleVote.new()
         const reputation = await Reputation.new()
         const executable = await ExecutableTest.new()
@@ -423,14 +423,38 @@ contract('SimpleVote', function (accounts) {
 
         try {
             await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[2] })
-            assert(false, 'accounts[2] voter for accounts[1] but accounts[2] is not owner');
+            assert(false, 'accounts[2] voted for accounts[1] but accounts[2] is not owner');
         } catch (ex) {
         }
         try {
             await simpleVote.vote(proposalId, false, accounts[1], { from: accounts[2] })
-            assert(false, 'accounts[2] voter for accounts[1] but accounts[2] is not owner');
+            assert(false, 'accounts[2] voted for accounts[1] but accounts[2] is not owner');
         } catch (ex) {
 
+        }
+    });
+
+    it('cannot cancel vote by another user', async function () {
+        const simpleVote = await SimpleVote.new()
+        const reputation = await Reputation.new()
+        const executable = await ExecutableTest.new()
+
+        await reputation.mint(20, accounts[1])
+        await reputation.mint(40, accounts[2])
+
+        await simpleVote.setParameters(reputation.address, 50)
+
+        const paramsHash = await simpleVote.getParametersHash(reputation.address, 50)
+        let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address)
+
+        const proposalId = tx.logs[0].args._proposalId
+
+        await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[1] })
+
+        try {
+            await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[2] })
+            assert(false, 'accounts[2] canceled vote by accounts[1] but accounts[2] is not owner');
+        } catch (ex) {
         }
     });
 });
