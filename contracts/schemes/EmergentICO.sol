@@ -131,7 +131,7 @@ contract EmergentICO {
     if (isHalted) {
       return false;
     }
-    if (block.number >= startBlock) {
+    if (block.number < startBlock) {
       return false;
     }
     return true;
@@ -171,7 +171,7 @@ contract EmergentICO {
       partLeftOfCurrentBatch = _valueLeft%batchSize;
       currentBatchId += _valueLeft/batchSize + 1;
       // Allow only donations with _finalBatch that can be fulfilled on arrival:
-      if ((_isLimitedBatches) && (_finalBatch <= currentBatchId)) {
+      if ((_isLimitedBatches) && (_finalBatch >= currentBatchId)) {
         revert();
       }
       // Raise event that bach is filled:
