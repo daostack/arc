@@ -210,6 +210,36 @@ contract('SimpleVote', function (accounts) {
         assert(tx.logs[0].args._reputation.toNumber() == reps)
     });
 
+    it('double vote "yes" changes nothing', async function () {
+        const simpleVote = await SimpleVote.new()
+        const reputation = await Reputation.new()
+        const executable = await ExecutableTest.new()
 
+        await reputation.mint(20, accounts[1])
+        await reputation.mint(40, accounts[2])
+
+        await simpleVote.setParameters(reputation.address, 50)
+
+        const paramsHash = await simpleVote.getParametersHash(reputation.address, 50)
+        let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address)
+
+        const proposalId = tx.logs[0].args._proposalId
+
+        await simpleVote.vote(proposalId, true, accounts[1])
+
+        const [yes1, no1, ended1] = await simpleVote.voteStatus(proposalId)
+
+        assert(yes1.toNumber() == 20, 'wrong "yes" count')
+        assert(no1.toNumber() == 0, 'wrong "no" count')
+        assert(ended1.toNumber() == 0, 'wrong "ended"')
+
+        await simpleVote.vote(proposalId, true, accounts[1]);
+
+        const [yes2, no2, ended2] = await simpleVote.voteStatus(proposalId)
+
+        assert(yes1.toNumber() == yes2.toNumber())
+        assert(no1.toNumber() == no2.toNumber())
+        assert(ended1.toNumber() == ended2.toNumber())
+    });
 
 });
