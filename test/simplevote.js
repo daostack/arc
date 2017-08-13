@@ -405,4 +405,32 @@ contract('SimpleVote', function (accounts) {
             assert.equal(ended2.toNumber(), 0, 'wrong "ended"')
         });
     });
+
+    it('cannot vote for another user"', async function () {
+        const simpleVote = await SimpleVote.new()
+        const reputation = await Reputation.new()
+        const executable = await ExecutableTest.new()
+
+        await reputation.mint(20, accounts[1])
+        await reputation.mint(40, accounts[2])
+
+        await simpleVote.setParameters(reputation.address, 50)
+
+        const paramsHash = await simpleVote.getParametersHash(reputation.address, 50)
+        let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address)
+
+        const proposalId = tx.logs[0].args._proposalId
+
+        try {
+            await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[2] })
+            assert(false, 'accounts[2] voter for accounts[1] but accounts[2] is not owner');
+        } catch (ex) {
+        }
+        try {
+            await simpleVote.vote(proposalId, false, accounts[1], { from: accounts[2] })
+            assert(false, 'accounts[2] voter for accounts[1] but accounts[2] is not owner');
+        } catch (ex) {
+
+        }
+    });
 });
