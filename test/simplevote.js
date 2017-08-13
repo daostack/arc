@@ -103,7 +103,7 @@ contract('SimpleVote', function (accounts) {
         assert.equal(proposalInfo[4].toNumber(), rep1.toNumber());
 
         // lets try to cancel the previous vote.
-        await simpleVote.cancelVote(proposalId, { from: accounts[1] });
+        await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[1] });
         // total 'yes' is supposed to be zero again.
         proposalInfo = await simpleVote.proposals(proposalId);
         assert.equal(proposalInfo[4].toNumber(), 0);
@@ -114,29 +114,29 @@ contract('SimpleVote', function (accounts) {
         // total 'yes' is supposed to be equal to the voters 0 + 1 reputation
         proposalInfo = await simpleVote.proposals(proposalId);
         assert.equal(proposalInfo[4].toNumber(), rep0.toNumber() + rep1.toNumber());
-        await simpleVote.cancelVote(proposalId, { from: accounts[0] }); // Cleaning the vote for the next test.
-        await simpleVote.cancelVote(proposalId, { from: accounts[1] }); // Cleaning the vote for the next test.
+        await simpleVote.cancelVote(proposalId, accounts[0], { from: accounts[0] }); // Cleaning the vote for the next test.
+        await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
 
         // lets try to vote on the behalf of someone else without being the proposal owner.
         await simpleVote.vote(proposalId, true, accounts[0], { from: accounts[1] });
         // total 'yes' is supposed to be account 1's reputaton because he's the one who actually voted(he's the sender but not the owner).
         proposalInfo = await simpleVote.proposals(proposalId);
         assert.equal(proposalInfo[4].toNumber(), rep1);
-        await simpleVote.cancelVote(proposalId, { from: accounts[1] }); // Cleaning the vote for the next test.
+        await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
 
         // lets try to vote with empty address
         await simpleVote.vote(proposalId, true, helpers.NULL_ADDRESS, { from: accounts[1] });
         // total 'yes' is supposed to be account 1's reputaton because he's the one who actually voted(he's the sender but not the owner).
         proposalInfo = await simpleVote.proposals(proposalId);
         assert.equal(proposalInfo[4].toNumber(), rep1);
-        await simpleVote.cancelVote(proposalId, { from: accounts[1] }); // Cleaning the vote for the next test.
+        await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
 
         // lets try to vote with null address
         await simpleVote.vote(proposalId, true, null, { from: accounts[1] });
         // total 'yes' is supposed to be account 1's reputaton because he's the one who actually voted(he's the sender but not the owner).
         proposalInfo = await simpleVote.proposals(proposalId);
         assert.equal(proposalInfo[4].toNumber(), rep1);
-        await simpleVote.cancelVote(proposalId, { from: accounts[1] }); // Cleaning the vote for the next test.
+        await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
 
         // lets try to vote with false.
         await simpleVote.vote(proposalId, false, helpers.NULL_ADDRESS, { from: accounts[1] });
@@ -144,7 +144,7 @@ contract('SimpleVote', function (accounts) {
         proposalInfo = await simpleVote.proposals(proposalId);
         assert.equal(proposalInfo[4].toNumber(), 0);
         assert.equal(proposalInfo[5].toNumber(), rep1);
-        await simpleVote.cancelVote(proposalId, { from: accounts[1] }); // Cleaning the vote for the next test.
+        await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
 
         // lets try to vote by the owner on the behalf of non-existent voters(they do exist but they aren't registered to the reputation system).
         for (var i = 3; i < accounts.length; i++) {
