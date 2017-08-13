@@ -116,7 +116,7 @@ contract SimpleVote {
                 return false;
             }
             
-            cancelVote(_proposalId);
+            cancelVote(_proposalId, _voter);
         }
 
         uint reputation = parameters[proposal.paramsHash].reputationSystem.reputationOf(_voter);
@@ -138,21 +138,21 @@ contract SimpleVote {
      * @dev cancel your vote
      * @param _proposalId id of the proposal
      */
-    function cancelVote(bytes32 _proposalId) {
+    function cancelVote(bytes32 _proposalId, address _voter) {
         Proposal storage proposal = proposals[_proposalId];
         // Check vote is open:
         require(proposal.opened);
         require(!proposal.ended);
 
-        int vote = proposal.voted[msg.sender];
+        int vote = proposal.voted[_voter];
 
         if (vote > 0) {
             proposal.yes = (proposal.yes).sub(uint(vote));
         } else {
             proposal.no = (proposal.no).sub(uint((-1)*vote));
         }
-        proposal.voted[msg.sender] = 0;
-        CancelVoting(msg.sender, _proposalId);
+        proposal.voted[_voter] = 0;
+        CancelVoting(_voter, _proposalId);
     }
 
     /**
