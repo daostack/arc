@@ -171,7 +171,7 @@ contract('SimpleVote', function (accounts) {
     });
 
     it("shoud behave sensibly when voting with an empty reputation system [TODO]", async function () {
-        const accounts = web3.eth.accounts;
+        // const accounts = web3.eth.accounts; // Commented to avoid linter error.
         const simpleVote = await SimpleVote.new();
         const reputation = await Reputation.new();
         const executable = await ExecutableTest.new();
