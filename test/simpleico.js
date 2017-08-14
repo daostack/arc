@@ -1,8 +1,7 @@
-<<<<<<< HEAD
-// const helpers = require('./helpers');
-// import { Organization } from '../lib/organization.js';
-//
-// const SimpleICO = artifacts.require("./SimpleICO.sol");
+const helpers = require('./helpers');
+import { Organization } from '../lib/organization.js';
+
+const SimpleICO = artifacts.require("./SimpleICO.sol");
 //
 // let nativeToken, fee, creator, accounts;
 //
@@ -63,15 +62,3 @@
 //
 //
 // });
-=======
-const helpers = require('./helpers');
-
-
-contract('SimpleICO', function() {
-
-  before(function() {
-    helpers.etherForEveryone();
-  });
-
-});
->>>>>>> 59925b87586949aea3181f7eadc9fa07f0381af3
