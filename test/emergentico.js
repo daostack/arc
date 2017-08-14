@@ -1,4 +1,4 @@
-const helpers = require('./helpers')
+const helpers = require('./helpers');
 const Controller = artifacts.require("./Controller.sol");
 
 const EmergentICO = artifacts.require("./EmergentICO.sol");
@@ -22,7 +22,7 @@ const setupEmergantICO = async function(){
   batchSize = web3.toWei(10000, "ether");
   newController = await Controller.new(null, null, null, [], [], []);
   newICO = await EmergentICO.new(newController.address, admin, target, startBlock, clearancePeriodDuration, minDonation, initialRate, rateFractionNumerator, rateFractionDenominator, batchSize);
-}
+};
 
 contract("EmergantICO", function(accounts){
   before(function() {

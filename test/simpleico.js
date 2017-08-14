@@ -1,7 +1,7 @@
-const helpers = require('./helpers');
-import { Organization } from '../lib/organization.js';
-
-const SimpleICO = artifacts.require("./SimpleICO.sol");
+// const helpers = require('./helpers');
+// import { Organization } from '../lib/organization.js';
+//
+// const SimpleICO = artifacts.require("./SimpleICO.sol");
 //
 // let nativeToken, fee, creator, accounts;
 //
