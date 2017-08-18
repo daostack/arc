@@ -1,6 +1,5 @@
 import * as helpers from './helpers';
 import { Organization } from '../lib/organization.js';
-const Controller = artifacts.require("./Controller.sol");
 
 const EmergentICO = artifacts.require("./EmergentICO.sol");
 
@@ -228,6 +227,14 @@ contract("EmergentICO", function(accounts){
     await newICO.checkAverage(period, 2);
     const periodPlus1Init = await newICO.getIsPeriodInitialized(period+1);
     assert.equal(periodPlus1Init, true);
+
+     // Collect tokens:
+    //  const token = org.token;
+    //  const initBalance5 = await token.balanceOf(accounts[5]);
+    //  console.log(Number(initBalance5));
+    //  await newICO.collectMine(3, { from: accounts[5] });
+    //  const balance5 = await token.balanceOf(accounts[5]);
+    //  console.log(Number(balance5));
   });
 
   it("Test collection of funds and tokens [ToDo]", async function() {
