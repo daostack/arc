@@ -169,6 +169,7 @@ contract('SimpleVote', function (accounts) {
         //console.log("yes: " + proposalInfo[4] + ", no: " + proposalInfo[5]);
     });
 
+
     it("shoud behave sensibly when voting with an empty reputation system [TODO]", async function () {
         // const accounts = web3.eth.accounts; // Commented to avoid linter error.
         const simpleVote = await SimpleVote.new();

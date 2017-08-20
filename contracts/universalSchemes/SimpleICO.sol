@@ -14,13 +14,20 @@ contract MirrorContractICO is Destructible {
   Avatar public organization; // The organization address (the avatar)
   SimpleICO public simpleICO;  // The ICO contract address
 
-  // Contstructor, setting the organization and ICO scheme:
+  /**
+   * @dev Constructor, setting the organization and ICO scheme.
+   * @param _organization The organization's avatar.
+   * @param _simpleICO The ICO Scheme.
+   */
   function MirrorContractICO(Avatar _organization, SimpleICO _simpleICO) {
     organization = _organization;
     simpleICO = _simpleICO;
   }
 
-  // Fallback function,when ether is sent it will donate to the ICO.
+  /**
+   * @dev Fallback function, when ether is sent it will donate to the ICO.
+   * The ether will be returned if the donation is failed.
+   */
   function () payable {
     // Not to waste gas, if no value.
     require(msg.value != 0);
@@ -66,13 +73,18 @@ contract SimpleICO is UniversalScheme {
 
     event DonationReceived(address indexed organization, address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
 
-    // Constructor, updating the initial prarmeters:
+    /**
+     * @dev Constructor, Updating the initial prarmeters
+     * @param _nativeToken The native token of the ICO
+     * @param _fee The fee for intiating the ICO
+     * @param _beneficiary The address that will receive the ethers
+     */
     function SimpleICO(StandardToken _nativeToken, uint _fee, address _beneficiary) {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
     /**
-     * @dev hash the parameters, save them if necessary, and return the hash value
+     * @dev Hash the parameters, save them if necessary, and return the hash value
      */
     function setParameters(
         uint _cap,
@@ -94,7 +106,11 @@ contract SimpleICO is UniversalScheme {
         return paramsHash;
     }
 
-    // The format of the hashing of the parameters:
+
+    /**
+     * @dev Calculate a hash of the given parameters.
+     * @return bytes32 Hash of the given parameters.
+     */
     function getParametersHash(
         uint _cap,
         uint _price,
@@ -105,7 +121,10 @@ contract SimpleICO is UniversalScheme {
         return (sha3(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin));
     }
 
-    // Adding an organization to the universal scheme, and opens an ICO for it:
+    /**
+     * @dev Adding an organization to the universal scheme, and opens an ICO for it
+     * @param _avatar The Avatar's of the organization
+     */
     function registerOrganization(Avatar _avatar) {
       // Pay fees for using scheme:
       if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
@@ -130,19 +149,32 @@ contract SimpleICO is UniversalScheme {
         revert();
     }
 
-    // Admin can halt ICO:
+    /**
+     * @dev Allowing admin to halt an ICO.
+     * @param _avatar The Avatar's of the organization
+     */
     function haltICO(address _avatar) {
         require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
         organizations[_avatar].isHalted = true;
     }
 
-    // Admin can reopen ICO:
+    /**
+     * @dev Allowing admin to reopen an ICO.
+     * @param _avatar The Avatar's of the organization
+     */
     function resumeICO(address _avatar) {
         require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
         organizations[_avatar].isHalted = false;
     }
 
-    // Check if an ICO is active (halted is still considered active)
+    /**
+     * @dev Check is an ICO is active (halted is still considered active). Active ICO:
+     * 1. The organization is registered.
+     * 2. The ICO didn't reach it's cap yet.
+     * 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
+     * @param _avatar The Avatar's of the organization
+     * @return bool which represents a successful of the function
+     */
     function isActiveICO(address _avatar) constant returns(bool) {
         Organization memory org = organizations[_avatar];
         Parameters memory params = parameters[org.paramsHash];
@@ -161,7 +193,14 @@ contract SimpleICO is UniversalScheme {
         return true;
     }
 
-    // Donating ethers to get tokens:
+    /**
+     * @dev Donating ethers to get tokens.
+     * If the donation is higher than the remaining ethers in the "cap",
+     * The donator will get the change in ethers.
+     * @param _avatar The Avatar's of the organization.
+     * @param _beneficiary The donator's address - which will receive the ICO's tokens.
+     * @return bool which represents a successful of the function
+     */
     function donate(Avatar _avatar, address _beneficiary) payable returns(uint) {
         Organization memory org = organizations[_avatar];
         Parameters memory params = parameters[org.paramsHash];
