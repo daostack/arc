@@ -288,7 +288,7 @@ contract('SimpleVote', function (accounts) {
             const paramsHash = await simpleVote.getParametersHash(reputation.address, 50);
             let tx = await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address);
 
-            const proposalId = tx.logs[0].args._proposalI;
+            const proposalId = tx.logs[0].args._proposalId;
 
             await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[1] });
 
