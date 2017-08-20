@@ -82,4 +82,10 @@ contract('MintableToken', function (accounts) {
 
         assert.equal(amount, 1000);
     });
+
+    it("totalSupply is 0 on init", async function () {
+        const token = await MintableToken.new();
+
+        assert.equal(await token.totalSupply(), 0);
+    });
 });
