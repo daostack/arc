@@ -102,7 +102,7 @@ contract SimpleVote {
         require(proposal.opened); // Check the proposal exists
         require(!proposal.ended); // Check the voting is not finished
 
-        // The owner of the vote can vote in anyones name. Others can only vote for themselves.
+        // The owner of the proposal can vote in anyones name. Others can only vote for themselves.
         if (msg.sender != proposal.owner) {
             _voter = msg.sender;
         }
@@ -116,7 +116,7 @@ contract SimpleVote {
                 return false;
             }
             
-            cancelVote(_proposalId);
+            cancelVote(_proposalId, _voter);
         }
 
         uint reputation = parameters[proposal.paramsHash].reputationSystem.reputationOf(_voter);
@@ -138,21 +138,26 @@ contract SimpleVote {
      * @dev cancel your vote
      * @param _proposalId id of the proposal
      */
-    function cancelVote(bytes32 _proposalId) {
+    function cancelVote(bytes32 _proposalId, address _voter) {
         Proposal storage proposal = proposals[_proposalId];
         // Check vote is open:
         require(proposal.opened);
         require(!proposal.ended);
 
-        int vote = proposal.voted[msg.sender];
+        // The owner of the proposal can cancell vote in anyones name. Others can only cancell vote for themselves.
+        if (msg.sender != proposal.owner) {
+            _voter = msg.sender;
+        }
+
+        int vote = proposal.voted[_voter];
 
         if (vote > 0) {
             proposal.yes = (proposal.yes).sub(uint(vote));
         } else {
             proposal.no = (proposal.no).sub(uint((-1)*vote));
         }
-        proposal.voted[msg.sender] = 0;
-        CancelVoting(msg.sender, _proposalId);
+        proposal.voted[_voter] = 0;
+        CancelVoting(_voter, _proposalId);
     }
 
     /**
