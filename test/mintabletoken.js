@@ -59,16 +59,6 @@ contract('MintableToken', function (accounts) {
         assert.equal(tx.logs[0].args.value, 1000);
     });
 
-    it("mint should be reflected in balances", async function () {
-        const token = await MintableToken.new();
-
-        await token.mint(1000, accounts[1], { from: accounts[0] });
-
-        const amount = await token.balanceOf(accounts[1]);
-
-        assert.equal(amount, 1000);
-    });
-
     it("mint should be reflected in totalSupply", async function () {
         const token = await MintableToken.new();
 
@@ -81,5 +71,15 @@ contract('MintableToken', function (accounts) {
         amount = await token.totalSupply();
 
         assert.equal(amount, 1500);
+    });
+
+    it("mint should be reflected in balances", async function () {
+        const token = await MintableToken.new();
+
+        await token.mint(1000, accounts[1], { from: accounts[0] });
+
+        const amount = await token.balanceOf(accounts[1]);
+
+        assert.equal(amount, 1000);
     });
 });
