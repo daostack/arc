@@ -2,9 +2,9 @@ const helpers = require('./helpers');
 
 const MintableToken = artifacts.require("./MintableToken.sol");
 
-contract('MintableToken', function(accounts) {
+contract('MintableToken', function (accounts) {
 
-    it("should mint tokens to owner account", async function() {
+    it("should mint tokens to owner account", async function () {
         helpers.etherForEveryone();
 
         let owner, totalSupply, userSupply;
@@ -29,7 +29,7 @@ contract('MintableToken', function(accounts) {
 
     });
 
-    it("should allow minting tokens only by owner", async function() {
+    it("should allow minting tokens only by owner", async function () {
         helpers.etherForEveryone();
         let token = await MintableToken.new();
         let owner = await token.owner();
@@ -37,14 +37,25 @@ contract('MintableToken', function(accounts) {
 
         // calling 'mint' as a non-owner throws an error
         try {
-            await token.mint(1000, owner, {'from': accounts[1]});
+            await token.mint(1000, owner, { 'from': accounts[1] });
             throw 'an error';
-        } catch(error) {
+        } catch (error) {
             helpers.assertVMException(error);
         }
 
         // and so the supply of tokens should remain unchanged
         let newSupply = await token.totalSupply();
         assert.equal(totalSupply.valueOf(), newSupply.valueOf());
+    });
+
+    it("log the Mint event on mint", async function () {
+        const token = await MintableToken.new();
+
+        const tx = await token.mint(1000, accounts[1], { from: accounts[0] });
+
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "Mint");
+        assert.equal(tx.logs[0].args.to, accounts[1]);
+        assert.equal(tx.logs[0].args.value, 1000);
     });
 });
