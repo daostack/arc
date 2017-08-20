@@ -32,7 +32,11 @@ const setupEmergentICO = async function(){
     tokenSymbol: 'ADM',
     founders,
   });
-    newICO = await EmergentICO.new(org.contoller, admin, target, startBlock, clearancePeriodDuration, minDonation, initialRate, rateFractionNumerator, rateFractionDenominator, batchSize);
+  newICO = await EmergentICO.new(org.controller.address, admin, target, startBlock, clearancePeriodDuration, minDonation, initialRate, rateFractionNumerator, rateFractionDenominator, batchSize);
+  const schemeRegistrar = await org.scheme('SchemeRegistrar');
+  const token = org.token;
+  schemeRegistrar.proposeScheme(org.avatar.address, newICO.address, 0, false, token.address, 0, false);
+
 };
 
 contract("EmergentICO", function(accounts){
@@ -182,7 +186,7 @@ contract("EmergentICO", function(accounts){
     assert.equal(await Number(web3.eth.getBalance(target)), Number(targetOriginalBalance));
   });
 
-  it("Test donations and average calculation of period [ToDo: add more checks about the final state]", async function(){
+  it("Full scenario 1", async function(){
     await setupEmergentICO();
 
     // Original data:
@@ -228,16 +232,33 @@ contract("EmergentICO", function(accounts){
     const periodPlus1Init = await newICO.getIsPeriodInitialized(period+1);
     assert.equal(periodPlus1Init, true);
 
-     // Collect tokens:
-    //  const token = org.token;
-    //  const initBalance5 = await token.balanceOf(accounts[5]);
-    //  console.log(Number(initBalance5));
-    //  await newICO.collectMine(3, { from: accounts[5] });
-    //  const balance5 = await token.balanceOf(accounts[5]);
-    //  console.log(Number(balance5));
-  });
+    // Retrieve ether:
+    const gasPrice = await web3.eth.gasPrice;
+    let account3EthBefore = await web3.eth.getBalance(accounts[3]);
+    const account3BeforePlusDonation = Number(account3EthBefore) + Number(web3.toWei(4));
+    let tx = await newICO.collectMine(1, { from: accounts[3], gasPrice: gasPrice });
+    let gasCost = Number(tx.receipt.gasUsed)*gasPrice;
+    let account3EthAfter = await web3.eth.getBalance(accounts[3]);
+    let account3AfterPlusGas = Number(account3EthAfter) + Number(gasCost);
+    assert(Math.abs(account3BeforePlusDonation - account3AfterPlusGas)/account3AfterPlusGas < 10**(-8));
 
-  it("Test collection of funds and tokens [ToDo]", async function() {
+    // Try to retrieve ether twice:
+    account3EthBefore = await web3.eth.getBalance(accounts[3]);
+    tx = await newICO.collectMine(1, { from: accounts[3], gasPrice: gasPrice });
+    gasCost = Number(tx.receipt.gasUsed)*gasPrice;
+    account3EthAfter = await web3.eth.getBalance(accounts[3]);
+    account3AfterPlusGas = Number(account3EthAfter) + Number(gasCost);
+    assert(Math.abs(Number(account3EthBefore) - account3AfterPlusGas)/account3AfterPlusGas < 10**(-8));
+
+     // Collect tokens:
+     const averageRate18Digits = Number(await newICO.averageRateCalc18Digits(0, web3.toWei(38)));
+     const tokensToBeCollected = averageRate18Digits*11;
+     const token = org.token;
+     const initBalance5 = await token.balanceOf(accounts[5]);
+     await newICO.collectMine(3, { from: accounts[5] });
+     const balance5 = await token.balanceOf(accounts[5]);
+     const collectedTokens = Number(balance5) - Number(initBalance5);
+     assert(Math.abs(collectedTokens - tokensToBeCollected)/tokensToBeCollected < 10**(-8));
   });
 
 });

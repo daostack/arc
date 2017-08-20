@@ -3,6 +3,7 @@ pragma solidity ^0.4.11;
 import "../controller/Controller.sol";
 
 contract EmergentICO {
+  // ToDo: Use SafeMath for uint.
 
   event LogDonationReceived
   (
@@ -14,7 +15,7 @@ contract EmergentICO {
     uint _minRate
   );
   event LogPeriodAverageComputed(uint _periodId);
-  event LogCollect(uint _donation, uint tokens);
+  event LogCollect(uint _donation, uint _tokens, uint _ether);
 
   struct Donation {
     address donor;
@@ -288,7 +289,7 @@ contract EmergentICO {
     isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
-    Period memory period = periods[_periodId];
+    Period period = periods[_periodId];
     AvarageComputator avgComp = avarageComputators[msg.sender];
     require(avgComp.periodId == _periodId);
 
@@ -321,12 +322,13 @@ contract EmergentICO {
    * @param _donationId The donation to be cleared.
    */
   function collectTokens(uint _donationId) internal {
-    Donation memory donation = donations[_donationId];
-    Period memory period = periods[donation.periodId];
+    Donation donation = donations[_donationId];
+    Period period = periods[donation.periodId];
 
     // Check collection is possible:
     require(donation.periodId  < currentClearancePeriod());
     require(period.isAverageRateComputed);
+
     if (donation.isCollected) {
       return;
     }
@@ -336,13 +338,13 @@ contract EmergentICO {
     period.clearedDonations++;
 
     // Check the donation minimum rate is valid, if so mint tokens, else, return funds:
-    if (donation.minRate >= period.averageRate) {
-      uint tokensToMint = period.averageRate*donation.value/period.raisedInPeriod/(10**18);
+    if (donation.minRate < period.averageRate) {
+      uint tokensToMint = period.averageRate*donation.value/(10**18);
       controller.mintTokens(tokensToMint, donation.beneficiary);
-      LogCollect(_donationId, tokensToMint);
+      LogCollect(_donationId, tokensToMint, 0);
     } else {
       donation.donor.transfer(donation.value);
-      LogCollect(_donationId, 0);
+      LogCollect(_donationId, 0, donation.value);
     }
   }
 
