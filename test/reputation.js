@@ -124,14 +124,14 @@ contract('Reputation', function (accounts) {
         const reputation = await Reputation.new();
 
         await reputation.mint(1000, accounts[1], { from: accounts[0] });
-        let amount = await reputation.totalSupply();
+        let totalSupply = await reputation.totalSupply();
 
-        assert.equal(amount, 1000);
+        assert.equal(totalSupply.toNumber(), 1000);
 
         await reputation.mint(500, accounts[2], { from: accounts[0] });
-        amount = await reputation.totalSupply();
+        totalSupply = await reputation.totalSupply();
 
-        assert.equal(amount.toNumber(), 1500);
+        assert.equal(totalSupply.toNumber(), 1500);
     });
 
     it("mint should be reflected in balances", async function () {
@@ -142,5 +142,36 @@ contract('Reputation', function (accounts) {
         const amount = await reputation.reputationOf(accounts[1]);
 
         assert.equal(amount.toNumber(), 1000);
+    });
+
+    it("setReputation should be reflected in totalSupply", async function () {
+        const reputation = await Reputation.new();
+
+        await reputation.setReputation(1000, accounts[1], { from: accounts[0] });
+        let totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 1000);
+
+        await reputation.setReputation(500, accounts[2], { from: accounts[0] });
+        totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 1500);
+
+        await reputation.setReputation(500, accounts[1], { from: accounts[0] });
+        totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 1000);
+    });
+
+    it("setReputation should be reflected in balances", async function () {
+        const reputation = await Reputation.new();
+
+        await reputation.setReputation(1000, accounts[1], { from: accounts[0] });
+        let amount = await reputation.reputationOf(accounts[1]);
+        assert.equal(amount.toNumber(), 1000);
+
+        await reputation.setReputation(500, accounts[1], { from: accounts[0] });
+        amount = await reputation.reputationOf(accounts[1]);
+        assert.equal(amount.toNumber(), 500);
     });
 });
