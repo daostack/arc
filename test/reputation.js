@@ -108,4 +108,39 @@ contract('Reputation', function (accounts) {
 
         assert.equal(totalSupply.toNumber(), 0);
     });
+
+    it("log the Mint event on mint", async function () {
+        const reputation = await Reputation.new();
+
+        const tx = await reputation.mint(1000, accounts[1], { from: accounts[0] });
+
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "Mint");
+        assert.equal(tx.logs[0].args.to, accounts[1]);
+        assert.equal(tx.logs[0].args.value.toNumber(), 1000);
+    });
+
+    it("mint should be reflected in totalSupply", async function () {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
+        let amount = await reputation.totalSupply();
+
+        assert.equal(amount, 1000);
+
+        await reputation.mint(500, accounts[2], { from: accounts[0] });
+        amount = await reputation.totalSupply();
+
+        assert.equal(amount.toNumber(), 1500);
+    });
+
+    it("mint should be reflected in balances", async function () {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
+
+        const amount = await reputation.reputationOf(accounts[1]);
+
+        assert.equal(amount.toNumber(), 1000);
+    });
 });
