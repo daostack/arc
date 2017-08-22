@@ -3,15 +3,9 @@ pragma solidity ^0.4.11;
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
 
-// ToDo: write tests!
+// ToDo: Write tests!
 
-/**
- * @title Simple Absolute Voting Machine.
- * @dev Implements an absolute voting machine which means that the votes are being counted related to
- * the total reputation of the DAO.
- * Most of the time the DAO's Schemes will be the owners of the porposals.
- */
-contract AbsoluteVote is IntVoteInterface {
+contract AbsoluteVote { // is IntVoteInterface
   using SafeMath for uint;
 
 
@@ -66,6 +60,9 @@ contract AbsoluteVote is IntVoteInterface {
     require(proposals[_proposalId].opened);
     require(! proposals[_proposalId].executed);
     _;
+  }
+
+  function AbsoluteVote() {
   }
 
   /**
@@ -201,8 +198,7 @@ contract AbsoluteVote is IntVoteInterface {
   function cancelVote(bytes32 _proposalId) votableProposal(_proposalId) {
     Proposal storage proposal = proposals[_proposalId];
 
-    Voter voter = proposal.voters[msg.sender];
-    // Cancel yes vote
+    Voter storage voter = proposal.voters[msg.sender];
     if (voter.vote == 1) {
         proposal.yes = (proposal.yes).sub(voter.reputation);
     }
@@ -241,13 +237,6 @@ contract AbsoluteVote is IntVoteInterface {
       proposals[_proposalId].executed = true;
       LogExecuteProposal(_proposalId, -1);
       proposal.executable.execute(_proposalId, proposal.avatar, -1);
-      return true;
-    }
-    // "abstain" was elected, executing with "abstain"
-    if (proposal.abstain > totalReputation*precReq/100) {
-      proposals[_proposalId].executed = true;
-      LogExecuteProposal(_proposalId, 0);
-      proposal.executable.execute(_proposalId, proposal.avatar, 0);
       return true;
     }
     return false;
