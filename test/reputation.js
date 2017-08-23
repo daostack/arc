@@ -3,8 +3,8 @@ const helpers = require('./helpers');
 var Reputation = artifacts.require("./Reputation.sol");
 
 
-contract('Reputation', function(accounts) {
-    it("test setting and getting reputation by the owner", async function() {
+contract('Reputation', function (accounts) {
+    it("test setting and getting reputation by the owner", async function () {
         let value;
         let reputation = await Reputation.new();
 
@@ -14,21 +14,21 @@ contract('Reputation', function(accounts) {
         assert.equal(value.valueOf(), 3131);
     });
 
-    it("should be owned by the main account", async function() {
+    it("should be owned by the main account", async function () {
         let reputation = await Reputation.new();
         let owner = await reputation.owner();
         assert.equal(owner, accounts[0]);
     });
 
-    it("check permissions", async function() {
+    it("check permissions", async function () {
         let rep = await Reputation.new();
         await rep.setReputation(1000, accounts[1]);
 
         // only the owner can call setReputation
         try {
-            await rep.setReputation(1000, accounts[2], {from: accounts[2]});
+            await rep.setReputation(1000, accounts[2], { from: accounts[2] });
             throw 'an error'; // make sure that an error is thrown
-        } catch(error) {
+        } catch (error) {
             helpers.assertVMException(error);
         }
 
@@ -43,7 +43,7 @@ contract('Reputation', function(accounts) {
         assert.equal(parseInt(totalRep), parseInt(account0Rep) + parseInt(account1Rep), "total reputation should be sum of account0 and account1");
     });
 
-    it("check total reputation", async function() {
+    it("check total reputation", async function () {
         let rep = await Reputation.new();
         await rep.mint(2000, accounts[0]);
         await rep.mint(1000, accounts[1]);
@@ -65,7 +65,7 @@ contract('Reputation', function(accounts) {
     });
 
 
-    it("check total reputation overflow", async function() {
+    it("check total reputation overflow", async function () {
         let rep = await Reputation.new();
         let BigNumber = require('bignumber.js');
         let bigNum = ((new BigNumber(2)).toPower(254));
@@ -77,10 +77,10 @@ contract('Reputation', function(accounts) {
         let totalRepBefore = await rep.totalSupply();
 
         try {
-          await rep.mint(bigNum, accounts[1]);
-          throw 'an error'; // make sure that an error is thrown
-        } catch(error) {
-          helpers.assertVMException(error);
+            await rep.mint(bigNum, accounts[1]);
+            throw 'an error'; // make sure that an error is thrown
+        } catch (error) {
+            helpers.assertVMException(error);
         }
 
         let totalRepAfter = await rep.totalSupply();
@@ -88,7 +88,7 @@ contract('Reputation', function(accounts) {
         assert(totalRepBefore.equals(totalRepAfter), "reputation should remain the same");
     });
 
-    it("test reducing reputation", async function() {
+    it("test reducing reputation", async function () {
         let value;
         let reputation = await Reputation.new();
 
@@ -100,5 +100,78 @@ contract('Reputation', function(accounts) {
 
         assert.equal(value.valueOf(), 1000);
         assert.equal(totalRepSupply.valueOf(), 1000);
+    });
+
+    it("totalSupply is 0 on init", async function () {
+        const reputation = await Reputation.new();
+        const totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 0);
+    });
+
+    it("log the Mint event on mint", async function () {
+        const reputation = await Reputation.new();
+
+        const tx = await reputation.mint(1000, accounts[1], { from: accounts[0] });
+
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "Mint");
+        assert.equal(tx.logs[0].args.to, accounts[1]);
+        assert.equal(tx.logs[0].args.value.toNumber(), 1000);
+    });
+
+    it("mint should be reflected in totalSupply", async function () {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
+        let totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 1000);
+
+        await reputation.mint(500, accounts[2], { from: accounts[0] });
+        totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 1500);
+    });
+
+    it("mint should be reflected in balances", async function () {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
+
+        const amount = await reputation.reputationOf(accounts[1]);
+
+        assert.equal(amount.toNumber(), 1000);
+    });
+
+    it("setReputation should be reflected in totalSupply", async function () {
+        const reputation = await Reputation.new();
+
+        await reputation.setReputation(1000, accounts[1], { from: accounts[0] });
+        let totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 1000);
+
+        await reputation.setReputation(500, accounts[2], { from: accounts[0] });
+        totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 1500);
+
+        await reputation.setReputation(500, accounts[1], { from: accounts[0] });
+        totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 1000);
+    });
+
+    it("setReputation should be reflected in balances", async function () {
+        const reputation = await Reputation.new();
+
+        await reputation.setReputation(1000, accounts[1], { from: accounts[0] });
+        let amount = await reputation.reputationOf(accounts[1]);
+        assert.equal(amount.toNumber(), 1000);
+
+        await reputation.setReputation(500, accounts[1], { from: accounts[0] });
+        amount = await reputation.reputationOf(accounts[1]);
+        assert.equal(amount.toNumber(), 500);
     });
 });
