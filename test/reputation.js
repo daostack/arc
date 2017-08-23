@@ -119,7 +119,7 @@ contract('Reputation', accounts => {
         assert.equal(tx.logs[0].args.value.toNumber(), 1000);
     });
 
-    it("mint should be reflected in totalSupply", async () => {
+    it("mint (plus) should be reflected in totalSupply", async () => {
         const reputation = await Reputation.new();
 
         await reputation.mint(1000, accounts[1], { from: accounts[0] });
@@ -133,7 +133,7 @@ contract('Reputation', accounts => {
         assert.equal(totalSupply.toNumber(), 1500);
     });
 
-    it("mint should be reflected in balances", async () => {
+    it("mint (plus) should be reflected in balances", async () => {
         const reputation = await Reputation.new();
 
         await reputation.mint(1000, accounts[1], { from: accounts[0] });
@@ -141,6 +141,20 @@ contract('Reputation', accounts => {
         const amount = await reputation.reputationOf(accounts[1]);
 
         assert.equal(amount.toNumber(), 1000);
+    });
+
+    it("mint (minus) should be reflected in totalSupply", async () => {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
+        let totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 1000);
+
+        await reputation.mint(-500, accounts[1], { from: accounts[0] });
+        totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 500);
     });
 
     it("setReputation should be reflected in totalSupply", async () => {
