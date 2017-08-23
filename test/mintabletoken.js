@@ -109,4 +109,25 @@ contract('MintableToken', function (accounts) {
 
         assert.equal(totalSupply.toNumber(), 0);
     });
+
+    describe('onlyOwner', () => {
+        it('mint by owner', async () => {
+            const token = await MintableToken.new();
+            try {
+                await token.mint(10, accounts[1], { from: accounts[0] });
+            } catch (ex) {
+                assert(false, 'owner could not mint');
+            }
+        });
+
+        it('mint by not owner', async () => {
+            const token = await MintableToken.new();
+            try {
+                await token.mint(10, accounts[1], { from: accounts[1] });
+                assert(false, 'non-owner was able to mint');
+            } catch (ex) {
+                assert(true);
+            }
+        });
+    });
 });
