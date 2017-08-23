@@ -190,13 +190,17 @@ contract('Reputation', accounts => {
     it("setReputation should be reflected in balances", async () => {
         const reputation = await Reputation.new();
 
-        await reputation.setReputation(1000, accounts[1], { from: accounts[0] });
-        let amount = await reputation.reputationOf(accounts[1]);
-        assert.equal(amount.toNumber(), 1000);
+        let rep = Math.floor(Math.random() * 1e6);
 
-        await reputation.setReputation(500, accounts[1], { from: accounts[0] });
+        await reputation.setReputation(rep, accounts[1], { from: accounts[0] });
+        let amount = await reputation.reputationOf(accounts[1]);
+        assert.equal(amount.toNumber(), rep);
+
+        rep = Math.floor(Math.random() * 1e6);
+
+        await reputation.setReputation(rep, accounts[1], { from: accounts[0] });
         amount = await reputation.reputationOf(accounts[1]);
-        assert.equal(amount.toNumber(), 500);
+        assert.equal(amount.toNumber(), rep);
     });
 
     describe('onlyOwner', () => {
@@ -237,5 +241,16 @@ contract('Reputation', accounts => {
                 assert(true);
             }
         });
+    });
+
+    it("mint (minus) should be reflected in balances", async () => {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
+        await reputation.mint(-500, accounts[1], { from: accounts[0] });
+
+        const amount = await reputation.reputationOf(accounts[1]);
+
+        assert.equal(amount.toNumber(), 500);
     });
 });
