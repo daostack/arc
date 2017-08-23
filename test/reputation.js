@@ -2,9 +2,8 @@ const helpers = require('./helpers');
 
 var Reputation = artifacts.require("./Reputation.sol");
 
-
-contract('Reputation', function (accounts) {
-    it("test setting and getting reputation by the owner", async function () {
+contract('Reputation', accounts => {
+    it("test setting and getting reputation by the owner", async () => {
         let value;
         let reputation = await Reputation.new();
 
@@ -14,13 +13,13 @@ contract('Reputation', function (accounts) {
         assert.equal(value.valueOf(), 3131);
     });
 
-    it("should be owned by the main account", async function () {
+    it("should be owned by the main account", async () => {
         let reputation = await Reputation.new();
         let owner = await reputation.owner();
         assert.equal(owner, accounts[0]);
     });
 
-    it("check permissions", async function () {
+    it("check permissions", async () => {
         let rep = await Reputation.new();
         await rep.setReputation(1000, accounts[1]);
 
@@ -43,7 +42,7 @@ contract('Reputation', function (accounts) {
         assert.equal(parseInt(totalRep), parseInt(account0Rep) + parseInt(account1Rep), "total reputation should be sum of account0 and account1");
     });
 
-    it("check total reputation", async function () {
+    it("check total reputation", async () => {
         let rep = await Reputation.new();
         await rep.mint(2000, accounts[0]);
         await rep.mint(1000, accounts[1]);
@@ -65,7 +64,7 @@ contract('Reputation', function (accounts) {
     });
 
 
-    it("check total reputation overflow", async function () {
+    it("check total reputation overflow", async () => {
         let rep = await Reputation.new();
         let BigNumber = require('bignumber.js');
         let bigNum = ((new BigNumber(2)).toPower(254));
@@ -88,7 +87,7 @@ contract('Reputation', function (accounts) {
         assert(totalRepBefore.equals(totalRepAfter), "reputation should remain the same");
     });
 
-    it("test reducing reputation", async function () {
+    it("test reducing reputation", async () => {
         let value;
         let reputation = await Reputation.new();
 
@@ -102,14 +101,14 @@ contract('Reputation', function (accounts) {
         assert.equal(totalRepSupply.valueOf(), 1000);
     });
 
-    it("totalSupply is 0 on init", async function () {
+    it("totalSupply is 0 on init", async () => {
         const reputation = await Reputation.new();
         const totalSupply = await reputation.totalSupply();
 
         assert.equal(totalSupply.toNumber(), 0);
     });
 
-    it("log the Mint event on mint", async function () {
+    it("log the Mint event on mint", async () => {
         const reputation = await Reputation.new();
 
         const tx = await reputation.mint(1000, accounts[1], { from: accounts[0] });
@@ -120,7 +119,7 @@ contract('Reputation', function (accounts) {
         assert.equal(tx.logs[0].args.value.toNumber(), 1000);
     });
 
-    it("mint should be reflected in totalSupply", async function () {
+    it("mint should be reflected in totalSupply", async () => {
         const reputation = await Reputation.new();
 
         await reputation.mint(1000, accounts[1], { from: accounts[0] });
@@ -134,7 +133,7 @@ contract('Reputation', function (accounts) {
         assert.equal(totalSupply.toNumber(), 1500);
     });
 
-    it("mint should be reflected in balances", async function () {
+    it("mint should be reflected in balances", async () => {
         const reputation = await Reputation.new();
 
         await reputation.mint(1000, accounts[1], { from: accounts[0] });
@@ -144,7 +143,7 @@ contract('Reputation', function (accounts) {
         assert.equal(amount.toNumber(), 1000);
     });
 
-    it("setReputation should be reflected in totalSupply", async function () {
+    it("setReputation should be reflected in totalSupply", async () => {
         const reputation = await Reputation.new();
 
         await reputation.setReputation(1000, accounts[1], { from: accounts[0] });
@@ -163,7 +162,7 @@ contract('Reputation', function (accounts) {
         assert.equal(totalSupply.toNumber(), 1000);
     });
 
-    it("setReputation should be reflected in balances", async function () {
+    it("setReputation should be reflected in balances", async () => {
         const reputation = await Reputation.new();
 
         await reputation.setReputation(1000, accounts[1], { from: accounts[0] });
@@ -173,5 +172,45 @@ contract('Reputation', function (accounts) {
         await reputation.setReputation(500, accounts[1], { from: accounts[0] });
         amount = await reputation.reputationOf(accounts[1]);
         assert.equal(amount.toNumber(), 500);
+    });
+
+    describe('onlyOwner', () => {
+        it('setReputation by owner', async () => {
+            const reputation = await Reputation.new();
+            try {
+                await reputation.setReputation(10, accounts[1], { from: accounts[0] });
+            } catch (ex) {
+                assert(false, 'owner could not setReputation');
+            }
+        });
+
+        it('setReputation by not owner', async () => {
+            const reputation = await Reputation.new();
+            try {
+                await reputation.setReputation(10, accounts[1], { from: accounts[1] });
+                assert(false, 'non-owner was able to setReputation');
+            } catch (ex) {
+                assert(true);
+            }
+        });
+
+        it('mint by owner', async () => {
+            const reputation = await Reputation.new();
+            try {
+                await reputation.mint(10, accounts[1], { from: accounts[0] });
+            } catch (ex) {
+                assert(false, 'owner could not mint');
+            }
+        });
+
+        it('mint by not owner', async () => {
+            const reputation = await Reputation.new();
+            try {
+                await reputation.mint(10, accounts[1], { from: accounts[1] });
+                assert(false, 'non-owner was able to mint');
+            } catch (ex) {
+                assert(true);
+            }
+        });
     });
 });
