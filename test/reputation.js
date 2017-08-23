@@ -173,4 +173,41 @@ contract('Reputation', accounts => {
         amount = await reputation.reputationOf(accounts[1]);
         assert.equal(amount.toNumber(), 500);
     });
+
+    describe('onlyOwner', () => {
+        it('setReputation by owner', async () => {
+            const reputation = await Reputation.new();
+            try {
+                await reputation.setReputation(10, accounts[1], { from: accounts[0] });
+            } catch (ex) {
+                assert(false, 'owner could not setReputation');
+            }
+        })
+        it('setReputation by not owner', async () => {
+            const reputation = await Reputation.new();
+            try {
+                await reputation.setReputation(10, accounts[1], { from: accounts[1] });
+                assert(false, 'non-owner was able to setReputation');
+            } catch (ex) {
+                assert(true);
+            }
+        })
+        it('mint by owner', async () => {
+            const reputation = await Reputation.new();
+            try {
+                await reputation.mint(10, accounts[1], { from: accounts[0] });
+            } catch (ex) {
+                assert(false, 'owner could not mint');
+            }
+        })
+        it('mint by not owner', async () => {
+            const reputation = await Reputation.new();
+            try {
+                await reputation.mint(10, accounts[1], { from: accounts[1] });
+                assert(false, 'non-owner was able to mint');
+            } catch (ex) {
+                assert(true);
+            }
+        })
+    })
 });
