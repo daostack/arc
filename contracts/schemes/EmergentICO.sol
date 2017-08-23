@@ -1,9 +1,23 @@
 pragma solidity ^0.4.11;
 
 import "../controller/Controller.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
+
+/**
+ * @title EmergentICO
+ * @dev An ICO model that is trying to be fair for all sides.
+ * The ICO is divided to periods, on each period all donors get the same rate (rate=tokens per 1 ether).
+ * This means one does not have to rush in and there is no FOMO (fear of missing out).
+ * The rate decrease exponentially with the funds coming in.
+ * At the end of each period an average of the exponential rate is computed, and all donors get it.
+ * The only problem with the above model is that donors do not know the rate they are getting upon sending tx.
+ * To improve that there is a feature that allow one to to declare a minimum rate.
+ * If the average rate of the period is lower than the minimum pointed by donor, donor will be refunded.
+ * For easier computation the exponent is discretized into batches.
+  */
 
 contract EmergentICO {
-  // ToDo: Use SafeMath for uint.
+  using SafeMath for uint;
 
   event LogDonationReceived
   (
@@ -17,38 +31,43 @@ contract EmergentICO {
   event LogPeriodAverageComputed(uint _periodId);
   event LogCollect(uint _donation, uint _tokens, uint _ether);
 
+  // The data saved for each donation:
   struct Donation {
     address donor;
-    address beneficiary;
-    uint periodId;
-    uint value;
-    uint minRate;
-    bool isCollected;
+    address beneficiary; // The tokens wil lbe alocated to this address.
+    uint periodId; // Donation's period.
+    uint value; // Value in wei.
+    uint minRate; // If the rate is lower than this, the funds will be returned.
+    bool isCollected; // A flag to check if tokens/funds were already collected.
   }
 
-  struct AvarageComputator {
-    uint periodId;
-    uint donorsCounted;
-    uint avarageRateComputed;
-    uint fundsToBeReturned;
-  }
-
+  // Data for each period:
   struct Period {
     uint donationsCounterInPeriod;
-    uint clearedDonations;
-    uint incomingInPeriod;
-    uint raisedInPeriod;
-    uint raisedUpToPeriod;
-    uint averageRate;
-    bool isInitialized;
-    bool isAverageRateComputed;
-    uint[] donationsIdsWithLimit;
+    uint clearedDonations; // Number of donations cleared.
+    uint incomingInPeriod; // The total incoming donations in wei.
+    uint raisedInPeriod; // The total raised (incoming minus returned).
+    uint raisedUpToPeriod; // How much was raised up to this period.
+    uint averageRate; // The calculated average rate of the period.
+    bool isInitialized; // A flag to indicate that the previous period was calculated and so raisedUpToPeriod is set.
+    bool isAverageRateComputed; // A flag to indicate that the average for this period was computed.
+    uint[] donationsIdsWithLimit; // An array for the donations that use the limit feature.
   }
 
+  // Data for every attempt for computing an average for a period.
+  struct AverageComputator {
+    uint periodId; // The period for which the computation is done.
+    uint averageRateComputed; // The result of the computation suggested by this computator.
+    uint donorsCounted; // A counter used in the validation of the computation.
+    uint fundsToBeReturned; // A variable used in the validation of the computation.
+  }
 
+  // Mapping from donation ID to the donation. IDs are sequential 0,1,2..
   mapping (uint=>Donation) donations;
+  // Mapping from period ID to the period. IDs are sequential 0,1,2..
   mapping (uint=>Period) periods;
-  mapping (address=>AvarageComputator) avarageComputators;
+  // Mapping from address of an agent, to the data of the computation he suggested.
+  mapping (address=>AverageComputator) AverageComputators;
 
   // Parameters:
   Controller public controller; // The conroller is responsible to mint tokens.
@@ -56,8 +75,9 @@ contract EmergentICO {
   address public target; // The funds will be tranffered here.
   uint public startBlock; // ICO starting block.
   uint public clearancePeriodDuration; // The length of each clearance period in blocks.
-  uint public minDonation;
-  // Rate function is initialRate*(rateFractionNumerator/rateFractionDenominator)^x.
+  uint public minDonation; // The minimum allowed donation in wei.
+  // Rate function is initialRate*(rateFractionNumerator/rateFractionDenominator)^n.
+  // wehre x is the incoming
   uint public initialRate;
   uint public rateFractionNumerator;
   uint public rateFractionDenominator;
@@ -271,10 +291,10 @@ contract EmergentICO {
     isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
-    avarageComputators[msg.sender] = AvarageComputator({
+    AverageComputators[msg.sender] = AverageComputator({
       periodId: _periodId,
       donorsCounted: 0,
-      avarageRateComputed: _average,
+      averageRateComputed: _average,
       fundsToBeReturned: 0
     });
     checkAverage(_periodId, _iterations);
@@ -290,13 +310,13 @@ contract EmergentICO {
     isPeriodInitialized(_periodId)
   {
     Period period = periods[_periodId];
-    AvarageComputator avgComp = avarageComputators[msg.sender];
+    AverageComputator avgComp = AverageComputators[msg.sender];
     require(avgComp.periodId == _periodId);
 
     // Run over the array of donors with limit, sum the ones that are to be refunded:
     for (uint cnt=0; cnt < _iterations; cnt++) {
       uint donationId = period.donationsIdsWithLimit[avgComp.donorsCounted];
-      if (donations[donationId].minRate > avgComp.avarageRateComputed) {
+      if (donations[donationId].minRate > avgComp.averageRateComputed) {
         avgComp.fundsToBeReturned += donations[donationId].value;
       }
       avgComp.donorsCounted += 1;
@@ -305,13 +325,13 @@ contract EmergentICO {
     if (avgComp.donorsCounted == period.donationsIdsWithLimit.length) {
       uint computedRaisedInPeriod = period.incomingInPeriod - avgComp.fundsToBeReturned;
       uint computedRate = averageRateCalc18Digits(period.raisedUpToPeriod, periods[_periodId].raisedUpToPeriod+computedRaisedInPeriod);
-      if (computedRate == avgComp.avarageRateComputed) {
+      if (computedRate == avgComp.averageRateComputed) {
         period.isAverageRateComputed = true;
         period.raisedInPeriod = computedRaisedInPeriod;
         period.averageRate = computedRate;
         periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod + period.raisedInPeriod;
         periods[_periodId+1].isInitialized = true;
-        delete avarageComputators[msg.sender];
+        delete AverageComputators[msg.sender];
         LogPeriodAverageComputed(_periodId);
       }
     }
