@@ -5,7 +5,7 @@ import "./IntVoteInterface.sol";
 
 // ToDo: Write tests!
 
-contract AbsoluteVote { // is IntVoteInterface
+contract AbsoluteVote is IntVoteInterface{ 
   using SafeMath for uint;
 
 

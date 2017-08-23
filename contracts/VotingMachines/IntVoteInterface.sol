@@ -4,6 +4,7 @@ import "../universalSchemes/ExecutableInterface.sol";
 
 contract IntVoteInterface {
   modifier onlyOwner(bytes32 _proposalId) {_;}
+  modifier votableProposal(bytes32 _proposalId) {_;}
 
   function propose(bytes32 _proposalParameters, address _avatar, ExecutableInterface _executable) returns(bytes32);
 
@@ -15,9 +16,9 @@ contract IntVoteInterface {
 
   function vote(bytes32 _proposalId, int _vote);
 
-  function cancelVote(uint _proposalId);
+  function cancelVote(bytes32 _proposalId) votableProposal(_proposalId);
 
-  function executeProposal(uint _proposalId) returns(bool);
+  function executeProposal(bytes32 _proposalId) votableProposal(_proposalId) returns(bool);
 
   function voteInfo(bytes32 _proposalId, address _voter) constant returns(int[10]);
 
