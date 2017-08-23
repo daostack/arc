@@ -119,6 +119,18 @@ contract('Reputation', accounts => {
         assert.equal(tx.logs[0].args.value.toNumber(), 1000);
     });
 
+    it("log negative Mint event on negative mint", async () => {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
+        const tx = await reputation.mint(-1000, accounts[1], { from: accounts[0] });
+
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "Mint");
+        assert.equal(tx.logs[0].args.to, accounts[1]);
+        assert.equal(tx.logs[0].args.value.toNumber(), -1000);
+    });
+
     it("mint (plus) should be reflected in totalSupply", async () => {
         const reputation = await Reputation.new();
 
