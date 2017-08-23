@@ -278,4 +278,23 @@ contract('Reputation', accounts => {
         amount = await reputation.reputationOf(accounts[1]);
         assert.equal(amount.toNumber(), 1);
     });
+
+    it("totalSupply cannot be negative", async () => {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1, accounts[1], { from: accounts[0] });
+
+        let amount = await reputation.totalSupply();
+        assert.equal(amount.toNumber(), 1);
+
+        try {
+            await reputation.mint(-2, accounts[1], { from: accounts[0] });
+            assert(false);
+        } catch (ex) {
+            assert(true);
+        }
+
+        amount = await reputation.totalSupply();
+        assert.equal(amount.toNumber(), 1);
+    });
 });
