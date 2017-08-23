@@ -182,7 +182,8 @@ contract('Reputation', accounts => {
             } catch (ex) {
                 assert(false, 'owner could not setReputation');
             }
-        })
+        });
+
         it('setReputation by not owner', async () => {
             const reputation = await Reputation.new();
             try {
@@ -191,7 +192,8 @@ contract('Reputation', accounts => {
             } catch (ex) {
                 assert(true);
             }
-        })
+        });
+
         it('mint by owner', async () => {
             const reputation = await Reputation.new();
             try {
@@ -199,7 +201,8 @@ contract('Reputation', accounts => {
             } catch (ex) {
                 assert(false, 'owner could not mint');
             }
-        })
+        });
+
         it('mint by not owner', async () => {
             const reputation = await Reputation.new();
             try {
@@ -208,6 +211,6 @@ contract('Reputation', accounts => {
             } catch (ex) {
                 assert(true);
             }
-        })
-    })
+        });
+    });
 });
