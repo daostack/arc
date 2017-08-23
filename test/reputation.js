@@ -119,7 +119,19 @@ contract('Reputation', accounts => {
         assert.equal(tx.logs[0].args.value.toNumber(), 1000);
     });
 
-    it("mint should be reflected in totalSupply", async () => {
+    it("log negative Mint event on negative mint", async () => {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
+        const tx = await reputation.mint(-1000, accounts[1], { from: accounts[0] });
+
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "Mint");
+        assert.equal(tx.logs[0].args.to, accounts[1]);
+        assert.equal(tx.logs[0].args.value.toNumber(), -1000);
+    });
+
+    it("mint (plus) should be reflected in totalSupply", async () => {
         const reputation = await Reputation.new();
 
         await reputation.mint(1000, accounts[1], { from: accounts[0] });
@@ -133,7 +145,7 @@ contract('Reputation', accounts => {
         assert.equal(totalSupply.toNumber(), 1500);
     });
 
-    it("mint should be reflected in balances", async () => {
+    it("mint (plus) should be reflected in balances", async () => {
         const reputation = await Reputation.new();
 
         await reputation.mint(1000, accounts[1], { from: accounts[0] });
@@ -143,35 +155,70 @@ contract('Reputation', accounts => {
         assert.equal(amount.toNumber(), 1000);
     });
 
-    it("setReputation should be reflected in totalSupply", async () => {
+    it("mint (minus) should be reflected in totalSupply", async () => {
         const reputation = await Reputation.new();
 
-        await reputation.setReputation(1000, accounts[1], { from: accounts[0] });
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
         let totalSupply = await reputation.totalSupply();
 
         assert.equal(totalSupply.toNumber(), 1000);
 
-        await reputation.setReputation(500, accounts[2], { from: accounts[0] });
+        await reputation.mint(-500, accounts[1], { from: accounts[0] });
         totalSupply = await reputation.totalSupply();
 
-        assert.equal(totalSupply.toNumber(), 1500);
+        assert.equal(totalSupply.toNumber(), 500);
+    });
 
-        await reputation.setReputation(500, accounts[1], { from: accounts[0] });
+    it("mint (minus) should be reflected in balances", async () => {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1000, accounts[1], { from: accounts[0] });
+        await reputation.mint(-500, accounts[1], { from: accounts[0] });
+
+        const amount = await reputation.reputationOf(accounts[1]);
+
+        assert.equal(amount.toNumber(), 500);
+    });
+
+    it("setReputation should be reflected in totalSupply", async () => {
+        const reputation = await Reputation.new();
+
+        let rep1 = Math.floor(Math.random() * 1e6);
+
+        await reputation.setReputation(rep1, accounts[1], { from: accounts[0] });
+        let totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), rep1);
+
+        let rep2 = Math.floor(Math.random() * 1e6);
+
+        await reputation.setReputation(rep2, accounts[2], { from: accounts[0] });
         totalSupply = await reputation.totalSupply();
 
-        assert.equal(totalSupply.toNumber(), 1000);
+        assert.equal(totalSupply.toNumber(), rep1 + rep2);
+
+        rep1 = Math.floor(Math.random() * 1e6);
+
+        await reputation.setReputation(rep1, accounts[1], { from: accounts[0] });
+        totalSupply = await reputation.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), rep1 + rep2);
     });
 
     it("setReputation should be reflected in balances", async () => {
         const reputation = await Reputation.new();
 
-        await reputation.setReputation(1000, accounts[1], { from: accounts[0] });
-        let amount = await reputation.reputationOf(accounts[1]);
-        assert.equal(amount.toNumber(), 1000);
+        let rep = Math.floor(Math.random() * 1e6);
 
-        await reputation.setReputation(500, accounts[1], { from: accounts[0] });
+        await reputation.setReputation(rep, accounts[1], { from: accounts[0] });
+        let amount = await reputation.reputationOf(accounts[1]);
+        assert.equal(amount.toNumber(), rep);
+
+        rep = Math.floor(Math.random() * 1e6);
+
+        await reputation.setReputation(rep, accounts[1], { from: accounts[0] });
         amount = await reputation.reputationOf(accounts[1]);
-        assert.equal(amount.toNumber(), 500);
+        assert.equal(amount.toNumber(), rep);
     });
 
     describe('onlyOwner', () => {
@@ -212,5 +259,63 @@ contract('Reputation', accounts => {
                 assert(true);
             }
         });
+    });
+
+    it("account balance cannot be negative", async () => {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1, accounts[1], { from: accounts[0] });
+
+        let amount = await reputation.reputationOf(accounts[1]);
+        assert.equal(amount.toNumber(), 1);
+
+        try {
+            await reputation.mint(-2, accounts[1], { from: accounts[0] });
+            assert(false);
+        } catch (ex) {
+            assert(true);
+        }
+
+        amount = await reputation.reputationOf(accounts[1]);
+        assert.equal(amount.toNumber(), 1);
+    });
+
+    it("totalSupply cannot be negative", async () => {
+        const reputation = await Reputation.new();
+
+        await reputation.mint(1, accounts[1], { from: accounts[0] });
+
+        let amount = await reputation.totalSupply();
+        assert.equal(amount.toNumber(), 1);
+
+        try {
+            await reputation.mint(-2, accounts[1], { from: accounts[0] });
+            assert(false);
+        } catch (ex) {
+            assert(true);
+        }
+
+        amount = await reputation.totalSupply();
+        assert.equal(amount.toNumber(), 1);
+    });
+
+    it("reputationOf = balances", async () => {
+        const reputation = await Reputation.new();
+
+        const rep1 = Math.floor(Math.random() * 1e6);
+        const rep2 = Math.floor(Math.random() * 1e6);
+        const rep3 = Math.floor(Math.random() * 1e6);
+
+        await reputation.mint(rep1, accounts[1], { from: accounts[0] });
+        await reputation.mint(rep2, accounts[2], { from: accounts[0] });
+        await reputation.mint(rep3, accounts[3], { from: accounts[0] });
+
+        const reputationOf1 = await reputation.reputationOf(accounts[1]);
+        const reputationOf2 = await reputation.reputationOf(accounts[2]);
+        const reputationOf3 = await reputation.reputationOf(accounts[3]);
+
+        assert.equal(reputationOf1.toNumber(), rep1);
+        assert.equal(reputationOf2.toNumber(), rep2);
+        assert.equal(reputationOf3.toNumber(), rep3);
     });
 });
