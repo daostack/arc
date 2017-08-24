@@ -89,10 +89,13 @@ contract AbsoluteVote is IntVoteInterface{
    * @param _paramsHash defined the parameters of the voting machine used for this proposal
    * @param _avatar an address to be sent as the payload to the _executable contract.
    * @param _executable This contract will be executed when vote is over.
+   * TODO: Maybe we neem to check the the 0 < precReq <= 100 ??
    */
   function propose(bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
     // Check params exist:
     require(parameters[_paramsHash].reputationSystem != address(0));
+    // Precentage required should not be lower than 1 and greater the 100
+    require(0 < parameters[_paramsHash].precReq && parameters[_paramsHash].precReq <= 100);
 
     // Generate a unique ID:
     bytes32 proposalId = sha3(this, proposalsCnt);
@@ -114,7 +117,7 @@ contract AbsoluteVote is IntVoteInterface{
    * @dev Cancel a porposal, only the owner can call this function and only if allowOwner flag is true.
    * @param _proposalId the porposal ID
    */
-  function cancelProposal(bytes32 _proposalId) onlyOwner(_proposalId) returns(bool){
+  function cancelProposal(bytes32 _proposalId) onlyOwner(_proposalId) votableProposal(_proposalId) returns(bool){
     if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
       return false;
     }
