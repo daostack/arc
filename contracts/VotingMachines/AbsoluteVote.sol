@@ -3,8 +3,6 @@ pragma solidity ^0.4.11;
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
 
-// ToDo: Write tests!
-
 contract AbsoluteVote is IntVoteInterface{
   using SafeMath for uint;
 
