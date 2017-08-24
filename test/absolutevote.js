@@ -95,6 +95,146 @@ contract('AbsoluteVote', function (accounts) {
         await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, reputationArray[0], reputationArray[2], reputationArray[1], true, true]);
     });
 
+    it("log the LogNewProposal event on porposing new porposal", async function() {
+      absoluteVote = await setupAbsoluteVote(true);
+
+      // propose a vote
+      const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
+      let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+      const proposalId = await getValueFromLogs(tx, '_proposalId');
+      assert.isOk(proposalId);
+
+      // no one has voted yet at this point
+      await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, 0, true, false]);
+
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "LogNewProposal");
+      assert.equal(tx.logs[0].args._proposalId, proposalId);
+      assert.equal(tx.logs[0].args._proposer, accounts[0]);
+      assert.equal(tx.logs[0].args._paramsHash, paramsHash);
+    });
+
+    it("should log the LogCancelProposal event on canceling a porposal", async function() {
+      absoluteVote = await setupAbsoluteVote(true);
+
+      // propose a vote
+      const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
+      let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+      const proposalId = await getValueFromLogs(tx, '_proposalId');
+      assert.isOk(proposalId);
+
+      // no one has voted yet at this point
+      await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, 0, true, false]);
+
+      let newtx = await absoluteVote.cancelProposal(proposalId);
+
+      assert.equal(newtx.logs.length, 1);
+      assert.equal(newtx.logs[0].event, "LogCancelProposal");
+      assert.equal(newtx.logs[0].args._proposalId, proposalId);
+    });
+
+    it("should log the LogVoteProposal and LogCancelVoting events on voting and caceling the vote", async function() {
+      absoluteVote = await setupAbsoluteVote(true);
+
+      // propose a vote
+      const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
+      let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+      const proposalId = await getValueFromLogs(tx, '_proposalId');
+      assert.isOk(proposalId);
+
+      // no one has voted yet at this point
+      await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, 0, true, false]);
+
+      let voteTX = await absoluteVote.vote(proposalId, 1);
+
+      assert.equal(voteTX.logs.length, 1);
+      assert.equal(voteTX.logs[0].event, "LogVoteProposal");
+      assert.equal(voteTX.logs[0].args._proposalId, proposalId);
+      assert.equal(voteTX.logs[0].args._voter, accounts[0]);
+      assert.equal(voteTX.logs[0].args._vote, 1);
+      assert.equal(voteTX.logs[0].args._reputation, reputationArray[0]);
+      assert.equal(voteTX.logs[0].args._isOwnerVote, false);
+
+      let cancelVoteTX = await absoluteVote.cancelVote(proposalId);
+      assert.equal(cancelVoteTX.logs.length, 1);
+      assert.equal(cancelVoteTX.logs[0].event, "LogCancelVoting");
+      assert.equal(cancelVoteTX.logs[0].args._proposalId, proposalId);
+      assert.equal(cancelVoteTX.logs[0].args._voter, accounts[0]);
+    });
+
+    it("should log the LogExecuteProposal event on executing qourum porposal with 'no' decision", async function() {
+      absoluteVote = await setupAbsoluteVote(true);
+
+      // propose a vote
+      const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
+      let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+      const proposalId = await getValueFromLogs(tx, '_proposalId');
+      assert.isOk(proposalId);
+
+      // no one has voted yet at this point
+      await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, 0, true, false]);
+
+      // now lets vote with a minority reputation
+      await absoluteVote.vote(proposalId, 1);
+      await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
+      await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, reputationArray[0], 0, 0, true, false]);
+
+      // another minority reputation:
+      await absoluteVote.vote(proposalId, 0, { from: accounts[1] });
+      await checkVoteInfo(proposalId, accounts[1], [0, reputationArray[1]]);
+      await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, reputationArray[0], 0, reputationArray[1], true, false]);
+
+      // the decisive vote is cast now and the proposal will be executed
+      tx = await absoluteVote.ownerVote(proposalId, -1, accounts[2]);
+      await checkVoteInfo(proposalId, accounts[2], [-1, reputationArray[2]]);
+      await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, reputationArray[0], reputationArray[2], reputationArray[1], true, true]);
+
+      assert.equal(tx.logs.length, 2);
+      assert.equal(tx.logs[1].event, "LogExecuteProposal");
+      assert.equal(tx.logs[1].args._proposalId, proposalId);
+      assert.equal(tx.logs[1].args._decision, -1);
+    });
+
+    it("Vote with 'no'", async function() {
+        absoluteVote = await setupAbsoluteVote(true);
+
+        // propose a vote
+        const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
+        let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+        const proposalId = await getValueFromLogs(tx, '_proposalId');
+        assert.isOk(proposalId);
+
+        // no one has voted yet at this point
+        await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, 0, true, false]);
+
+        // Lets try to vote with 'no'
+        await absoluteVote.vote(proposalId, -1);
+        await checkVoteInfo(proposalId, accounts[0], [-1, reputationArray[0]]);
+
+        // Total 'no' should be equal to the voter's reputation exactly
+        await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, Number(await reputation.reputationOf(accounts[0])), 0, true, false]);
+    });
+
+    it("Vote with 'abstain'", async function() {
+        absoluteVote = await setupAbsoluteVote(true);
+
+        // propose a vote
+        const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
+        let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+        const proposalId = await getValueFromLogs(tx, '_proposalId');
+        assert.isOk(proposalId);
+
+        // no one has voted yet at this point
+        await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, 0, true, false]);
+
+        // Lets try to vote with 'no'
+        await absoluteVote.vote(proposalId, 0);
+        await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
+
+        // Total 'no' should be equal to the voter's reputation exactly
+        await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, Number(await reputation.reputationOf(accounts[0])), true, false]);
+    });
+
     it("Double vote shouldn't double proposal's 'yes' count", async function() {
         absoluteVote = await setupAbsoluteVote(true);
 
@@ -214,44 +354,6 @@ contract('AbsoluteVote', function (accounts) {
     //     const rep0 = await reputation.reputationOf(accounts[0]);
     //     const rep1 = await reputation.reputationOf(accounts[1]);
     //     assert.isOk(proposalId);
-    //
-    //     // We are the owner of the poposal, let's try to vote on the behalf of someone else.
-    //     await absoluteVote.vote(proposalId, true, accounts[0]);
-    //     await absoluteVote.vote(proposalId, true, accounts[1]);
-    //     // total 'yes' is supposed to be equal to the voters 0 + 1 reputation
-    //     proposalInfo = await absoluteVote.proposals(proposalId);
-    //     assert.equal(proposalInfo[4].toNumber(), rep0.toNumber() + rep1.toNumber());
-    //     await absoluteVote.cancelVote(proposalId, accounts[0], { from: accounts[0] }); // Cleaning the vote for the next test.
-    //     await absoluteVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
-    //
-    //     // lets try to vote on the behalf of someone else without being the proposal owner.
-    //     await absoluteVote.vote(proposalId, true, accounts[0], { from: accounts[1] });
-    //     // total 'yes' is supposed to be account 1's reputaton because he's the one who actually voted(he's the sender but not the owner).
-    //     proposalInfo = await absoluteVote.proposals(proposalId);
-    //     assert.equal(proposalInfo[4].toNumber(), rep1);
-    //     await absoluteVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
-    //
-    //     // lets try to vote with empty address
-    //     await absoluteVote.vote(proposalId, true, helpers.NULL_ADDRESS, { from: accounts[1] });
-    //     // total 'yes' is supposed to be account 1's reputaton because he's the one who actually voted(he's the sender but not the owner).
-    //     proposalInfo = await absoluteVote.proposals(proposalId);
-    //     assert.equal(proposalInfo[4].toNumber(), rep1);
-    //     await absoluteVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
-    //
-    //     // lets try to vote with null address
-    //     await absoluteVote.vote(proposalId, true, null, { from: accounts[1] });
-    //     // total 'yes' is supposed to be account 1's reputaton because he's the one who actually voted(he's the sender but not the owner).
-    //     proposalInfo = await absoluteVote.proposals(proposalId);
-    //     assert.equal(proposalInfo[4].toNumber(), rep1);
-    //     await absoluteVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
-    //
-    //     // lets try to vote with false.
-    //     await absoluteVote.vote(proposalId, false, helpers.NULL_ADDRESS, { from: accounts[1] });
-    //     // Total 'yes' is supposed to be 0, Total 'no' is supposed to be accounts[1] reputation.
-    //     proposalInfo = await absoluteVote.proposals(proposalId);
-    //     assert.equal(proposalInfo[4].toNumber(), 0);
-    //     assert.equal(proposalInfo[5].toNumber(), rep1);
-    //     await absoluteVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
     //
     //     // lets try to vote by the owner on the behalf of non-existent voters(they do exist but they aren't registered to the reputation system).
     //     for (var i = 3; i < accounts.length; i++) {
