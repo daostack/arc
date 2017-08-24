@@ -9,10 +9,10 @@ contract IntVoteInterface {
   function propose(bytes32 _proposalParameters, address _avatar, ExecutableInterface _executable) returns(bytes32);
 
   // Only owned proposals and only the owner:
-  function cancelProposal(bytes32 _proposalId) onlyOwner(_proposalId);
+  function cancelProposal(bytes32 _proposalId) onlyOwner(_proposalId) returns(bool);
 
   // Only owned proposals and only the owner:
-  function ownerVote(bytes32 _proposalId, int _vote, address _voter) onlyOwner(_proposalId);
+  function ownerVote(bytes32 _proposalId, int _vote, address _voter) onlyOwner(_proposalId) returns(bool);
 
   function vote(bytes32 _proposalId, int _vote);
 

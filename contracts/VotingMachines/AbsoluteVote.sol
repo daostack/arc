@@ -5,7 +5,7 @@ import "./IntVoteInterface.sol";
 
 // ToDo: Write tests!
 
-contract AbsoluteVote is IntVoteInterface{ 
+contract AbsoluteVote is IntVoteInterface{
   using SafeMath for uint;
 
 
@@ -48,7 +48,6 @@ contract AbsoluteVote is IntVoteInterface{
    * @dev Check that there is owner for the porposal and he sent the transaction
    */
   modifier onlyOwner(bytes32 _proposalId) {
-    require(parameters[proposals[_proposalId].paramsHash].allowOwner);
     require(msg.sender == proposals[_proposalId].owner);
     _;
   }
@@ -117,9 +116,13 @@ contract AbsoluteVote is IntVoteInterface{
    * @dev Cancel a porposal, only the owner can call this function and only if allowOwner flag is true.
    * @param _proposalId the porposal ID
    */
-  function cancelProposal(bytes32 _proposalId) onlyOwner(_proposalId) {
+  function cancelProposal(bytes32 _proposalId) onlyOwner(_proposalId) returns(bool){
+    if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
+      return false;
+    }
     delete proposals[_proposalId];
     LogCancelProposal(_proposalId);
+    return true;
   }
 
   /**
@@ -186,8 +189,12 @@ contract AbsoluteVote is IntVoteInterface{
    * @param _vote yes (1) / no (-1) / abstain (0)
    * @param _voter will be voted with that voter's address
    */
-  function ownerVote(bytes32 _proposalId, int _vote, address _voter) onlyOwner(_proposalId) {
+  function ownerVote(bytes32 _proposalId, int _vote, address _voter) onlyOwner(_proposalId) returns(bool) {
+    if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
+      return false;
+    }
     internalVote(_proposalId, _vote, _voter);
+    return true;
   }
 
   /**

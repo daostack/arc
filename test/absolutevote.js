@@ -172,12 +172,7 @@ contract('AbsoluteVote', function (accounts) {
       await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, 0, true, false]);
 
       // Lets try to vote on the behalf of someone else
-      try {
-        await absoluteVote.ownerVote(proposalId, 1, accounts[1]);
-        assert(false, "ownerVote was supposed to throw but didn't.");
-      } catch(error) {
-        assert(true);
-      }
+      await absoluteVote.ownerVote(proposalId, 1, accounts[1]);
 
       // The vote should not be counted
       await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, 0, true, false]);
@@ -200,7 +195,7 @@ contract('AbsoluteVote', function (accounts) {
         await absoluteVote.ownerVote(proposalId, 1, accounts[0], {from: accounts[1]});
         assert(false, "ownerVote was supposed to throw but didn't.");
       } catch(error) {
-        assert(true);
+        helpers.assertVMException(error);
       }
 
       // The vote should not be counted
