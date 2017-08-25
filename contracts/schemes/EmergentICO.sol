@@ -185,8 +185,7 @@ contract EmergentICO {
    * @dev Constant function, returns the current periodId:
    */
   function currentClearancePeriod() constant returns(uint) {
-    require(block.number >= startBlock);
-    return ((block.number - startBlock)/clearancePeriodDuration);
+    return ((block.number.sub(startBlock))/clearancePeriodDuration);
   }
 
   /**
@@ -194,7 +193,7 @@ contract EmergentICO {
    * @param _batch the batch for which the computation is done.
    */
   function rate18Digits(uint _batch) constant returns(uint) {
-    return ((10**18)*initialRate*rateFractionNumerator**_batch/rateFractionDenominator**_batch);
+    return (((10**18)*initialRate).mul(rateFractionNumerator**_batch)/rateFractionDenominator**_batch);
   }
 
   /**
@@ -203,21 +202,22 @@ contract EmergentICO {
    * @param _end the starting point for the computation.
    */
   function averageRateCalc18Digits(uint _start, uint _end) constant returns(uint) {
+    assert(_end >= _start);
     uint batchStart = _start/batchSize;
     uint batchEnd = _end/batchSize;
-    uint partOfStartBatch = batchSize - _start%batchSize;
+    uint partOfStartBatch = batchSize.sub(_start%batchSize);
     uint partOfEndBatch = _end%batchSize;
-    uint delta = batchEnd - batchStart;
+    uint delta = batchEnd.sub(batchStart);
 
     if (delta == 0) {
         return rate18Digits(batchStart);
     }
     if (delta == 1) {
-        return (partOfStartBatch*rate18Digits(batchStart) + partOfEndBatch*rate18Digits(batchEnd))/(_end-_start);
+        return ((partOfStartBatch.mul(rate18Digits(batchStart))).add(partOfEndBatch.mul(rate18Digits(batchEnd))))/(_end-_start);
     }
     if (delta > 1) {
-        uint geomSeries = batchSize*(rate18Digits(batchStart+1)-rate18Digits(batchEnd))*rateFractionDenominator/(rateFractionDenominator-rateFractionNumerator);
-        return (geomSeries + partOfStartBatch*rate18Digits(batchStart) + partOfEndBatch*rate18Digits(batchEnd))/(_end-_start);
+        uint geomSeries = (batchSize.mul(rate18Digits(batchStart+1).sub(rate18Digits(batchEnd)))).mul(rateFractionDenominator)/(rateFractionDenominator.sub(rateFractionNumerator));
+        return ((geomSeries.add(partOfStartBatch.mul(rate18Digits(batchStart)))).add(partOfEndBatch.mul(rate18Digits(batchEnd))))/(_end-_start);
     }
   }
 
@@ -236,12 +236,12 @@ contract EmergentICO {
     // Update period data:
     uint currentPeriod = currentClearancePeriod();
     Period period = periods[currentPeriod];
-    period.incomingInPeriod += msg.value;
+    period.incomingInPeriod = period.incomingInPeriod.add(msg.value);
     period.donationsCounterInPeriod++;
     if (_minRate != 0) {
       period.donationsIdsWithLimit.push(donationCounter);
     } else {
-      period.raisedInPeriod += msg.value;
+      period.raisedInPeriod = period.raisedInPeriod.add(msg.value);
     }
 
     // Update donation data:
@@ -254,17 +254,17 @@ contract EmergentICO {
       isCollected: false
     });
     donationCounter++;
-    totalReceived += msg.value;
+    totalReceived = totalReceived.add(msg.value);
 
     // If minimum rate is 0 move funds to target now:
     if (_minRate == 0) {
-      totalDonated += msg.value;
+      totalDonated = totalDonated.add(msg.value);
       target.transfer(msg.value);
     }
 
     // If we can determine that the donation will not go through, revert:
     if (_minRate != 0 && period.isInitialized) {
-      if (averageRateCalc18Digits(period.raisedUpToPeriod, period.raisedUpToPeriod+period.raisedInPeriod) < _minRate) {
+      if (averageRateCalc18Digits(period.raisedUpToPeriod, period.raisedUpToPeriod.add(period.raisedInPeriod)) < _minRate) {
         revert();
       }
     }
@@ -317,19 +317,19 @@ contract EmergentICO {
     for (uint cnt=0; cnt < _iterations; cnt++) {
       uint donationId = period.donationsIdsWithLimit[avgComp.donorsCounted];
       if (donations[donationId].minRate > avgComp.averageRateComputed) {
-        avgComp.fundsToBeReturned += donations[donationId].value;
+        avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(donations[donationId].value);
       }
-      avgComp.donorsCounted += 1;
+      avgComp.donorsCounted++;
     }
     // Check if finished:
     if (avgComp.donorsCounted == period.donationsIdsWithLimit.length) {
-      uint computedRaisedInPeriod = period.incomingInPeriod - avgComp.fundsToBeReturned;
-      uint computedRate = averageRateCalc18Digits(period.raisedUpToPeriod, periods[_periodId].raisedUpToPeriod+computedRaisedInPeriod);
+      uint computedRaisedInPeriod = period.incomingInPeriod.sub(avgComp.fundsToBeReturned);
+      uint computedRate = averageRateCalc18Digits(period.raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(computedRaisedInPeriod));
       if (computedRate == avgComp.averageRateComputed) {
         period.isAverageRateComputed = true;
         period.raisedInPeriod = computedRaisedInPeriod;
         period.averageRate = computedRate;
-        periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod + period.raisedInPeriod;
+        periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(period.raisedInPeriod);
         periods[_periodId+1].isInitialized = true;
         delete AverageComputators[msg.sender];
         LogPeriodAverageComputed(_periodId);
@@ -359,7 +359,7 @@ contract EmergentICO {
 
     // Check the donation minimum rate is valid, if so mint tokens, else, return funds:
     if (donation.minRate < period.averageRate) {
-      uint tokensToMint = period.averageRate*donation.value/(10**18);
+      uint tokensToMint = period.averageRate.mul(donation.value)/(10**18);
       controller.mintTokens(tokensToMint, donation.beneficiary);
       LogCollect(_donationId, tokensToMint, 0);
     } else {

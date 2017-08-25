@@ -3,9 +3,7 @@ pragma solidity ^0.4.11;
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
 
-// ToDo: Write tests!
-
-contract AbsoluteVote is IntVoteInterface{ 
+contract AbsoluteVote is IntVoteInterface{
   using SafeMath for uint;
 
 
@@ -48,7 +46,6 @@ contract AbsoluteVote is IntVoteInterface{
    * @dev Check that there is owner for the porposal and he sent the transaction
    */
   modifier onlyOwner(bytes32 _proposalId) {
-    require(parameters[proposals[_proposalId].paramsHash].allowOwner);
     require(msg.sender == proposals[_proposalId].owner);
     _;
   }
@@ -92,10 +89,13 @@ contract AbsoluteVote is IntVoteInterface{
    * @param _paramsHash defined the parameters of the voting machine used for this proposal
    * @param _avatar an address to be sent as the payload to the _executable contract.
    * @param _executable This contract will be executed when vote is over.
+   * TODO: Maybe we neem to check the the 0 < precReq <= 100 ??
    */
   function propose(bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
     // Check params exist:
     require(parameters[_paramsHash].reputationSystem != address(0));
+    // Precentage required should not be lower than 1 and greater the 100
+    require(0 < parameters[_paramsHash].precReq && parameters[_paramsHash].precReq <= 100);
 
     // Generate a unique ID:
     bytes32 proposalId = sha3(this, proposalsCnt);
@@ -117,9 +117,13 @@ contract AbsoluteVote is IntVoteInterface{
    * @dev Cancel a porposal, only the owner can call this function and only if allowOwner flag is true.
    * @param _proposalId the porposal ID
    */
-  function cancelProposal(bytes32 _proposalId) onlyOwner(_proposalId) {
+  function cancelProposal(bytes32 _proposalId) onlyOwner(_proposalId) votableProposal(_proposalId) returns(bool){
+    if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
+      return false;
+    }
     delete proposals[_proposalId];
     LogCancelProposal(_proposalId);
+    return true;
   }
 
   /**
@@ -186,8 +190,12 @@ contract AbsoluteVote is IntVoteInterface{
    * @param _vote yes (1) / no (-1) / abstain (0)
    * @param _voter will be voted with that voter's address
    */
-  function ownerVote(bytes32 _proposalId, int _vote, address _voter) onlyOwner(_proposalId) {
+  function ownerVote(bytes32 _proposalId, int _vote, address _voter) onlyOwner(_proposalId) returns(bool) {
+    if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
+      return false;
+    }
     internalVote(_proposalId, _vote, _voter);
+    return true;
   }
 
   /**
