@@ -124,10 +124,11 @@ contract('MintableToken', accounts => {
             const token = await MintableToken.new();
             try {
                 await token.mint(10, accounts[1], { from: accounts[1] });
-                assert(false, 'non-owner was able to mint');
             } catch (ex) {
-                assert(true);
+                return;
             }
+
+            assert(false, 'non-owner was able to mint');
         });
     });
 });
