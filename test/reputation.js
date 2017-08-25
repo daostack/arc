@@ -235,10 +235,11 @@ contract('Reputation', accounts => {
             const reputation = await Reputation.new();
             try {
                 await reputation.setReputation(10, accounts[1], { from: accounts[1] });
-                assert(false, 'non-owner was able to setReputation');
             } catch (ex) {
-                assert(true);
+                return;
             }
+
+            assert(false, 'non-owner was able to setReputation');
         });
 
         it('mint by owner', async () => {
@@ -254,10 +255,10 @@ contract('Reputation', accounts => {
             const reputation = await Reputation.new();
             try {
                 await reputation.mint(10, accounts[1], { from: accounts[1] });
-                assert(false, 'non-owner was able to mint');
             } catch (ex) {
-                assert(true);
+                return;
             }
+            assert(false, 'non-owner was able to mint');
         });
     });
 
