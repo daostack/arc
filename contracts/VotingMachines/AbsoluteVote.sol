@@ -66,7 +66,7 @@ contract AbsoluteVote is IntVoteInterface{
    * @dev hash the parameters, save them if necessary, and return the hash value
    */
   function setParameters(Reputation _reputationSystem, uint _precReq, bool _allowOwner) returns(bytes32) {
-    require(_precReq <= 100);
+    require(_precReq <= 100 && _precReq > 0);
     bytes32 hashedParameters = getParametersHash(_reputationSystem, _precReq, _allowOwner);
     parameters[hashedParameters] = Parameters({
       precReq: _precReq,
@@ -94,8 +94,6 @@ contract AbsoluteVote is IntVoteInterface{
   function propose(bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
     // Check params exist:
     require(parameters[_paramsHash].reputationSystem != address(0));
-    // Precentage required should not be lower than 1 and greater the 100
-    require(0 < parameters[_paramsHash].precReq && parameters[_paramsHash].precReq <= 100);
 
     // Generate a unique ID:
     bytes32 proposalId = sha3(this, proposalsCnt);
