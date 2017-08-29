@@ -118,7 +118,7 @@ contract('QuorumVote', function (accounts) {
         await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, reputationArray[0], 0, reputationArray[1], true, true]);
     });
 
-    it("Can't porpose a porposal with precReq lower than 1 or greater than 100", async function () {
+    it("Invalid inputs shouldn't work (precReq, vote)", async function () {
 
         // Lets try to create a porposal with precReq=-1
         try {
@@ -136,12 +136,26 @@ contract('QuorumVote', function (accounts) {
             helpers.assertVMException(error);
         }
 
+        // propose a porposal
+        quorumVote = await setupQuorumVote(true, 50);
+        const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
+        let tx = await quorumVote.propose(paramsHash, avatar.address, executable.address);
+        const proposalId = await getValueFromLogs(tx, '_proposalId');
+        assert.isOk(proposalId);
+
+        // Lets try to vote with the int 3 (invalid vote)
+        try {
+            await quorumVote.vote(proposalId, 3);
+            throw 'an error'; // make sure that an error is thrown
+        } catch (error) {
+            helpers.assertVMException(error);
+        }
     });
 
     it("Double vote shouldn't double proposal's 'yes' count", async function() {
         quorumVote = await setupQuorumVote();
 
-        // propose a vote
+        // propose a porposal
         const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
         let tx = await quorumVote.propose(paramsHash, avatar.address, executable.address);
         const proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -245,7 +259,7 @@ contract('QuorumVote', function (accounts) {
       await checkProposalInfo(proposalId, [accounts[0], avatar.address, executable.address, paramsHash, 0, 0, 0, true, false]);
     });
 
-    it("Should not able to vote / cancel vote after porposal has been executed", async function () {
+    it("Should not able to vote / cancel vote / porposal after porposal has been executed", async function () {
 
       // propose a vote with precrequired=19%
       quorumVote = await setupQuorumVote(true, 19);
@@ -257,6 +271,14 @@ contract('QuorumVote', function (accounts) {
 
       // After that voting the porposal should be executed
       await quorumVote.vote(proposalId, -1);
+
+      // Should not be able to cancel the porposal because it's already been executed
+      try {
+        await quorumVote.cancelProposal(proposalId);
+        throw 'an error'; // make sure that an error is thrown
+      } catch (error) {
+        assert(true);
+      }
 
       // Should not be able to cancel the vote because the porposal has been executed
       try {
@@ -273,6 +295,7 @@ contract('QuorumVote', function (accounts) {
       } catch (error) {
           helpers.assertVMException(error);
       }
+
     });
 
     it("Only the owner of the porposal can cancle it", async function () {
@@ -357,7 +380,7 @@ contract('QuorumVote', function (accounts) {
 
     it("Should log the LogExecuteProposal event on executing qourum porposal with 'no' decision", async () => {
 
-      // propose a vote with precrequired=19%
+      // propose a porposal with precrequired=19%
       quorumVote = await setupQuorumVote(true, 19);
 
       const paramsHash = await quorumVote.getParametersHash(reputation.address, 19, true);
@@ -372,5 +395,24 @@ contract('QuorumVote', function (accounts) {
       assert.equal(voteTX.logs[1].args._proposalId, proposalId);
       assert.equal(voteTX.logs[1].args._decision, -1);
     });
+
+    it("Internal functions can not be called externally", async () => {
+
+      // propose a porposal
+      quorumVote = await setupQuorumVote(true, 50);
+
+      const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
+      let tx = await quorumVote.propose(paramsHash, avatar.address, executable.address);
+      const proposalId = await getValueFromLogs(tx, '_proposalId');
+      assert.isOk(proposalId);
+
+      // Lets try to call internalVote function
+      try {
+          await quorumVote.internalVote(proposalId, 1, accounts[0]);
+      } catch (ex) {
+          assert(true); // Make sure an exception has been thrown
+      }
+    });
+
 
 });
