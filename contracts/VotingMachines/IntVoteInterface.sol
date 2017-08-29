@@ -3,16 +3,16 @@ pragma solidity ^0.4.11;
 import "../universalSchemes/ExecutableInterface.sol";
 
 contract IntVoteInterface {
-  modifier onlyOwner(bytes32 _proposalId) {_;}
+  modifier onlyProposalOwner(bytes32 _proposalId) {_;}
   modifier votableProposal(bytes32 _proposalId) {_;}
 
   function propose(bytes32 _proposalParameters, address _avatar, ExecutableInterface _executable) returns(bytes32);
 
   // Only owned proposals and only the owner:
-  function cancelProposal(bytes32 _proposalId) onlyOwner(_proposalId) returns(bool);
+  function cancelProposal(bytes32 _proposalId) onlyProposalOwner(_proposalId) returns(bool);
 
   // Only owned proposals and only the owner:
-  function ownerVote(bytes32 _proposalId, int _vote, address _voter) onlyOwner(_proposalId) returns(bool);
+  function ownerVote(bytes32 _proposalId, int _vote, address _voter) onlyProposalOwner(_proposalId) returns(bool);
 
   function vote(bytes32 _proposalId, int _vote);
 
