@@ -274,9 +274,11 @@ contract('Reputation', accounts => {
         try {
             await reputation.mint(-2, accounts[1], { from: accounts[0] });
             balanceIsNegative = true;
-        } finally {
-            assert(!balanceIsNegative, 'balance is negative');
+        } catch (ex) {
+            balanceIsNegative = false;
         }
+
+        assert.equal(balanceIsNegative, false, 'balance is negative');
 
         amount = await reputation.reputationOf(accounts[1]);
         assert.equal(amount.toNumber(), 1);
