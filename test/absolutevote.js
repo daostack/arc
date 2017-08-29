@@ -348,7 +348,7 @@ contract('AbsoluteVote', function (accounts) {
       // propose a vote
       paramsHash = await absoluteVote.getParametersHash(reputation.address, 70, true);
       try {
-        let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+        await absoluteVote.propose(paramsHash, avatar.address, executable.address);
         assert(false, "propose was supposed to throw but didn't.");
       } catch(error) {
         helpers.assertVMException(error);
@@ -356,7 +356,7 @@ contract('AbsoluteVote', function (accounts) {
 
       paramsHash = await absoluteVote.getParametersHash(helpers.NULL_ADDRESS, 50, true);
       try {
-        let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+        await absoluteVote.propose(paramsHash, avatar.address, executable.address);
         assert(false, "propose was supposed to throw but didn't.");
       } catch(error) {
         helpers.assertVMException(error);
@@ -364,7 +364,7 @@ contract('AbsoluteVote', function (accounts) {
 
       paramsHash = await absoluteVote.getParametersHash(helpers.SOME_ADDRESS, 50, true);
       try {
-        let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+        await absoluteVote.propose(paramsHash, avatar.address, executable.address);
         assert(false, "propose was supposed to throw but didn't.");
       } catch(error) {
         helpers.assertVMException(error);
@@ -372,7 +372,7 @@ contract('AbsoluteVote', function (accounts) {
 
       paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, false);
       try {
-        let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+        await absoluteVote.propose(paramsHash, avatar.address, executable.address);
         assert(false, "propose was supposed to throw but didn't.");
       } catch(error) {
         helpers.assertVMException(error);
@@ -382,14 +382,14 @@ contract('AbsoluteVote', function (accounts) {
     it("Invalid precentage required( < 0 || > 100) shouldn't work", async function() {
       try {
         absoluteVote = await setupAbsoluteVote(true, 150);
-        assert(false, "setParameters(we call it here: test/absolutevote.js:setupAbsoluteVote()) was supposed to throw but didn't.")
+        assert(false, "setParameters(we call it here: test/absolutevote.js:setupAbsoluteVote()) was supposed to throw but didn't.");
       } catch(error) {
         helpers.assertVMException(error);
       }
 
       try {
         absoluteVote = await setupAbsoluteVote(true, -50);
-        assert(false, "setParameters(we call it here: test/absolutevote.js:setupAbsoluteVote()) was supposed to throw but didn't.")
+        assert(false, "setParameters(we call it here: test/absolutevote.js:setupAbsoluteVote()) was supposed to throw but didn't.");
       } catch(error) {
         helpers.assertVMException(error);
       }
