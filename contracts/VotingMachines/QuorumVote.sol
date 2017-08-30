@@ -11,26 +11,26 @@ contract QuorumVote is IntVoteInterface, AbsoluteVote {
    */
   // TODO: do we want to delete the vote from the proposals mapping?
   function executeProposal(bytes32 _proposalId) votableProposal(_proposalId) returns(bool) {
-    Proposal memory proposal = proposals[_proposalId];
+    Proposal storage proposal = proposals[_proposalId];
 
     uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
     uint precReq = parameters[proposal.paramsHash].precReq;
 
     // this is the actual voting rule:
-    uint totalVoters = proposal.yes + proposal.no + proposal.abstain;
-    if (totalVoters > totalReputation*precReq/100) {
-      if (proposal.yes > proposal.no) {
-        proposals[_proposalId].executed = true;
-        LogExecuteProposal(_proposalId, 1);
-        proposal.executable.execute(_proposalId, proposal.avatar, 1);
-        return true;
+    if (proposal.totalVotes > totalReputation*precReq/100) {
+      uint max;
+      uint maxInd;
+      for (uint cnt=1; cnt<=parameters[proposal.paramsHash].numOfChoices; cnt++) {
+        if (proposal.votes[cnt] > max) {
+          max = proposal.votes[cnt];
+          maxInd = cnt;
+        }
       }
-      if (proposal.no > proposal.yes) {
-        proposals[_proposalId].executed = true;
-        LogExecuteProposal(_proposalId, -1);
-        proposal.executable.execute(_proposalId, proposal.avatar, -1);
-        return true;
-      }
+      Proposal memory tmpProposal = proposal;
+      delete proposals[_proposalId];
+      LogExecuteProposal(_proposalId, maxInd);
+      (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(maxInd));
+      return true;
     }
     return false;
   }

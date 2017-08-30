@@ -8,38 +8,38 @@ contract AbsoluteVote is IntVoteInterface{
 
 
   struct Parameters {
-      Reputation reputationSystem; // the reputation system that is being used
-      uint precReq; // how many precentages are required for the porpsal to be passed
-      bool allowOwner; // does this porposal has a owner who has owner rights?
+    Reputation reputationSystem; // the reputation system that is being used
+    uint numOfChoices;
+    uint precReq; // how many precentages are required for the porpsal to be passed
+    bool allowOwner; // does this porposal has a owner who has owner rights?
   }
 
   struct Voter {
-      int vote; // voter's vote: 1 - 'yes', -1 - 'no', 0 - 'abstain'
-      uint reputation; // amount of voter's reputation
+    uint vote; // 0 - 'abstain'
+    uint reputation; // amount of voter's reputation
   }
 
   struct Proposal {
-      address owner; // the porposal's owner
-      address avatar; // the avatar of the organization that owns the porposal
-      ExecutableInterface executable; // will be executed if the perposal will pass
-      bytes32 paramsHash; // the hash of the parameters of the porposal
-      uint yes; // total 'yes' votes
-      uint no; // total 'no' votes
-      uint abstain; // total 'abstain' votes
-      mapping(address=>Voter) voters;
-      bool opened; // voting opened flag
-      bool executed; // voting was executed flag
+    address owner; // the porposal's owner
+    address avatar; // the avatar of the organization that owns the porposal
+    ExecutableInterface executable; // will be executed if the perposal will pass
+    bytes32 paramsHash; // the hash of the parameters of the porposal
+    uint totalVotes;
+    mapping(uint=>uint) votes;
+    mapping(address=>Voter) voters;
+    bool opened; // voting opened flag
   }
 
   event LogNewProposal(bytes32 indexed _proposalId, address _proposer, bytes32 _paramsHash);
   event LogCancelProposal(bytes32 indexed _proposalId);
-  event LogExecuteProposal(bytes32 indexed _proposalId, int _decision);
-  event LogVoteProposal(bytes32 indexed _proposalId, address indexed _voter, int _vote, uint _reputation, bool _isOwnerVote);
+  event LogExecuteProposal(bytes32 indexed _proposalId, uint _decision);
+  event LogVoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
   event LogCancelVoting(bytes32 indexed _proposalId, address indexed _voter);
 
   mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
   mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
 
+  uint constant maxNumOfChoices = 10;
   uint proposalsCnt; // Total amount of porposals
 
   /**
@@ -55,7 +55,6 @@ contract AbsoluteVote is IntVoteInterface{
    */
   modifier votableProposal(bytes32 _proposalId) {
     require(proposals[_proposalId].opened);
-    require(! proposals[_proposalId].executed);
     _;
   }
 
@@ -65,12 +64,14 @@ contract AbsoluteVote is IntVoteInterface{
   /**
    * @dev hash the parameters, save them if necessary, and return the hash value
    */
-  function setParameters(Reputation _reputationSystem, uint _precReq, bool _allowOwner) returns(bytes32) {
+  function setParameters(Reputation _reputationSystem, uint _numOfChoices, uint _precReq, bool _allowOwner) returns(bytes32) {
     require(_precReq <= 100 && _precReq > 0);
-    bytes32 hashedParameters = getParametersHash(_reputationSystem, _precReq, _allowOwner);
+    require(_numOfChoices > 0 && _numOfChoices <= maxNumOfChoices);
+    bytes32 hashedParameters = getParametersHash(_reputationSystem, _numOfChoices, _precReq, _allowOwner);
     parameters[hashedParameters] = Parameters({
-      precReq: _precReq,
       reputationSystem: _reputationSystem,
+      numOfChoices: _numOfChoices,
+      precReq: _precReq,
       allowOwner: _allowOwner
     });
     return hashedParameters;
@@ -79,8 +80,8 @@ contract AbsoluteVote is IntVoteInterface{
   /**
    * @dev hashParameters returns a hash of the given parameters
    */
-  function getParametersHash(Reputation _reputationSystem, uint _precReq, bool _allowOwner) constant returns(bytes32) {
-      return sha3(_reputationSystem, _precReq, _allowOwner);
+  function getParametersHash(Reputation _reputationSystem, uint _numOfOptions, uint _precReq, bool _allowOwner) constant returns(bytes32) {
+      return sha3(_reputationSystem, _numOfOptions, _precReq, _allowOwner);
   }
 
   /**
@@ -92,8 +93,8 @@ contract AbsoluteVote is IntVoteInterface{
    * TODO: Maybe we neem to check the the 0 < precReq <= 100 ??
    */
   function propose(bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
-    // Check params exist:
-    require(parameters[_paramsHash].reputationSystem != address(0));
+    // Check valid params:
+    require(parameters[_paramsHash].numOfChoices > 0);
 
     // Generate a unique ID:
     bytes32 proposalId = sha3(this, proposalsCnt);
@@ -127,36 +128,36 @@ contract AbsoluteVote is IntVoteInterface{
   /**
    * @dev Vote for a proposal, if the voter already voted, cancel the last vote and set a new one instead
    * @param _proposalId id of the proposal
-   * @param _vote yes (1) / no (-1) / abstain (0)
    * @param _voter used in case the vote is cast for someone else
+   * @param _vote yes (1) / no (-1) / abstain (0)
    * @return true in case of success
    * throws if proposal is not opened or if it is executed
    * NB: executes the proposal if a decision has been reached
    */
-  function internalVote(bytes32 _proposalId, int _vote, address _voter) internal votableProposal(_proposalId) {
+  function internalVote(bytes32 _proposalId, address _voter, uint _vote, uint _rep) internal votableProposal(_proposalId) {
     Proposal storage proposal = proposals[_proposalId];
+    Parameters memory params = parameters[proposal.paramsHash];
 
     // Check valid vote:
-    require(_vote == 1 || _vote == -1 || _vote == 0);
+    require(_vote <= params.numOfChoices);
+
+    // Check voter has enough reputation:
+    uint reputation = params.reputationSystem.reputationOf(_voter);
+    require(reputation >= _rep);
+    if (_rep == 0) {
+      _rep = reputation;
+    }
 
     // If this voter has already voted, first cancel the vote:
     if (proposal.voters[_voter].reputation != 0) {
-        cancelVote(_proposalId);
+        cancelVoteInternal(_proposalId, _voter);
     }
 
     // The voting itself:
-    uint reputation = parameters[proposal.paramsHash].reputationSystem.reputationOf(_voter);
-    if (_vote == 1) {
-      proposal.yes = reputation.add(proposal.yes);
-    }
-    if (_vote == -1) {
-      proposal.no = reputation.add(proposal.no);
-    }
-    if (_vote == 0) {
-      proposal.abstain = reputation.add(proposal.abstain);
-    }
+    proposal.votes[_vote] = _rep.add(proposal.votes[_vote]);
+    proposal.totalVotes = _rep.add(proposal.totalVotes);
     proposal.voters[_voter] = Voter({
-      reputation: reputation,
+      reputation: _rep,
       vote: _vote
     });
 
@@ -178,8 +179,8 @@ contract AbsoluteVote is IntVoteInterface{
    * @param _proposalId id of the proposal
    * @param _vote yes (1) / no (-1) / abstain (0)
    */
-  function vote(bytes32 _proposalId, int _vote) {
-    internalVote(_proposalId, _vote, msg.sender);
+  function vote(bytes32 _proposalId, uint _vote) {
+    internalVote(_proposalId, msg.sender, _vote, 0);
   }
 
   /**
@@ -188,12 +189,27 @@ contract AbsoluteVote is IntVoteInterface{
    * @param _vote yes (1) / no (-1) / abstain (0)
    * @param _voter will be voted with that voter's address
    */
-  function ownerVote(bytes32 _proposalId, int _vote, address _voter) onlyProposalOwner(_proposalId) returns(bool) {
+  function ownerVote(bytes32 _proposalId, uint _vote, address _voter) onlyProposalOwner(_proposalId) returns(bool) {
     if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
       return false;
     }
-    internalVote(_proposalId, _vote, _voter);
+    internalVote(_proposalId, _voter, _vote, 0);
     return true;
+  }
+
+  function voteWithSpecifiedAmounts(bytes32 _proposalId, uint _vote, uint _rep, uint) votableProposal(_proposalId) {
+    internalVote(_proposalId, msg.sender, _vote, _rep);
+  }
+
+  function cancelVoteInternal(bytes32 _proposalId, address _voter) internal {
+    Proposal storage proposal = proposals[_proposalId];
+    Voter memory voter = proposal.voters[_voter];
+
+    proposal.votes[voter.vote] = (proposal.votes[voter.vote]).sub(voter.reputation);
+    proposal.totalVotes = (proposal.totalVotes).sub(voter.reputation);
+
+    delete proposal.voters[_voter];
+    LogCancelVoting(_proposalId, _voter);
   }
 
   /**
@@ -202,21 +218,7 @@ contract AbsoluteVote is IntVoteInterface{
    * @param _proposalId id of the proposal
    */
   function cancelVote(bytes32 _proposalId) votableProposal(_proposalId) {
-    Proposal storage proposal = proposals[_proposalId];
-
-    Voter storage voter = proposal.voters[msg.sender];
-    if (voter.vote == 1) {
-        proposal.yes = (proposal.yes).sub(voter.reputation);
-    }
-    if (voter.vote == -1) {
-        proposal.no = (proposal.no).sub(voter.reputation);
-    }
-    if (voter.vote == 0) {
-        proposal.abstain = (proposal.abstain).sub(voter.reputation);
-    }
-
-    delete proposal.voters[msg.sender];
-    LogCancelVoting(_proposalId, msg.sender);
+    cancelVoteInternal(_proposalId, msg.sender);
   }
 
   /**
@@ -226,25 +228,22 @@ contract AbsoluteVote is IntVoteInterface{
    */
   // TODO: do we want to delete the vote from the proposals mapping?
   function executeProposal(bytes32 _proposalId) votableProposal(_proposalId) returns(bool) {
-    Proposal memory proposal = proposals[_proposalId];
+    Proposal storage proposal = proposals[_proposalId];
 
     uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
     uint precReq = parameters[proposal.paramsHash].precReq;
 
-    // "yes" was elected, executing with "yes"
-    if (proposal.yes > totalReputation*precReq/100) {
-      proposals[_proposalId].executed = true;
-      LogExecuteProposal(_proposalId, 1);
-      proposal.executable.execute(_proposalId, proposal.avatar, 1);
-      return true;
+    // Check if someone crossed the bar:
+    for (uint cnt=0; cnt<=parameters[proposal.paramsHash].numOfChoices; cnt++) {
+      if (proposal.votes[cnt] > totalReputation*precReq/100) {
+        Proposal memory tmpProposal = proposal;
+        delete proposals[_proposalId];
+        LogExecuteProposal(_proposalId, cnt);
+        (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(cnt));
+        return true;
+      }
     }
-    // "no" was elected, executing with "no"
-    if (proposal.no > totalReputation*precReq/100) {
-      proposals[_proposalId].executed = true;
-      LogExecuteProposal(_proposalId, -1);
-      proposal.executable.execute(_proposalId, proposal.avatar, -1);
-      return true;
-    }
+
     return false;
   }
 
@@ -255,9 +254,9 @@ contract AbsoluteVote is IntVoteInterface{
    * @return int[10] array that contains the vote's info:
    * amount of reputation committed by _voter to _proposalId, and the voters vote (1/-1/-0)
    */
-  function voteInfo(bytes32 _proposalId, address _voter) constant returns(int[10]) {
+  function voteInfo(bytes32 _proposalId, address _voter) constant returns(uint[13]) {
     Voter memory voter = proposals[_proposalId].voters[_voter];
-    return [voter.vote, int(voter.reputation), 0, 0, 0, 0, 0, 0, 0, 0];
+    return [voter.vote, voter.reputation, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   }
 
   /**
@@ -266,10 +265,14 @@ contract AbsoluteVote is IntVoteInterface{
    * @return int[10] array that contains the porposal's info:
    * number of yes, no, and abstain, and if the voting for the porposal has ended
    */
-  function proposalStatus(bytes32 _proposalId) constant returns(uint[10]) {
-    Proposal memory proposal = proposals[_proposalId];
-    uint ended = proposal.executed ? 1 : 0;
-
-    return [proposal.yes, proposal.no, proposal.abstain, ended, 0, 0, 0, 0, 0, 0];
+  function proposalStatus(bytes32 _proposalId) constant returns(uint[13]) {
+    Proposal storage proposal = proposals[_proposalId];
+    uint opened = proposal.opened ? 1 : 0;
+    uint[13] memory returnedArray;
+    returnedArray[12] = opened;
+    for (uint cnt=0; cnt<=parameters[proposal.paramsHash].numOfChoices; cnt++) {
+      returnedArray[cnt] = proposal.votes[cnt];
+    }
+    return returnedArray;
   }
 }
