@@ -22,7 +22,7 @@ contract EmergentICO {
   event LogDonationReceived
   (
     uint indexed _donationId,
-    address indexed _donator,
+    address indexed _donor,
     address indexed _beneficiary,
     uint _periodId,
     uint _value,
@@ -34,7 +34,7 @@ contract EmergentICO {
   // The data saved for each donation:
   struct Donation {
     address donor;
-    address beneficiary; // The tokens wil lbe alocated to this address.
+    address beneficiary; // The tokens will be alocated to this address.
     uint periodId; // Donation's period.
     uint value; // Value in wei.
     uint minRate; // If the rate is lower than this, the funds will be returned.
@@ -63,11 +63,11 @@ contract EmergentICO {
   }
 
   // Mapping from donation ID to the donation. IDs are sequential 0,1,2..
-  mapping (uint=>Donation) donations;
+  mapping (uint=>Donation) public donations;
   // Mapping from period ID to the period. IDs are sequential 0,1,2..
-  mapping (uint=>Period) periods;
+  mapping (uint=>Period) public periods;
   // Mapping from address of an agent, to the data of the computation he suggested.
-  mapping (address=>AverageComputator) AverageComputators;
+  mapping (address=>AverageComputator) public averageComputators;
 
   // Parameters:
   Controller public controller; // The conroller is responsible to mint tokens.
@@ -291,7 +291,7 @@ contract EmergentICO {
     isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
-    AverageComputators[msg.sender] = AverageComputator({
+    averageComputators[msg.sender] = AverageComputator({
       periodId: _periodId,
       donorsCounted: 0,
       averageRateComputed: _average,
@@ -310,7 +310,7 @@ contract EmergentICO {
     isPeriodInitialized(_periodId)
   {
     Period period = periods[_periodId];
-    AverageComputator avgComp = AverageComputators[msg.sender];
+    AverageComputator avgComp = averageComputators[msg.sender];
     require(avgComp.periodId == _periodId);
 
     // Run over the array of donors with limit, sum the ones that are to be refunded:
@@ -331,7 +331,7 @@ contract EmergentICO {
         period.averageRate = computedRate;
         periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(period.raisedInPeriod);
         periods[_periodId+1].isInitialized = true;
-        delete AverageComputators[msg.sender];
+        delete averageComputators[msg.sender];
         LogPeriodAverageComputed(_periodId);
       }
     }
