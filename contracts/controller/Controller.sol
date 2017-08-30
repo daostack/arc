@@ -99,14 +99,14 @@ contract Controller {
     // TODO: XXX: Constraints are commented due to gas issues, must fix.
     modifier onlySubjectToConstraint(bytes32 func) {
       /*for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
-        if (globalConstraints[cnt] != address(0))
-        require( (GlobalConstraintInterface(globalConstraints[cnt])).pre(msg.sender, globalConstraintsParams[cnt], func) );
+        if (globalConstraints[cnt].gcAddress != address(0))
+        require( (GlobalConstraintInterface(globalConstraints[cnt].gcAddress)).pre(msg.sender, globalConstraints[cnt].params, func) );
       }*/
       _;
-      /*for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
-        if (globalConstraints[cnt] != address(0))
-        require( (GlobalConstraintInterface(globalConstraints[cnt])).post(msg.sender, globalConstraintsParams[cnt], func) );
-      }*/
+      for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
+        if (globalConstraints[cnt].gcAddress != address(0))
+        require( (GlobalConstraintInterface(globalConstraints[cnt].gcAddress)).post(msg.sender, globalConstraints[cnt].params, func) );
+      }
     }
 
     // Minting:
@@ -192,7 +192,7 @@ contract Controller {
 
     function addGlobalConstraint(address _globalConstraint, bytes32 _params)
         onlyGlobalConstraintsScheme
-        returns(bool) 
+        returns(bool)
         {
         GlobalConstraint memory gc;
         gc.gcAddress = _globalConstraint;
