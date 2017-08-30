@@ -103,10 +103,10 @@ contract Controller {
         require( (GlobalConstraintInterface(globalConstraints[cnt].gcAddress)).pre(msg.sender, globalConstraints[cnt].params, func) );
       }*/
       _;
-      for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
+      /*for (uint cnt=0; cnt<globalConstraints.length; cnt++) {
         if (globalConstraints[cnt].gcAddress != address(0))
         require( (GlobalConstraintInterface(globalConstraints[cnt].gcAddress)).post(msg.sender, globalConstraints[cnt].params, func) );
-      }
+      }*/
     }
 
     // Minting:
