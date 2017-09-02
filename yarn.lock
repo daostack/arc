@@ -3557,12 +3557,14 @@ solc@0.4.11:
     semver "^5.3.0"
     yargs "^4.7.1"
 
-solc@^0.3.5:
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/solc/-/solc-0.3.6.tgz#ee1678e144701fbc1635efb21213c7953cf2bba9"
+solc@^0.4.15:
+  version "0.4.16"
+  resolved "https://registry.yarnpkg.com/solc/-/solc-0.4.16.tgz#809a5b1257c7c200e11a841b377eaec274698539"
   dependencies:
+    fs-extra "^0.30.0"
     memorystream "^0.3.1"
     require-from-string "^1.1.0"
+    semver "^5.3.0"
     yargs "^4.7.1"
 
 solc@^0.4.2:
