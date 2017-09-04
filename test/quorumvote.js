@@ -410,7 +410,7 @@
 //       try {
 //           await quorumVote.internalVote(proposalId, 1, accounts[0]);
 //       } catch (ex) {
-//           assert(true); // Make sure an exception has been thrown
+//           helpers.assertInternalFunctionException(ex);
 //       }
 //     });
 //
