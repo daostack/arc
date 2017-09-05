@@ -227,7 +227,6 @@ contract("EmergentICO", function(accounts){
 
     // Compute all previous periods, and initialize current period:
     for (let cnt=0; cnt<period; cnt++) {
-      console.log(cnt);
       await newICO.setAverageAndTest(cnt, web3.toWei(initialRate), 0);
     }
     const periodInit = await newICO.getIsPeriodInitialized(period);

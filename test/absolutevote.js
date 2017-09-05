@@ -143,16 +143,16 @@ const checkProposalInfoWithAbsoluteVote = async function(proposalId, _proposalIn
   assert.equal(proposalInfo[5], _proposalInfo[5]);
 };
 
-const checkVoteInfoWithAbsoluteVote = async function(proposalId, voterAddress, _voteInfo, absoluteVote) {
-  let voteInfo;
-  voteInfo = await absoluteVote.voteInfo(proposalId, voterAddress);
-  // console.log("VoteInfo: " + voteInfo);
-  // voteInfo has the following structure
-  // int vote;
-  assert.equal(voteInfo[0], _voteInfo[0]);
-  // uint reputation;
-  assert.equal(voteInfo[1], _voteInfo[1]);
-};
+// const checkVoteInfoWithAbsoluteVote = async function(proposalId, voterAddress, _voteInfo, absoluteVote) {
+//   let voteInfo;
+//   voteInfo = await absoluteVote.voteInfo(proposalId, voterAddress);
+//   // console.log("VoteInfo: " + voteInfo);
+//   // voteInfo has the following structure
+//   // int vote;
+//   assert.equal(voteInfo[0], _voteInfo[0]);
+//   // uint reputation;
+//   assert.equal(voteInfo[1], _voteInfo[1]);
+// };
 
 contract('AbsoluteVote', function (accounts) {
 
