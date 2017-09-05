@@ -8,7 +8,7 @@ const ExecutableTest = artifacts.require("./ExecutableTest.sol");
 
 let reputation, avatar, absoluteVote, executable, accounts, reputationArray;
 
-const setupAbsoluteVote = async function (isOwnedVote, precReq, numOfChoices) {
+const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50, numOfChoices=6) {
   accounts = web3.eth.accounts;
   absoluteVote = await AbsoluteVote.new();
   executable = await ExecutableTest.new();
@@ -77,7 +77,6 @@ const checkProposalStatus = async function(proposalId, _proposalStatus){
   assert.equal(proposalStatus[11], 0);
   // uint Opened - is the porposal open for voting?
   assert.equal(proposalStatus[12], _proposalStatus[12]);
-
 };
 
 const checkVoteInfo = async function(proposalId, voterAddress, _voteInfo) {
@@ -283,56 +282,55 @@ contract('AbsoluteVote', function (accounts) {
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
-      // Option 1
-      await absoluteVote.vote(proposalId, 0);
-      await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    // Option 1
+    await absoluteVote.vote(proposalId, 0);
+    await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
-      // Option 2
-      await absoluteVote.vote(proposalId, 1);
-      await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    // Option 2
+    await absoluteVote.vote(proposalId, 1);
+    await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
-      // Option 3
-      await absoluteVote.vote(proposalId, 2);
-      await checkVoteInfo(proposalId, accounts[0], [2, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    // Option 3
+    await absoluteVote.vote(proposalId, 2);
+    await checkVoteInfo(proposalId, accounts[0], [2, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
-      // Option 4
-      await absoluteVote.vote(proposalId, 3);
-      await checkVoteInfo(proposalId, accounts[0], [3, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    // Option 4
+    await absoluteVote.vote(proposalId, 3);
+    await checkVoteInfo(proposalId, accounts[0], [3, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
-      // Option 5
-      await absoluteVote.vote(proposalId, 4);
-      await checkVoteInfo(proposalId, accounts[0], [4, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 1]);
+    // Option 5
+    await absoluteVote.vote(proposalId, 4);
+    await checkVoteInfo(proposalId, accounts[0], [4, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 1]);
 
-      // Option 6
-      await absoluteVote.vote(proposalId, 5);
-      await checkVoteInfo(proposalId, accounts[0], [5, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 1]);
+    // Option 6
+    await absoluteVote.vote(proposalId, 5);
+    await checkVoteInfo(proposalId, accounts[0], [5, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 1]);
 
-      // Option 7
-      await absoluteVote.vote(proposalId, 6);
-      await checkVoteInfo(proposalId, accounts[0], [6, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 1]);
+    // Option 7
+    await absoluteVote.vote(proposalId, 6);
+    await checkVoteInfo(proposalId, accounts[0], [6, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 1]);
 
-      // Option 8
-      await absoluteVote.vote(proposalId, 7);
-      await checkVoteInfo(proposalId, accounts[0], [7, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 1]);
+    // Option 8
+    await absoluteVote.vote(proposalId, 7);
+    await checkVoteInfo(proposalId, accounts[0], [7, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 1]);
 
-      // Option 9
-      await absoluteVote.vote(proposalId, 8);
-      await checkVoteInfo(proposalId, accounts[0], [8, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 1]);
+    // Option 9
+    await absoluteVote.vote(proposalId, 8);
+    await checkVoteInfo(proposalId, accounts[0], [8, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 1]);
 
-      // Option 10
-      await absoluteVote.vote(proposalId, 9);
-      await checkVoteInfo(proposalId, accounts[0], [9, reputationArray[0]]);
-      await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 1]);
-
+    // Option 10
+    await absoluteVote.vote(proposalId, 9);
+    await checkVoteInfo(proposalId, accounts[0], [9, reputationArray[0]]);
+    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 1]);
   });
 
 
@@ -669,24 +667,25 @@ contract('AbsoluteVote', function (accounts) {
     }
   });
 
-  it('cannot cancel vote by another user', async function () {
-    absoluteVote = await setupAbsoluteVote(true, 50, 6);
-
-    // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 6, 50, true);
-    let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
-    const proposalId = await getValueFromLogs(tx, '_proposalId');
-    assert.isOk(proposalId);
-
-    await absoluteVote.vote(proposalId, 1, accounts[1], { from: accounts[1] });
-
-    try {
-      await absoluteVote.cancelVote(proposalId, accounts[1], { from: accounts[2] });
-      assert(false, 'accounts[2] canceled vote by accounts[1] but accounts[2] is not owner');
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
-  });
+  // Irrelevant test
+  // it('cannot cancel vote by another user', async function () {
+  //   absoluteVote = await setupAbsoluteVote(true, 50, 6);
+  //
+  //   // propose a vote
+  //   const paramsHash = await absoluteVote.getParametersHash(reputation.address, 6, 50, true);
+  //   let tx = await absoluteVote.propose(paramsHash, avatar.address, executable.address);
+  //   const proposalId = await getValueFromLogs(tx, '_proposalId');
+  //   assert.isOk(proposalId);
+  //
+  //   await absoluteVote.vote(proposalId, 1, { from: accounts[1] });
+  //
+  //   try {
+  //     await absoluteVote.cancelVote(proposalId, { from: accounts[2] });
+  //     assert(false, 'accounts[2] canceled vote by accounts[1] but accounts[2] is not owner');
+  //   } catch (ex) {
+  //     helpers.assertVMException(ex);
+  //   }
+  // });
 
   it("Shoud behave sensibly when voting with an empty reputation system", async function () {
       // Initiate objects
@@ -731,7 +730,7 @@ contract('AbsoluteVote', function (accounts) {
     // Minority vote - no execution - no exception
     tx = await absoluteVote.vote(proposalId, 5, accounts[0]);
 
-    // // In the future hsould throw an exception because we can't execute an empty address.
+    // // In the future should throw an exception because we can't execute an empty address.
     // // The decisive vote - execution should be initiated and excpetion should be raised
     // try {
     //   await absoluteVote.vote(proposalId, 5, accounts[2]);

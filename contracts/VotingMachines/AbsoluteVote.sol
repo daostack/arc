@@ -39,7 +39,7 @@ contract AbsoluteVote is IntVoteInterface{
   mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
   mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
 
-  uint constant public maxNumOfChoices = 10;
+  uint constant maxNumOfChoices = 10;
   uint proposalsCnt; // Total amount of porposals
 
   /**
@@ -243,6 +243,7 @@ contract AbsoluteVote is IntVoteInterface{
         return true;
       }
     }
+
     return false;
   }
 
