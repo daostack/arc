@@ -361,7 +361,7 @@ contract EmergentICO {
     if (donation.minRate < period.averageRate) {
       uint tokensToMint = period.averageRate.mul(donation.value)/(10**18);
       controller.mintTokens(tokensToMint, donation.beneficiary);
-      totalDonated = totalDonated.sub(donation.value);
+      totalDonated = totalDonated.add(donation.value);
       LogCollect(_donationId, tokensToMint, 0);
     } else {
       donation.donor.transfer(donation.value);
