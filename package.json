@@ -1,11 +1,16 @@
 {
-  "name": "daostack",
-  "version": "0.0.1",
+  "name": "emergent-arc",
+  "version": "0.0.2",
   "description": "Building DAOs",
-  "main": "truffle.js",
+  "main": "arc.js",
   "directories": {
-    "test": "test"
+    "lib": "./lib",
+    "doc": "./docs"
   },
+  "files": [
+    "lib/", 
+    "docs/"
+  ],
   "scripts": {
     "test": "truffle test",
     "testrpc": "pm2 start testrpc",
