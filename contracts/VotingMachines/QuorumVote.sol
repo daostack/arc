@@ -20,7 +20,7 @@ contract QuorumVote is IntVoteInterface, AbsoluteVote {
     if (proposal.totalVotes > totalReputation*precReq/100) {
       uint max;
       uint maxInd;
-      for (uint cnt=1; cnt<=parameters[proposal.paramsHash].numOfChoices; cnt++) {
+      for (uint cnt=1; cnt<=proposal.numOfChoices; cnt++) {
         if (proposal.votes[cnt] > max) {
           max = proposal.votes[cnt];
           maxInd = cnt;
