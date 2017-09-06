@@ -569,6 +569,10 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     return false;
   }
 
+  function getNumberOfChoices(bytes32 _proposalId) constant returns(uint) {
+    return (proposals[_proposalId].numOfChoices);
+  }
+
   /**
    * @dev voteInfo returns the vote and the amount of reputation of the user committed to this proposal
    * @param _proposalId the ID of the proposal
