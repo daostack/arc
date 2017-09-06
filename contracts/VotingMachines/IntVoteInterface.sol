@@ -6,7 +6,7 @@ contract IntVoteInterface {
   modifier onlyProposalOwner(bytes32 _proposalId) {_;}
   modifier votableProposal(bytes32 _proposalId) {_;}
 
-  function propose(bytes32 _proposalParameters, address _avatar, ExecutableInterface _executable) returns(bytes32);
+  function propose(uint _numOfChoices, bytes32 _proposalParameters, address _avatar, ExecutableInterface _executable) returns(bytes32);
 
   // Only owned proposals and only the owner:
   function cancelProposal(bytes32 _proposalId) onlyProposalOwner(_proposalId) votableProposal(_proposalId) returns(bool);
