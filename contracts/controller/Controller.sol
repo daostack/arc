@@ -46,7 +46,7 @@ contract Controller {
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
     event RegisterScheme (address indexed _sender, address indexed _scheme);
     event UnregisterScheme (address indexed _sender, address indexed _scheme);
-    event GenericAction (address indexed _sender, address indexed _action, uint _param);
+    event GenericAction (address indexed _sender, address indexed _action, bytes32[] _params);
     event SendEther (address indexed _sender, uint _amountInWei, address indexed _to);
     event ExternalTokenTransfer (address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
     event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
@@ -228,13 +228,13 @@ contract Controller {
     }
 
     // External actions:
-    function genericAction(ActionInterface _action, uint _param)
+    function genericAction(ActionInterface _action, bytes32[] _params)
         onlyRegisteredScheme
         onlySubjectToConstraint("genericAction")
         returns(bool)
     {
-        GenericAction( msg.sender, _action, _param );
-        return avatar.genericAction(_action, _param);
+        GenericAction( msg.sender, _action, _params);
+        return avatar.genericAction(_action, _params);
     }
 
     /**
