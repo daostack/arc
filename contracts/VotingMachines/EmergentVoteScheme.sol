@@ -374,9 +374,8 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
   }
 
   /**
-   * @dev Delete an index from an array which in the storage
-   * @param _idsArray the pointer for the array
-   * @param _index the index we want to delete
+   * @dev Move the top porposal form the waiting list to the boosted proposals
+   * @param _avatar avatar of the organization
    */
    // [TODO] event
   function moveTopAwaitingBoostMode(address _avatar) {
