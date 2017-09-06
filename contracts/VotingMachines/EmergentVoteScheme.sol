@@ -11,26 +11,26 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
 
   struct Organization {
       bool isRegistered;
-      uint boostedProposals;
-      bytes32[] awaitingBoostProposals;
+      uint boostedProposals; // Currently amount of boosted proposals
+      bytes32[] awaitingBoostProposals; // Array that contains a waiting list of porposals to be boosted
   }
 
   struct OrgParameters {
     Reputation reputationSystem; // the reputation system that is being used
-    StandardToken boostToken;
-    address beneficiary;
-    uint attentionBandwidth;
-    uint minBoostTimeFrame;
-    uint maxBoostTimeFrame;
-    uint minBoost;
+    StandardToken boostToken; // The token that will be used in order to boost porposals
+    address beneficiary; // The tokens that has been spent for boosting porposals will be transfered to this address
+    uint attentionBandwidth; // Limit the amount of boosted proposals
+    uint minBoostTimeFrame; // The boost time can not be less than that time frame
+    uint maxBoostTimeFrame; // The boost time can not be more than that time frame
+    uint minBoost; // Minimum amount of token can be paid for boosting porposals
     bool allowOwner; // does this porposal has a owner who has owner rights?
   }
 
   struct ProposalParameters {
     uint precReq; // how many precentages are required for the porpsal to be passed
-    uint numOfChoices;
-    uint qourum;
-    uint boostTimeFrame;
+    uint numOfChoices; // Number of choices in the porposal
+    uint qourum; // Qurum that will be rellevant only if the porposal will get boosted
+    uint boostTimeFrame; // The time frame that the porpoal will be boosted
   }
 
   struct Voter {
@@ -43,14 +43,14 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     address avatar; // the avatar of the organization that owns the porposal
     ExecutableInterface executable; // will be executed if the perposal will pass
     bytes32 paramsHash; // the hash of the parameters of the porposal
-    uint totalVotes;
+    uint totalVotes; // Totals porposal's votes
     mapping(uint=>uint) votes;
     mapping(address=>Voter) voters;
     bool opened; // voting opened flag
-    bool isBoostModeActive;
-    bool isAwaitingBoost;
-    uint closingTime;
-    uint boostedFunds;
+    bool isBoostModeActive; // Is the porposal boosted?
+    bool isAwaitingBoost; // Is in the waiting list for being boosted
+    uint closingTime; // Will be setted only if the porposal is boosted, will determine the closing time of the porposal
+    uint boostedFunds; // amount of funds that has been invested in this porposal
   }
 
   event LogNewProposal(bytes32 indexed _proposalId, address _proposer, bytes32 _paramsHash);
@@ -149,10 +149,16 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
   }
 
   /**
-   * @dev hash the parameters, save them if necessary, and return the hash value
+   * @dev Set porposals parameters
+   * @param _precReq the precentage that are required for the porposal to be executed
+   * @param _numOfChoices the number of choices inthe porposal
+   * @param _qourum the 'qourum' precentages that are required for the winning choice (will be rellevant only if boosted)
+   * @param _boostTimeFrame the time frame of the porposal after being boosted, after the time passed, a decision will be made
+   * @return bytes32 the hashed parameters
    */
   function setProposalParameters(uint _precReq, uint _numOfChoices, uint _qourum, uint _boostTimeFrame) returns(bytes32) {
     require(_precReq <= 100 && _precReq > 0);
+    require(_qourum <= 100 && _qourum > 0);
     require(_numOfChoices > 0 && _numOfChoices <= maxNumOfChoices);
     bytes32 hashedParameters = getProposalParametersHash(_precReq, _numOfChoices, _qourum, _boostTimeFrame);
     proposalsParameters[hashedParameters] = ProposalParameters({
@@ -177,6 +183,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * @param _paramsHash defined the parameters of the voting machine used for this proposal
    * @param _avatar an address to be sent as the payload to the _executable contract.
    * @param _executable This contract will be executed when vote is over.
+   * @return bytes32 porposalId the ID of the porposal
    */
   function propose(bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
     // ToDo: check parameters are OK:
@@ -206,6 +213,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
   /**
    * @dev Cancel a porposal, only the owner can call this function and only if allowOwner flag is true.
    * @param _proposalId the porposal ID
+   * @return bool True if the porposal is canceled and False if it wasn't
    */
   function cancelProposal(bytes32 _proposalId) onlyProposalOwner(_proposalId) votableProposal(_proposalId) returns(bool){
     address avatar = proposals[_proposalId].avatar;
@@ -227,11 +235,23 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     return true;
   }
 
+  /**
+   * @dev Get the score of a specific porposal
+   * The score is evaluated by multiplying the number of votes with the funds that are invested
+   * @param _proposalId the porposal ID
+   * @return uint Porposal's score
+   */
   function proposalScore(bytes32 _proposalId) constant returns(uint) {
     Proposal proposal = proposals[_proposalId];
     return (proposal.boostedFunds.mul(proposal.totalVotes));
   }
 
+  /**
+   * @dev Get the minimum score of a given list porposal ids
+   * @param _idsArray the porposal ids that will be checked
+   * @return uint index the index of the porposal containing the smallest score in the list
+   * @return uint min the minimum score in the list
+   */
   function findMinScore(bytes32[] _idsArray) constant returns(uint index, uint min) {
     for (uint cnt=0; cnt<_idsArray.length; cnt++) {
       if (proposalScore(_idsArray[cnt]) < min) {
@@ -241,6 +261,12 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
   }
 
+  /**
+   * @dev Get the maximum score of a given list porposal ids
+   * @param _idsArray the porposal ids that will be checked
+   * @return uint index the index of the porposal containing the highest score in the list
+   * @return uint max the maximum score in the list
+   */
   function findMaxScore(bytes32[] _idsArray) constant returns(uint index, uint max) {
     for (uint cnt=0; cnt<_idsArray.length; cnt++) {
       if (proposalScore(_idsArray[cnt]) > max) {
@@ -250,6 +276,13 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
   }
 
+  /**
+   * @dev Helper function to find an ID in a given array
+   * @param _idsArray an array of id's
+   * @param _id the id we want ot find in the array
+   * @return bool isFound that indicated if the id has been found in the array
+   * @return uint index the index of the id in the array
+   */
   function findInArray(bytes32[] _idsArray, bytes32 _id) constant returns(bool isFound, uint index) {
     for (uint cnt=0; cnt<_idsArray.length; cnt++) {
       if (_idsArray[cnt] == _id) {
@@ -258,7 +291,14 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
   }
 
+  /**
+   * @dev Will try to insert a porposal to the waiting list (if there is place in the waiting list)
+   * This function will be called only from boostProposal function
+   * @param _proposalId the id of the porposal that is being checked
+   */
+   // [TODO] event
   function tryAwaitingBoostProposals(bytes32 _proposalId) internal {
+
     // Retrieve org and parameters hash:
     address avatar = proposals[_proposalId].avatar;
     require(avatar != address(0)); // Check propsal exists
@@ -272,6 +312,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     // If there is room just add proposal:
+    // The Waiting list is twice the attentionBandwidth
     uint maxAwaitingList = 2*orgParams.attentionBandwidth;
     if (org.awaitingBoostProposals.length < maxAwaitingList) {
       org.awaitingBoostProposals.push(_proposalId);
@@ -290,7 +331,13 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
   }
 
-  function boostProposal(bytes32 _proposalId, uint _boostValue) internal {
+  /**
+   * @dev Internal function to boost a proposal
+   * @param _proposalId the id of the proposal that is being checked
+   * @param _boostValue amount of tokens to use for boosting, must be greater then minBoost
+   */
+  function boostProposal(bytes32 _proposalId, uint _boostValue) {
+
     // Check proposal is not already in boost mode:
     if (proposals[_proposalId].isBoostModeActive) {
       return;
@@ -313,6 +360,11 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
   }
 
+  /**
+   * @dev Delete an index from an array which in the storage
+   * @param _idsArray the pointer for the array
+   * @param _index the index we want to delete
+   */
   function deleteFromArray(bytes32[] storage _idsArray, uint _index) internal {
     assert(_idsArray.length > _index);
     for (uint cnt=_index; cnt<_idsArray.length-1; cnt++) {
@@ -321,6 +373,11 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     _idsArray.length--;
   }
 
+  /**
+   * @dev Move the top porposal form the waiting list to the boosted proposals
+   * @param _avatar avatar of the organization
+   */
+   // [TODO] event
   function moveTopAwaitingBoostMode(address _avatar) {
     // Retrieve org and parameters hash:
     require(_avatar != address(0)); // Check propsal exists
@@ -447,6 +504,11 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     cancelVoteInternal(_proposalId, msg.sender);
   }
 
+  /**
+   * @dev Internal function that actually cancel the vote and delete it from storage
+   * @param _proposalId id of the proposal
+   * @param _voter the address of the voter we want to cancel his vote
+   */
   function cancelVoteInternal(bytes32 _proposalId, address _voter) internal {
     Proposal storage proposal = proposals[_proposalId];
     Voter memory voter = proposal.voters[_voter];
@@ -464,6 +526,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * @return bool is the porposal has been executed or not?
    */
   // TODO: do we want to delete the vote from the proposals mapping?
+  // TODO: add to the event if this porposal was bossted or not
   function executeProposal(bytes32 _proposalId) votableProposal(_proposalId) returns(bool) {
     Proposal storage proposal = proposals[_proposalId];
 
@@ -475,9 +538,13 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     // Check boosted propsals:
     if (proposal.isBoostModeActive && block.number >= proposal.closingTime) {
       uint qourum = proposalsParameters[proposal.paramsHash].qourum;
+
+      // Check if qourum has been reached
       if (proposal.totalVotes/totalReputation >= qourum) {
         uint max;
         uint maxInd;
+
+        // Count which choice is the winning choice
         for (uint cnt=1; cnt<=proposalsParameters[proposal.paramsHash].numOfChoices; cnt++) {
           if (proposal.votes[cnt] > max) {
             max = proposal.votes[cnt];
