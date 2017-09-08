@@ -235,7 +235,7 @@ contract EmergentICO {
 
     // Update period data:
     uint currentPeriod = currentClearancePeriod();
-    Period period = periods[currentPeriod];
+    Period storage period = periods[currentPeriod];
     period.incomingInPeriod = period.incomingInPeriod.add(msg.value);
     period.donationsCounterInPeriod++;
     if (_minRate != 0) {
@@ -309,8 +309,8 @@ contract EmergentICO {
     isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
-    Period period = periods[_periodId];
-    AverageComputator avgComp = averageComputators[msg.sender];
+    Period storage period = periods[_periodId];
+    AverageComputator storage avgComp = averageComputators[msg.sender];
     require(avgComp.periodId == _periodId);
 
     // Run over the array of donors with limit, sum the ones that are to be refunded:
@@ -342,8 +342,8 @@ contract EmergentICO {
    * @param _donationId The donation to be cleared.
    */
   function collectTokens(uint _donationId) internal {
-    Donation donation = donations[_donationId];
-    Period period = periods[donation.periodId];
+    Donation storage donation = donations[_donationId];
+    Period storage period = periods[donation.periodId];
 
     // Check collection is possible:
     require(donation.periodId  < currentClearancePeriod());
