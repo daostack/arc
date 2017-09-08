@@ -79,6 +79,13 @@ export function assertVMException(error) {
     assert.isTrue(condition, 'Expected a VM Exception, got this instead:' + error.message);
 }
 
+export function assertInternalFunctionException(error) {
+    let condition = (
+        error.message.search('is not a function') > -1
+    );
+    assert.isTrue(condition, 'Expected a function not found Exception, got this instead:' + error.message);
+}
+
 export function assertJump(error) {
   assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned' + error.message);
 }

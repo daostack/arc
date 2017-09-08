@@ -9,7 +9,6 @@ contract AbsoluteVote is IntVoteInterface{
 
   struct Parameters {
     Reputation reputationSystem; // the reputation system that is being used
-    uint numOfChoices;
     uint precReq; // how many precentages are required for the porpsal to be passed
     bool allowOwner; // does this porposal has a owner who has owner rights?
   }
@@ -22,6 +21,7 @@ contract AbsoluteVote is IntVoteInterface{
   struct Proposal {
     address owner; // the porposal's owner
     address avatar; // the avatar of the organization that owns the porposal
+    uint numOfChoices;
     ExecutableInterface executable; // will be executed if the perposal will pass
     bytes32 paramsHash; // the hash of the parameters of the porposal
     uint totalVotes;
@@ -64,13 +64,11 @@ contract AbsoluteVote is IntVoteInterface{
   /**
    * @dev hash the parameters, save them if necessary, and return the hash value
    */
-  function setParameters(Reputation _reputationSystem, uint _numOfChoices, uint _precReq, bool _allowOwner) returns(bytes32) {
+  function setParameters(Reputation _reputationSystem, uint _precReq, bool _allowOwner) returns(bytes32) {
     require(_precReq <= 100 && _precReq > 0);
-    require(_numOfChoices > 0 && _numOfChoices <= maxNumOfChoices);
-    bytes32 hashedParameters = getParametersHash(_reputationSystem, _numOfChoices, _precReq, _allowOwner);
+    bytes32 hashedParameters = getParametersHash(_reputationSystem, _precReq, _allowOwner);
     parameters[hashedParameters] = Parameters({
       reputationSystem: _reputationSystem,
-      numOfChoices: _numOfChoices,
       precReq: _precReq,
       allowOwner: _allowOwner
     });
@@ -80,8 +78,8 @@ contract AbsoluteVote is IntVoteInterface{
   /**
    * @dev hashParameters returns a hash of the given parameters
    */
-  function getParametersHash(Reputation _reputationSystem, uint _numOfOptions, uint _precReq, bool _allowOwner) constant returns(bytes32) {
-      return sha3(_reputationSystem, _numOfOptions, _precReq, _allowOwner);
+  function getParametersHash(Reputation _reputationSystem, uint _precReq, bool _allowOwner) constant returns(bytes32) {
+      return sha3(_reputationSystem, _precReq, _allowOwner);
   }
 
   /**
@@ -92,9 +90,9 @@ contract AbsoluteVote is IntVoteInterface{
    * @param _executable This contract will be executed when vote is over.
    * TODO: Maybe we neem to check the the 0 < precReq <= 100 ??
    */
-  function propose(bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
+  function propose(uint _numOfChoices, bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
     // Check valid params:
-    require(parameters[_paramsHash].numOfChoices > 0);
+    require(_numOfChoices > 0 && _numOfChoices <= maxNumOfChoices);
 
     // Generate a unique ID:
     bytes32 proposalId = sha3(this, proposalsCnt);
@@ -102,6 +100,7 @@ contract AbsoluteVote is IntVoteInterface{
 
     // Open proposal:
     Proposal memory proposal;
+    proposal.numOfChoices = _numOfChoices;
     proposal.paramsHash = _paramsHash;
     proposal.avatar = _avatar;
     proposal.executable = _executable;
@@ -139,7 +138,7 @@ contract AbsoluteVote is IntVoteInterface{
     Parameters memory params = parameters[proposal.paramsHash];
 
     // Check valid vote:
-    require(_vote <= params.numOfChoices);
+    require(_vote <= proposal.numOfChoices);
 
     // Check voter has enough reputation:
     uint reputation = params.reputationSystem.reputationOf(_voter);
@@ -234,7 +233,7 @@ contract AbsoluteVote is IntVoteInterface{
     uint precReq = parameters[proposal.paramsHash].precReq;
 
     // Check if someone crossed the bar:
-    for (uint cnt=0; cnt<=parameters[proposal.paramsHash].numOfChoices; cnt++) {
+    for (uint cnt=0; cnt<=proposal.numOfChoices; cnt++) {
       if (proposal.votes[cnt] > totalReputation*precReq/100) {
         Proposal memory tmpProposal = proposal;
         delete proposals[_proposalId];
@@ -270,7 +269,7 @@ contract AbsoluteVote is IntVoteInterface{
     uint opened = proposal.opened ? 1 : 0;
     uint[13] memory returnedArray;
     returnedArray[12] = opened;
-    for (uint cnt=0; cnt<=parameters[proposal.paramsHash].numOfChoices; cnt++) {
+    for (uint cnt=0; cnt<=proposal.numOfChoices; cnt++) {
       returnedArray[cnt] = proposal.votes[cnt];
     }
     return returnedArray;
