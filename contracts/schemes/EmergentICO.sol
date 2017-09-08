@@ -6,15 +6,16 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
 /**
  * @title EmergentICO
  * @dev An ICO model that is trying to be fair for all sides.
- * The ICO is divided to periods, on each period all donors get the same rate (rate=tokens per 1 ether).
- * This means one does not have to rush in and there is no FOMO (fear of missing out).
- * The rate decrease exponentially with the funds coming in.
- * At the end of each period an average of the exponential rate is computed, and all donors get it.
- * The only problem with the above model is that donors do not know the rate they are getting upon sending tx.
- * To improve that there is a feature that allow one to to declare a minimum rate.
- * If the average rate of the period is lower than the minimum pointed by donor, donor will be refunded.
- * For easier computation the exponent is discretized into batches.
-  */
+ * The ICO is divided into "Periods" in which a fixed number of tokens is available
+ * - each period has the same duration (set by periodDuration)
+ * - within a period, all donors get the same rate (rate=tokens per 1 ether).
+ * - within a period, each donor gets an amount of tokens that are proportional to her donation
+ * - the rate decreases exponentially, with each batch
+ * - a batch is an amount (in Wei) of eth donated
+ * - at the end of each period an average of the exponential rate is computed, and all donors get their tokens for that price
+ * - donators can specify a minimum rate (i.e. a maximum price) of their donation
+ * - if the average rate of the period is lower than the minimum pointed by donor, donor will be refunded.
+ */
 
 contract EmergentICO {
   using SafeMath for uint;
@@ -74,14 +75,14 @@ contract EmergentICO {
   address public admin; // Admin can halt and resume the ICO, and also clear batches for everyone.
   address public target; // The funds will be tranffered here.
   uint public startBlock; // ICO starting block.
-  uint public clearancePeriodDuration; // The length of each clearance period in blocks.
+  uint public periodDuration; // The length of each clearance period in blocks.
   uint public minDonation; // The minimum allowed donation in wei.
   // Rate function is initialRate*(rateFractionNumerator/rateFractionDenominator)^n.
-  // wehre x is the incoming
   uint public initialRate;
   uint public rateFractionNumerator;
   uint public rateFractionDenominator;
-  uint public batchSize;
+
+  uint public batchSize; //
 
   // Variables:
   uint public totalReceived; // Total of funds received in the contract, including the returned change.
@@ -102,7 +103,7 @@ contract EmergentICO {
    * @param _periodId the period checked.
    */
   modifier isPeriodOver(uint _periodId) {
-    require(_periodId < currentClearancePeriod());
+    require(_periodId < currentPeriodId());
     _;
   }
 
@@ -117,13 +118,20 @@ contract EmergentICO {
 
   /**
    * @dev Constructor, setting all the parameters:
+   * @param _controller The address of an Organization
+   * @param _target The beneficiary of the ICO (who gets the funds)
+   * @param _admin The administrator of the ICO
+   * @param _startBlock The blocknumber at which the ico starts
+   * @param _periodDuration The length of each period
+   * @param _minDonation The minimal donation
+   * @param _initialRate The price of tokens in the first block (in tokens/ETH)
    */
   function EmergentICO(
     Controller _controller,
     address _admin,
     address _target,
     uint _startBlock,
-    uint _clearancePeriodDuration,
+    uint _periodDuration,
     uint _minDonation,
     uint _initialRate,
     uint _rateFractionNumerator,
@@ -135,7 +143,7 @@ contract EmergentICO {
       admin = _admin;
       target = _target;
       startBlock = _startBlock;
-      clearancePeriodDuration = _clearancePeriodDuration;
+      periodDuration = _periodDuration;
       minDonation = _minDonation;
       initialRate = _initialRate;
       rateFractionNumerator = _rateFractionNumerator;
@@ -182,24 +190,24 @@ contract EmergentICO {
   }
 
   /**
-   * @dev Constant function, returns the current periodId:
+   * @dev Constant function, returns the periodId of the current block:
    */
-  function currentClearancePeriod() constant returns(uint) {
-    return ((block.number.sub(startBlock))/clearancePeriodDuration);
+  function currentPeriodId() constant returns(uint) {
+    return ((block.number.sub(startBlock))/periodDuration);
   }
 
   /**
-   * @dev Constant function, computes the rate for in a given batch:
-   * @param _batch the batch for which the computation is done.
+   * @dev Constant function, computes the rate for a given batch:
+   * @param _batch the (index of) the batch for which the computation is done.
    */
-  function rate18Digits(uint _batch) constant returns(uint) {
+  function rateInWei(uint _batch) constant returns(uint) {
     return (((10**18)*initialRate).mul(rateFractionNumerator**_batch)/rateFractionDenominator**_batch);
   }
 
   /**
    * @dev Constant function, computes the average rate between two points.
-   * @param _start the starting point for the computation.
-   * @param _end the starting point for the computation.
+   * @param _start the starting point for the computation - expressed in  Wei donated
+   * @param _end the starting point for the computation, expressed in Wei donated.
    */
   function averageRateCalc18Digits(uint _start, uint _end) constant returns(uint) {
     assert(_end >= _start);
@@ -210,14 +218,14 @@ contract EmergentICO {
     uint delta = batchEnd.sub(batchStart);
 
     if (delta == 0) {
-        return rate18Digits(batchStart);
+        return rateInWei(batchStart);
     }
     if (delta == 1) {
-        return ((partOfStartBatch.mul(rate18Digits(batchStart))).add(partOfEndBatch.mul(rate18Digits(batchEnd))))/(_end-_start);
+        return ((partOfStartBatch.mul(rateInWei(batchStart))).add(partOfEndBatch.mul(rateInWei(batchEnd))))/(_end-_start);
     }
     if (delta > 1) {
-        uint geomSeries = (batchSize.mul(rate18Digits(batchStart+1).sub(rate18Digits(batchEnd)))).mul(rateFractionDenominator)/(rateFractionDenominator.sub(rateFractionNumerator));
-        return ((geomSeries.add(partOfStartBatch.mul(rate18Digits(batchStart)))).add(partOfEndBatch.mul(rate18Digits(batchEnd))))/(_end-_start);
+        uint geomSeries = (batchSize.mul(rateInWei(batchStart+1).sub(rateInWei(batchEnd)))).mul(rateFractionDenominator)/(rateFractionDenominator.sub(rateFractionNumerator));
+        return ((geomSeries.add(partOfStartBatch.mul(rateInWei(batchStart)))).add(partOfEndBatch.mul(rateInWei(batchEnd))))/(_end-_start);
     }
   }
 
@@ -234,7 +242,7 @@ contract EmergentICO {
     require(msg.value >= minDonation);
 
     // Update period data:
-    uint currentPeriod = currentClearancePeriod();
+    uint currentPeriod = currentPeriodId();
     Period storage period = periods[currentPeriod];
     period.incomingInPeriod = period.incomingInPeriod.add(msg.value);
     period.donationsCounterInPeriod++;
@@ -270,7 +278,7 @@ contract EmergentICO {
     }
 
     // Event:
-    LogDonationReceived(donationCounter-1, msg.sender, _beneficiary, currentClearancePeriod(), msg.value, _minRate);
+    LogDonationReceived(donationCounter-1, msg.sender, _beneficiary, currentPeriodId(), msg.value, _minRate);
   }
 
   /**
@@ -346,7 +354,7 @@ contract EmergentICO {
     Period storage period = periods[donation.periodId];
 
     // Check collection is possible:
-    require(donation.periodId  < currentClearancePeriod());
+    require(donation.periodId  < currentPeriodId());
     require(period.isAverageRateComputed);
 
     if (donation.isCollected) {
