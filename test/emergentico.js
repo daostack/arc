@@ -7,13 +7,13 @@ const EmergentICO = artifacts.require("./EmergentICO.sol");
 let accounts, org, newICO;
 let admin, target, startBlock,clearancePeriodDuration, minDonation, initialRate, rateFractionNumerator, rateFractionDenominator, batchSize;
 
-const setupEmergentICO = async function(){
+const setupEmergentICO = async function(opts={}){
 
   accounts = web3.eth.accounts;
 
   admin = accounts[0];
   target = accounts[9];
-  startBlock = web3.eth.blockNumber;
+  startBlock = opts.startBlock || web3.eth.blockNumber;
   clearancePeriodDuration = 10;
   minDonation =  web3.toWei(1, "ether");
   initialRate = 100;
@@ -35,7 +35,8 @@ const setupEmergentICO = async function(){
   newICO = await EmergentICO.new(org.controller.address, admin, target, startBlock, clearancePeriodDuration, minDonation, initialRate, rateFractionNumerator, rateFractionDenominator, batchSize);
   const schemeRegistrar = await org.scheme('SchemeRegistrar');
   const token = org.token;
-  schemeRegistrar.proposeScheme(org.avatar.address, newICO.address, 0, false, token.address, 0, false);
+  // propose the ICO as a schme for the organization - in this case, the scheme is immediately accepted as the proposer has a majority
+  await schemeRegistrar.proposeScheme(org.avatar.address, newICO.address, 0, false, token.address, 0, false);
 
 };
 
@@ -143,7 +144,6 @@ contract("EmergentICO", function(accounts){
   it("Try donating below minimum", async function(){
     await setupEmergentICO();
 
-
     // Try to donate:
     try {
       await web3.eth.sendTransaction({
@@ -195,6 +195,34 @@ contract("EmergentICO", function(accounts){
     assert.equal(await newICO.totalDonated(), 0);
     assert.equal(await newICO.donationCounter(), 1);
     assert.equal(await Number(web3.eth.getBalance(target)), Number(targetOriginalBalance));
+  });
+
+  it("currentClearancePeriod should behave as expected", async function(){
+    let expectedPeriodId, periodId;
+    await setupEmergentICO();
+    periodId = Number(await newICO.currentClearancePeriod());
+    expectedPeriodId = Math.floor((web3.eth.blockNumber - startBlock)/clearancePeriodDuration);
+    assert.equal(periodId, expectedPeriodId);
+
+    // it takesa bout 14 blocks to setup the ICO, so we expect the periodId here to be 0
+    await setupEmergentICO({startBlock: web3.eth.blockNumber + 14});
+    periodId = Number(await newICO.currentClearancePeriod());
+    expectedPeriodId = Math.floor((web3.eth.blockNumber - startBlock)/clearancePeriodDuration);
+    assert.equal(periodId, expectedPeriodId);
+
+    // put the startBlock far in the future
+    await setupEmergentICO({startBlock: web3.eth.blockNumber + 10000});
+
+    // currentClearancePeriod throws an error if the period is in the future
+    try {
+        await newICO.currentClearancePeriod();
+        throw 'an error'; // make sure that an error is thrown
+    } catch(error) {
+        helpers.assertVMException(error);
+    }
+
+    // expectedPeriodId = Math.floor((web3.eth.blockNumber - startBlock)/clearancePeriodDuration);
+    assert.equal(await newICO.isActive(), false);
   });
 
   it("Full scenario 1", async function(){
