@@ -530,7 +530,6 @@ contract("EmergentICO", function(accounts){
       const totalReceived = await newICO.totalReceived();
       avg = await newICO.averageRateInWei(0, totalReceived);
     }
-    console.log('test avg:', avg);
     await newICO.setAverageAndTest(currentPeriod, avg, 10);
 
     // check if indeed this rates where computed

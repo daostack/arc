@@ -17,7 +17,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * - if the average rate of the period is lower than the minimum pointed by donor, donor will be refunded.
  */
 
-contract EmergentICO is Debug {
+contract EmergentICO {
   using SafeMath for uint;
 
   event LogDonationReceived
