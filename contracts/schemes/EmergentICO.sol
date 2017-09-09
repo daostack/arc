@@ -209,7 +209,7 @@ contract EmergentICO {
    * @param _start the starting point for the computation - expressed in  Wei donated
    * @param _end the starting point for the computation, expressed in Wei donated.
    */
-  function averageRateCalc18Digits(uint _start, uint _end) constant returns(uint) {
+  function averageRateInWei(uint _start, uint _end) constant returns(uint) {
     assert(_end >= _start);
     uint batchStart = _start/batchSize;
     uint batchEnd = _end/batchSize;
@@ -272,7 +272,7 @@ contract EmergentICO {
 
     // If we can determine that the donation will not go through, revert:
     if (_minRate != 0 && period.isInitialized) {
-      if (averageRateCalc18Digits(period.raisedUpToPeriod, period.raisedUpToPeriod.add(period.raisedInPeriod)) < _minRate) {
+      if (averageRateInWei(period.raisedUpToPeriod, period.raisedUpToPeriod.add(period.raisedInPeriod)) < _minRate) {
         revert();
       }
     }
@@ -309,7 +309,10 @@ contract EmergentICO {
   }
 
   /**
-   * @dev an agent testing his average computation.
+   * @dev compute the statistics (average payout, eth raised, eth to be refunded) for a given period
+   * because the computation can be very long, the function takes a parameter "_iterations" that limits
+   * the computation. "_iterations" is bounded by period.donationsIdsWithLimit.
+   *
    * @param _periodId the period for which average is computed.
    * @param _iterations number of iterations to check from the array donationsIdsWithLimit.
    */
@@ -332,7 +335,7 @@ contract EmergentICO {
     // Check if finished:
     if (avgComp.donorsCounted == period.donationsIdsWithLimit.length) {
       uint computedRaisedInPeriod = period.incomingInPeriod.sub(avgComp.fundsToBeReturned);
-      uint computedRate = averageRateCalc18Digits(period.raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(computedRaisedInPeriod));
+      uint computedRate = averageRateInWei(period.raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(computedRaisedInPeriod));
       if (computedRate == avgComp.averageRateComputed) {
         period.isAverageRateComputed = true;
         period.raisedInPeriod = computedRaisedInPeriod;
