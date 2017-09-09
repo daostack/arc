@@ -56,5 +56,7 @@
     "url": "https://github.com/daostack/daostack/issues"
   },
   "homepage": "https://github.com/daostack/daostack",
-  "dependencies": {}
+  "dependencies": {
+    "truffle-contract": "^2.0.5"
+  }
 }
