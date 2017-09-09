@@ -389,7 +389,7 @@ contract EmergentICO {
    * Although not really necessary, only the doner (or the admin) can clear his own donation.
    * @param _donationId The donation to be cleared.
    */
-  function collectMine(uint _donationId) {
+  function collectMyTokens(uint _donationId) {
     // Check sender is indeed the donor:
     require(msg.sender == donations[_donationId].donor);
     // Collect:

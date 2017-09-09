@@ -288,7 +288,7 @@ contract("EmergentICO", function(accounts){
     const gasPrice = await web3.eth.gasPrice;
     let account3EthBefore = await web3.eth.getBalance(accounts[3]);
     const account3BeforePlusDonation = Number(account3EthBefore) + Number(web3.toWei(4));
-    let tx = await newICO.collectMine(1, { from: accounts[3], gasPrice: gasPrice });
+    let tx = await newICO.collectMyTokens(1, { from: accounts[3], gasPrice: gasPrice });
     let gasCost = Number(tx.receipt.gasUsed)*gasPrice;
     let account3EthAfter = await web3.eth.getBalance(accounts[3]);
     let account3AfterPlusGas = Number(account3EthAfter) + Number(gasCost);
@@ -297,7 +297,7 @@ contract("EmergentICO", function(accounts){
     // Try to retrieve ether twice:
     account3EthBefore = await web3.eth.getBalance(accounts[3]);
 
-    tx = await newICO.collectMine(1, { from: accounts[3], gasPrice: gasPrice });
+    tx = await newICO.collectMyTokens(1, { from: accounts[3], gasPrice: gasPrice });
     gasCost = Number(tx.receipt.gasUsed)*gasPrice;
     account3EthAfter = await web3.eth.getBalance(accounts[3]);
     account3AfterPlusGas = Number(account3EthAfter) + Number(gasCost);
@@ -308,7 +308,7 @@ contract("EmergentICO", function(accounts){
      const tokensToBeCollected = averageRateInWei*11;
      const token = org.token;
      const initBalance5 = await token.balanceOf(accounts[5]);
-     await newICO.collectMine(3, { from: accounts[5] });
+     await newICO.collectMyTokens(3, { from: accounts[5] });
      const balance5 = await token.balanceOf(accounts[5]);
      const collectedTokens = Number(balance5) - Number(initBalance5);
      assert(Math.abs(collectedTokens - tokensToBeCollected)/tokensToBeCollected < 10**(-8));
@@ -374,8 +374,46 @@ contract("EmergentICO", function(accounts){
       await newICO.donate(donation.beneficiary, web3.toWei(donation.minRate, "ether"), {from: donation.from, value: web3.toWei(donation.amount, "ether")});
     }
 
+    // finish the currentPeriod
+    const currentPeriod = Number(await newICO.currentPeriodId());
+    // console.log(currentPeriod);
+    // console.log('periodDuration:', Number(await newICO.periodDuration()));
+    // Mine blocks to end of the next period:
+    while(Number(await newICO.currentPeriodId()) <= currentPeriod + 1) {
+        await web3.eth.sendTransaction({
+          from: accounts[0],
+          to: accounts[1],
+          value: web3.toWei(0.1,"ether")
+        });
+    }
+
+    // Compute all previous periods, and initialize current period:
+    for (let cnt=0; cnt<currentPeriod; cnt++) {
+      let avg = await newICO.averageRateInWei(0, web3.toWei(0,"ether"));
+      await newICO.setAverageAndTest(cnt, web3.toWei(avg), 0);
+    }
+    const periodInit = await newICO.getIsPeriodInitialized(currentPeriod);
+    assert.equal(periodInit, true);
+
+    // compute all totals
+    const avg = await newICO.averageRateInWei(0, web3.toWei(10,"ether"));
+    await newICO.setAverageAndTest(currentPeriod, avg, 0);
+    const periodPlus1Init = await newICO.getIsPeriodInitialized(currentPeriod+1);
+    assert.equal(periodPlus1Init, true);
+
+
+    // collect the tokens
+    for(let i=0; i < opts.donations.length; i++) {
+      await newICO.collectMyTokens(i, { from: opts.donations[i].beneficiary });
+    }
+
+    // check the results
+    const token = org.token;
+    assert.equal((await token.balanceOf(accounts[1])).toNumber(), web3.toWei(100*10, "ether"));
+
   }
-  it("Full scenario 3 (different types of donations with a single period) [IN PROGRESS]", async function() {
+
+  it("Full scenario (single donation)", async function() {
     await run_scenario({
       icoConfig: {
         periodDuration: 30, // set up so that all donaations are likely to fall within the same period
@@ -394,65 +432,5 @@ contract("EmergentICO", function(accounts){
         }]
       }
     });
-
-
-    // inital period
-    const startPeriod = Number(await newICO.currentPeriodId());
-    // console.log('blocknumber: ' + web3.eth.blockNumber)
-    // console.log('startBlock: ' + await newICO.startBlock())
-    // console.log('startPeriod: ' + await newICO.currentPeriodId())
-
-    // // Donations
-    // // 1. 10 Eth with limit 100: should get rightful share of first batch and nothing else
-    // // await newICO.donate(accounts[1], web3.toWei(100,"ether"), {from: accounts[1], value: web3.toWei(10, "ether")});
-    // await newICO.donate(accounts[1], web3.toWei(0,"ether"), {from: accounts[1], value: web3.toWei(10, "ether")});
-    // // 2. 10 ETH with no limit - should get rightful share
-    // await newICO.donate(accounts[2], 0, {from: accounts[2], value: web3.toWei(20, "ether")});
-    // // 3. 10 ETH with minimal rate 100: should not get anything (because arrived when first batch was already filled)`
-    // // await newICO.donate(accounts[3], web3.toWei(100,"ether"), {from: accounts[3], value: web3.toWei(10, "ether")});
-    // await newICO.donate(accounts[3], web3.toWei(0,"ether"), {from: accounts[3], value: web3.toWei(10, "ether")});
-    // // 4. 10 ETH with minimal rate of 99 - should get part of second batch, but none of the first:
-    // // await newICO.donate(accounts[4], web3.toWei(99,"ether"), {from: accounts[4], value: web3.toWei(10, "ether")});
-    // await newICO.donate(accounts[4], web3.toWei(0,"ether"), {from: accounts[4], value: web3.toWei(10, "ether")});
-    // // 5. 10 ETh with no limit - should get part of all bacthes (same as 1)
-    // await newICO.donate(accounts[5], 0, {from: accounts[5], value: web3.toWei(10, "ether")});
-    // // 6. 10 ethw ith limit of 3rd batch donated in third batch: will only get part of 3rd batch/
-    // // await newICO.donate(accounts[6], web3.toWei(98.01, "ether"), {from: accounts[6], value: web3.toWei(10, "ether")});
-    // await newICO.donate(accounts[6], web3.toWei(0, "ether"), {from: accounts[6], value: web3.toWei(10, "ether")});
-    // // 7. 10 ETH with no limit at all
-    // await newICO.donate(accounts[7], 0, {from: accounts[7], value: web3.toWei(10, "ether")});
-    // // We've donated a total of 70 ETH
-    //
-    // console.log('blcoknumber after donations: ' + web3.eth.blockNumber)
-    // all donations were made in the same period (if this fails, set periodDuration to a higher value..)
-    const currentPeriod = Number(await newICO.currentPeriodId());
-    assert.equal(currentPeriod, startPeriod);
-
-    // Mine blocks to end of the next period:
-    while(Number(await newICO.currentPeriodId()) <= currentPeriod + 1) {
-        await web3.eth.sendTransaction({
-          from: accounts[0],
-          to: accounts[1],
-          value: web3.toWei(0.1,"ether")
-        });
-    }
-
-    // Compute all previous periods, and initialize current period:
-    for (let cnt=0; cnt<currentPeriod; cnt++) {
-      let avg = await newICO.averageRateInWei(0, web3.toWei(0,"ether"));
-      console.log('cnt' + cnt + 'avg: ' + avg);
-      await newICO.setAverageAndTest(cnt, web3.toWei(avg), 0);
-    }
-    const periodInit = await newICO.getIsPeriodInitialized(currentPeriod);
-    assert.equal(periodInit, true);
-
-    // Compute average and let contract test it:
-    const avg = await newICO.averageRateInWei(0, web3.toWei(10,"ether"));
-    await newICO.setAverageAndTest(currentPeriod, avg, 0);
-    const periodPlus1Init = await newICO.getIsPeriodInitialized(currentPeriod+1);
-    assert.equal(periodPlus1Init, true);
-
-    // now check the payouts
-    
   });
 });
