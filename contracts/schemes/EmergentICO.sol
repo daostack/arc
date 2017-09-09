@@ -326,6 +326,10 @@ contract EmergentICO {
 
     // Run over the array of donors with limit, sum the ones that are to be refunded:
     for (uint cnt=0; cnt < _iterations; cnt++) {
+      if (avgComp.donorsCounted >= period.donationsIdsWithLimit.length) {
+        // we have counted all donors in this period and can move on to the payout
+        break;
+      }
       uint donationId = period.donationsIdsWithLimit[avgComp.donorsCounted];
       if (donations[donationId].minRate > avgComp.averageRateComputed) {
         avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(donations[donationId].value);
