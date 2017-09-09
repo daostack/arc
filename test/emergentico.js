@@ -18,7 +18,7 @@ const setupEmergentICO = async function(opts={}){
   startBlock = opts.startBlock || web3.eth.blockNumber;
   periodDuration = opts.periodDuration || 10;
   minDonation =  web3.toWei(1, "ether");
-  initialRate = 100;
+  initialRate = opts.initialRate || 100;
   rateFractionNumerator = opts.rateFractionNumerator || 99;
   rateFractionDenominator = opts.rateFractionDenominator || 100;
   batchSize = web3.toWei(20, "ether");
@@ -73,7 +73,6 @@ contract("EmergentICO", function(accounts){
   //   assert(Math.abs(batch17Rate - Number (await newICO.rate18Digits(17)))/batch7Rate < 10**(-8));
   // });
   //
-
   it("Check average rate function", async function(){
     // fac = 0.9
     await setupEmergentICO();
@@ -85,13 +84,11 @@ contract("EmergentICO", function(accounts){
     let averageRate = initialRate*(9*frac + 20*frac**2 + 20*frac**3 + 5*frac**4)/(end-start);
     let averageRateInWei = Number(web3.toWei(averageRate, "ether"));
     let averageRateInWeiCalculated = Number(await newICO.averageRateInWei(web3.toWei(start, "ether"), web3.toWei(end, "ether")));
-    assert.equal(averageRateInWei,  averageRateInWei);
     // Checking rate is the same up to rounding error:
     assert(Math.abs(averageRateInWei - averageRateInWeiCalculated)/averageRateInWei < 10**(-8));
   });
 
   it("Only admin can halt and resume the ICO", async function(){
-
     await setupEmergentICO();
 
     await newICO.haltICO();
@@ -349,12 +346,142 @@ contract("EmergentICO", function(accounts){
   //   const periodInit = await newICO.getIsPeriodInitialized(Number(await newICO.currentPeriodId()));
   //   assert.equal(periodInit, true);
   // });
+  it("Run Scenario (single donation)", async function() {
+    await run_scenario({
+      icoConfig: {
+        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
+      },
+      donations: [
+        {
+          beneficiary: accounts[1],
+          amount: 10,
+          minRate: 0
+        },
+      ],
+      expected: {
+        tokenDistribution: [{
+          account: accounts[1],
+          tokens: 100 * 10,
+        }]
+      }
+    });
+  });
+
+  it("Run Scenario (some donations without limit within a single period)", async function() {
+    // in the next scenario, 50ETH is donated without any limit
+    // this fills up the 2.5 batches (of 20 ETH each)
+    // - each order will be fullfilled
+    // - the rate that each person pays is: (1 * 1 + 1 * .99 + .5 * .99**2) * 100/2.5
+    let expectedRate = (1 + .99 + .5 * .99**2) * 100/2.5;
+
+    await run_scenario({
+      averageRate: expectedRate,
+      icoConfig: {
+        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
+      },
+      donations: [
+        {
+          beneficiary: accounts[1],
+          amount: 10,
+        },
+        {
+          beneficiary: accounts[2],
+          amount: 20,
+        },
+        {
+          beneficiary: accounts[3],
+          amount: 10,
+        },
+        {
+          beneficiary: accounts[2],
+          amount: 10,
+        },
+      ],
+      expected: {
+        tokenDistribution: [
+          {
+            account: accounts[1],
+            tokens: 10 * expectedRate,
+            rate: expectedRate
+          },
+          {
+            account: accounts[2],
+            tokens: 30 * expectedRate,
+            rate: expectedRate
+          },
+          {
+            account: accounts[3],
+            tokens: 10 * expectedRate,
+            rate: expectedRate
+          },
+        ]
+      }
+    });
+  });
+
+
+  it("Run Scenario (donations with minRate)", async function() {
+    // TODO: make this test work
+    return;
+    /********************************
+
+    // let averageRate = (1.0 + .5*.99) * 100/1.5;
+    // let averageRate = (1.0 ) * 100/1;
+    console.log((1.0 + .5 * .99) * 100/ 1.5);
+    let averageRate;
+    averageRate = 99666666666666666666 / 10**18;
+    averageRate = 100;
+
+    // let averageRate = (1.0 + .99) * 100/2;
+    // averageRate = 100;
+    // averageRate = (100 + 99)/2
+    await run_scenario({
+      averageRate: averageRate,
+      icoConfig: {
+        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
+      },
+      donations: [
+        {
+          beneficiary: accounts[1],
+          amount: 10,
+        },
+        { // the second donation fills up the first batch - but does not splill over into the second
+          beneficiary: accounts[2],
+          amount: 20,
+          minRate: 100,
+        },
+        // { // the third donation is ignored - it sepcifies a minRate of the first batch, which is already filled
+        //   beneficiary: accounts[3],
+        //   amount: 10,
+        //   minRate: 100,
+        // },
+      ],
+      expected: {
+        tokenDistribution: [
+          {
+            account: accounts[1],
+            tokens: 10 * 100 + 10 * 99,
+          },
+          {
+            account: accounts[2],
+            tokens: 10 * 100,
+          },
+          {
+            account: accounts[3],
+            tokens: 0,
+          },
+        ]
+      }
+    )};
+    ********************************/
+  });
 
 
   async function run_scenario(opts) {
     /*
 
       run_scenario({
+        averageRate: 100, // precalculated the average rate for payout
         icoConfig:  {
           periodDuration: 50
         },
@@ -396,11 +523,19 @@ contract("EmergentICO", function(accounts){
     assert.equal(periodInit, true);
 
     // compute all totals
-    const avg = await newICO.averageRateInWei(0, web3.toWei(10,"ether"));
-    await newICO.setAverageAndTest(currentPeriod, avg, 0);
+    let avg;
+    if (opts.averageRate) {
+      avg = web3.toWei(opts.averageRate);
+    } else {
+      const totalReceived = await newICO.totalReceived();
+      avg = await newICO.averageRateInWei(0, totalReceived);
+    }
+    console.log('test avg:', avg);
+    await newICO.setAverageAndTest(currentPeriod, avg, 10);
+
+    // check if indeed this rates where computed
     const periodPlus1Init = await newICO.getIsPeriodInitialized(currentPeriod+1);
     assert.equal(periodPlus1Init, true);
-
 
     // collect the tokens
     for(let i=0; i < opts.donations.length; i++) {
@@ -409,28 +544,14 @@ contract("EmergentICO", function(accounts){
 
     // check the results
     const token = org.token;
-    assert.equal((await token.balanceOf(accounts[1])).toNumber(), web3.toWei(100*10, "ether"));
+    const tokenDistribution = opts.expected.tokenDistribution;
+    for(let i = 0; i < tokenDistribution.length; i ++ ) {
+      if (tokenDistribution[i].tokens) {
+        assert.equal((await token.balanceOf(tokenDistribution[i].account)).toNumber(), web3.toWei(tokenDistribution[i].tokens, "ether"));
+      }
+    }
 
   }
 
-  it("Full scenario (single donation)", async function() {
-    await run_scenario({
-      icoConfig: {
-        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
-      },
-      donations: [
-        {
-          beneficiary: accounts[1],
-          amount: 10,
-          minRate: 0
-        },
-      ],
-      expected: {
-        tokenDistribution: [{
-          account: accounts[1],
-          tokens: 100 * 10,
-        }]
-      }
-    });
-  });
+
 });
