@@ -17,7 +17,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * - if the average rate of the period is lower than the minimum pointed by donor, donor will be refunded.
  */
 
-contract EmergentICO {
+contract EmergentICO is Debug {
   using SafeMath for uint;
 
   event LogDonationReceived
@@ -59,7 +59,7 @@ contract EmergentICO {
   struct AverageComputator {
     uint periodId; // The period for which the computation is done.
     uint averageRateComputed; // The result of the computation suggested by this computator.
-    uint donorsCounted; // A counter used in the validation of the computation.
+    uint donationsCounted; // A counter used in the validation of the computation.
     uint fundsToBeReturned; // A variable used in the validation of the computation.
   }
 
@@ -301,7 +301,7 @@ contract EmergentICO {
   {
     averageComputators[msg.sender] = AverageComputator({
       periodId: _periodId,
-      donorsCounted: 0,
+      donationsCounted: 0,
       averageRateComputed: _average,
       fundsToBeReturned: 0
     });
@@ -326,18 +326,19 @@ contract EmergentICO {
 
     // Run over the array of donors with limit, sum the ones that are to be refunded:
     for (uint cnt=0; cnt < _iterations; cnt++) {
-      if (avgComp.donorsCounted >= period.donationsIdsWithLimit.length) {
+      if (avgComp.donationsCounted >= period.donationsIdsWithLimit.length) {
         // we have counted all donors in this period and can move on to the payout
         break;
       }
-      uint donationId = period.donationsIdsWithLimit[avgComp.donorsCounted];
+      uint donationId = period.donationsIdsWithLimit[avgComp.donationsCounted];
       if (donations[donationId].minRate > avgComp.averageRateComputed) {
         avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(donations[donationId].value);
       }
-      avgComp.donorsCounted++;
+      avgComp.donationsCounted++;
     }
     // Check if finished:
-    if (avgComp.donorsCounted == period.donationsIdsWithLimit.length) {
+    if (avgComp.donationsCounted == period.donationsIdsWithLimit.length) {
+
       uint computedRaisedInPeriod = period.incomingInPeriod.sub(avgComp.fundsToBeReturned);
       uint computedRate = averageRateInWei(period.raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(computedRaisedInPeriod));
       if (computedRate == avgComp.averageRateComputed) {
