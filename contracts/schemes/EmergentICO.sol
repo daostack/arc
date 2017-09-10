@@ -2,6 +2,8 @@ pragma solidity ^0.4.11;
 
 import "../controller/Controller.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import '../test/Debug.sol';
+
 
 /**
  * @title EmergentICO
@@ -17,7 +19,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * - if the average rate of the period is lower than the minimum pointed by donor, donor will be refunded.
  */
 
-contract EmergentICO {
+contract EmergentICO is Debug {
   using SafeMath for uint;
 
   event LogDonationReceived
@@ -50,6 +52,8 @@ contract EmergentICO {
     uint raisedInPeriod; // The total raised (incoming minus returned).
     uint raisedUpToPeriod; // How much was raised up to this period.
     uint averageRate; // The calculated average rate of the period.
+    uint donationsWithMinRateEqualToRate;
+    uint donationsWithMinRateEqualToRateToInclude;
     bool isInitialized; // A flag to indicate that the previous period was calculated and so raisedUpToPeriod is set.
     bool isAverageRateComputed; // A flag to indicate that the average for this period was computed.
     uint[] donationsIdsWithLimit; // An array for the donations that use the limit feature.
@@ -58,8 +62,10 @@ contract EmergentICO {
   // Data for every attempt for computing an average for a period.
   struct AverageComputator {
     uint periodId; // The period for which the computation is done.
-    uint averageRateComputed; // The result of the computation suggested by this computator.
     uint donationsCounted; // A counter used in the validation of the computation.
+    uint hintRate; // [cf doc for initAverageComputation]
+    uint hintDonationsWithMinRateEqualToRateToInclude; // [cf doc for initAverageComputation]
+    uint donationsWithMinRateEqualToRate; // [cf doc for initAverageComputation]
     uint fundsToBeReturned; // A variable used in the validation of the computation.
   }
 
@@ -292,31 +298,40 @@ contract EmergentICO {
   /**
    * @dev an agent can set what he thinks is the correct average for a period and start the test.
    * @param _periodId the period for which average is computed.
-   * @param _average the average computed by the user.
+   * @param _hintRate a hint for the average pre-computed by the caller
+   * @param _hintDonationsWithMinRateEqualToRateToInclude a hint provided by the caller
+   *  all donations with minRate < _hintRate, and the first _hintDonationsCuttoff donations with minRate == _hintRate
+   *  are included - the rest of the donations are reimbursed
    * @param _iterations number of iterations to check from the array donationsIdsWithLimit.
    */
-  function setAverageAndTest(uint _periodId, uint _average, uint _iterations)
-    isPeriodOver(_periodId)
+  function initAverageComputation(
+    uint _periodId,
+    uint _hintRate,
+    uint _hintDonationsWithMinRateEqualToRateToInclude,
+    uint _iterations
+  ) isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
     averageComputators[msg.sender] = AverageComputator({
       periodId: _periodId,
       donationsCounted: 0,
-      averageRateComputed: _average,
+      hintRate: _hintRate,
+      hintDonationsWithMinRateEqualToRateToInclude: _hintDonationsWithMinRateEqualToRateToInclude,
+      donationsWithMinRateEqualToRate: 0,
       fundsToBeReturned: 0
     });
-    checkAverage(_periodId, _iterations);
+    computeAverage(_periodId, _iterations);
   }
 
   /**
    * @dev compute the statistics (average payout, eth raised, eth to be refunded) for a given period
    * because the computation can be very long, the function takes a parameter "_iterations" that limits
    * the computation. "_iterations" is bounded by period.donationsIdsWithLimit.
-   *
+  *  some configuration, and intermediate results, are stored in AverageComputators[msg.sender]
    * @param _periodId the period for which average is computed.
    * @param _iterations number of iterations to check from the array donationsIdsWithLimit.
    */
-  function checkAverage(uint _periodId, uint _iterations)
+  function computeAverage(uint _periodId, uint _iterations)
     isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
@@ -331,22 +346,57 @@ contract EmergentICO {
         break;
       }
       uint donationId = period.donationsIdsWithLimit[avgComp.donationsCounted];
-      if (donations[donationId].minRate > avgComp.averageRateComputed) {
+      // donations that ask for a minRate greater or equal than the avg are discarded
+      LogString('Donation');
+      LogUint(donationId);
+      LogString('Donation.minRate');
+      LogUint(donations[donationId].minRate);
+      LogString('hintRate');
+      LogUint(avgComp.hintRate);
+      if ( donations[donationId].minRate > avgComp.hintRate ) {
+        // donations with a  minRate that is higher than the hint will not be included
         avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(donations[donationId].value);
+      }
+      if (donations[donationId].minRate == avgComp.hintRate) {
+        // we keep track of the donations that have set a minRate exactly to the final rate
+        avgComp.donationsWithMinRateEqualToRate = avgComp.donationsWithMinRateEqualToRate.add(donations[donationId].value);
       }
       avgComp.donationsCounted++;
     }
-    // Check if finished:
+
+    // if we have checked all donations, we are ready to check if the result is as hinted
     if (avgComp.donationsCounted == period.donationsIdsWithLimit.length) {
 
+      // calculate the average rate in this period
+      LogUint(avgComp.donationsWithMinRateEqualToRate);
+      LogUint(avgComp.hintDonationsWithMinRateEqualToRateToInclude);
+      require(avgComp.donationsWithMinRateEqualToRate >= avgComp.hintDonationsWithMinRateEqualToRateToInclude);
+      avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(avgComp.donationsWithMinRateEqualToRate - avgComp.hintDonationsWithMinRateEqualToRateToInclude);
       uint computedRaisedInPeriod = period.incomingInPeriod.sub(avgComp.fundsToBeReturned);
       uint computedRate = averageRateInWei(period.raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(computedRaisedInPeriod));
-      if (computedRate == avgComp.averageRateComputed) {
+      LogString('ComputedRate:');
+      LogUint(computedRate);
+      LogString('Guesss:');
+      LogUint(avgComp.hintRate);
+
+
+      // TODO: check if it "the best" solution
+      // if (avgComp.donationsWithMinRateEqualToRate < avgComp.hintDonationsWithMinRateEqualToRateToInclude) {
+      //    adding 1 WEI to the computedRate calculation should give a higher computedRate
+      // } else {
+      // perhaps there is no else, except that comutedRate == avgComp.hintRate? Each next-best donation has a minRate that is out, so we cannot add it
+      //}
+
+      if (computedRate == avgComp.hintRate) {
         period.isAverageRateComputed = true;
         period.raisedInPeriod = computedRaisedInPeriod;
         period.averageRate = computedRate;
+        period.donationsWithMinRateEqualToRate = avgComp.donationsWithMinRateEqualToRate;
+        period.donationsWithMinRateEqualToRateToInclude = avgComp.hintDonationsWithMinRateEqualToRateToInclude;
+
         periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(period.raisedInPeriod);
         periods[_periodId+1].isInitialized = true;
+        // TODO: may want to delete it also if the computedRate is not correct
         delete averageComputators[msg.sender];
         LogPeriodAverageComputed(_periodId);
       }
@@ -374,15 +424,34 @@ contract EmergentICO {
     period.clearedDonations++;
 
     // Check the donation minimum rate is valid, if so mint tokens, else, return funds:
+    uint tokensToMint = 0;
+    uint ethToReturn = 0;
+    LogUint(donation.minRate);
+    LogString('donation.value');
+    LogUint(donation.value);
     if (donation.minRate < period.averageRate) {
-      uint tokensToMint = period.averageRate.mul(donation.value)/(10**18);
-      controller.mintTokens(tokensToMint, donation.beneficiary);
-      totalDonated = totalDonated.add(donation.value);
-      LogCollect(_donationId, tokensToMint, 0);
+      tokensToMint = period.averageRate.mul(donation.value)/(10**18);
+    } else if (donation.minRate == period.averageRate) {
+      uint ethToSpendOnTokens = donation.value.mul(period.donationsWithMinRateEqualToRateToInclude).div(period.donationsWithMinRateEqualToRate);
+      LogString('period.donationsWithMinRateEqualToRateToInclude');
+      LogUint(period.donationsWithMinRateEqualToRateToInclude);
+      LogString('period.donationsWithMinRateEqualToRate)');
+      LogUint(period.donationsWithMinRateEqualToRate);
+      LogString('ethToSpendOnTokens');
+      LogUint(ethToSpendOnTokens);
+      tokensToMint = period.averageRate.mul(ethToSpendOnTokens)/(10**18);
+      ethToReturn = donation.value - ethToSpendOnTokens;
     } else {
-      donation.donor.transfer(donation.value);
-      LogCollect(_donationId, 0, donation.value);
+      ethToReturn = donation.value;
     }
+    if (tokensToMint > 0) {
+      controller.mintTokens(tokensToMint, donation.beneficiary);
+    }
+    if (ethToReturn > 0) {
+      donation.donor.transfer(ethToReturn);
+    }
+    totalDonated = totalDonated.add(donation.value - ethToReturn);
+    LogCollect(_donationId, tokensToMint, ethToReturn);
   }
 
   /**
