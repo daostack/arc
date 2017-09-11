@@ -43,13 +43,10 @@ const setupEmergentICO = async function(opts={}){
 };
 
 
-
 contract("EmergentICO", function(accounts){
   before(function() {
     helpers.etherForEveryone();
   });
-
-
   it("should log the LogDonationReceived event on donating [TODO]", async function() {
 
   });
@@ -271,21 +268,22 @@ contract("EmergentICO", function(accounts){
 
     // Compute all previous periods, and initialize current period:
     for (let cnt=0; cnt<period; cnt++) {
-      await newICO.initAverageComputation(cnt, web3.toWei(initialRate), 0, 0);
+      await newICO.initAverageComputation(cnt, 0, 0);
     }
     const periodInit = await newICO.getIsPeriodInitialized(period);
     assert.equal(periodInit, true);
 
     // Try a wrong (too low) average:
-    let avgWrong, periodPlus1InitFalse;
-    avgWrong = await newICO.averageRateInWei(0, web3.toWei(37,"ether"));
-    await newICO.initAverageComputation(period, avgWrong, 0, 3);
+    // let avgWrong
+    let periodPlus1InitFalse;
+    // avgWrong = await newICO.averageRateInWei(0, web3.toWei(37,"ether"));
+    await newICO.initAverageComputation(period, web3.toWei(37), 3);
     periodPlus1InitFalse = await newICO.getIsPeriodInitialized(period+1);
     assert.equal(periodPlus1InitFalse, false);
 
     // Compute average and let contract test it:
-    const avg = await newICO.averageRateInWei(0, web3.toWei(38,"ether"));
-    await newICO.initAverageComputation(period, avg, 0, 1);
+    // const avg = await newICO.averageRateInWei(0, web3.toWei(38,"ether"));
+    await newICO.initAverageComputation(period,web3.toWei(38,"ether"), 1);
     await newICO.computeAverage(period, 2);
     const periodPlus1Init = await newICO.getIsPeriodInitialized(period+1);
     assert.equal(periodPlus1Init, true);
@@ -355,6 +353,7 @@ contract("EmergentICO", function(accounts){
   //   const periodInit = await newICO.getIsPeriodInitialized(Number(await newICO.currentPeriodId()));
   //   assert.equal(periodInit, true);
   // });
+
   it("Run Scenario (single donation)", async function() {
     await run_scenario({
       icoConfig: {
@@ -384,7 +383,7 @@ contract("EmergentICO", function(accounts){
     let averageRate = (1 + .99 + .5 * .99**2) * 100/2.5;
 
     await run_scenario({
-      hintRate: averageRate,
+      hintTotalDonatedInThisPeriodInThisPeriod: 50, // (can be omitted)
       icoConfig: {
         periodDuration: 30, // set up so that all donaations are likely to fall within the same period
       },
@@ -425,13 +424,10 @@ contract("EmergentICO", function(accounts){
     });
   });
 
-  it("Run Scenario (donations with minRate I) [TODO]", async function() {
-    // XXX this test fails because there is no 'stable' average rate
-    let hintRate = 100;
+  it("Run Scenario (donations with minRate I)", async function() {
 
     await run_scenario({
-      hintRate: hintRate,
-      hintDonationsWithMinRateEqualToRateToInclude: 10,
+      hintTotalDonatedInThisPeriodInThisPeriod: 20,
       icoConfig: {
         periodDuration: 30, // set up so that all donaations are likely to fall within the same period
       },
@@ -464,13 +460,12 @@ contract("EmergentICO", function(accounts){
       }
     });
   });
-
   it("Run Scenario (donations with minRate II)", async function() {
-    // XXX: this test fails because of rounding errors
     let averageRate = 199/2;
     await run_scenario({
-      hintRate: averageRate,
-      hintDonationsWithMinRateEqualToRateToInclude: 30,
+      // hintRate: averageRate,
+      // hintDonationsWithMinRateEqualToRateToInclude: 30,
+      hintTotalDonatedInThisPeriodInThisPeriod: 40,
       icoConfig: {
         periodDuration: 30, // set up so that all donaations are likely to fall within the same period
       },
@@ -503,13 +498,11 @@ contract("EmergentICO", function(accounts){
       }
     });
   });
-
   async function run_scenario(opts) {
     /*
 
       run_scenario({
-        hintRate: 100, // precalculated the average rate for payout
-        hintDonationsWithMinRateEqualToRateToInclude: 0,
+        hintTotalDonatedInThisPeriodInThisPeriod: 1234,
         icoConfig:  {
           periodDuration: 50
         },
@@ -542,22 +535,19 @@ contract("EmergentICO", function(accounts){
 
     // Compute all previous periods, and initialize current period:
     for (let cnt=0; cnt<currentPeriod; cnt++) {
-      let avg = await newICO.averageRateInWei(0, web3.toWei(0,"ether"));
-      await newICO.initAverageComputation(cnt, web3.toWei(avg), 0);
+      // let avg = await newICO.averageRateInWei(0, web3.toWei(0,"ether"));
+      await newICO.initAverageComputation(cnt, 0, 0);
     }
     const periodInit = await newICO.getIsPeriodInitialized(currentPeriod);
     assert.equal(periodInit, true);
-
     // compute all totals
-    let hintRate;
-    let hintDonationsWithMinRateEqualToRateToInclude = opts.hintDonationsWithMinRateEqualToRateToInclude || 0;
-    if (opts.hintRate) {
-      hintRate = web3.toWei(opts.hintRate);
+    let hintTotalDonatedInThisPeriodInThisPeriod;
+    if (opts.hintTotalDonatedInThisPeriodInThisPeriod) {
+      hintTotalDonatedInThisPeriodInThisPeriod = web3.toWei(opts.hintTotalDonatedInThisPeriodInThisPeriod);
     } else {
-      const totalReceived = await newICO.totalReceived();
-      hintRate = await newICO.averageRateInWei(0, totalReceived);
+      hintTotalDonatedInThisPeriodInThisPeriod = await newICO.totalReceived();
     }
-    await newICO.initAverageComputation(currentPeriod, hintRate, web3.toWei(hintDonationsWithMinRateEqualToRateToInclude), 10);
+    await newICO.initAverageComputation(currentPeriod, hintTotalDonatedInThisPeriodInThisPeriod, 10);
 
     // check if indeed this rates where computed
     const periodPlus1Init = await newICO.getIsPeriodInitialized(currentPeriod+1);

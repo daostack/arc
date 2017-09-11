@@ -63,9 +63,10 @@ contract EmergentICO is Debug {
   struct AverageComputator {
     uint periodId; // The period for which the computation is done.
     uint donationsCounted; // A counter used in the validation of the computation.
-    uint hintRate; // [cf doc for initAverageComputation]
-    uint hintDonationsWithMinRateEqualToRateToInclude; // [cf doc for initAverageComputation]
-    uint donationsWithMinRateEqualToRate; // [cf doc for initAverageComputation]
+    uint hintRate; //
+    uint hintTotalDonatedInThisPeriod; // [cf doc for initAverageComputation]
+    uint donationsWithMinRateEqualToRate;
+    uint donationsWithMinRateLowerThanRate;
     uint fundsToBeReturned; // A variable used in the validation of the computation.
   }
 
@@ -148,7 +149,7 @@ contract EmergentICO is Debug {
       controller = _controller;
       admin = _admin;
       target = _target;
-      startBlock = _startBlock;
+      startBlock = _startBlock; // [cf doc for initAverageComputation]
       periodDuration = _periodDuration;
       minDonation = _minDonation;
       initialRate = _initialRate;
@@ -195,7 +196,7 @@ contract EmergentICO is Debug {
     return true;
   }
 
-  /**
+  /**fundsToBeReturned
    * @dev Constant function, returns the periodId of the current block:
    */
   function currentPeriodId() constant returns(uint) {
@@ -298,26 +299,24 @@ contract EmergentICO is Debug {
   /**
    * @dev an agent can set what he thinks is the correct average for a period and start the test.
    * @param _periodId the period for which average is computed.
-   * @param _hintRate a hint for the average pre-computed by the caller
-   * @param _hintDonationsWithMinRateEqualToRateToInclude a hint provided by the caller
-   *  all donations with minRate < _hintRate, and the first _hintDonationsCuttoff donations with minRate == _hintRate
-   *  are included - the rest of the donations are reimbursed
    * @param _iterations number of iterations to check from the array donationsIdsWithLimit.
    */
   function initAverageComputation(
     uint _periodId,
-    uint _hintRate,
-    uint _hintDonationsWithMinRateEqualToRateToInclude,
+    uint _hintTotalDonatedInThisPeriod,
     uint _iterations
   ) isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
+    /*uint hintRate = averageRateInWei(start, start+hintTotalDonatedInThisPeriod);*/
+    uint computedRate = averageRateInWei(periods[_periodId].raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(_hintTotalDonatedInThisPeriod));
     averageComputators[msg.sender] = AverageComputator({
       periodId: _periodId,
       donationsCounted: 0,
-      hintRate: _hintRate,
-      hintDonationsWithMinRateEqualToRateToInclude: _hintDonationsWithMinRateEqualToRateToInclude,
+      hintRate: computedRate,
+      hintTotalDonatedInThisPeriod: _hintTotalDonatedInThisPeriod,
       donationsWithMinRateEqualToRate: 0,
+      donationsWithMinRateLowerThanRate: periods[_periodId].raisedInPeriod,
       fundsToBeReturned: 0
     });
     computeAverage(_periodId, _iterations);
@@ -345,6 +344,7 @@ contract EmergentICO is Debug {
         // we have counted all donors in this period and can move on to the payout
         break;
       }
+      // get the next donation with a minRate that we need to process
       uint donationId = period.donationsIdsWithLimit[avgComp.donationsCounted];
       // donations that ask for a minRate greater or equal than the avg are discarded
       LogString('Donation');
@@ -353,53 +353,63 @@ contract EmergentICO is Debug {
       LogUint(donations[donationId].minRate);
       LogString('hintRate');
       LogUint(avgComp.hintRate);
-      if ( donations[donationId].minRate > avgComp.hintRate ) {
-        // donations with a  minRate that is higher than the hint will not be included
+      LogString('avgComp.hintTotalDonatedInThisPeriod');
+      LogUint(avgComp.hintTotalDonatedInThisPeriod);
+      if (donations[donationId].minRate > avgComp.hintRate ) {
+        // a donation with a  minRate that is higher than the hint will not be included
         avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(donations[donationId].value);
-      }
-      if (donations[donationId].minRate == avgComp.hintRate) {
-        // we keep track of the donations that have set a minRate exactly to the final rate
+      } else if (donations[donationId].minRate == avgComp.hintRate) {
+        // a donation with a minRate equal to the expected rate:
+        // we keep track of these donations  and calculate the amount to return later on
         avgComp.donationsWithMinRateEqualToRate = avgComp.donationsWithMinRateEqualToRate.add(donations[donationId].value);
+      } else {
+        // a donation that has a minRate that is lower than the expected rate is included
+        avgComp.donationsWithMinRateLowerThanRate = avgComp.donationsWithMinRateLowerThanRate.add(donations[donationId].value);
       }
       avgComp.donationsCounted++;
     }
 
     // if we have checked all donations, we are ready to check if the result is as hinted
     if (avgComp.donationsCounted == period.donationsIdsWithLimit.length) {
-
-      // calculate the average rate in this period
+      LogString('_periodId');
+      LogUint(_periodId);
+      LogString('avgComp.donationsWithMinRateEqualToRate');
       LogUint(avgComp.donationsWithMinRateEqualToRate);
-      LogUint(avgComp.hintDonationsWithMinRateEqualToRateToInclude);
-      require(avgComp.donationsWithMinRateEqualToRate >= avgComp.hintDonationsWithMinRateEqualToRateToInclude);
-      avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(avgComp.donationsWithMinRateEqualToRate - avgComp.hintDonationsWithMinRateEqualToRateToInclude);
-      uint computedRaisedInPeriod = period.incomingInPeriod.sub(avgComp.fundsToBeReturned);
-      uint computedRate = averageRateInWei(period.raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(computedRaisedInPeriod));
-      LogString('ComputedRate:');
-      LogUint(computedRate);
-      LogString('Guesss:');
-      LogUint(avgComp.hintRate);
-
-
-      // TODO: check if it "the best" solution
-      // if (avgComp.donationsWithMinRateEqualToRate < avgComp.hintDonationsWithMinRateEqualToRateToInclude) {
-      //    adding 1 WEI to the computedRate calculation should give a higher computedRate
-      // } else {
-      // perhaps there is no else, except that comutedRate == avgComp.hintRate? Each next-best donation has a minRate that is out, so we cannot add it
-      //}
-
-      if (computedRate == avgComp.hintRate) {
-        period.isAverageRateComputed = true;
-        period.raisedInPeriod = computedRaisedInPeriod;
-        period.averageRate = computedRate;
-        period.donationsWithMinRateEqualToRate = avgComp.donationsWithMinRateEqualToRate;
-        period.donationsWithMinRateEqualToRateToInclude = avgComp.hintDonationsWithMinRateEqualToRateToInclude;
-
-        periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(period.raisedInPeriod);
-        periods[_periodId+1].isInitialized = true;
-        // TODO: may want to delete it also if the computedRate is not correct
-        delete averageComputators[msg.sender];
-        LogPeriodAverageComputed(_periodId);
+      LogString('avgComp.donationsWithMinRateLowerThanRate');
+      LogUint(avgComp.donationsWithMinRateLowerThanRate);
+      LogString('avgComp.hintTotalDonatedInThisPeriod');
+      LogUint(avgComp.hintTotalDonatedInThisPeriod);
+      // we check two things for correctness:
+      // 1. the hintTotalDonatedInThisPeriod is in the right range
+      if (avgComp.donationsWithMinRateLowerThanRate> avgComp.hintTotalDonatedInThisPeriod){
+        LogString('Calculation failed: donationsWithMinRateLowerThanRate > hintTotalDonatedInThisPeriod');
+        return;
       }
+      if (avgComp.donationsWithMinRateLowerThanRate + avgComp.donationsWithMinRateEqualToRate < avgComp.hintTotalDonatedInThisPeriod){
+        LogString('Calculation failed: davgComp.donationsWithMinRateLowerThanRate + avgComp.donationsWithMinRateEqualToRate < avgComp.hintTotalDonatedInThisPeriod');
+        return;
+      }
+      // 2. thehinttotalDonated cannot be raised without including donations with a minRate > rate.
+      // TODO
+
+      uint donationsWithMinRateEqualToRateToInclude = avgComp.hintTotalDonatedInThisPeriod - avgComp.donationsWithMinRateLowerThanRate;
+      LogString('donationsWithMinRateEqualToRateToInclude');
+      LogUint(donationsWithMinRateEqualToRateToInclude);
+      LogString('period.raisedUpToPeriod');
+      LogUint(period.raisedUpToPeriod);
+      avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(avgComp.donationsWithMinRateEqualToRate - donationsWithMinRateEqualToRateToInclude );
+
+      period.isAverageRateComputed = true;
+      period.raisedInPeriod = avgComp.hintTotalDonatedInThisPeriod;
+      period.averageRate = avgComp.hintRate;
+      period.donationsWithMinRateEqualToRate = avgComp.donationsWithMinRateEqualToRate;
+      period.donationsWithMinRateEqualToRateToInclude = donationsWithMinRateEqualToRateToInclude;
+
+      periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(period.raisedInPeriod);
+      periods[_periodId+1].isInitialized = true;
+      // TODO: may want to delete it also if the computedRate is not correct
+      delete averageComputators[msg.sender];
+      LogPeriodAverageComputed(_periodId);
     }
   }
 
@@ -450,7 +460,7 @@ contract EmergentICO is Debug {
     if (ethToReturn > 0) {
       donation.donor.transfer(ethToReturn);
     }
-    totalDonated = totalDonated.add(donation.value - ethToReturn);
+
     LogCollect(_donationId, tokensToMint, ethToReturn);
   }
 
