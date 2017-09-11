@@ -67,7 +67,6 @@ contract EmergentICO is Debug {
     uint hintTotalDonatedInThisPeriod; // [cf doc for initAverageComputation]
     uint donationsWithMinRateEqualToRate;
     uint donationsWithMinRateLowerThanRate;
-    uint fundsToBeReturned; // A variable used in the validation of the computation.
   }
 
   // Mapping from donation ID to the donation. IDs are sequential 0,1,2..
@@ -196,7 +195,7 @@ contract EmergentICO is Debug {
     return true;
   }
 
-  /**fundsToBeReturned
+  /**
    * @dev Constant function, returns the periodId of the current block:
    */
   function currentPeriodId() constant returns(uint) {
@@ -317,7 +316,6 @@ contract EmergentICO is Debug {
       hintTotalDonatedInThisPeriod: _hintTotalDonatedInThisPeriod,
       donationsWithMinRateEqualToRate: 0,
       donationsWithMinRateLowerThanRate: periods[_periodId].raisedInPeriod,
-      fundsToBeReturned: 0
     });
     computeAverage(_periodId, _iterations);
   }
@@ -336,6 +334,8 @@ contract EmergentICO is Debug {
   {
     Period storage period = periods[_periodId];
     AverageComputator storage avgComp = averageComputators[msg.sender];
+    // TODO: the next statement is superfluous - either just not provide the _periodId argument
+    // or (better) have different avgComp objects for each _periodÍd
     require(avgComp.periodId == _periodId);
 
     // Run over the array of donors with limit, sum the ones that are to be refunded:
@@ -357,7 +357,7 @@ contract EmergentICO is Debug {
       LogUint(avgComp.hintTotalDonatedInThisPeriod);
       if (donations[donationId].minRate > avgComp.hintRate ) {
         // a donation with a  minRate that is higher than the hint will not be included
-        avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(donations[donationId].value);
+
       } else if (donations[donationId].minRate == avgComp.hintRate) {
         // a donation with a minRate equal to the expected rate:
         // we keep track of these donations  and calculate the amount to return later on
@@ -397,7 +397,6 @@ contract EmergentICO is Debug {
       LogUint(donationsWithMinRateEqualToRateToInclude);
       LogString('period.raisedUpToPeriod');
       LogUint(period.raisedUpToPeriod);
-      avgComp.fundsToBeReturned = avgComp.fundsToBeReturned.add(avgComp.donationsWithMinRateEqualToRate - donationsWithMinRateEqualToRateToInclude );
 
       period.isAverageRateComputed = true;
       period.raisedInPeriod = avgComp.hintTotalDonatedInThisPeriod;
@@ -407,7 +406,7 @@ contract EmergentICO is Debug {
 
       periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(period.raisedInPeriod);
       periods[_periodId+1].isInitialized = true;
-      // TODO: may want to delete it also if the computedRate is not correct
+      // TODO: may want to delete it also if the computedRate is not correct - i.e. always delete
       delete averageComputators[msg.sender];
       LogPeriodAverageComputed(_periodId);
     }
