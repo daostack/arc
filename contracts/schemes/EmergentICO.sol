@@ -315,7 +315,8 @@ contract EmergentICO is Debug {
       hintRate: computedRate,
       hintTotalDonatedInThisPeriod: _hintTotalDonatedInThisPeriod,
       donationsWithMinRateEqualToRate: 0,
-      donationsWithMinRateLowerThanRate: periods[_periodId].raisedInPeriod,
+      // when the period has not been calculated yet, raisedInPeriod are exactly those donatinos with minRate == 0
+      donationsWithMinRateLowerThanRate: periods[_periodId].raisedInPeriod
     });
     computeAverage(_periodId, _iterations);
   }
@@ -338,7 +339,7 @@ contract EmergentICO is Debug {
     // or (better) have different avgComp objects for each _periodÍd
     require(avgComp.periodId == _periodId);
 
-    // Run over the array of donors with limit, sum the ones that are to be refunded:
+    // Run over the array of donors with a minRate and keep track of those with lower, or equal, minRate
     for (uint cnt=0; cnt < _iterations; cnt++) {
       if (avgComp.donationsCounted >= period.donationsIdsWithLimit.length) {
         // we have counted all donors in this period and can move on to the payout
@@ -346,39 +347,22 @@ contract EmergentICO is Debug {
       }
       // get the next donation with a minRate that we need to process
       uint donationId = period.donationsIdsWithLimit[avgComp.donationsCounted];
-      // donations that ask for a minRate greater or equal than the avg are discarded
-      LogString('Donation');
-      LogUint(donationId);
-      LogString('Donation.minRate');
-      LogUint(donations[donationId].minRate);
-      LogString('hintRate');
-      LogUint(avgComp.hintRate);
-      LogString('avgComp.hintTotalDonatedInThisPeriod');
-      LogUint(avgComp.hintTotalDonatedInThisPeriod);
-      if (donations[donationId].minRate > avgComp.hintRate ) {
-        // a donation with a  minRate that is higher than the hint will not be included
 
+      if (donations[donationId].minRate < avgComp.hintRate ) {
+        // a donation that has a minRate that is lower than the expected rate is included
+        avgComp.donationsWithMinRateLowerThanRate = avgComp.donationsWithMinRateLowerThanRate.add(donations[donationId].value);
       } else if (donations[donationId].minRate == avgComp.hintRate) {
         // a donation with a minRate equal to the expected rate:
         // we keep track of these donations  and calculate the amount to return later on
         avgComp.donationsWithMinRateEqualToRate = avgComp.donationsWithMinRateEqualToRate.add(donations[donationId].value);
       } else {
-        // a donation that has a minRate that is lower than the expected rate is included
-        avgComp.donationsWithMinRateLowerThanRate = avgComp.donationsWithMinRateLowerThanRate.add(donations[donationId].value);
+        // a donation with a  minRate that is higher than the hint will not be included
       }
       avgComp.donationsCounted++;
     }
 
     // if we have checked all donations, we are ready to check if the result is as hinted
     if (avgComp.donationsCounted == period.donationsIdsWithLimit.length) {
-      LogString('_periodId');
-      LogUint(_periodId);
-      LogString('avgComp.donationsWithMinRateEqualToRate');
-      LogUint(avgComp.donationsWithMinRateEqualToRate);
-      LogString('avgComp.donationsWithMinRateLowerThanRate');
-      LogUint(avgComp.donationsWithMinRateLowerThanRate);
-      LogString('avgComp.hintTotalDonatedInThisPeriod');
-      LogUint(avgComp.hintTotalDonatedInThisPeriod);
       // we check two things for correctness:
       // 1. the hintTotalDonatedInThisPeriod is in the right range
       if (avgComp.donationsWithMinRateLowerThanRate> avgComp.hintTotalDonatedInThisPeriod){
@@ -390,19 +374,13 @@ contract EmergentICO is Debug {
         return;
       }
       // 2. thehinttotalDonated cannot be raised without including donations with a minRate > rate.
-      // TODO
-
-      uint donationsWithMinRateEqualToRateToInclude = avgComp.hintTotalDonatedInThisPeriod - avgComp.donationsWithMinRateLowerThanRate;
-      LogString('donationsWithMinRateEqualToRateToInclude');
-      LogUint(donationsWithMinRateEqualToRateToInclude);
-      LogString('period.raisedUpToPeriod');
-      LogUint(period.raisedUpToPeriod);
+      // TODO: !!
 
       period.isAverageRateComputed = true;
       period.raisedInPeriod = avgComp.hintTotalDonatedInThisPeriod;
       period.averageRate = avgComp.hintRate;
       period.donationsWithMinRateEqualToRate = avgComp.donationsWithMinRateEqualToRate;
-      period.donationsWithMinRateEqualToRateToInclude = donationsWithMinRateEqualToRateToInclude;
+      period.donationsWithMinRateEqualToRateToInclude = avgComp.hintTotalDonatedInThisPeriod - avgComp.donationsWithMinRateLowerThanRate;
 
       periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(period.raisedInPeriod);
       periods[_periodId+1].isInitialized = true;
