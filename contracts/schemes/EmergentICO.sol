@@ -413,19 +413,11 @@ contract EmergentICO is Debug {
     // Check the donation minimum rate is valid, if so mint tokens, else, return funds:
     uint tokensToMint = 0;
     uint ethToReturn = 0;
-    LogUint(donation.minRate);
-    LogString('donation.value');
-    LogUint(donation.value);
+
     if (donation.minRate < period.averageRate) {
       tokensToMint = period.averageRate.mul(donation.value)/(10**18);
     } else if (donation.minRate == period.averageRate) {
       uint ethToSpendOnTokens = donation.value.mul(period.donationsWithMinRateEqualToRateToInclude).div(period.donationsWithMinRateEqualToRate);
-      LogString('period.donationsWithMinRateEqualToRateToInclude');
-      LogUint(period.donationsWithMinRateEqualToRateToInclude);
-      LogString('period.donationsWithMinRateEqualToRate)');
-      LogUint(period.donationsWithMinRateEqualToRate);
-      LogString('ethToSpendOnTokens');
-      LogUint(ethToSpendOnTokens);
       tokensToMint = period.averageRate.mul(ethToSpendOnTokens)/(10**18);
       ethToReturn = donation.value - ethToSpendOnTokens;
     } else {
