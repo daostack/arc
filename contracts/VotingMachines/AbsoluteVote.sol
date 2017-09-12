@@ -248,6 +248,15 @@ contract AbsoluteVote is IntVoteInterface{
   }
 
   /**
+   * @dev getNumberOfChoices returns the number of choices possible in this proposal
+   * @param _proposalId the ID of the proposal
+   * @return uint that contains number of choices
+   */
+  function getNumberOfChoices(bytes32 _proposalId) constant returns(uint) {
+    return proposals[_proposalId].numOfChoices;
+  }
+
+  /**
    * @dev voteInfo returns the vote and the amount of reputation of the user committed to this proposal
    * @param _proposalId the ID of the proposal
    * @param _voter the address of the voter
