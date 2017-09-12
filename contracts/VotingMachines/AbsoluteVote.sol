@@ -91,7 +91,8 @@ contract AbsoluteVote is IntVoteInterface{
    * TODO: Maybe we neem to check the the 0 < precReq <= 100 ??
    */
   function propose(uint _numOfChoices, bytes32 _paramsHash, address _avatar, ExecutableInterface _executable) returns(bytes32) {
-    // Check valid params:
+    // Check valid params and number of choices:
+    require(parameters[_paramsHash].reputationSystem != address(0));
     require(_numOfChoices > 0 && _numOfChoices <= maxNumOfChoices);
 
     // Generate a unique ID:
