@@ -9,3 +9,4 @@ test/play.js
 tmp/
 installed_contracts/
 remarks.md
+.node-xmlhttprequest-sync*
