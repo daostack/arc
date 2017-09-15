@@ -302,7 +302,6 @@ contract EmergentICO is Debug {
   ) isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
-    /*uint hintRate = averageRateInWei(start, start+hintTotalDonatedInThisPeriod);*/
     uint computedRate = averageRateInWei(periods[_periodId].raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(_hintTotalDonatedInThisPeriod));
     averageComputators[msg.sender] = AverageComputator({
       periodId: _periodId,
@@ -364,11 +363,11 @@ contract EmergentICO is Debug {
         delete averageComputators[msg.sender];
         return;
       }
-      if (avgComp.donationsWithMinRateLowerThanRate + avgComp.donationsWithMinRateEqualToRate < avgComp.hintTotalDonatedInThisPeriod){
+      /*if (avgComp.donationsWithMinRateLowerThanRate + avgComp.donationsWithMinRateEqualToRate < avgComp.hintTotalDonatedInThisPeriod){
         LogString('Calculation failed: davgComp.donationsWithMinRateLowerThanRate + avgComp.donationsWithMinRateEqualToRate < avgComp.hintTotalDonatedInThisPeriod');
         delete averageComputators[msg.sender];
         return;
-      }
+      }*/
 
       period.isAverageRateComputed = true;
       period.averageRate = avgComp.hintRate;
