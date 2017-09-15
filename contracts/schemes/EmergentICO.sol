@@ -48,7 +48,6 @@ contract EmergentICO is Debug {
   struct Period {
     uint donationsCounterInPeriod;
     uint clearedDonations; // Number of donations cleared.
-    uint incomingInPeriod; // The total incoming donations in wei.
     uint raisedUpToPeriod; // How much was raised up to this period.
     uint averageRate; // The calculated average rate of the period.
     uint donationsWithMinRateEqualToZero;
@@ -249,7 +248,6 @@ contract EmergentICO is Debug {
     // Update period data:
     uint currentPeriod = currentPeriodId();
     Period storage period = periods[currentPeriod];
-    period.incomingInPeriod = period.incomingInPeriod.add(msg.value);
     period.donationsCounterInPeriod++;
     if (_minRate != 0) {
       period.donationsIdsWithLimit.push(donationCounter);
