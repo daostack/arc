@@ -162,60 +162,6 @@ contract("EmergentICO", function(accounts){
     assert.equal(await newICO.donationCounter(), 0);
   });
 
-  it("Try donating below minimum", async function(){
-    await setupEmergentICO();
-
-    // Try to donate:
-    try {
-      await web3.eth.sendTransaction({
-        from: accounts[1],
-        to: newICO.address,
-        value: web3.toWei(0.5, "ether"),
-      });
-      throw 'an error'; // make sure that an error is thrown
-    } catch(error) {
-        helpers.assertVMException(error);
-    }
-
-    // Checking contract variables:
-    assert.equal(await newICO.totalReceived(), 0);
-    assert.equal(await newICO.donationCounter(), 0);
-  });
-
-  it("Single regular donation", async function(){
-    await setupEmergentICO();
-
-    const donationInWei = web3.toWei(2, "ether");
-    const targetOriginalBalance = await web3.eth.getBalance(target);
-
-    // Regular small send:
-    await web3.eth.sendTransaction({
-      from: accounts[1],
-      to: newICO.address,
-      value: web3.toWei(2, "ether"),
-      gas: 600000
-    });
-    // Checking contract variables:
-    assert.equal(Number(await newICO.totalReceived()), donationInWei);
-    assert.equal(await newICO.donationCounter(), 1);
-    assert.equal(Number(await web3.eth.getBalance(target)), Number(targetOriginalBalance) + Number(donationInWei));
-  });
-
-  it("Single donation with limit", async function(){
-    await setupEmergentICO();
-
-    const donationInWei = web3.toWei(2, "ether");
-    const targetOriginalBalance = await web3.eth.getBalance(target);
-
-    // Donating:
-    await newICO.donate(accounts[2], web3.toWei(5,"ether"), {from: accounts[1], value: donationInWei});
-
-    // Checking contract variables:
-    assert.equal(Number(await newICO.totalReceived()), donationInWei);
-    assert.equal(await newICO.donationCounter(), 1);
-    assert.equal(await Number(web3.eth.getBalance(target)), Number(targetOriginalBalance));
-  });
-
   it("currentPeriodId should behave as expected", async function(){
     let expectedPeriodId, periodId;
     await setupEmergentICO();
@@ -359,6 +305,68 @@ contract("EmergentICO", function(accounts){
   //   assert.equal(periodInit, true);
   // });
 
+  it("Donations below minimum throw an exception", async function(){
+    await setupEmergentICO();
+
+    // Try to donate:
+    try {
+      await web3.eth.sendTransaction({
+        from: accounts[1],
+        to: newICO.address,
+        value: web3.toWei(0.5, "ether"),
+      });
+      throw 'an error'; // make sure that an error is thrown
+    } catch(error) {
+        helpers.assertVMException(error);
+    }
+
+    // Checking contract variables:
+    assert.equal(await newICO.totalReceived(), 0);
+    assert.equal(await newICO.donationCounter(), 0);
+  });
+
+  it("Single regular donation transferring ETH directly to the ICO contract", async function(){
+    await setupEmergentICO();
+
+    const donationInWei = web3.toWei(2, "ether");
+    const targetOriginalBalance = await web3.eth.getBalance(target);
+
+    // Regular small send:
+    await web3.eth.sendTransaction({
+      from: accounts[1],
+      to: newICO.address,
+      value: web3.toWei(2, "ether"),
+      gas: 600000
+    });
+    // Checking contract variables:
+    assert.equal(Number(await newICO.totalReceived()), donationInWei);
+    assert.equal(await newICO.donationCounter(), 1);
+    assert.equal(Number(await web3.eth.getBalance(target)), Number(targetOriginalBalance) + Number(donationInWei));
+  });
+
+  // *************************/
+
+  it("Single donation with limit", async function(){
+    await run_scenario({
+      donations: [
+        {
+          beneficiary: accounts[1],
+          amount: 2,
+          minRate: 5
+        },
+      ],
+      expected: {
+        totalRaised: 2,
+        tokenDistribution: [{
+          account: accounts[1],
+          tokens: 100 * 2,
+          amountSpent: 2,
+        }]
+      }
+    });
+  });
+
+  // /*********************
   it("Run Scenario (single donation)", async function() {
     await run_scenario({
       icoConfig: {
@@ -371,6 +379,7 @@ contract("EmergentICO", function(accounts){
         },
       ],
       expected: {
+        totalRaised: 42,
         tokenDistribution: [{
           account: accounts[1],
           tokens: 100 * 20 + 100 * .99 * 20  + 100 * (.99**2) * 2,
@@ -408,6 +417,7 @@ contract("EmergentICO", function(accounts){
         },
       ],
       expected: {
+        totalRaised: 50,
         tokenDistribution: [
           {
             account: accounts[1],
@@ -429,7 +439,7 @@ contract("EmergentICO", function(accounts){
     });
   });
 
-  it("Run Scenario (donations with minRate I)", async function() {
+  it("Run Scenario (one partially filled donation)", async function() {
 
     await run_scenario({
       hintTotalDonatedInThisPeriodInThisPeriod: 20,
@@ -445,6 +455,7 @@ contract("EmergentICO", function(accounts){
         },
       ],
       expected: {
+        totalRaised: 20,
         tokenDistribution: [
           {
             account: accounts[1],
@@ -465,7 +476,6 @@ contract("EmergentICO", function(accounts){
       }
     });
   });
-  // *************************/
 
   it("Run Scenario (two donations with minRate)", async function() {
     let averageRate = 199/2;
@@ -485,6 +495,7 @@ contract("EmergentICO", function(accounts){
         },
       ],
       expected: {
+        totalRaised: 40,
         tokenDistribution: [
           {
             account: accounts[1],
@@ -504,8 +515,9 @@ contract("EmergentICO", function(accounts){
       }
     });
   });
+  // *************************/
 
-  /******************
+  // /******************
   it("Run Scenario - try to break the calculations", async function() {
     //
     // if we make two donations
@@ -662,7 +674,7 @@ contract("EmergentICO", function(accounts){
 
     const tokenDistribution = opts.expected && opts.expected.tokenDistribution || []
     let target = opts.icoConfig && opts.icoConfig.target || accounts[4]
-    let targetBalance = await web3.eth.getBalance(target)
+    let targetBalanceBeforeSale = await web3.eth.getBalance(target)
     for(let i = 0; i < tokenDistribution.length; i ++ ) {
       tokenDistribution[i].balanceBeforeSale = await web3.eth.getBalance(tokenDistribution[i].account)
     }
@@ -745,6 +757,13 @@ contract("EmergentICO", function(accounts){
           assert.isOk(Math.abs(diff) < 0.1 * 10**18, msg)
         }
       }
+    }
+
+    if (opts.expected && opts.expected.totalRaised) {
+      let actuallyRaised = (await web3.eth.getBalance(target)).minus(targetBalanceBeforeSale)
+      let diff = Number(actuallyRaised) - (opts.expected.totalRaised * 10 ** 18)
+      let msg = `Expected the amountof ETH actually raised ${Number(actuallyRaised)} to be (almost) equal to ${opts.expected.totalRaised * 10 ** 18}, but the diff is ${diff}`
+      assert.isOk(Math.abs(diff) < 0.1 * 10**18, msg)
     }
 
   }

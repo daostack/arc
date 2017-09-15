@@ -404,11 +404,16 @@ contract EmergentICO is Debug {
     // Check the donation minimum rate is valid, if so mint tokens, else, return funds:
     uint tokensToMint = 0;
     uint ethToReturn = 0;
+    uint ethToSpendOnTokens = 0;
 
-    if (donation.minRate < period.averageRate) {
+    if (donation.minRate == 0) {
       tokensToMint = period.averageRate.mul(donation.value)/(10**18);
+      // we do not set ethToSpendOnTokens, because the transfer has already taken place in donation()
+    } else if (donation.minRate < period.averageRate) {
+      ethToSpendOnTokens = donation.value;
+      tokensToMint = period.averageRate.mul(ethToSpendOnTokens)/(10**18);
     } else if (donation.minRate == period.averageRate) {
-      uint ethToSpendOnTokens = donation.value.mul(period.donationsWithMinRateEqualToRateToInclude).div(period.donationsWithMinRateEqualToRate);
+      ethToSpendOnTokens = donation.value.mul(period.donationsWithMinRateEqualToRateToInclude).div(period.donationsWithMinRateEqualToRate);
       tokensToMint = period.averageRate.mul(ethToSpendOnTokens)/(10**18);
       ethToReturn = donation.value - ethToSpendOnTokens;
     } else {
@@ -421,6 +426,11 @@ contract EmergentICO is Debug {
       donation.donor.transfer(ethToReturn);
     }
 
+    if (ethToSpendOnTokens > 0) {
+      target.transfer(ethToSpendOnTokens);
+    }
+    LogString('ethToSpendOnTokens');
+    LogUint(ethToSpendOnTokens);
     LogCollect(_donationId, tokensToMint, ethToReturn);
   }
 
