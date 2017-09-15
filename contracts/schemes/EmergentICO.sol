@@ -93,7 +93,6 @@ contract EmergentICO is Debug {
 
   // Variables:
   uint public totalReceived; // Total of funds received in the contract, including the returned change.
-  uint public totalDonated; // The total funds actually donated.
   uint public donationCounter;
   bool public isHalted; // Flag to indicate ICO is halted.
 
@@ -273,7 +272,6 @@ contract EmergentICO is Debug {
 
     // If minimum rate is 0 move funds to target now:
     if (_minRate == 0) {
-      totalDonated = totalDonated.add(msg.value);
       target.transfer(msg.value);
     }
 
@@ -373,8 +371,6 @@ contract EmergentICO is Debug {
         LogString('Calculation failed: davgComp.donationsWithMinRateLowerThanRate + avgComp.donationsWithMinRateEqualToRate < avgComp.hintTotalDonatedInThisPeriod');
         return;
       }
-      // 2. thehinttotalDonated cannot be raised without including donations with a minRate > rate.
-      // TODO: !!
 
       period.isAverageRateComputed = true;
       period.raisedInPeriod = avgComp.hintTotalDonatedInThisPeriod;

@@ -196,7 +196,6 @@ contract("EmergentICO", function(accounts){
     });
     // Checking contract variables:
     assert.equal(Number(await newICO.totalReceived()), donationInWei);
-    assert.equal(Number(await newICO.totalDonated()), donationInWei);
     assert.equal(await newICO.donationCounter(), 1);
     assert.equal(Number(await web3.eth.getBalance(target)), Number(targetOriginalBalance) + Number(donationInWei));
   });
@@ -212,7 +211,6 @@ contract("EmergentICO", function(accounts){
 
     // Checking contract variables:
     assert.equal(Number(await newICO.totalReceived()), donationInWei);
-    assert.equal(await newICO.totalDonated(), 0);
     assert.equal(await newICO.donationCounter(), 1);
     assert.equal(await Number(web3.eth.getBalance(target)), Number(targetOriginalBalance));
   });
@@ -272,9 +270,6 @@ contract("EmergentICO", function(accounts){
     // a total of 4 donataions was made
     assert.equal(await newICO.donationCounter(), 4);
     assert.equal(Number(await newICO.totalReceived()), Number(web3.toWei(15 + 4 + 12 + 11, "ether")));
-
-    // only the first donation is counted for 'totalDonated'; the others specified a minimal rate and will only be counted later,
-    assert.equal(await newICO.totalDonated(), Number(web3.toWei(15, "ether")));
 
     // Compute all previous periods, and initialize current period:
     for (let cnt=0; cnt<period; cnt++) {
@@ -352,7 +347,6 @@ contract("EmergentICO", function(accounts){
   //
   //   // Checking contract variables:
   //   assert.equal(Number(await newICO.totalReceived()), Number(web3.toWei(56, "ether")));
-  //   assert.equal(await newICO.totalDonated(), Number(web3.toWei(32, "ether")));
   //   assert.equal(await newICO.donationCounter(), 5);
   //
   //   // Compute all previous periods, and initialize current period:
