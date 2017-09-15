@@ -357,14 +357,16 @@ contract EmergentICO is Debug {
 
     // if we have checked all donations, we are ready to check if the result is as hinted
     if (avgComp.donationsCounted == period.donationsIdsWithLimit.length) {
-      // we check two things for correctness:
-      // 1. the hintTotalDonatedInThisPeriod is in the right range
+
+      // check correctness of the calculation
       if (avgComp.donationsWithMinRateLowerThanRate > avgComp.hintTotalDonatedInThisPeriod){
         LogString('Calculation failed: donationsWithMinRateLowerThanRate > hintTotalDonatedInThisPeriod');
+        delete averageComputators[msg.sender];
         return;
       }
       if (avgComp.donationsWithMinRateLowerThanRate + avgComp.donationsWithMinRateEqualToRate < avgComp.hintTotalDonatedInThisPeriod){
         LogString('Calculation failed: davgComp.donationsWithMinRateLowerThanRate + avgComp.donationsWithMinRateEqualToRate < avgComp.hintTotalDonatedInThisPeriod');
+        delete averageComputators[msg.sender];
         return;
       }
 
@@ -375,7 +377,6 @@ contract EmergentICO is Debug {
 
       periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(avgComp.hintTotalDonatedInThisPeriod);
       periods[_periodId+1].isInitialized = true;
-      // TODO: may want to delete it also if the computedRate is not correct - i.e. always delete
       delete averageComputators[msg.sender];
       LogPeriodAverageComputed(_periodId);
     }
