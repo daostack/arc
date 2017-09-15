@@ -521,29 +521,43 @@ contract("EmergentICO", function(accounts){
   it("Run Scenario - try to break the calculations", async function() {
     //
     // if we make two donations
-    //    20ETH - no limit
-    //    20ETH - limit 199/2 (= rate if 2 batches are included)
+    //    10ETH - no limit
+    //    30ETH - limit 199/2 (= rate if 2 batches are included)
     // then we have two "fixed pints":
-    //    a: accept only the first donation, sell 20ETH of tokens for rate = 100
+    //    a: accept only the first donation, sell 10ETH of tokens for rate = 100
     //    b: accept both donations: sell 40 ETH of tokens for rate = 199/2
     // of course, only the second rate should be accepted
-    let averageRate = 199/2;
     //
     // a computation with an excpected sale of 20 ETH (just the first batch) should fail,
     await run_scenario({
       hintTotalDonatedInThisPeriodInThisPeriod: 20,
-      icoConfig: {
-        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
-      },
       donations: [
         {
           beneficiary: accounts[1],
-          amount: 20,
+          amount: 30,
           minRate: 199/2,
         },
         {
           beneficiary: accounts[2],
-          amount: 20,
+          amount: 10,
+        },
+      ],
+      expected: {
+          computationWillFail: true,
+      }
+    });
+
+    await run_scenario({
+      hintTotalDonatedInThisPeriodInThisPeriod: 20,
+      donations: [
+        {
+          beneficiary: accounts[1],
+          amount: 30,
+          minRate: 199/2 - 0.1,
+        },
+        {
+          beneficiary: accounts[2],
+          amount: 10,
         },
       ],
       expected: {
@@ -554,18 +568,15 @@ contract("EmergentICO", function(accounts){
     // a computation with an excped sale of 30 ETH should fail,
     await run_scenario({
       hintTotalDonatedInThisPeriodInThisPeriod: 30,
-      icoConfig: {
-        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
-      },
       donations: [
         {
           beneficiary: accounts[1],
-          amount: 20,
+          amount: 30,
           minRate: 199/2,
         },
         {
           beneficiary: accounts[2],
-          amount: 20,
+          amount: 10,
         },
       ],
       expected: {
@@ -579,12 +590,12 @@ contract("EmergentICO", function(accounts){
       donations: [
         {
           beneficiary: accounts[1],
-          amount: 20,
+          amount: 30,
           minRate: 199/2,
         },
         {
           beneficiary: accounts[2],
-          amount: 20,
+          amount: 10,
         },
       ],
       expected: {
@@ -595,18 +606,15 @@ contract("EmergentICO", function(accounts){
     // a computation with an excped sale of 40 ETH (the right answer) should be ok,
     await run_scenario({
       hintTotalDonatedInThisPeriodInThisPeriod: 40,
-      icoConfig: {
-        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
-      },
       donations: [
         {
           beneficiary: accounts[1],
-          amount: 20,
+          amount: 10,
           minRate: 199/2,
         },
         {
           beneficiary: accounts[2],
-          amount: 20,
+          amount: 30,
         },
       ],
       expected: {
