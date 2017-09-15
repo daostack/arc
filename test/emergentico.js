@@ -14,9 +14,9 @@ const setupEmergentICO = async function(opts={}){
   accounts = web3.eth.accounts;
 
   admin = accounts[0];
-  target = accounts[9];
+  target = accounts[4];
   startBlock = opts.startBlock || web3.eth.blockNumber;
-  periodDuration = opts.periodDuration || 10;
+  periodDuration = opts.periodDuration || 30;
   minDonation =  web3.toWei(1, "ether");
   initialRate = opts.initialRate || 100;
   rateFractionNumerator = opts.rateFractionNumerator || 99;
@@ -34,12 +34,22 @@ const setupEmergentICO = async function(opts={}){
     tokenSymbol: 'ADM',
     founders,
   });
-  newICO = await EmergentICO.new(org.controller.address, admin, target, startBlock, periodDuration, minDonation, initialRate, rateFractionNumerator, rateFractionDenominator, batchSize);
+  newICO = await EmergentICO.new(
+    org.controller.address,
+    admin,
+    target,
+    startBlock,
+    periodDuration,
+    minDonation,
+    initialRate,
+    rateFractionNumerator,
+    rateFractionDenominator,
+    batchSize
+  );
   const schemeRegistrar = await org.scheme('SchemeRegistrar');
   const token = org.token;
   // propose the ICO as a schme for the organization - in this case, the scheme is immediately accepted as the proposer has a majority
   await schemeRegistrar.proposeScheme(org.avatar.address, newICO.address, 0, false, token.address, 0, false);
-
 };
 
 
@@ -498,7 +508,137 @@ contract("EmergentICO", function(accounts){
       }
     });
   });
+  // /******************
+  it("Run Scenario - donations with two fixed points", async function() {
+    //
+    // if we make two donations
+    //    20ETH - no limit
+    //    20ETH - limit 199/2 (= rate if 2 batches are included)
+    // then we have two "fixed pints":
+    //    a: accept only the first donation, sell 20ETH of tokens for rate = 100
+    //    b: accept both donations: sell 40 ETH of tokens for rate = 199/2
+    // of course, only the second rate should be accepted
+    let averageRate = 199/2;
+    //
+    // a computation with an excpected sale of 20 ETH (just the first batch) should fail,
+    await run_scenario({
+      hintTotalDonatedInThisPeriodInThisPeriod: 20,
+      icoConfig: {
+        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
+      },
+      donations: [
+        {
+          beneficiary: accounts[1],
+          amount: 20,
+          minRate: 199/2,
+        },
+        {
+          beneficiary: accounts[2],
+          amount: 20,
+        },
+      ],
+      expected: {
+          computationWillFail: true,
+      }
+    });
+
+    // a computation with an excped sale of 30 ETH should fail,
+    await run_scenario({
+      hintTotalDonatedInThisPeriodInThisPeriod: 30,
+      icoConfig: {
+        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
+      },
+      donations: [
+        {
+          beneficiary: accounts[1],
+          amount: 20,
+          minRate: 199/2,
+        },
+        {
+          beneficiary: accounts[2],
+          amount: 20,
+        },
+      ],
+      expected: {
+          computationWillFail: true,
+      }
+    });
+    //
+    // a computation with an excped sale of 39.99999999999999999999999999ETH (almost 40, which is the right answer) should fail
+    await run_scenario({
+      hintTotalDonatedInThisPeriodInThisPeriod: 39.99999999999999999999999,
+      icoConfig: {
+        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
+      },
+      donations: [
+        {
+          beneficiary: accounts[1],
+          amount: 20,
+          minRate: 199/2,
+        },
+        {
+          beneficiary: accounts[2],
+          amount: 20,
+        },
+      ],
+      expected: {
+          computationWillFail: false,
+      }
+    });
+
+    // a computation with an excped sale of 40 ETH (the right answer) should be ok,
+    await run_scenario({
+      hintTotalDonatedInThisPeriodInThisPeriod: 40,
+      icoConfig: {
+        periodDuration: 30, // set up so that all donaations are likely to fall within the same period
+      },
+      donations: [
+        {
+          beneficiary: accounts[1],
+          amount: 20,
+          minRate: 199/2,
+        },
+        {
+          beneficiary: accounts[2],
+          amount: 20,
+        },
+      ],
+      expected: {
+          computationWillFail: false,
+      }
+    });
+  });
+  // *************************/
+
+  it("A compution with an expected sale of 0 should fail if donations are available", async function() {
+    await run_scenario({
+      hintTotalDonatedInThisPeriodInThisPeriod: 0,
+      donations: [
+        {
+          beneficiary: accounts[2],
+          amount: 10,
+        },
+      ],
+      expected: {
+          computationWillFail: true,
+          period: {
+          }
+      }
+    });
+  });
+
+  it("A compution with an expected sale of 0 should succeed if no donations were made", async function() {
+    await run_scenario({
+      hintTotalDonatedInThisPeriodInThisPeriod: 0,
+      donations: [],
+      expected: {
+          computationWillFail: false,
+      }
+    });
+  });
+
   async function run_scenario(opts) {
+
     /*
 
       run_scenario({
@@ -510,9 +650,21 @@ contract("EmergentICO", function(accounts){
           beneficiary: accounts[1],
           amount: 2,
           minRate: 0,
-      }]
+        }],
+        excepted: {
+          computationWillFail: false, // if this is true, we expect the calcuation to fail (i.e. because the hintTotalDonatedInThisPeriodInThisPeriod will be wrong)
+          tokenDistribution: [ // the excpeted tokend istribution after the period is over
+            {
+              account: accounts[1],
+              tokens: 10 * averageRate,
+            },
+            ....
+          ]
+        }
+      }
     })
     */
+
     await setupEmergentICO(opts.icoConfig);
     let donation;
     for (let i=0; i<opts.donations.length; i++) {
@@ -542,7 +694,7 @@ contract("EmergentICO", function(accounts){
     assert.equal(periodInit, true);
     // compute all totals
     let hintTotalDonatedInThisPeriodInThisPeriod;
-    if (opts.hintTotalDonatedInThisPeriodInThisPeriod) {
+    if (opts.hintTotalDonatedInThisPeriodInThisPeriod !== undefined) {
       hintTotalDonatedInThisPeriodInThisPeriod = web3.toWei(opts.hintTotalDonatedInThisPeriodInThisPeriod);
     } else {
       hintTotalDonatedInThisPeriodInThisPeriod = await newICO.totalReceived();
@@ -550,21 +702,32 @@ contract("EmergentICO", function(accounts){
     await newICO.initAverageComputation(currentPeriod, hintTotalDonatedInThisPeriodInThisPeriod, 10);
 
     // check if indeed this rates where computed
-    const periodPlus1Init = await newICO.getIsPeriodInitialized(currentPeriod+1);
-    assert.equal(periodPlus1Init, true);
+    const computationOK = await newICO.getIsPeriodInitialized(currentPeriod+1);
+    let computationWillFail = opts.expected && opts.expected.computationWillFail && true || false
+    if (!computationWillFail) {
+      assert.equal(computationOK, true);
+    } else {
+      assert.equal(computationOK, false);
+      return true;
+    }
 
     // collect the tokens
-    for(let i=0; i < opts.donations.length; i++) {
-      await newICO.collectMyTokens(i, { from: opts.donations[i].beneficiary });
+    if (opts.donations) {
+      for(let i=0; i < opts.donations.length; i++) {
+        await newICO.collectMyTokens(i, { from: opts.donations[i].beneficiary });
+      }
     }
 
     // check the results
+
     const token = org.token;
-    const tokenDistribution = opts.expected.tokenDistribution;
-    for(let i = 0; i < tokenDistribution.length; i ++ ) {
-      if (tokenDistribution[i].tokens) {
-        let msg = 'Expected amount of tokens actually received to be equal to the expected amount, for ' + tokenDistribution[i];
-        assert.equal((await token.balanceOf(tokenDistribution[i].account)).toNumber(), web3.toWei(tokenDistribution[i].tokens, "ether"), msg);
+    const tokenDistribution = opts.expected && opts.expected.tokenDistribution;
+    if (tokenDistribution) {
+      for(let i = 0; i < tokenDistribution.length; i ++ ) {
+        if (tokenDistribution[i].tokens) {
+          let msg = 'Expected amount of tokens actually received to be equal to the expected amount, for ' + tokenDistribution[i];
+          assert.equal((await token.balanceOf(tokenDistribution[i].account)).toNumber(), web3.toWei(tokenDistribution[i].tokens, "ether"), msg);
+        }
       }
     }
 
