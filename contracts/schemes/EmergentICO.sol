@@ -52,6 +52,7 @@ contract EmergentICO is Debug {
     uint raisedInPeriod; // The total raised (incoming minus returned).
     uint raisedUpToPeriod; // How much was raised up to this period.
     uint averageRate; // The calculated average rate of the period.
+    uint donationsWithMinRateEqualToZero;
     uint donationsWithMinRateEqualToRate;
     uint donationsWithMinRateEqualToRateToInclude;
     bool isInitialized; // A flag to indicate that the previous period was calculated and so raisedUpToPeriod is set.
@@ -255,7 +256,7 @@ contract EmergentICO is Debug {
     if (_minRate != 0) {
       period.donationsIdsWithLimit.push(donationCounter);
     } else {
-      period.raisedInPeriod = period.raisedInPeriod.add(msg.value);
+      period.donationsWithMinRateEqualToZero = period.donationsWithMinRateEqualToZero.add(msg.value);
     }
 
     // Update donation data:
@@ -278,7 +279,7 @@ contract EmergentICO is Debug {
 
     // If we can determine that the donation will not go through, revert:
     if (_minRate != 0 && period.isInitialized) {
-      if (averageRateInWei(period.raisedUpToPeriod, period.raisedUpToPeriod.add(period.raisedInPeriod)) < _minRate) {
+      if (averageRateInWei(period.raisedUpToPeriod, period.raisedUpToPeriod.add(period.donationsWithMinRateEqualToZero)) < _minRate) {
         revert();
       }
     }
@@ -315,8 +316,7 @@ contract EmergentICO is Debug {
       hintRate: computedRate,
       hintTotalDonatedInThisPeriod: _hintTotalDonatedInThisPeriod,
       donationsWithMinRateEqualToRate: 0,
-      // when the period has not been calculated yet, raisedInPeriod are exactly those donatinos with minRate == 0
-      donationsWithMinRateLowerThanRate: periods[_periodId].raisedInPeriod
+      donationsWithMinRateLowerThanRate: periods[_periodId].donationsWithMinRateEqualToZero
     });
     computeAverage(_periodId, _iterations);
   }
@@ -365,7 +365,7 @@ contract EmergentICO is Debug {
     if (avgComp.donationsCounted == period.donationsIdsWithLimit.length) {
       // we check two things for correctness:
       // 1. the hintTotalDonatedInThisPeriod is in the right range
-      if (avgComp.donationsWithMinRateLowerThanRate> avgComp.hintTotalDonatedInThisPeriod){
+      if (avgComp.donationsWithMinRateLowerThanRate > avgComp.hintTotalDonatedInThisPeriod){
         LogString('Calculation failed: donationsWithMinRateLowerThanRate > hintTotalDonatedInThisPeriod');
         return;
       }
