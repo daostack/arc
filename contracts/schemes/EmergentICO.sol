@@ -47,7 +47,6 @@ contract EmergentICO is Debug {
   // Data for each period:
   struct Period {
     uint donationsCounterInPeriod;
-    uint clearedDonations; // Number of donations cleared.
     uint raisedUpToPeriod; // How much was raised up to this period.
     uint averageRate; // The calculated average rate of the period.
     uint donationsWithMinRateEqualToZero;
@@ -400,7 +399,6 @@ contract EmergentICO is Debug {
 
     // Mark donation as collected:
     donation.isCollected = true;
-    period.clearedDonations++;
 
     // Check the donation minimum rate is valid, if so mint tokens, else, return funds:
     uint tokensToMint = 0;
