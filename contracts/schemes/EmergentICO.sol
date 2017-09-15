@@ -39,7 +39,7 @@ contract EmergentICO is Debug {
     address donor;
     address beneficiary; // The tokens will be alocated to this address.
     uint periodId; // Donation's period.
-    uint value; // Value in wei.
+    uint value; // Value of the donation in wei.
     uint minRate; // If the rate is lower than this, the funds will be returned.
     bool isCollected; // A flag to check if tokens/funds were already collected.
   }
@@ -49,7 +49,6 @@ contract EmergentICO is Debug {
     uint donationsCounterInPeriod;
     uint clearedDonations; // Number of donations cleared.
     uint incomingInPeriod; // The total incoming donations in wei.
-    uint raisedInPeriod; // The total raised (incoming minus returned).
     uint raisedUpToPeriod; // How much was raised up to this period.
     uint averageRate; // The calculated average rate of the period.
     uint donationsWithMinRateEqualToZero;
@@ -373,12 +372,11 @@ contract EmergentICO is Debug {
       }
 
       period.isAverageRateComputed = true;
-      period.raisedInPeriod = avgComp.hintTotalDonatedInThisPeriod;
       period.averageRate = avgComp.hintRate;
       period.donationsWithMinRateEqualToRate = avgComp.donationsWithMinRateEqualToRate;
       period.donationsWithMinRateEqualToRateToInclude = avgComp.hintTotalDonatedInThisPeriod - avgComp.donationsWithMinRateLowerThanRate;
 
-      periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(period.raisedInPeriod);
+      periods[_periodId+1].raisedUpToPeriod = period.raisedUpToPeriod.add(avgComp.hintTotalDonatedInThisPeriod);
       periods[_periodId+1].isInitialized = true;
       // TODO: may want to delete it also if the computedRate is not correct - i.e. always delete
       delete averageComputators[msg.sender];
