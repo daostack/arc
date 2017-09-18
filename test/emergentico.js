@@ -2,7 +2,7 @@
 
 import * as helpers from './helpers';
 import { Organization } from '../lib/organization.js';
-
+import { getValueFromLogs } from '../lib/utils.js';
 const EmergentICO = artifacts.require("./EmergentICO.sol");
 
 // Vars
@@ -57,17 +57,50 @@ contract("EmergentICO", function(accounts){
   before(function() {
     helpers.etherForEveryone();
   });
-  // /**************************
-  it("should log the LogDonationReceived event on donating [TODO]", async function() {
-
-  });
-  it("should log the LogPeriodAverageComputed event on canceling a proposal [TODO]", async function() {
-
-  });
-  it("should log the LogCancelProposal event on canceling a proposal [TODO]", async function() {
-
+  // /***********************
+  it("should log the LogDonationReceived event on donating", async function() {
+    await setupEmergentICO();
+    let tx = await newICO.donate(accounts[1], 0, {from: accounts[1], value: web3.toWei(15, "ether")});
+    assert.equal(getValueFromLogs(tx, '_value', 'LogDonationReceived'), Number(web3.toWei(15, "ether")))
   });
 
+  it("should log the LogPeriodAverageComputed event when computation is finished", async function() {
+    await setupEmergentICO();
+
+    const currentPeriod = Number(await newICO.currentPeriodId());
+    await finishPeriod()
+
+    await newICO.donate(accounts[1], 0, {from: accounts[1], value: web3.toWei(15, "ether")})
+    // Compute all previous periods, and initialize current period:
+    for (let cnt=0; cnt<currentPeriod; cnt++) {
+      await newICO.initAverageComputation(cnt, 0, 0);
+    }
+    // await newICO.initAverageComputation(currentPeriod, 0, 10);
+    let tx = await newICO.initAverageComputation(currentPeriod, web3.toWei(15, "ether"), 10);
+    assert.equal(getValueFromLogs(tx, '_periodId', 'LogPeriodAverageComputed'), currentPeriod);
+
+  });
+  // ******************/
+  it("should log the LogCollect event on collection [TODO]", async function() {
+    await setupEmergentICO();
+
+    await newICO.donate(accounts[0], 0, {from: accounts[0], value: web3.toWei(15, "ether")});
+
+    const currentPeriod = Number(await newICO.currentPeriodId());
+    await finishPeriod();
+    // Compute all previous periods, and initialize current period:
+    for (let cnt=0; cnt<currentPeriod; cnt++) {
+      await newICO.initAverageComputation(cnt, 0, 0);
+    }
+    // await newICO.initAverageComputation(currentPeriod, 0, 10);
+    await newICO.initAverageComputation(currentPeriod, web3.toWei(15, "ether"), 10);
+    let tx = await newICO.collectMyTokens(0, { from: accounts[0] });
+    assert.equal(Number(getValueFromLogs(tx, '_donation', 'LogCollect')), 0);
+    assert.equal(Number(getValueFromLogs(tx, '_tokens', 'LogCollect')), 15 * 100 * 10 ** 18);
+    assert.equal(getValueFromLogs(tx, '_ether', 'LogCollect'), 0);
+  });
+
+  // /***************************
   it("Check rate function", async function(){
     await setupEmergentICO();
 
@@ -76,16 +109,16 @@ contract("EmergentICO", function(accounts){
     const batch7Rate = Number(web3.toWei(initialRate*frac**7),"ether");
     const batch17Rate =  Number(web3.toWei(initialRate*frac**17),"ether");
 
+    assert.equal(Number(web3.toWei(initialRate)), Number(await newICO.rateInWei(0)));
     // assert(Math.abs(batch7Rate - Number (await newICO.rateInWei(7)))/batch7Rate < 10**(-8));
     assert.equal(batch7Rate, Number(await newICO.rateInWei(7)));
 
-    // we have rounding errors, so testing for strigh equality fails
+    // we have rounding errors, so testing for strict equality fails
     // assert.equal(batch17Rate, Number(await newICO.rateInWei(17)));
     assert(Math.abs(batch17Rate - Number (await newICO.rateInWei(17)))/batch17Rate < 10**(-8));
   });
-  //
+
   it("Check average rate function", async function(){
-    // fac = 0.9
     await setupEmergentICO();
     let frac = rateFractionNumerator/rateFractionDenominator;
 
@@ -95,7 +128,7 @@ contract("EmergentICO", function(accounts){
     let averageRateInWei = Number(web3.toWei(averageRate, "ether"));
     let averageRateInWeiCalculated = Number(await newICO.averageRateInWei(web3.toWei(start, "ether"), web3.toWei(end, "ether")));
     // Checking rate is the same up to rounding error:
-    assert(Math.abs(averageRateInWei - averageRateInWeiCalculated)/averageRateInWei < 10**(-8));
+    assert.isOk(Math.abs(averageRateInWei - averageRateInWeiCalculated)/averageRateInWei < 10**(-8));
 
     start = 10;
     end = 11;
@@ -103,9 +136,29 @@ contract("EmergentICO", function(accounts){
     averageRateInWei = Number(web3.toWei(averageRate, "ether"));
     averageRateInWeiCalculated = Number(await newICO.averageRateInWei(web3.toWei(start, "ether"), web3.toWei(end, "ether")));
     // Checking rate is the same up to rounding error:
-    assert(Math.abs(averageRateInWei - averageRateInWeiCalculated)/averageRateInWei < 10**(-8));
-  });
+    assert.isOk(Math.abs(averageRateInWei - averageRateInWeiCalculated)/averageRateInWei < 10**(-8));
 
+    // Check for limit cases
+    start = 0;
+    end = 0;
+    averageRate = initialRate;
+    averageRateInWei = Number(web3.toWei(averageRate, "ether"));
+    averageRateInWeiCalculated = Number(await newICO.averageRateInWei(web3.toWei(start, "ether"), web3.toWei(end, "ether")));
+    // Checking rate is the same up to rounding error:
+    assert.isOk(Math.abs(averageRateInWei - averageRateInWeiCalculated)/averageRateInWei < 10**(-8));
+
+    // Check for limit cases
+    start = 20;
+    end = 21;
+    averageRate = initialRate * (1 * frac);
+    averageRateInWei = Number(web3.toWei(averageRate, "ether"));
+    averageRateInWeiCalculated = Number(await newICO.averageRateInWei(web3.toWei(start, "ether"), web3.toWei(end, "ether")));
+    // Checking rate is the same up to rounding error:
+    let msg = `Expected ${Number(averageRateInWeiCalculated)} to be (almost) equal to ${averageRateInWei}`
+    assert.isOk(Math.abs(averageRateInWei - averageRateInWeiCalculated)/averageRateInWei < 10**(-8), msg);
+
+
+  });
   it("Only admin can halt and resume the ICO", async function(){
     await setupEmergentICO();
 
@@ -344,7 +397,6 @@ contract("EmergentICO", function(accounts){
     assert.equal(Number(await web3.eth.getBalance(target)), Number(targetOriginalBalance) + Number(donationInWei));
   });
 
-  // *************************/
 
   it("Single donation with limit", async function(){
     await run_scenario({
@@ -366,7 +418,6 @@ contract("EmergentICO", function(accounts){
     });
   });
 
-  // /*********************
   it("Run Scenario (single donation)", async function() {
     await run_scenario({
       icoConfig: {
@@ -515,9 +566,7 @@ contract("EmergentICO", function(accounts){
       }
     });
   });
-  // *************************/
 
-  // /******************
   it("Run Scenario - try to break the calculations", async function() {
     //
     // if we make two donations
@@ -652,8 +701,7 @@ contract("EmergentICO", function(accounts){
   async function run_scenario(opts) {
 
     /*
-
-      run_scenario({
+    run_scenario({
         hintTotalDonatedInThisPeriodInThisPeriod: 1234,
         icoConfig:  {
           periodDuration: 50
@@ -694,20 +742,9 @@ contract("EmergentICO", function(accounts){
       donation.minRate = donation.minRate || 0;
       await newICO.donate(donation.beneficiary, web3.toWei(donation.minRate, "ether"), {from: donation.from, value: web3.toWei(donation.amount, "ether")});
     }
-    // for(let i = 0; i < tokenDistribution.length; i ++ ) {
-    //   console.log('actual diff for account right after donation', tokenDistribution[i].account, 'is: ', Number(tokenDistribution[i].balanceBeforeSale.minus(await web3.eth.getBalance(tokenDistribution[i].account))))
-    // }
 
-    // finish the currentPeriod
     const currentPeriod = Number(await newICO.currentPeriodId());
-    // Mine blocks to end of the next period:
-    while(Number(await newICO.currentPeriodId()) <= currentPeriod + 1) {
-        await web3.eth.sendTransaction({
-          from: accounts[0],
-          to: accounts[1],
-          value: 1, // 1 wei
-        });
-    }
+    await finishPeriod()
 
     // Compute all previous periods, and initialize current period:
     for (let cnt=0; cnt<currentPeriod; cnt++) {
@@ -775,4 +812,17 @@ contract("EmergentICO", function(accounts){
     }
 
   }
+  async function finishPeriod() {
+    // finish the currentPeriod
+    const currentPeriod = Number(await newICO.currentPeriodId());
+    // Mine blocks to end of the next period:
+    while(Number(await newICO.currentPeriodId()) <= currentPeriod + 1) {
+        await web3.eth.sendTransaction({
+          from: accounts[0],
+          to: accounts[1],
+          value: 1, // 1 wei
+        });
+    }
+  }
+
 });

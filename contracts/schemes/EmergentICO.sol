@@ -210,7 +210,7 @@ contract EmergentICO is Debug {
   /**
    * @dev Constant function, computes the average rate between two points.
    * @param _start the starting point for the computation - expressed in  Wei donated
-   * @param _end the starting point for the computation, expressed in Wei donated.
+   * @param _end the end point for the computation, expressed in Wei donated.
    */
   function averageRateInWei(uint _start, uint _end) constant returns(uint) {
     assert(_end >= _start);
@@ -302,11 +302,11 @@ contract EmergentICO is Debug {
   ) isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
-    uint computedRate = averageRateInWei(periods[_periodId].raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(_hintTotalDonatedInThisPeriod));
+    uint hintRate = averageRateInWei(periods[_periodId].raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(_hintTotalDonatedInThisPeriod));
     averageComputators[msg.sender] = AverageComputator({
       periodId: _periodId,
       donationsCounted: 0,
-      hintRate: computedRate,
+      hintRate: hintRate,
       hintTotalDonatedInThisPeriod: _hintTotalDonatedInThisPeriod,
       donationsWithMinRateEqualToRate: 0,
       donationsWithMinRateLowerThanRate: periods[_periodId].donationsWithMinRateEqualToZero
@@ -435,7 +435,7 @@ contract EmergentICO is Debug {
 
   /**
    * @dev Collecting donor own tokens.
-   * Although not really necessary, only the doner (or the admin) can clear his own donation.
+   * Although not really necessary, only the donor (or the admin) can clear his own donation.
    * @param _donationId The donation to be cleared.
    */
   function collectMyTokens(uint _donationId) {
