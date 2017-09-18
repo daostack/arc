@@ -77,7 +77,7 @@ contract EmergentICO is Debug {
   // Parameters:
   Controller public controller; // The conroller is responsible to mint tokens.
   address public admin; // Admin can halt and resume the ICO, and also clear batches for everyone.
-  address public target; // The funds will be tranffered here.
+  address public beneficiary; // The funds will be transfered here.
   uint public startBlock; // ICO starting block.
   uint public periodDuration; // The length of each clearance period in blocks.
   uint public minDonation; // The minimum allowed donation in wei.
@@ -122,7 +122,7 @@ contract EmergentICO is Debug {
   /**
    * @dev Constructor, setting all the parameters:
    * @param _controller The address of an Organization
-   * @param _target The beneficiary of the ICO (who gets the funds)
+   * @param _beneficiary The beneficiary of the ICO (who gets the funds)
    * @param _admin The administrator of the ICO
    * @param _startBlock The blocknumber at which the ico starts
    * @param _periodDuration The length of each period
@@ -132,7 +132,7 @@ contract EmergentICO is Debug {
   function EmergentICO(
     Controller _controller,
     address _admin,
-    address _target,
+    address _beneficiary,
     uint _startBlock,
     uint _periodDuration,
     uint _minDonation,
@@ -144,7 +144,7 @@ contract EmergentICO is Debug {
       // Set parameters:
       controller = _controller;
       admin = _admin;
-      target = _target;
+      beneficiary = _beneficiary;
       startBlock = _startBlock; // [cf doc for initAverageComputation]
       periodDuration = _periodDuration;
       minDonation = _minDonation;
@@ -266,9 +266,9 @@ contract EmergentICO is Debug {
     donationCounter++;
     totalReceived = totalReceived.add(msg.value);
 
-    // If minimum rate is 0 move funds to target now:
+    // If minimum rate is 0 move funds to beneficiary now:
     if (_minRate == 0) {
-      target.transfer(msg.value);
+      beneficiary.transfer(msg.value);
     }
 
     // If we can determine that the donation will not go through, revert:
@@ -426,7 +426,7 @@ contract EmergentICO is Debug {
     }
 
     if (ethToSpendOnTokens > 0) {
-      target.transfer(ethToSpendOnTokens);
+      beneficiary.transfer(ethToSpendOnTokens);
     }
     LogString('ethToSpendOnTokens');
     LogUint(ethToSpendOnTokens);

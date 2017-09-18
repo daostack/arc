@@ -7,14 +7,14 @@ const EmergentICO = artifacts.require("./EmergentICO.sol");
 
 // Vars
 let accounts, org, newICO;
-let admin, target, startBlock,periodDuration, minDonation, initialRate, rateFractionNumerator, rateFractionDenominator, batchSize;
+let admin, beneficiary, startBlock,periodDuration, minDonation, initialRate, rateFractionNumerator, rateFractionDenominator, batchSize;
 
 const setupEmergentICO = async function(opts={}){
 
   accounts = web3.eth.accounts;
 
   admin = accounts[0];
-  target = accounts[4];
+  beneficiary = accounts[4];
   startBlock = opts.startBlock || web3.eth.blockNumber;
   periodDuration = opts.periodDuration || 30;
   minDonation =  web3.toWei(1, "ether");
@@ -37,7 +37,7 @@ const setupEmergentICO = async function(opts={}){
   newICO = await EmergentICO.new(
     org.controller.address,
     admin,
-    target,
+    beneficiary,
     startBlock,
     periodDuration,
     minDonation,
@@ -382,7 +382,7 @@ contract("EmergentICO", function(accounts){
     await setupEmergentICO();
 
     const donationInWei = web3.toWei(2, "ether");
-    const targetOriginalBalance = await web3.eth.getBalance(target);
+    const beneficiaryOriginalBalance = await web3.eth.getBalance(beneficiary);
 
     // Regular small send:
     await web3.eth.sendTransaction({
@@ -394,7 +394,7 @@ contract("EmergentICO", function(accounts){
     // Checking contract variables:
     assert.equal(Number(await newICO.totalReceived()), donationInWei);
     assert.equal(await newICO.donationCounter(), 1);
-    assert.equal(Number(await web3.eth.getBalance(target)), Number(targetOriginalBalance) + Number(donationInWei));
+    assert.equal(Number(await web3.eth.getBalance(beneficiary)), Number(beneficiaryOriginalBalance) + Number(donationInWei));
   });
 
 
@@ -729,8 +729,8 @@ contract("EmergentICO", function(accounts){
     await setupEmergentICO(opts.icoConfig);
 
     const tokenDistribution = opts.expected && opts.expected.tokenDistribution || []
-    let target = opts.icoConfig && opts.icoConfig.target || accounts[4]
-    let targetBalanceBeforeSale = await web3.eth.getBalance(target)
+    let beneficiary = opts.icoConfig && opts.icoConfig.beneficiary || accounts[4]
+    let beneficiaryBalanceBeforeSale = await web3.eth.getBalance(beneficiary)
     for(let i = 0; i < tokenDistribution.length; i ++ ) {
       tokenDistribution[i].balanceBeforeSale = await web3.eth.getBalance(tokenDistribution[i].account)
     }
@@ -805,7 +805,7 @@ contract("EmergentICO", function(accounts){
     }
 
     if (opts.expected && opts.expected.totalRaised) {
-      let actuallyRaised = (await web3.eth.getBalance(target)).minus(targetBalanceBeforeSale)
+      let actuallyRaised = (await web3.eth.getBalance(beneficiary)).minus(beneficiaryBalanceBeforeSale)
       let diff = Number(actuallyRaised) - (opts.expected.totalRaised * 10 ** 18)
       let msg = `Expected the amountof ETH actually raised ${Number(actuallyRaised)} to be (almost) equal to ${opts.expected.totalRaised * 10 ** 18}, but the diff is ${diff}`
       assert.isOk(Math.abs(diff) < 0.1 * 10**18, msg)
