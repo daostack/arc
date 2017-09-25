@@ -61,16 +61,16 @@ contract("EmergentICO", function(accounts){
   it("should log the LogDonationReceived event on donating", async function() {
     await setupEmergentICO();
     let tx = await newICO.donate(accounts[1], 0, {from: accounts[1], value: web3.toWei(15, "ether")});
-    assert.equal(getValueFromLogs(tx, '_value', 'LogDonationReceived'), Number(web3.toWei(15, "ether")))
+    assert.equal(getValueFromLogs(tx, '_value', 'LogDonationReceived'), Number(web3.toWei(15, "ether")));
   });
 
   it("should log the LogPeriodAverageComputed event when computation is finished", async function() {
     await setupEmergentICO();
 
     const currentPeriod = Number(await newICO.currentPeriodId());
-    await finishPeriod()
+    await finishPeriod();
 
-    await newICO.donate(accounts[1], 0, {from: accounts[1], value: web3.toWei(15, "ether")})
+    await newICO.donate(accounts[1], 0, {from: accounts[1], value: web3.toWei(15, "ether")});
     // Compute all previous periods, and initialize current period:
     for (let cnt=0; cnt<currentPeriod; cnt++) {
       await newICO.initAverageComputation(cnt, 0, 0);
@@ -154,7 +154,7 @@ contract("EmergentICO", function(accounts){
     averageRateInWei = Number(web3.toWei(averageRate, "ether"));
     averageRateInWeiCalculated = Number(await newICO.averageRateInWei(web3.toWei(start, "ether"), web3.toWei(end, "ether")));
     // Checking rate is the same up to rounding error:
-    let msg = `Expected ${Number(averageRateInWeiCalculated)} to be (almost) equal to ${averageRateInWei}`
+    let msg = `Expected ${Number(averageRateInWeiCalculated)} to be (almost) equal to ${averageRateInWei}`;
     assert.isOk(Math.abs(averageRateInWei - averageRateInWeiCalculated)/averageRateInWei < 10**(-8), msg);
 
 
@@ -728,11 +728,11 @@ contract("EmergentICO", function(accounts){
 
     await setupEmergentICO(opts.icoConfig);
 
-    const tokenDistribution = opts.expected && opts.expected.tokenDistribution || []
-    let beneficiary = opts.icoConfig && opts.icoConfig.beneficiary || accounts[4]
-    let beneficiaryBalanceBeforeSale = await web3.eth.getBalance(beneficiary)
+    const tokenDistribution = opts.expected && opts.expected.tokenDistribution || [];
+    let beneficiary = opts.icoConfig && opts.icoConfig.beneficiary || accounts[4];
+    let beneficiaryBalanceBeforeSale = await web3.eth.getBalance(beneficiary);
     for(let i = 0; i < tokenDistribution.length; i ++ ) {
-      tokenDistribution[i].balanceBeforeSale = await web3.eth.getBalance(tokenDistribution[i].account)
+      tokenDistribution[i].balanceBeforeSale = await web3.eth.getBalance(tokenDistribution[i].account);
     }
 
     let donation;
@@ -744,7 +744,7 @@ contract("EmergentICO", function(accounts){
     }
 
     const currentPeriod = Number(await newICO.currentPeriodId());
-    await finishPeriod()
+    await finishPeriod();
 
     // Compute all previous periods, and initialize current period:
     for (let cnt=0; cnt<currentPeriod; cnt++) {
@@ -764,7 +764,7 @@ contract("EmergentICO", function(accounts){
 
     // check if indeed this rates where computed
     const computationOK = await newICO.getIsPeriodInitialized(currentPeriod+1);
-    let computationWillFail = opts.expected && opts.expected.computationWillFail && true || false
+    let computationWillFail = opts.expected && opts.expected.computationWillFail && true || false;
     if (!computationWillFail) {
       assert.equal(computationOK, true);
     } else {
@@ -796,19 +796,19 @@ contract("EmergentICO", function(accounts){
         }
 
         if (tokenDistribution[i].etherSpent) {
-          let actuallySpent = tokenDistribution[i].balanceBeforeSale.minus(await web3.eth.getBalance(tokenDistribution[i].account))
-          let diff = Number(actuallySpent) - (tokenDistribution[i].etherSpent * 10 ** 18)
-          let msg = `Expected ${Number(actuallySpent)} to be (almost) equal to ${tokenDistribution[i].etherSpent * 10 ** 18}, but the diff is ${diff}`
-          assert.isOk(Math.abs(diff) < 0.1 * 10**18, msg)
+          let actuallySpent = tokenDistribution[i].balanceBeforeSale.minus(await web3.eth.getBalance(tokenDistribution[i].account));
+          let diff = Number(actuallySpent) - (tokenDistribution[i].etherSpent * 10 ** 18);
+          let msg = `Expected ${Number(actuallySpent)} to be (almost) equal to ${tokenDistribution[i].etherSpent * 10 ** 18}, but the diff is ${diff}`;
+          assert.isOk(Math.abs(diff) < 0.1 * 10**18, msg);
         }
       }
     }
 
     if (opts.expected && opts.expected.totalRaised) {
-      let actuallyRaised = (await web3.eth.getBalance(beneficiary)).minus(beneficiaryBalanceBeforeSale)
-      let diff = Number(actuallyRaised) - (opts.expected.totalRaised * 10 ** 18)
-      let msg = `Expected the amountof ETH actually raised ${Number(actuallyRaised)} to be (almost) equal to ${opts.expected.totalRaised * 10 ** 18}, but the diff is ${diff}`
-      assert.isOk(Math.abs(diff) < 0.1 * 10**18, msg)
+      let actuallyRaised = (await web3.eth.getBalance(beneficiary)).minus(beneficiaryBalanceBeforeSale);
+      let diff = Number(actuallyRaised) - (opts.expected.totalRaised * 10 ** 18);
+      let msg = `Expected the amountof ETH actually raised ${Number(actuallyRaised)} to be (almost) equal to ${opts.expected.totalRaised * 10 ** 18}, but the diff is ${diff}`;
+      assert.isOk(Math.abs(diff) < 0.1 * 10**18, msg);
     }
 
   }
