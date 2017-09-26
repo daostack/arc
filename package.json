@@ -67,7 +67,4 @@
     "promisify": "0.0.3",
     "truffle-contract": "^2.0.5"
   }
-  "dependencies": {
-    "truffle-contract": "^2.0.5"
-  }
 }
