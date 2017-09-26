@@ -47,36 +47,36 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
   // A mapping from hashes to parameters (use to store a particular configuration on the controller)
   struct Parameters {
-      bytes32 voteRegisterParams;
-      IntVoteInterface intVote;
+    bytes32 voteRegisterParams;
+    IntVoteInterface intVote;
   }
   mapping(bytes32=>Parameters) public parameters;
 
   function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) {
-      updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
+    updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
   }
 
   /**
    * @dev hash the parameters, save them if necessary, and return the hash value
    */
   function setParameters(
-      bytes32 _voteRegisterParams,
-      IntVoteInterface _intVote
+    bytes32 _voteRegisterParams,
+    IntVoteInterface _intVote
   ) returns(bytes32)
   {
-      bytes32 paramsHash = getParametersHash(_voteRegisterParams, _intVote);
-      parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
-      parameters[paramsHash].intVote = _intVote;
-      return paramsHash;
+    bytes32 paramsHash = getParametersHash(_voteRegisterParams, _intVote);
+    parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
+    parameters[paramsHash].intVote = _intVote;
+    return paramsHash;
   }
 
   function getParametersHash(
-      bytes32 _voteRegisterParams,
-      IntVoteInterface _intVote
+    bytes32 _voteRegisterParams,
+    IntVoteInterface _intVote
   ) constant returns(bytes32)
   {
-      bytes32 paramsHash = (sha3(_voteRegisterParams, _intVote));
-      return paramsHash;
+    bytes32 paramsHash = (sha3(_voteRegisterParams, _intVote));
+    return paramsHash;
   }
 
   // Adding an organization to the universal scheme:
