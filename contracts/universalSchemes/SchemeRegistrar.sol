@@ -216,29 +216,29 @@ contract SchemeRegistrar is UniversalScheme {
 
     // Add a scheme:
     if (proposal.proposalType == 1) {
-        if (proposal.fee != 0) {
-            if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) {
-              revert();
-            }
+      if (proposal.fee != 0) {
+        if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) {
+          revert();
         }
-        if (proposal.isRegistering == false) {
-            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
-              revert();
-            }
-        } else {
-            if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
-              revert();
-            }
+      }
+      if (proposal.isRegistering == false) {
+        if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
+          revert();
         }
-        if (proposal.autoRegister) {
-          UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
+      } else {
+        if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
+          revert();
         }
+      }
+      if (proposal.autoRegister) {
+        UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
+      }
     }
     // Remove a scheme:
     if( proposal.proposalType == 2 ) {
-        if(!controller.unregisterScheme(proposal.scheme)) {
-            revert();
-        }
+      if(!controller.unregisterScheme(proposal.scheme)) {
+          revert();
+      }
     }
 
     delete organizations[_avatar].proposals[_proposalId];

@@ -174,16 +174,16 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
     // Adding a GC
     if (proposal.proposalType == 1) {
-        if (!controller.addGlobalConstraint(proposal.gc, proposal.params)) {
-          revert();
-        }
+      if (!controller.addGlobalConstraint(proposal.gc, proposal.params)) {
+        revert();
+      }
     }
 
     // Removing a GC
     if (proposal.proposalType == 2) {
-        if (!controller.removeGlobalConstraint(proposal.gc)) {
-          revert();
-        }
+      if (!controller.removeGlobalConstraint(proposal.gc)) {
+        revert();
+      }
     }
     delete organizations[_avatar].proposals[_proposalId];
     LogProposalExecuted(_avatar, _proposalId);
