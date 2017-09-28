@@ -11,6 +11,7 @@ var SimpleVote = artifacts.require('./SimpleVote.sol');
 var SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
 var TokenCapGC = artifacts.require('./TokenCapGC.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
+var OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
 
 // Instances:
 var simpleVoteInst;
@@ -122,4 +123,5 @@ module.exports = async function(deployer) {
 
     deployer.deploy(SimpleContributionScheme);
     deployer.deploy(TokenCapGC);
+    deployer.deploy(OrganizationRegister);
 };

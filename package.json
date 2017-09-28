@@ -5,11 +5,13 @@
   "main": "lib/arc.js",
   "directories": {
     "lib": "./lib",
-    "doc": "./docs"
+    "doc": "./docs",
+    "contracts": "./build/contracts/"
   },
   "files": [
     "lib/",
-    "docs/"
+    "docs/",
+    "build/contracts/"
   ],
   "scripts": {
     "test": "truffle test",
@@ -38,7 +40,6 @@
     "solc": "^0.4.15",
     "solc-cli": "^0.3.0",
     "solium": "^0.5.4",
-    "truffle": "3.4.5",
     "zeppelin-solidity": "^1.1.0"
   },
   "repository": {
