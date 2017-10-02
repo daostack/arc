@@ -30,7 +30,7 @@ contract AbsoluteVote is IntVoteInterface{
     bool opened; // voting opened flag
   }
 
-  event LogNewProposal(bytes32 indexed _proposalId, address _proposer, bytes32 _paramsHash);
+  event LogNewProposal(bytes32 indexed _proposalId, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
   event LogCancelProposal(bytes32 indexed _proposalId);
   event LogExecuteProposal(bytes32 indexed _proposalId, uint _decision);
   event LogVoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
@@ -108,7 +108,7 @@ contract AbsoluteVote is IntVoteInterface{
     proposal.owner = msg.sender;
     proposal.opened = true;
     proposals[proposalId] = proposal;
-    LogNewProposal(proposalId, msg.sender, _paramsHash);
+    LogNewProposal(proposalId, _numOfChoices, msg.sender, _paramsHash);
     return proposalId;
   }
 
