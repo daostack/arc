@@ -117,11 +117,10 @@ module.exports = async function(deployer) {
       await upgradeSchemeInst.registerOrganization(AvatarInst.address);
 
 
-      // also deploy a SimpleContributionScheme for general use
       deployer.deploy(SimpleICO, tokenAddress, UniversalRegisterFee, avatarAddress);
+      deployer.deploy(OrganizationRegister, tokenAddress, UniversalRegisterFee, avatarAddress);
     });
 
     deployer.deploy(SimpleContributionScheme);
     deployer.deploy(TokenCapGC);
-    deployer.deploy(OrganizationRegister);
-};
+  }
