@@ -3,7 +3,7 @@ import { Organization } from '../lib/organization.js';
 import { getSettings } from '../lib/settings.js';
 import { getValueFromLogs } from '../lib/utils.js';
 const Controller = artifacts.require("./Controller.sol");
-const SimpleVote = artifacts.require('./SimpleVote.sol');
+const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 
 
 contract('UpgradeScheme', function(accounts) {
@@ -33,7 +33,7 @@ contract('UpgradeScheme', function(accounts) {
 
     const upgradeScheme = await organization.scheme('UpgradeScheme');
     const settings = await getSettings();
-    const votingMachine = SimpleVote.at(settings.votingMachine);
+    const votingMachine = AbsoluteVote.at(settings.votingMachine);
 
     // the organization has not bene upgraded yet, so newController is the NULL address
     assert.equal(await organization.controller.newController(), helpers.NULL_ADDRESS);
@@ -42,9 +42,9 @@ contract('UpgradeScheme', function(accounts) {
     const newController = await Controller.new(null, null, null, [], [], []);
     let tx = await upgradeScheme.proposeUpgrade(organization.avatar.address, newController.address);
 
-    const proposalId = getValueFromLogs(tx, 'proposalId');
+    const proposalId = getValueFromLogs(tx, '_proposalId');
     // now vote with the majority for the proposal
-    tx = await votingMachine.vote(proposalId, true, accounts[1], {from: accounts[1]});
+    tx = await votingMachine.vote(proposalId, 1, accounts[1], {from: accounts[1]});
 
     // now the ugprade should have been executed
     assert.equal(await organization.controller.newController(), newController.address);

@@ -8,13 +8,15 @@ var Reputation = artifacts.require('./schemes/controller/Reputation.sol');
 var SchemeRegistrar = artifacts.require('./schemes/SchemeRegistrar.sol');
 var SimpleICO = artifacts.require('./SimpleICO.sol');
 var SimpleVote = artifacts.require('./SimpleVote.sol');
+var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 var SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
 var TokenCapGC = artifacts.require('./TokenCapGC.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
 
 // Instances:
-var simpleVoteInst;
+var SimpleVoteInst;
+var AbsoluteVoteInst;
 var UniversalGenesisSchemeInst;
 var schemeRegistrarInst;
 var globalConstraintRegistrarInst;
@@ -67,9 +69,12 @@ module.exports = async function(deployer) {
       tokenAddress = await ControllerInst.nativeToken();
       reputationAddress = await ControllerInst.nativeReputation();
       MintableTokenInst = await MintableToken.at(tokenAddress);
+      await deployer.deploy(AbsoluteVote);
+      // Deploy AbsoluteVote:
+      AbsoluteVoteInst = await AbsoluteVote.deployed();
       await deployer.deploy(SimpleVote);
       // Deploy SimpleVote:
-      simpleVoteInst = await SimpleVote.deployed();
+      SimpleVoteInst = await SimpleVote.deployed();
       // Deploy SchemeRegistrar:
       await deployer.deploy(SchemeRegistrar, tokenAddress, UniversalRegisterFee, avatarAddress);
       schemeRegistrarInst = await SchemeRegistrar.deployed();
@@ -81,16 +86,16 @@ module.exports = async function(deployer) {
       globalConstraintRegistrarInst = await GlobalConstraintRegistrar.deployed();
 
       // Voting parameters and schemes params:
-      voteParametersHash = await simpleVoteInst.getParametersHash(reputationAddress, votePrec);
+      voteParametersHash = await AbsoluteVoteInst.getParametersHash(reputationAddress, votePrec, true);
 
-      await schemeRegistrarInst.setParameters(voteParametersHash, voteParametersHash, simpleVoteInst.address);
-      schemeRegisterParams = await schemeRegistrarInst.getParametersHash(voteParametersHash, voteParametersHash, simpleVoteInst.address);
+      await schemeRegistrarInst.setParameters(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);
+      schemeRegisterParams = await schemeRegistrarInst.getParametersHash(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);
 
       await globalConstraintRegistrarInst.setParameters(reputationAddress, votePrec);
       schemeGCRegisterParams = await globalConstraintRegistrarInst.getParametersHash(reputationAddress, votePrec);
 
-      await upgradeSchemeInst.setParameters(voteParametersHash, simpleVoteInst.address);
-      schemeUpgradeParams = await upgradeSchemeInst.getParametersHash(voteParametersHash, simpleVoteInst.address);
+      await upgradeSchemeInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
+      schemeUpgradeParams = await upgradeSchemeInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
 
       // Transferring tokens to org to pay fees:
       await MintableTokenInst.transfer(AvatarInst.address, 3*UniversalRegisterFee);

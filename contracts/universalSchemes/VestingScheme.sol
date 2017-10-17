@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-import "../VotingMachines/BoolVoteInterface.sol";
+import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
 
 /**
@@ -47,7 +47,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
   // A mapping from hashes to parameters (use to store a particular configuration on the controller)
   struct Parameters {
     bytes32 voteParams;
-    BoolVoteInterface boolVote;
+    IntVoteInterface intVote;
   }
 
   // A mapping from thr organization (Avatar) address to the saved data of the organization:
@@ -75,33 +75,33 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
    * @dev the constructor takes a token address, fee and beneficiary
    */
   function VestingScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
-      updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
+    updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
   }
 
   /**
    * @dev Constant function, hash the parameters, save them if necessary, and return the hash value
    */
   function setParameters(
-      bytes32 _voteParams,
-      BoolVoteInterface _boolVote
+    bytes32 _voteParams,
+    IntVoteInterface _intVote
   ) returns(bytes32)
   {
-      bytes32 paramsHash = getParametersHash(_voteParams, _boolVote);
-      parameters[paramsHash].voteParams = _voteParams;
-      parameters[paramsHash].boolVote = _boolVote;
-      return paramsHash;
+    bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
+    parameters[paramsHash].voteParams = _voteParams;
+    parameters[paramsHash].intVote = _intVote;
+    return paramsHash;
   }
 
   /**
    * @dev Constant function, return a hash of the given parameters
    */
   function getParametersHash(
-      bytes32 _voteParams,
-      BoolVoteInterface _boolVote
+    bytes32 _voteParams,
+    IntVoteInterface _intVote
   ) constant returns(bytes32)
   {
-      bytes32 paramsHash = (sha3(_voteParams, _boolVote));
-      return paramsHash;
+    bytes32 paramsHash = (sha3(_voteParams, _intVote));
+    return paramsHash;
   }
 
   /**
@@ -159,8 +159,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
 
     // Open voting:
     Parameters memory params = parameters[getParametersFromController(_avatar)];
-    bytes32 proposalId = params.boolVote.propose(params.voteParams, _avatar, ExecutableInterface(this));
-    params.boolVote.vote(proposalId, true, msg.sender); // Automatically votes `yes` in the name of the opener.
+    bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this));
+    params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
 
     // Write the signers mapping:
     assert(_signaturesReqToCancel >= _signersArray.length);
@@ -192,7 +192,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
    */
   function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
     // Check the caller is indeed the voting machine:
-    require(parameters[getParametersFromController(Avatar(_avatar))].boolVote == msg.sender);
+    require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
     // Log execition:
     LogExecutaion(_avatar, _proposalId, _param);
