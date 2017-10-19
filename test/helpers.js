@@ -17,8 +17,8 @@ export function getProposalAddress(tx) {
     return proposalAddress;
 }
 
-export function getProposal(tx) {
-    return Proposal.at(getProposalAddress(tx));
+export async function getProposal(tx) {
+    return await Proposal.at(getProposalAddress(tx));
 }
 
 export async function etherForEveryone() {
