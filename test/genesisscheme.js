@@ -33,9 +33,9 @@ contract('GenesisScheme', function(accounts) {
         const controller = organization.controller;
 
         const reputationAddress = await controller.nativeReputation();
-        const reputationInstance = Reputation.at(reputationAddress);
+        const reputationInstance = await Reputation.at(reputationAddress);
         const tokenAddress = await controller.nativeToken();
-        const tokenInstance = MintableToken.at(tokenAddress);
+        const tokenInstance = await MintableToken.at(tokenAddress);
 
         for (let i = 0 ; i < founders.length ; i++ ) {
             let rep = await reputationInstance.reputationOf(founders[i].address);

@@ -12,6 +12,7 @@ var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 var SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
 var TokenCapGC = artifacts.require('./TokenCapGC.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
+var OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
 
 // Instances:
 var SimpleVoteInst;
@@ -121,10 +122,10 @@ module.exports = async function(deployer) {
       await upgradeSchemeInst.registerOrganization(AvatarInst.address);
 
 
-      // also deploy a SimpleContributionScheme for general use
       deployer.deploy(SimpleICO, tokenAddress, UniversalRegisterFee, avatarAddress);
+      deployer.deploy(OrganizationRegister, tokenAddress, UniversalRegisterFee, avatarAddress);
     });
 
     deployer.deploy(SimpleContributionScheme);
     deployer.deploy(TokenCapGC);
-};
+  }

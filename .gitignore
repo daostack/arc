@@ -10,3 +10,4 @@ tmp/
 installed_contracts/
 remarks.md
 .node-xmlhttprequest-sync*
+*.tgz

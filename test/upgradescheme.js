@@ -33,7 +33,7 @@ contract('UpgradeScheme', function(accounts) {
 
     const upgradeScheme = await organization.scheme('UpgradeScheme');
     const settings = await getSettings();
-    const votingMachine = AbsoluteVote.at(settings.votingMachine);
+    const votingMachine = await AbsoluteVote.at(settings.votingMachine);
 
     // the organization has not bene upgraded yet, so newController is the NULL address
     assert.equal(await organization.controller.newController(), helpers.NULL_ADDRESS);

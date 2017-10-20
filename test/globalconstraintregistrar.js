@@ -104,7 +104,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     // assert.equal(params, tokenCapGCParamsHash);
   });
 
-  it("the GlobalConstraintRegistrar.new() functioshould work as expected with the default parameters", async function() {
+  it("the GlobalConstraintRegistrar.new() function should work as expected with the default parameters", async function() {
     // create a schemeRegistrar
     const registrar = await GlobalConstraintRegistrar.new();
 
