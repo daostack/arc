@@ -39,10 +39,10 @@ contract DAOToken is MintableToken, Destructible {
       lockInternal(msg.sender, _value, _releaseBlock);
     }
 
-    function mintLocked(address _to, uint _amount, uint _releaseBlock) {
-      super.mint(_to, _amount);
+    /*function mintLocked(address _to, uint _amount, uint _releaseBlock) returns(bool res) {
+      res = (super.mint(_to, _amount));
       lockInternal(_to, _amount, _releaseBlock);
-    }
+    }*/
 
     function lockInternal(address agent, uint _value, uint _releaseBlock) internal {
       // Sanity check:
@@ -66,7 +66,7 @@ contract DAOToken is MintableToken, Destructible {
       if (lockBalances[msg.sender].releaseBlock > block.number)
         require(balances[msg.sender].sub(_value) >= lockBalances[msg.sender].lockedAmount);
 
-      res = super.transfer(_to, _value);
+      res = (super.transfer(_to, _value));
 
       if (_to == address(this))
         burnContractTokens();
@@ -78,7 +78,7 @@ contract DAOToken is MintableToken, Destructible {
       if (lockBalances[_from].releaseBlock > block.number)
         require(balances[_from].sub(_value) >= lockBalances[_from].lockedAmount);
 
-      res = super.transferFrom(_from, _to, _value);
+      res = (super.transferFrom(_from, _to, _value));
 
       if (_to == address(this)) {
         burnContractTokens();
