@@ -36,41 +36,49 @@ contract DAOToken is MintableToken, Destructible {
     mapping(address => Lock) lockBalances;
 
     function lock(uint _value, uint _releaseBlock) {
+      lockInternal(msg.sender, _value, _releaseBlock);
+    }
+
+    function mintLocked(address _to, uint _amount, uint _releaseBlock) {
+      super.mint(_to, _amount);
+      lockInternal(_to, _amount, _releaseBlock);
+    }
+
+    function lockInternal(address agent, uint _value, uint _releaseBlock) internal {
       // Sanity check:
       require(_value != 0);
-      require(_value <= balances[msg.sender]);
-      require(_releaseBlock > block.number);
+      require(_value <= balances[agent]);
 
       // Check if user has locked funds, and verify the change is legit:
-      if (lockBalances[msg.sender].releaseBlock > block.number) {
-        require(_value >= lockBalances[msg.sender].lockedAmount);
-        require(_releaseBlock >= lockBalances[msg.sender].releaseBlock);
+      if (lockBalances[agent].releaseBlock > block.number) {
+        require(_value >= lockBalances[agent].lockedAmount);
+        require(_releaseBlock >= lockBalances[agent].releaseBlock);
       }
 
-      lockBalances[msg.sender].lockedAmount = _value;
-      lockBalances[msg.sender].releaseBlock = _releaseBlock;
-      TokenLock(msg.sender, _value);
+      lockBalances[agent].lockedAmount = _value;
+      lockBalances[agent].releaseBlock = _releaseBlock;
+      TokenLock(agent, _value);
     }
 
     // Rewriting the function to check for locking and burn tokens of the contract itself:
-    function transfer(address _to, uint _value) returns(bool) {
+    function transfer(address _to, uint _value) returns(bool res) {
       // Check for locking:
       if (lockBalances[msg.sender].releaseBlock > block.number)
         require(balances[msg.sender].sub(_value) >= lockBalances[msg.sender].lockedAmount);
 
-      return (super.transfer(_to, _value));
+      res = super.transfer(_to, _value);
 
       if (_to == address(this))
         burnContractTokens();
     }
 
     // Rewriting the function to check for locking and burn tokens of the contract itself:
-    function transferFrom(address _from, address _to, uint _value) returns(bool) {
+    function transferFrom(address _from, address _to, uint _value) returns(bool res) {
       // Check for locking:
       if (lockBalances[_from].releaseBlock > block.number)
         require(balances[_from].sub(_value) >= lockBalances[_from].lockedAmount);
 
-      return (super.transferFrom(_from, _to, _value));
+      res = super.transferFrom(_from, _to, _value);
 
       if (_to == address(this)) {
         burnContractTokens();
