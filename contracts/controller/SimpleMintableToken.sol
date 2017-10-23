@@ -13,7 +13,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * Based on code by TokenMarketNet: https://github.com/TokenMarketNet/ico/blob/master/contracts/MintableToken.sol
  */
 
-contract MintableToken is StandardToken, Ownable, Destructible {
+contract SimpleMintableToken is StandardToken, Ownable, Destructible {
     using SafeMath for uint;
 
     string public name;
@@ -26,7 +26,7 @@ contract MintableToken is StandardToken, Ownable, Destructible {
     /**
      * @dev the constructor takes a token name and a symbol and sets the total supply to 0
      */
-    function MintableToken(string _name, string _symbol) {
+    function SimpleMintableToken(string _name, string _symbol) {
         name = _name;
         symbol = _symbol;
         totalSupply = 0;

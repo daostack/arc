@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 import "../controller/Avatar.sol";
 import "../controller/Controller.sol";
-import "../controller/MintableToken.sol";
+import "../controller/DAOToken.sol";
 import "../controller/Reputation.sol";
 
 /**
@@ -10,7 +10,7 @@ import "../controller/Reputation.sol";
  */
 
 contract GenesisScheme {
-    MintableToken nativeToken;
+    DAOToken nativeToken;
     Reputation nativeReputation;
     Avatar avatar;
 
@@ -52,7 +52,7 @@ contract GenesisScheme {
     {
 
         // Create Token, Reputation and Avatar:
-        nativeToken = new MintableToken(_tokenName, _tokenSymbol);
+        nativeToken = new DAOToken(_tokenName, _tokenSymbol);
         nativeReputation = new Reputation();
         avatar =  new Avatar(_orgName, nativeToken, nativeReputation);
 

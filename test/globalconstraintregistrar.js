@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 
 import { GlobalConstraintRegistrar } from '../lib/globalconstraintregistrar.js';
 
-const MintableToken = artifacts.require("./MintableToken.sol");
+const DAOToken = artifacts.require("./DAOToken.sol");
 const TokenCapGC = artifacts.require("./TokenCapGC.sol");
 
 import { getValueFromLogs } from '../lib/utils.js';
@@ -119,7 +119,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
 
   it("the GlobalConstraintRegistrar.new() function should work as expected with specific parameters", async function() {
     // create a schemeRegistrar, passing some options
-    const token = await MintableToken.new();
+    const token = await DAOToken.new();
 
     const registrar = await GlobalConstraintRegistrar.new({
         tokenAddress:token.address,

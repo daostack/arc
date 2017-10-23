@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
-/*import "zeppelin-solidity/contracts/token/MintableToken.sol";*/ // ToDo, Build on zeppelin contrcat.
-import "./MintableToken.sol";
+import "zeppelin-solidity/contracts/token/MintableToken.sol";
+import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
@@ -9,7 +9,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * @dev ERC20 comptible token. It is a mintable, lockable, burnable token.
  */
 
-contract DAOToken is MintableToken {
+contract DAOToken is MintableToken, Destructible {
     using SafeMath for uint;
 
     event TokenLock(address indexed user, uint value);
@@ -18,6 +18,18 @@ contract DAOToken is MintableToken {
     struct Lock {
       uint lockedAmount;
       uint releaseBlock;
+    }
+
+    string public name;
+    string public symbol;
+    uint public decimals = 18;
+
+    /**
+     * @dev the constructor takes a token name and a symbol
+     */
+    function DAOToken(string _name, string _symbol) {
+        name = _name;
+        symbol = _symbol;
     }
 
     // Locking mapping:
@@ -46,11 +58,10 @@ contract DAOToken is MintableToken {
       if (lockBalances[msg.sender].releaseBlock > block.number)
         require(balances[msg.sender].sub(_value) >= lockBalances[msg.sender].lockedAmount);
 
-      // TODO: return the result of transfer
-      super.transfer(_to, _value);
+      return (super.transfer(_to, _value));
 
       if (_to == address(this))
-        burnContractToken();
+        burnContractTokens();
     }
 
     // Rewriting the function to check for locking and burn tokens of the contract itself:
@@ -59,16 +70,15 @@ contract DAOToken is MintableToken {
       if (lockBalances[_from].releaseBlock > block.number)
         require(balances[_from].sub(_value) >= lockBalances[_from].lockedAmount);
 
-      // TODO: return the result of transferFrom
-      super.transferFrom(_from, _to, _value);
+      return (super.transferFrom(_from, _to, _value));
 
       if (_to == address(this)) {
-        burnContractToken();
+        burnContractTokens();
       }
     }
 
     // The token contract should not hold its own tokens, allow anyont to burn its balance:
-    function burnContractToken() {
+    function burnContractTokens() {
       totalSupply = totalSupply.sub(balances[this]);
       balances[this] = 0;
       Burn(balances[this]);

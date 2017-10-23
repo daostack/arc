@@ -17,9 +17,9 @@ const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
   reputationArray = [20, 10, 70 ];
-  await reputation.mint(reputationArray[0], accounts[0]);
-  await reputation.mint(reputationArray[1], accounts[1]);
-  await reputation.mint(reputationArray[2], accounts[2]);
+  await reputation.mint(accounts[0], reputationArray[0]);
+  await reputation.mint(accounts[1], reputationArray[1]);
+  await reputation.mint(accounts[2], reputationArray[2]);
 
   // register some parameters
   await absoluteVote.setParameters(reputation.address, precReq, isOwnedVote);
@@ -716,9 +716,9 @@ contract('AbsoluteVote', function (accounts) {
     const absoluteVote = await AbsoluteVote.new();
     const reputation = await Reputation.new();
     reputationArray = [20, 10, 70];
-    await reputation.mint(reputationArray[0], accounts[0]);
-    await reputation.mint(reputationArray[1], accounts[1]);
-    await reputation.mint(reputationArray[2], accounts[2]);
+    await reputation.mint(accounts[0], reputationArray[0]);
+    await reputation.mint(accounts[1], reputationArray[1]);
+    await reputation.mint(accounts[2], reputationArray[2]);
     avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
 
     // Send empty rep system to the absoluteVote contract
@@ -893,9 +893,9 @@ contract('AbsoluteVote', function (accounts) {
     reputation = await Reputation.new();
     avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
     reputationArray = [20, 10, 70 ];
-    await reputation.mint(reputationArray[0], accounts[0]);
-    await reputation.mint(reputationArray[1], accounts[1]);
-    await reputation.mint(reputationArray[2], accounts[2]);
+    await reputation.mint(accounts[0], reputationArray[0]);
+    await reputation.mint(accounts[1], reputationArray[1]);
+    await reputation.mint(accounts[2], reputationArray[2]);
 
     // Porposal 1 - 6 choices - 30% - ownerVote disabled
     let absoluteVote1 = await AbsoluteVote.new();

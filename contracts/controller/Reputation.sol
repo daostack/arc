@@ -16,7 +16,7 @@ contract Reputation is Ownable {
     uint256 public totalSupply;
     uint public decimals = 18;
 
-    event Mint(address indexed to, int256 value);
+    event Mint(address indexed to, int256 amount);
 
   /**
      * @dev the constructor initiate a reputation system with no supply at all
@@ -37,11 +37,11 @@ contract Reputation is Ownable {
     /**
      * @dev adding/reducing reputation of a given address, updating the total supply,
      * and triggering an event of the operation
-     * @param _amount the reputation amount to be added/reduced
      * @param _to the address which we gives/takes reputation amount
+     * @param _amount the reputation amount to be added/reduced
      * @return bool which represents a successful of the function
      */
-    function mint(int256 _amount, address _to) onlyOwner returns (bool) {
+    function mint(address _to, int256 _amount) onlyOwner returns (bool) {
           // create new tokens and add them to the given account
           uint absAmount; // allow to reduce reputation also for non owner
           if( _amount >= 0 ) {
@@ -59,11 +59,11 @@ contract Reputation is Ownable {
 
     /**
      * @dev setting reputation amount for a given address, updating the total supply as well
-     * @param _amount the new reputation amount to be setted
      * @param _to the address which we set it's reputation amount
+     * @param _amount the new reputation amount to be setted
      * @return bool which represents a success
      */
-    function setReputation(uint256 _amount, address _to) onlyOwner returns (bool) {
+    function setReputation(address _to, uint256 _amount) onlyOwner returns (bool) {
         // set the balance of _to to _amount
         totalSupply = (totalSupply.sub(balances[_to])).add(_amount);
         balances[_to] = _amount;

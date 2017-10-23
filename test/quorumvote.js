@@ -18,9 +18,9 @@ const setupQuorumVote = async function (isOwnedVote=true, precReq=50) {
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
   reputationArray = [20, 10, 70 ];
-  await reputation.mint(reputationArray[0], accounts[0]);
-  await reputation.mint(reputationArray[1], accounts[1]);
-  await reputation.mint(reputationArray[2], accounts[2]);
+  await reputation.mint(accounts[0], reputationArray[0]);
+  await reputation.mint(accounts[1], reputationArray[1]);
+  await reputation.mint(accounts[2], reputationArray[2]);
 
   // register some parameters
   await quorumVote.setParameters(reputation.address, precReq, isOwnedVote);
@@ -593,9 +593,9 @@ contract('QuorumVote', function (accounts) {
     const quorumVote = await QuorumVote.new();
     const reputation = await Reputation.new();
     reputationArray = [20, 10, 70];
-    await reputation.mint(reputationArray[0], accounts[0]);
-    await reputation.mint(reputationArray[1], accounts[1]);
-    await reputation.mint(reputationArray[2], accounts[2]);
+    await reputation.mint(accounts[0], reputationArray[0]);
+    await reputation.mint(accounts[1], reputationArray[1]);
+    await reputation.mint(accounts[2], reputationArray[2]);
     avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
 
     // Send empty rep system to the absoluteVote contract

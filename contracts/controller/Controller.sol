@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 import "./Avatar.sol";
 import "./Reputation.sol";
-import "./MintableToken.sol";
+import "./DAOToken.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
 
 
@@ -33,7 +33,7 @@ contract Controller {
     mapping(address=>Scheme) public schemes;
 
     Avatar public avatar;
-    MintableToken public nativeToken;
+    DAOToken public nativeToken;
     Reputation public nativeReputation;
     // newController will point to the new controller after the present controller is upgraded
     address public newController;
@@ -56,7 +56,7 @@ contract Controller {
     // This is a good constructor only for new organizations, need an improved one to support upgrade.
     function Controller(
         Avatar _avatar,
-        MintableToken _nativeToken,
+        DAOToken _nativeToken,
         Reputation    _nativeReputation,
         address[] _schemes,
         bytes32[] _params,
@@ -116,7 +116,7 @@ contract Controller {
         returns(bool)
         {
         MintReputation(msg.sender, _beneficiary, _amount);
-        return nativeReputation.mint(_amount, _beneficiary);
+        return nativeReputation.mint(_beneficiary, _amount);
     }
 
     function mintTokens(uint256 _amount, address _beneficiary)
@@ -125,7 +125,7 @@ contract Controller {
         returns(bool)
     {
         MintTokens(msg.sender, _beneficiary, _amount);
-        return nativeToken.mint(_amount, _beneficiary);
+        return nativeToken.mint(_beneficiary, _amount);
     }
 
     /**

@@ -3,7 +3,7 @@ var Avatar = artifacts.require('./schemes/controller/Avatar.sol');
 var Controller = artifacts.require('./schemes/controller/Controller.sol');
 var GenesisScheme = artifacts.require('./schemes/GenesisScheme.sol');
 var GlobalConstraintRegistrar = artifacts.require('./schemes/GlobalConstraintRegistrar.sol');
-var MintableToken = artifacts.require('./schemes/controller/MintableToken.sol');
+var DAOToken = artifacts.require('./schemes/controller/DAOToken.sol');
 var Reputation = artifacts.require('./schemes/controller/Reputation.sol');
 var SchemeRegistrar = artifacts.require('./schemes/SchemeRegistrar.sol');
 var SimpleICO = artifacts.require('./SimpleICO.sol');
@@ -24,7 +24,7 @@ var upgradeSchemeInst;
 var ControllerInst;
 var OrganizationsBoardInst;
 var ReputationInst;
-var MintableTokenInst;
+var DAOTokenInst;
 var AvatarInst;
 var SimpleICOInst;
 
@@ -68,7 +68,7 @@ module.exports = async function(deployer) {
       ControllerInst = await Controller.at(controllerAddress);
       tokenAddress = await ControllerInst.nativeToken();
       reputationAddress = await ControllerInst.nativeReputation();
-      MintableTokenInst = await MintableToken.at(tokenAddress);
+      DAOTokenInst = await DAOToken.at(tokenAddress);
       await deployer.deploy(AbsoluteVote);
       // Deploy AbsoluteVote:
       AbsoluteVoteInst = await AbsoluteVote.deployed();
@@ -98,7 +98,7 @@ module.exports = async function(deployer) {
       schemeUpgradeParams = await upgradeSchemeInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
 
       // Transferring tokens to org to pay fees:
-      await MintableTokenInst.transfer(AvatarInst.address, 3*UniversalRegisterFee);
+      await DAOTokenInst.transfer(AvatarInst.address, 3*UniversalRegisterFee);
 
       var schemesArray = [schemeRegistrarInst.address, globalConstraintRegistrarInst.address, upgradeSchemeInst.address];
       var paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams];

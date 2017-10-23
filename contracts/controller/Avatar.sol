@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 import "./Controller.sol";
 import "./Reputation.sol";
-import "./MintableToken.sol";
+import "./DAOToken.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/token/StandardToken.sol";
 
@@ -17,7 +17,7 @@ contract ActionInterface {
  */
 contract Avatar is Ownable {
     bytes32 public orgName;
-    MintableToken public nativeToken;
+    DAOToken public nativeToken;
     Reputation public nativeReputation;
 
     event GenericAction(address indexed _action, bytes32[] _params);
@@ -32,7 +32,7 @@ contract Avatar is Ownable {
      * @dev the constructor takes organization name, native token and reputation system
      and creates an avatar for a controller
      */
-    function Avatar(bytes32 _orgName, MintableToken _nativeToken, Reputation _nativeReputation) {
+    function Avatar(bytes32 _orgName, DAOToken _nativeToken, Reputation _nativeReputation) {
         orgName = _orgName;
         nativeToken = _nativeToken;
         nativeReputation = _nativeReputation;

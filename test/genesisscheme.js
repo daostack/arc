@@ -1,6 +1,6 @@
 const helpers = require('./helpers');
 
-const MintableToken = artifacts.require("./MintableToken.sol");
+const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 
 contract('GenesisScheme', function(accounts) {
@@ -35,7 +35,7 @@ contract('GenesisScheme', function(accounts) {
         const reputationAddress = await controller.nativeReputation();
         const reputationInstance = await Reputation.at(reputationAddress);
         const tokenAddress = await controller.nativeToken();
-        const tokenInstance = await MintableToken.at(tokenAddress);
+        const tokenInstance = await DAOToken.at(tokenAddress);
 
         for (let i = 0 ; i < founders.length ; i++ ) {
             let rep = await reputationInstance.reputationOf(founders[i].address);
