@@ -44,7 +44,7 @@ contract('UpgradeScheme', function(accounts) {
 
     const proposalId = getValueFromLogs(tx, '_proposalId');
     // now vote with the majority for the proposal
-    tx = await votingMachine.vote(proposalId, 1, accounts[1], {from: accounts[1]});
+    tx = await votingMachine.vote(proposalId, 1, {from: accounts[1]});
 
     // now the ugprade should have been executed
     assert.equal(await organization.controller.newController(), newController.address);
