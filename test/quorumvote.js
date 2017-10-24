@@ -605,9 +605,9 @@ contract('QuorumVote', function (accounts) {
     const proposalId = await getValueFromLogs(tx, '_proposalId');
 
     // Minority vote - no execution - no exception
-    tx = await quorumVote.vote(proposalId, 5, accounts[0]);
+    tx = await quorumVote.vote(proposalId, 5, {from: accounts[0]});
     // The decisive vote - execution should be initiate execution with an empty address
-    await quorumVote.vote(proposalId, 5, accounts[2]);
+    // await quorumVote.vote(proposalId, 5, {from: accounts[2]});
   });
 
   it('Test voteWithSpecifiedAmounts - More reputation than I own, negative reputation, etc..', async function () {
@@ -661,15 +661,15 @@ contract('QuorumVote', function (accounts) {
 
     // Lets try to call internalVote function
     try {
-      await quorumVote.internalVote(proposalId, 1, accounts[0]);
+      await quorumVote.internalVote(proposalId, accounts[0], 1, reputationArray[0]);
       assert(false, 'Can\'t call internalVote');
     } catch (ex) {
       helpers.assertInternalFunctionException(ex);
     }
 
-    await quorumVote.vote(proposalId, 1, accounts[0]);
+    await quorumVote.vote(proposalId, 1, {from: accounts[0]});
 
-    // Lets try to call internalVote function
+    // Lets try to call cancelVoteInternal function
     try {
       await quorumVote.cancelVoteInternal(proposalId, accounts[0]);
       assert(false, 'Can\'t call cancelVoteInternal');
@@ -690,7 +690,7 @@ contract('QuorumVote', function (accounts) {
 
     // Lets try to call vote with invalid porposal id
     try {
-      await quorumVote.vote('asdsada', 1, accounts[0]);
+      await quorumVote.vote('asdsada', 1, {from: accounts[0]});
       assert(false, 'Invalid porposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -706,7 +706,7 @@ contract('QuorumVote', function (accounts) {
 
     // Lets try to call executeProposal with invalid porposal id
     try {
-      await quorumVote.executeProposal('asdsada', 1, 1, 1);
+      await quorumVote.executeProposal('asdsada');
       assert(false, 'Invalid porposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -722,7 +722,7 @@ contract('QuorumVote', function (accounts) {
 
     // Lets try to call cancel a vote with invalid porposal id
     try {
-      await quorumVote.cancelVote('asdsada', accounts[0]);
+      await quorumVote.cancelVote('asdsada');
       assert(false, 'Invalid porposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
