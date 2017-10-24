@@ -115,7 +115,7 @@ contract SimpleVote {
             if (_yes == false && proposal.voted[_voter] < 0) {
                 return false;
             }
-            
+
             cancelVote(_proposalId, _voter);
         }
 
@@ -138,27 +138,27 @@ contract SimpleVote {
      * @dev cancel your vote
      * @param _proposalId id of the proposal
      */
-    function cancelVote(bytes32 _proposalId, address _voter) {
-        Proposal storage proposal = proposals[_proposalId];
-        // Check vote is open:
-        require(proposal.opened);
-        require(!proposal.ended);
+     function cancelVote(bytes32 _proposalId, address _voter) {
+         Proposal storage proposal = proposals[_proposalId];
+         // Check vote is open:
+         require(proposal.opened);
+         require(!proposal.ended);
 
-        // The owner of the proposal can cancell vote in anyones name. Others can only cancell vote for themselves.
-        if (msg.sender != proposal.owner) {
-            _voter = msg.sender;
-        }
+         // The owner of the proposal can cancell vote in anyones name. Others can only cancell vote for themselves.
+         if (msg.sender != proposal.owner) {
+             _voter = msg.sender;
+         }
 
-        int vote = proposal.voted[_voter];
+         int origVote = proposal.voted[_voter];
 
-        if (vote > 0) {
-            proposal.yes = (proposal.yes).sub(uint(vote));
-        } else {
-            proposal.no = (proposal.no).sub(uint((-1)*vote));
-        }
-        proposal.voted[_voter] = 0;
-        CancelVoting(_voter, _proposalId);
-    }
+         if (origVote > 0) {
+             proposal.yes = (proposal.yes).sub(uint(origVote));
+         } else {
+             proposal.no = (proposal.no).sub(uint((-1)*origVote));
+         }
+         proposal.voted[_voter] = 0;
+         CancelVoting(_voter, _proposalId);
+     }
 
     /**
      * @dev check if the proposal has been decided, and if so, execute the proposal
