@@ -237,7 +237,7 @@ contract SchemeRegistrar is UniversalScheme {
     // Remove a scheme:
     if( proposal.proposalType == 2 ) {
       if(!controller.unregisterScheme(proposal.scheme)) {
-          revert();
+        revert();
       }
     }
 
