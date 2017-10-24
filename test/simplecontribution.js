@@ -72,7 +72,7 @@ contract('SimpleContribution scheme', function(accounts) {
       address: contributionScheme.address,
     });
     // this will vote-and-execute
-    tx = await votingMachine.vote(proposalId, 1, accounts[1], {from: accounts[1]});
+    tx = await votingMachine.vote(proposalId, 1, {from: accounts[1]});
 
     // now our scheme should be registered on the controller
     const schemeFromController = await controller.schemes(contributionScheme.address);
@@ -137,9 +137,9 @@ contract('SimpleContribution scheme', function(accounts) {
     // first we check if our executable (proposal[3]) is indeed the contributionScheme
     assert.equal(proposal[3], contributionScheme.address);
 
-    tx = await votingMachine.vote(contributionId, 1, accounts[0], {from: accounts[0]});
+    tx = await votingMachine.vote(contributionId, 1, {from: accounts[0]});
     // and this is the majority vote (which will also call execute on the executable
-    tx = await votingMachine.vote(contributionId, 1, accounts[1], {from: accounts[1]});
+    tx = await votingMachine.vote(contributionId, 1, {from: accounts[1]});
 
     // TODO: check if proposal was deleted from contribution Scheme
     // proposal = await contributionScheme.proposals(contributionId);
