@@ -242,7 +242,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * @return uint Porposal's score
    */
   function proposalScore(bytes32 _proposalId) constant returns(uint) {
-    Proposal proposal = proposals[_proposalId];
+    Proposal memory proposal = proposals[_proposalId];
     return (proposal.boostedFunds.mul(proposal.totalVotes));
   }
 
@@ -304,7 +304,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     require(avatar != address(0)); // Check propsal exists
     bytes32 orgParamsHash = getParametersFromController(Avatar(avatar));
     OrgParameters memory orgParams = organizationsParameters[orgParamsHash];
-    Organization org = organizations[avatar];
+    Organization storage org = organizations[avatar];
 
     // If proposal already awaiting, return:
     if (proposals[_proposalId].isAwaitingBoost) {
@@ -383,7 +383,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     require(_avatar != address(0)); // Check propsal exists
     bytes32 orgParamsHash = getParametersFromController(Avatar(_avatar));
     OrgParameters memory orgParams = organizationsParameters[orgParamsHash];
-    Organization org = organizations[_avatar];
+    Organization storage org = organizations[_avatar];
 
     // Check we have free bandwidth:
     if (org.boostedProposals >= orgParams.attentionBandwidth) {
@@ -399,7 +399,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     org.boostedProposals++;
     uint maxIndex;
     (maxIndex, ) = findMaxScore(org.awaitingBoostProposals);
-    Proposal proposal =  proposals[org.awaitingBoostProposals[maxIndex]];
+    Proposal storage proposal =  proposals[org.awaitingBoostProposals[maxIndex]];
     proposal.isBoostModeActive = true;
     proposal.isAwaitingBoost = false;
     uint timeFrame = proposalsParameters[proposal.paramsHash].boostTimeFrame;
