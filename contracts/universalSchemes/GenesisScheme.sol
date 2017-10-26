@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.15;
 
 import "../controller/Avatar.sol";
 import "../controller/Controller.sol";

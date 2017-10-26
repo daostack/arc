@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.15;
 
 import "../universalSchemes/ExecutableInterface.sol";
 
@@ -22,7 +22,7 @@ contract IntVoteInterface {
 
   function executeProposal(bytes32 _proposalId) votableProposal(_proposalId) returns(bool);
 
-  function getNumberOfChoices(bytes32 _proposalId) constant returns(uint); 
+  function getNumberOfChoices(bytes32 _proposalId) constant returns(uint);
 
   function voteInfo(bytes32 _proposalId, address _voter) constant returns(uint[13]);
 
