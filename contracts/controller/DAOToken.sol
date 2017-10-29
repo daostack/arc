@@ -39,10 +39,10 @@ contract DAOToken is MintableToken, Destructible {
       lockInternal(msg.sender, _value, _releaseBlock);
     }
 
-    /*function mintLocked(address _to, uint _amount, uint _releaseBlock) returns(bool res) {
+    function mintLocked(address _to, uint _amount, uint _releaseBlock) returns(bool res) {
       res = (super.mint(_to, _amount));
       lockInternal(_to, _amount, _releaseBlock);
-    }*/
+    }
 
     function lockInternal(address agent, uint _value, uint _releaseBlock) internal {
       // Sanity check:
