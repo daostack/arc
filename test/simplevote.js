@@ -15,9 +15,9 @@ const setupSimpleVote = async function () {
 
     // set up a reputaiton system
     reputation = await Reputation.new();
-    await reputation.mint(20, accounts[0]);
-    await reputation.mint(10, accounts[1]);
-    await reputation.mint(70, accounts[2]);
+    await reputation.mint(accounts[0], 20);
+    await reputation.mint(accounts[1], 10);
+    await reputation.mint(accounts[2], 70);
 
     // register some parameters
     await simpleVote.setParameters(reputation.address, 50);
@@ -193,7 +193,7 @@ contract('SimpleVote', function (accounts) {
 
         const reps = Math.floor(Math.random() * 49);
 
-        await reputation.mint(reps, accounts[1]);
+        await reputation.mint(accounts[1], reps);
 
         await simpleVote.setParameters(reputation.address, 50);
 
@@ -215,8 +215,8 @@ contract('SimpleVote', function (accounts) {
         const reputation = await Reputation.new();
         const executable = await ExecutableTest.new();
 
-        await reputation.mint(20, accounts[1]);
-        await reputation.mint(40, accounts[2]);
+        await reputation.mint(accounts[1], 20);
+        await reputation.mint(accounts[2], 40);
 
         await simpleVote.setParameters(reputation.address, 50);
 
@@ -247,8 +247,8 @@ contract('SimpleVote', function (accounts) {
         const reputation = await Reputation.new();
         const executable = await ExecutableTest.new();
 
-        await reputation.mint(20, accounts[1]);
-        await reputation.mint(40, accounts[2]);
+        await reputation.mint(accounts[1], 20);
+        await reputation.mint(accounts[2], 40);
 
         await simpleVote.setParameters(reputation.address, 50);
 
@@ -280,8 +280,8 @@ contract('SimpleVote', function (accounts) {
             const reputation = await Reputation.new();
             const executable = await ExecutableTest.new();
 
-            await reputation.mint(20, accounts[1]);
-            await reputation.mint(40, accounts[2]);
+            await reputation.mint(accounts[1], 20);
+            await reputation.mint(accounts[2], 40);
 
             await simpleVote.setParameters(reputation.address, 50);
 
@@ -312,8 +312,8 @@ contract('SimpleVote', function (accounts) {
             const reputation = await Reputation.new();
             const executable = await ExecutableTest.new();
 
-            await reputation.mint(20, accounts[1]);
-            await reputation.mint(40, accounts[2]);
+            await reputation.mint(accounts[1], 20);
+            await reputation.mint(accounts[2], 40);
 
             await simpleVote.setParameters(reputation.address, 50);
 
@@ -346,8 +346,8 @@ contract('SimpleVote', function (accounts) {
             const reputation = await Reputation.new();
             const executable = await ExecutableTest.new();
 
-            await reputation.mint(20, accounts[1]);
-            await reputation.mint(40, accounts[2]);
+            await reputation.mint(accounts[1], 20);
+            await reputation.mint(accounts[2], 40);
 
             await simpleVote.setParameters(reputation.address, 50);
 
@@ -378,8 +378,8 @@ contract('SimpleVote', function (accounts) {
             const reputation = await Reputation.new();
             const executable = await ExecutableTest.new();
 
-            await reputation.mint(20, accounts[1]);
-            await reputation.mint(40, accounts[2]);
+            await reputation.mint(accounts[1], 20);
+            await reputation.mint(accounts[2], 40);
 
             await simpleVote.setParameters(reputation.address, 50);
 
@@ -411,8 +411,8 @@ contract('SimpleVote', function (accounts) {
         const reputation = await Reputation.new();
         const executable = await ExecutableTest.new();
 
-        await reputation.mint(20, accounts[1]);
-        await reputation.mint(40, accounts[2]);
+        await reputation.mint(accounts[1], 20);
+        await reputation.mint(accounts[2], 40);
 
         await simpleVote.setParameters(reputation.address, 50);
 
@@ -440,8 +440,8 @@ contract('SimpleVote', function (accounts) {
         const reputation = await Reputation.new();
         const executable = await ExecutableTest.new();
 
-        await reputation.mint(20, accounts[1]);
-        await reputation.mint(40, accounts[2]);
+        await reputation.mint(accounts[1], 20);
+        await reputation.mint(accounts[2], 40);
 
         await simpleVote.setParameters(reputation.address, 50);
 

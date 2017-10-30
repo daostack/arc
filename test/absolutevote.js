@@ -17,9 +17,9 @@ const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
   reputationArray = [20, 10, 70 ];
-  await reputation.mint(reputationArray[0], accounts[0]);
-  await reputation.mint(reputationArray[1], accounts[1]);
-  await reputation.mint(reputationArray[2], accounts[2]);
+  await reputation.mint(accounts[0], reputationArray[0]);
+  await reputation.mint(accounts[1], reputationArray[1]);
+  await reputation.mint(accounts[2], reputationArray[2]);
 
   // register some parameters
   await absoluteVote.setParameters(reputation.address, precReq, isOwnedVote);
@@ -555,10 +555,10 @@ contract('AbsoluteVote', function (accounts) {
     await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // Let's try to change user voting choice. and also check that if it's the same choice, ignore.
-    await absoluteVote.vote(proposalId, 1, accounts[1], { from: accounts[1] });
-    await absoluteVote.vote(proposalId, 1, accounts[1], { from: accounts[1] });
-    await absoluteVote.vote(proposalId, 2, accounts[1], { from: accounts[1] });
-    await absoluteVote.vote(proposalId, 2, accounts[1], { from: accounts[1] });
+    await absoluteVote.vote(proposalId, 1, { from: accounts[1] });
+    await absoluteVote.vote(proposalId, 1, { from: accounts[1] });
+    await absoluteVote.vote(proposalId, 2, { from: accounts[1] });
+    await absoluteVote.vote(proposalId, 2, { from: accounts[1] });
     // Total 'Option 2' supposed to be 0, 'Option 3' supposed to be accounts[1] reputation.
     // everything should be 0
     await checkProposalStatus(proposalId, [0, 0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
@@ -578,11 +578,11 @@ contract('AbsoluteVote', function (accounts) {
       // no one has voted yet at this point
       await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, 0, true]);
 
-      await absoluteVote.vote(proposalId, 0, accounts[1], { from: accounts[1] });
+      await absoluteVote.vote(proposalId, 0, { from: accounts[1] });
 
       await checkProposalStatus(proposalId, [reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
-      await absoluteVote.vote(proposalId, 1, accounts[1], { from: accounts[1] });
+      await absoluteVote.vote(proposalId, 1, { from: accounts[1] });
 
       await checkProposalStatus(proposalId, [0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
     });
@@ -599,11 +599,11 @@ contract('AbsoluteVote', function (accounts) {
       // no one has voted yet at this point
       await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, 0, true]);
 
-      await absoluteVote.vote(proposalId, 2, accounts[1], { from: accounts[1] });
+      await absoluteVote.vote(proposalId, 2, { from: accounts[1] });
 
       await checkProposalStatus(proposalId, [0, 0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
-      await absoluteVote.vote(proposalId, 3, accounts[1], { from: accounts[1] });
+      await absoluteVote.vote(proposalId, 3, { from: accounts[1] });
 
       await checkProposalStatus(proposalId, [0, 0, 0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 1]);
     });
@@ -716,9 +716,9 @@ contract('AbsoluteVote', function (accounts) {
     const absoluteVote = await AbsoluteVote.new();
     const reputation = await Reputation.new();
     reputationArray = [20, 10, 70];
-    await reputation.mint(reputationArray[0], accounts[0]);
-    await reputation.mint(reputationArray[1], accounts[1]);
-    await reputation.mint(reputationArray[2], accounts[2]);
+    await reputation.mint(accounts[0], reputationArray[0]);
+    await reputation.mint(accounts[1], reputationArray[1]);
+    await reputation.mint(accounts[2], reputationArray[2]);
     avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
 
     // Send empty rep system to the absoluteVote contract
@@ -728,9 +728,9 @@ contract('AbsoluteVote', function (accounts) {
     const proposalId = await getValueFromLogs(tx, '_proposalId');
 
     // Minority vote - no execution - no exception
-    tx = await absoluteVote.vote(proposalId, 5, accounts[0]);
+    tx = await absoluteVote.vote(proposalId, 5, { from: accounts[0] });
     // The decisive vote - execution should be initiate execution with an empty address
-    await absoluteVote.vote(proposalId, 5, accounts[2]);
+    // await absoluteVote.vote(proposalId, 5, { from: accounts[2] });
   });
 
   it('Porposal with wrong num of options', async function () {
@@ -817,15 +817,15 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call internalVote function
     try {
-      await absoluteVote.internalVote(proposalId, 1, accounts[0]);
+      await absoluteVote.internalVote(proposalId, accounts[0], 1, reputationArray[0]);
       assert(false, 'Can\'t call internalVote');
     } catch (ex) {
       helpers.assertInternalFunctionException(ex);
     }
 
-    await absoluteVote.vote(proposalId, 1, accounts[0]);
+    await absoluteVote.vote(proposalId, 1, { from: accounts[0] });
 
-    // Lets try to call internalVote function
+    // Lets try to call cancelVoteInternal function
     try {
       await absoluteVote.cancelVoteInternal(proposalId, accounts[0]);
       assert(false, 'Can\'t call cancelVoteInternal');
@@ -846,7 +846,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call vote with invalid porposal id
     try {
-      await absoluteVote.vote('asdsada', 1, accounts[0]);
+      await absoluteVote.vote('asdsada', 1, {from: accounts[0]});
       assert(false, 'Invalid porposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -862,7 +862,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call executeProposal with invalid porposal id
     try {
-      await absoluteVote.executeProposal('asdsada', 1, 1, 1);
+      await absoluteVote.executeProposal('asdsada');
       assert(false, 'Invalid porposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -878,7 +878,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call cancel a vote with invalid porposal id
     try {
-      await absoluteVote.cancelVote('asdsada', accounts[0]);
+      await absoluteVote.cancelVote('asdsada');
       assert(false, 'Invalid porposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -893,9 +893,9 @@ contract('AbsoluteVote', function (accounts) {
     reputation = await Reputation.new();
     avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
     reputationArray = [20, 10, 70 ];
-    await reputation.mint(reputationArray[0], accounts[0]);
-    await reputation.mint(reputationArray[1], accounts[1]);
-    await reputation.mint(reputationArray[2], accounts[2]);
+    await reputation.mint(accounts[0], reputationArray[0]);
+    await reputation.mint(accounts[1], reputationArray[1]);
+    await reputation.mint(accounts[2], reputationArray[2]);
 
     // Porposal 1 - 6 choices - 30% - ownerVote disabled
     let absoluteVote1 = await AbsoluteVote.new();
