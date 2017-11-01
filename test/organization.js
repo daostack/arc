@@ -50,9 +50,16 @@ contract('Organization', function(accounts) {
       const settings = await helpers.settingsForTest();
       // a new organization comes with three known schemes
       assert.equal((await organization.schemes()).length, 3);
-      assert.equal((await organization.scheme('GlobalConstraintRegistrar')).address, settings.daostackContracts.GlobalConstraintRegistrar.address);
-      assert.equal((await organization.scheme('SchemeRegistrar')).address, settings.daostackContracts.SchemeRegistrar.address);
-      assert.equal((await organization.scheme('UpgradeScheme')).address, settings.daostackContracts.UpgradeScheme.address);
+      let scheme = await organization.scheme('GlobalConstraintRegistrar');
+      assert.equal(scheme.address, settings.daostackContracts.GlobalConstraintRegistrar.address);
+      assert.isTrue(!!scheme.contract, "contract must be set");
+      scheme = await organization.scheme('SchemeRegistrar');
+      assert.equal(scheme.address, settings.daostackContracts.SchemeRegistrar.address);
+      assert.isTrue(!!scheme.contract, "contract must be set");
+      scheme = await organization.scheme('UpgradeScheme');
+      assert.equal(scheme.address, settings.daostackContracts.UpgradeScheme.address);
+      assert.isTrue(!!scheme.contract, "contract must be set");
+      
 
       // now we add another known scheme
       proposalId = await organization.proposeScheme({contract: 'SimpleContributionScheme'});
