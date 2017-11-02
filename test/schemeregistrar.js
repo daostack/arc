@@ -1,12 +1,17 @@
 const DAOToken = artifacts.require("./DAOToken.sol");
 
 import { daostack } from '../lib/daostack.js';
+import { SchemeRegistrar } from   '../lib/schemeregistrar.js';
 
 contract('SchemeRegistrar', function(accounts) {
 
-  it("the daostack.createSchemeRegistrar function should work as expected with default values", async function() {
+  it("schemeRegistrar.new should work as expected with default values", async function() {
     // create a schemeRegistrar
-    const registrar = await daostack.createSchemeRegistrar();
+    const registrar = await SchemeRegistrar.new({
+        fee: undefined,
+        beneficiary: undefined,
+        tokenAddress: undefined
+    });
 
     // because the registrar is constructed without a token address, it should have
     // created a new DAOToken - we check if it works as expected
@@ -21,11 +26,11 @@ contract('SchemeRegistrar', function(accounts) {
     assert.equal(balance.valueOf(), 1000 * Math.pow(10, 18));
   });
 
-  it("the daostack.createSchemeRegistrar function should work as expected with non-default values", async function() {
+  it("schemeRegistrar.new should work as expected with non-default values", async function() {
     // create a schemeRegistrar, passing some options
     const token = await DAOToken.new();
 
-    const registrar = await daostack.createSchemeRegistrar({
+    const registrar = await  SchemeRegistrar.new({
         tokenAddress:token.address,
         fee: 3e18,
         beneficiary: accounts[1]

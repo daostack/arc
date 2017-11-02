@@ -1,4 +1,5 @@
 import { SimpleContributionScheme } from '../lib/simplecontributionscheme.js';
+const DAOToken = artifacts.require("./DAOToken.sol");
 import * as helpers from './helpers';
 
 const SoliditySimpleContributionScheme = artifacts.require("./SimpleContributionScheme.sol");
@@ -157,12 +158,14 @@ contract('SimpleContribution scheme', function(accounts) {
   it('Can set and get parameters', async function() {
       let params;
 
-      // create a contribution Scheme
-      const contributionScheme = await SimpleContributionScheme.new(
-        helpers.SOME_ADDRESS,
-        0, // register with 0 fee
-        accounts[0],
-      );
+      const token = await DAOToken.new();
+
+    // create a contribution Scheme
+      const contributionScheme = await SimpleContributionScheme.new({
+        tokenAddress: token.address,
+        fee: 0, // register with 0 fee
+        beneficiary: accounts[1],
+      });
 
       const contributionSchemeParamsHash = await contributionScheme.getParametersHash(
         0,
