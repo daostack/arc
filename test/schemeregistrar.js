@@ -1,6 +1,5 @@
 const DAOToken = artifacts.require("./DAOToken.sol");
 
-import { daostack } from '../lib/daostack.js';
 import { SchemeRegistrar } from   '../lib/schemeregistrar.js';
 
 contract('SchemeRegistrar', function(accounts) {
