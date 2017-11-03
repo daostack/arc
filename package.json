@@ -1,6 +1,6 @@
 {
   "name": "emergent-arc",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Building DAOs",
   "main": "lib/arc.js",
   "directories": {

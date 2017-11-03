@@ -102,7 +102,7 @@ module.exports = async function(deployer) {
 
       var schemesArray = [schemeRegistrarInst.address, globalConstraintRegistrarInst.address, upgradeSchemeInst.address];
       var paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams];
-      var permissionArray = [3, 5, 9];
+      var permissionArray = ['0x00000003', '0x00000005', '0x00000009'];
       var tokenArray = [tokenAddress, tokenAddress, tokenAddress];
       var feeArray = [UniversalRegisterFee, UniversalRegisterFee, UniversalRegisterFee];
 
@@ -121,11 +121,9 @@ module.exports = async function(deployer) {
       await globalConstraintRegistrarInst.registerOrganization(AvatarInst.address);
       await upgradeSchemeInst.registerOrganization(AvatarInst.address);
 
-
-      deployer.deploy(SimpleICO, tokenAddress, UniversalRegisterFee, avatarAddress);
-      deployer.deploy(OrganizationRegister, tokenAddress, UniversalRegisterFee, avatarAddress);
+      await deployer.deploy(SimpleICO, tokenAddress, UniversalRegisterFee, avatarAddress);
+      await deployer.deploy(SimpleContributionScheme, tokenAddress, 0, avatarAddress);
     });
 
-    deployer.deploy(SimpleContributionScheme);
-    deployer.deploy(TokenCapGC);
+    await deployer.deploy(TokenCapGC);
   }
