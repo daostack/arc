@@ -1,31 +1,35 @@
-const MintableToken = artifacts.require("./MintableToken.sol");
+const DAOToken = artifacts.require("./DAOToken.sol");
 
-import { daostack } from '../lib/daostack.js';
+import { SchemeRegistrar } from   '../lib/schemeregistrar.js';
 
 contract('SchemeRegistrar', function(accounts) {
 
-  it("the daostack.createSchemeRegistrar function should work as expected with default values", async function() {
+  it("schemeRegistrar.new should work as expected with default values", async function() {
     // create a schemeRegistrar
-    const registrar = await daostack.createSchemeRegistrar();
+    const registrar = await SchemeRegistrar.new({
+        fee: undefined,
+        beneficiary: undefined,
+        tokenAddress: undefined
+    });
 
     // because the registrar is constructed without a token address, it should have
-    // created a new MintableToken - we check if it works as expected
+    // created a new DAOToken - we check if it works as expected
     const tokenAddress = await registrar.nativeToken();
-    const token = await MintableToken.at(tokenAddress);
+    const token = await DAOToken.at(tokenAddress);
     const accounts = web3.eth.accounts;
     let balance;
     balance = await token.balanceOf(accounts[0]);
     assert.equal(balance.valueOf(), 0);
-    await token.mint(1000 * Math.pow(10, 18), web3.eth.accounts[0]);
+    await token.mint(web3.eth.accounts[0], 1000 * Math.pow(10, 18));
     balance = await token.balanceOf(accounts[0]);
     assert.equal(balance.valueOf(), 1000 * Math.pow(10, 18));
   });
 
-  it("the daostack.createSchemeRegistrar function should work as expected with non-default values", async function() {
+  it("schemeRegistrar.new should work as expected with non-default values", async function() {
     // create a schemeRegistrar, passing some options
-    const token = await MintableToken.new();
+    const token = await DAOToken.new();
 
-    const registrar = await daostack.createSchemeRegistrar({
+    const registrar = await  SchemeRegistrar.new({
         tokenAddress:token.address,
         fee: 3e18,
         beneficiary: accounts[1]

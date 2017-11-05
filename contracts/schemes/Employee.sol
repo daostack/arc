@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.15;
 import "../controller/Controller.sol";
 
 /*
@@ -45,7 +45,7 @@ contract Employee {
         if(!controller.mintTokens(tokenSalary, beneficiary)) {
             revert();
         }
-        if(!controller.mintReputation(repSalary, beneficiary)) { 
+        if(!controller.mintReputation(repSalary, beneficiary)) {
             revert();
         }
 
