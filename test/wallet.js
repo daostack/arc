@@ -36,7 +36,7 @@ contract('Wallet', function(accounts) {
     assert.equal(ethers.utils.formatEther(balanceWei), "100.0");
 
     const toBalanceBefore = await wallet.getProvider().getBalance(accounts[2]);
-    await wallet.wallet.send(accounts[2], ethers.utils.parseEther("10"));
+    await wallet.sendEther(accounts[2], 10);
     balanceWei = await wallet.getEtherBalance();
     assert.equal(ethers.utils.formatEther(balanceWei), "89.99958");
     const toBalanceAfter = await wallet.getProvider().getBalance(accounts[2]);
