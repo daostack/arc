@@ -3,6 +3,7 @@
   "version": "0.0.7",
   "description": "Building DAOs",
   "main": "lib/arc.js",
+  "types": "lib/arc.d.ts",
   "directories": {
     "lib": "./lib",
     "doc": "./docs",
