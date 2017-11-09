@@ -12,4 +12,8 @@ declare module 'emergent-arc' {
     giveOrgTokens(organizationAvatarAddress : string, numTokens : number) : null
     sendEther(accountAddress : string, numEther: number | string) : any // TODO return value
   }
+
+  export class Organization {
+
+  }
 }
