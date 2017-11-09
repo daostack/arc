@@ -7,13 +7,13 @@ exports.getSettings = undefined;
 
 var _utils = require('./utils.js');
 
-var _globalconstraintregistrar = require('../lib/globalconstraintregistrar.js');
+var _globalconstraintregistrar = require('./globalconstraintregistrar.js');
 
-var _schemeregistrar = require('../lib/schemeregistrar.js');
+var _schemeregistrar = require('./schemeregistrar.js');
 
-var _simplecontributionscheme = require('../lib/simplecontributionscheme.js');
+var _simplecontributionscheme = require('./simplecontributionscheme.js');
 
-var _upgradescheme = require('../lib/upgradescheme.js');
+var _upgradescheme = require('./upgradescheme.js');
 
 // TODO: these are settings for testing. Need some way to switch to "production settings"
 var GenesisScheme = (0, _utils.requireContract)("GenesisScheme");
