@@ -7,7 +7,6 @@ var DAOToken = artifacts.require('./schemes/controller/DAOToken.sol');
 var Reputation = artifacts.require('./schemes/controller/Reputation.sol');
 var SchemeRegistrar = artifacts.require('./schemes/SchemeRegistrar.sol');
 var SimpleICO = artifacts.require('./SimpleICO.sol');
-var SimpleVote = artifacts.require('./SimpleVote.sol');
 var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 var SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
 var TokenCapGC = artifacts.require('./TokenCapGC.sol');
@@ -15,7 +14,6 @@ var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
 
 // Instances:
-var SimpleVoteInst;
 var AbsoluteVoteInst;
 var UniversalGenesisSchemeInst;
 var schemeRegistrarInst;
@@ -57,7 +55,7 @@ module.exports = async function(deployer) {
     // apparently we must wrap the first deploy call in a then to avoid
     // what seem to be race conditions during deployment
     // await deployer.deploy(GenesisScheme)
-    deployer.deploy(GenesisScheme, {gas: 5500000}).then(async function(){
+    deployer.deploy(GenesisScheme, {gas: 5170000}).then(async function(){
       genesisSchemeInst = await GenesisScheme.deployed();
       // Create DAOstack:
       returnedParams = await genesisSchemeInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
@@ -72,9 +70,6 @@ module.exports = async function(deployer) {
       await deployer.deploy(AbsoluteVote);
       // Deploy AbsoluteVote:
       AbsoluteVoteInst = await AbsoluteVote.deployed();
-      await deployer.deploy(SimpleVote);
-      // Deploy SimpleVote:
-      SimpleVoteInst = await SimpleVote.deployed();
       // Deploy SchemeRegistrar:
       await deployer.deploy(SchemeRegistrar, tokenAddress, UniversalRegisterFee, avatarAddress);
       schemeRegistrarInst = await SchemeRegistrar.deployed();
