@@ -4,8 +4,8 @@ import { Wallet } from '../lib/wallet.js';
 import * as helpers from './helpers';
 
 const setupWallet = async function () {
-  console.log("Creating encrypted wallet")
-  var wallet = await Wallet.new("Passw0rd", function(progress) { process.stdout.write(".") })
+  console.log("Creating encrypted wallet");
+  var wallet = await Wallet.new("Passw0rd", function(progress) { process.stdout.write("."); });
   console.log("\n");
   return wallet;
 };
@@ -18,15 +18,15 @@ contract('Wallet', function(accounts) {
     assert.equal(await wallet.getEtherBalance(), 0);
     assert.notEqual(await wallet.getMnemonic().length, 0);
     assert.notEqual(await wallet.getEncryptedJSON().length, 0);
-  })
+  });
 
   it('can be decrypted', async function() {
     this.timeout(10000);
     var wallet = await setupWallet();
     console.log("Decrypting wallet");
-    var wallet2 = await Wallet.fromEncrypted(wallet.getEncryptedJSON(), "Passw0rd", function(progress) { process.stdout.write(",") })
+    var wallet2 = await Wallet.fromEncrypted(wallet.getEncryptedJSON(), "Passw0rd", function(progress) { process.stdout.write(","); });
     assert.equal(await wallet.getPublicAddress(), wallet2.getPublicAddress());
-  })
+  });
 
   it('can send and receive ether', async function() {
     this.timeout(10000);
@@ -41,7 +41,7 @@ contract('Wallet', function(accounts) {
     assert.equal(ethers.utils.formatEther(balanceWei), "89.99958");
     const toBalanceAfter = await wallet.getProvider().getBalance(accounts[2]);
     assert(toBalanceAfter.eq(toBalanceBefore.add(ethers.utils.parseEther("10"))));
-  })
+  });
 
   // it('can receive org tokens', async function() {
   //   this.timeout(10000);
@@ -57,4 +57,4 @@ contract('Wallet', function(accounts) {
   //   //var wallet = await setupWallet();
   //   //const organization = await helpers.forgeOrganization();
   // })
-})
+});
