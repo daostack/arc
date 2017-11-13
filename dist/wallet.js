@@ -42,16 +42,6 @@ var Wallet = exports.Wallet = function () {
   }
 
   _createClass(Wallet, [{
-    key: 'giveOrgTokens',
-
-
-    // Either we mint tokens to an account and tranfer from them. hold private key on the server for this network. Or we "vote" and every reputation holder must vote
-    // Is this a zero account that holds this? Or a NUMA account?
-    value: async function giveOrgTokens(organizationAvatarAddress, numTokens) {
-      var org = await _organization.Organization.at(organizationAvatarAddress);
-      org.token.transfer(this.getPublicAddress(), ethers.utils.parseEther(numTokens));
-    }
-  }, {
     key: 'getEncryptedJSON',
     value: function getEncryptedJSON() {
       return this.encryptedJSON;

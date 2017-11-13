@@ -18,6 +18,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var SoliditySimpleVote = (0, _utils.requireContract)("SimpleVote");
 
+/**
+ * DEPRECATED
+ */
+
 var SimpleVote = function (_ExtendTruffleContrac) {
   _inherits(SimpleVote, _ExtendTruffleContrac);
 

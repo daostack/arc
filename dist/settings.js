@@ -19,7 +19,6 @@ var _upgradescheme = require('./upgradescheme.js');
 var GenesisScheme = (0, _utils.requireContract)("GenesisScheme");
 
 var SimpleICO = (0, _utils.requireContract)("SimpleICO");
-var SimpleVote = (0, _utils.requireContract)("SimpleVote");
 var AbsoluteVote = (0, _utils.requireContract)("AbsoluteVote");
 var TokenCapGC = (0, _utils.requireContract)("TokenCapGC");
 
@@ -32,7 +31,6 @@ var getSettings = async function getSettings() {
   var simpleICO = await SimpleICO.deployed();
   var tokenCapGC = await TokenCapGC.deployed();
   var upgradeScheme = await _upgradescheme.UpgradeScheme.deployed();
-  var simpleVote = await SimpleVote.deployed();
   var absoluteVote = await AbsoluteVote.deployed();
 
   return {
@@ -69,10 +67,6 @@ var getSettings = async function getSettings() {
       AbsoluteVote: {
         contract: AbsoluteVote,
         address: absoluteVote.address
-      },
-      SimpleVote: {
-        contract: SimpleVote,
-        address: simpleVote.address
       }
     }
   };

@@ -25,7 +25,6 @@ var DAOToken = (0, _utils.requireContract)("DAOToken");
 var GenesisScheme = (0, _utils.requireContract)("GenesisScheme");
 var Reputation = (0, _utils.requireContract)("Reputation");
 var SimpleICO = (0, _utils.requireContract)("SimpleICO");
-// const SimpleVote = requireContract("SimpleVote");
 // import { GlobalConstraintRegistrar } from   './globalconstraintregistrar.js';
 var AbsoluteVote = (0, _utils.requireContract)("AbsoluteVote");
 
