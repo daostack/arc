@@ -1,3 +1,6 @@
+/* eslint-disable no-console */
+/* eslint-disable no-unused-vars */
+
 import * as ethers from 'ethers';
 
 import { Wallet } from '../lib/wallet.js';
