@@ -134,6 +134,7 @@ async function getDeployedContracts() {
     return {
         allContracts: contracts,
         schemes: [contracts.SchemeRegistrar, contracts.UpgradeScheme, contracts.GlobalConstraintRegistrar, contracts.SimpleContributionScheme],
-        votingMachines: [contracts.AbsoluteVote]
+        votingMachines: [contracts.AbsoluteVote],
+        globalConstraints: [contracts.TokenCapGC]
     };
 }
