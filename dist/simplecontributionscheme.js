@@ -49,8 +49,8 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
             var options = dopts(opts, defaults);
 
             // is the organization registered?
-            var msg = 'This organization ' + options.avatar + ' is not registered on the current scheme ' + this.address;
-            assert.isOk((await this.isRegistered(options.avatar)), msg);
+            // let msg = `This organization ${options.avatar} is not registered on the current scheme ${this.address}`;
+            // assert.isOk(await this.isRegistered(options.avatar), msg);
 
             // TODO: Check if the fees are payable
             // check fees; first get the parameters

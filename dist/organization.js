@@ -130,8 +130,8 @@ var Organization = exports.Organization = function () {
             var settings = await (0, _settings.getSettings)();
             var contractInfo = settings.daostackContracts[contract];
             // check if indeed the registrar is registered as a scheme on  the controller
-            var isSchemeRegistered = await this.controller.isSchemeRegistered(contractInfo.address);
-            assert.equal(isSchemeRegistered, true, contract + ' is not registered with the controller');
+            // const isSchemeRegistered = await this.controller.isSchemeRegistered(contractInfo.address);
+            // assert.equal(isSchemeRegistered, true, `${contract} is not registered with the controller`);
 
             return contractInfo.contract.at(contractInfo.address);
         }
@@ -140,12 +140,12 @@ var Organization = exports.Organization = function () {
         value: async function checkSchemeConditions(scheme) {
             // check if the scheme if ready for usage - i.e. if the org is registered at the scheme and vice versa
             // check if the schems is usable
-            var controller = this.controller;
+            // const controller = this.controller;
             var avatar = this.avatar;
 
             // check if indeed the registrar is registered as a scheme on  the controller
-            var isSchemeRegistered = await controller.isSchemeRegistered(scheme.address);
-            assert.equal(isSchemeRegistered, true, contract + ' is not registered with the controller');
+            // const isSchemeRegistered = await controller.isSchemeRegistered(scheme.address);
+            // assert.equal(isSchemeRegistered, true, `${contract} is not registered with the controller`);
 
             // check if the controller is registered (has paid the fee)
             var isControllerRegistered = await scheme.isRegistered(avatar.address);
