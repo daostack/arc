@@ -1,7 +1,7 @@
 
 # DAOSTACK library
 
-Work in progress.  Install via `npm install emergent-arc`.
+Work in progress.  Install via `npm install daostack-arc`.
 
 ## API
 
