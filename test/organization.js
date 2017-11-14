@@ -50,15 +50,21 @@ contract('Organization', function(accounts) {
       const settings = await helpers.settingsForTest();
       // a new organization comes with three known schemes
       assert.equal((await organization.schemes()).length, 3);
-      assert.equal((await organization.scheme('GlobalConstraintRegistrar')).address, settings.daostackContracts.GlobalConstraintRegistrar.address);
-      assert.equal((await organization.scheme('SchemeRegistrar')).address, settings.daostackContracts.SchemeRegistrar.address);
-      assert.equal((await organization.scheme('UpgradeScheme')).address, settings.daostackContracts.UpgradeScheme.address);
+      let scheme = await organization.scheme('GlobalConstraintRegistrar');
+      assert.equal(scheme.address, settings.daostackContracts.GlobalConstraintRegistrar.address);
+      assert.isTrue(!!scheme.contract, "contract must be set");
+      scheme = await organization.scheme('SchemeRegistrar');
+      assert.equal(scheme.address, settings.daostackContracts.SchemeRegistrar.address);
+      assert.isTrue(!!scheme.contract, "contract must be set");
+      scheme = await organization.scheme('UpgradeScheme');
+      assert.equal(scheme.address, settings.daostackContracts.UpgradeScheme.address);
+      assert.isTrue(!!scheme.contract, "contract must be set");
+      
 
       // now we add another known scheme
       proposalId = await organization.proposeScheme({contract: 'SimpleContributionScheme'});
-      await organization.vote(proposalId, true, {from: accounts[1]});
-      await organization.vote(proposalId, true, {from: accounts[2]});
-      // await organization.votingMachine.vote(proposalId, true, accounts[2], {from: accounts[2]});
+      await organization.vote(proposalId, 1, {from: accounts[1]});
+      await organization.vote(proposalId, 1, {from: accounts[2]});
 
       assert.equal((await organization.schemes()).length, 4);
       // TODO: the organizaiton must be registered with the scheme before the next works
@@ -89,6 +95,7 @@ contract('Organization', function(accounts) {
     assert.notEqual(proposalId, helpers.NULL_HASH);
 
   });
+
   it("has a working proposeScheme function for ContributionScheme [IN PROGRESS]", async function(){
     organization = await Organization.new({
       orgName: 'Skynet',
@@ -106,7 +113,8 @@ contract('Organization', function(accounts) {
     // TODO: test with non-default settings
 
   });
-  it("has a working proposeScheme function for UpgradeScheme [TODO]", async function(){
 
+  it("has a working proposeScheme function for UpgradeScheme [TODO]", async function(){
   });
+
 });
