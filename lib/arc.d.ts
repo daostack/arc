@@ -1,7 +1,7 @@
 import TruffleContract from 'truffle-contract';
 import * as Web3 from "web3";
 
-declare module 'emergent-arc' {
+declare module 'daostack-arc' {
   export class Wallet {
     static new(password: string, progressCallback: (progress: number) => void) : Wallet;
     static fromEncrypted(encryptedJSON: string, password: string, progressCallback: (progress: number) => void) : Wallet
@@ -22,23 +22,23 @@ declare module 'emergent-arc' {
     /**
      * includes static `new` and `at`
      */
-    avatar: TruffleContract; 
+    avatar: TruffleContract;
     /**
      * Controller truffle contract
-     */ 
-    controller: TruffleContract; 
+     */
+    controller: TruffleContract;
     /**
      * DAOToken truffle contract
-     */ 
-    token: TruffleContract; 
+     */
+    token: TruffleContract;
     /**
      * Reputation truffle contract
-     */ 
-    reputation: TruffleContract; 
+     */
+    reputation: TruffleContract;
     /**
      * AbsoluteVote truffle contract
-     */ 
-    votingMachine: TruffleContract; 
+     */
+    votingMachine: TruffleContract;
 
     schemes(contractName?:string);
     scheme(contractName:string);
@@ -95,7 +95,7 @@ declare module 'emergent-arc' {
   // from arc.js
   export function configure(options): Web3;
   export function getDeployedContracts() : ArcDeployedContracts;
-  
+
   // from utils.js
   export function requireContract(contractName): TruffleContract;
   export function getWeb3():Web3;
