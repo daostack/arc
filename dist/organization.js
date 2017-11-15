@@ -151,7 +151,7 @@ var Organization = exports.Organization = function () {
             var isControllerRegistered = await scheme.isRegistered(avatar.address);
             if (!isControllerRegistered) {
                 var msg = 'The organization is not registered on this schme: ' + contract + '; ' + contractInfo.address;
-                throw msg;
+                throw new Error(msg);
             }
             return true;
         }
@@ -248,7 +248,7 @@ var Organization = exports.Organization = function () {
                 var _proposalId = await (0, _utils.getValueFromLogs)(tx, '_proposalId');
                 return _proposalId;
             } else {
-                throw 'Unknown contract';
+                throw new Error('Unknown contract');
             }
         }
     }, {
@@ -292,7 +292,7 @@ var Organization = exports.Organization = function () {
                     //
                 } else {
                     var msg = 'Either "contract" or "address" must be provided';
-                    throw msg;
+                    throw new Error(msg);
                 }
             }
             // calculate (and set) the hash that will be used to remove the parameters
