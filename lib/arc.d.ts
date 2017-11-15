@@ -1,7 +1,7 @@
 import TruffleContract from 'truffle-contract';
 import * as Web3 from "web3";
 
-declare module 'emergent-arc' {
+declare module 'daostack-arc' {
   export class Wallet {
     static new(password: string, progressCallback: (progress: number) => void) : Wallet;
     static fromEncrypted(encryptedJSON: string, password: string, progressCallback: (progress: number) => void) : Wallet
