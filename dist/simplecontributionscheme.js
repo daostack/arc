@@ -105,7 +105,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
             if (options.tokenAddress == null) {
                 token = await DAOToken.new('schemeregistrartoken', 'STK');
                 // TODO: or is it better to throw an error?
-                // throw 'A tokenAddress must be provided';
+                // throw new Error('A tokenAddress must be provided');
             } else {
                 token = await DAOToken.at(options.tokenAddress);
             }
