@@ -1,16 +1,18 @@
 
 # DAOSTACK library
 
-Work in progress.  Install via `npm install emergent-arc`.
+Work in progress.  Install via `npm install daostack-arc`.
 
 ## API
 
 [Organization](organization.md)
 
+[Wallet](wallet.md)
+
 ## Example Session
 [next examples are not all working yet, but this is what is should/could look like]
 
-    import { Organization } from 'emergent-arc';
+    import { Organization } from 'daostack-arc';
 
 create an Organization from zero:
 

@@ -57,7 +57,7 @@ var GlobalConstraintRegistrar = exports.GlobalConstraintRegistrar = function (_E
       if (options.tokenAddress == null) {
         token = await DAOToken.new('globalconstraintregistrartoken', 'GCT');
         // TODO: or is it better to throw an error?
-        // throw 'A tokenAddress must be provided';
+        // throw new Error('A tokenAddress must be provided');
       } else {
         token = await DAOToken.at(options.tokenAddress);
       }

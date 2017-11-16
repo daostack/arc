@@ -1,6 +1,6 @@
 {
-  "name": "emergent-arc",
-  "version": "0.0.8",
+  "name": "daostack-arc",
+  "version": "0.0.0-alpha.9",
   "description": "Building DAOs",
   "main": "dist/arc.js",
   "types": "lib/arc.d.ts",
@@ -64,7 +64,6 @@
     "security",
     "doastack",
     "backfeed",
-    "emergent",
     "arc"
   ],
   "author": "Jelle Gerbrandy <jelle@gerbrandy.com>",

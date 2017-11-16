@@ -29,7 +29,7 @@ var daostack = function () {
     //
     //   // check if we have the funds to pay the fee
     //   if (avatarBalance.toNumber() < fee.toNumber()) {
-    //     throw Error('The balance of the controller\'s avatar is too low to pay the fee for adding an organization. Balance: ' +  ourBalance.valueOf() + 'fee: '  + fee);
+    //     throw new Error('The balance of the controller\'s avatar is too low to pay the fee for adding an organization. Balance: ' +  ourBalance.valueOf() + 'fee: '  + fee);
     //   }
     //
     //   const beneficiary = await schemeRegistrar.beneficiary();
@@ -38,7 +38,7 @@ var daostack = function () {
     //   // TODO: move this to a separate test on the controller
     //   const allowance = await schemeRegistrarToken.allowance(avatar.address, beneficiary);
     //   if (allowance.toNumber() < fee.toNumber()) {
-    //     throw Error('The allowance of the controllers avatar to the registrars beneficiary is too low to pay the fee for adding an organization. Balance: ' +  ourBalance.valueOf() + 'fee: '  + fee);
+    //     throw new Error('The allowance of the controllers avatar to the registrars beneficiary is too low to pay the fee for adding an organization. Balance: ' +  ourBalance.valueOf() + 'fee: '  + fee);
     //   }
     // }
 

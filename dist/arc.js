@@ -127,13 +127,14 @@ function configure(options) {
  *              setParams(params: any): string (returns hash)
  *              getDefaultPermissions(): string (string represent permissions bits -- see Controller)
  * 
- *  votingMachines: An array containing the set of property values from allContracts that represent voting machine
+ *  votingMachines: An array containing the set of property values from allContracts that represent voting machines
  */
 async function getDeployedContracts() {
     var contracts = (await (0, _settings.getSettings)()).daostackContracts;
     return {
         allContracts: contracts,
         schemes: [contracts.SchemeRegistrar, contracts.UpgradeScheme, contracts.GlobalConstraintRegistrar, contracts.SimpleContributionScheme],
-        votingMachines: [contracts.AbsoluteVote]
+        votingMachines: [contracts.AbsoluteVote],
+        globalConstraints: [contracts.TokenCapGC]
     };
 }
