@@ -19,7 +19,18 @@ the percent finished encryption.
 
 Usage:
 
-    let wallet = Wallet.fromEncrypted.at(encryptedJSON, "password", (progress) => { console.log(progress); })
+    let wallet = Wallet.fromEncrypted(encryptedJSON, "password", (progress) => { console.log(progress); })
+
+
+## async Wallet.fromMnemonic(mnemonic: string, password: string, progressCallback: (percentFinished) => any) => Wallet
+
+Generates/recovers a wallet from a mnemonic string, then encrypts it with `password`.
+The progressCallback function will be called during the wallet unencryption process which can take several seconds, and will be passed
+the percent finished encryption.
+
+Usage:
+
+    let wallet = Wallet.fromMnemonic(mnemonic, "password", (progress) => { console.log(progress); })
 
 ## getEncryptedJSON() => string
 
