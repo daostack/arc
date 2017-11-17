@@ -10,11 +10,13 @@ module.exports = {
       host: "localhost",
       port: 8545,
       network_id: "*",
+      gas: 4543760
     },
     ropsten: {
       host: "localhost",
       port: 8545,
-      network_id: "*"
+      network_id: "*",
+      gas: 4543760
     },
     kovan: {
       host: "localhost",
