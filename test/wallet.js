@@ -17,10 +17,10 @@ contract('Wallet', function(accounts) {
   it('creates a new wallet on the blockchain', async function() {
     this.timeout(10000);
     var wallet = await setupWallet();
-    assert.equal(await wallet.getPublicAddress().length, 42);
+    assert.equal(wallet.getPublicAddress().length, 42);
     assert.equal(await wallet.getEtherBalance(), 0);
-    assert.notEqual(await wallet.getMnemonic().length, 0);
-    assert.notEqual(await wallet.getEncryptedJSON().length, 0);
+    assert.notEqual(wallet.getMnemonic().length, 0);
+    assert.notEqual(wallet.getEncryptedJSON().length, 0);
   });
 
   it('can be decrypted', async function() {
@@ -28,7 +28,16 @@ contract('Wallet', function(accounts) {
     var wallet = await setupWallet();
     console.log("Decrypting wallet");
     var wallet2 = await Wallet.fromEncrypted(wallet.getEncryptedJSON(), "Passw0rd", function(progress) { process.stdout.write(","); });
-    assert.equal(await wallet.getPublicAddress(), wallet2.getPublicAddress());
+    assert.equal(wallet.getPublicAddress(), wallet2.getPublicAddress());
+  });
+
+  it('can be recovered from a mnemonic', async function() {
+    this.timeout(10000);
+    var wallet = await setupWallet();
+    var mnemonic = wallet.getMnemonic();
+    console.log("Recovering from mnemonic");
+    var wallet2 = await Wallet.fromMnemonic(mnemonic, "Passw0rd", function(progress) { process.stdout.write(","); });
+    assert.equal(wallet.wallet.privateKey, wallet2.wallet.privateKey);
   });
 
   it('can send and receive ether', async function() {
