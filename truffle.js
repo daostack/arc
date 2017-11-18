@@ -25,6 +25,12 @@ module.exports = {
       gas: 4543760
     }
   },
+  solc: {
+    optimizer: {
+      enabled: true,
+      runs: 200
+    }
+  },
   rpc: {
     host: "localhost",
     port: 8545

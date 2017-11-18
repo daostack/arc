@@ -48,7 +48,7 @@
     "solc": "^0.4.18",
     "solc-cli": "^0.3.0",
     "solium": "^0.5.4",
-    "truffle": "^3.4.11",
+    "truffle": "^4.0.1",
     "when": "^3.7.8",
     "zeppelin-solidity": "^1.1.0"
   },
