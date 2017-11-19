@@ -52,7 +52,7 @@ contract SimpleVote {
      * @dev hashParameters returns a hash of the given parameters
      */
     function getParametersHash(Reputation _reputationSystem, uint _absPrecReq) constant returns(bytes32) {
-        return sha3(_reputationSystem, _absPrecReq);
+        return keccak256(_reputationSystem, _absPrecReq);
     }
 
     /**
@@ -66,7 +66,7 @@ contract SimpleVote {
         require(parameters[_paramsHash].reputationSystem != address(0));
 
         // Generate a unique ID:
-        bytes32 proposalId = sha3(this, proposalsCnt);
+        bytes32 proposalId = keccak256(this, proposalsCnt);
         proposalsCnt++;
 
         // Open proposal:

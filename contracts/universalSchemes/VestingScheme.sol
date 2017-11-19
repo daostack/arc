@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -74,7 +74,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
   /**
    * @dev the constructor takes a token address, fee and beneficiary
    */
-  function VestingScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+  function VestingScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
     updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
   }
 
@@ -84,7 +84,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
   function setParameters(
     bytes32 _voteParams,
     IntVoteInterface _intVote
-  ) returns(bytes32)
+  ) public returns(bytes32)
   {
     bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
     parameters[paramsHash].voteParams = _voteParams;
@@ -98,16 +98,16 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
   function getParametersHash(
     bytes32 _voteParams,
     IntVoteInterface _intVote
-  ) constant returns(bytes32)
+  ) public constant returns(bytes32)
   {
-    bytes32 paramsHash = (sha3(_voteParams, _intVote));
+    bytes32 paramsHash = (keccak256(_voteParams, _intVote));
     return paramsHash;
   }
 
   /**
    * @dev Constant function, check if organization is registered.
    */
-  function isRegistered(address _avatar) constant returns(bool) {
+  function isRegistered(address _avatar) public constant returns(bool) {
     return organizations[_avatar].isRegistered;
   }
 
@@ -115,7 +115,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
    * @dev registering an organization to the univarsal scheme.
    * @param _avatar avatar of the organization
  */
-  function registerOrganization(Avatar _avatar) {
+  function registerOrganization(Avatar _avatar) public {
     // Pay fees for using scheme:
     if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
       nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -152,7 +152,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     address[] _signersArray,
     Avatar _avatar
   )
-  returns(bytes32)
+    public
+    returns(bytes32)
   {
     // Require registered org and get parameters:
     require(organizations[_avatar].isRegistered);
@@ -190,7 +191,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
    * @param _avatar address of the controller
    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
    */
-  function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+  function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
     // Check the caller is indeed the voting machine:
     require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
@@ -202,8 +203,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
 
     // Check if vote was successful:
     if (_param != 1) {
-        // ToDo: log
-        return true;
+      // ToDo: log
+      return true;
     }
 
     // Define controller and mint tokens, check minting actually took place:
@@ -245,7 +246,10 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     uint _cliffInPeriods,
     uint _signaturesReqToCancel,
     address[] _signersArray
-    ) returns(uint) {
+    )
+      public
+      returns(uint)
+    {
       // Collect funds:
       uint totalAmount = _amountPerPeriod.mul(_numOfAgreedPeriods);
       _token.transferFrom(msg.sender, this, totalAmount);
@@ -279,7 +283,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
    * @dev Function to sign to cancel an agreement.
    * @param _agreementId the relevant agreement.
  */
-  function signToCancelAgreement(uint _agreementId) onlySigner(_agreementId) {
+  function signToCancelAgreement(uint _agreementId) public onlySigner(_agreementId) {
     Agreement storage agreement = agreements[_agreementId];
 
     // Check attempt to double sign:
@@ -301,7 +305,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
    * @dev Function to revoke vote for canceling agreement.
    * @param _agreementId the relevant agreement.
  */
-  function revokeSignToCancelAgreement(uint _agreementId) onlySigner(_agreementId) {
+  function revokeSignToCancelAgreement(uint _agreementId) public onlySigner(_agreementId) {
     Agreement storage agreement = agreements[_agreementId];
 
     // Check signer did sign:
@@ -333,7 +337,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
    * @dev Function for a beneficiary to collect.
    * @param _agreementId the relevant agreement.
  */
-  function collect(uint _agreementId) onlyBeneficiary(_agreementId) {
+  function collect(uint _agreementId) public onlyBeneficiary(_agreementId) {
     Agreement memory agreement = agreements[_agreementId];
     uint periodsFromStartingBlock = (block.number.sub(agreement.startingBlock)).div(agreement.periodLength);
     assert(periodsFromStartingBlock >= agreement.cliffInPeriods);

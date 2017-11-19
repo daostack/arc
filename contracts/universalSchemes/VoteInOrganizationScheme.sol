@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -50,7 +50,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
   /**
    * @dev the constructor takes a token address, fee and beneficiary
    */
-  function VoteInOrganizationScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+  function VoteInOrganizationScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
     updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
   }
 
@@ -60,7 +60,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
   function setParameters(
     bytes32 _voteParams,
     IntVoteInterface _intVote
-  ) returns(bytes32)
+  ) public returns(bytes32)
   {
     bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
     parameters[paramsHash].voteParams = _voteParams;
@@ -74,13 +74,13 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
   function getParametersHash(
     bytes32 _voteParams,
     IntVoteInterface _intVote
-  ) constant returns(bytes32)
+  ) public constant returns(bytes32)
   {
-    bytes32 paramsHash = (sha3(_voteParams, _intVote));
+    bytes32 paramsHash = (keccak256(_voteParams, _intVote));
     return paramsHash;
   }
 
-  function isRegistered(address _avatar) constant returns(bool) {
+  function isRegistered(address _avatar) public constant returns(bool) {
     return organizations[_avatar].isRegistered;
   }
 
@@ -88,7 +88,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
    * @dev registering an organization to the univarsal scheme
    * @param _avatar avatar of the organization
    */
-  function registerOrganization(Avatar _avatar) {
+  function registerOrganization(Avatar _avatar) public {
     // Pay fees for using scheme:
     if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
       nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -100,7 +100,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     LogOrgRegistered(_avatar);
   }
 
-  function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId) returns(bytes32) {
+  function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId) public returns(bytes32) {
     Organization memory org = organizations[_avatar];
     require(org.isRegistered); // Check org is registred to use this universal scheme.
     uint numOfChoices = _originalIntVote.getNumberOfChoices(_originalProposalId);
@@ -125,7 +125,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
    * @param _avatar address of the controller
    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
    */
-  function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+  function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
     // Check the caller is indeed the voting machine:
     require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
@@ -153,7 +153,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     return true;
   }
 
-  function action(bytes32[] _params) returns(bool) {
+  function action(bytes32[] _params) public returns(bool) {
     IntVoteInterface intVote = IntVoteInterface(address(_params[0]));
     bytes32 proposalId = _params[1];
     uint vote = uint(_params[2]);

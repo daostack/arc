@@ -17,16 +17,18 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface { //
   event LogNewProposal(bytes32 proposalId);
 
   function updateParameters(
-      StandardToken _nativeToken,
-      uint _fee,
-      address _beneficiary,
-      bytes32 _hashedParameters
-  ) onlyOwner
+    StandardToken _nativeToken,
+    uint _fee,
+    address _beneficiary,
+    bytes32 _hashedParameters
+  )
+    public
+    onlyOwner
   {
-      nativeToken = _nativeToken;
-      fee = _fee;
-      beneficiary = _beneficiary;
-      hashedParameters = _hashedParameters;
+    nativeToken = _nativeToken;
+    fee = _fee;
+    beneficiary = _beneficiary;
+    hashedParameters = _hashedParameters;
   }
 
   /**

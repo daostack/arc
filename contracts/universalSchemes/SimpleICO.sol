@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "./UniversalScheme.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -19,7 +19,7 @@ contract MirrorContractICO is Destructible {
    * @param _organization The organization's avatar.
    * @param _simpleICO The ICO Scheme.
    */
-  function MirrorContractICO(Avatar _organization, SimpleICO _simpleICO) {
+  function MirrorContractICO(Avatar _organization, SimpleICO _simpleICO) public {
     organization = _organization;
     simpleICO = _simpleICO;
   }
@@ -28,7 +28,7 @@ contract MirrorContractICO is Destructible {
    * @dev Fallback function, when ether is sent it will donate to the ICO.
    * The ether will be returned if the donation is failed.
    */
-  function () payable {
+  function () public payable {
     // Not to waste gas, if no value.
     require(msg.value != 0);
 
@@ -58,12 +58,12 @@ contract SimpleICO is UniversalScheme {
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
-        uint cap; // Cap in Eth
-        uint price; // Price represents Tokens per 1 Eth
-        uint startBlock;
-        uint endBlock;
-        address beneficiary; // all funds received will be transffered to this address.
-        address admin; // The admin can halt or resume ICO.
+      uint cap; // Cap in Eth
+      uint price; // Price represents Tokens per 1 Eth
+      uint startBlock;
+      uint endBlock;
+      address beneficiary; // all funds received will be transffered to this address.
+      address admin; // The admin can halt or resume ICO.
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
@@ -79,31 +79,34 @@ contract SimpleICO is UniversalScheme {
      * @param _fee The fee for intiating the ICO
      * @param _beneficiary The address that will receive the ethers
      */
-    function SimpleICO(StandardToken _nativeToken, uint _fee, address _beneficiary) {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
+    function SimpleICO(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
+      updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
     /**
      * @dev Hash the parameters, save them if necessary, and return the hash value
      */
     function setParameters(
-        uint _cap,
-        uint _price,
-        uint _startBlock,
-        uint _endBlock,
-        address _beneficiary,
-        address _admin)  returns(bytes32)
+      uint _cap,
+      uint _price,
+      uint _startBlock,
+      uint _endBlock,
+      address _beneficiary,
+      address _admin
+    )
+      public
+      returns(bytes32)
     {
-        bytes32 paramsHash = getParametersHash(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin);
-        if (parameters[paramsHash].cap != 0) {
-            parameters[paramsHash].cap = _cap;
-            parameters[paramsHash].price = _price;
-            parameters[paramsHash].startBlock = _startBlock;
-            parameters[paramsHash].endBlock = _endBlock;
-            parameters[paramsHash].beneficiary = _beneficiary;
-            parameters[paramsHash].admin = _admin;
-        }
-        return paramsHash;
+      bytes32 paramsHash = getParametersHash(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin);
+      if (parameters[paramsHash].cap != 0) {
+        parameters[paramsHash].cap = _cap;
+        parameters[paramsHash].price = _price;
+        parameters[paramsHash].startBlock = _startBlock;
+        parameters[paramsHash].endBlock = _endBlock;
+        parameters[paramsHash].beneficiary = _beneficiary;
+        parameters[paramsHash].admin = _admin;
+      }
+      return paramsHash;
     }
 
 
@@ -112,20 +115,25 @@ contract SimpleICO is UniversalScheme {
      * @return bytes32 Hash of the given parameters.
      */
     function getParametersHash(
-        uint _cap,
-        uint _price,
-        uint _startBlock,
-        uint _endBlock,
-        address _beneficiary,
-        address _admin) constant returns(bytes32) {
-        return (sha3(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin));
+      uint _cap,
+      uint _price,
+      uint _startBlock,
+      uint _endBlock,
+      address _beneficiary,
+      address _admin
+    )
+      public
+      constant
+      returns(bytes32)
+   {
+      return (keccak256(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin));
     }
 
     /**
      * @dev Adding an organization to the universal scheme, and opens an ICO for it
      * @param _avatar The Avatar's of the organization
      */
-    function registerOrganization(Avatar _avatar) {
+    function registerOrganization(Avatar _avatar) public {
       // Pay fees for using scheme:
       if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
         nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -145,26 +153,26 @@ contract SimpleICO is UniversalScheme {
     }
 
     // If someone accidentally sends ether to this contract, revert;
-    function () {
-        revert();
+    function () public {
+      revert();
     }
 
     /**
      * @dev Allowing admin to halt an ICO.
      * @param _avatar The Avatar's of the organization
      */
-    function haltICO(address _avatar) {
-        require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
-        organizations[_avatar].isHalted = true;
+    function haltICO(address _avatar) public {
+      require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
+      organizations[_avatar].isHalted = true;
     }
 
     /**
      * @dev Allowing admin to reopen an ICO.
      * @param _avatar The Avatar's of the organization
      */
-    function resumeICO(address _avatar) {
-        require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
-        organizations[_avatar].isHalted = false;
+    function resumeICO(address _avatar) public {
+      require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
+      organizations[_avatar].isHalted = false;
     }
 
     /**
@@ -175,22 +183,22 @@ contract SimpleICO is UniversalScheme {
      * @param _avatar The Avatar's of the organization
      * @return bool which represents a successful of the function
      */
-    function isActiveICO(address _avatar) constant returns(bool) {
-        Organization memory org = organizations[_avatar];
-        Parameters memory params = parameters[org.paramsHash];
-        if (! org.isRegistered) {
-          return false;
-        }
-        if (org.totalEthRaised >= params.cap) {
-          return false;
-        }
-        if (block.number >= params.endBlock) {
-          return false;
-        }
-        if (block.number <= params.startBlock) {
-          return false;
-        }
-        return true;
+    function isActiveICO(address _avatar) public constant returns(bool) {
+      Organization memory org = organizations[_avatar];
+      Parameters memory params = parameters[org.paramsHash];
+      if (! org.isRegistered) {
+        return false;
+      }
+      if (org.totalEthRaised >= params.cap) {
+        return false;
+      }
+      if (block.number >= params.endBlock) {
+        return false;
+      }
+      if (block.number <= params.startBlock) {
+        return false;
+      }
+      return true;
     }
 
     /**
@@ -201,41 +209,41 @@ contract SimpleICO is UniversalScheme {
      * @param _beneficiary The donator's address - which will receive the ICO's tokens.
      * @return bool which represents a successful of the function
      */
-    function donate(Avatar _avatar, address _beneficiary) payable returns(uint) {
-        Organization memory org = organizations[_avatar];
-        Parameters memory params = parameters[org.paramsHash];
+    function donate(Avatar _avatar, address _beneficiary) public payable returns(uint) {
+      Organization memory org = organizations[_avatar];
+      Parameters memory params = parameters[org.paramsHash];
 
-        // Check ICO is active:
-        require(isActiveICO(_avatar));
+      // Check ICO is active:
+      require(isActiveICO(_avatar));
 
-        // Check ICO is not halted:
-        require(!org.isHalted);
+      // Check ICO is not halted:
+      require(!org.isHalted);
 
-        uint incomingEther;
-        uint change;
+      uint incomingEther;
+      uint change;
 
-        // Compute how much tokens to buy:
-        if ( msg.value > (params.cap).sub(org.totalEthRaised) ) {
-            incomingEther = (params.cap).sub(org.totalEthRaised);
-            change = (msg.value).sub(incomingEther);
-        } else {
-            incomingEther = msg.value;
-        }
-        uint tokens = incomingEther.mul(params.price);
+      // Compute how much tokens to buy:
+      if ( msg.value > (params.cap).sub(org.totalEthRaised) ) {
+        incomingEther = (params.cap).sub(org.totalEthRaised);
+        change = (msg.value).sub(incomingEther);
+      } else {
+        incomingEther = msg.value;
+      }
+      uint tokens = incomingEther.mul(params.price);
 
-        // Send ether to the defined address, mint, and send change to beneficiary:
-        params.beneficiary.transfer(incomingEther);
-        Controller controller = Controller(_avatar.owner());
-        if (!controller.mintTokens(tokens, _beneficiary)) {
-            revert();
-        }
-        if (change != 0) {
-            _beneficiary.transfer(change);
-        }
+      // Send ether to the defined address, mint, and send change to beneficiary:
+      params.beneficiary.transfer(incomingEther);
+      Controller controller = Controller(_avatar.owner());
+      if (!controller.mintTokens(tokens, _beneficiary)) {
+        revert();
+      }
+      if (change != 0) {
+        _beneficiary.transfer(change);
+      }
 
-        // Update total raised, call event and return amount of tokens bought:
-        org.totalEthRaised += incomingEther;
-        DonationReceived(_avatar, _beneficiary, incomingEther, tokens);
-        return tokens;
+      // Update total raised, call event and return amount of tokens bought:
+      org.totalEthRaised += incomingEther;
+      DonationReceived(_avatar, _beneficiary, incomingEther, tokens);
+      return tokens;
     }
 }

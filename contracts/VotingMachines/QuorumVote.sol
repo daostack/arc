@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
@@ -10,7 +10,7 @@ contract QuorumVote is IntVoteInterface, AbsoluteVote {
    * @param _proposalId the id of the proposal
    */
   // TODO: do we want to delete the vote from the proposals mapping?
-  function executeProposal(bytes32 _proposalId) votableProposal(_proposalId) returns(bool) {
+  function executeProposal(bytes32 _proposalId) public votableProposal(_proposalId) returns(bool) {
     Proposal storage proposal = proposals[_proposalId];
 
     uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
