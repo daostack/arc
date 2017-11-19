@@ -74,7 +74,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
   function getParametersHash(
     bytes32 _voteParams,
     IntVoteInterface _intVote
-  ) public constant returns(bytes32)
+  ) public pure returns(bytes32)
   {
     bytes32 paramsHash = (keccak256(_voteParams, _intVote));
     return paramsHash;

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../controller/Controller.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -140,34 +140,35 @@ contract EmergentICO is Debug {
     uint _rateFractionNumerator,
     uint _rateFractionDenominator,
     uint _batchSize
-    ) {
-      // Set parameters:
-      controller = _controller;
-      admin = _admin;
-      beneficiary = _beneficiary;
-      startBlock = _startBlock; // [cf doc for initAverageComputation]
-      periodDuration = _periodDuration;
-      minDonation = _minDonation;
-      initialRate = _initialRate;
-      rateFractionNumerator = _rateFractionNumerator;
-      rateFractionDenominator = _rateFractionDenominator;
-      batchSize = _batchSize;
+  ) public
+  {
+    // Set parameters:
+    controller = _controller;
+    admin = _admin;
+    beneficiary = _beneficiary;
+    startBlock = _startBlock; // [cf doc for initAverageComputation]
+    periodDuration = _periodDuration;
+    minDonation = _minDonation;
+    initialRate = _initialRate;
+    rateFractionNumerator = _rateFractionNumerator;
+    rateFractionDenominator = _rateFractionDenominator;
+    batchSize = _batchSize;
 
-      // Initialize:
-      periods[0].isInitialized = true;
+    // Initialize:
+    periods[0].isInitialized = true;
   }
 
   /**
    * @dev Pausing ICO, using onlyAdmin modifier:
    */
-  function haltICO() onlyAdmin {
+  function haltICO() public onlyAdmin {
     isHalted = true;
   }
 
   /**
    * @dev Resuming ICO, using onlyAdmin modifier:
    */
-  function resumeICO() onlyAdmin {
+  function resumeICO() public onlyAdmin {
     isHalted = false;
   }
 
@@ -175,14 +176,14 @@ contract EmergentICO is Debug {
    * @dev Modifier, Check if a given period is initialized for average computations:
    * @param _periodId the period checked.
    */
-  function getIsPeriodInitialized(uint _periodId) constant returns(bool) {
+  function getIsPeriodInitialized(uint _periodId) public constant returns(bool) {
     return(periods[_periodId].isInitialized);
   }
 
   /**
    * @dev Constant boolean function, checking if the ICO is active:
    */
-  function isActive() constant returns(bool) {
+  function isActive() public constant returns(bool) {
     if (isHalted) {
       return false;
     }
@@ -195,7 +196,7 @@ contract EmergentICO is Debug {
   /**
    * @dev Constant function, returns the periodId of the current block:
    */
-  function currentPeriodId() constant returns(uint) {
+  function currentPeriodId() public constant returns(uint) {
     return ((block.number.sub(startBlock))/periodDuration);
   }
 
@@ -203,7 +204,7 @@ contract EmergentICO is Debug {
    * @dev Constant function, computes the rate for a given batch:
    * @param _batch the (index of) the batch for which the computation is done.
    */
-  function rateInWei(uint _batch) constant returns(uint) {
+  function rateInWei(uint _batch) public constant returns(uint) {
     return (((10**18)*initialRate).mul(rateFractionNumerator**_batch)/rateFractionDenominator**_batch);
   }
 
@@ -212,7 +213,7 @@ contract EmergentICO is Debug {
    * @param _start the starting point for the computation - expressed in  Wei donated
    * @param _end the end point for the computation, expressed in Wei donated.
    */
-  function averageRateInWei(uint _start, uint _end) constant returns(uint) {
+  function averageRateInWei(uint _start, uint _end) public constant returns(uint) {
     assert(_end >= _start);
     uint batchStart = _start/batchSize;
     uint batchEnd = _end/batchSize;
@@ -237,7 +238,7 @@ contract EmergentICO is Debug {
    * @param _beneficiary The address that will receive the tokens.
    * @param _minRate the minimum rate the donor is willing to participate in.
    */
-  function donate(address _beneficiary, uint _minRate) payable {
+  function donate(address _beneficiary, uint _minRate) public payable {
     // Check ICO is open:
     require(isActive());
 
@@ -286,7 +287,7 @@ contract EmergentICO is Debug {
    * @dev Fallback function.
    * upon receivng funds, treat it as donation with default parameters, minRate=0.
    */
-  function () payable {
+  function () public payable {
     donate(msg.sender, 0);
   }
 
@@ -299,7 +300,9 @@ contract EmergentICO is Debug {
     uint _periodId,
     uint _hintTotalDonatedInThisPeriod,
     uint _iterations
-  ) isPeriodOver(_periodId)
+  )
+    public
+    isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
     uint hintRate = averageRateInWei(periods[_periodId].raisedUpToPeriod, periods[_periodId].raisedUpToPeriod.add(_hintTotalDonatedInThisPeriod));
@@ -323,6 +326,7 @@ contract EmergentICO is Debug {
    * @param _iterations number of iterations to check from the array donationsIdsWithLimit.
    */
   function computeAverage(uint _periodId, uint _iterations)
+    public
     isPeriodOver(_periodId)
     isPeriodInitialized(_periodId)
   {
@@ -438,7 +442,7 @@ contract EmergentICO is Debug {
    * Although not really necessary, only the donor (or the admin) can clear his own donation.
    * @param _donationId The donation to be cleared.
    */
-  function collectMyTokens(uint _donationId) {
+  function collectMyTokens(uint _donationId) public {
     // Check sender is indeed the donor:
     require(msg.sender == donations[_donationId].donor);
     // Collect:
@@ -450,7 +454,7 @@ contract EmergentICO is Debug {
    * Although not really necessary, only the doner (or the admin) can clear his own donation.
    * @param _donationIds array of donations to be cleared.
    */
-  function collectMulti(uint[] _donationIds) onlyAdmin {
+  function collectMulti(uint[] _donationIds) public onlyAdmin {
     for (uint cnt=0; cnt<_donationIds.length; cnt++) {
       collectTokens(_donationIds[cnt]);
     }

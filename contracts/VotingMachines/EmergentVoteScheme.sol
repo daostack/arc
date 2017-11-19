@@ -83,7 +83,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     _;
   }
 
-  function EmergentVoteScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+  function EmergentVoteScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
     updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
   }
 
@@ -133,7 +133,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     uint _maxBoostTimeFrame,
     uint _minBoost,
     bool _allowOwner
-  ) public constant returns(bytes32)
+  ) public pure returns(bytes32)
   {
     bytes32 paramsHash = keccak256(
       _reputationSystem,
@@ -170,7 +170,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
   /**
    * @dev hashParameters returns a hash of the given parameters
    */
-  function getProposalParametersHash(uint _precReq, uint _qourum, uint _boostTimeFrame) public constant returns(bytes32) {
+  function getProposalParametersHash(uint _precReq, uint _qourum, uint _boostTimeFrame) public pure returns(bytes32) {
     return keccak256(_precReq, _qourum, _boostTimeFrame);
   }
 
@@ -283,7 +283,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * @return bool isFound that indicated if the id has been found in the array
    * @return uint index the index of the id in the array
    */
-  function findInArray(bytes32[] _idsArray, bytes32 _id) public constant returns(bool isFound, uint index) {
+  function findInArray(bytes32[] _idsArray, bytes32 _id) public pure returns(bool isFound, uint index) {
     for (uint cnt=0; cnt<_idsArray.length; cnt++) {
       if (_idsArray[cnt] == _id) {
         return(true, cnt);

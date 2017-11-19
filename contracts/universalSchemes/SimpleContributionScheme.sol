@@ -99,7 +99,7 @@ contract SimpleContributionScheme is UniversalScheme {
     uint _schemeNativeTokenFee,
     bytes32 _voteApproveParams,
     IntVoteInterface _intVote
-  ) public constant returns(bytes32)
+  ) public pure returns(bytes32)
   {
     return (keccak256(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _intVote));
   }

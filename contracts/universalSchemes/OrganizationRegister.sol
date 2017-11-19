@@ -49,7 +49,7 @@ contract OrganizationRegister is UniversalScheme {
 
   // The format of the hashing of the parameters:
   function getParametersHash(StandardToken _token, uint _fee, address _beneficiary)
-    public constant returns(bytes32)
+    public pure returns(bytes32)
   {
     return (keccak256(_token, _fee, _beneficiary));
   }

@@ -27,7 +27,7 @@ contract TokenCapGC {
   }
 
   // The format of the hashing of the parameters:
-  function getParametersHash(StandardToken _token, uint _cap) public constant returns(bytes32) {
+  function getParametersHash(StandardToken _token, uint _cap) public pure returns(bytes32) {
     return (keccak256(_token, _cap));
   }
 

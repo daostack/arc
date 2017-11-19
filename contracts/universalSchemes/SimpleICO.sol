@@ -123,7 +123,7 @@ contract SimpleICO is UniversalScheme {
       address _admin
     )
       public
-      constant
+      pure
       returns(bytes32)
    {
       return (keccak256(_cap, _price, _startBlock, _endBlock, _beneficiary, _admin));
