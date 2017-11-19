@@ -75,7 +75,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
             options.externalTokenReward, // uint _externalTokenReward,
             options.beneficiary // address _beneficiary
             );
-            return (0, _utils.getValueFromLogs)(tx, '_proposalId');
+            return tx;
         }
     }, {
         key: 'setParams',
