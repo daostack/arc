@@ -36,7 +36,7 @@ contract('Wallet', function(accounts) {
 
   it('can send and receive ether', async function() {
     this.timeout(10000);
-    var wallet = Wallet.new()
+    var wallet = Wallet.new();
     await web3.eth.sendTransaction({to: wallet.getPublicAddress(), from: accounts[0], value: web3.toWei(100, "ether")});
     let balanceWei = await wallet.getEtherBalance();
     assert.equal(ethers.utils.formatEther(balanceWei), "100.0");
