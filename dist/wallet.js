@@ -41,11 +41,18 @@ var Wallet = exports.Wallet = function () {
     _classCallCheck(this, Wallet);
   }
 
+  // Create a new wallet and encrypt it with password
+  // The wallet will be generated deterministically from a mnemonic created using bip39
+
+
   _createClass(Wallet, [{
     key: 'getEncryptedJSON',
     value: function getEncryptedJSON() {
       return this.encryptedJSON;
     }
+
+    // TODO: convert to ether?
+
   }, {
     key: 'getEtherBalance',
     value: async function getEtherBalance() {
@@ -88,6 +95,9 @@ var Wallet = exports.Wallet = function () {
       wallet.encryptedJSON = await wallet.wallet.encrypt(password, progressCallback);
       return wallet;
     }
+
+    // Unencrypt an encrypted wallet
+
   }, {
     key: 'fromEncrypted',
     value: async function fromEncrypted(encryptedJSON, password, progressCallback) {
@@ -95,6 +105,20 @@ var Wallet = exports.Wallet = function () {
       wallet.wallet = await ethers.Wallet.fromEncryptedWallet(encryptedJSON, password, progressCallback);
       wallet.wallet.provider = provider;
       wallet.encryptedJSON = encryptedJSON;
+      return wallet;
+    }
+
+    // Recover a wallet from a mnemonic and then encrypt it with a new password
+    // TODO: what happens with an invalid mnemonic?
+
+  }, {
+    key: 'fromMnemonic',
+    value: async function fromMnemonic(mnemonic, password, progressCallback) {
+      var wallet = new Wallet();
+      wallet.wallet = ethers.Wallet.fromMnemonic(mnemonic);
+      wallet.mnemonic = mnemonic;
+      wallet.wallet.provider = provider;
+      wallet.encryptedJSON = await wallet.wallet.encrypt(password, progressCallback);
       return wallet;
     }
   }]);

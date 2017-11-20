@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -52,7 +52,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
   }
   mapping(bytes32=>Parameters) public parameters;
 
-  function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+  function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
     updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
   }
 
@@ -62,7 +62,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
   function setParameters(
     bytes32 _voteRegisterParams,
     IntVoteInterface _intVote
-  ) returns(bytes32)
+  ) public returns(bytes32)
   {
     bytes32 paramsHash = getParametersHash(_voteRegisterParams, _intVote);
     parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
@@ -73,15 +73,15 @@ contract GlobalConstraintRegistrar is UniversalScheme {
   function getParametersHash(
     bytes32 _voteRegisterParams,
     IntVoteInterface _intVote
-  ) constant returns(bytes32)
+  ) public pure returns(bytes32)
   {
-    bytes32 paramsHash = (sha3(_voteRegisterParams, _intVote));
+    bytes32 paramsHash = (keccak256(_voteRegisterParams, _intVote));
     return paramsHash;
   }
 
   // Adding an organization to the universal scheme:
   // TODO: probably we want to define registerOrganization and isRegistered in UniversalScheme
-  function registerOrganization(Avatar _avatar) {
+  function registerOrganization(Avatar _avatar) public {
     // Pay fees for using scheme:
     if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
       nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -93,7 +93,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     LogOrgRegistered(_avatar);
   }
 
-  function isRegistered(address _avatar) constant returns(bool) {
+  function isRegistered(address _avatar) public constant returns(bool) {
     return organizations[_avatar].isRegistered;
   }
 
@@ -105,7 +105,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
    * @param _removeParams the conditions (on the voting machine) for removing this global constraint
    */
   // TODO: do some checks on _removeParams - it is very easy to make a mistake and not be able to remove the GC
-  function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _removeParams) returns(bytes32) {
+  function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _removeParams) public returns(bytes32) {
     require(isRegistered(_avatar)); // Check org is registered to use this universal scheme.
     Parameters memory votingParams = parameters[getParametersFromController(_avatar)];
 
@@ -129,7 +129,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
   }
 
   // Proposing to remove a new GC:
-  function proposeToRemoveGC(Avatar _avatar, address _gc) returns(bytes32) {
+  function proposeToRemoveGC(Avatar _avatar, address _gc) public returns(bytes32) {
     Organization storage org = organizations[_avatar];
     Parameters memory params = parameters[getParametersFromController(_avatar)];
     require(org.isRegistered); // Check org is registred to use this universal scheme.
@@ -158,7 +158,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
    * @param _avatar address of the controller
    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
    */
-  function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+  function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
     // Check the caller is indeed the voting machine:
     require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 

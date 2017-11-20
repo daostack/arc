@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "zeppelin-solidity/contracts/crowdsale/CappedCrowdsale.sol";
 import "zeppelin-solidity/contracts/token/MintableToken.sol";
@@ -21,6 +21,7 @@ contract SaftToken is MintableToken {
 contract SaftTokenSale is CappedCrowdsale {
 
   function SaftTokenSale(uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _cap, address _wallet)
+    public
     CappedCrowdsale(_cap)
     Crowdsale(_startTime, _endTime, _rate, _wallet)
   {

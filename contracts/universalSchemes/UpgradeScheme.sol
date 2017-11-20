@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -57,7 +57,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
   /**
    * @dev the constructor takes a token address, fee and beneficiary
    */
-  function UpgradeScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+  function UpgradeScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
     updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
   }
 
@@ -67,7 +67,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
   function setParameters(
       bytes32 _voteParams,
       IntVoteInterface _intVote
-  ) returns(bytes32)
+  ) public returns(bytes32)
   {
     bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
     parameters[paramsHash].voteParams = _voteParams;
@@ -81,13 +81,13 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
   function getParametersHash(
       bytes32 _voteParams,
       IntVoteInterface _intVote
-  ) constant returns(bytes32)
+  ) public pure returns(bytes32)
   {
-    bytes32 paramsHash = (sha3(_voteParams, _intVote));
+    bytes32 paramsHash = (keccak256(_voteParams, _intVote));
     return paramsHash;
   }
 
-  function isRegistered(address _avatar) constant returns(bool) {
+  function isRegistered(address _avatar) public constant returns(bool) {
     return organizations[_avatar].isRegistered;
   }
 
@@ -95,7 +95,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
    * @dev registering an organization to the univarsal scheme
    * @param _avatar avatar of the organization
    */
-  function registerOrganization(Avatar _avatar) {
+  function registerOrganization(Avatar _avatar) public {
     // Pay fees for using scheme:
     if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
       nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -113,7 +113,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
  * @param _newController address of the new controller that is being porposed
  * @return an id which represents the porposal
  */
-  function proposeUpgrade(Avatar _avatar, address _newController) returns(bytes32) {
+  function proposeUpgrade(Avatar _avatar, address _newController) public returns(bytes32) {
     Organization memory org = organizations[_avatar];
     require(org.isRegistered); // Check org is registred to use this universal scheme.
     Parameters memory params = parameters[getParametersFromController(_avatar)];
@@ -144,6 +144,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     StandardToken _tokenFee,
     uint _fee
   )
+    public
     returns(bytes32)
   {
     Organization memory org = organizations[_avatar];
@@ -177,7 +178,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
    * @param _avatar address of the controller
    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
    */
-  function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+  function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
     // Check the caller is indeed the voting machine:
     require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
     // Check if vote was successful:

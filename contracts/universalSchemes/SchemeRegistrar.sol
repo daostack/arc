@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -57,7 +57,7 @@ contract SchemeRegistrar is UniversalScheme {
    * @param _fee the fee to pay
    * @param _beneficiary to whom the fee is payed
    */
-  function SchemeRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+  function SchemeRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
     updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
   }
 
@@ -68,7 +68,7 @@ contract SchemeRegistrar is UniversalScheme {
     bytes32 _voteRegisterParams,
     bytes32 _voteRemoveParams,
     IntVoteInterface _intVote
-  ) returns(bytes32)
+  ) public returns(bytes32)
   {
     bytes32 paramsHash = getParametersHash(_voteRegisterParams, _voteRemoveParams, _intVote);
     parameters[paramsHash].voteRegisterParams = _voteRegisterParams;
@@ -81,9 +81,9 @@ contract SchemeRegistrar is UniversalScheme {
     bytes32 _voteRegisterParams,
     bytes32 _voteRemoveParams,
     IntVoteInterface _intVote
-    ) constant returns(bytes32)
+    ) public pure returns(bytes32)
   {
-    bytes32 paramsHash = (sha3(_voteRegisterParams, _voteRemoveParams, _intVote));
+    bytes32 paramsHash = (keccak256(_voteRegisterParams, _voteRemoveParams, _intVote));
     return paramsHash;
   }
 
@@ -92,7 +92,7 @@ contract SchemeRegistrar is UniversalScheme {
    * @dev the sender pays a fee (in nativeToken) for using this function, and must approve it before calling the transaction
    * @param _avatar the address of the organization
    */
-  function registerOrganization(Avatar _avatar) {
+  function registerOrganization(Avatar _avatar) public {
     // Pay fees for using scheme
     if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
       nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -105,7 +105,7 @@ contract SchemeRegistrar is UniversalScheme {
     LogOrgRegistered(_avatar);
   }
 
-  function isRegistered(address _avatar) constant returns(bool) {
+  function isRegistered(address _avatar) public constant returns(bool) {
     return organizations[_avatar].isRegistered;
   }
 
@@ -132,7 +132,7 @@ contract SchemeRegistrar is UniversalScheme {
     StandardToken _tokenFee,
     uint _fee,
     bool _autoRegister
-  ) returns(bytes32)
+  ) public returns(bytes32)
   {
     Organization memory org = organizations[_avatar];
     // Check if org is registered to use this universal scheme
@@ -171,7 +171,7 @@ contract SchemeRegistrar is UniversalScheme {
    *
    * NB: not only registers the proposal, but also votes for it
    */
-  function proposeToRemoveScheme(Avatar _avatar, address _scheme) returns(bytes32) {
+  function proposeToRemoveScheme(Avatar _avatar, address _scheme) public returns(bytes32) {
     Organization memory org = organizations[_avatar];
 
     // Check if the orgazation is registred to use this universal scheme.
@@ -201,7 +201,7 @@ contract SchemeRegistrar is UniversalScheme {
    * @param _param identifies the action to be taken
    */
   // TODO: this call can be simplified if we save the _avatar together with the proposal
-  function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+  function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
     // Check the caller is indeed the voting machine:
     require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -58,7 +58,7 @@ contract SimpleContributionScheme is UniversalScheme {
   /**
    * @dev the constructor takes a token address, fee and beneficiary
    */
-  function SimpleContributionScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) {
+  function SimpleContributionScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
     updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
   }
 
@@ -70,7 +70,7 @@ contract SimpleContributionScheme is UniversalScheme {
     uint _schemeNativeTokenFee,
     bytes32 _voteApproveParams,
     IntVoteInterface _intVote
-  ) returns(bytes32)
+  ) public returns(bytes32)
   {
     bytes32 paramsHash = getParametersHash(
       _orgNativeTokenFee,
@@ -99,12 +99,12 @@ contract SimpleContributionScheme is UniversalScheme {
     uint _schemeNativeTokenFee,
     bytes32 _voteApproveParams,
     IntVoteInterface _intVote
-  ) constant returns(bytes32)
+  ) public pure returns(bytes32)
   {
-    return (sha3(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _intVote));
+    return (keccak256(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _intVote));
   }
 
-  function registerOrganization(Avatar _avatar) {
+  function registerOrganization(Avatar _avatar) public {
     // Pay fees for using scheme
     if ((fee > 0) && (!organizations[_avatar].isRegistered)) {
       nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -140,7 +140,7 @@ contract SimpleContributionScheme is UniversalScheme {
     StandardToken _externalToken,
     uint _externalTokenReward,
     address _beneficiary
-  ) returns(bytes32)
+  ) public returns(bytes32)
   {
     require(organizations[_avatar].isRegistered);
 
@@ -163,7 +163,7 @@ contract SimpleContributionScheme is UniversalScheme {
 
     // Set the struct:
     ContributionProposal memory proposal = ContributionProposal({
-      contributionDescriptionHash: sha3(_contributionDesciption),
+      contributionDescriptionHash: keccak256(_contributionDesciption),
       nativeTokenReward: _nativeTokenReward,
       reputationReward: _reputationReward,
       ethReward: _ethReward,
@@ -196,7 +196,7 @@ contract SimpleContributionScheme is UniversalScheme {
    * @param _avatar address of the controller
    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
    */
-  function execute(bytes32 _proposalId, address _avatar, int _param) returns(bool) {
+  function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
     // Check the caller is indeed the voting machine:
     require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
     // Check if vote was successful:
@@ -231,7 +231,7 @@ contract SimpleContributionScheme is UniversalScheme {
     return true;
   }
 
-  function isRegistered(address _avatar) constant returns(bool) {
+  function isRegistered(address _avatar) public constant returns(bool) {
     return organizations[_avatar].isRegistered;
   }
 
