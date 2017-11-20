@@ -6,43 +6,37 @@ import * as ethers from 'ethers';
 import { Wallet } from '../lib/wallet.js';
 import * as helpers from './helpers';
 
-const setupWallet = async function () {
-  console.log("Creating encrypted wallet");
-  var wallet = await Wallet.new("Passw0rd", function(progress) { process.stdout.write("."); });
-  console.log("\n");
-  return wallet;
-};
-
 contract('Wallet', function(accounts) {
   it('creates a new wallet on the blockchain', async function() {
     this.timeout(10000);
-    var wallet = await setupWallet();
+    var wallet = Wallet.new();
     assert.equal(wallet.getPublicAddress().length, 42);
     assert.equal(await wallet.getEtherBalance(), 0);
     assert.notEqual(wallet.getMnemonic().length, 0);
-    assert.notEqual(wallet.getEncryptedJSON().length, 0);
   });
 
-  it('can be decrypted', async function() {
+  it('can be encrypted and decrypted', async function() {
     this.timeout(10000);
-    var wallet = await setupWallet();
+    var wallet = Wallet.new();
+    console.log("Encrypt wallet");
+    var encryptedJSON = await wallet.encrypt("Passw0rd", function(progress) { process.stdout.write("."); });
+    console.log("\n");
     console.log("Decrypting wallet");
-    var wallet2 = await Wallet.fromEncrypted(wallet.getEncryptedJSON(), "Passw0rd", function(progress) { process.stdout.write(","); });
+    var wallet2 = await Wallet.fromEncrypted(encryptedJSON, "Passw0rd", function(progress) { process.stdout.write(","); });
     assert.equal(wallet.getPublicAddress(), wallet2.getPublicAddress());
   });
 
-  it('can be recovered from a mnemonic', async function() {
+  it('can be recovered from a mnemonic', function() {
     this.timeout(10000);
-    var wallet = await setupWallet();
+    var wallet = Wallet.new();
     var mnemonic = wallet.getMnemonic();
-    console.log("Recovering from mnemonic");
-    var wallet2 = await Wallet.fromMnemonic(mnemonic, "Passw0rd", function(progress) { process.stdout.write(","); });
+    var wallet2 = Wallet.fromMnemonic(mnemonic);
     assert.equal(wallet.wallet.privateKey, wallet2.wallet.privateKey);
   });
 
   it('can send and receive ether', async function() {
     this.timeout(10000);
-    var wallet = await setupWallet();
+    var wallet = Wallet.new()
     await web3.eth.sendTransaction({to: wallet.getPublicAddress(), from: accounts[0], value: web3.toWei(100, "ether")});
     let balanceWei = await wallet.getEtherBalance();
     assert.equal(ethers.utils.formatEther(balanceWei), "100.0");
