@@ -41,14 +41,16 @@ var Wallet = exports.Wallet = function () {
     _classCallCheck(this, Wallet);
   }
 
-  // Create a new wallet and encrypt it with password
-  // The wallet will be generated deterministically from a mnemonic created using bip39
+  // Create a new wallet, generated deterministically from a mnemonic created using bip39
 
 
   _createClass(Wallet, [{
-    key: 'getEncryptedJSON',
-    value: function getEncryptedJSON() {
-      return this.encryptedJSON;
+    key: 'encrypt',
+
+
+    // Encrypt a wallet and return the Secret Storage JSON
+    value: async function encrypt(password, progressCallback) {
+      return await this.wallet.encrypt(password, progressCallback);
     }
 
     // TODO: convert to ether?
@@ -87,16 +89,15 @@ var Wallet = exports.Wallet = function () {
     }
   }], [{
     key: 'new',
-    value: async function _new(password, progressCallback) {
+    value: function _new() {
       var wallet = new Wallet();
       wallet.mnemonic = bip39.generateMnemonic();
       wallet.wallet = ethers.Wallet.fromMnemonic(wallet.mnemonic);
       wallet.wallet.provider = provider;
-      wallet.encryptedJSON = await wallet.wallet.encrypt(password, progressCallback);
       return wallet;
     }
 
-    // Unencrypt an encrypted wallet
+    // Unencrypt an encrypted Secret Storage JSON Wallet
 
   }, {
     key: 'fromEncrypted',
@@ -104,21 +105,19 @@ var Wallet = exports.Wallet = function () {
       var wallet = new Wallet();
       wallet.wallet = await ethers.Wallet.fromEncryptedWallet(encryptedJSON, password, progressCallback);
       wallet.wallet.provider = provider;
-      wallet.encryptedJSON = encryptedJSON;
       return wallet;
     }
 
-    // Recover a wallet from a mnemonic and then encrypt it with a new password
+    // Recover a wallet from a mnemonic
     // TODO: what happens with an invalid mnemonic?
 
   }, {
     key: 'fromMnemonic',
-    value: async function fromMnemonic(mnemonic, password, progressCallback) {
+    value: function fromMnemonic(mnemonic) {
       var wallet = new Wallet();
       wallet.wallet = ethers.Wallet.fromMnemonic(mnemonic);
       wallet.mnemonic = mnemonic;
       wallet.wallet.provider = provider;
-      wallet.encryptedJSON = await wallet.wallet.encrypt(password, progressCallback);
       return wallet;
     }
   }]);

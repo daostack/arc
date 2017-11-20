@@ -1,7 +1,7 @@
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 exports.SchemeRegistrar = undefined;
 
@@ -21,49 +21,49 @@ var SoliditySchemeRegistrar = (0, _utils.requireContract)("SchemeRegistrar");
 var DAOToken = (0, _utils.requireContract)("DAOToken");
 
 var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac) {
-    _inherits(SchemeRegistrar, _ExtendTruffleContrac);
+  _inherits(SchemeRegistrar, _ExtendTruffleContrac);
 
-    function SchemeRegistrar() {
-        _classCallCheck(this, SchemeRegistrar);
+  function SchemeRegistrar() {
+    _classCallCheck(this, SchemeRegistrar);
 
-        return _possibleConstructorReturn(this, (SchemeRegistrar.__proto__ || Object.getPrototypeOf(SchemeRegistrar)).apply(this, arguments));
+    return _possibleConstructorReturn(this, (SchemeRegistrar.__proto__ || Object.getPrototypeOf(SchemeRegistrar)).apply(this, arguments));
+  }
+
+  _createClass(SchemeRegistrar, [{
+    key: 'setParams',
+    value: async function setParams(params) {
+      return await this._setParameters(params.voteParametersHash, params.voteParametersHash, params.votingMachine);
     }
+  }, {
+    key: 'getDefaultPermissions',
+    value: function getDefaultPermissions(overrideValue) {
+      return overrideValue || '0x00000003';
+    }
+  }], [{
+    key: 'new',
+    value: async function _new() {
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    _createClass(SchemeRegistrar, [{
-        key: 'setParams',
-        value: async function setParams(params) {
-            return await this._setParameters(params.voteParametersHash, params.voteParametersHash, params.votingMachine);
-        }
-    }, {
-        key: 'getDefaultPermissions',
-        value: function getDefaultPermissions(overrideValue) {
-            return overrideValue || '0x00000003';
-        }
-    }], [{
-        key: 'new',
-        value: async function _new() {
-            var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      // TODO: provide options to use an existing token or specifiy the new token
+      var defaults = {
+        fee: 0, // the fee to use this scheme
+        beneficiary: (0, _utils.getDefaultAccount)(),
+        tokenAddress: undefined // the address of a token to use
+      };
 
-            // TODO: provide options to use an existing token or specifiy the new token
-            var defaults = {
-                fee: 0, // the fee to use this scheme
-                beneficiary: (0, _utils.getDefaultAccount)(),
-                tokenAddress: undefined // the address of a token to use
-            };
+      var options = dopts(opts, defaults);
 
-            var options = dopts(opts, defaults);
+      var token = void 0;
+      if (options.tokenAddress == undefined) {
+        token = await DAOToken.new('schemeregistrartoken', 'SRT');
+      } else {
+        token = await DAOToken.at(options.tokenAddress);
+      }
 
-            var token = void 0;
-            if (options.tokenAddress == undefined) {
-                token = await DAOToken.new('schemeregistrartoken', 'SRT');
-            } else {
-                token = await DAOToken.at(options.tokenAddress);
-            }
+      contract = await SoliditySchemeRegistrar.new(token.address, options.fee, options.beneficiary);
+      return new this(contract);
+    }
+  }]);
 
-            contract = await SoliditySchemeRegistrar.new(token.address, options.fee, options.beneficiary);
-            return new this(contract);
-        }
-    }]);
-
-    return SchemeRegistrar;
+  return SchemeRegistrar;
 }((0, _utils.ExtendTruffleContract)(SoliditySchemeRegistrar));
