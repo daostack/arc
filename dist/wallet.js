@@ -11,6 +11,8 @@ var _ethers = require('ethers');
 
 var ethers = _interopRequireWildcard(_ethers);
 
+var _utils = require('./utils.js');
+
 var _organization = require('./organization.js');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -18,6 +20,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var bip39 = require('bip39');
+
 
 // TODO: move all the provider connection stuff to settings.js
 var ethProvider = process.env.ETH_PROVIDER; // If provider not specified will default to local RPC (testrpc, Geth, or Parity..)
@@ -36,6 +39,8 @@ switch (ethProvider) {
     provider = new ethers.providers.JsonRpcProvider('http://localhost:8545', ethNetwork);
 }
 
+var web3 = (0, _utils.getWeb3)();
+
 var Wallet = exports.Wallet = function () {
   function Wallet() {
     _classCallCheck(this, Wallet);
@@ -53,29 +58,34 @@ var Wallet = exports.Wallet = function () {
       return await this.wallet.encrypt(password, progressCallback);
     }
 
-    // TODO: convert to ether?
+    // Return amount of ether in the wallet.
+    // If inWei = false then return num Ether as a string.
+    // See details on units here http://ethdocs.org/en/latest/ether.html
 
   }, {
     key: 'getEtherBalance',
-    value: async function getEtherBalance() {
-      return await this.wallet.getBalance();
+    value: async function getEtherBalance(inWei) {
+      inWei = inWei || false;
+      var wei = await web3.eth.getBalance(this.getPublicAddress());
+      return inWei ? wei : Number(web3.fromWei(wei, "ether"));
     }
   }, {
     key: 'getMnemonic',
     value: function getMnemonic() {
       return this.mnemonic;
     }
+
+    // Return amount of an organization's token in the wallet.
+    // If inWei = false then return num Ether as a formated string with one decimal place
+    // See details on units here http://ethdocs.org/en/latest/ether.html
+
   }, {
     key: 'getOrgTokenBalance',
-    value: async function getOrgTokenBalance(organizationAvatarAddress) {
+    value: async function getOrgTokenBalance(organizationAvatarAddress, inWei) {
+      inWei = inWei || false;
       var org = await _organization.Organization.at(organizationAvatarAddress);
-      var balance = await org.controller.balanceOf(this.getPublicAddress());
-      return ethers.utils.formatEther(balance);
-    }
-  }, {
-    key: 'getPublicAddress',
-    value: function getPublicAddress() {
-      return this.wallet.address;
+      var balance = await org.token.balanceOf(this.getPublicAddress());
+      return inWei ? web3.toWei(balance.valueOf(), "ether") : balance.valueOf();
     }
   }, {
     key: 'getProvider',
@@ -83,10 +93,22 @@ var Wallet = exports.Wallet = function () {
       return this.wallet.provider;
     }
   }, {
-    key: 'sendEther',
-    value: async function sendEther(accountAddress, numEther) {
-      return await this.wallet.send(accountAddress, ethers.utils.parseEther(numEther.toString()));
+    key: 'getPublicAddress',
+    value: function getPublicAddress() {
+      return this.wallet.address;
     }
+  }, {
+    key: 'sendEther',
+    value: async function sendEther(toAccountAddress, numEther) {
+      return await this.wallet.send(toAccountAddress, ethers.utils.parseEther(numEther.toString()));
+    }
+
+    // async sendOrgTokens(organizationAvatarAddress, toAccountAddress, numTokens) {
+    //   let org = await Organization.at(organizationAvatarAddress);
+
+    //   return await this.wallet.send(accountAddress, ethers.utils.parseEther(numEther.toString()));
+    // }
+
   }], [{
     key: 'new',
     value: function _new() {

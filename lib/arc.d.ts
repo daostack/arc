@@ -1,18 +1,18 @@
-import TruffleContract from 'truffle-contract';
+import * as BigNumber from 'bignumber.js';
 import * as Web3 from "web3";
 
 declare module 'daostack-arc' {
   export class Wallet {
-    static new(password: string, progressCallback: (progress: number) => void) : Wallet;
-    static fromEncrypted(encryptedJSON: string, password: string, progressCallback: (progress: number) => void) : Wallet
+    static new() : Wallet;
+    static fromEncrypted(encryptedJSON: string, password: string) : Wallet
+    static fromMnemonic(mnemonic: string) : Wallet
 
-    getEncryptedJSON() : string
-    getEtherBalance() : any // TODO return bignumber
+    encrypt(password: string, progressCallback: (progress: number) => void) : string
+    getEtherBalance(inWei? : boolean) : BigNumber.BigNumber | string
     getMnemonic() : string
-    getOrgTokenBalance(organizationAvatarAddress : string) : any // TODO return bignumber
+    getOrgTokenBalance(organizationAvatarAddress : string, inWei? : boolean) : BigNumber.BigNumber | string
     getPublicAddress() : string
     getProvider() : any
-    giveOrgTokens(organizationAvatarAddress : string, numTokens : number) : null
     sendEther(accountAddress : string, numEther: number | string) : any // TODO return value
   }
 
@@ -22,26 +22,26 @@ declare module 'daostack-arc' {
     /**
      * includes static `new` and `at`
      */
-    avatar: TruffleContract;
+    avatar: any;
     /**
      * Controller truffle contract
      */
-    controller: TruffleContract;
+    controller: any;
     /**
      * DAOToken truffle contract
      */
-    token: TruffleContract;
+    token: any;
     /**
      * Reputation truffle contract
      */
-    reputation: TruffleContract;
+    reputation: any;
     /**
      * AbsoluteVote truffle contract
      */
-    votingMachine: TruffleContract;
+    votingMachine: any;
 
-    schemes(contractName?:string);
-    scheme(contractName:string);
+    schemes(contractName?:string) : any;
+    scheme(contractName:string) : any;
     // checkSchemeConditions(contractName:string);
     // proposeScheme(options?);
     // proposeGlobalConstraint(options?);
@@ -54,7 +54,7 @@ declare module 'daostack-arc' {
       /**
        * TruffleContract as obtained via require()
        */
-      contract: TruffleContract;
+      contract: any;
       address: string;
   }
 
@@ -93,11 +93,11 @@ declare module 'daostack-arc' {
   }
 
   // from arc.js
-  export function configure(options): Web3;
+  export function configure(options : any): Web3;
   export function getDeployedContracts() : ArcDeployedContracts;
 
   // from utils.js
-  export function requireContract(contractName): TruffleContract;
+  export function requireContract(contractName : string): any;
   export function getWeb3():Web3;
   export function getValueFromLogs(tx:any, arg:string, eventName:string, index:Number):string;
   export function getDefaultAccount():any;

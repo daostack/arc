@@ -38,25 +38,38 @@ contract('Wallet', function(accounts) {
     this.timeout(10000);
     var wallet = Wallet.new();
     await web3.eth.sendTransaction({to: wallet.getPublicAddress(), from: accounts[0], value: web3.toWei(100, "ether")});
-    let balanceWei = await wallet.getEtherBalance();
-    assert.equal(ethers.utils.formatEther(balanceWei), "100.0");
+    let balance = await wallet.getEtherBalance();
+    assert.equal(balance, 100.0);
 
-    const toBalanceBefore = await wallet.getProvider().getBalance(accounts[2]);
+    const toBalanceBefore = await web3.eth.getBalance(accounts[2]);
     await wallet.sendEther(accounts[2], 10);
-    balanceWei = await wallet.getEtherBalance();
-    assert.equal(ethers.utils.formatEther(balanceWei), "89.99958");
-    const toBalanceAfter = await wallet.getProvider().getBalance(accounts[2]);
-    assert(toBalanceAfter.eq(toBalanceBefore.add(ethers.utils.parseEther("10"))));
+    balance = await wallet.getEtherBalance();
+    assert.equal(balance, 89.99958);
+    const toBalanceAfter = await web3.eth.getBalance(accounts[2]);
+    assert(toBalanceAfter.equals(toBalanceBefore.plus(web3.toWei(10, "ether"))));
   });
 
-  // it('can receive org tokens', async function() {
-  //   this.timeout(10000);
-  //   let org = await helpers.forgeOrganization();
-  //   let wallet = await setupWallet();
-  //   await org.token.mint(wallet.getPublicAddress(), 1000);
-
-  //   assert.equal(wallet.getOrgTokenBalance(org.avatar), "1000");
-  // })
+  it('can receive org tokens', async function() {
+    this.timeout(10000);
+    let wallet1 = Wallet.new();
+    let wallet2 = Wallet.new();
+    const orgOptions = {
+      founders: [
+        {
+          address: wallet1.getPublicAddress(),
+          tokens: 100,
+          reputation: 100
+        },
+        {
+          address: wallet2.getPublicAddress(),
+          tokens: 100,
+          reputation: 100
+        },
+      ]
+    };
+    let org = await helpers.forgeOrganization(orgOptions);
+    assert.equal(await wallet1.getOrgTokenBalance(org.avatar.address), 100);
+  });
 
   // it('can sign transactions', async function() {
   //   this.timeout(10000);

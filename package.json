@@ -1,6 +1,6 @@
 {
   "name": "daostack-arc",
-  "version": "0.0.0-alpha.10",
+  "version": "0.0.0-alpha.11",
   "description": "Building DAOs",
   "main": "dist/arc.js",
   "types": "lib/arc.d.ts",
@@ -27,6 +27,7 @@
     "truffle": "truffle"
   },
   "devDependencies": {
+    "@types/bignumber.js": "^4.0.3",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-plugin-syntax-async-functions": "^6.1.4",

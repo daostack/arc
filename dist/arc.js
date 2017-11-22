@@ -93,7 +93,7 @@ exports.getDeployedContracts = getDeployedContracts;
 var _settings = require('./settings.js');
 
 /**
- * Configure the emergent-arc module.
+ * Configure the daostack-arc module.
  *
  * @return: Web3 web3 as a convenience for the client.
  * `web3` is set automatically in testing and migration, or elsewhere (development, production)
@@ -115,18 +115,18 @@ function configure(options) {
 
 /**
  * Returns and object with the following properties:
- * 
+ *
  *  allContracts:   An object with each property name being a key identifying a deployed Arc contract,
  *                  (example: "GlobalContraintRegistrar"), and value being an object containing:
  *                      address: of the deployed contract
  *                      contract: a TruffleContract
- * 
+ *
  *  schemes: An array containing the set of property values from allContracts that represent schemes
  *          Scheme contracts contain additional methods on "contract", including the following, plus others
  *          unique to each scheme:
  *              setParams(params: any): string (returns hash)
  *              getDefaultPermissions(): string (string represent permissions bits -- see Controller)
- * 
+ *
  *  votingMachines: An array containing the set of property values from allContracts that represent voting machines
  */
 async function getDeployedContracts() {
