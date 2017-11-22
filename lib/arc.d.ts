@@ -1,18 +1,19 @@
+import * as BigNumber from 'bignumber.js';
 import TruffleContract from 'truffle-contract';
 import * as Web3 from "web3";
 
 declare module 'daostack-arc' {
   export class Wallet {
-    static new(password: string, progressCallback: (progress: number) => void) : Wallet;
-    static fromEncrypted(encryptedJSON: string, password: string, progressCallback: (progress: number) => void) : Wallet
+    static new() : Wallet;
+    static fromEncrypted(encryptedJSON: string, password: string) : Wallet
+    static fromMnemonic(mnemonic: string) : Wallet
 
-    getEncryptedJSON() : string
-    getEtherBalance() : any // TODO return bignumber
+    encrypt(password: string, progressCallback: (progress: number) => void) : string
+    getEtherBalance(inWei? : boolean) : BigNumber | string
     getMnemonic() : string
-    getOrgTokenBalance(organizationAvatarAddress : string) : any // TODO return bignumber
+    getOrgTokenBalance(organizationAvatarAddress : string, inWei? : boolean) : BigNumber | string
     getPublicAddress() : string
     getProvider() : any
-    giveOrgTokens(organizationAvatarAddress : string, numTokens : number) : null
     sendEther(accountAddress : string, numEther: number | string) : any // TODO return value
   }
 

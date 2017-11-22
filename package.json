@@ -27,6 +27,7 @@
     "truffle": "truffle"
   },
   "devDependencies": {
+    "@types/bignumber.js": "^4.0.3",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-plugin-syntax-async-functions": "^6.1.4",
