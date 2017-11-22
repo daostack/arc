@@ -1,5 +1,5 @@
 import * as BigNumber from 'bignumber.js';
-import TruffleContract from 'truffle-contract';
+import * as TruffleContract from 'truffle-contract';
 import * as Web3 from "web3";
 
 declare module 'daostack-arc' {
@@ -41,8 +41,8 @@ declare module 'daostack-arc' {
      */
     votingMachine: TruffleContract;
 
-    schemes(contractName?:string);
-    scheme(contractName:string);
+    schemes(contractName?:string) : any;
+    scheme(contractName:string) : any;
     // checkSchemeConditions(contractName:string);
     // proposeScheme(options?);
     // proposeGlobalConstraint(options?);
@@ -94,11 +94,11 @@ declare module 'daostack-arc' {
   }
 
   // from arc.js
-  export function configure(options): Web3;
+  export function configure(options : any): Web3;
   export function getDeployedContracts() : ArcDeployedContracts;
 
   // from utils.js
-  export function requireContract(contractName): TruffleContract;
+  export function requireContract(contractName : string): TruffleContract;
   export function getWeb3():Web3;
   export function getValueFromLogs(tx:any, arg:string, eventName:string, index:Number):string;
   export function getDefaultAccount():any;
