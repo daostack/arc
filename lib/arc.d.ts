@@ -1,5 +1,4 @@
 import * as BigNumber from 'bignumber.js';
-import * as TruffleContract from 'truffle-contract';
 import * as Web3 from "web3";
 
 declare module 'daostack-arc' {
@@ -9,9 +8,9 @@ declare module 'daostack-arc' {
     static fromMnemonic(mnemonic: string) : Wallet
 
     encrypt(password: string, progressCallback: (progress: number) => void) : string
-    getEtherBalance(inWei? : boolean) : BigNumber | string
+    getEtherBalance(inWei? : boolean) : BigNumber.BigNumber | string
     getMnemonic() : string
-    getOrgTokenBalance(organizationAvatarAddress : string, inWei? : boolean) : BigNumber | string
+    getOrgTokenBalance(organizationAvatarAddress : string, inWei? : boolean) : BigNumber.BigNumber | string
     getPublicAddress() : string
     getProvider() : any
     sendEther(accountAddress : string, numEther: number | string) : any // TODO return value
@@ -23,23 +22,23 @@ declare module 'daostack-arc' {
     /**
      * includes static `new` and `at`
      */
-    avatar: TruffleContract;
+    avatar: any;
     /**
      * Controller truffle contract
      */
-    controller: TruffleContract;
+    controller: any;
     /**
      * DAOToken truffle contract
      */
-    token: TruffleContract;
+    token: any;
     /**
      * Reputation truffle contract
      */
-    reputation: TruffleContract;
+    reputation: any;
     /**
      * AbsoluteVote truffle contract
      */
-    votingMachine: TruffleContract;
+    votingMachine: any;
 
     schemes(contractName?:string) : any;
     scheme(contractName:string) : any;
@@ -55,7 +54,7 @@ declare module 'daostack-arc' {
       /**
        * TruffleContract as obtained via require()
        */
-      contract: TruffleContract;
+      contract: any;
       address: string;
   }
 
@@ -98,7 +97,7 @@ declare module 'daostack-arc' {
   export function getDeployedContracts() : ArcDeployedContracts;
 
   // from utils.js
-  export function requireContract(contractName : string): TruffleContract;
+  export function requireContract(contractName : string): any;
   export function getWeb3():Web3;
   export function getValueFromLogs(tx:any, arg:string, eventName:string, index:Number):string;
   export function getDefaultAccount():any;
