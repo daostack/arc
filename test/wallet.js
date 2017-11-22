@@ -66,10 +66,10 @@ contract('Wallet', function(accounts) {
           reputation: 100
         },
       ]
-    }
+    };
     let org = await helpers.forgeOrganization(orgOptions);
     assert.equal(await wallet1.getOrgTokenBalance(org.avatar.address), 100);
-  })
+  });
 
   // it('can sign transactions', async function() {
   //   this.timeout(10000);

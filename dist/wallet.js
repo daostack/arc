@@ -102,13 +102,13 @@ var Wallet = exports.Wallet = function () {
     value: async function sendEther(toAccountAddress, numEther) {
       return await this.wallet.send(toAccountAddress, ethers.utils.parseEther(numEther.toString()));
     }
-  }, {
-    key: 'sendOrgTokens',
-    value: async function sendOrgTokens(organizationAvatarAddress, toAccountAddress, numTokens) {
-      var org = await _organization.Organization.at(organizationAvatarAddress);
 
-      return await this.wallet.send(accountAddress, ethers.utils.parseEther(numEther.toString()));
-    }
+    // async sendOrgTokens(organizationAvatarAddress, toAccountAddress, numTokens) {
+    //   let org = await Organization.at(organizationAvatarAddress);
+
+    //   return await this.wallet.send(accountAddress, ethers.utils.parseEther(numEther.toString()));
+    // }
+
   }], [{
     key: 'new',
     value: function _new() {
