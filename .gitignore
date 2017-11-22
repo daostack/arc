@@ -1,6 +1,5 @@
 *sublime*
 *.pyc
-build/
 logs/
 fabfile.py
 node_modules/
