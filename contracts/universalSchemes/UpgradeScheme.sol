@@ -202,14 +202,16 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
       bytes4 permissions = controller.getSchemePermissions(this);
       if (proposal.fee != 0) {
         if (!controller.externalTokenApprove(proposal.tokenFee, proposal.newContOrScheme, proposal.fee)) {
-            revert();
+          revert();
         }
       }
       if (!controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions)) {
         revert();
       }
-      if (!controller.unregisterSelf()) {
-        revert();
+      if (proposal.newContOrScheme != address(this) ) {
+        if (!controller.unregisterSelf()) {
+          revert();
+        }
       }
     }
     delete organizations[_avatar].proposals[_proposalId];
