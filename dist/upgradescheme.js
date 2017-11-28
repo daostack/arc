@@ -9,6 +9,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _utils = require('./utils.js');
 
+var _settings = require('./settings.js');
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -124,6 +126,7 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
             //   throw new Error("fee is greater than zero but tokenAddress is not defined");
             // }
 
+            var settings = await (0, _settings.getSettings)();
             var newScheme = await settings.daostackContracts.UpgradeScheme.contract.at(options.scheme);
             var fee = await newScheme.fee();
             var tokenAddress = await newScheme.nativeToken();

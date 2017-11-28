@@ -47,11 +47,12 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
                  */
                 , scheme: undefined
                 /**
-                 * scheme identifier, like "SchemeRegistrar" or "SimpleContributionScheme"
+                 * scheme identifier, like "SchemeRegistrar" or "SimpleContributionScheme".
+                 * pass null if registering a non-arc scheme
                  */
                 , schemeKey: undefined
                 /**
-                 * scheme parameters
+                 * hash of scheme parameters
                  */
                 , schemeParametersHash: undefined
             };
@@ -66,27 +67,32 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
                 throw new Error("scheme is not defined");
             }
 
-            if (!options.schemeKey) {
-                throw new Error("schemeKey is not defined");
-            }
-
             if (!options.schemeParametersHash) {
                 throw new Error("schemeParametersHash is not defined");
             }
 
-            var settings = await (0, _settings.getSettings)();
-            var newScheme = await settings.daostackContracts[options.schemeKey].contract.at(options.scheme);
-            var fee = await newScheme.fee();
-            var tokenAddress = await newScheme.nativeToken();
-            // Note that the javascript wrapper "newScheme" we've gotten here is defined in this version of Arc.  If newScheme is 
-            // actually coming from a different version of Arc, then theoretically the permissions could be different from this version.
-            var permissions = Number(newScheme.getDefaultPermissions());
+            var tx = void 0;
 
-            if (permissions > this.getDefaultPermissions()) {
-                throw new Error("SchemeRegistrar cannot work with schemes having greater permissions than its own");
+            if (options.schemeKey) {
+                var settings = await (0, _settings.getSettings)();
+                var newScheme = await settings.daostackContracts[options.schemeKey].contract.at(options.scheme);
+                var fee = await newScheme.fee();
+                var tokenAddress = await newScheme.nativeToken();
+                // Note that the javascript wrapper "newScheme" we've gotten here is defined in this version of Arc.  If newScheme is 
+                // actually coming from a different version of Arc, then theoretically the permissions could be different from this version.
+                var permissions = Number(newScheme.getDefaultPermissions());
+
+                if (permissions > this.getDefaultPermissions()) {
+                    throw new Error("SchemeRegistrar cannot work with schemes having greater permissions than its own");
+                }
+
+                tx = await this.contract.proposeScheme(options.avatar, options.scheme, options.schemeParametersHash, (permissions & 2) != 0, tokenAddress, fee, true);
+            } else {
+
+                tx = await this.contract.proposeScheme(options.avatar, options.scheme, options.schemeParametersHash,
+                // TODO: should caller be able to specify the rest of these parameters for non-arc schemes?
+                false, _utils.NULL_ADDRESS, 0, true);
             }
-
-            var tx = await this.contract.proposeScheme(options.avatar, options.scheme, options.schemeParametersHash, (permissions & 2) != 0, tokenAddress, fee, true);
 
             return tx;
         }
