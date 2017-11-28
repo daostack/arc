@@ -9,6 +9,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _utils = require('./utils.js');
 
+var _organization = require('./organization.js');
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -30,6 +32,83 @@ var GlobalConstraintRegistrar = exports.GlobalConstraintRegistrar = function (_E
   }
 
   _createClass(GlobalConstraintRegistrar, [{
+    key: 'proposeGlobalConstraint',
+    value: async function proposeGlobalConstraint() {
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      var defaults = {
+        /**
+         * avatar address
+         */
+        avatar: undefined
+        /**
+         *  the address of the global constraint to add
+         */
+        , globalConstraint: undefined
+        /**
+         * hash of the parameters of the global contraint
+         */
+        , globalConstraintParametersHash: undefined
+        /**
+         * voting machine to use when voting to remove the global constraint
+         */
+        , votingMachineHash: undefined
+      };
+
+      var options = dopts(opts, defaults);
+
+      if (!options.avatar) {
+        throw new Error("avatar address is not defined");
+      }
+
+      if (!options.globalConstraint) {
+        throw new Error("avatar globalConstraint is not defined");
+      }
+
+      if (!options.globalConstraintParametersHash) {
+        throw new Error("avatar globalConstraintParametersHash is not defined");
+      }
+
+      if (!options.votingMachineHash) {
+        throw new Error("avatar votingMachineHash is not defined");
+      }
+
+      var tx = await this.contract.proposeGlobalConstraint(options.avatar, options.globalConstraint, options.globalConstraintParametersHash, options.votingMachineHash);
+
+      return tx;
+    }
+  }, {
+    key: 'proposeToRemoveGlobalConstraint',
+    value: async function proposeToRemoveGlobalConstraint() {
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+
+      var defaults = {
+        /**
+         * avatar address
+         */
+        avatar: undefined
+        /**
+         *  the address of the global constraint to remove
+         */
+        , globalConstraint: undefined
+      };
+
+      var options = dopts(opts, defaults);
+
+      if (!options.avatar) {
+        throw new Error("avatar address is not defined");
+      }
+
+      if (!options.globalConstraint) {
+        throw new Error("avatar globalConstraint is not defined");
+      }
+
+      var tx = await this.contract.proposeToRemoveGC(options.avatar, options.globalConstraint);
+
+      return tx;
+    }
+  }, {
     key: 'setParams',
     value: async function setParams(params) {
       return await this._setParameters(params.voteParametersHash, params.votingMachine);

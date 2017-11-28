@@ -17,8 +17,6 @@ declare module 'daostack-arc' {
   }
 
   export class Organization  {
-    address: string;
-    name: string;
     /**
      * includes static `new` and `at`
      */
