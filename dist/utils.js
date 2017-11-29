@@ -82,9 +82,7 @@ function getWeb3() {
   var preWeb3;
 
   // already defined under `window`?
-  var windowWeb3 = window.web3;
-
-  if (windowWeb3) {
+  if (typeof window !== "undefined" && typeof window.web3 !== "undefined") {
     // console.log(`Connecting via currentProvider`)
     preWeb3 = new _web2.default(windowWeb3.currentProvider);
   } else {
