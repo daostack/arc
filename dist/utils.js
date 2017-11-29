@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.ExtendTruffleContract = exports.NULL_HASH = exports.NULL_ADDRESS = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -13,25 +14,30 @@ exports.getWeb3 = getWeb3;
 exports.getValueFromLogs = getValueFromLogs;
 exports.getDefaultAccount = getDefaultAccount;
 
+var _web = require('web3');
+
+var _web2 = _interopRequireDefault(_web);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 // some utility functions
 
+var TruffleContract = require('truffle-contract');
 var NULL_ADDRESS = exports.NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 var NULL_HASH = exports.NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-var TruffleContract = require('truffle-contract');
-
 /**
  * Returns TruffleContract given the name of the contract.
- * 
+ *
  * When testing or migrating, uses .sol
  * Elsewhere (development, production), uses migrated .json
- * 
+ *
  * Side effect:  It initializes (and uses) `web3` if a global `web3` is not already present, which
  * happens when running in the context of an application (as opposed to tests or migration).
- * 
- * @param contractName 
+ *
+ * @param contractName
  */
 function requireContract(contractName) {
   if ((typeof artifacts === 'undefined' ? 'undefined' : _typeof(artifacts)) == 'object') {
@@ -64,8 +70,8 @@ var alreadyTriedAndFailed = false;
  */
 function getWeb3() {
 
-  if (typeof window === 'undefined') {
-    return web3; // assume is set by truffle in test and migration environments
+  if (typeof web3 !== 'undefined') {
+    return web3; // e.g. set by truffle in test and migration environments
   } else if (_web3) {
     return _web3;
   } else if (alreadyTriedAndFailed) {
@@ -80,10 +86,10 @@ function getWeb3() {
 
   if (windowWeb3) {
     // console.log(`Connecting via currentProvider`)
-    preWeb3 = new Web3(windowWeb3.currentProvider);
+    preWeb3 = new _web2.default(windowWeb3.currentProvider);
   } else {
     // console.log(`Connecting via http://localhost:8545`)
-    preWeb3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+    preWeb3 = new _web2.default(new _web2.default.providers.HttpProvider('http://localhost:8545'));
   }
 
   if (!preWeb3) {
@@ -104,7 +110,7 @@ function getValueFromLogs(tx, arg, eventName) {
   var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
   /**
-   * 
+   *
    * tx.logs look like this:
    *
    * [ { logIndex: 13,
@@ -150,26 +156,11 @@ function getValueFromLogs(tx, arg, eventName) {
  * throws an exception on failure.
  */
 function getDefaultAccount() {
-  var defaultAccount = void 0;
+  var web3 = getWeb3();
+  var defaultAccount = web3.eth.defaultAccount = web3.eth.defaultAccount || web3.eth.accounts[0];
 
-  try {
-    if (typeof window === 'undefined') {
-      defaultAccount = web3.eth.defaultAccount = web3.eth.defaultAccount || web3.eth.accounts[0];
-    } else {
-      if (_web3 && !alreadyTriedAndFailed) {
-        defaultAccount = _web3.eth.defaultAccount = _web3.eth.accounts[0];
-      } else {
-        throw new Error("web3 is not available.  getWeb3() has not been called or else it failed.");
-      }
-    }
-
-    if (!defaultAccount) {
-      alreadyTriedAndFailed = true;
-      throw new Error("eth.accounts[0] is not set");
-    }
-  } catch (ex) {
-    alreadyTriedAndFailed = true;
-    throw new Error('No default account found: ' + ex);
+  if (!defaultAccount) {
+    throw new Error("eth.accounts[0] is not set");
   }
 
   // TODO: this should be the default sender account that signs the transactions
@@ -203,13 +194,13 @@ var ExtendTruffleContract = exports.ExtendTruffleContract = function ExtendTruff
        * Returns promise of parameters hash.
        * If there are any parameters, then this function must be overridden by the subclass to provide them.
        * @param overrides -- object with properties whose names are expected by the scheme to correspond to parameters.  Overrides the defaults.
-       * 
+       *
        * Should have the following properties:
-       *  
+       *
        *  for all:
        *    voteParametersHash
        *    votingMachine -- address
-       * 
+       *
        *  for SimpleContributionScheme:
        *    orgNativeTokenFee -- number
        *    schemeNativeTokenFee -- number
