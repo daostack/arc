@@ -9,8 +9,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _utils = require('./utils.js');
 
-var _simplecontributionscheme = require('./simplecontributionscheme.js');
-
 var _settings = require('./settings.js');
 
 var _schemeregistrar = require('./schemeregistrar.js');
@@ -24,11 +22,8 @@ var Controller = (0, _utils.requireContract)('Controller');
 var DAOToken = (0, _utils.requireContract)("DAOToken");
 var GenesisScheme = (0, _utils.requireContract)("GenesisScheme");
 var Reputation = (0, _utils.requireContract)("Reputation");
-var SimpleICO = (0, _utils.requireContract)("SimpleICO");
 // import { GlobalConstraintRegistrar } from   './globalconstraintregistrar.js';
 var AbsoluteVote = (0, _utils.requireContract)("AbsoluteVote");
-
-var TokenCapGC = (0, _utils.requireContract)("TokenCapGC");
 // import { UpgradeScheme } from   './upgradescheme.js';
 
 var promisify = require('promisify');

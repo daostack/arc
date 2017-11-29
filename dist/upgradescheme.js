@@ -77,6 +77,10 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
             var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 
+            /**
+             * Note that explicitly supplying any property with a value of undefined will prevent the property
+             * from taking on its default value (weird behavior of default-options)
+             */
             var defaults = {
                 /**
                  * avatar address
