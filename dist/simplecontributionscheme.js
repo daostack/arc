@@ -59,7 +59,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
                  * the address of an external token (for externalTokenReward)
                  * Only required when externalTokenReward is non-zero.
                  */
-                externalToken: null,
+                externalToken: _utils.NULL_ADDRESS,
                 /**
                  * reward in the given external token
                  */
@@ -80,7 +80,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
                 throw new Error("description is not defined");
             }
 
-            if (!(options.nativeTokenReward < 0 || options.reputationReward < 0 || options.ethReward < 0 || options.externalTokenReward < 0)) {
+            if (options.nativeTokenReward < 0 || options.reputationReward < 0 || options.ethReward < 0 || options.externalTokenReward < 0) {
                 throw new Error("rewards cannot be less than 0");
             }
 
@@ -88,7 +88,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
                 throw new Error("no reward amount was given");
             }
 
-            if (options.externalTokenReward && !options.externalToken) {
+            if (options.externalTokenReward && (!options.externalToken || options.externalToken === _utils.NULL_ADDRESS)) {
                 throw new Error("external token reward is proposed but externalToken is not defined");
             }
 
@@ -113,6 +113,15 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
             // BoolVoteInterface boolVote;
             // assert.equal(params[0].toNumber(), 0);
             // assert.equal(params[2].toNumber(), 0);
+
+            // console.log(`********* options.avatar ${options.avatar} **********`);
+            // console.log(`********* options.description ${options.description} **********`);
+            // console.log(`********* options.nativeTokenReward ${options.nativeTokenReward} **********`);
+            // console.log(`********* options.reputationReward ${options.reputationReward} **********`);
+            // console.log(`********* options.ethReward ${options.ethReward} **********`);
+            // console.log(`********* options.externalToken ${options.externalToken} **********`);
+            // console.log(`********* options.externalTokenReward ${options.externalTokenReward} **********`);
+            // console.log(`********* options.beneficiary ${options.beneficiary} **********`);
 
             var tx = await this.contract.submitContribution(options.avatar, // Avatar _avatar,
             options.description, // string _contributionDesciption,

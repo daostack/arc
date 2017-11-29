@@ -70,6 +70,10 @@ var GlobalConstraintRegistrar = exports.GlobalConstraintRegistrar = function (_E
       if (!options.votingMachineHash) {
         throw new Error("avatar votingMachineHash is not defined");
       }
+      // console.log(`****** avatar ${options.avatar} ******`);
+      // console.log(`****** globalConstraint ${options.globalConstraint} ******`);
+      // console.log(`****** globalConstraintParametersHash ${options.globalConstraintParametersHash} ******`);
+      // console.log(`****** votingMachineHash ${options.votingMachineHash} ******`);
 
       var tx = await this.contract.proposeGlobalConstraint(options.avatar, options.globalConstraint, options.globalConstraintParametersHash, options.votingMachineHash);
 

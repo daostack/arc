@@ -52,9 +52,15 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
                  */
                 , schemeKey: undefined
                 /**
-                 * hash of scheme parameters
+                 * hash of scheme parameters. These must be already registered with the new scheme.
                  */
                 , schemeParametersHash: undefined
+                /**
+                 * true to register organization into the scheme when the proposal is approved.
+                 * If false then caller must do it manually via scheme.registerOrganization(avatarAddress).
+                 * Default is true.
+                 */
+                , autoRegister: true
             };
 
             var options = dopts(opts, defaults);
@@ -86,12 +92,12 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
                     throw new Error("SchemeRegistrar cannot work with schemes having greater permissions than its own");
                 }
 
-                tx = await this.contract.proposeScheme(options.avatar, options.scheme, options.schemeParametersHash, (permissions & 2) != 0, tokenAddress, fee, true);
+                tx = await this.contract.proposeScheme(options.avatar, options.scheme, options.schemeParametersHash, (permissions & 2) != 0, tokenAddress, fee, options.autoRegister);
             } else {
 
                 tx = await this.contract.proposeScheme(options.avatar, options.scheme, options.schemeParametersHash,
                 // TODO: should caller be able to specify the rest of these parameters for non-arc schemes?
-                false, _utils.NULL_ADDRESS, 0, true);
+                false, _utils.NULL_ADDRESS, 0, options.autoRegister);
             }
 
             return tx;
