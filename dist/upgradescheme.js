@@ -87,9 +87,15 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
                  */
                 , scheme: undefined
                 /**
-                 * hash of the parameters of the upgrading scheme
+                 * hash of the parameters of the upgrading scheme. These must be already registered with the new scheme.
                  */
                 , schemeParametersHash: undefined
+                /**
+                 * true to register organization into the scheme when the proposal is approved.
+                 * If false then caller must do it manually via scheme.registerOrganization(avatarAddress).
+                 * Default is true.
+                 */
+                , autoRegister: true
                 /**
                  * address of token that will be used by the upgrading scheme when it is required to pay for something.
                  * Should be the NativeToken of the new upgrading scheme.
@@ -132,6 +138,10 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
             var tokenAddress = await newScheme.nativeToken();
 
             var tx = await this.contract.proposeChangeUpgradingScheme(options.avatar, options.scheme, options.schemeParametersHash, tokenAddress, fee);
+
+            if (options.autoRegister) {
+                this.contract.registerOrganization(options.avatar);
+            }
 
             return tx;
         }
