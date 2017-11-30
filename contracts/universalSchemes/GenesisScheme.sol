@@ -17,6 +17,7 @@ contract GenesisScheme {
     mapping(address=>address) locks;
 
     event NewOrg (address _avatar);
+    event InitialSchemesSet (address _avatar);
 
     address[] addressArray;
     bytes32[] bytes32Array;
@@ -109,5 +110,7 @@ contract GenesisScheme {
 
       // Remove lock:
       delete locks[_avatar];
+
+      InitialSchemesSet(address(avatar));
     }
 }
