@@ -159,7 +159,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
 
     // Setting the struct:
     UpgradeProposal memory proposal = UpgradeProposal({
-      proposalType: 1,
+      proposalType: 2,
       newContOrScheme: _scheme,
       params: _params,
       tokenFee: _tokenFee,
