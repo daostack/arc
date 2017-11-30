@@ -175,6 +175,7 @@ contract Controller {
 
   function unregisterSelf() public returns(bool) {
     delete schemes[msg.sender];
+    UnregisterScheme(msg.sender, msg.sender);
     return true;
   }
 
