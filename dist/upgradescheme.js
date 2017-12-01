@@ -101,15 +101,20 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
                  */
                 , autoRegister: true
                 /**
-                 * address of token that will be used by the upgrading scheme when it is required to pay for something.
-                 * Should be the NativeToken of the new upgrading scheme.
-                 * Only required when fee is non-zero.  Should be the SchemeFee of the upgrading scheme.
+                 * The fee that the scheme charges to register an organization in the new upgrade scheme.
+                 * The controller will be asked in advance to approve this expenditure.
+                 * 
+                 * fee is optional.  If the new UpgradeScheme is an Arc scheme, you may omit this and we will
+                 * obtain the values directly from the submitted scheme.
+                 * 
+                 * The fee is paid using the token given by tokenAddress.
                  */
-                // , tokenAddress: null
+                , fee: null
                 /**
-                 * fee to charge when fulfilling it's functions
+                 * address of token that will be used when paying the fee.
+                 * Only required when fee is supplied.
                  */
-                // , fee: 0
+                , tokenAddress: null
             };
 
             var options = dopts(opts, defaults);
@@ -126,20 +131,23 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
                 throw new Error("schemeParametersHash is not defined");
             }
 
-            // if ((options.fee < 0))
-            // {
-            //   throw new Error("fee cannot be less than 0");
-            // }
+            var fee = Number(options.fee === null ? undefined : options.fee);
+            var tokenAddress = options.tokenAddress;
 
-            // if ((options.fee > 0) && !options.tokenAddress)
-            // {
-            //   throw new Error("fee is greater than zero but tokenAddress is not defined");
-            // }
+            if (!Number.isNaN(fee)) {
+                if (fee < 0) {
+                    throw new Error("fee cannot be less than 0");
+                }
 
-            var settings = await (0, _settings.getSettings)();
-            var newScheme = await settings.daostackContracts.UpgradeScheme.contract.at(options.scheme);
-            var fee = await newScheme.fee();
-            var tokenAddress = await newScheme.nativeToken();
+                if (!tokenAddress) {
+                    throw new Error("fee is given but tokenAddress is undefined");
+                }
+            } else {
+                var settings = await (0, _settings.getSettings)();
+                var newScheme = await settings.daostackContracts.UpgradeScheme.contract.at(options.scheme);
+                fee = await newScheme.fee();
+                tokenAddress = await newScheme.nativeToken();
+            }
 
             var tx = await this.contract.proposeChangeUpgradingScheme(options.avatar, options.scheme, options.schemeParametersHash, tokenAddress, fee);
 

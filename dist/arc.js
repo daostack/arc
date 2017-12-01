@@ -87,6 +87,30 @@ Object.keys(_wallet).forEach(function (key) {
         }
     });
 });
+
+var _absoluteVote = require('./absoluteVote.js');
+
+Object.keys(_absoluteVote).forEach(function (key) {
+    if (key === "default" || key === "__esModule") return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function get() {
+            return _absoluteVote[key];
+        }
+    });
+});
+
+var _tokenCapGC = require('./tokenCapGC.js');
+
+Object.keys(_tokenCapGC).forEach(function (key) {
+    if (key === "default" || key === "__esModule") return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function get() {
+            return _tokenCapGC[key];
+        }
+    });
+});
 exports.configure = configure;
 exports.getDeployedContracts = getDeployedContracts;
 
