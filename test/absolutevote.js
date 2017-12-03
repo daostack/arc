@@ -30,7 +30,6 @@ const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
 const checkProposalInfo = async function(proposalId, _proposalInfo) {
   let proposalInfo;
   proposalInfo = await absoluteVote.proposals(proposalId);
-  //console.log("proposalInfo: " + proposalInfo);
   // proposalInfo has the following structure
   // address owner;
   assert.equal(proposalInfo[0], _proposalInfo[0]);
@@ -51,8 +50,8 @@ const checkProposalInfo = async function(proposalId, _proposalInfo) {
 
 const checkProposalStatus = async function(proposalId, _proposalStatus){
   let proposalStatus;
+
   proposalStatus = await absoluteVote.proposalStatus(proposalId);
-  // console.log("ProposalStatus: " + proposalStatus);
   // uint Option 1
   assert.equal(proposalStatus[0], _proposalStatus[0]);
   // uint Option 2
@@ -84,7 +83,6 @@ const checkProposalStatus = async function(proposalId, _proposalStatus){
 const checkVoteInfo = async function(proposalId, voterAddress, _voteInfo) {
   let voteInfo;
   voteInfo = await absoluteVote.voteInfo(proposalId, voterAddress);
-  // console.log("VoteInfo: " + voteInfo);
   // voteInfo has the following structure
   // int vote;
   assert.equal(voteInfo[0], _voteInfo[0]);
@@ -95,7 +93,6 @@ const checkVoteInfo = async function(proposalId, voterAddress, _voteInfo) {
 const checkProposalStatusWithAbsoluteVote = async function(proposalId, _proposalStatus, absoluteVote){
   let proposalStatus;
   proposalStatus = await absoluteVote.proposalStatus(proposalId);
-  //console.log("ProposalStatus: " + proposalStatus);
   // uint Option 1
   assert.equal(proposalStatus[0], _proposalStatus[0]);
   // uint Option 2
@@ -128,7 +125,6 @@ const checkProposalStatusWithAbsoluteVote = async function(proposalId, _proposal
 const checkProposalInfoWithAbsoluteVote = async function(proposalId, _proposalInfo, absoluteVote) {
   let proposalInfo;
   proposalInfo = await absoluteVote.proposals(proposalId);
-  //console.log("proposalInfo: " + proposalInfo);
   // proposalInfo has the following structure
   // address owner;
   assert.equal(proposalInfo[0], _proposalInfo[0]);
@@ -146,17 +142,6 @@ const checkProposalInfoWithAbsoluteVote = async function(proposalId, _proposalIn
   // bool opened; // voting opened flag
   assert.equal(proposalInfo[6], _proposalInfo[6]);
 };
-
-// const checkVoteInfoWithAbsoluteVote = async function(proposalId, voterAddress, _voteInfo, absoluteVote) {
-//   let voteInfo;
-//   voteInfo = await absoluteVote.voteInfo(proposalId, voterAddress);
-//   // console.log("VoteInfo: " + voteInfo);
-//   // voteInfo has the following structure
-//   // int vote;
-//   assert.equal(voteInfo[0], _voteInfo[0]);
-//   // uint reputation;
-//   assert.equal(voteInfo[1], _voteInfo[1]);
-// };
 
 contract('AbsoluteVote', function (accounts) {
 
@@ -187,12 +172,11 @@ contract('AbsoluteVote', function (accounts) {
 
 
       // the decisive vote is cast now and the proposal will be executed with option 5
-      tx = await absoluteVote.ownerVote(proposalId, 5, accounts[2]);
+      await absoluteVote.ownerVote(proposalId, 5, accounts[2]);
       await checkVoteInfo(proposalId, accounts[2], [5, reputationArray[2]]);
       // Porposal should be empty (being deleted after execution)
       await checkProposalInfo(proposalId, [helpers.NULL_ADDRESS, helpers.NULL_ADDRESS, 0, helpers.NULL_ADDRESS, helpers.NULL_HASH, 0, false]);
-      // TODO: Adam: option[0] should be 0 rep, I don't know why it's still 10 rep. do you have any idea why?
-      await checkProposalStatus(proposalId, [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+      await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
   it("log the LogNewProposal event on porposing new porposal", async function() {

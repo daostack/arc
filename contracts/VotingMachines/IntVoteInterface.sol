@@ -24,7 +24,7 @@ contract IntVoteInterface {
 
   function getNumberOfChoices(bytes32 _proposalId) public constant returns(uint);
 
-  function voteInfo(bytes32 _proposalId, address _voter) public constant returns(uint[13]);
+  function voteInfo(bytes32 _proposalId, address _voter) public constant returns(uint[2]);
 
   function proposalStatus(bytes32 _proposalId) public constant returns(uint[13]);
 }
