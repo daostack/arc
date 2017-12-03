@@ -249,7 +249,7 @@ contract AbsoluteVote is IntVoteInterface {
    * @dev voteInfo returns the vote and the amount of reputation of the user committed to this proposal
    * @param _proposalId the ID of the proposal
    * @param _voter the address of the voter
-   * @return uint[10] array that contains the vote's info:
+   * @return uint[2] array that contains the vote's info:
    * amount of reputation committed by _voter to _proposalId, and the voters vote (1/-1/-0)
    */
     function voteInfo(bytes32 _proposalId, address _voter) public constant returns(uint[2]) {
