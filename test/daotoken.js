@@ -72,6 +72,7 @@ contract('DAOToken', accounts => {
 
         const tx = await token.mint(accounts[1], 1000, { from: accounts[0] });
 
+        assert.equal(tx.logs.length, 2);
         assert.equal(tx.logs[0].event, "Mint");
         assert.equal(tx.logs[0].args.to, accounts[1]);
         assert.equal(tx.logs[0].args.amount.toNumber(), 1000);
