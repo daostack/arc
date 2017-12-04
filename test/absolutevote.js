@@ -275,61 +275,61 @@ contract('AbsoluteVote', function (accounts) {
     await absoluteVote.vote(proposalId, 0);
     await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
     await checkVotesStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
 
     // Option 2
     await absoluteVote.vote(proposalId, 1);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
 
     // Option 3
     await absoluteVote.vote(proposalId, 2);
     await checkVoteInfo(proposalId, accounts[0], [2, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
 
     // Option 4
     await absoluteVote.vote(proposalId, 3);
     await checkVoteInfo(proposalId, accounts[0], [3, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
 
     // Option 5
     await absoluteVote.vote(proposalId, 4);
     await checkVoteInfo(proposalId, accounts[0], [4, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
 
     // Option 6
     await absoluteVote.vote(proposalId, 5);
     await checkVoteInfo(proposalId, accounts[0], [5, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
 
     // Option 7
     await absoluteVote.vote(proposalId, 6);
     await checkVoteInfo(proposalId, accounts[0], [6, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
 
     // Option 8
     await absoluteVote.vote(proposalId, 7);
     await checkVoteInfo(proposalId, accounts[0], [7, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
 
     // Option 9
     await absoluteVote.vote(proposalId, 8);
     await checkVoteInfo(proposalId, accounts[0], [8, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
 
     // Option 10
     await absoluteVote.vote(proposalId, 9);
     await checkVoteInfo(proposalId, accounts[0], [9, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0]]);
-    await checkIsVotable(proposalId,true)
+    await checkIsVotable(proposalId,true);
   });
 
   it("Double vote shouldn't double proposal's 'Option 2' count", async function() {
@@ -912,8 +912,8 @@ contract('AbsoluteVote', function (accounts) {
     // Lets check the porposalst status
     await checkVotesStatusWithAbsoluteVote(proposalId1, [0, 0, 2, reputationArray[1], 0, 0, 0, 0, 0, 0], absoluteVote1);
     await checkVotesStatusWithAbsoluteVote(proposalId2, [0, (reputationArray[0] + reputationArray[1]), 0, 0, 0, 0, 0, 0, 0, 0], absoluteVote2);
-    await checkIsVotableWithAbsoluteVote(proposalId1,true,absoluteVote1)
-    await checkIsVotableWithAbsoluteVote(proposalId2,true,absoluteVote2)
+    await checkIsVotableWithAbsoluteVote(proposalId1,true,absoluteVote1);
+    await checkIsVotableWithAbsoluteVote(proposalId2,true,absoluteVote2);
 
   });
 });
