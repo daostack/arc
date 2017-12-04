@@ -28,6 +28,7 @@ const setupEmergentICO = async function(opts={}){
       reputation: 30,
       tokens: 30,
     }];
+  //use default library configuration
   org = await Organization.new({
     orgName: 'AdamsOrg',
     tokenName: 'AdamCoin',
