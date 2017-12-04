@@ -79,7 +79,7 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
          * fee should only be supplied when schemeKey is not given (and thus the scheme is non-Arc).
          * Otherwise we use the amount of the fee of the scheme given by scheme and schemeKey.
          * 
-         * The fee is paid using the token given by tokenAddress.
+         * The fee is paid using the token given by tokenAddress.  In Wei.
          */
         , fee: null
         /**
@@ -104,7 +104,7 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
         , autoRegister: true
       };
 
-      var options = dopts(opts, defaults);
+      var options = dopts(opts, defaults, { allowUnknown: true });
 
       if (!options.avatar) {
         throw new Error("avatar address is not defined");
@@ -177,7 +177,7 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
         , scheme: undefined
       };
 
-      var options = dopts(opts, defaults);
+      var options = dopts(opts, defaults, { allowUnknown: true });
 
       if (!options.avatar) {
         throw new Error("avatar address is not defined");
@@ -208,12 +208,12 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
 
       // TODO: provide options to use an existing token or specifiy the new token
       var defaults = {
-        fee: 0, // the fee to use this scheme
+        fee: 0, // the fee to use this scheme, in Wei
         beneficiary: (0, _utils.getDefaultAccount)(),
         tokenAddress: undefined // the address of a token to use
       };
 
-      var options = dopts(opts, defaults);
+      var options = dopts(opts, defaults, { allowUnknown: true });
 
       var token = void 0;
       if (options.tokenAddress == undefined) {

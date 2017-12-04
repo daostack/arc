@@ -53,7 +53,7 @@ var GlobalConstraintRegistrar = exports.GlobalConstraintRegistrar = function (_E
         , votingMachineHash: undefined
       };
 
-      var options = dopts(opts, defaults);
+      var options = dopts(opts, defaults, { allowUnknown: true });
 
       if (!options.avatar) {
         throw new Error("avatar address is not defined");
@@ -96,7 +96,7 @@ var GlobalConstraintRegistrar = exports.GlobalConstraintRegistrar = function (_E
         , globalConstraint: undefined
       };
 
-      var options = dopts(opts, defaults);
+      var options = dopts(opts, defaults, { allowUnknown: true });
 
       if (!options.avatar) {
         throw new Error("avatar address is not defined");
@@ -125,14 +125,14 @@ var GlobalConstraintRegistrar = exports.GlobalConstraintRegistrar = function (_E
     value: async function _new() {
       var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      // TODO: provide options to use an existing token or specifiy the new token
+      // TODO: provide options to use an existing token or specify the new token
       var defaults = {
-        fee: 0, // the fee to use this scheme
+        fee: 0, // the fee to use this scheme, in Wei
         beneficiary: (0, _utils.getDefaultAccount)(),
         tokenAddress: null // the address of a token to use
       };
 
-      var options = dopts(opts, defaults);
+      var options = dopts(opts, defaults, { allowUnknown: true });
 
       var token = void 0;
       if (options.tokenAddress == null) {

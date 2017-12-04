@@ -35,8 +35,6 @@ var TokenCapGC = exports.TokenCapGC = function (_ExtendTruffleContrac) {
   }], [{
     key: "new",
     value: async function _new() {
-      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
       contract = await SolidityTokenCapGC.new();
       return new this(contract);
     }

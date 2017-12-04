@@ -161,7 +161,7 @@ var Organization = exports.Organization = function () {
     //     params: {},
     //   };
 
-    //   const options = dopts(opts, defaults);
+    //   const options = dopts(opts, defaults, { allowUnknown: true });
 
     //   let tx;
 
@@ -282,7 +282,7 @@ var Organization = exports.Organization = function () {
     //     absPrecReq: 50,
     //   };
 
-    //   const options = dopts(opts, defaults);
+    //   const options = dopts(opts, defaults, { allowUnknown: true });
 
     //   if (options.contract==='TokenCapGC') {
     //     options.address = options.address || settings.daostackContracts.TokenCapGC.address;
@@ -361,7 +361,7 @@ var Organization = exports.Organization = function () {
         }]
       };
 
-      var options = dopts(opts, defaults);
+      var options = dopts(opts, defaults, { allowUnknown: true });
 
       var tx = void 0;
 

@@ -48,15 +48,15 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
                  */
                 description: undefined,
                 /**
-                 * reward in the DAO's native token
+                 * reward in the DAO's native token.  In Wei.
                  */
                 nativeTokenReward: 0,
                 /**
-                 * reward in the DAO's native reputation
+                 * reward in the DAO's native reputation.  In Wei.
                  */
                 reputationReward: 0,
                 /**
-                 * reward in ethers (Wei)
+                 * reward in ethers.  In Wei.
                  */
                 ethReward: 0,
                 /**
@@ -65,7 +65,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
                  */
                 externalToken: _utils.NULL_ADDRESS,
                 /**
-                 * reward in the given external token
+                 * reward in the given external token.  In Wei.
                  */
                 externalTokenReward: 0,
                 /**
@@ -74,7 +74,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
                 beneficiary: undefined
             };
 
-            var options = dopts(opts, defaults);
+            var options = dopts(opts, defaults, { allowUnknown: true });
 
             if (!options.avatar) {
                 throw new Error("avatar address is not defined");
@@ -127,15 +127,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
             // console.log(`********* options.externalTokenReward ${options.externalTokenReward} **********`);
             // console.log(`********* options.beneficiary ${options.beneficiary} **********`);
 
-            var tx = await this.contract.submitContribution(options.avatar, // Avatar _avatar,
-            options.description, // string _contributionDesciption,
-            options.nativeTokenReward, // uint _nativeTokenReward,
-            options.reputationReward, // uint _reputationReward,
-            options.ethReward, // uint _ethReward,
-            options.externalToken, // StandardToken _externalToken,
-            options.externalTokenReward, // uint _externalTokenReward,
-            options.beneficiary // address _beneficiary
-            );
+            var tx = await this.contract.submitContribution(options.avatar, options.description, options.nativeTokenReward, options.reputationReward, options.ethReward, options.externalToken, options.externalTokenReward, options.beneficiary);
             return tx;
         }
     }, {
@@ -160,7 +152,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
                 beneficiary: (0, _utils.getDefaultAccount)()
             };
 
-            var options = dopts(opts, defaults);
+            var options = dopts(opts, defaults, { allowUnknown: true });
 
             var token = void 0;
             if (options.tokenAddress == null) {

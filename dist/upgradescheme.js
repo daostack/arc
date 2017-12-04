@@ -52,7 +52,7 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
                 , controller: undefined
             };
 
-            var options = dopts(opts, defaults);
+            var options = dopts(opts, defaults, { allowUnknown: true });
 
             if (!options.avatar) {
                 throw new Error("avatar address is not defined");
@@ -107,7 +107,7 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
                  * fee is optional.  If the new UpgradeScheme is an Arc scheme, you may omit this and we will
                  * obtain the values directly from the submitted scheme.
                  * 
-                 * The fee is paid using the token given by tokenAddress.
+                 * The fee is paid using the token given by tokenAddress.  In Wei.
                  */
                 , fee: null
                 /**
@@ -117,7 +117,7 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
                 , tokenAddress: null
             };
 
-            var options = dopts(opts, defaults);
+            var options = dopts(opts, defaults, { allowUnknown: true });
 
             if (!options.avatar) {
                 throw new Error("avatar address is not defined");
@@ -179,7 +179,7 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
                 tokenAddress: null // the address of a token to use
             };
 
-            var options = dopts(opts, defaults);
+            var options = dopts(opts, defaults, { allowUnknown: true });
 
             var token = void 0;
             if (options.tokenAddress == null) {
