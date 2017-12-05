@@ -116,6 +116,8 @@ exports.getDeployedContracts = getDeployedContracts;
 
 var _settings = require('./settings.js');
 
+// import * as BigNumber from 'bignumber.js';
+
 /**
  * Configure the daostack-arc module.
  *
@@ -134,6 +136,11 @@ function configure(options) {
      * else, or separately.
      */
 
+    /**
+     * TODO: should we specify something here?
+     * See: https://mikemcl.github.io/bignumber.js/#config
+    BigNumber.config({...});
+     */
     return (0, _utils.getWeb3)();
 }
 

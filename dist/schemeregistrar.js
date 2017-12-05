@@ -67,7 +67,7 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
          * scheme identifier, like "SchemeRegistrar" or "SimpleContributionScheme".
          * pass null if registering a non-arc scheme
          */
-        , schemeKey: undefined
+        , schemeKey: null
         /**
          * hash of scheme parameters. These must be already registered with the new scheme.
          */
@@ -76,8 +76,10 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
          * The fee that the scheme charges to register an organization in the scheme.  The controller
          * will be asked in advance to approve this expenditure.
          * 
-         * fee should only be supplied when schemeKey is not given (and thus the scheme is non-Arc).
-         * Otherwise we use the amount of the fee of the scheme given by scheme and schemeKey.
+         * If schemeKey is given but fee is not then we use the amount of the fee of the 
+         * Arc scheme given by scheme and schemeKey.
+         * 
+         * Fee is required when schemeKey is not given (non-Arc schemes).
          * 
          * The fee is paid using the token given by tokenAddress.  In Wei.
          */
@@ -85,8 +87,10 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
         /**
          * The token used to pay the fee that the scheme charges to register an organization in the scheme.
          * 
-         * tokenAddress should only be supplied when schemeKey is not given (and thus the scheme is non-Arc)
-         * and the fee is non-zero.
+         * If schemeKey is given but tokenAddress is not then we use the token address of the 
+         * Arc scheme given by scheme and schemeKey.
+         * 
+         * tokenAddress is required when schemeKey is not given (non-Arc schemes).
          */
         , tokenAddress: null
         /**
@@ -118,37 +122,52 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
         throw new Error("schemeParametersHash is not defined");
       }
 
-      var fee = void 0;
-      var tokenAddress = void 0;
+      var feeIsDefined = options.fee !== null && options.fee !== undefined;
+      var tokenAddressIsDefined = !!options.tokenAddress;
+      /**
+       * throws an Error if not valid, yields 0 if null or undefined
+       */
+      var web3 = (0, _utils.getWeb3)();
+      var fee = web3.toBigNumber(options.fee);
+      var tokenAddress = options.tokenAddress;
       var isRegistering = void 0;
 
       if (options.schemeKey) {
-        var settings = await (0, _settings.getSettings)();
-        var newScheme = await settings.daostackContracts[options.schemeKey].contract.at(options.scheme);
-        // Note that the javascript wrapper "newScheme" we've gotten here is defined in this version of Arc.  If newScheme is 
-        // actually coming from a different version of Arc, then theoretically the permissions could be different from this version.
-        var permissions = number(newScheme.getDefaultPermissions());
-        fee = await newScheme.fee();
-        tokenAddress = await newScheme.nativeToken();
-        isRegistering = (permissions & 2) != 0;
+        try {
+          var settings = await (0, _settings.getSettings)();
+          var newScheme = await settings.daostackContracts[options.schemeKey].contract.at(options.scheme);
 
-        if (permissions > this.getDefaultPermissions()) {
-          throw new Error("SchemeRegistrar cannot work with schemes having greater permissions than its own");
+          if (!feeIsDefined || !tokenAddressIsDefined) {
+            if (!feeIsDefined) {
+              fee = await newScheme.fee();
+            }
+            if (!tokenAddressIsDefined) {
+              tokenAddress = await newScheme.nativeToken();
+            }
+          }
+
+          isRegistering = (permissions & 2) != 0;
+
+          // Note that the javascript wrapper "newScheme" we've gotten here is defined in this version of Arc.  If newScheme is 
+          // actually coming from a different version of Arc, then theoretically the permissions could be different from this version.
+          var permissions = Number(newScheme.getDefaultPermissions());
+
+          if (permissions > this.getDefaultPermissions()) {
+            throw new Error("SchemeRegistrar cannot work with schemes having greater permissions than its own");
+          }
+        } catch (ex) {
+          throw new Error("Unable to obtain default information from the given scheme address. The scheme is probably not an Arc scheme and in that case you must supply fee and tokenAddress.");
         }
       } else {
-        /**
-         * fee will be NaN if not given.  Note that NaN evaluates to falsey and so does 0.
-         */
-        fee = Number(options.fee === null ? undefined : options.fee);
-        tokenAddress = options.tokenAddress;
+
         isRegistering = options.isRegistering;
+
+        if (!feeIsDefined || !tokenAddressIsDefined) {
+          throw new Error("fee/tokenAddress are not defined; they are required for non-Arc schemes (schemeKey is undefined)");
+        }
 
         if (isRegistering === null) {
           throw new Error("isRegistering is not defined; it is required for non-Arc schemes (schemeKey is undefined)");
-        }
-
-        if (Number.isNaN(fee) || !tokenAddress) {
-          throw new Error("fee/tokenAddress are not defined; they are required for non-Arc schemes (schemeKey is undefined)");
         }
 
         if (fee < 0) {
@@ -210,13 +229,13 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
       var defaults = {
         fee: 0, // the fee to use this scheme, in Wei
         beneficiary: (0, _utils.getDefaultAccount)(),
-        tokenAddress: undefined // the address of a token to use
+        tokenAddress: null // the address of a token to use
       };
 
       var options = dopts(opts, defaults, { allowUnknown: true });
 
       var token = void 0;
-      if (options.tokenAddress == undefined) {
+      if (options.tokenAddress == null) {
         token = await DAOToken.new('schemeregistrartoken', 'SRT');
       } else {
         token = await DAOToken.at(options.tokenAddress);

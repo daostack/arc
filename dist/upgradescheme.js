@@ -104,15 +104,19 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
                  * The fee that the scheme charges to register an organization in the new upgrade scheme.
                  * The controller will be asked in advance to approve this expenditure.
                  * 
-                 * fee is optional.  If the new UpgradeScheme is an Arc scheme, you may omit this and we will
+                 * If the new UpgradeScheme is an Arc scheme, you may omit fee and we will
                  * obtain the values directly from the submitted scheme.
+                 * Otherwise fee is required.
                  * 
                  * The fee is paid using the token given by tokenAddress.  In Wei.
                  */
                 , fee: null
                 /**
                  * address of token that will be used when paying the fee.
-                 * Only required when fee is supplied.
+                 * 
+                 * If the new UpgradeScheme is an Arc scheme, you may omit tokenAddress and we will
+                 * obtain the values directly from the submitted scheme.
+                 * Otherwise tokenAddress is required.
                  */
                 , tokenAddress: null
             };
@@ -131,22 +135,33 @@ var UpgradeScheme = exports.UpgradeScheme = function (_ExtendTruffleContrac) {
                 throw new Error("schemeParametersHash is not defined");
             }
 
-            var fee = Number(options.fee === null ? undefined : options.fee);
+            var feeIsDefined = options.fee !== null && options.fee !== undefined;
+            var tokenAddressIsDefined = !!options.tokenAddress;
+
+            /**
+             * throws an Error if not valid, yields 0 if null or undefined
+             */
+            var web3 = (0, _utils.getWeb3)();
+            var fee = web3.toBigNumber(options.fee);
             var tokenAddress = options.tokenAddress;
 
-            if (!Number.isNaN(fee)) {
-                if (fee < 0) {
-                    throw new Error("fee cannot be less than 0");
+            if (!feeIsDefined || !tokenAddressIsDefined) {
+                try {
+                    var settings = await (0, _settings.getSettings)();
+                    var newScheme = await settings.daostackContracts.UpgradeScheme.contract.at(options.scheme);
+                    if (!feeIsDefined) {
+                        fee = await newScheme.fee();
+                    }
+                    if (!tokenAddressIsDefined) {
+                        tokenAddress = await newScheme.nativeToken();
+                    }
+                } catch (ex) {
+                    throw new Error("Unable to obtain default information from the given scheme address. The scheme is probably not an Arc UpgradeScheme and in that case you must supply fee and tokenAddress.");
                 }
+            }
 
-                if (!tokenAddress) {
-                    throw new Error("fee is given but tokenAddress is undefined");
-                }
-            } else {
-                var settings = await (0, _settings.getSettings)();
-                var newScheme = await settings.daostackContracts.UpgradeScheme.contract.at(options.scheme);
-                fee = await newScheme.fee();
-                tokenAddress = await newScheme.nativeToken();
+            if (fee < 0) {
+                throw new Error("fee cannot be less than 0");
             }
 
             var tx = await this.contract.proposeChangeUpgradingScheme(options.avatar, options.scheme, options.schemeParametersHash, tokenAddress, fee);

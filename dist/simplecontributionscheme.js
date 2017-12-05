@@ -63,7 +63,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
                  * the address of an external token (for externalTokenReward)
                  * Only required when externalTokenReward is non-zero.
                  */
-                externalToken: _utils.NULL_ADDRESS,
+                externalToken: null,
                 /**
                  * reward in the given external token.  In Wei.
                  */
@@ -84,15 +84,24 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
                 throw new Error("description is not defined");
             }
 
-            if (options.nativeTokenReward < 0 || options.reputationReward < 0 || options.ethReward < 0 || options.externalTokenReward < 0) {
+            /**
+             * will thrown Error if not valid numbers
+             */
+            var web3 = (0, _utils.getWeb3)();
+            var nativeTokenReward = web3.toBigNumber(options.nativeTokenReward);
+            var reputationReward = web3.toBigNumber(options.reputationReward);
+            var ethReward = web3.toBigNumber(options.ethReward);
+            var externalTokenReward = web3.toBigNumber(options.externalTokenReward);
+
+            if (nativeTokenReward < 0 || reputationReward < 0 || ethReward < 0 || externalTokenReward < 0) {
                 throw new Error("rewards cannot be less than 0");
             }
 
-            if (!(options.nativeTokenReward || options.reputationReward || options.ethReward || options.externalTokenReward)) {
+            if (!(nativeTokenReward > 0 || reputationReward > 0 || ethReward > 0 || externalTokenReward > 0)) {
                 throw new Error("no reward amount was given");
             }
 
-            if (options.externalTokenReward && (!options.externalToken || options.externalToken === _utils.NULL_ADDRESS)) {
+            if (externalTokenReward > 0 && !options.externalToken) {
                 throw new Error("external token reward is proposed but externalToken is not defined");
             }
 
@@ -127,7 +136,7 @@ var SimpleContributionScheme = function (_ExtendTruffleContrac) {
             // console.log(`********* options.externalTokenReward ${options.externalTokenReward} **********`);
             // console.log(`********* options.beneficiary ${options.beneficiary} **********`);
 
-            var tx = await this.contract.submitContribution(options.avatar, options.description, options.nativeTokenReward, options.reputationReward, options.ethReward, options.externalToken, options.externalTokenReward, options.beneficiary);
+            var tx = await this.contract.submitContribution(options.avatar, options.description, nativeTokenReward, reputationReward, ethReward, options.externalToken, externalTokenReward, options.beneficiary);
             return tx;
         }
     }, {

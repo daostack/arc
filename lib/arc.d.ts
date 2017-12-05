@@ -183,19 +183,23 @@ export class ExtendTruffleScheme extends ExtendTruffleContract {
   getDefaultPermissions(overrideValue: string): string;
 }
 
-/********************************
- * GlobalConstraintRegistrar
- */
-export interface GlobalConstraintRegistrarNewParams {
-    fee: BigNumber.BigNumber|null, // the fee to use this scheme, in Wei
-    beneficiary: string, // default is default account,
-    tokenAddress: string, // the address of a token to use
+export interface StandardNewSchemeParams {
+    fee?: BigNumber.BigNumber | string, // the fee to use this scheme, in Wei
+    beneficiary?: string, // default is default account,
+    tokenAddress?: string, // the address of a token to use
 }
 
-export interface GlobalConstraintRegistrarParams {
+export interface StandardSchemeParams {
   voteParametersHash: string,
   votingMachine: string // address
 }
+
+/********************************
+ * GlobalConstraintRegistrar
+ */
+export interface GlobalConstraintRegistrarNewParams extends StandardNewSchemeParams { }
+
+export interface GlobalConstraintRegistrarParams extends StandardSchemeParams { }
 
 export interface ProposeToAddModifyGlobalConstraintParams {
     /**
@@ -249,16 +253,9 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
 /********************************
  * SchemeRegistrar
  */
-  export interface SchemeRegistrarNewParams {
-      fee: BigNumber.BigNumber|null, // the fee to use this scheme, in Wei
-      beneficiary: string, // default is default account,
-      tokenAddress: string, // the address of a token to use
-  }
+  export interface SchemeRegistrarNewParams extends StandardNewSchemeParams { }
 
-  export interface SchemeRegistrarParams {
-    voteParametersHash: string,
-    votingMachine: string // address
-  }
+  export interface SchemeRegistrarParams extends StandardSchemeParams { }
 
   export interface ProposeToAddModifySchemeParams {
       /**
@@ -282,19 +279,23 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
        * The fee that the scheme charges to register an organization in the scheme.  The controller
        * will be asked in advance to approve this expenditure.
        * 
-       * fee should only be supplied when schemeKey is not given (and thus the scheme is non-Arc).
-       * Otherwise we use the amount of the fee of the scheme given by scheme and schemeKey.
+       * If schemeKey is given but fee is not then we use the amount of the fee of the 
+       * Arc scheme given by scheme and schemeKey.
+       * 
+       * Fee is required when schemeKey is not given (non-Arc schemes).
        * 
        * The fee is paid using the token given by tokenAddress.  In Wei.
        */
-      , fee?: BigNumber.BigNumber|null
+      , fee?: BigNumber.BigNumber | string | null
       /**
        * The token used to pay the fee that the scheme charges to register an organization in the scheme.
        * 
-       * tokenAddress should only be supplied when schemeKey is not given (and thus the scheme is non-Arc)
-       * and the fee is non-zero.
+       * If schemeKey is given but tokenAddress is not then we use the token address of the 
+       * Arc scheme given by scheme and schemeKey.
+       * 
+       * tokenAddress is required when schemeKey is not given (non-Arc schemes).
        */
-      , tokenAddress?: string|null
+      , tokenAddress?: string | null
       /**
        * true if the given scheme is able to register/unregister/modify schemes.
        * 
@@ -323,8 +324,8 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
 
   export class SchemeRegistrar extends ExtendTruffleScheme {
     static new(options:SchemeRegistrarNewParams): SchemeRegistrar;
-    static at(address:string): SchemeRegistrarNewParams;
-    static deployed(): SchemeRegistrarNewParams;
+    static at(address:string): SchemeRegistrar;
+    static deployed(): SchemeRegistrar;
     /**
      *  propose to add or modify a scheme
      * @param opts ProposeToAddModifySchemeParams
@@ -341,16 +342,9 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
 /********************************
  * UpgradeScheme
  */
-  export interface UpgradeSchemeNewParams {
-      fee: BigNumber.BigNumber|null, // the fee to use this scheme, in Wei
-      beneficiary: string, // default is default account,
-      tokenAddress: string, // the address of a token to use
-  }
+  export interface UpgradeSchemeNewParams extends StandardNewSchemeParams { }
 
-  export interface UpgradeSchemeParams {
-    voteParametersHash: string,
-    votingMachine: string // address
-  }
+  export interface UpgradeSchemeParams extends StandardSchemeParams { }
 
   export interface ProposeUpgradingSchemeParams {
       /**
@@ -375,17 +369,21 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
        * The fee that the scheme charges to register an organization in the new upgrade scheme.
        * The controller will be asked in advance to approve this expenditure.
        * 
-       * fee is optional.  If the new UpgradeScheme is an Arc scheme, you may omit this and we will
+       * If the new UpgradeScheme is an Arc scheme, you may omit fee and we will
        * obtain the values directly from the submitted scheme.
+       * Otherwise fee is required.
        * 
        * The fee is paid using the token given by tokenAddress.  In Wei.
        */
-      , fee?: BigNumber.BigNumber|null
+      , fee?: BigNumber.BigNumber | string | null
       /**
        * address of token that will be used when paying the fee.
-       * Only required when fee is supplied.
+       * 
+       * If the new UpgradeScheme is an Arc scheme, you may omit tokenAddress and we will
+       * obtain the values directly from the submitted scheme.
+       * Otherwise tokenAddress is required.
        */
-      , tokenAddress?: string|null
+      , tokenAddress?: string | null
     }
 
   export interface ProposeControllerParams {
@@ -401,8 +399,8 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
 
   export class UpgradeScheme extends ExtendTruffleScheme {
     static new(options:UpgradeSchemeNewParams): UpgradeScheme;
-    static at(address:string): UpgradeSchemeNewParams;
-    static deployed(): UpgradeSchemeNewParams;
+    static at(address:string): UpgradeScheme;
+    static deployed(): UpgradeScheme;
     /**
      * propose to replace this UpgradingScheme
      * @param opts ProposeUpgradingSchemeParams
@@ -419,17 +417,11 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
 /********************************
  * SimpleContributionScheme
  */
-  export interface SimpleContributionSchemeNewParams {
-      fee: BigNumber.BigNumber, // the fee to use this scheme, in Wei
-      beneficiary: string, // default is default account,
-      tokenAddress: string, // the address of a token to use
-  }
+  export interface SimpleContributionSchemeNewParams extends StandardNewSchemeParams { }
 
-  export interface SimpleContributionSchemeParams {
-    voteParametersHash: string,
-    votingMachine: string // address
-    orgNativeTokenFee: BigNumber.BigNumber,
-    schemeNativeTokenFee: BigNumber.BigNumber
+  export interface SimpleContributionSchemeParams extends StandardSchemeParams {
+    orgNativeTokenFee: BigNumber.BigNumber | string,
+    schemeNativeTokenFee: BigNumber.BigNumber | string
   }
 
   export interface ProposeContributionParams {
@@ -442,26 +434,26 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
        */
       description: string,
       /**
-       * reward in the DAO's native token.  In Wei.
+       * reward in the DAO's native token.  In Wei. Default is 0;
        */
-      nativeTokenReward: BigNumber.BigNumber,
+      nativeTokenReward?: BigNumber.BigNumber | string,
       /**
-       * reward in the DAO's native reputation.  In Wei.
+       * reward in the DAO's native reputation.  In Wei. Default is 0;
        */
-      reputationReward: BigNumber.BigNumber,
+      reputationReward?: BigNumber.BigNumber | string,
       /**
-       * reward in ethers.  In Wei.
+       * reward in ethers.  In Wei. Default is 0;
        */
-      ethReward: BigNumber.BigNumber,
+      ethReward?: BigNumber.BigNumber | string,
+      /**
+       * reward in the given external token.  In Wei. Default is 0;
+       */
+      externalTokenReward?: BigNumber.BigNumber | string,
       /**
        * the address of an external token (for externalTokenReward)
-       * Only required when externalTokenReward is non-zero.
+       * Only required when externalTokenReward is given and non-zero.
        */
       externalToken?: string,
-      /**
-       * reward in the given external token.  In Wei.
-       */
-      externalTokenReward?: BigNumber.BigNumber,
       /**
        *  beneficiary address
        */
@@ -470,8 +462,8 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
 
   export class SimpleContributionScheme extends ExtendTruffleScheme {
     static new(options:SimpleContributionSchemeNewParams): SimpleContributionScheme;
-    static at(address:string): SimpleContributionSchemeNewParams;
-    static deployed(): SimpleContributionSchemeNewParams;
+    static at(address:string): SimpleContributionScheme;
+    static deployed(): SimpleContributionScheme;
     /**
      * propose to make a contribution
      * @param opts ProposeContributionParams
