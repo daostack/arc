@@ -30,8 +30,8 @@ var GlobalConstraintRegistrar = exports.GlobalConstraintRegistrar = function (_E
   }
 
   _createClass(GlobalConstraintRegistrar, [{
-    key: 'proposeGlobalConstraint',
-    value: async function proposeGlobalConstraint() {
+    key: 'proposeToAddModifyGlobalConstraint',
+    value: async function proposeToAddModifyGlobalConstraint() {
       var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       var defaults = {

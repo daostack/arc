@@ -14,7 +14,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     helpers.etherForEveryone();
   });
 
-  it("proposeGlobalConstraint javascript wrapper should work", async function() {
+  it("proposeToAddModifyGlobalConstraint javascript wrapper should work", async function() {
     const organization = await helpers.forgeOrganization();
 
     let tokenCapGC = await organization.scheme('TokenCapGC');
@@ -27,7 +27,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
 
     let globalConstraintRegistrar = await organization.scheme('GlobalConstraintRegistrar');
 
-    await globalConstraintRegistrar.proposeGlobalConstraint({
+    await globalConstraintRegistrar.proposeToAddModifyGlobalConstraint({
       avatar: organization.avatar.address,
       globalConstraint: tokenCapGC.address,
       globalConstraintParametersHash: globalConstraintParametersHash,
@@ -38,6 +38,23 @@ contract('GlobalConstraintRegistrar', function(accounts) {
 
     // console.log(`****** proposal ID ${proposalId} ******`);
   });
+
+  //   it("proposeToRemoveGlobalConstraint javascript wrapper should not crash", async function() {
+  //   const organization = await helpers.forgeOrganization();
+
+  //   let tokenCapGC = await organization.scheme('TokenCapGC');
+
+  //   let globalConstraintRegistrar = await organization.scheme('GlobalConstraintRegistrar');
+
+  //   await globalConstraintRegistrar.proposeToRemoveGlobalConstraint({
+  //     avatar: organization.avatar.address,
+  //     globalConstraint: tokenCapGC.address
+  //   });
+
+  //   // const proposalId = getValueFromLogs(tx, '_proposalId');
+
+  //   // console.log(`****** proposal ID ${proposalId} ******`);
+  // });
 
   it("should register and enforce a global constraint", async function() {
     const organization = await helpers.forgeOrganization();

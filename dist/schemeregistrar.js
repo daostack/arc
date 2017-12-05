@@ -127,7 +127,7 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
         var newScheme = await settings.daostackContracts[options.schemeKey].contract.at(options.scheme);
         // Note that the javascript wrapper "newScheme" we've gotten here is defined in this version of Arc.  If newScheme is 
         // actually coming from a different version of Arc, then theoretically the permissions could be different from this version.
-        var permissions = Number(newScheme.getDefaultPermissions());
+        var permissions = number(newScheme.getDefaultPermissions());
         fee = await newScheme.fee();
         tokenAddress = await newScheme.nativeToken();
         isRegistering = (permissions & 2) != 0;
