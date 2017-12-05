@@ -6,6 +6,7 @@ declare module 'daostack-arc' {
     static new() : Wallet;
     static fromEncrypted(encryptedJSON: string, password: string) : Wallet
     static fromMnemonic(mnemonic: string) : Wallet
+    static fromPrivateKey(privateKey : string) : Wallet
 
     encrypt(password: string, progressCallback: (progress: number) => void) : string
     getEtherBalance(inWei? : boolean) : BigNumber.BigNumber | string
@@ -14,6 +15,7 @@ declare module 'daostack-arc' {
     getPublicAddress() : string
     getProvider() : any
     sendEther(accountAddress : string, numEther: number | string) : any // TODO return value
+    sendOrgTokens(organizationAvatarAddress : string, toAccountAddress : string, numTokens : number | string) : any // TODO return value
   }
 
   export class Organization  {
