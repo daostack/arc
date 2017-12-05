@@ -10,7 +10,7 @@ contract QuorumVote is IntVoteInterface, AbsoluteVote {
    * @param _proposalId the id of the proposal
    */
   // TODO: do we want to delete the vote from the proposals mapping?
-  function executeProposal(bytes32 _proposalId) public votableProposal(_proposalId) returns(bool) {
+  function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool) {
     Proposal storage proposal = proposals[_proposalId];
 
     uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
