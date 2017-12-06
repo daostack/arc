@@ -8,6 +8,7 @@ import "./UniversalScheme.sol";
  * Other organizations can then add and promote themselves on this registry.
  */
 
+
 contract OrganizationRegister is UniversalScheme {
     // Struct holding the data for each organization
     struct Organization {
@@ -74,7 +75,7 @@ contract OrganizationRegister is UniversalScheme {
 
         // Pay promotion, if the org was not listed the minimum is the fee:
         if ((org.registry[_record] == 0) && (_amount < params.fee) ) {
-          revert();
+            revert();
         }
 
         params.token.transferFrom(msg.sender, params.beneficiary, _amount);
