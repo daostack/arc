@@ -45,22 +45,6 @@ contract DAOToken is MintableToken, Destructible {
         lockInternal(_to, _amount, _releaseBlock);
     }
 
-    function lockInternal(address agent, uint _value, uint _releaseBlock) internal {
-        // Sanity check:
-        require(_value != 0);
-        require(_value <= balances[agent]);
-
-        // Check if user has locked funds, and verify the change is legit:
-        if (lockBalances[agent].releaseBlock > block.number) {
-            require(_value >= lockBalances[agent].lockedAmount);
-            require(_releaseBlock >= lockBalances[agent].releaseBlock);
-        }
-
-        lockBalances[agent].lockedAmount = _value;
-        lockBalances[agent].releaseBlock = _releaseBlock;
-        TokenLock(agent, _value);
-    }
-
     // Rewriting the function to check for locking and burn tokens of the contract itself:
     function transfer(address _to, uint _value) public returns(bool res) {
         // Check for locking:
@@ -93,4 +77,19 @@ contract DAOToken is MintableToken, Destructible {
         Burn(balances[this]);
     }
 
+    function lockInternal(address agent, uint _value, uint _releaseBlock) internal {
+        // Sanity check:
+        require(_value != 0);
+        require(_value <= balances[agent]);
+
+        // Check if user has locked funds, and verify the change is legit:
+        if (lockBalances[agent].releaseBlock > block.number) {
+            require(_value >= lockBalances[agent].lockedAmount);
+            require(_releaseBlock >= lockBalances[agent].releaseBlock);
+        }
+
+        lockBalances[agent].lockedAmount = _value;
+        lockBalances[agent].releaseBlock = _releaseBlock;
+        TokenLock(agent, _value);
+    }
 }
