@@ -251,7 +251,6 @@ contract AbsoluteVote is IntVoteInterface {
      * throws if proposal is not open or if it has been executed
      * NB: executes the proposal if a decision has been reached
      */
-
     function internalVote(bytes32 _proposalId, address _voter, uint _vote, uint _rep) private returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
         Parameters memory params = parameters[proposal.paramsHash];
