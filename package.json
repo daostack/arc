@@ -47,7 +47,7 @@
     "pug": "^2.0.0-rc.1",
     "solc": "^0.4.18",
     "solc-cli": "^0.3.0",
-    "solium": "^0.5.4",
+    "solium": "^1.0.9",
     "truffle": "^4.0.1",
     "when": "^3.7.8",
     "zeppelin-solidity": "^1.4.0"
