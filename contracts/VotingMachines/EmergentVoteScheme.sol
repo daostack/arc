@@ -78,7 +78,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
   /**
    * @dev Check that the porposal is votable (opened and not executed yet)
    */
-  modifier votableProposal(bytes32 _proposalId) {
+  modifier votable(bytes32 _proposalId) {
     require(proposals[_proposalId].opened);
     _;
   }
@@ -215,7 +215,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * @param _proposalId the porposal ID
    * @return bool True if the porposal is canceled and False if it wasn't
    */
-  function cancelProposal(bytes32 _proposalId) public onlyProposalOwner(_proposalId) votableProposal(_proposalId) returns(bool){
+  function cancelProposal(bytes32 _proposalId) public onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool){
     address avatar = proposals[_proposalId].avatar;
     bytes32 paramsHash = getParametersFromController(Avatar(avatar));
     if (! organizationsParameters[paramsHash].allowOwner) {
@@ -418,15 +418,14 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * throws if proposal is not opened or if it is executed
    * NB: executes the proposal if a decision has been reached
    */
-  function internalVote(bytes32 _proposalId, uint _vote, address _voter, uint _rep) internal votableProposal(_proposalId) {
+  function internalVote(bytes32 _proposalId, uint _vote, address _voter, uint _rep) private returns(bool) {
     Proposal storage proposal = proposals[_proposalId];
     bytes32 paramsHash = getParametersFromController(Avatar(proposal.avatar));
     OrgParameters memory orgParams = organizationsParameters[paramsHash];
 
     // If boosted proposal and ended, exectute:
     if (proposal.isBoostModeActive && block.number >= proposal.closingTime) {
-      executeProposal(_proposalId);
-      return;
+      return execute(_proposalId);
     }
 
     // Check valid vote:
@@ -462,7 +461,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     LogVoteProposal(_proposalId, _voter, _vote, reputation, isOwnerVote);
 
     // execute the proposal if this vote was decisive:
-    executeProposal(_proposalId);
+    return execute(_proposalId);
   }
 
   /**
@@ -470,12 +469,12 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * @param _proposalId id of the proposal
    * @param _vote yes (1) / no (-1) / abstain (0)
    */
-  function vote(bytes32 _proposalId, uint _vote) public {
-    internalVote(_proposalId, _vote, msg.sender, 0);
+  function vote(bytes32 _proposalId, uint _vote) public votable(_proposalId) returns(bool){
+    return internalVote(_proposalId, _vote, msg.sender, 0);
   }
 
-  function voteWithSpecifiedAmounts(bytes32 _proposalId, uint _vote, uint _rep, uint) public votableProposal(_proposalId) {
-    internalVote(_proposalId, _vote, msg.sender, _rep);
+  function voteWithSpecifiedAmounts(bytes32 _proposalId, uint _vote, uint _rep, uint) public votable(_proposalId) returns(bool) {
+    return internalVote(_proposalId, _vote, msg.sender, _rep);
   }
 
   /**
@@ -484,14 +483,13 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * @param _vote yes (1) / no (-1) / abstain (0)
    * @param _voter will be voted with that voter's address
    */
-  function ownerVote(bytes32 _proposalId, uint _vote, address _voter) public onlyProposalOwner(_proposalId) returns(bool) {
+  function ownerVote(bytes32 _proposalId, uint _vote, address _voter) public onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool) {
     bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
     if (! organizationsParameters[paramsHash].allowOwner) {
       return;
     }
 
-    internalVote(_proposalId, _vote, _voter, 0);
-    return true;
+    return internalVote(_proposalId, _vote, _voter, 0);
   }
 
   /**
@@ -499,7 +497,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * and delete the voter from the porposal struct
    * @param _proposalId id of the proposal
    */
-  function cancelVote(bytes32 _proposalId) public votableProposal(_proposalId) {
+  function cancelVote(bytes32 _proposalId) public votable(_proposalId) {
     cancelVoteInternal(_proposalId, msg.sender);
   }
 
@@ -526,7 +524,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    */
   // TODO: do we want to delete the vote from the proposals mapping?
   // TODO: add to the event if this porposal was bossted or not
-  function executeProposal(bytes32 _proposalId) public votableProposal(_proposalId) returns(bool) {
+  function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool) {
     Proposal storage proposal = proposals[_proposalId];
 
     bytes32 orgParamsHash = getParametersFromController(Avatar(proposal.avatar));
@@ -577,12 +575,12 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
    * @dev voteInfo returns the vote and the amount of reputation of the user committed to this proposal
    * @param _proposalId the ID of the proposal
    * @param _voter the address of the voter
-   * @return int[10] array that contains the vote's info:
+   * @return uint[2] array that contains the vote's info:
    * amount of reputation committed by _voter to _proposalId, and the voters vote (1/-1/-0)
    */
-  function voteInfo(bytes32 _proposalId, address _voter) public constant returns(uint[13]) {
+  function voteInfo(bytes32 _proposalId, address _voter) public constant returns(uint[2]) {
     Voter memory voter = proposals[_proposalId].voters[_voter];
-    return [voter.vote, voter.reputation, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    return [voter.vote, voter.reputation];
   }
 
   /**
@@ -600,5 +598,13 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
       returnedArray[cnt] = proposal.votes[cnt];
     }
     return returnedArray;
+  }
+  /**
+   * @dev isVotable check if the proposal is open
+   * @param _proposalId the ID of the proposal
+   * @return bool true or false
+   */
+  function isVotable(bytes32 _proposalId) public constant returns(bool){
+      return  proposals[_proposalId].opened;
   }
 }

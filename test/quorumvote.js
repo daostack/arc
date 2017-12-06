@@ -50,36 +50,30 @@ const checkProposalInfo = async function(proposalId, _proposalInfo) {
   assert.equal(proposalInfo[6], _proposalInfo[6]);
 };
 
-const checkProposalStatus = async function(proposalId, _proposalStatus){
-  let proposalStatus;
-  proposalStatus = await quorumVote.proposalStatus(proposalId);
-  //console.log("ProposalStatus: " + proposalStatus);
+const checkVotesStatus = async function(proposalId, _votesStatus){
+  let votesStatus;
+  votesStatus = await quorumVote.votesStatus(proposalId);
+  //console.log("ProposalStatus: " + votesStatus);
   // uint Option 1
-  assert.equal(proposalStatus[0], _proposalStatus[0]);
+  assert.equal(votesStatus[0], _votesStatus[0]);
   // uint Option 2
-  assert.equal(proposalStatus[1], _proposalStatus[1]);
+  assert.equal(votesStatus[1], _votesStatus[1]);
   // uint Option 3
-  assert.equal(proposalStatus[2], _proposalStatus[2]);
+  assert.equal(votesStatus[2], _votesStatus[2]);
   // uint Option 4
-  assert.equal(proposalStatus[3], _proposalStatus[3]);
+  assert.equal(votesStatus[3], _votesStatus[3]);
   // uint Option 5
-  assert.equal(proposalStatus[4], _proposalStatus[4]);
+  assert.equal(votesStatus[4], _votesStatus[4]);
   // uint Option 6
-  assert.equal(proposalStatus[5], _proposalStatus[5]);
+  assert.equal(votesStatus[5], _votesStatus[5]);
   // uint Option 7
-  assert.equal(proposalStatus[6], _proposalStatus[6]);
+  assert.equal(votesStatus[6], _votesStatus[6]);
   // uint Option 8
-  assert.equal(proposalStatus[7], _proposalStatus[7]);
+  assert.equal(votesStatus[7], _votesStatus[7]);
   // uint Option 9
-  assert.equal(proposalStatus[8], _proposalStatus[8]);
+  assert.equal(votesStatus[8], _votesStatus[8]);
   // uint Option 10
-  assert.equal(proposalStatus[9], _proposalStatus[9]);
-  // uint an empty cell equals to 0
-  assert.equal(proposalStatus[10], 0);
-  // uint an empty cell equals to 0
-  assert.equal(proposalStatus[11], 0);
-  // uint Opened - is the porposal open for voting?
-  assert.equal(proposalStatus[12], _proposalStatus[12]);
+  assert.equal(votesStatus[9], _votesStatus[9]);
 };
 
 const checkVoteInfo = async function(proposalId, voterAddress, _voteInfo) {
@@ -105,19 +99,19 @@ contract('QuorumVote', function (accounts) {
 
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 5, executable.address, paramsHash, 0, true]);
-    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // now lets vote Option 1 with a minority reputation
     await QuorumVote.vote(proposalId, 1);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 5, executable.address, paramsHash, reputationArray[0], true]);
-    await checkProposalStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // another minority reputation (Option 0):
     await QuorumVote.vote(proposalId, 0, { from: accounts[1] });
     await checkVoteInfo(proposalId, accounts[1], [0, reputationArray[1]]);
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 5, executable.address, paramsHash, (reputationArray[0] + reputationArray[1]), true]);
-    await checkProposalStatus(proposalId, [reputationArray[1], reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [reputationArray[1], reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
 
     // the decisive vote is cast now and the proposal will be executed with option 5
@@ -126,7 +120,7 @@ contract('QuorumVote', function (accounts) {
     // Porposal should be empty (being deleted after execution)
     await checkProposalInfo(proposalId, [helpers.NULL_ADDRESS, helpers.NULL_ADDRESS, 0, helpers.NULL_ADDRESS, helpers.NULL_HASH, 0, false]);
     // TODO: Adam: option[0] should be 0 rep, I don't know why it's still 10 rep. do you have any idea why?
-    await checkProposalStatus(proposalId, [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    await checkVotesStatus(proposalId, [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
   it("Quorum porposals should be executed when reaching the precentage required", async function () {
@@ -140,13 +134,13 @@ contract('QuorumVote', function (accounts) {
 
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, 0, true]);
-    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // now lets vote 'Option 0' with 20% of the reputation - should not be executed yet (didn't reach 25%).
     await quorumVote.vote(proposalId, 0);
     await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, reputationArray[0], true]);
-    await checkProposalStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // now lets vote 'Option 1' with 10% of the reputation - should be executed with 'Option 0'! (reached 30% and the 'Option 1' is the majority).
     await quorumVote.vote(proposalId, 1, { from: accounts[1] });
@@ -228,52 +222,52 @@ contract('QuorumVote', function (accounts) {
     // Option 1
     await quorumVote.vote(proposalId, 0);
     await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // Option 2
     await quorumVote.vote(proposalId, 1);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // Option 3
     await quorumVote.vote(proposalId, 2);
     await checkVoteInfo(proposalId, accounts[0], [2, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // Option 4
     await quorumVote.vote(proposalId, 3);
     await checkVoteInfo(proposalId, accounts[0], [3, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // Option 5
     await quorumVote.vote(proposalId, 4);
     await checkVoteInfo(proposalId, accounts[0], [4, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 1]);
 
     // Option 6
     await quorumVote.vote(proposalId, 5);
     await checkVoteInfo(proposalId, accounts[0], [5, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 1]);
 
     // Option 7
     await quorumVote.vote(proposalId, 6);
     await checkVoteInfo(proposalId, accounts[0], [6, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 1]);
 
     // Option 8
     await quorumVote.vote(proposalId, 7);
     await checkVoteInfo(proposalId, accounts[0], [7, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 1]);
 
     // Option 9
     await quorumVote.vote(proposalId, 8);
     await checkVoteInfo(proposalId, accounts[0], [8, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 1]);
 
     // Option 10
     await quorumVote.vote(proposalId, 9);
     await checkVoteInfo(proposalId, accounts[0], [9, reputationArray[0]]);
-    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 1]);
   });
 
   it("Double vote shouldn't double proposal's 'Option 2' count", async function() {
@@ -296,7 +290,7 @@ contract('QuorumVote', function (accounts) {
 
     // Total 'Option 2' should be equal to the voter's reputation exactly, even though we voted twice
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, reputationArray[0], true]);
-    await checkProposalStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
   });
 
   it("Vote cancellation should revert proposal's counters", async function() {
@@ -319,7 +313,7 @@ contract('QuorumVote', function (accounts) {
 
     // Proposal's votes supposed to be zero again.
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, 0, true]);
-    await checkProposalStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
   });
 
   it("As allowOwner is set to true, Vote on the behalf of someone else should work", async function() {
@@ -340,7 +334,7 @@ contract('QuorumVote', function (accounts) {
 
     // Proposal's 'yes' count should be equal to accounts[1] reputation
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, reputationArray[1], true]);
-    await checkProposalStatus(proposalId, [0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
+    await checkVotesStatus(proposalId, [0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
   });
 
   it("As allowOwner is set to false, Vote on the beahlf of someone elase should NOT work", async function() {
@@ -704,9 +698,9 @@ contract('QuorumVote', function (accounts) {
       helpers.assertVMException(ex);
     }
 
-    // Lets try to call executeProposal with invalid porposal id
+    // Lets try to call execute with invalid porposal id
     try {
-      await quorumVote.executeProposal('asdsada');
+      await quorumVote.execute('asdsada');
       assert(false, 'Invalid porposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
