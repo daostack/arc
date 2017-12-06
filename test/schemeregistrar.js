@@ -35,7 +35,6 @@ contract('SchemeRegistrar', function(accounts) {
 
   it("proposeToAddModifyScheme javascript wrapper should modify existing scheme", async function() {
     const organization = await forgeOrganization();
-    const settings = await settingsForTest();
 
     let schemeRegistrar = await organization.scheme('SchemeRegistrar');
     let upgradeScheme = await organization.schemes('SchemeRegistrar');

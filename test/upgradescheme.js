@@ -2,9 +2,8 @@ import * as helpers from './helpers';
 import { Organization } from '../lib/organization.js';
 import { getValueFromLogs } from '../lib/utils.js';
 const Controller = artifacts.require("./Controller.sol");
-const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
-import { SOME_ADDRESS, forgeOrganization, settingsForTest } from './helpers';
+import { forgeOrganization, settingsForTest } from './helpers';
 
 
 contract('UpgradeScheme', function(accounts) {
