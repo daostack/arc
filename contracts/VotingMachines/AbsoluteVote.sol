@@ -122,43 +122,6 @@ contract AbsoluteVote is IntVoteInterface {
     }
 
   /**
-   * @dev Vote for a proposal, if the voter already voted, cancel the last vote and set a new one instead
-   * @param _proposalId id of the proposal
-   * @param _voter used in case the vote is cast for someone else
-   * @param _vote a value between 0 to and the proposal's number of choices.
-   * @return true in case of proposal excution otherwise false
-   * throws if proposal is not open or if it has been executed
-   * NB: executes the proposal if a decision has been reached
-   */
-    function internalVote(bytes32 _proposalId, address _voter, uint _vote, uint _rep) private returns(bool) {
-        Proposal storage proposal = proposals[_proposalId];
-        Parameters memory params = parameters[proposal.paramsHash];
-        // Check valid vote:
-        require(_vote <= proposal.numOfChoices);
-        // Check voter has enough reputation:
-        uint reputation = params.reputationSystem.reputationOf(_voter);
-        require(reputation >= _rep);
-        if (_rep == 0) {
-            _rep = reputation;
-        }
-        // If this voter has already voted, first cancel the vote:
-        if (proposal.voters[_voter].reputation != 0) {
-            cancelVoteInternal(_proposalId, _voter);
-        }
-        // The voting itself:
-        proposal.votes[_vote] = _rep.add(proposal.votes[_vote]);
-        proposal.totalVotes = _rep.add(proposal.totalVotes);
-        proposal.voters[_voter] = Voter({
-            reputation: _rep,
-            vote: _vote
-        });
-          // Event:
-        LogVoteProposal(_proposalId, _voter, _vote, reputation, (_voter != msg.sender));
-          // execute the proposal if this vote was decisive:
-        return execute(_proposalId);
-    }
-
-  /**
    * @dev voting function
    * @param _proposalId id of the proposal
    * @param _vote a value between 0 to and the proposal number of choices.
@@ -184,17 +147,8 @@ contract AbsoluteVote is IntVoteInterface {
         return  internalVote(_proposalId, _voter, _vote, 0);
     }
 
-    function voteWithSpecifiedAmounts(bytes32 _proposalId,uint _vote,uint _rep,uint) public votable(_proposalId) returns(bool){
+    function voteWithSpecifiedAmounts(bytes32 _proposalId,uint _vote,uint _rep,uint) public votable(_proposalId) returns(bool) {
         return internalVote(_proposalId,msg.sender,_vote,_rep);
-    }
-
-    function cancelVoteInternal(bytes32 _proposalId, address _voter) internal {
-        Proposal storage proposal = proposals[_proposalId];
-        Voter memory voter = proposal.voters[_voter];
-        proposal.votes[voter.vote] = (proposal.votes[voter.vote]).sub(voter.reputation);
-        proposal.totalVotes = (proposal.totalVotes).sub(voter.reputation);
-        delete proposal.voters[_voter];
-        LogCancelVoting(_proposalId, _voter);
     }
 
   /**
@@ -229,14 +183,6 @@ contract AbsoluteVote is IntVoteInterface {
         return false;
     }
 
-    function deleteProposal(bytes32 _proposalId) private {
-        Proposal storage proposal = proposals[_proposalId];
-        for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
-            delete proposal.votes[cnt];
-        }
-        delete proposals[_proposalId];
-    }
-
   /**
    * @dev getNumberOfChoices returns the number of choices possible in this proposal
    * @param _proposalId the ID of the proposal
@@ -253,9 +199,9 @@ contract AbsoluteVote is IntVoteInterface {
    * @return uint vote - the voters vote
    *        uint reputation - amount of reputation committed by _voter to _proposalId
    */
-    function voteInfo(bytes32 _proposalId, address _voter) public constant returns(uint,uint) {
+    function voteInfo(bytes32 _proposalId, address _voter) public constant returns(uint, uint) {
         Voter memory voter = proposals[_proposalId].voters[_voter];
-        return (voter.vote , voter.reputation);
+        return (voter.vote, voter.reputation);
     }
 
     /**
@@ -267,7 +213,7 @@ contract AbsoluteVote is IntVoteInterface {
         Proposal storage proposal = proposals[_proposalId];
         for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
             votes[cnt] = proposal.votes[cnt];
-          }
+        }
     }
 
     /**
@@ -275,7 +221,62 @@ contract AbsoluteVote is IntVoteInterface {
       * @param _proposalId the ID of the proposal
       * @return bool true or false
     */
-    function isVotable(bytes32 _proposalId) public constant returns(bool){
+    function isVotable(bytes32 _proposalId) public constant returns(bool) {
         return  proposals[_proposalId].open;
+    }
+
+    function cancelVoteInternal(bytes32 _proposalId, address _voter) internal {
+        Proposal storage proposal = proposals[_proposalId];
+        Voter memory voter = proposal.voters[_voter];
+        proposal.votes[voter.vote] = (proposal.votes[voter.vote]).sub(voter.reputation);
+        proposal.totalVotes = (proposal.totalVotes).sub(voter.reputation);
+        delete proposal.voters[_voter];
+        LogCancelVoting(_proposalId, _voter);
+    }
+
+    function deleteProposal(bytes32 _proposalId) private {
+        Proposal storage proposal = proposals[_proposalId];
+        for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
+            delete proposal.votes[cnt];
+        }
+        delete proposals[_proposalId];
+    }
+
+    /**
+     * @dev Vote for a proposal, if the voter already voted, cancel the last vote and set a new one instead
+     * @param _proposalId id of the proposal
+     * @param _voter used in case the vote is cast for someone else
+     * @param _vote a value between 0 to and the proposal's number of choices.
+     * @return true in case of proposal excution otherwise false
+     * throws if proposal is not open or if it has been executed
+     * NB: executes the proposal if a decision has been reached
+     */
+
+    function internalVote(bytes32 _proposalId, address _voter, uint _vote, uint _rep) private returns(bool) {
+        Proposal storage proposal = proposals[_proposalId];
+        Parameters memory params = parameters[proposal.paramsHash];
+        // Check valid vote:
+        require(_vote <= proposal.numOfChoices);
+        // Check voter has enough reputation:
+        uint reputation = params.reputationSystem.reputationOf(_voter);
+        require(reputation >= _rep);
+        if (_rep == 0) {
+            _rep = reputation;
+        }
+        // If this voter has already voted, first cancel the vote:
+        if (proposal.voters[_voter].reputation != 0) {
+            cancelVoteInternal(_proposalId, _voter);
+        }
+        // The voting itself:
+        proposal.votes[_vote] = _rep.add(proposal.votes[_vote]);
+        proposal.totalVotes = _rep.add(proposal.totalVotes);
+        proposal.voters[_voter] = Voter({
+            reputation: _rep,
+            vote: _vote
+        });
+        // Event:
+        LogVoteProposal(_proposalId, _voter, _vote, reputation, (_voter != msg.sender));
+        // execute the proposal if this vote was decisive:
+        return execute(_proposalId);
     }
 }
