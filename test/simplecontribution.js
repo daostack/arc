@@ -1,11 +1,42 @@
 import { SimpleContributionScheme } from '../lib/simplecontributionscheme.js';
 const DAOToken = artifacts.require("./DAOToken.sol");
 import * as helpers from './helpers';
+import { getValueFromLogs } from '../lib/utils.js';
 
 const SoliditySimpleContributionScheme = artifacts.require("./SimpleContributionScheme.sol");
 
+export async function proposeSimpleContributionScheme(org, accounts) {
+    let schemeRegistrar = await org.scheme("SchemeRegistrar");
+    let simpleContributionScheme = await org.scheme('SimpleContributionScheme');
+
+    let votingMachineHash = await org.votingMachine.getParametersHash(org.reputation.address, 50, true);
+    await org.votingMachine.setParameters(org.reputation.address, 50, true);
+
+    let votingMachineAddress = org.votingMachine.address;
+
+    const schemeParametersHash = await simpleContributionScheme.setParams({
+      orgNativeTokenFee: 0,
+      schemeNativeTokenFee:  0,
+      voteParametersHash: votingMachineHash,
+      votingMachine: votingMachineAddress
+    });
+
+    let tx = await schemeRegistrar.proposeToAddModifyScheme({
+      avatar: org.avatar.address,
+      scheme: simpleContributionScheme.address,
+      schemeKey: "SimpleContributionScheme",
+      schemeParametersHash: schemeParametersHash
+    });
+
+    const proposalId = getValueFromLogs(tx, '_proposalId');
+
+    org.vote(proposalId, 1, {from: accounts[2]});
+
+    return simpleContributionScheme;
+}
+
 contract('SimpleContribution scheme', function(accounts) {
-  let params, paramsHash, tx, proposal, proposalId;
+  let params, paramsHash, tx, proposal;
 
   before(function() {
     helpers.etherForEveryone();
@@ -13,20 +44,17 @@ contract('SimpleContribution scheme', function(accounts) {
 
   it("submit and accept a contribution - complete workflow", async function(){
     const organization = await helpers.forgeOrganization();
-    proposalId = await organization.proposeScheme({contract: 'SimpleContributionScheme' });
+    let scheme = await proposeSimpleContributionScheme(organization, accounts);
 
-    // vote with the majority and accept the proposal
-    organization.vote(proposalId, 1, {from: accounts[2]});
-
-    const scheme = await organization.scheme('SimpleContributionScheme');
-    // register the organization on the contribution scheme
-    await scheme.registerOrganization(organization.avatar.address);
-    // we can now submit a contribution
-    proposalId = await scheme.submitContribution({
+    tx = await scheme.proposeContribution({
       avatar: organization.avatar.address,  // Avatar _avatar,
       description: 'A new contribution', // string _contributionDesciption,
-      beneficiary: web3.eth.accounts[1], // address _beneficiary
+      beneficiary: accounts[1], // address _beneficiary
+      nativeTokenReward: 1,
     });
+
+    const proposalId = getValueFromLogs(tx, '_proposalId');
+
     // now vote with a majority account and accept this contribution
     organization.vote(proposalId, 1, {from: accounts[2]});
 
@@ -61,17 +89,50 @@ contract('SimpleContribution scheme', function(accounts) {
     const votingMachine = org.votingMachine;
 
     // create a contribution Scheme
-    const contributionScheme = await SoliditySimpleContributionScheme.new(
+    const contributionScheme = (await SoliditySimpleContributionScheme.new(
       tokenAddress,
       0, // register with 0 fee
       accounts[0],
+    ));
+
+    // check if we have the fee to register the contribution
+    const contributionSchemeRegisterFee = await contributionScheme.fee();
+    // console.log('contributionSchemeRegisterFee: ' + contributionSchemeRegisterFee);
+    // our fee is 0, so that's easy  (TODO: write a test with non-zero fees)
+    assert.equal(contributionSchemeRegisterFee, 0);
+
+    let votingMachineHash = await votingMachine.getParametersHash(org.reputation.address, 50, true);
+    await votingMachine.setParameters(org.reputation.address, 50, true);
+    let votingMachineAddress = votingMachine.address;
+
+    // console.log(`******  votingMachineHash ${votingMachineHash} ******`);
+    // console.log(`******  votingMachineAddress ${votingMachineAddress} ******`);
+
+    const schemeParametersHash = await contributionScheme.getParametersHash(
+      0,
+      0,
+      votingMachineHash,
+      votingMachineAddress
+    );
+    
+    await contributionScheme.setParameters(
+      0,
+      0,
+      votingMachineHash,
+      votingMachineAddress
     );
 
-    // propose a SimpleContributionScheme
-    proposalId = await org.proposeScheme({
-      contract: 'SimpleContributionScheme',
-      address: contributionScheme.address,
+    let schemeRegistrar = await org.scheme("SchemeRegistrar");
+    
+    tx = await schemeRegistrar.proposeToAddModifyScheme({
+      avatar: avatar.address,
+      scheme: contributionScheme.address,
+      schemeKey: "SimpleContributionScheme",
+      schemeParametersHash: schemeParametersHash
     });
+    
+    const proposalId = getValueFromLogs(tx, '_proposalId');
+
     // this will vote-and-execute
     tx = await votingMachine.vote(proposalId, 1, {from: accounts[1]});
 
@@ -80,26 +141,14 @@ contract('SimpleContribution scheme', function(accounts) {
     // we expect to have only the first bit set (it is a registered scheme without nay particular permissions)
     assert.equal(schemeFromController[1], '0x00000001');
 
-    //  Our organization is not registered with the contribution scheme yet at this point
-    let orgFromContributionScheme = await contributionScheme.organizations(avatar.address);
-    assert.equal(orgFromContributionScheme, false);
-
-    // check if we have the fee to register the contribution
-    const contributionSchemeRegisterFee = await contributionScheme.fee();
-    // console.log('contributionSchemeRegisterFee: ' + contributionSchemeRegisterFee);
-    // our fee is 0, so that's easy  (TODO: write a test with non-zero fees)
-    assert.equal(contributionSchemeRegisterFee, 0);
-
-    // now we register it
-    await contributionScheme.registerOrganization(avatar.address);
-
-    // is the organization actually registered?
-    orgFromContributionScheme = await contributionScheme.organizations(avatar.address);
+    // is the organization registered?
+    const orgFromContributionScheme = await contributionScheme.organizations(avatar.address);
     // console.log('orgFromContributionScheme after registering');
     assert.equal(orgFromContributionScheme, true);
     // check the configuration for proposing new contributions
 
     paramsHash = await controller.getSchemeParameters(contributionScheme.address);
+    // console.log(`****** paramsHash ${paramsHash} ******`);
     // params are: uint orgNativeTokenFee; bytes32 voteApproveParams; uint schemeNativeTokenFee;         BoolVoteInterface boolVote;
     params = await contributionScheme.parameters(paramsHash);
     // check if they are not trivial - the 4th item should be a valid boolVote address
@@ -193,3 +242,4 @@ contract('SimpleContribution scheme', function(accounts) {
 
 
 });
+
