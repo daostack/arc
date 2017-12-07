@@ -9,8 +9,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _utils = require('./utils.js');
 
-var _simplecontributionscheme = require('./simplecontributionscheme.js');
-
 var _settings = require('./settings.js');
 
 var _schemeregistrar = require('./schemeregistrar.js');
@@ -24,11 +22,8 @@ var Controller = (0, _utils.requireContract)('Controller');
 var DAOToken = (0, _utils.requireContract)("DAOToken");
 var GenesisScheme = (0, _utils.requireContract)("GenesisScheme");
 var Reputation = (0, _utils.requireContract)("Reputation");
-var SimpleICO = (0, _utils.requireContract)("SimpleICO");
 // import { GlobalConstraintRegistrar } from   './globalconstraintregistrar.js';
 var AbsoluteVote = (0, _utils.requireContract)("AbsoluteVote");
-
-var TokenCapGC = (0, _utils.requireContract)("TokenCapGC");
 // import { UpgradeScheme } from   './upgradescheme.js';
 
 var promisify = require('promisify');
@@ -155,155 +150,176 @@ var Organization = exports.Organization = function () {
       }
       return true;
     }
-  }, {
-    key: 'proposeScheme',
-    value: async function proposeScheme() {
-      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    // async proposeScheme(opts={}) {
+
+    //   const settings = await getSettings();
+
+    //   const defaults = {
+    //     contract: undefined,
+    //     address: null,
+    //     params: {},
+    //   };
+
+    //   const options = dopts(opts, defaults, { allowUnknown: true });
+
+    //   let tx;
+
+    //   const schemeRegistrar = await this.scheme('SchemeRegistrar');
+
+    //   if (options.contract === 'SimpleICO') {
+    //     const scheme = await SimpleICO.at(settings.daostackContracts.SimpleICO.address);
+    //     // TODO: check which default params should be required
+    //     const defaultParams = {
+    //       cap: 0, // uint _cap,
+    //       price: 0, // uint _price,
+    //       startBlock: 0, // uint _startBlock,
+    //       endBlock: 0, // uint _endBlock,
+    //       beneficiary: NULL_ADDRESS, // address _beneficiary,
+    //       admin: NULL_ADDRESS,// address _admin)  returns(bytes32) {
+    //     };
+    //     // tod: all 'null' params are required
+    //     options.params = dopts(options.params, defaultParams);
+
+    //     // TODO: create the parameters hash on the basis of the options
+    //     await scheme.setParameters(
+    //       options.params.cap,
+    //       options.params.price,
+    //       options.params.startBlock,
+    //       options.params.endBlock,
+    //       options.params.beneficiary,
+    //       options.params.admin,
+    //     );
+    //     const parametersHash = await scheme.getParametersHash(
+    //       options.params.cap,
+    //       options.params.price,
+    //       options.params.startBlock,
+    //       options.params.endBlock,
+    //       options.params.beneficiary,
+    //       options.params.admin,
+    //     );
+    //     const tokenForFee = await scheme.nativeToken();
+    //     const fee = await scheme.fee();
+    //     const autoRegister = false;
+    //     tx = await schemeRegistrar.proposeScheme(
+    //       this.avatar.address, // Avatar _avatar,
+    //       scheme.address, //address _scheme,
+    //       parametersHash, // bytes32 _parametersHash,
+    //       false, // bool _isRegistering,
+    //       tokenForFee, // StandardToken _tokenFee,
+    //       fee, // uint _fee
+    //       autoRegister // bool _autoRegister
+    //     );
+    //     const proposalId = await getValueFromLogs(tx, '_proposalId');
+    //     return proposalId;
 
 
-      var settings = await (0, _settings.getSettings)();
+    //   } else if (options.contract === CONTRACT_SIMPLECONTRIBUTIONSCHEME) {
+    //     // get the scheme
+    //     const defaultParams = {
+    //       votePrec: 50, // used for SimpleContributionScheme
+    //       ownerVote: true,
+    //       intVote: this.votingMachine.address, // used for SimpleContributionScheme
+    //       orgNativeTokenFee: 0, // used for SimpleContributionScheme
+    //       schemeNativeTokenFee: 0, // used for SimpleContributionScheme
+    //     };
+    //     // tod: all 'null' params are required
+    //     options.params = dopts(options.params, defaultParams);
 
-      var defaults = {
-        contract: undefined,
-        address: null,
-        params: {}
-      };
+    //     const scheme = await SimpleContributionScheme.at(options.address || settings.daostackContracts.SimpleContributionScheme.address);
+    //     const votingMachine = AbsoluteVote.at(options.params.intVote);
+    //     // check if voteApporveParams are known on the votingMachine
+    //     await votingMachine.setParameters(this.reputation.address, options.params.votePrec, options.params.ownerVote);
+    //     const voteApproveParams = await votingMachine.getParametersHash(this.reputation.address, options.params.votePrec, options.params.ownerVote);
 
-      var options = dopts(opts, defaults);
+    //     // const unpackedParams = await votingMachine.parameters(voteApproveParams);
+    //     // let msg = 'it seems your voteApproveParams are not known on this votingMachine';
+    //     // assert.isOk(unpackedParams[0], msg);
 
-      var tx = void 0;
+    //     const parametersHash = await scheme.getParametersHash(
+    //       options.params.orgNativeTokenFee,
+    //       options.params.schemeNativeTokenFee,
+    //       voteApproveParams,
+    //       votingMachine.address,
+    //     );
+    //     await scheme.setParameters(
+    //       options.params.orgNativeTokenFee, // uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
+    //       options.params.schemeNativeTokenFee, // uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
+    //       voteApproveParams, // bytes32 voteApproveParams;
+    //       votingMachine.address,
+    //     );
 
-      var schemeRegistrar = await this.scheme('SchemeRegistrar');
+    //     const feeToken = await scheme.nativeToken();
+    //     const fee = await scheme.fee();
+    //     const autoRegister = false;
 
-      if (options.contract === 'SimpleICO') {
-        var scheme = await SimpleICO.at(settings.daostackContracts.SimpleICO.address);
-        // TODO: check which default params should be required
-        var defaultParams = {
-          cap: 0, // uint _cap,
-          price: 0, // uint _price,
-          startBlock: 0, // uint _startBlock,
-          endBlock: 0, // uint _endBlock,
-          beneficiary: _utils.NULL_ADDRESS, // address _beneficiary,
-          admin: _utils.NULL_ADDRESS // address _admin)  returns(bytes32) {
-        };
-        // tod: all 'null' params are required
-        options.params = dopts(options.params, defaultParams);
+    //     tx = await schemeRegistrar.proposeScheme(
+    //       this.avatar.address, // Avatar _avatar,
+    //       scheme.address, //address _scheme,
+    //       parametersHash, // bytes32 _parametersHash,
+    //       false, // bool _isRegistering,
+    //       feeToken, // StandardToken _tokenFee,
+    //       fee, // uint _fee
+    //       autoRegister // bool _autoRegister
+    //     );
+    //     const proposalId = await getValueFromLogs(tx, '_proposalId');
+    //     return proposalId;
+    //   } else {
+    //     throw new Error('Unknown contract');
+    //   }
+    // }
 
-        // TODO: create the parameters hash on the basis of the options
-        await scheme.setParameters(options.params.cap, options.params.price, options.params.startBlock, options.params.endBlock, options.params.beneficiary, options.params.admin);
-        var parametersHash = await scheme.getParametersHash(options.params.cap, options.params.price, options.params.startBlock, options.params.endBlock, options.params.beneficiary, options.params.admin);
-        var tokenForFee = await scheme.nativeToken();
-        var fee = await scheme.fee();
-        var autoRegister = false;
-        tx = await schemeRegistrar.proposeScheme(this.avatar.address, // Avatar _avatar,
-        scheme.address, //address _scheme,
-        parametersHash, // bytes32 _parametersHash,
-        false, // bool _isRegistering,
-        tokenForFee, // StandardToken _tokenFee,
-        fee, // uint _fee
-        autoRegister // bool _autoRegister
-        );
-        var proposalId = await (0, _utils.getValueFromLogs)(tx, '_proposalId');
-        return proposalId;
-      } else if (options.contract === CONTRACT_SIMPLECONTRIBUTIONSCHEME) {
-        // get the scheme
-        var _defaultParams = {
-          votePrec: 50, // used for SimpleContributionScheme
-          ownerVote: true,
-          intVote: this.votingMachine.address, // used for SimpleContributionScheme
-          orgNativeTokenFee: 0, // used for SimpleContributionScheme
-          schemeNativeTokenFee: 0 // used for SimpleContributionScheme
-        };
-        // tod: all 'null' params are required
-        options.params = dopts(options.params, _defaultParams);
+    // async proposeGlobalConstraint(opts= {}) {
+    //   const settings = await getSettings();
+    //   const defaults = {
+    //     contract: null,
+    //     address: null,
+    //     params: {},
+    //     paramsHash: null,
+    //     // next three options regard removing a global constraint
+    //     votingMachine: this.votingMachine.address,
+    //     reputation: this.reputation.address,
+    //     absPrecReq: 50,
+    //   };
 
-        var _scheme = await _simplecontributionscheme.SimpleContributionScheme.at(options.address || settings.daostackContracts.SimpleContributionScheme.address);
-        var votingMachine = AbsoluteVote.at(options.params.intVote);
-        // check if voteApporveParams are known on the votingMachine
-        await votingMachine.setParameters(this.reputation.address, options.params.votePrec, options.params.ownerVote);
-        var voteApproveParams = await votingMachine.getParametersHash(this.reputation.address, options.params.votePrec, options.params.ownerVote);
+    //   const options = dopts(opts, defaults, { allowUnknown: true });
 
-        // const unpackedParams = await votingMachine.parameters(voteApproveParams);
-        // let msg = 'it seems your voteApproveParams are not known on this votingMachine';
-        // assert.isOk(unpackedParams[0], msg);
+    //   if (options.contract==='TokenCapGC') {
+    //     options.address = options.address || settings.daostackContracts.TokenCapGC.address;
+    //     const tokenCapGC = await TokenCapGC.at(options.address);
 
-        var _parametersHash = await _scheme.getParametersHash(options.params.orgNativeTokenFee, options.params.schemeNativeTokenFee, voteApproveParams, votingMachine.address);
-        await _scheme.setParameters(options.params.orgNativeTokenFee, // uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
-        options.params.schemeNativeTokenFee, // uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
-        voteApproveParams, // bytes32 voteApproveParams;
-        votingMachine.address);
+    //     if (options.paramsHash) {
+    //         // TODO: check if paramsHash is registered
+    //     } else {
+    //         const defaultParams = {
+    //           token: null,
+    //           tokenAddress: this.token.address,
+    //           cap: 21e9,
+    //         };
+    //         let params = dopts(options.params, defaultParams);
 
-        var feeToken = await _scheme.nativeToken();
-        var _fee = await _scheme.fee();
-        var _autoRegister = false;
+    //         await tokenCapGC.setParameters(params.tokenAddress, params.cap);
+    //         options.paramsHash = await tokenCapGC.getParametersHash(params.tokenAddress, params.cap);
+    //     }
 
-        tx = await schemeRegistrar.proposeScheme(this.avatar.address, // Avatar _avatar,
-        _scheme.address, //address _scheme,
-        _parametersHash, // bytes32 _parametersHash,
-        false, // bool _isRegistering,
-        feeToken, // StandardToken _tokenFee,
-        _fee, // uint _fee
-        _autoRegister // bool _autoRegister
-        );
-        var _proposalId = await (0, _utils.getValueFromLogs)(tx, '_proposalId');
-        return _proposalId;
-      } else {
-        throw new Error('Unknown contract');
-      }
-    }
-  }, {
-    key: 'proposeGlobalConstraint',
-    value: async function proposeGlobalConstraint() {
-      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    //   } else {
+    //     if (options.address) {
+    //       //
+    //     } else {
+    //       let msg = 'Either "contract" or "address" must be provided';
+    //       throw new Error(msg);
+    //     }
+    //   }
+    //   // calculate (and set) the hash that will be used to remove the parameters
+    //   await AbsoluteVote.at(options.votingMachine).setParameters(options.reputation, options.absPrecReq, true);
+    //   options.votingMachineHash = await AbsoluteVote.at(options.votingMachine).getParametersHash(options.reputation, options.absPrecReq, true);
 
-      var settings = await (0, _settings.getSettings)();
-      var defaults = {
-        contract: null,
-        address: null,
-        params: {},
-        paramsHash: null,
-        // next three options regard removing a global constraint
-        votingMachine: this.votingMachine.address,
-        reputation: this.reputation.address,
-        absPrecReq: 50
-      };
+    //   const globalConstraintRegistrar = await this.scheme('GlobalConstraintRegistrar');
+    //   let tx = await globalConstraintRegistrar.proposeGlobalConstraint(this.avatar.address, options.address, options.paramsHash, options.votingMachineHash);
+    //   const proposalId = getValueFromLogs(tx, '_proposalId');
+    //   return proposalId;
+    // }
 
-      var options = dopts(opts, defaults);
-
-      if (options.contract === 'TokenCapGC') {
-        options.address = options.address || settings.daostackContracts.TokenCapGC.address;
-        var tokenCapGC = await TokenCapGC.at(options.address);
-
-        if (options.paramsHash) {
-          // TODO: check if paramsHash is registered
-        } else {
-          var defaultParams = {
-            token: null,
-            tokenAddress: this.token.address,
-            cap: 21e9
-          };
-          var params = dopts(options.params, defaultParams);
-
-          await tokenCapGC.setParameters(params.tokenAddress, params.cap);
-          options.paramsHash = await tokenCapGC.getParametersHash(params.tokenAddress, params.cap);
-        }
-      } else {
-        if (options.address) {
-          //
-        } else {
-          var msg = 'Either "contract" or "address" must be provided';
-          throw new Error(msg);
-        }
-      }
-      // calculate (and set) the hash that will be used to remove the parameters
-      await AbsoluteVote.at(options.votingMachine).setParameters(options.reputation, options.absPrecReq, true);
-      options.votingMachineHash = await AbsoluteVote.at(options.votingMachine).getParametersHash(options.reputation, options.absPrecReq, true);
-
-      var globalConstraintRegistrar = await this.scheme('GlobalConstraintRegistrar');
-      var tx = await globalConstraintRegistrar.proposeGlobalConstraint(this.avatar.address, options.address, options.paramsHash, options.votingMachineHash);
-      var proposalId = (0, _utils.getValueFromLogs)(tx, '_proposalId');
-      return proposalId;
-    }
   }, {
     key: 'vote',
     value: function vote(proposalId, choice, params) {
@@ -345,7 +361,7 @@ var Organization = exports.Organization = function () {
         }]
       };
 
-      var options = dopts(opts, defaults);
+      var options = dopts(opts, defaults, { allowUnknown: true });
 
       var tx = void 0;
 

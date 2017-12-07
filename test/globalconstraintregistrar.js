@@ -14,15 +14,70 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     helpers.etherForEveryone();
   });
 
+  it("proposeToAddModifyGlobalConstraint javascript wrapper should work", async function() {
+    const organization = await helpers.forgeOrganization();
+
+    let tokenCapGC = await organization.scheme('TokenCapGC');
+
+    let globalConstraintParametersHash = await tokenCapGC.getParametersHash(organization.token.address,3141);
+    await tokenCapGC.setParameters(organization.token.address,3141);
+
+    let votingMachineHash = await organization.votingMachine.getParametersHash(organization.reputation.address, 50, true);
+    await organization.votingMachine.setParameters(organization.reputation.address, 50, true);
+
+    let globalConstraintRegistrar = await organization.scheme('GlobalConstraintRegistrar');
+
+    await globalConstraintRegistrar.proposeToAddModifyGlobalConstraint({
+      avatar: organization.avatar.address,
+      globalConstraint: tokenCapGC.address,
+      globalConstraintParametersHash: globalConstraintParametersHash,
+      votingMachineHash: votingMachineHash
+    });
+
+    // const proposalId = getValueFromLogs(tx, '_proposalId');
+
+    // console.log(`****** proposal ID ${proposalId} ******`);
+  });
+
+  //   it("proposeToRemoveGlobalConstraint javascript wrapper should not crash", async function() {
+  //   const organization = await helpers.forgeOrganization();
+
+  //   let tokenCapGC = await organization.scheme('TokenCapGC');
+
+  //   let globalConstraintRegistrar = await organization.scheme('GlobalConstraintRegistrar');
+
+  //   await globalConstraintRegistrar.proposeToRemoveGlobalConstraint({
+  //     avatar: organization.avatar.address,
+  //     globalConstraint: tokenCapGC.address
+  //   });
+
+  //   // const proposalId = getValueFromLogs(tx, '_proposalId');
+
+  //   // console.log(`****** proposal ID ${proposalId} ******`);
+  // });
+
   it("should register and enforce a global constraint", async function() {
     const organization = await helpers.forgeOrganization();
 
-    proposalId = await organization.proposeGlobalConstraint({
-      contract: 'TokenCapGC',
-      params: {
-        cap: 3141, // is the cap
-      },
-    });
+    let tokenCapGC = await organization.scheme('TokenCapGC');
+    let globalConstraintParametersHash = await tokenCapGC.getParametersHash(organization.token.address,3141);
+    await tokenCapGC.setParameters(organization.token.address,3141);
+
+    let votingMachineHash = await organization.votingMachine.getParametersHash(organization.reputation.address, 50, true);
+    await organization.votingMachine.setParameters(organization.reputation.address, 50, true);
+
+    let globalConstraintRegistrar = (await organization.scheme('GlobalConstraintRegistrar')).contract;
+
+    let tx = await globalConstraintRegistrar.proposeGlobalConstraint(
+      organization.avatar.address,
+      tokenCapGC.address,
+      globalConstraintParametersHash,
+      votingMachineHash
+    );
+
+    const proposalId = getValueFromLogs(tx, '_proposalId');
+
+    // console.log(`****** proposal ID ${proposalId} ******`);
 
     // serveral users now cast their vote
     await organization.vote(proposalId, 1, {from: web3.eth.accounts[0]});
@@ -43,7 +98,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     const organization = await helpers.forgeOrganization();
 
     // do some sanity checks on the globalconstriantregistrar
-    const gcr = await organization.scheme('GlobalConstraintRegistrar');
+    const gcr = (await organization.scheme('GlobalConstraintRegistrar')).contract;
     // check if our organization is registered on the gcr
     assert.equal(await gcr.isRegistered(organization.avatar.address), true);
     // check if indeed the registrar is registered as a scheme on  the controller
@@ -139,12 +194,24 @@ contract('GlobalConstraintRegistrar', function(accounts) {
   it('organisation.proposalGlobalConstraint() should accept different parameters [TODO]', async function(){
     const organization = await helpers.forgeOrganization();
 
-    proposalId = await organization.proposeGlobalConstraint({
-      contract: 'TokenCapGC',
-      params: {
-        cap: 21e9, // is the cap
-      },
-    });
+    let tokenCapGC = await organization.scheme('TokenCapGC');
+
+    let globalConstraintParametersHash = await tokenCapGC.getParametersHash(organization.token.address,21e9);
+    await tokenCapGC.setParameters(organization.token.address,21e9);
+
+    let votingMachineHash = await organization.votingMachine.getParametersHash(organization.reputation.address, 50, true);
+    await organization.votingMachine.setParameters(organization.reputation.address, 50, true);
+
+    let globalConstraintRegistrar = (await organization.scheme('GlobalConstraintRegistrar')).contract;
+
+    let tx = await globalConstraintRegistrar.proposeGlobalConstraint(
+      organization.avatar.address,
+      tokenCapGC.address,
+      globalConstraintParametersHash,
+      votingMachineHash
+    );
+
+    let proposalId = getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
     // proposalId = await organization.proposeGlobalConstraint({
@@ -154,13 +221,20 @@ contract('GlobalConstraintRegistrar', function(accounts) {
     //
     // assert.isOk(proposalId);
 
-    proposalId = await organization.proposeGlobalConstraint({
-      contract: 'TokenCapGC',
-      params: {
-        token: organization.token.address, // is the default
-        cap: 1234, // is the cap
-      },
-    });
+    globalConstraintParametersHash = await tokenCapGC.getParametersHash(organization.token.address, 1234);
+    await tokenCapGC.setParameters(organization.token.address, 1234);
+
+    votingMachineHash = await organization.votingMachine.getParametersHash(organization.reputation.address, 1, false);
+    await organization.votingMachine.setParameters(organization.reputation.address, 1, false);
+
+    tx = await globalConstraintRegistrar.proposeGlobalConstraint(
+      organization.avatar.address,
+      tokenCapGC.address,
+      globalConstraintParametersHash,
+      votingMachineHash
+    );
+
+    proposalId = getValueFromLogs(tx, '_proposalId');
 
     assert.isOk(proposalId);
 

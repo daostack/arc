@@ -13,14 +13,16 @@ var _schemeregistrar = require('./schemeregistrar.js');
 
 var _simplecontributionscheme = require('./simplecontributionscheme.js');
 
+var _absoluteVote = require('./absoluteVote.js');
+
+var _tokenCapGC = require('./tokenCapGC.js');
+
 var _upgradescheme = require('./upgradescheme.js');
 
 // TODO: these are settings for testing. Need some way to switch to "production settings"
 var GenesisScheme = (0, _utils.requireContract)("GenesisScheme");
 
 var SimpleICO = (0, _utils.requireContract)("SimpleICO");
-var AbsoluteVote = (0, _utils.requireContract)("AbsoluteVote");
-var TokenCapGC = (0, _utils.requireContract)("TokenCapGC");
 
 
 var getSettings = async function getSettings() {
@@ -29,9 +31,9 @@ var getSettings = async function getSettings() {
   var globalConstraintRegistrar = await _globalconstraintregistrar.GlobalConstraintRegistrar.deployed();
   var schemeRegistrar = await _schemeregistrar.SchemeRegistrar.deployed();
   var simpleICO = await SimpleICO.deployed();
-  var tokenCapGC = await TokenCapGC.deployed();
+  var tokenCapGC = await _tokenCapGC.TokenCapGC.deployed();
   var upgradeScheme = await _upgradescheme.UpgradeScheme.deployed();
-  var absoluteVote = await AbsoluteVote.deployed();
+  var absoluteVote = await _absoluteVote.AbsoluteVote.deployed();
 
   return {
     votingMachine: absoluteVote.address,
@@ -57,7 +59,7 @@ var getSettings = async function getSettings() {
         address: simpleICO.address
       },
       TokenCapGC: {
-        contract: TokenCapGC,
+        contract: _tokenCapGC.TokenCapGC,
         address: tokenCapGC.address
       },
       UpgradeScheme: {
@@ -65,7 +67,7 @@ var getSettings = async function getSettings() {
         address: upgradeScheme.address
       },
       AbsoluteVote: {
-        contract: AbsoluteVote,
+        contract: _absoluteVote.AbsoluteVote,
         address: absoluteVote.address
       }
     }

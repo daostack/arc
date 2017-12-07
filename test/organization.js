@@ -1,10 +1,11 @@
 
 import { Organization } from '../lib/organization.js';
 import * as helpers from './helpers';
+import { proposeSimpleContributionScheme } from './simplecontribution.js';
 
 
 contract('Organization', function(accounts) {
-  let organization, proposalId;
+  let organization;
 
   before(function() {
     helpers.etherForEveryone();
@@ -62,59 +63,57 @@ contract('Organization', function(accounts) {
       
 
       // now we add another known scheme
-      proposalId = await organization.proposeScheme({contract: 'SimpleContributionScheme'});
-      await organization.vote(proposalId, 1, {from: accounts[1]});
-      await organization.vote(proposalId, 1, {from: accounts[2]});
+      await proposeSimpleContributionScheme(organization, accounts);
 
       assert.equal((await organization.schemes()).length, 4);
       // TODO: the organizaiton must be registered with the scheme before the next works
       // assert.equal((await organization.scheme('SimpleContributionScheme')).address, settings.daostackContracts.ContributionScheme.address);
   });
 
-  it("has a working proposeScheme function for SimpleICO", async function(){
+  // it("has a working proposeScheme function for SimpleICO", async function(){
 
-    organization = await Organization.new({
-      orgName: 'Skynet',
-      tokenName: 'Tokens of skynet',
-      tokenSymbol: 'SNT'
-    });
+  //   organization = await Organization.new({
+  //     orgName: 'Skynet',
+  //     tokenName: 'Tokens of skynet',
+  //     tokenSymbol: 'SNT'
+  //   });
 
-    proposalId = await organization.proposeScheme({
-      contract: 'SimpleICO',
-      params: {
-        cap: 100, // uint cap; // Cap in Eth
-        price: .001, // uint price; // Price represents Tokens per 1 Eth
-        startBlock: 5, // uint startBlock;
-        endBlock: 10, // uint endBlock;
-        admin: accounts[3], // address admin; // The admin can halt or resume ICO.
-        beneficiary: accounts[4], // address beneficiary; // all funds received will be transffered to this address.
-      }
-    });
-    //
-    assert.isOk(proposalId);
-    assert.notEqual(proposalId, helpers.NULL_HASH);
+  //   proposalId = await organization.proposeScheme({
+  //     contract: 'SimpleICO',
+  //     params: {
+  //       cap: 100, // uint cap; // Cap in Eth
+  //       price: .001, // uint price; // Price represents Tokens per 1 Eth
+  //       startBlock: 5, // uint startBlock;
+  //       endBlock: 10, // uint endBlock;
+  //       admin: accounts[3], // address admin; // The admin can halt or resume ICO.
+  //       beneficiary: accounts[4], // address beneficiary; // all funds received will be transffered to this address.
+  //     }
+  //   });
+  //   //
+  //   assert.isOk(proposalId);
+  //   assert.notEqual(proposalId, helpers.NULL_HASH);
 
-  });
+  // });
 
-  it("has a working proposeScheme function for ContributionScheme [IN PROGRESS]", async function(){
-    organization = await Organization.new({
-      orgName: 'Skynet',
-      tokenName: 'Tokens of skynet',
-      tokenSymbol: 'SNT'
-    });
+  // it("has a working proposeScheme function for ContributionScheme [IN PROGRESS]", async function(){
+  //   organization = await Organization.new({
+  //     orgName: 'Skynet',
+  //     tokenName: 'Tokens of skynet',
+  //     tokenSymbol: 'SNT'
+  //   });
 
-    proposalId = await organization.proposeScheme({
-      contract: 'SimpleContributionScheme',
-    });
-    //
-    assert.isOk(proposalId);
-    assert.notEqual(proposalId, helpers.NULL_HASH);
+  //   proposalId = await organization.proposeScheme({
+  //     contract: 'SimpleContributionScheme',
+  //   });
+  //   //
+  //   assert.isOk(proposalId);
+  //   assert.notEqual(proposalId, helpers.NULL_HASH);
 
-    // TODO: test with non-default settings
+  //   // TODO: test with non-default settings
 
-  });
+  // });
 
-  it("has a working proposeScheme function for UpgradeScheme [TODO]", async function(){
-  });
+  // it("has a working proposeScheme function for UpgradeScheme [TODO]", async function(){
+  // });
 
 });

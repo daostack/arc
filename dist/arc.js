@@ -87,10 +87,36 @@ Object.keys(_wallet).forEach(function (key) {
         }
     });
 });
+
+var _absoluteVote = require('./absoluteVote.js');
+
+Object.keys(_absoluteVote).forEach(function (key) {
+    if (key === "default" || key === "__esModule") return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function get() {
+            return _absoluteVote[key];
+        }
+    });
+});
+
+var _tokenCapGC = require('./tokenCapGC.js');
+
+Object.keys(_tokenCapGC).forEach(function (key) {
+    if (key === "default" || key === "__esModule") return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function get() {
+            return _tokenCapGC[key];
+        }
+    });
+});
 exports.configure = configure;
 exports.getDeployedContracts = getDeployedContracts;
 
 var _settings = require('./settings.js');
+
+// import * as BigNumber from 'bignumber.js';
 
 /**
  * Configure the daostack-arc module.
@@ -110,6 +136,11 @@ function configure(options) {
      * else, or separately.
      */
 
+    /**
+     * TODO: should we specify something here?
+     * See: https://mikemcl.github.io/bignumber.js/#config
+    BigNumber.config({...});
+     */
     return (0, _utils.getWeb3)();
 }
 
