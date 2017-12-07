@@ -1,6 +1,6 @@
 # Wallet API
 
-## async Wallet.new() => Wallet
+## Wallet.new() => Wallet
 
 `Wallet.new` will create a Ethereum wallet using the ethers.js library.
 It uses bip39 to generate a mnemonic seed to generate the wallet deterministically.
@@ -9,6 +9,14 @@ The seed should never be shared with anyone.
 Usage:
 
     let wallet = Wallet.new();
+
+## Wallet.fromPrivateKey(privateKey: string) => Wallet
+
+Creates a wallet from a private key
+
+Usage:
+
+    let wallet = Wallet.fromPrivateKey("0xXXXX...")
 
 ## async Wallet.fromEncrypted(encryptedJSON: string, password: string, progressCallback: (percentFinished) => any) => Wallet
 
@@ -21,7 +29,7 @@ Usage:
     let wallet = Wallet.fromEncrypted(encryptedJSON, "password", (progress) => { console.log(progress); })
 
 
-## async Wallet.fromMnemonic(mnemonic: string) => Wallet
+## Wallet.fromMnemonic(mnemonic: string) => Wallet
 
 Generates/recovers a wallet from a mnemonic string.
 
@@ -56,3 +64,8 @@ Returns the public address of the wallet
 ## async sendEther(toAccountAddress: string, numEther: number) => void
 
 Sends ETH from the wallet to the public address toAccountAddress.
+
+## async sendOrgTokens(organizationAvatarAddress: string, toAccountAddress: string, numTokens: number) => object
+
+Sends DAOStack tokens from the wallet to the public address toAccountAddress.
+Requires the wallet to be unlocked so it can sign the transaction using the privateKey. This allows the functiom to be run on the server side with a manually unencrypted wallet.

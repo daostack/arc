@@ -49,10 +49,13 @@ contract('Wallet', function(accounts) {
     assert(toBalanceAfter.equals(toBalanceBefore.plus(web3.toWei(10, "ether"))));
   });
 
-  it('can receive org tokens', async function() {
+  it('can send and receive org tokens', async function() {
     this.timeout(10000);
-    let wallet1 = Wallet.new();
-    let wallet2 = Wallet.new();
+
+    // TODO: easier way to get the private key from the testrpc accounts?
+    let wallet1 = Wallet.fromPrivateKey("0x0191ecbd1b150b8a3c27c27010ba51b45521689611e669109e034fd66ae69621");
+    let wallet2 = Wallet.fromPrivateKey("0x00f360233e89c65970a41d4a85990ec6669526b2230e867c352130151453180d");
+
     const orgOptions = {
       founders: [
         {
@@ -69,11 +72,10 @@ contract('Wallet', function(accounts) {
     };
     let org = await helpers.forgeOrganization(orgOptions);
     assert.equal(await wallet1.getOrgTokenBalance(org.avatar.address), 100);
+
+    await wallet1.sendOrgTokens(org.avatar.address, wallet2.getPublicAddress(), 10);
+    assert.equal(await wallet1.getOrgTokenBalance(org.avatar.address), 90);
+    assert.equal(await wallet2.getOrgTokenBalance(org.avatar.address), 110);
   });
 
-  // it('can sign transactions', async function() {
-  //   this.timeout(10000);
-  //   //var wallet = await setupWallet();
-  //   //const organization = await helpers.forgeOrganization();
-  // })
 });

@@ -1,7 +1,7 @@
-declare module 'daostack-arc' {
-
 import * as BigNumber from 'bignumber.js';
-import Web3 from "web3";
+import * as Web3 from "web3";
+
+declare module 'daostack-arc' {
 
 /*******************************
  * Arc
@@ -59,6 +59,7 @@ export class Wallet {
   static new() : Wallet;
   static fromEncrypted(encryptedJSON: string, password: string) : Wallet
   static fromMnemonic(mnemonic: string) : Wallet
+  static fromPrivateKey(privateKey : string) : Wallet
 
   encrypt(password: string, progressCallback: (progress: number) => void) : string
   getEtherBalance(inWei? : boolean) : BigNumber.BigNumber | string
@@ -67,6 +68,7 @@ export class Wallet {
   getPublicAddress() : string
   getProvider() : any
   sendEther(accountAddress : string, numEther: number | string) : any // TODO return value
+  sendOrgTokens(organizationAvatarAddress : string, toAccountAddress : string, numTokens : number | string) : any // TODO return value
 }
 
 /********************************
@@ -172,13 +174,13 @@ export class ExtendTruffleContract {
 export class ExtendTruffleScheme extends ExtendTruffleContract {
   /**
    * Returns a string containing 1s and 0s representing scheme permissions as follows:
-   * 
+   *
    * All 0: Not registered,
    * 1st bit: Flag if the scheme is registered,
    * 2nd bit: Scheme can register other schemes
    * 3th bit: Scheme can add/remove global constraints
    * 4rd bit: Scheme can upgrade the controller
-   * 
+   *
    */
   getDefaultPermissions(overrideValue: string): string;
 }
@@ -278,27 +280,27 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
       /**
        * The fee that the scheme charges to register an organization in the scheme.  The controller
        * will be asked in advance to approve this expenditure.
-       * 
-       * If schemeKey is given but fee is not then we use the amount of the fee of the 
+       *
+       * If schemeKey is given but fee is not then we use the amount of the fee of the
        * Arc scheme given by scheme and schemeKey.
-       * 
+       *
        * Fee is required when schemeKey is not given (non-Arc schemes).
-       * 
+       *
        * The fee is paid using the token given by tokenAddress.  In Wei.
        */
       , fee?: BigNumber.BigNumber | string | null
       /**
        * The token used to pay the fee that the scheme charges to register an organization in the scheme.
-       * 
-       * If schemeKey is given but tokenAddress is not then we use the token address of the 
+       *
+       * If schemeKey is given but tokenAddress is not then we use the token address of the
        * Arc scheme given by scheme and schemeKey.
-       * 
+       *
        * tokenAddress is required when schemeKey is not given (non-Arc schemes).
        */
       , tokenAddress?: string | null
       /**
        * true if the given scheme is able to register/unregister/modify schemes.
-       * 
+       *
        * isRegistering should only be supplied when schemeKey is not given (and thus the scheme is non-Arc).
        * Otherwise we determine it's value based on scheme and schemeKey.
        */
@@ -368,17 +370,17 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
       /**
        * The fee that the scheme charges to register an organization in the new upgrade scheme.
        * The controller will be asked in advance to approve this expenditure.
-       * 
+       *
        * If the new UpgradeScheme is an Arc scheme, you may omit fee and we will
        * obtain the values directly from the submitted scheme.
        * Otherwise fee is required.
-       * 
+       *
        * The fee is paid using the token given by tokenAddress.  In Wei.
        */
       , fee?: BigNumber.BigNumber | string | null
       /**
        * address of token that will be used when paying the fee.
-       * 
+       *
        * If the new UpgradeScheme is an Arc scheme, you may omit tokenAddress and we will
        * obtain the values directly from the submitted scheme.
        * Otherwise tokenAddress is required.
@@ -409,7 +411,7 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
     /**
      * propose to replace this DAO's controller
      * @param opts ProposeControllerParams
-     */ 
+     */
     proposeController(opts: ProposeControllerParams): TransactionReceiptTruffle;
     setParams(params: UpgradeSchemeParams): string;
   }
@@ -470,5 +472,5 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
      */
     proposeContribution(opts: ProposeContributionParams): TransactionReceiptTruffle;
     setParams(params: SimpleContributionSchemeParams): string;
-  } 
+  }
 }
