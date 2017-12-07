@@ -50,7 +50,8 @@
     "solium": "^1.0.9",
     "truffle": "^4.0.1",
     "when": "^3.7.8",
-    "zeppelin-solidity": "^1.4.0"
+    "zeppelin-solidity": "^1.4.0",
+    "uint32": "^0.2.1"
   },
   "repository": {
     "type": "git",

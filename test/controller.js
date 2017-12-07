@@ -3,6 +3,7 @@ const Controller = artifacts.require("./Controller.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken   = artifacts.require("./DAOToken.sol");
+const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 
 var uint32 = require('uint32');
 
@@ -214,19 +215,37 @@ contract('Controller', function (accounts)  {
           assert.equal(balanceAfter - balanceBefore, 1);
         });
 
-        it("externalTokenTransfer [TODO]", async () => {
-          //todo
+        it("externalTokenTransfer", async () => {
+          //External transfer token from avatar contract to other address
+          controller = await setup();
+          var standardToken = await StandardTokenMock.new(avatar.address, 100);
+          let balanceAvatar = await standardToken.balanceOf(avatar.address);
+          assert.equal(balanceAvatar, 100);
+          await avatar.transferOwnership(controller.address);
+          var tx = await controller.externalTokenTransfer(standardToken.address,accounts[1],50);
+          assert.equal(tx.logs.length, 1);
+          assert.equal(tx.logs[0].event, "ExternalTokenTransfer");
+          balanceAvatar = await standardToken.balanceOf(avatar.address);
+          assert.equal(balanceAvatar, 50);
+          let balance1 = await standardToken.balanceOf(accounts[1]);
+          assert.equal(balance1, 50);
         });
 
-        it("externalTokenTransferFrom [TODO]", async () => {
-            //todo
-        });
-
-        it("externalTokenApprove [TODO]", async () => {
-            //todo
-        });
-
-        it("externalTokenTransfer [TODO]", async () => {
-            //todo
+        it("externalTokenTransferFrom & externalTokenApprove", async () => {
+          var tx;
+          var to   = accounts[1];
+          controller = await setup();
+          var standardToken = await StandardTokenMock.new(avatar.address, 100);
+          await avatar.transferOwnership(controller.address);
+          tx = await controller.externalTokenApprove(standardToken.address,avatar.address,50);
+          assert.equal(tx.logs.length, 1);
+          assert.equal(tx.logs[0].event, "ExternalTokenApprove");
+          tx = await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
+          assert.equal(tx.logs.length, 1);
+          assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
+          let balanceAvatar = await standardToken.balanceOf(avatar.address);
+          assert.equal(balanceAvatar, 50);
+          let balanceTo = await standardToken.balanceOf(to);
+          assert.equal(balanceTo, 50);
         });
 });
