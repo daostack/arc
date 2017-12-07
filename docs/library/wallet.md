@@ -64,3 +64,8 @@ Returns the public address of the wallet
 ## async sendEther(toAccountAddress: string, numEther: number) => void
 
 Sends ETH from the wallet to the public address toAccountAddress.
+
+## async sendOrgTokens(organizationAvatarAddress: string, toAccountAddress: string, numTokens: number) => object
+
+Sends DAOStack tokens from the wallet to the public address toAccountAddress.
+Requires the wallet to be unlocked so it can sign the transaction using the privateKey. This allows the functiom to be run on the server side with a manually unencrypted wallet.
