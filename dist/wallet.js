@@ -23,7 +23,7 @@ var bip39 = require('bip39');
 
 
 // TODO: move all the provider connection stuff to settings.js
-var ethProvider = process.env.ETH_PROVIDER; // If provider not specified will default to local RPC (testrpc, Geth, or Parity..)
+var ethProvider = process.env.ETH_PROVIDER || 'local'; // 'infura', 'etherscan', otherwise will default to local RPC (testrpc, Geth, or Parity..)
 var ethNetwork = process.env.ETH_NETWORK || 'kovan'; // Options are 'homestead', 'ropsten', 'rinkeby', 'kovan'
 var ethApiToken = process.env.ETH_API_TOKEN; // Required for Infura or Etherscan
 
@@ -40,6 +40,9 @@ switch (ethProvider) {
 }
 
 var web3 = (0, _utils.getWeb3)();
+
+// This class is used to create new wallets, encrypt and unencrypt them, and send signed transactions using the privateKey
+// It is particularly useful in e.g. a server side app, where the app manually handles unencrypting the wallet itself
 
 var Wallet = exports.Wallet = function () {
   function Wallet() {
@@ -102,13 +105,25 @@ var Wallet = exports.Wallet = function () {
     value: async function sendEther(toAccountAddress, numEther) {
       return await this.wallet.send(toAccountAddress, ethers.utils.parseEther(numEther.toString()));
     }
+  }, {
+    key: 'sendOrgTokens',
+    value: async function sendOrgTokens(organizationAvatarAddress, toAccountAddress, numTokens) {
+      var org = await _organization.Organization.at(organizationAvatarAddress);
 
-    // async sendOrgTokens(organizationAvatarAddress, toAccountAddress, numTokens) {
-    //   let org = await Organization.at(organizationAvatarAddress);
+      // Get raw transaction data so we can sign ourselves
+      var transactionData = org.token.transfer.request(toAccountAddress, numTokens, { from: this.getPublicAddress() }).params[0].data;
 
-    //   return await this.wallet.send(accountAddress, ethers.utils.parseEther(numEther.toString()));
-    // }
+      var transaction = {
+        to: org.token.address,
+        value: 0,
+        data: transactionData,
+        // This ensures the transaction cannot be replayed on different networks
+        chainId: ethers.providers.Provider.chainId[ethNetwork]
+      };
 
+      var transactionHash = await this.wallet.sendTransaction(transaction);
+      return transactionHash;
+    }
   }], [{
     key: 'new',
     value: function _new() {
@@ -116,6 +131,13 @@ var Wallet = exports.Wallet = function () {
       wallet.mnemonic = bip39.generateMnemonic();
       wallet.wallet = ethers.Wallet.fromMnemonic(wallet.mnemonic);
       wallet.wallet.provider = provider;
+      return wallet;
+    }
+  }, {
+    key: 'fromPrivateKey',
+    value: function fromPrivateKey(privateKey) {
+      var wallet = new Wallet();
+      wallet.wallet = new ethers.Wallet(privateKey, provider);
       return wallet;
     }
 
