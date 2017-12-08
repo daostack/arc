@@ -20,7 +20,8 @@ install:
   - truffle version
 
 script:
-  - yarn run test
-  - yarn run lint
+  - yarn test
+  - yarn lint
+  - yarn solium
 notifications:
   slack: daostack:fGuaFPsiQiV5mgmzRcSzbYqw
