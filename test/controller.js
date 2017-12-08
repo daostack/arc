@@ -201,18 +201,20 @@ contract('Controller', function (accounts)  {
           assert.equal(tx.logs[0].event, "GenericAction");
 
         });
-        it("sendEther action", async () => {
+        it("sendEther", async () => {
           controller = await setup();
+          let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
           await avatar.transferOwnership(controller.address);
           //send some ether to the avatar
           web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.toWei('1', "ether")});
-          //send some ether from an organization's avatar to the accounts[1]
-          var balanceBefore = web3.eth.getBalance(accounts[1])/web3.toWei('1', "ether");
-          var tx = await controller.sendEther(web3.toWei('1', "ether"),accounts[1]);
+          //send some ether from an organization's avatar to the otherAvatar
+          var tx = await controller.sendEther(web3.toWei('1', "ether"),otherAvatar.address);
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "SendEther");
-          var balanceAfter = web3.eth.getBalance(accounts[1])/web3.toWei('1', "ether");
-          assert.equal(balanceAfter - balanceBefore, 1);
+          var avatarBalance = web3.eth.getBalance(avatar.address)/web3.toWei('1', "ether");
+          assert.equal(avatarBalance, 0);
+          var otherAvatarBalance = web3.eth.getBalance(otherAvatar.address)/web3.toWei('1', "ether");
+          assert.equal(otherAvatarBalance, 1);
         });
 
         it("externalTokenTransfer", async () => {
