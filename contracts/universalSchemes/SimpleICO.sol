@@ -83,6 +83,11 @@ contract SimpleICO is UniversalScheme {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
+    // If someone accidentally sends ether to this contract, revert;
+    function () public {
+        revert();
+    }
+
     /**
      * @dev Hash the parameters, save them if necessary, and return the hash value
      */
@@ -253,10 +258,5 @@ contract SimpleICO is UniversalScheme {
         org.totalEthRaised += incomingEther;
         DonationReceived(_avatar, _beneficiary, incomingEther, tokens);
         return tokens;
-    }
-
-    // If someone accidentally sends ether to this contract, revert;
-    function () public {
-        revert();
     }
 }

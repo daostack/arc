@@ -39,6 +39,13 @@ contract Avatar is Ownable {
     }
 
     /**
+    * @dev enables an avatar to receive ethers
+    */
+    function() public payable {
+        ReceiveEther(msg.sender, msg.value);
+    }
+
+    /**
     * @dev ???
     */
     function genericAction(ActionInterface _action, bytes32[] _params)
@@ -95,10 +102,4 @@ contract Avatar is Ownable {
         return true;
     }
 
-    /**
-    * @dev enables an avatar to receive ethers
-    */
-    function() public payable {
-        ReceiveEther(msg.sender, msg.value);
-    }
 }

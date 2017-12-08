@@ -159,6 +159,14 @@ contract EmergentICO is Debug {
     }
 
     /**
+    * @dev Fallback function.
+    * upon receivng funds, treat it as donation with default parameters, minRate=0.
+    */
+    function () public payable {
+        donate(msg.sender, 0);
+    }
+
+    /**
     * @dev Pausing ICO, using onlyAdmin modifier:
     */
     function haltICO() public onlyAdmin {
@@ -288,14 +296,6 @@ contract EmergentICO is Debug {
             msg.value,
             _minRate
         );
-    }
-
-    /**
-    * @dev Fallback function.
-    * upon receivng funds, treat it as donation with default parameters, minRate=0.
-    */
-    function () public payable {
-        donate(msg.sender, 0);
     }
 
     /**
