@@ -23,7 +23,7 @@
     "start": "pm2 start truffle -- serve",
     "lint": "eslint .",
     "lint --fix": "eslint --fix .",
-    "solium": "solium --dir .",
+    "solium": "solium --dir ./contracts/",
     "truffle": "truffle"
   },
   "devDependencies": {
