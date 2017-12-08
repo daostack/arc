@@ -123,7 +123,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
 
     // the info we just got consists of paramsHash and permissions
     const gcrPermissionsOnOrg = await organization.controller.getSchemePermissions(gcr.address);
-    assert.equal(gcrPermissionsOnOrg, '0x00000005');
+    assert.equal(gcrPermissionsOnOrg, '0x00000007');
 
     // the voting machine used in this GCR is the same as the voting machine of the organization
     assert.equal(organization.votingMachine.address, parametersForVotingInGCR[1]);
