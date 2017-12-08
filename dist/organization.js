@@ -47,14 +47,10 @@ var Organization = exports.Organization = function () {
       // return the schemes registered on this controller satisfying the contract spec
       // return all schems if contract is not given
       var schemes = await this._getSchemes();
-      if (contract !== undefined) {
-        var result = [];
-        for (var i = 0; i < schemes.length; i = i + 1) {
-          if (schemes[i].contract === contract) {
-            result.push(schemes[i]);
-          }
-        }
-        return result;
+      if (contract) {
+        return schemes.filter(function (s) {
+          return s.contract === contract;
+        });
       } else {
         return schemes;
       }
