@@ -1,6 +1,5 @@
 *sublime*
 *.pyc
-build/
 logs/
 fabfile.py
 node_modules/
@@ -10,3 +9,6 @@ tmp/
 installed_contracts/
 remarks.md
 .node-xmlhttprequest-sync*
+*.tgz
+testrpc/
+kovan_pass.txt

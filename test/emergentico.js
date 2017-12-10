@@ -28,6 +28,7 @@ const setupEmergentICO = async function(opts={}){
       reputation: 30,
       tokens: 30,
     }];
+  //use default library configuration
   org = await Organization.new({
     orgName: 'AdamsOrg',
     tokenName: 'AdamCoin',
@@ -57,6 +58,7 @@ contract("EmergentICO", function(accounts){
   before(function() {
     helpers.etherForEveryone();
   });
+
   // /***********************
   it("should log the LogDonationReceived event on donating", async function() {
     await setupEmergentICO();
@@ -159,6 +161,7 @@ contract("EmergentICO", function(accounts){
 
 
   });
+
   it("Only admin can halt and resume the ICO", async function(){
     await setupEmergentICO();
 
@@ -396,7 +399,6 @@ contract("EmergentICO", function(accounts){
     assert.equal(await newICO.donationCounter(), 1);
     assert.equal(Number(await web3.eth.getBalance(beneficiary)), Number(beneficiaryOriginalBalance) + Number(donationInWei));
   });
-
 
   it("Single donation with limit", async function(){
     await run_scenario({

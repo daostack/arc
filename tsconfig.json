@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "outFile": "./build/tsc.js",
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "include": [
+    "lib/**/*",
+    "./node_modules/web3-typescript-typings/index.d.ts",
+  ],
+  "typeRoots" : [
+    "node_modules/@types",
+    "node_modules/web3-typescript-typings"
+  ]
+}
