@@ -4,7 +4,7 @@ import { getValueFromLogs } from '../lib/utils.js';
 const Controller = artifacts.require("./Controller.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const UpgradeScheme = artifacts.require('./AbsoluteVote.sol');
-import { forgeOrganization, settingsForTest } from './helpers';
+import { forgeOrganization, settingsForTest, SOME_HASH } from './helpers';
 
 
 contract('UpgradeScheme', function(accounts) {
@@ -109,8 +109,31 @@ contract('UpgradeScheme', function(accounts) {
     organization.vote(proposalId, 1, {from: accounts[2]});
 
     assert.isTrue(await organization.controller.isSchemeRegistered(newUpgradeScheme.address), "new scheme is not registered into the controller");
+});
 
-    assert.isFalse(await organization.controller.isSchemeRegistered(upgradeScheme.address), "original scheme is still registered into the controller");
+
+it("proposeUpgradingScheme javascript wrapper should modify the modifying scheme", async function() {
+
+    const organization = await forgeOrganization();
+
+    let upgradeScheme = await organization.scheme('UpgradeScheme');
+
+    assert.isTrue(await organization.controller.isSchemeRegistered(upgradeScheme.address), "upgrade scheme is not registered into the controller");
+
+    let tx = await upgradeScheme.proposeUpgradingScheme({
+      avatar: organization.avatar.address,
+      scheme: upgradeScheme.address,
+      schemeParametersHash: SOME_HASH
+    });
+
+    // newUpgradeScheme.registerOrganization(organization.avatar.address);
+
+    const proposalId = getValueFromLogs(tx, '_proposalId');
+
+    organization.vote(proposalId, 1, {from: accounts[2]});
+
+    assert.isTrue(await organization.controller.isSchemeRegistered(upgradeScheme.address), "upgrade scheme is no longer registered into the controller");
+
+    assert.equal(await organization.controller.getSchemeParameters(upgradeScheme.address), SOME_HASH, "parameters were not updated");
   });
-
 });

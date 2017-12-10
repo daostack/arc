@@ -4,13 +4,19 @@ import * as Web3 from "web3";
 declare module 'daostack-arc' {
 
 /*******************************
- * Arc
+ * Arc contract information as contained in ArcDeployedContractNames (see settings)
  */
 export interface ArcContractInfo {
     /**
-     * TruffleContract as obtained via require()
+     * An uninitialized instance of ExtendTruffleContract,
+     * basically the class factory with static methods.
      */
     contract: any;
+    /**
+     * address of the instance deployed by Arc.
+     * Calling contract.at() (a static method on ExtendTruffleContract) will return a 
+     * the properly initialized instance of ExtendTruffleContract.
+     */
     address: string;
 }
 
@@ -18,7 +24,7 @@ export interface ArcContractInfo {
  * An object with property names being a contract key and property value as the corresponding ArcContractInfo.
  * For all deployed contracts exposed by Arc.
  */
-export interface ArcDeployedContractKeys {
+export interface ArcDeployedContractNames {
   SimpleContributionScheme: ArcContractInfo;
   GenesisScheme: ArcContractInfo;
   GlobalConstraintRegistrar: ArcContractInfo;
@@ -30,10 +36,11 @@ export interface ArcDeployedContractKeys {
 }
 
 /**
- * ArcDeployedContractKeys, and those contracts organized by type.
+ * ArcDeployedContractNames, and those contracts organized by type.
+ * Call it.at(it.address) to get javascript wrapper
  */
 export interface ArcDeployedContracts {
-    allContracts : ArcDeployedContractKeys;
+    allContracts : ArcDeployedContractNames;
     /**
      * All deployed schemes
      */
@@ -52,60 +59,12 @@ export interface ArcDeployedContracts {
 export function configure(options : any): Web3;
 export function getDeployedContracts() : ArcDeployedContracts;
 
-/*******************************
- * Wallet
- */
-export class Wallet {
-  static new() : Wallet;
-  static fromEncrypted(encryptedJSON: string, password: string) : Wallet
-  static fromMnemonic(mnemonic: string) : Wallet
-  static fromPrivateKey(privateKey : string) : Wallet
-
-  encrypt(password: string, progressCallback: (progress: number) => void) : string
-  getEtherBalance(inWei? : boolean) : BigNumber.BigNumber | string
-  getMnemonic() : string
-  getOrgTokenBalance(organizationAvatarAddress : string, inWei? : boolean) : BigNumber.BigNumber | string
-  getPublicAddress() : string
-  getProvider() : any
-  sendEther(accountAddress : string, numEther: number | string) : any // TODO return value
-  sendOrgTokens(organizationAvatarAddress : string, toAccountAddress : string, numTokens : number | string) : any // TODO return value
+export interface OrganizationSchemeInfo
+{
+  name: string;
+  address: string;
+  permissions: string;
 }
-
-/********************************
- * Organization
- */
-export class Organization  {
-  /**
-   * includes static `new` and `at`
-   */
-  avatar: any;
-  /**
-   * Controller truffle contract
-   */
-  controller: any;
-  /**
-   * DAOToken truffle contract
-   */
-  token: any;
-  /**
-   * Reputation truffle contract
-   */
-  reputation: any;
-  /**
-   * AbsoluteVote truffle contract
-   */
-  votingMachine: any;
-
-  schemes(contractName?:string) : any;
-  scheme(contractName:string) : any;
-  // checkSchemeConditions(contractName:string);
-  // proposeScheme(options?);
-  // proposeGlobalConstraint(options?);
-  // vote(proposalId, choice, params);
-  static new(options:any): Organization;
-  static at(avatarAddress:string): Organization;
-}
-
 
 /********************************
  * Utils
@@ -154,7 +113,12 @@ export interface TransactionReceiptTruffle {
   tx: string // address of the transaction
 }
 
-export function requireContract(contractName : string): any;
+/**
+ * Returns TruffleContract given the name of the contract (like "SchemeRegistrar"), or undefined
+ * if not found or any other error occurs.
+ * @param contractName like "SchemeRegistrar"
+ */
+export function requireContract(contractName : string): Promise<any|undefined>;
 export function getWeb3():Web3;
 export function getValueFromLogs(tx:TransactionReceiptTruffle, arg:string, eventName:string, index:number):string;
 export function getDefaultAccount():any;
@@ -163,12 +127,15 @@ export class ExtendTruffleContract {
   static new(options:any): any;
   static at(address:string): any;
   static deployed(): any;
-
+  /**
+   * the underlying truffle contract object
+   */
+  public contract: any;
   /**
    * Call setParameters on this contract, returning promise of the parameters hash.
    * @params Should contain property names expected by the specific contract type.
    */
-  setParams(params: any): string;
+  public setParams(params: any): Promise<string>;
 }
 
 export class ExtendTruffleScheme extends ExtendTruffleContract {
@@ -194,6 +161,83 @@ export interface StandardNewSchemeParams {
 export interface StandardSchemeParams {
   voteParametersHash: string,
   votingMachine: string // address
+}
+
+export interface FounderConfig {
+  address: string;
+  tokens: number; // in Wei
+  reputation: number;
+}
+
+export interface OrganizationNewConfig {
+  orgName: string;
+  tokenName: string;
+  tokenSymbol: string;
+  founders: Array<FounderConfig>;
+  votingMachine: string, // address
+  votePrec: Number,
+  ownerVote: boolean,
+  schemes: Array<{ name: string, address: string }>
+}
+
+
+
+/********************************
+ * Organization
+ */
+export class Organization  {
+  /**
+   * includes static `new` and `at`
+   */
+  avatar: any;
+  /**
+   * Controller truffle contract
+   */
+  controller: any;
+  /**
+   * DAOToken truffle contract
+   */
+  token: any;
+  /**
+   * Reputation truffle contract
+   */
+  reputation: any;
+  /**
+   * AbsoluteVote truffle contract
+   */
+  votingMachine: any;
+
+  schemes(contractName?:string) : Promise<Array<OrganizationSchemeInfo>>;
+  /**
+   * Returns promise of a scheme as ExtendTruffleScheme, or ? if not found
+   * @param contract name of scheme, like "SchemeRegistrar" 
+   */
+  scheme(contractName:string) : Promise<ExtendTruffleScheme>;
+  // checkSchemeConditions(contractName:string);
+  // proposeScheme(options?);
+  // proposeGlobalConstraint(options?);
+  // vote(proposalId, choice, params);
+  static new(options:OrganizationNewConfig): Promise<Organization>;
+  static at(avatarAddress:string): Promise<Organization>;
+}
+
+/*******************************
+ * Wallet
+ */
+export class Wallet {
+  static new() : Wallet;
+  static fromEncrypted(encryptedJSON: string, password: string) : Wallet
+  static fromMnemonic(mnemonic: string) : Wallet
+  static fromPrivateKey(privateKey : string) : Wallet
+
+  encrypt(password: string, progressCallback: (progress: number) => void) : string
+  getEtherBalance(inWei? : boolean) : BigNumber.BigNumber | string
+  getMnemonic() : string
+  getOrgTokenBalance(organizationAvatarAddress : string, inWei? : boolean) : BigNumber.BigNumber | string
+  getPublicAddress() : string
+  getProvider() : any
+  sendEther(accountAddress : string, numEther: number | string) : any // TODO return value
+  sendOrgTokens(organizationAvatarAddress : string, toAccountAddress : string, numTokens : number | string) : any // TODO return value
 }
 
 /********************************
@@ -242,14 +286,14 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
    *  propose to add or modify a global constraint
    * @param opts ProposeToAddModifyGlobalConstraintParams
    */
-  proposeToAddModifyGlobalConstraint(opts: ProposeToAddModifyGlobalConstraintParams): TransactionReceiptTruffle;
+  proposeToAddModifyGlobalConstraint(opts: ProposeToAddModifyGlobalConstraintParams): Promise<TransactionReceiptTruffle>;
   /**
    * propose to remove a global constraint
    * @param opts ProposeToRemoveGlobalConstraintParams
    */
-  proposeToRemoveGlobalConstraint(opts: ProposeToRemoveGlobalConstraintParams): TransactionReceiptTruffle;
+  proposeToRemoveGlobalConstraint(opts: ProposeToRemoveGlobalConstraintParams): Promise<TransactionReceiptTruffle>;
 
-  setParams(params: GlobalConstraintRegistrarParams): string;
+  setParams(params: GlobalConstraintRegistrarParams): Promise<string>;
 }
 
 /********************************
@@ -272,7 +316,7 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
        * scheme identifier, like "SchemeRegistrar" or "SimpleContributionScheme".
        * pass null if registering a non-arc scheme
        */
-      , schemeKey?: string|null
+      , schemeName?: string|null
       /**
        * hash of scheme parameters. These must be already registered with the new scheme.
        */
@@ -281,10 +325,10 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
        * The fee that the scheme charges to register an organization in the scheme.  The controller
        * will be asked in advance to approve this expenditure.
        *
-       * If schemeKey is given but fee is not then we use the amount of the fee of the
-       * Arc scheme given by scheme and schemeKey.
+       * If schemeName is given but fee is not then we use the amount of the fee of the
+       * Arc scheme given by scheme and schemeName.
        *
-       * Fee is required when schemeKey is not given (non-Arc schemes).
+       * Fee is required when schemeName is not given (non-Arc schemes).
        *
        * The fee is paid using the token given by tokenAddress.  In Wei.
        */
@@ -292,17 +336,17 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
       /**
        * The token used to pay the fee that the scheme charges to register an organization in the scheme.
        *
-       * If schemeKey is given but tokenAddress is not then we use the token address of the
-       * Arc scheme given by scheme and schemeKey.
+       * If schemeName is given but tokenAddress is not then we use the token address of the
+       * Arc scheme given by scheme and schemeName.
        *
-       * tokenAddress is required when schemeKey is not given (non-Arc schemes).
+       * tokenAddress is required when schemeName is not given (non-Arc schemes).
        */
       , tokenAddress?: string | null
       /**
        * true if the given scheme is able to register/unregister/modify schemes.
        *
-       * isRegistering should only be supplied when schemeKey is not given (and thus the scheme is non-Arc).
-       * Otherwise we determine it's value based on scheme and schemeKey.
+       * isRegistering should only be supplied when schemeName is not given (and thus the scheme is non-Arc).
+       * Otherwise we determine it's value based on scheme and schemeName.
        */
       , isRegistering?: boolean|null
       /**
@@ -332,13 +376,13 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
      *  propose to add or modify a scheme
      * @param opts ProposeToAddModifySchemeParams
      */
-    proposeToAddModifyScheme(opts: ProposeToAddModifySchemeParams): TransactionReceiptTruffle;
+    proposeToAddModifyScheme(opts: ProposeToAddModifySchemeParams): Promise<TransactionReceiptTruffle>;
     /**
      * propose to remove a scheme
      * @param opts ProposeToRemoveSchemeParams
      */
-    proposeToRemoveScheme(opts: ProposeToRemoveSchemeParams): TransactionReceiptTruffle;
-    setParams(params: SchemeRegistrarParams): string;
+    proposeToRemoveScheme(opts: ProposeToRemoveSchemeParams): Promise<TransactionReceiptTruffle>;
+    setParams(params: SchemeRegistrarParams): Promise<string>;
   }
 
 /********************************
@@ -407,13 +451,13 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
      * propose to replace this UpgradingScheme
      * @param opts ProposeUpgradingSchemeParams
      */
-    proposeUpgradingScheme(opts: ProposeUpgradingSchemeParams): TransactionReceiptTruffle;
+    proposeUpgradingScheme(opts: ProposeUpgradingSchemeParams): Promise<TransactionReceiptTruffle>;
     /**
      * propose to replace this DAO's controller
      * @param opts ProposeControllerParams
      */
-    proposeController(opts: ProposeControllerParams): TransactionReceiptTruffle;
-    setParams(params: UpgradeSchemeParams): string;
+    proposeController(opts: ProposeControllerParams): Promise<TransactionReceiptTruffle>;
+    setParams(params: UpgradeSchemeParams): Promise<string>;
   }
 
 /********************************
@@ -470,7 +514,7 @@ export class GlobalConstraintRegistrar extends ExtendTruffleScheme {
      * propose to make a contribution
      * @param opts ProposeContributionParams
      */
-    proposeContribution(opts: ProposeContributionParams): TransactionReceiptTruffle;
-    setParams(params: SimpleContributionSchemeParams): string;
+    proposeContribution(opts: ProposeContributionParams): Promise<TransactionReceiptTruffle>;
+    setParams(params: SimpleContributionSchemeParams): Promise<string>;
   }
 }
