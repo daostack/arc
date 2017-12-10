@@ -67,7 +67,7 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
          * scheme identifier, like "SchemeRegistrar" or "SimpleContributionScheme".
          * pass null if registering a non-arc scheme
          */
-        , schemeKey: null
+        , schemeName: null
         /**
          * hash of scheme parameters. These must be already registered with the new scheme.
          */
@@ -76,10 +76,10 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
          * The fee that the scheme charges to register an organization in the scheme.  The controller
          * will be asked in advance to approve this expenditure.
          * 
-         * If schemeKey is given but fee is not then we use the amount of the fee of the 
-         * Arc scheme given by scheme and schemeKey.
+         * If schemeName is given but fee is not then we use the amount of the fee of the 
+         * Arc scheme given by scheme and schemeName.
          * 
-         * Fee is required when schemeKey is not given (non-Arc schemes).
+         * Fee is required when schemeName is not given (non-Arc schemes).
          * 
          * The fee is paid using the token given by tokenAddress.  In Wei.
          */
@@ -87,17 +87,17 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
         /**
          * The token used to pay the fee that the scheme charges to register an organization in the scheme.
          * 
-         * If schemeKey is given but tokenAddress is not then we use the token address of the 
-         * Arc scheme given by scheme and schemeKey.
+         * If schemeName is given but tokenAddress is not then we use the token address of the 
+         * Arc scheme given by scheme and schemeName.
          * 
-         * tokenAddress is required when schemeKey is not given (non-Arc schemes).
+         * tokenAddress is required when schemeName is not given (non-Arc schemes).
          */
         , tokenAddress: null
         /**
          * true if the given scheme is able to register/unregister/modify schemes.
          * 
-         * isRegistering should only be supplied when schemeKey is not given (and thus the scheme is non-Arc).
-         * Otherwise we determine it's value based on scheme and schemeKey.
+         * isRegistering should only be supplied when schemeName is not given (and thus the scheme is non-Arc).
+         * Otherwise we determine it's value based on scheme and schemeName.
          */
         , isRegistering: null
         /**
@@ -132,10 +132,10 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
       var tokenAddress = options.tokenAddress;
       var isRegistering = void 0;
 
-      if (options.schemeKey) {
+      if (options.schemeName) {
         try {
           var settings = await (0, _settings.getSettings)();
-          var newScheme = await settings.daostackContracts[options.schemeKey].contract.at(options.scheme);
+          var newScheme = await settings.daostackContracts[options.schemeName].contract.at(options.scheme);
 
           if (!feeIsDefined || !tokenAddressIsDefined) {
             if (!feeIsDefined) {
@@ -163,11 +163,11 @@ var SchemeRegistrar = exports.SchemeRegistrar = function (_ExtendTruffleContrac)
         isRegistering = options.isRegistering;
 
         if (!feeIsDefined || !tokenAddressIsDefined) {
-          throw new Error("fee/tokenAddress are not defined; they are required for non-Arc schemes (schemeKey is undefined)");
+          throw new Error("fee/tokenAddress are not defined; they are required for non-Arc schemes (schemeName is undefined)");
         }
 
         if (isRegistering === null) {
-          throw new Error("isRegistering is not defined; it is required for non-Arc schemes (schemeKey is undefined)");
+          throw new Error("isRegistering is not defined; it is required for non-Arc schemes (schemeName is undefined)");
         }
 
         if (fee < 0) {

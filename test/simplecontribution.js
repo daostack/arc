@@ -24,7 +24,7 @@ export async function proposeSimpleContributionScheme(org, accounts) {
     let tx = await schemeRegistrar.proposeToAddModifyScheme({
       avatar: org.avatar.address,
       scheme: simpleContributionScheme.address,
-      schemeKey: "SimpleContributionScheme",
+      schemeName: "SimpleContributionScheme",
       schemeParametersHash: schemeParametersHash
     });
 
@@ -127,7 +127,7 @@ contract('SimpleContribution scheme', function(accounts) {
     tx = await schemeRegistrar.proposeToAddModifyScheme({
       avatar: avatar.address,
       scheme: contributionScheme.address,
-      schemeKey: "SimpleContributionScheme",
+      schemeName: "SimpleContributionScheme",
       schemeParametersHash: schemeParametersHash
     });
     

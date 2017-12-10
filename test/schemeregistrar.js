@@ -21,7 +21,7 @@ contract('SchemeRegistrar', function(accounts) {
     let tx = await schemeRegistrar.proposeToAddModifyScheme({
       avatar: organization.avatar.address,
       scheme: simpleContributionSchemeAddress,
-      schemeKey: "SimpleContributionScheme",
+      schemeName: "SimpleContributionScheme",
       schemeParametersHash: NULL_HASH
     });
 
@@ -45,7 +45,7 @@ contract('SchemeRegistrar', function(accounts) {
     let tx = await schemeRegistrar.proposeToAddModifyScheme({
       avatar: organization.avatar.address,
       scheme: modifiedSchemeAddress,
-      schemeKey: "SchemeRegistrar",
+      schemeName: "SchemeRegistrar",
       schemeParametersHash: NULL_HASH
     });
 

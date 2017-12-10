@@ -29,7 +29,11 @@ var NULL_ADDRESS = exports.NULL_ADDRESS = '0x00000000000000000000000000000000000
 var NULL_HASH = exports.NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 /**
- * Returns TruffleContract given the name of the contract.
+ * Returns TruffleContract given the name of the contract (like "SchemeRegistrar"), or undefined
+ * if not found or any other error occurs.
+ * 
+ * This is not an Arc javascript wrapper, rather it is the straight TruffleContract
+ * that one references in the Arc javascript wrapper as ".contract".
  *
  * When testing or migrating, uses .sol
  * Elsewhere (development, production), uses migrated .json
