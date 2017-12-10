@@ -3,6 +3,7 @@ import { Organization } from '../lib/organization.js';
 import { getValueFromLogs } from '../lib/utils.js';
 const Controller = artifacts.require("./Controller.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
+const UpgradeScheme = artifacts.require('./AbsoluteVote.sol');
 import { forgeOrganization, settingsForTest } from './helpers';
 
 
@@ -85,30 +86,31 @@ contract('UpgradeScheme', function(accounts) {
     // TODO: we also want to reflect this upgrade in our Controller object!
   });
 
-  // it("proposeUpgradingScheme javascript wrapper should change upgrade scheme", async function() {
-  //   const organization = await forgeOrganization();
+  it("proposeUpgradingScheme javascript wrapper should change upgrade scheme", async function() {
+    const organization = await forgeOrganization();
 
-  //   let upgradeScheme = await organization.scheme('UpgradeScheme');
-  //   const newUpgradeScheme = await UpgradeScheme.new(SOME_ADDRESS, 0, SOME_ADDRESS);
+    let upgradeScheme = await organization.scheme('UpgradeScheme');
 
-  //   assert.isFalse(await organization.controller.isSchemeRegistered(newUpgradeScheme.address), "new scheme is already registered into the controller");
-  //   assert.isTrue(await organization.controller.isSchemeRegistered(upgradeScheme.address), "original scheme is not registered into the controller");
+    const newUpgradeScheme = await UpgradeScheme.new(organization.token.address, 0, accounts[0]);
 
-  //   let tx = await upgradeScheme.proposeUpgradingScheme({
-  //     avatar: organization.avatar.address,
-  //     scheme: newUpgradeScheme.address,
-  //     schemeParametersHash: await organization.controller.getSchemeParameters(newUpgradeScheme.address)
-  //   });
+    assert.isFalse(await organization.controller.isSchemeRegistered(newUpgradeScheme.address), "new scheme is already registered into the controller");
+    assert.isTrue(await organization.controller.isSchemeRegistered(upgradeScheme.address), "original scheme is not registered into the controller");
 
-  //   // newUpgradeScheme.registerOrganization(organization.avatar.address);
+    let tx = await upgradeScheme.proposeUpgradingScheme({
+      avatar: organization.avatar.address,
+      scheme: newUpgradeScheme.address,
+      schemeParametersHash: await organization.controller.getSchemeParameters(upgradeScheme.address)
+    });
 
-  //   const proposalId = getValueFromLogs(tx, '_proposalId');
+    // newUpgradeScheme.registerOrganization(organization.avatar.address);
 
-  //   organization.vote(proposalId, 1, {from: accounts[2]});
+    const proposalId = getValueFromLogs(tx, '_proposalId');
 
-  //   assert.isTrue(await organization.controller.isSchemeRegistered(newUpgradeScheme.address), "new scheme is not registered into the controller");
+    organization.vote(proposalId, 1, {from: accounts[2]});
 
-  //   assert.isFalse(await organization.controller.isSchemeRegistered(upgradeScheme.address), "original scheme is still registered into the controller");
-  // });
+    assert.isTrue(await organization.controller.isSchemeRegistered(newUpgradeScheme.address), "new scheme is not registered into the controller");
+
+    assert.isFalse(await organization.controller.isSchemeRegistered(upgradeScheme.address), "original scheme is still registered into the controller");
+  });
 
 });
