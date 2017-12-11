@@ -160,7 +160,10 @@ contract Controller {
     // Check scheme has at least the permissions it is changing, and at least the current permissions:
     // Implementation is a bit messy. One must recall logic-circuits ^^
 
+    // produces non-zero if sender does not have all of the perms that are changing between old and new
         require(bytes4(15)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
+    
+    // produces non-zero if sender does not have all of the perms in the old scheme
         require(bytes4(15)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
     // Add or change the scheme:
