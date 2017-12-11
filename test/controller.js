@@ -4,11 +4,14 @@ const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken   = artifacts.require("./DAOToken.sol");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+//todo : find out how to import this directly from zeppline.
+const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
 
 var uint32 = require('uint32');
 
 
 let reputation, avatar, accounts,controller,token;
+var amountToMint = 10;
 
 const setup = async function (permission='0xffffffff') {
   accounts = web3.eth.accounts;
@@ -23,27 +26,38 @@ const setup = async function (permission='0xffffffff') {
   return controller;
 };
 
+const constraint = async function (method) {
+  var globalConstraints = await GlobalConstraintMock.new();
+  let globalConstraintsCount =await controller.globalConstraintsCount();
+  assert.equal(globalConstraintsCount,0);
+  await globalConstraints.setConstraint(method,false,false);
+  await controller.addGlobalConstraint(globalConstraints.address,0);
+  globalConstraintsCount =await controller.globalConstraintsCount();
+  assert.equal(globalConstraintsCount,1);
+  return globalConstraints;
+};
+
 contract('Controller', function (accounts)  {
     it("mint reputation via controller", async () => {
         controller = await setup();
         await reputation.transferOwnership(controller.address);
-        let tx =  await controller.mintReputation(4,accounts[0]);
+        let tx =  await controller.mintReputation(amountToMint,accounts[0]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "MintReputation");
-        assert.equal(tx.logs[0].args._amount, 4);
+        assert.equal(tx.logs[0].args._amount, amountToMint);
         let rep = await reputation.reputationOf(accounts[0]);
-        assert.equal(rep,4);
+        assert.equal(rep,amountToMint);
     });
 
     it("mint tokens via controller", async () => {
         controller = await setup();
         await token.transferOwnership(controller.address);
-        let tx =  await controller.mintTokens(4,accounts[0]);
+        let tx =  await controller.mintTokens(amountToMint,accounts[0]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "MintTokens");
-        assert.equal(tx.logs[0].args._amount, 4);
+        assert.equal(tx.logs[0].args._amount, amountToMint);
         let balance =  await token.balanceOf(accounts[0]);
-        assert.equal(balance,4);
+        assert.equal(balance,amountToMint);
     });
 
     it("register schemes", async () => {
@@ -148,10 +162,20 @@ contract('Controller', function (accounts)  {
        controller = await setup("0x00000000");
        tx = await controller.unregisterSelf({ from: accounts[1]});
        assert.equal(tx.logs.length, 0); // scheme was not registered
+
        tx = await controller.unregisterSelf();
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "UnregisterScheme");
       });
+
+      it("isSchemeRegistered ", async () => {
+        var isSchemeRegistered;
+        controller = await setup("0x00000000");
+        isSchemeRegistered = await controller.isSchemeRegistered(accounts[1]);
+        assert.equal(isSchemeRegistered, false);
+        isSchemeRegistered = await controller.isSchemeRegistered(accounts[0]);
+        assert.equal(isSchemeRegistered, true);
+       });
 
       it("addGlobalConstraint ", async () => {
         controller = await setup();
@@ -250,4 +274,202 @@ contract('Controller', function (accounts)  {
           let balanceTo = await standardToken.balanceOf(to);
           assert.equal(balanceTo, 50);
         });
+
+        it("globalConstraints mintReputation add & remove", async () => {
+          await setup();
+          var globalConstraints = await constraint("mintReputation");
+          await reputation.transferOwnership(controller.address);
+          try {
+          await controller.mintReputation(amountToMint,accounts[0]);
+          assert(false,"mint reputation should fail due to the global constraint ");
+          }
+          catch(ex){
+            helpers.assertVMException(ex);
+          }
+          await controller.removeGlobalConstraint(globalConstraints.address);
+          var globalConstraintsCount =await controller.globalConstraintsCount();
+          assert.equal(globalConstraintsCount,0);
+          let tx = await controller.mintReputation(amountToMint,accounts[0]);
+          assert.equal(tx.logs.length, 1);
+          assert.equal(tx.logs[0].event, "MintReputation");
+          assert.equal(tx.logs[0].args._amount, amountToMint);
+          let rep = await reputation.reputationOf(accounts[0]);
+          assert.equal(rep,amountToMint);
+          });
+
+          it("globalConstraints mintTokens add & remove", async () => {
+
+            controller = await setup();
+            var globalConstraints = await constraint("mintTokens");
+            await token.transferOwnership(controller.address);
+            try {
+            await controller.mintTokens(amountToMint,accounts[0]);
+            assert(false,"mint tokens should fail due to the global constraint ");
+            }
+            catch(ex){
+              helpers.assertVMException(ex);
+            }
+            await controller.removeGlobalConstraint(globalConstraints.address);
+            var globalConstraintsCount =await controller.globalConstraintsCount();
+            assert.equal(globalConstraintsCount,0);
+            let tx =  await controller.mintTokens(amountToMint,accounts[0]);
+            assert.equal(tx.logs.length, 1);
+            assert.equal(tx.logs[0].event, "MintTokens");
+            assert.equal(tx.logs[0].args._amount, amountToMint);
+            let balance =  await token.balanceOf(accounts[0]);
+            assert.equal(balance,amountToMint);
+            });
+
+           it("globalConstraints register schemes add & remove", async () => {
+              controller = await setup();
+              var globalConstraints = await constraint("registerScheme");
+              try {
+              await controller.registerScheme(accounts[1], 0,0);
+              assert(false,"registerScheme should fail due to the global constraint ");
+              }
+              catch(ex){
+                helpers.assertVMException(ex);
+              }
+              await controller.removeGlobalConstraint(globalConstraints.address);
+              var globalConstraintsCount =await controller.globalConstraintsCount();
+              assert.equal(globalConstraintsCount,0);
+              let tx =  await controller.registerScheme(accounts[1], 0,0);
+              assert.equal(tx.logs.length, 1);
+              assert.equal(tx.logs[0].event, "RegisterScheme");
+              });
+
+              it("globalConstraints unregister schemes add & remove", async () => {
+                 controller = await setup();
+                 var globalConstraints = await constraint("registerScheme");
+                 try {
+                 await controller.unregisterScheme(accounts[0]);
+                 assert(false,"unregisterScheme should fail due to the global constraint ");
+                 }
+                 catch(ex){
+                   helpers.assertVMException(ex);
+                 }
+                 await controller.removeGlobalConstraint(globalConstraints.address);
+                 var globalConstraintsCount =await controller.globalConstraintsCount();
+                 assert.equal(globalConstraintsCount,0);
+                 let tx =  await controller.unregisterScheme(accounts[0]);
+                 assert.equal(tx.logs.length, 1);
+                 assert.equal(tx.logs[0].event, "UnregisterScheme");
+                 });
+
+                 it("globalConstraints generic action  add & remove", async () => {
+                    controller = await setup();
+                    var globalConstraints = await constraint("genericAction");
+                    await avatar.transferOwnership(controller.address);
+
+                    try {
+                    await controller.genericAction(accounts[0],[0]);
+                    assert(false,"genericAction should fail due to the global constraint ");
+                    }
+                    catch(ex){
+                      helpers.assertVMException(ex);
+                    }
+                    await controller.removeGlobalConstraint(globalConstraints.address);
+                    var globalConstraintsCount =await controller.globalConstraintsCount();
+                    assert.equal(globalConstraintsCount,0);
+                    var tx =  await controller.genericAction(accounts[0],[0]);
+                    assert.equal(tx.logs.length, 1);
+                    assert.equal(tx.logs[0].event, "GenericAction");
+                    });
+
+                    it("globalConstraints sendEther  add & remove", async () => {
+                       controller = await setup();
+                       var globalConstraints = await constraint("sendEther");
+                       let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
+                       await avatar.transferOwnership(controller.address);
+                       web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.toWei('1', "ether")});
+
+                       try {
+                        await controller.sendEther(web3.toWei('1', "ether"),otherAvatar.address);
+                        assert(false,"sendEther should fail due to the global constraint ");
+                       }
+                       catch(ex){
+                         helpers.assertVMException(ex);
+                       }
+                       await controller.removeGlobalConstraint(globalConstraints.address);
+                       var globalConstraintsCount =await controller.globalConstraintsCount();
+                       assert.equal(globalConstraintsCount,0);
+                       var tx = await controller.sendEther(web3.toWei('1', "ether"),otherAvatar.address);
+                       assert.equal(tx.logs.length, 1);
+                       assert.equal(tx.logs[0].event, "SendEther");
+                       var avatarBalance = web3.eth.getBalance(avatar.address)/web3.toWei('1', "ether");
+                       assert.equal(avatarBalance, 0);
+                       var otherAvatarBalance = web3.eth.getBalance(otherAvatar.address)/web3.toWei('1', "ether");
+                       assert.equal(otherAvatarBalance, 1);
+                       });
+
+                       it("globalConstraints externalTokenTransfer  add & remove", async () => {
+                          controller = await setup();
+                          var globalConstraints = await constraint("externalTokenTransfer");
+                          var standardToken = await StandardTokenMock.new(avatar.address, 100);
+                          let balanceAvatar = await standardToken.balanceOf(avatar.address);
+                          assert.equal(balanceAvatar, 100);
+                          await avatar.transferOwnership(controller.address);
+
+                          try {
+                           await controller.externalTokenTransfer(standardToken.address,accounts[1],50);
+                           assert(false,"externalTokenTransfer should fail due to the global constraint ");
+                          }
+                          catch(ex){
+                            helpers.assertVMException(ex);
+                          }
+                          await controller.removeGlobalConstraint(globalConstraints.address);
+                          var globalConstraintsCount =await controller.globalConstraintsCount();
+                          assert.equal(globalConstraintsCount,0);
+                          var tx = await controller.externalTokenTransfer(standardToken.address,accounts[1],50);
+                          assert.equal(tx.logs.length, 1);
+                          assert.equal(tx.logs[0].event, "ExternalTokenTransfer");
+                          balanceAvatar = await standardToken.balanceOf(avatar.address);
+                          assert.equal(balanceAvatar, 50);
+                          let balance1 = await standardToken.balanceOf(accounts[1]);
+                          assert.equal(balance1, 50);
+                          });
+
+                          it("globalConstraints externalTokenTransferFrom and externalTokenApprove ", async () => {
+                             var tx;
+                             var to   = accounts[1];
+                             controller = await setup();
+                             var globalConstraints = await constraint("externalTokenApprove");
+                             var standardToken = await StandardTokenMock.new(avatar.address, 100);
+                             await avatar.transferOwnership(controller.address);
+
+                             try {
+                              await controller.externalTokenApprove(standardToken.address,avatar.address,50);
+                              assert(false,"externalTokenApprove should fail due to the global constraint ");
+                             }
+                             catch(ex){
+                               helpers.assertVMException(ex);
+                             }
+                             await controller.removeGlobalConstraint(globalConstraints.address);
+                             var globalConstraintsCount =await controller.globalConstraintsCount();
+                             assert.equal(globalConstraintsCount,0);
+                             tx = await controller.externalTokenApprove(standardToken.address,avatar.address,50);
+                             assert.equal(tx.logs.length, 1);
+                             assert.equal(tx.logs[0].event, "ExternalTokenApprove");
+                             globalConstraints = await constraint("externalTokenTransferFrom");
+                             try {
+                              await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
+                              assert(false,"externalTokenTransferFrom should fail due to the global constraint ");
+                             }
+                             catch(ex){
+                               helpers.assertVMException(ex);
+                             }
+                             await controller.removeGlobalConstraint(globalConstraints.address);
+                             globalConstraintsCount =await controller.globalConstraintsCount();
+                             assert.equal(globalConstraintsCount,0);
+
+                             tx = await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
+                             assert.equal(tx.logs.length, 1);
+                             assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
+                             let balanceAvatar = await standardToken.balanceOf(avatar.address);
+                             assert.equal(balanceAvatar, 50);
+                             let balanceTo = await standardToken.balanceOf(to);
+                             assert.equal(balanceTo, 50);
+                             });
+
+
 });
