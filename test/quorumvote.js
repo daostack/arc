@@ -1,5 +1,5 @@
 const helpers = require('./helpers');
-import { getValueFromLogs } from '../lib/utils.js';
+import { getValueFromLogs } from './helpers';
 
 const QuorumVote = artifacts.require("./QuorumVote.sol");
 const Reputation = artifacts.require("./Reputation.sol");
