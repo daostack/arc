@@ -55,7 +55,7 @@ module.exports = async function(deployer) {
     // apparently we must wrap the first deploy call in a then to avoid
     // what seem to be race conditions during deployment
     // await deployer.deploy(GenesisScheme)
-    deployer.deploy(GenesisScheme, {gas: 5170000}).then(async function(){
+    deployer.deploy(GenesisScheme, {gas: 6170000}).then(async function(){
       genesisSchemeInst = await GenesisScheme.deployed();
       // Create DAOstack:
       returnedParams = await genesisSchemeInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
