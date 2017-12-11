@@ -1,6 +1,6 @@
 {
   "name": "daostack-arc",
-  "version": "0.0.0-alpha.14",
+  "version": "0.0.0-alpha.16",
   "description": "Building DAOs",
   "main": "dist/arc.js",
   "types": "lib/arc.d.ts",
