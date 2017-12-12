@@ -8,7 +8,7 @@ let avatar,accounts;
 
 const setup = async function () {
   accounts = web3.eth.accounts;
-  avatar = await Avatar.new(0x1234, helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
+  avatar = await Avatar.new(0x1234, accounts[0], accounts[1]);
   return avatar;
 };
 
