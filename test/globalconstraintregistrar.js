@@ -42,7 +42,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
 
   it ("should satisfy a number of basic checks"), async function() {
       let org = await setupOrg();
-      await torg.controller.isSchemeRegistered(org.gcScheme);
+      await org.controller.isSchemeRegistered(org.gcScheme);
   }
 
   // it ("should register global constraint"), async function() {
