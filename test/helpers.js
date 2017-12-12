@@ -68,7 +68,7 @@ export class Organization {
     org.reputation = await Reputation.at(reputationAddress);
 
     org.votingMachine = await AbsoluteVote.deployed();
-    await org.votingMachine.setParameters(org.reputation.address, options.votePrec, options.ownerVote);
+    org.votingMachineParams = await org.votingMachine.setParameters(org.reputation.address, options.votePrec, options.ownerVote);
 
     // Add the Tyrant
     options.initialSchemes.addresses.unshift(org.tyrantAddress);
