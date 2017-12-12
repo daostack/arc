@@ -20,7 +20,6 @@ contract Avatar is Ownable {
     DAOToken public nativeToken;
     Reputation public nativeReputation;
 
-    event GenericCall(address indexed _to, bytes32[] _params);
     event GenericAction(address indexed _action, bytes32[] _params);
     event SendEther(uint _amountInWei, address indexed _to);
     event ExternalTokenTransfer(address indexed _externalToken, address indexed _to, uint _value);
