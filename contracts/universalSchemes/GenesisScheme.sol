@@ -110,7 +110,7 @@ contract GenesisScheme {
         }
 
         // Unregister self:
-        controller.unregisterSelf(this);
+        controller.unregisterSelf();
 
         // Remove lock:
         delete locks[_avatar];
