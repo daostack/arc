@@ -102,7 +102,7 @@ contract GenesisScheme {
         for ( uint i = 0 ; i < _schemes.length ; i++ ) {
             // TODO: the approval here is for paying the fee for that scheme later (with registerOrganization())
             // TODO: (continued)  why not have that separate? And why not ask the scheme for its fee, then, instead of passing it here?
-            controller.externalTokenApprove(_token[i], _schemes[i], _fee[i]);
+            controller.externalTokenIncreaseApproval(_token[i], _schemes[i], _fee[i]);
             controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
         }
 

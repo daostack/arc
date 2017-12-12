@@ -231,7 +231,7 @@ contract SchemeRegistrar is UniversalScheme {
         // Add a scheme:
         if (proposal.proposalType == 1) {
             if (proposal.fee != 0) {
-                if (!controller.externalTokenApprove(proposal.tokenFee, proposal.scheme, proposal.fee)) {
+                if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.scheme, proposal.fee)) {
                     revert();
                 }
             }

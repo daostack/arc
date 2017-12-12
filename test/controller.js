@@ -217,11 +217,11 @@ contract('Controller', function (accounts)  {
           }
         });
 
-        it("generic action", async () => {
+        it("generic call", async () => {
           controller = await setup();
           await avatar.transferOwnership(controller.address);
-          var tx = await controller.genericAction(accounts[0],[0]);
-          assert.equal(tx.logs.length, 1);
+          var tx = await controller.genericAction([0]);
+          assert.equal(tx.logs.length, 2);
           assert.equal(tx.logs[0].event, "GenericAction");
 
         });
@@ -257,16 +257,43 @@ contract('Controller', function (accounts)  {
           assert.equal(balance1, 50);
         });
 
-        it("externalTokenTransferFrom & externalTokenApprove", async () => {
+        it("externalTokenTransferFrom & ExternalTokenIncreaseApproval", async () => {
           var tx;
           var to   = accounts[1];
           controller = await setup();
           var standardToken = await StandardTokenMock.new(avatar.address, 100);
           await avatar.transferOwnership(controller.address);
-          tx = await controller.externalTokenApprove(standardToken.address,avatar.address,50);
+          tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
           assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "ExternalTokenApprove");
+          assert.equal(tx.logs[0].event, "ExternalTokenIncreaseApproval");
           tx = await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
+          assert.equal(tx.logs.length, 1);
+          assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
+          let balanceAvatar = await standardToken.balanceOf(avatar.address);
+          assert.equal(balanceAvatar, 50);
+          let balanceTo = await standardToken.balanceOf(to);
+          assert.equal(balanceTo, 50);
+        });
+
+        it("externalTokenTransferFrom & externalTokenDecreaseApproval", async () => {
+          var tx;
+          var to   = accounts[1];
+          controller = await setup();
+          var standardToken = await StandardTokenMock.new(avatar.address, 100);
+          await avatar.transferOwnership(controller.address);
+          tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
+          tx = await controller.externalTokenDecreaseApproval(standardToken.address,avatar.address,50);
+          assert.equal(tx.logs.length, 1);
+          assert.equal(tx.logs[0].event, "ExternalTokenDecreaseApproval");
+          try{
+             await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
+             assert(false,"externalTokenTransferFrom should fail due to decrease approval ");
+            }
+            catch(ex){
+              helpers.assertVMException(ex);
+            }
+          tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
+          tx=  await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
           let balanceAvatar = await standardToken.balanceOf(avatar.address);
@@ -356,13 +383,13 @@ contract('Controller', function (accounts)  {
                  assert.equal(tx.logs[0].event, "UnregisterScheme");
                  });
 
-                 it("globalConstraints generic action  add & remove", async () => {
+                 it("globalConstraints generic call  add & remove", async () => {
                     controller = await setup();
                     var globalConstraints = await constraint("genericAction");
                     await avatar.transferOwnership(controller.address);
 
                     try {
-                    await controller.genericAction(accounts[0],[0]);
+                    await controller.genericAction([0]);
                     assert(false,"genericAction should fail due to the global constraint ");
                     }
                     catch(ex){
@@ -371,8 +398,8 @@ contract('Controller', function (accounts)  {
                     await controller.removeGlobalConstraint(globalConstraints.address);
                     var globalConstraintsCount =await controller.globalConstraintsCount();
                     assert.equal(globalConstraintsCount,0);
-                    var tx =  await controller.genericAction(accounts[0],[0]);
-                    assert.equal(tx.logs.length, 1);
+                    var tx =  await controller.genericAction([0]);
+                    assert.equal(tx.logs.length, 2);
                     assert.equal(tx.logs[0].event, "GenericAction");
                     });
 
@@ -429,17 +456,17 @@ contract('Controller', function (accounts)  {
                           assert.equal(balance1, 50);
                           });
 
-                          it("globalConstraints externalTokenTransferFrom and externalTokenApprove ", async () => {
+                          it("globalConstraints externalTokenTransferFrom , externalTokenIncreaseApproval , externalTokenDecreaseApproval", async () => {
                              var tx;
                              var to   = accounts[1];
                              controller = await setup();
-                             var globalConstraints = await constraint("externalTokenApprove");
+                             var globalConstraints = await constraint("externalTokenIncreaseApproval");
                              var standardToken = await StandardTokenMock.new(avatar.address, 100);
                              await avatar.transferOwnership(controller.address);
 
                              try {
-                              await controller.externalTokenApprove(standardToken.address,avatar.address,50);
-                              assert(false,"externalTokenApprove should fail due to the global constraint ");
+                              await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
+                              assert(false,"externalTokenIncreaseApproval should fail due to the global constraint ");
                              }
                              catch(ex){
                                helpers.assertVMException(ex);
@@ -447,9 +474,10 @@ contract('Controller', function (accounts)  {
                              await controller.removeGlobalConstraint(globalConstraints.address);
                              var globalConstraintsCount =await controller.globalConstraintsCount();
                              assert.equal(globalConstraintsCount,0);
-                             tx = await controller.externalTokenApprove(standardToken.address,avatar.address,50);
+
+                             tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
                              assert.equal(tx.logs.length, 1);
-                             assert.equal(tx.logs[0].event, "ExternalTokenApprove");
+                             assert.equal(tx.logs[0].event, "ExternalTokenIncreaseApproval");
                              globalConstraints = await constraint("externalTokenTransferFrom");
                              try {
                               await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
@@ -462,6 +490,27 @@ contract('Controller', function (accounts)  {
                              globalConstraintsCount =await controller.globalConstraintsCount();
                              assert.equal(globalConstraintsCount,0);
 
+
+
+                             globalConstraints = await constraint("externalTokenDecreaseApproval");
+                             try {
+                              await controller.externalTokenDecreaseApproval(standardToken.address,avatar.address,50);
+                              assert(false,"externalTokenDecreaseApproval should fail due to the global constraint ");
+                             }
+                             catch(ex){
+                               helpers.assertVMException(ex);
+                             }
+                             await controller.removeGlobalConstraint(globalConstraints.address);
+                             await controller.externalTokenDecreaseApproval(standardToken.address,avatar.address,50);
+                             try {
+                              await await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
+                              assert(false,"externalTokenTransferFrom should fail due to decrease approval ");
+                             }
+                             catch(ex){
+                               helpers.assertVMException(ex);
+                             }
+
+                             await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
                              tx = await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
                              assert.equal(tx.logs.length, 1);
                              assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
@@ -470,6 +519,4 @@ contract('Controller', function (accounts)  {
                              let balanceTo = await standardToken.balanceOf(to);
                              assert.equal(balanceTo, 50);
                              });
-
-
 });
