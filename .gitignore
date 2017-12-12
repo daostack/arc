@@ -9,6 +9,7 @@ test/play.js
 tmp/
 installed_contracts/
 remarks.md
+yarn-error.log
 .node-xmlhttprequest-sync*
 *.tgz
 testrpc/
