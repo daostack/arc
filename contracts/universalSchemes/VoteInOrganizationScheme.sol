@@ -155,7 +155,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         tmp[0] = bytes32(address(proposal.originalIntVote));
         tmp[2] = proposal.originalProposalId;
         tmp[3] = bytes32(_param);
-        controller.genericAction(this, tmp);
+        controller.genericAction(tmp);
         LogProposalExecuted(_avatar, _proposalId);
         return true;
     }

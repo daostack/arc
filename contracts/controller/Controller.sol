@@ -43,11 +43,12 @@ contract Controller {
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
     event RegisterScheme (address indexed _sender, address indexed _scheme);
     event UnregisterScheme (address indexed _sender, address indexed _scheme);
-    event GenericAction (address indexed _sender, address indexed _action, bytes32[] _params);
+    event GenericAction (address indexed _sender, bytes32[] _params);
     event SendEther (address indexed _sender, uint _amountInWei, address indexed _to);
     event ExternalTokenTransfer (address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
     event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
-    event ExternalTokenApprove (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
+    event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
+    event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event AddGlobalConstraint(address _globalconstraint, bytes32 _params);
     event RemoveGlobalConstraint(address _globalConstraint ,uint256 _index);
     event UpgradeController(address _oldController,address _newController);
@@ -288,21 +289,21 @@ contract Controller {
         return true;
     }
 
-   /**
-     * @dev perform a generic action on the controller's avatar.
-     *      The function will trigger an event 'GenericAction'.
-     * @param  _action the action
-     * @param  _params the action's params
-     * @return bool which represents a success
+    /**
+    * @dev do a generic deligate call to the contract which called us.
+    * This function use deligatecall and might expose the organization to security
+    * risk. Use this function only if you really knows what you are doing.
+    * @param _params the params for the call.
+    * @return bool which represents success
     */
-    function genericAction(ActionInterface _action, bytes32[] _params)
+    function genericAction(bytes32[] _params)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("genericAction")
     returns(bool)
     {
-        GenericAction(msg.sender, _action, _params);
-        return avatar.genericAction(_action, _params);
+        GenericAction(msg.sender, _params);
+        return avatar.genericAction(msg.sender, _params);
     }
 
   /**
@@ -359,21 +360,39 @@ contract Controller {
     }
 
     /**
-    * @dev approve the spender address to spend the specified amount of tokens
+    * @dev increase approval for the spender address to spend a specified amount of tokens
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _value the amount of ether (in Wei) which the approval is refering to.
+    * @param _addedValue the amount of ether (in Wei) which the approval is refering to.
     * @return bool which represents a success
     */
-    function externalTokenApprove(StandardToken _externalToken, address _spender, uint _value)
+    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue)
     public
     onlyRegisteredScheme
-    onlySubjectToConstraint("externalTokenApprove")
+    onlySubjectToConstraint("externalTokenIncreaseApproval")
     returns(bool)
     {
-        ExternalTokenApprove(msg.sender,_externalToken,_spender,_value);
-        return avatar.externalTokenApprove(_externalToken, _spender, _value);
+        ExternalTokenIncreaseApproval(msg.sender,_externalToken,_spender,_addedValue);
+        return avatar.externalTokenIncreaseApproval(_externalToken, _spender, _addedValue);
+    }
+
+    /**
+    * @dev decrease approval for the spender address to spend a specified amount of tokens
+    *      on behalf of msg.sender.
+    * @param _externalToken the address of the Token Contract
+    * @param _spender address
+    * @param _subtractedValue the amount of ether (in Wei) which the approval is refering to.
+    * @return bool which represents a success
+    */
+    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue)
+    public
+    onlyRegisteredScheme
+    onlySubjectToConstraint("externalTokenDecreaseApproval")
+    returns(bool)
+    {
+        ExternalTokenDecreaseApproval(msg.sender,_externalToken,_spender,_subtractedValue);
+        return avatar.externalTokenDecreaseApproval(_externalToken, _spender, _subtractedValue);
     }
 
 }

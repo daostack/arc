@@ -210,7 +210,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         if (proposal.proposalType == 2) {
             bytes4 permissions = controller.getSchemePermissions(this);
             if (proposal.fee != 0) {
-                if (!controller.externalTokenApprove(proposal.tokenFee, proposal.newContOrScheme, proposal.fee)) {
+                if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.newContOrScheme, proposal.fee)) {
                     revert();
                 }
             }
