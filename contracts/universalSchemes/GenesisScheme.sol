@@ -104,12 +104,12 @@ contract GenesisScheme {
             // TODO: (continued)  why not have that separate? And why not ask the scheme for its fee, then, instead of passing it here?
             if (_fee[i] != 0) {
                 controller.externalTokenApprove(_token[i], _schemes[i], _fee[i]);
-                controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
             }
+            controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
         }
 
         // Unregister self:
-        controller.unregisterScheme(this);
+        controller.unregisterSelf(this);
 
         // Remove lock:
         delete locks[_avatar];
