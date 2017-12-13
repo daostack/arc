@@ -2,12 +2,139 @@
     helpers for tests
 */
 
-// TODO: Rebuild functions
+const Avatar = artifacts.require("./Avatar.sol");
+const Controller = artifacts.require("./Controller.sol");
+const DAOToken = artifacts.require("./DAOToken.sol");
+const GenesisScheme = artifacts.require("./GenesisScheme.sol");
+const Reputation = artifacts.require("./Reputation.sol");
+const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
 export const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
+
+var dopts = require('default-options');
+
+export class Organization {
+  constructor() {
+  }
+
+  static async new(opts) {
+    const defaults = {
+        orgName: null,
+        tokenName: null,
+        tokenSymbol: null,
+        founders: [],
+        votePrec: 50,
+        ownerVote: true,
+        initialSchemes: {
+            addresses: [],
+            params: [],
+            permissions: [],
+            fees: [],
+            feesTokenAddresses: [],
+        }
+    };
+
+    const options = dopts(opts, defaults, { allowUnknown: true });
+
+    let tx;
+
+    const genesisScheme = await GenesisScheme.deployed();
+
+    tx = await genesisScheme.forgeOrg(
+        options.orgName,
+        options.tokenName,
+        options.tokenSymbol,
+        options.founders.map(x => x.address),
+        options.founders.map(x => x.tokens),
+        options.founders.map(x => x.reputation),
+    );
+    // get the address of the avatar from the logs
+    const avatarAddress = getValueFromLogs(tx, '_avatar');
+    let org = new Organization();
+
+    org.tyrantAddress = web3.eth.accounts[5];
+
+    org.avatar = await Avatar.at(avatarAddress);
+    const controllerAddress = await org.avatar.owner();
+    org.controller = await Controller.at(controllerAddress);
+
+    const tokenAddress = await org.controller.nativeToken();
+    org.token = await DAOToken.at(tokenAddress);
+
+    const reputationAddress = await org.controller.nativeReputation();
+    org.reputation = await Reputation.at(reputationAddress);
+
+    org.votingMachine = await AbsoluteVote.deployed();
+    org.votingMachineParams = await org.votingMachine.setParameters(org.reputation.address, options.votePrec, options.ownerVote);
+
+    // Add the Tyrant
+    options.initialSchemes.addresses.unshift(org.tyrantAddress);
+    options.initialSchemes.params.unshift(NULL_HASH);
+    options.initialSchemes.permissions.unshift("0x0000000F");
+    options.initialSchemes.fees.unshift(0);
+    options.initialSchemes.feesTokenAddresses.unshift(NULL_ADDRESS);
+
+    // register the schemes with the organization
+    await genesisScheme.setInitialSchemes(
+      org.avatar.address,
+      options.initialSchemes.addresses,
+      options.initialSchemes.params,
+      options.initialSchemes.feesTokenAddresses,
+      options.initialSchemes.fees,
+      options.initialSchemes.permissions,
+    );
+
+    return org;
+  }
+
+  vote(proposalId, choice, params) {
+    // vote for the proposal given by proposalId using this.votingMachine
+    // NB: this will not work for proposals using votingMachine's that are not the default one
+    return this.votingMachine.vote(proposalId, choice, params);
+  }
+
+}
+
+export async function forgeOrganization(opts = {}) {
+  const founders = [
+    {
+      address: web3.eth.accounts[0],
+      reputation: 1,
+      tokens: 1,
+    },
+    {
+      address: web3.eth.accounts[1],
+      reputation: 29,
+      tokens: 2,
+    },
+    {
+      address: web3.eth.accounts[2],
+      reputation: 70,
+      tokens: 3,
+    },
+  ];
+
+  const defaults = {
+    orgName: 'test org',
+    tokenName: 'test token name',
+    tokenSymbol: 'TST',
+    founders,
+    initialSchemes: {
+        addresses: [],
+        params: [],
+        permissions: [],
+        fees: [],
+        feesTokenAddresses: [],
+    }
+  };
+
+  const options = Object.assign(defaults, opts);
+  // add this there to eat some dog food
+  return await Organization.new(options);
+}
 
 export function getProposalAddress(tx) {
     // helper function that returns a proposal object from the ProposalCreated event
@@ -17,7 +144,7 @@ export function getProposalAddress(tx) {
     return proposalAddress;
 }
 
-export async function getValueFromLogs(tx, arg, eventName, index=0) {
+export function getValueFromLogs(tx, arg, eventName, index=0) {
   /**
    *
    * tx.logs look like this:
@@ -72,40 +199,7 @@ export async function etherForEveryone() {
     }
 }
 
-
-// export async function forgeOrganization(opts = {}) {
-//   const founders = [
-//     {
-//       address: web3.eth.accounts[0],
-//       reputation: 1,
-//       tokens: 1,
-//     },
-//     {
-//       address: web3.eth.accounts[1],
-//       reputation: 29,
-//       tokens: 2,
-//     },
-//     {
-//       address: web3.eth.accounts[2],
-//       reputation: 70,
-//       tokens: 3,
-//     },
-//   ];
-//   const defaults = {
-//     orgName: 'something',
-//     tokenName: 'token name',
-//     tokenSymbol: 'TST',
-//     founders
-//   };
-//
-//   const options = Object.assign(defaults, opts);
-//   // add this there to eat some dog food
-//   return Organization.new(options);
-// }
-
-
 export const outOfGasMessage = 'VM Exception while processing transaction: out of gas';
-
 
 export function assertJumpOrOutOfGas(error) {
     let condition = (
