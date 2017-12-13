@@ -110,6 +110,26 @@ contract('DAOToken', accounts => {
         assert.equal(totalSupply.toNumber(), 0);
     });
 
+    it("burn", async () => {
+        const token = await DAOToken.new();
+
+        await token.mint(accounts[1], 1000, { from: accounts[0] });
+
+        var amount = await token.balanceOf(accounts[1]);
+
+        assert.equal(amount.toNumber(), 1000);
+
+        await token.burn(100,{ from: accounts[1] });
+
+        amount = await token.balanceOf(accounts[1]);
+
+        assert.equal(amount.toNumber(), 900);
+
+        const totalSupply = await token.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), 900);
+    });
+
     describe('onlyOwner', () => {
         it('mint by owner', async () => {
             const token = await DAOToken.new();
