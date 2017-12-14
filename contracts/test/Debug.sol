@@ -1,5 +1,6 @@
 pragma solidity ^0.4.18;
 
+import "zeppelin-solidity/test/helpers/StandardTokenMock.sol";
 
 /*
     A contract you can inherit from that has some useful Events to print statements.

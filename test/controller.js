@@ -3,7 +3,7 @@ const Controller = artifacts.require("./Controller.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken   = artifacts.require("./DAOToken.sol");
-const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const StandardTokenMock = artifacts.require('./StandardTokenMock.sol');
 //todo : find out how to import this directly from zeppline.
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
 
