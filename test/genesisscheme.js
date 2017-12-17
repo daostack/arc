@@ -148,6 +148,22 @@ contract('GenesisScheme', function(accounts) {
         assert.equal(tx.logs[0].args._avatar, avatar.address);
     });
 
+<<<<<<< HEAD
+=======
+    it("setSchemes from account that not hold the lock", async function() {
+        var amountToMint = 10;
+        await setup(accounts,amountToMint,amountToMint);
+        var standardTokenMock = await StandardTokenMock.new(accounts[0], 100);
+        try {
+         await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[100],["0x0000000F"],{ from: accounts[1]});
+         assert(false,"should fail because accounts[1] does not hold the lock");
+        }
+        catch(ex){
+          helpers.assertVMException(ex);
+        }
+    });
+
+>>>>>>> Update genesisschem test
     it("setSchemes from account that does not hold the lock", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
