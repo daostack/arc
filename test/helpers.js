@@ -78,7 +78,7 @@ export class Organization {
     options.initialSchemes.feesTokenAddresses.unshift(NULL_ADDRESS);
 
     // register the schemes with the organization
-    await genesisScheme.setInitialSchemes(
+    await genesisScheme.setSchemes(
       org.avatar.address,
       options.initialSchemes.addresses,
       options.initialSchemes.params,

@@ -11,24 +11,18 @@ import "../controller/Reputation.sol";
  */
 
 contract GenesisScheme {
-    DAOToken nativeToken;
-    Reputation nativeReputation;
-    Avatar avatar;
 
     mapping(address=>address) locks;
 
     event NewOrg (address _avatar);
     event InitialSchemesSet (address _avatar);
 
-    address[] addressArray;
-    bytes32[] bytes32Array;
-    bytes4[] bytes4Array;
+    address[] public addressArray = [address(this)];
+    bytes32[] public bytes32Array = [bytes32(0)];
+    //full permissions
+    bytes4[]  public bytes4Array  = [bytes4(0xF)];
 
-    function GenesisScheme() public {
-        addressArray.push(address(this));
-        bytes32Array.push(bytes32(0));
-        bytes4Array.push(bytes4(0xF));
-    }
+    function GenesisScheme() public {}
 
     /**
      * @dev Create a new organization
@@ -53,12 +47,12 @@ contract GenesisScheme {
     ) public returns(address)
     {
         // Create Token, Reputation and Avatar:
-        nativeToken = new DAOToken(_tokenName, _tokenSymbol);
-        nativeReputation = new Reputation();
-        avatar = new Avatar(_orgName, nativeToken, nativeReputation);
+        DAOToken  nativeToken = new DAOToken(_tokenName, _tokenSymbol);
+        Reputation  nativeReputation = new Reputation();
+        Avatar  avatar = new Avatar(_orgName, nativeToken, nativeReputation);
 
         // Create Controller:
-        Controller controller = new Controller(avatar, nativeToken, nativeReputation, addressArray, bytes32Array, bytes4Array);
+        Controller controller = new Controller(avatar,addressArray, bytes32Array, bytes4Array);
         // Transfer ownership:
         avatar.transferOwnership(controller);
         nativeToken.transferOwnership(controller);
@@ -80,10 +74,17 @@ contract GenesisScheme {
         return (address(avatar));
     }
 
-    /**
-     * @dev  register some initial schemes
-     */
-    function setInitialSchemes (
+     /**
+      * @dev Set initial schemes for the organization.
+      * @param _avatar organization avatar (returns from forgeOrg)
+      * @param _schemes the schemes to register for the organization
+      * @param _params the schemes's params
+      * @param _token the tokens these schemes are using and will be allowed to
+      *         spend on behalf of the organization's avatar
+      * @param _fee the allowance fee for the schemes to spend.
+      * @param _permissions the schemes permissins.
+      */
+    function setSchemes (
         Avatar _avatar,
         address[] _schemes,
         bytes32[] _params,
@@ -114,6 +115,6 @@ contract GenesisScheme {
         // Remove lock:
         delete locks[_avatar];
 
-        InitialSchemesSet(address(avatar));
+        InitialSchemesSet(address(_avatar));
     }
 }

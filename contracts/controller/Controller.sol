@@ -55,16 +55,14 @@ contract Controller {
 
     function Controller(
         Avatar _avatar,
-        DAOToken _nativeToken,
-        Reputation    _nativeReputation,
         address[] _schemes,
         bytes32[] _params,
         bytes4[] _permissions
     ) public
     {
         avatar = _avatar;
-        nativeToken = _nativeToken;
-        nativeReputation = _nativeReputation;
+        nativeToken = avatar.nativeToken();
+        nativeReputation = avatar.nativeReputation();
 
     // Register the schemes:
         for (uint i = 0; i < _schemes.length; i++) {
@@ -163,7 +161,7 @@ contract Controller {
 
     // produces non-zero if sender does not have all of the perms that are changing between old and new
         require(bytes4(15)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
-    
+
     // produces non-zero if sender does not have all of the perms in the old scheme
         require(bytes4(15)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
