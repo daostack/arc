@@ -93,12 +93,19 @@ contract('SimpleICO', function(accounts) {
     //give some tokens to organization avatar so it could register the univeral scheme.
     await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
     await simpleICO.registerOrganization(org.avatar.address);
+<<<<<<< HEAD
     await simpleICO.start(org.avatar.address);
+=======
+>>>>>>> Fix simpleico.sol + tests
     balanceOfBeneficiary  = await standardTokenMock.balanceOf(beneficiary);
     assert.equal(balanceOfBeneficiary.toNumber(),fee);
     });
 
+<<<<<<< HEAD
     it("simpleICO start with cap zero should revert ", async function() {
+=======
+    it("simpleICO register with cap zero should revert ", async function() {
+>>>>>>> Fix simpleico.sol + tests
       var beneficiary = accounts[0];
       var fee =10;
       var standardTokenMock = await StandardTokenMock.new(accounts[1],100);
@@ -108,10 +115,16 @@ contract('SimpleICO', function(accounts) {
       await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[standardTokenMock.address],[100],["0x0000000F"]);
       //give some tokens to organization avatar so it could register the univeral scheme.
       await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
+<<<<<<< HEAD
       await simpleICO.registerOrganization(org.avatar.address);
       try {
        await simpleICO.start(org.avatar.address);
        assert(false,"start should  fail - because params has cap zero");
+=======
+      try {
+       await simpleICO.registerOrganization(org.avatar.address);
+       assert(false,"registerOrganization should  fail - because params has cap zero");
+>>>>>>> Fix simpleico.sol + tests
       }catch(ex){
        helpers.assertVMException(ex);
      }
@@ -135,9 +148,12 @@ contract('SimpleICO', function(accounts) {
       await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
       await simpleICO.registerOrganization(org.avatar.address);
       isActive = await simpleICO.isActive(org.avatar.address);
+<<<<<<< HEAD
       assert.equal(isActive,false);
       await simpleICO.start(org.avatar.address);
       isActive = await simpleICO.isActive(org.avatar.address);
+=======
+>>>>>>> Fix simpleico.sol + tests
       assert.equal(isActive,true);
       });
 
@@ -152,7 +168,10 @@ contract('SimpleICO', function(accounts) {
         //give some tokens to organization avatar so it could register the univeral scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
         await simpleICO.registerOrganization(org.avatar.address);
+<<<<<<< HEAD
         await simpleICO.start(org.avatar.address);
+=======
+>>>>>>> Fix simpleico.sol + tests
         var isActive = await simpleICO.isActive(org.avatar.address);
         assert.equal(isActive,false);
         });
@@ -168,7 +187,10 @@ contract('SimpleICO', function(accounts) {
         //give some tokens to organization avatar so it could register the univeral scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
         await simpleICO.registerOrganization(org.avatar.address);
+<<<<<<< HEAD
         await simpleICO.start(org.avatar.address);
+=======
+>>>>>>> Fix simpleico.sol + tests
         var isActive = await simpleICO.isActive(org.avatar.address);
         assert.equal(isActive,false);
         });
@@ -186,7 +208,10 @@ contract('SimpleICO', function(accounts) {
         //give some tokens to organization avatar so it could register the univeral scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
         await simpleICO.registerOrganization(org.avatar.address);
+<<<<<<< HEAD
         await simpleICO.start(org.avatar.address);
+=======
+>>>>>>> Fix simpleico.sol + tests
         var donationEther = cap;
         await simpleICO.donate(org.avatar.address,accounts[3],{value:donationEther});
         var isActive = await simpleICO.isActive(org.avatar.address);
@@ -216,6 +241,7 @@ contract('SimpleICO', function(accounts) {
         await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[standardTokenMock.address],[100],["0x0000000F"]);
         //give some tokens to organization avatar so it could register the univeral scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
+<<<<<<< HEAD
         organization = await simpleICO.organizationsICOInfo(org.avatar.address);
         assert.equal(organization[3],false);
         await simpleICO.registerOrganization(org.avatar.address);
@@ -224,6 +250,15 @@ contract('SimpleICO', function(accounts) {
         assert.equal(organization[3],false);
         await simpleICO.haltICO(org.avatar.address);
         organization = await simpleICO.organizationsICOInfo(org.avatar.address);
+=======
+        organization = await simpleICO.organizations(org.avatar.address);
+        assert.equal(organization[3],false);
+        await simpleICO.registerOrganization(org.avatar.address);
+        organization = await simpleICO.organizations(org.avatar.address);
+        assert.equal(organization[3],false);
+        await simpleICO.haltICO(org.avatar.address);
+        organization = await simpleICO.organizations(org.avatar.address);
+>>>>>>> Fix simpleico.sol + tests
         assert.equal(organization[3],true);
         try{
          await simpleICO.haltICO(org.avatar.address,{from:accounts[1]});
@@ -244,12 +279,20 @@ contract('SimpleICO', function(accounts) {
         //give some tokens to organization avatar so it could register the univeral scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
         await simpleICO.registerOrganization(org.avatar.address);
+<<<<<<< HEAD
         await simpleICO.start(org.avatar.address);
         await simpleICO.haltICO(org.avatar.address);
         organization = await simpleICO.organizationsICOInfo(org.avatar.address);
         assert.equal(organization[3],true);
         await simpleICO.resumeICO(org.avatar.address);
         organization = await simpleICO.organizationsICOInfo(org.avatar.address);
+=======
+        await simpleICO.haltICO(org.avatar.address);
+        organization = await simpleICO.organizations(org.avatar.address);
+        assert.equal(organization[3],true);
+        await simpleICO.resumeICO(org.avatar.address);
+        organization = await simpleICO.organizations(org.avatar.address);
+>>>>>>> Fix simpleico.sol + tests
         assert.equal(organization[3],false);
         try{
          await simpleICO.resumeICO(org.avatar.address,{from:accounts[1]});
@@ -270,7 +313,10 @@ contract('SimpleICO', function(accounts) {
           //give some tokens to organization avatar so it could register the univeral scheme.
           await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
           await simpleICO.registerOrganization(org.avatar.address);
+<<<<<<< HEAD
           await simpleICO.start(org.avatar.address);
+=======
+>>>>>>> Fix simpleico.sol + tests
           //do not send ether ..just call donate.
           var tx = await simpleICO.donate(org.avatar.address,accounts[3]);
           assert.equal(tx.logs.length, 1);
@@ -310,7 +356,10 @@ contract('SimpleICO', function(accounts) {
             //give some tokens to organization avatar so it could register the univeral scheme.
             await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
             await simpleICO.registerOrganization(org.avatar.address);
+<<<<<<< HEAD
             await simpleICO.start(org.avatar.address);
+=======
+>>>>>>> Fix simpleico.sol + tests
             var donationEther = 3;
             await simpleICO.donate(org.avatar.address,accounts[3],{value:donationEther});
             var balance = await org.token.balanceOf(accounts[3]);
