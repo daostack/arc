@@ -13,7 +13,7 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface { //
     address public beneficiary;
     bytes32 public hashedParameters; // For other parameters.
 
-    event LogOrgRegistered (address _avatar);
+    event OrganizationRegistered (address _avatar);
     event LogNewProposal(bytes32 proposalId);
 
     function updateParameters(

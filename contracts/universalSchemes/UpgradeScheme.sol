@@ -105,7 +105,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         Organization memory org;
         org.isRegistered = true;
         organizations[_avatar] = org;
-        LogOrgRegistered(_avatar);
+        OrganizationRegistered(_avatar);
     }
 
     /**

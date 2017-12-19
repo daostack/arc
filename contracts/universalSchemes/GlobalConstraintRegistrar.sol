@@ -91,7 +91,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         Organization memory org;
         org.isRegistered = true;
         organizations[_avatar] = org;
-        LogOrgRegistered(_avatar);
+        OrganizationRegistered(_avatar);
     }
 
     function isRegistered(address _avatar) public constant returns(bool) {

@@ -165,18 +165,22 @@ contract SimpleICO is UniversalScheme {
         if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
             nativeToken.transferFrom(_avatar, beneficiary, fee);
         }
+        organizations[_avatar].isRegistered = true;
+        OrganizationRegistered(_avatar);
+    }
 
-        // Check there is no ongoing ICO:
+    /**
+     * @dev start an ICO
+     * @param _avatar The Avatar's of the organization
+     */
+    function start(Avatar _avatar) public {
         require(!isActive(_avatar));
-
-        // Set the organization data:
         Organization memory org;
         org.isRegistered = true;
         org.paramsHash = getParametersFromController(_avatar);
         require(parameters[org.paramsHash].cap != 0);
         org.avatarContractICO = new MirrorContractICO(_avatar, this);
         organizations[_avatar] = org;
-        LogOrgRegistered(_avatar);
     }
 
     /**

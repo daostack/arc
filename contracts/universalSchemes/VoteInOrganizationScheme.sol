@@ -97,7 +97,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         Organization memory org;
         org.isRegistered = true;
         organizations[_avatar] = org;
-        LogOrgRegistered(_avatar);
+        OrganizationRegistered(_avatar);
     }
 
     function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId) public returns(bytes32) {
