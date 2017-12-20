@@ -216,14 +216,14 @@ contract('SimpleICO', function(accounts) {
         await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[standardTokenMock.address],[100],["0x0000000F"]);
         //give some tokens to organization avatar so it could register the univeral scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
-        organization = await simpleICO.organizations(org.avatar.address);
+        organization = await simpleICO.organizationsICOInfo(org.avatar.address);
         assert.equal(organization[3],false);
         await simpleICO.registerOrganization(org.avatar.address);
         await simpleICO.start(org.avatar.address);
-        organization = await simpleICO.organizations(org.avatar.address);
+        organization = await simpleICO.organizationsICOInfo(org.avatar.address);
         assert.equal(organization[3],false);
         await simpleICO.haltICO(org.avatar.address);
-        organization = await simpleICO.organizations(org.avatar.address);
+        organization = await simpleICO.organizationsICOInfo(org.avatar.address);
         assert.equal(organization[3],true);
         try{
          await simpleICO.haltICO(org.avatar.address,{from:accounts[1]});
@@ -246,10 +246,10 @@ contract('SimpleICO', function(accounts) {
         await simpleICO.registerOrganization(org.avatar.address);
         await simpleICO.start(org.avatar.address);
         await simpleICO.haltICO(org.avatar.address);
-        organization = await simpleICO.organizations(org.avatar.address);
+        organization = await simpleICO.organizationsICOInfo(org.avatar.address);
         assert.equal(organization[3],true);
         await simpleICO.resumeICO(org.avatar.address);
-        organization = await simpleICO.organizations(org.avatar.address);
+        organization = await simpleICO.organizationsICOInfo(org.avatar.address);
         assert.equal(organization[3],false);
         try{
          await simpleICO.resumeICO(org.avatar.address,{from:accounts[1]});
@@ -331,7 +331,7 @@ contract('SimpleICO', function(accounts) {
               await simpleICO.start(org.avatar.address);
               var donationEther = 3;
               await simpleICO.donate(org.avatar.address,accounts[3],{value:donationEther});
-              var organization = await simpleICO.organizations(org.avatar.address);
+              var organization = await simpleICO.organizationsICOInfo(org.avatar.address);
               assert.equal(organization[2].toNumber(),donationEther);
               });
 
@@ -420,7 +420,7 @@ contract('SimpleICO', function(accounts) {
               let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
               var beneficiaryBalance = web3.eth.getBalance(otherAvatar.address);
               assert.equal(beneficiaryBalance,0);
-              var organization = await simpleICO.organizations(org.avatar.address);
+              var organization = await simpleICO.organizationsICOInfo(org.avatar.address);
               var mirrorContractICO = organization[1];
               //need more gas for this ...
               await web3.eth.sendTransaction({from:accounts[3],to:mirrorContractICO, value:2,gas: 900000 });
@@ -446,7 +446,7 @@ contract('SimpleICO', function(accounts) {
                 let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
                 var beneficiaryBalance = web3.eth.getBalance(otherAvatar.address);
                 assert.equal(beneficiaryBalance,0);
-                var organization = await simpleICO.organizations(org.avatar.address);
+                var organization = await simpleICO.organizationsICOInfo(org.avatar.address);
                 var mirrorContractICO = organization[1];
                 //need more gas for this ...
                 await web3.eth.sendTransaction({from:accounts[3],to:mirrorContractICO, value:2,gas: 900000 });

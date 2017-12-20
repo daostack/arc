@@ -52,7 +52,6 @@ contract SimpleICO is UniversalScheme {
         address avatarContractICO; // Avatar is a contract for users that want to send eth without calling a funciton.
         uint totalEthRaised;
         bool isHalted; // The admin of the ICO can halt the ICO at any time, and also resume it.
-        bool isRegistered;
     }
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
@@ -66,7 +65,7 @@ contract SimpleICO is UniversalScheme {
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) public organizations;
+    mapping(address=>Organization) public organizationsICOInfo;
 
     mapping(bytes32=>Parameters) public parameters;
 
@@ -157,30 +156,16 @@ contract SimpleICO is UniversalScheme {
     }
 
     /**
-     * @dev Adding an organization to the universal scheme, and opens an ICO for it
-     * @param _avatar The Avatar's of the organization
-     */
-    function registerOrganization(Avatar _avatar) public {
-        // Pay fees for using scheme:
-        if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
-            nativeToken.transferFrom(_avatar, beneficiary, fee);
-        }
-        organizations[_avatar].isRegistered = true;
-        OrganizationRegistered(_avatar);
-    }
-
-    /**
      * @dev start an ICO
      * @param _avatar The Avatar's of the organization
      */
     function start(Avatar _avatar) public {
         require(!isActive(_avatar));
         Organization memory org;
-        org.isRegistered = true;
         org.paramsHash = getParametersFromController(_avatar);
         require(parameters[org.paramsHash].cap != 0);
         org.avatarContractICO = new MirrorContractICO(_avatar, this);
-        organizations[_avatar] = org;
+        organizationsICOInfo[_avatar] = org;
     }
 
     /**
@@ -188,8 +173,8 @@ contract SimpleICO is UniversalScheme {
      * @param _avatar The Avatar's of the organization
      */
     function haltICO(address _avatar) public {
-        require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
-        organizations[_avatar].isHalted = true;
+        require(msg.sender == parameters[organizationsICOInfo[_avatar].paramsHash].admin);
+        organizationsICOInfo[_avatar].isHalted = true;
     }
 
     /**
@@ -197,8 +182,8 @@ contract SimpleICO is UniversalScheme {
      * @param _avatar The Avatar's of the organization
      */
     function resumeICO(address _avatar) public {
-        require(msg.sender == parameters[organizations[_avatar].paramsHash].admin);
-        organizations[_avatar].isHalted = false;
+        require(msg.sender == parameters[organizationsICOInfo[_avatar].paramsHash].admin);
+        organizationsICOInfo[_avatar].isHalted = false;
     }
 
     /**
@@ -210,9 +195,9 @@ contract SimpleICO is UniversalScheme {
      * @return bool which represents a successful of the function
      */
     function isActive(address _avatar) public constant returns(bool) {
-        Organization memory org = organizations[_avatar];
+        Organization memory org = organizationsICOInfo[_avatar];
         Parameters memory params = parameters[org.paramsHash];
-        if (! org.isRegistered) {
+        if (! organizations[_avatar]) {
             return false;
         }
         if (org.totalEthRaised >= params.cap) {
@@ -236,7 +221,7 @@ contract SimpleICO is UniversalScheme {
      * @return bool which represents a successful of the function
      */
     function donate(Avatar _avatar, address _beneficiary) public payable returns(uint) {
-        Organization memory org = organizations[_avatar];
+        Organization memory org = organizationsICOInfo[_avatar];
         Parameters memory params = parameters[org.paramsHash];
 
         // Check ICO is active:
@@ -268,7 +253,7 @@ contract SimpleICO is UniversalScheme {
             _beneficiary.transfer(change);
         }
         // Update total raised, call event and return amount of tokens bought:
-        organizations[_avatar].totalEthRaised += incomingEther;
+        organizationsICOInfo[_avatar].totalEthRaised += incomingEther;
         DonationReceived(_avatar, _beneficiary, incomingEther, tokens);
         return tokens;
     }

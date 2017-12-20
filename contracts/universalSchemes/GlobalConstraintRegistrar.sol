@@ -36,7 +36,6 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
     // Struct holding the data for each organization
     struct Organization {
-        bool isRegistered;
         bytes32 voteRegisterParams; // The voting parameters for adding a GC.
         IntVoteInterface intVote; // The voting machine in which the voting takes place.
         mapping(bytes32=>GCProposal) proposals; // A mapping from the proposal ID to the proposal itself.
@@ -44,7 +43,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
 
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) public organizations;
+    mapping(address=>Organization) public organizationsData;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
@@ -80,24 +79,6 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         return paramsHash;
     }
 
-    // Adding an organization to the universal scheme:
-    // TODO: probably we want to define registerOrganization and isRegistered in UniversalScheme
-    function registerOrganization(Avatar _avatar) public {
-        // Pay fees for using scheme:
-        if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
-            nativeToken.transferFrom(_avatar, beneficiary, fee);
-        }
-
-        Organization memory org;
-        org.isRegistered = true;
-        organizations[_avatar] = org;
-        OrganizationRegistered(_avatar);
-    }
-
-    function isRegistered(address _avatar) public constant returns(bool) {
-        return organizations[_avatar].isRegistered;
-    }
-
     /**
     * @dev propose to add a new global constraint:
     * @param _avatar the avatar of the organization that the constraint is proposed for
@@ -106,8 +87,11 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     * @param _removeParams the conditions (on the voting machine) for removing this global constraint
     */
     // TODO: do some checks on _removeParams - it is very easy to make a mistake and not be able to remove the GC
-    function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _removeParams) public returns(bytes32) {
-        require(isRegistered(_avatar)); // Check org is registered to use this universal scheme.
+    function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _removeParams)
+    public
+    onlyRegisteredOrganization(_avatar)
+    returns(bytes32)
+    {
         Parameters memory votingParams = parameters[getParametersFromController(_avatar)];
 
         IntVoteInterface intVote = votingParams.intVote;
@@ -120,10 +104,10 @@ contract GlobalConstraintRegistrar is UniversalScheme {
             removeParams: _removeParams
         });
 
-        if (organizations[_avatar].proposals[proposalId].proposalType != 0) {
+        if (organizationsData[_avatar].proposals[proposalId].proposalType != 0) {
             revert();
         }
-        organizations[_avatar].proposals[proposalId] = proposal;
+        organizationsData[_avatar].proposals[proposalId] = proposal;
         LogNewGlobalConstraintsProposal(
             _avatar,
             proposalId,
@@ -137,10 +121,9 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
 
     // Proposing to remove a new GC:
-    function proposeToRemoveGC(Avatar _avatar, address _gc) public returns(bytes32) {
-        Organization storage org = organizations[_avatar];
+    function proposeToRemoveGC(Avatar _avatar, address _gc) public onlyRegisteredOrganization(_avatar) returns(bytes32) {
+        Organization storage org = organizationsData[_avatar];
         Parameters memory params = parameters[getParametersFromController(_avatar)];
-        require(org.isRegistered); // Check org is registred to use this universal scheme.
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, org.removeParams[_gc], _avatar, ExecutableInterface(this));
 
@@ -151,10 +134,10 @@ contract GlobalConstraintRegistrar is UniversalScheme {
             removeParams: 0
         });
 
-        if (organizations[_avatar].proposals[proposalId].proposalType != 0) {
+        if (organizationsData[_avatar].proposals[proposalId].proposalType != 0) {
             revert();
         }
-        organizations[_avatar].proposals[proposalId] = proposal;
+        organizationsData[_avatar].proposals[proposalId] = proposal;
         LogRemoveGlobalConstraintsProposal(_avatar, proposalId, intVote, _gc);
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
@@ -172,13 +155,13 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
         // Check if vote was successful:
         if (_param != 1 ) {
-            delete organizations[_avatar].proposals[_proposalId];
+            delete organizationsData[_avatar].proposals[_proposalId];
             LogProposalDeleted(_avatar, _proposalId);
             return true;
         }
         // Define controller and get the parmas:
         Controller controller = Controller(Avatar(_avatar).owner());
-        GCProposal memory proposal = organizations[_avatar].proposals[_proposalId];
+        GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
 
         // Adding a GC
         if (proposal.proposalType == 1) {
@@ -193,7 +176,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
                 revert();
             }
         }
-        delete organizations[_avatar].proposals[_proposalId];
+        delete organizationsData[_avatar].proposals[_proposalId];
         LogProposalExecuted(_avatar, _proposalId);
         return true;
     }

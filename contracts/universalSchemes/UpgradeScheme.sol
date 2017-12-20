@@ -30,22 +30,15 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
 
     // Details of an upgrade proposal:
     struct UpgradeProposal {
-        address newContOrScheme; // Either the new conroller we upgrade to, or the new upgrading scheme.
+        address upgradeContract; // Either the new conroller we upgrade to, or the new upgrading scheme.
         bytes32 params; // Params for the new upgrading scheme.
         uint proposalType; // 1: Upgrade controller, 2: change upgrade scheme.
         StandardToken tokenFee;
         uint fee;
     }
 
-    // Struct holding the data for each organization
-    struct Organization {
-        bool isRegistered;
-        mapping(bytes32=>UpgradeProposal) proposals;
-    }
-
-
-    // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) public organizations;
+    // A mapping from the organization's (Avatar) address to the saved data of the organization:
+    mapping(address=>mapping(bytes32=>UpgradeProposal)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
@@ -53,7 +46,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         IntVoteInterface intVote;
     }
 
-    mapping(bytes32=>Parameters) parameters;
+    mapping(bytes32=>Parameters) public parameters;
 
     /**
     * @dev the constructor takes a token address, fee and beneficiary
@@ -84,28 +77,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        bytes32 paramsHash = (keccak256(_voteParams, _intVote));
-        return paramsHash;
-    }
-
-    function isRegistered(address _avatar) public constant returns(bool) {
-        return organizations[_avatar].isRegistered;
-    }
-
-    /**
-    * @dev registering an organization to the univarsal scheme
-    * @param _avatar avatar of the organization
-    */
-    function registerOrganization(Avatar _avatar) public {
-        // Pay fees for using scheme:
-        if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
-            nativeToken.transferFrom(_avatar, beneficiary, fee);
-        }
-
-        Organization memory org;
-        org.isRegistered = true;
-        organizations[_avatar] = org;
-        OrganizationRegistered(_avatar);
+        return  (keccak256(_voteParams, _intVote));
     }
 
     /**
@@ -114,25 +86,27 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     * @param _newController address of the new controller that is being porposed
     * @return an id which represents the porposal
     */
-    function proposeUpgrade(Avatar _avatar, address _newController) public returns(bytes32) {
-        Organization memory org = organizations[_avatar];
-        require(org.isRegistered); // Check org is registred to use this universal scheme.
+    function proposeUpgrade(Avatar _avatar, address _newController)
+        public
+        onlyRegisteredOrganization(_avatar)
+        returns(bytes32)
+    {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this));
-        if (organizations[_avatar].proposals[proposalId].proposalType != 0) {
+        if (organizationsProposals[_avatar][proposalId].proposalType != 0) {
             revert();
         }
-        organizations[_avatar].proposals[proposalId].proposalType = 1;
-        organizations[_avatar].proposals[proposalId].newContOrScheme = _newController;
+        organizationsProposals[_avatar][proposalId].proposalType = 1;
+        organizationsProposals[_avatar][proposalId].upgradeContract = _newController;
         LogNewUpgradeProposal(_avatar, proposalId, params.intVote, _newController);
-        params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
+        params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the proposal submitter.*/
         return proposalId;
     }
 
     /**
-    * @dev porpose to replace this schme by another upgrading scheme
+    * @dev porpose to replace this scheme by another upgrading scheme
     * @param _avatar avatar of the organization
-    * @param _scheme address of the new upgrad ing scheme
+    * @param _scheme address of the new upgrading scheme
     * @param _params ???
     * @param _tokenFee  ???
     * @param _fee ???
@@ -146,27 +120,24 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         uint _fee
     )
         public
+        onlyRegisteredOrganization(_avatar)
         returns(bytes32)
     {
-        Organization memory org = organizations[_avatar];
         Parameters memory params = parameters[getParametersFromController(_avatar)];
-
-        require(org.isRegistered); // Check org is registred to use this universal scheme.
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this));
-        if (organizations[_avatar].proposals[proposalId].proposalType != 0) {
+        if (organizationsProposals[_avatar][proposalId].proposalType != 0) {
             revert();
         }
 
-        // Setting the struct:
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 2,
-            newContOrScheme: _scheme,
+            upgradeContract: _scheme,
             params: _params,
             tokenFee: _tokenFee,
             fee: _fee
         });
-        organizations[_avatar].proposals[proposalId] = proposal;
+        organizationsProposals[_avatar][proposalId] = proposal;
 
         LogChangeUpgradeSchemeProposal(
             _avatar,
@@ -191,39 +162,38 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         // Check if vote was successful:
-        if (_param != 1) {
-            delete organizations[_avatar].proposals[_proposalId];
-            return true;
-        }
+        if (_param == 1) {
+
         // Define controller and get the parmas:
-        Controller controller = Controller(Avatar(_avatar).owner());
-        UpgradeProposal memory proposal = organizations[_avatar].proposals[_proposalId];
+            Controller controller = Controller(Avatar(_avatar).owner());
+            UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // Upgrading controller:
-        if (proposal.proposalType == 1) {
-            if (!controller.upgradeController(proposal.newContOrScheme)) {
-                revert();
-            }
-        }
+            if (proposal.proposalType == 1) {
+                if (!controller.upgradeController(proposal.upgradeContract)) {
+                    revert();
+                  }
+                }
 
         // Changing upgrade scheme:
-        if (proposal.proposalType == 2) {
-            bytes4 permissions = controller.getSchemePermissions(this);
-            if (proposal.fee != 0) {
-                if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.newContOrScheme, proposal.fee)) {
+            if (proposal.proposalType == 2) {
+                bytes4 permissions = controller.getSchemePermissions(this);
+                if (proposal.fee != 0) {
+                    if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.upgradeContract, proposal.fee)) {
+                        revert();
+                      }
+                    }
+                if (!controller.registerScheme(proposal.upgradeContract, proposal.params, permissions)) {
                     revert();
+                  }
+                if (proposal.upgradeContract != address(this) ) {
+                    if (!controller.unregisterSelf()) {
+                        revert();
+                      }
+                    }
+                  }
                 }
-            }
-            if (!controller.registerScheme(proposal.newContOrScheme, proposal.params, permissions)) {
-                revert();
-            }
-            if (proposal.newContOrScheme != address(this) ) {
-                if (!controller.unregisterSelf()) {
-                    revert();
-                }
-            }
-        }
-        delete organizations[_avatar].proposals[_proposalId];
+        delete organizationsProposals[_avatar][_proposalId];
         return true;
     }
 }
