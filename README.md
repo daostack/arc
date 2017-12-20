@@ -15,6 +15,6 @@ Gradually, bit by bit, we aim to build the first decentralized corporation, an a
 
 # Contributing
 
-Contributions and pull requests are very welcome. Check out [The DAOStack roadmap](docs/roadmap.md), and join us on [Slack](daostack.slack.com).
+Contributions and pull requests are very welcome. Check out [The DAOStack roadmap](docs/roadmap.md), and join us on [Slack](https://daostack.slack.com).
 
 If you want to contribute to the code, check out  [CONTRIBUTING.md](CONTRIBUTING.md).
