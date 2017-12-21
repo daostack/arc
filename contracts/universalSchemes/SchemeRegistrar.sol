@@ -83,8 +83,7 @@ contract SchemeRegistrar is UniversalScheme {
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        bytes32 paramsHash = (keccak256(_voteRegisterParams, _voteRemoveParams, _intVote));
-        return paramsHash;
+        return keccak256(_voteRegisterParams, _voteRemoveParams, _intVote);
     }
 
     /**
@@ -115,6 +114,11 @@ contract SchemeRegistrar is UniversalScheme {
     onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
+        if (_autoRegister) {
+            //This should revert for non arc scheme which do not have Fallback functions.
+            //We do it here to prevent revert at the proposal execution after the voting proccess.
+            UniversalScheme(_scheme).isRegistered(Avatar(_avatar));
+        }
         // propose
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
@@ -190,42 +194,39 @@ contract SchemeRegistrar is UniversalScheme {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
-        if (_param != 1) {
-            delete organizationsProposals[_avatar][_proposalId];
-            LogProposalExecuted(_avatar, _proposalId);
-            return true;
-        }
+        if (_param == 1) {
+
         // Define controller and get the parmas:
-        Controller controller = Controller(Avatar(_avatar).owner());
-        SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+            Controller controller = Controller(Avatar(_avatar).owner());
+            SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // Add a scheme:
-        if (proposal.proposalType == 1) {
-            if (proposal.fee != 0) {
-                if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.scheme, proposal.fee)) {
-                    revert();
+            if (proposal.proposalType == 1) {
+                if (proposal.fee != 0) {
+                    if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.scheme, proposal.fee)) {
+                        revert();
+                      }
+                    }
+                if (proposal.isRegistering == false) {
+                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
+                        revert();
+                      }
+                      } else {
+                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
+                        revert();
+                    }
                 }
-            }
-            if (proposal.isRegistering == false) {
-                if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
-                    revert();
+                if (proposal.autoRegister) {
+                    UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
+                  }
                 }
-            } else {
-                if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
-                    revert();
-                }
-            }
-            if (proposal.autoRegister) {
-                UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
-            }
-        }
         // Remove a scheme:
-        if ( proposal.proposalType == 2 ) {
-            if (!controller.unregisterScheme(proposal.scheme)) {
-                revert();
-            }
-        }
-
+            if ( proposal.proposalType == 2 ) {
+                if (!controller.unregisterScheme(proposal.scheme)) {
+                    revert();
+                  }
+                }
+          }
         delete organizationsProposals[_avatar][_proposalId];
         LogProposalExecuted(_avatar, _proposalId);
         return true;

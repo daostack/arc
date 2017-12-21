@@ -16,6 +16,17 @@ export const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
 
 var dopts = require('default-options');
 
+
+export class TestSetup {
+  constructor() {
+  }
+}
+
+export class VotingMachine {
+  constructor() {
+  }
+}
+
 export class Organization {
   constructor() {
   }
@@ -226,6 +237,49 @@ export function assertInternalFunctionException(error) {
 export function assertJump(error) {
   assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned' + error.message);
 }
+
+export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
+  var votingMachine = new VotingMachine();
+  var accounts = web3.eth.accounts;
+  votingMachine.absoluteVote = await AbsoluteVote.new();
+
+  // set up a reputaiton system
+  var reputation = await Reputation.new();
+  //var avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
+  votingMachine.reputationArray = [20, 40 ,70];
+  await reputation.mint(accounts[0], votingMachine.reputationArray[0]);
+  await reputation.mint(accounts[1], votingMachine.reputationArray[1]);
+  await reputation.mint(accounts[2], votingMachine.reputationArray[2]);
+  // register some parameters
+  await votingMachine.absoluteVote.setParameters(reputation.address, precReq, isOwnedVote);
+  votingMachine.params = await votingMachine.absoluteVote.getParametersHash(reputation.address, precReq, isOwnedVote);
+  return votingMachine;
+};
+
+export const setupOrganization = async function (genesisScheme,genesisSchemeOwner,founderToken,founderReputation) {
+  var org = new Organization();
+
+  var tx = await genesisScheme.forgeOrg("testOrg","TEST","TST",[genesisSchemeOwner],[founderToken],[founderReputation]);
+  assert.equal(tx.logs.length, 1);
+  assert.equal(tx.logs[0].event, "NewOrg");
+  var avatarAddress = tx.logs[0].args._avatar;
+  org.avatar = await Avatar.at(avatarAddress);
+  var tokenAddress = await org.avatar.nativeToken();
+  org.token = await DAOToken.at(tokenAddress);
+  var reputationAddress = await org.avatar.nativeReputation();
+  org.reputation = await Reputation.at(reputationAddress);
+  return org;
+};
+
+export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
+  let voteInfo;
+  voteInfo = await absoluteVote.voteInfo(proposalId, voterAddress);
+  // voteInfo has the following structure
+  // int vote;
+  assert.equal(voteInfo[0], _voteInfo[0]);
+  // uint reputation;
+  assert.equal(voteInfo[1], _voteInfo[1]);
+};
 
 // export function settingsForTest() {
 //     // return settings used for testing
