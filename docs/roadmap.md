@@ -12,7 +12,7 @@ We aim to launch an MVP platform for a collaborative DAO before the end of Q1 an
 
 ## Formal and informal whitepaper
 
-The whitepaper describes the general structure of a collaborative DAO and the particular protocol (and code) of DAOStack. The goal is to produce two versions: an [informal version](DAO_protocol.md) that explains the general concepts and ideas in layman's terms, and a [formal specification](DAO.pdf) in which all aspects are rigorously defined. Rough content should include:
+The whitepaper describes the general structure of a collaborative DAO and the particular protocol (and code) of DAOStack. The goal is to produce two versions: an [informal version](DAO-protocol.md) that explains the general concepts and ideas in layman's terms, and a [formal specification](dao.pdf) in which all aspects are rigorously defined. Rough content should include:
 
 1. Background, intro, definitions, basics, vision, purpose, mission
 2. Governance model (and its potential evolution) 
@@ -30,7 +30,7 @@ The core of the DAOStack is a set of [Smart Contracts](../contracts), written in
 1. A number of proposal schemas, including: Median voting, Yes/No proposal, investment distribution 
 1. Documentations
 
-See also [this issue](https/:/github.com/daostack/daostack/issues/14)
+See also [this issue](https://github.com/daostack/daostack/issues/14)
 
 # UI
 
