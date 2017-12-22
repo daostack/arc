@@ -1,17 +1,17 @@
 
 # Contributing
 
-Bug reports and pull requests very much welcomed.
+Bug reports and pull requests are very much welcomed.
 
-Please make sure test pass before submitting a PR.
+Please make sure all tests pass before submitting a PR.
 
-We try to follow the style guidelines from http://solidity.readthedocs.io/en/develop/style-guide.html
+We try to follow the style guidelines found at http://solidity.readthedocs.io/en/develop/style-guide.html
 
-The development id done on unix based systems.  
+The development is done on unix based systems.
 
 # Testing
 
-These contracts are tested using the truffle framework
+These contracts are tested using the truffle framework.
 
 ## Installation
 
@@ -37,18 +37,18 @@ On a second terminal, run the tests:
 
 For solidity, we are following the style guide here: http://solidity.readthedocs.io/en/develop/style-guide.html
 
-A Solidity linter (solium is installed, which can be run with:
+A Solidity linter Solium is used for ensuring proper Solidity practices, which can be run with:
 
     yarn run solium
 
-Code should survive Javascript linting as well:
+Code should pass Javascript linting as well:
 
     yarn run lint
 
 # Breakpoints
 
-if you run tests with:
+If you run tests with:
 
     node debug ./node_modules/truffle/build/cli.bundled.js test
 
-it is possible to use `debugger` statemetns and inspect the state
+it is possible to use `debugger` statements and inspect the state of the tests during runtime. 
