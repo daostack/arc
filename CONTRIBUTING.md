@@ -50,3 +50,4 @@ All Javascript must be formatted with [ESLint](http://eslint.org/) using the DAO
 
 ### Solidity
 All Solidity files must follow the style guide found [here](http://solidity.readthedocs.io/en/develop/style-guide.html).
+All Solidity code must pass [solium](https://github.com/duaraghav8/Solium) linter check using DAOSTACK [configuration](https://github.com/daostack/daostack/blob/master/.soliumrc.json).
