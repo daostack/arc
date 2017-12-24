@@ -19,7 +19,7 @@ var UniversalGenesisSchemeInst;
 var schemeRegistrarInst;
 var globalConstraintRegistrarInst;
 var upgradeSchemeInst;
-var ControllerInst;
+var ControllerInst;GenesisScheme
 var OrganizationsBoardInst;
 var ReputationInst;
 var DAOTokenInst;
@@ -102,7 +102,7 @@ module.exports = async function(deployer) {
       var feeArray = [UniversalRegisterFee, UniversalRegisterFee, UniversalRegisterFee];
 
       // set DAOstack initial schmes:
-      await genesisSchemeInst.setInitialSchemes(
+      await genesisSchemeInst.setSchemes(
         AvatarInst.address,
         schemesArray,
         paramsArray,

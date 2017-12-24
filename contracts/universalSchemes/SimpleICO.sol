@@ -13,7 +13,6 @@ import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
 contract MirrorContractICO is Destructible {
     Avatar public organization; // The organization address (the avatar)
     SimpleICO public simpleICO;  // The ICO contract address
-
     /**
     * @dev Constructor, setting the organization and ICO scheme.
     * @param _organization The organization's avatar.
@@ -69,7 +68,7 @@ contract SimpleICO is UniversalScheme {
     // A mapping from the organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) public organizations;
 
-    mapping(bytes32=>Parameters) parameters;
+    mapping(bytes32=>Parameters) public parameters;
 
     event DonationReceived(address indexed organization, address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
 
@@ -83,14 +82,16 @@ contract SimpleICO is UniversalScheme {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
-    // If someone accidentally sends ether to this contract, revert;
-    function () public {
-        revert();
-    }
-
     /**
-     * @dev Hash the parameters, save them if necessary, and return the hash value
-     */
+    * @dev Hash the parameters, save them if necessary, and return the hash value
+    * @param _cap the ico cap
+    * @param _price  represents Tokens per 1 Eth
+    * @param _startBlock  ico start block
+    * @param _endBlock ico end
+    * @param _beneficiary the ico ether beneficiary
+    * @param _admin the address of the ico admin which can hald and resume the ICO.
+    * @return bytes32 -the params hash
+    */
     function setParameters(
         uint _cap,
         uint _price,
@@ -110,21 +111,29 @@ contract SimpleICO is UniversalScheme {
             _beneficiary,
             _admin
         );
-        if (parameters[paramsHash].cap != 0) {
-            parameters[paramsHash].cap = _cap;
-            parameters[paramsHash].price = _price;
-            parameters[paramsHash].startBlock = _startBlock;
-            parameters[paramsHash].endBlock = _endBlock;
-            parameters[paramsHash].beneficiary = _beneficiary;
-            parameters[paramsHash].admin = _admin;
+        if (parameters[paramsHash].cap == 0) {
+            parameters[paramsHash] = Parameters({
+                cap: _cap,
+                price: _price,
+                startBlock: _startBlock,
+                endBlock:_endBlock,
+                beneficiary:_beneficiary,
+                admin:_admin
+            });
         }
         return paramsHash;
     }
 
     /**
-     * @dev Calculate a hash of the given parameters.
-     * @return bytes32 Hash of the given parameters.
-     */
+    * @dev Hash the parameters and return the hash value
+    * @param _cap the ico cap
+    * @param _price  represents Tokens per 1 Eth
+    * @param _startBlock  ico start block
+    * @param _endBlock ico end
+    * @param _beneficiary the ico ether beneficiary
+    * @param _admin the address of the ico admin which can hald and resume the ICO.
+    * @return bytes32 -the params hash
+    */
     function getParametersHash(
         uint _cap,
         uint _price,
@@ -156,18 +165,22 @@ contract SimpleICO is UniversalScheme {
         if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
             nativeToken.transferFrom(_avatar, beneficiary, fee);
         }
+        organizations[_avatar].isRegistered = true;
+        OrganizationRegistered(_avatar);
+    }
 
-        // Check there is no ongoing ICO:
-        require(!isActiveICO(_avatar));
-
-        // Set the organization data:
+    /**
+     * @dev start an ICO
+     * @param _avatar The Avatar's of the organization
+     */
+    function start(Avatar _avatar) public {
+        require(!isActive(_avatar));
         Organization memory org;
         org.isRegistered = true;
         org.paramsHash = getParametersFromController(_avatar);
         require(parameters[org.paramsHash].cap != 0);
         org.avatarContractICO = new MirrorContractICO(_avatar, this);
         organizations[_avatar] = org;
-        LogOrgRegistered(_avatar);
     }
 
     /**
@@ -196,7 +209,7 @@ contract SimpleICO is UniversalScheme {
      * @param _avatar The Avatar's of the organization
      * @return bool which represents a successful of the function
      */
-    function isActiveICO(address _avatar) public constant returns(bool) {
+    function isActive(address _avatar) public constant returns(bool) {
         Organization memory org = organizations[_avatar];
         Parameters memory params = parameters[org.paramsHash];
         if (! org.isRegistered) {
@@ -227,10 +240,11 @@ contract SimpleICO is UniversalScheme {
         Parameters memory params = parameters[org.paramsHash];
 
         // Check ICO is active:
-        require(isActiveICO(_avatar));
+        require(isActive(_avatar));
 
         // Check ICO is not halted:
         require(!org.isHalted);
+
 
         uint incomingEther;
         uint change;
@@ -243,9 +257,9 @@ contract SimpleICO is UniversalScheme {
             incomingEther = msg.value;
         }
         uint tokens = incomingEther.mul(params.price);
-
         // Send ether to the defined address, mint, and send change to beneficiary:
         params.beneficiary.transfer(incomingEther);
+
         Controller controller = Controller(_avatar.owner());
         if (!controller.mintTokens(tokens, _beneficiary)) {
             revert();
@@ -253,9 +267,8 @@ contract SimpleICO is UniversalScheme {
         if (change != 0) {
             _beneficiary.transfer(change);
         }
-
         // Update total raised, call event and return amount of tokens bought:
-        org.totalEthRaised += incomingEther;
+        organizations[_avatar].totalEthRaised += incomingEther;
         DonationReceived(_avatar, _beneficiary, incomingEther, tokens);
         return tokens;
     }

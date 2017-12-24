@@ -18,11 +18,11 @@ const setup = async function (permission='0xffffffff') {
   token  = await DAOToken.new("TEST","TST");
   // set up a reputaiton system
   reputation = await Reputation.new();
-  avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
+  avatar = await Avatar.new('name', token.address, reputation.address);
   var schemesArray = [accounts[0]];
   var paramsArray = [100];
   var permissionArray = [permission];
-  controller = await Controller.new(avatar.address,token.address,reputation.address,schemesArray,paramsArray,permissionArray);
+  controller = await Controller.new(avatar.address,schemesArray,paramsArray,permissionArray);
   return controller;
 };
 

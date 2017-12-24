@@ -118,7 +118,7 @@ contract SimpleContributionScheme is UniversalScheme {
         Organization memory org;
         org.isRegistered = true;
         organizations[_avatar] = org;
-        LogOrgRegistered(_avatar);
+        OrganizationRegistered(_avatar);
     }
 
     /**
