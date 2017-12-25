@@ -131,8 +131,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Open voting:
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this));
-        // Write the signers mapping:
         assert(_signaturesReqToCancel >= _signersArray.length);
+        assert(_periodLength > 0);
+        // Write the signers mapping:
         for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
             organizationsData[_avatar][proposalId].signers[_signersArray[cnt]] = true;
         }
@@ -212,6 +213,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         external
         returns(uint)
     {
+        assert(_signaturesReqToCancel >= _signersArray.length);
+        assert(_periodLength > 0);
         // Collect funds:
         uint totalAmount = _amountPerPeriod.mul(_numOfAgreedPeriods);
         _token.transferFrom(msg.sender, this, totalAmount);
@@ -228,7 +231,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         agreements[agreementsCounter].signaturesReqToCancel = _signaturesReqToCancel;
 
         // Write the signers mapping:
-        assert(_signaturesReqToCancel >= _signersArray.length);
         for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
             agreements[agreementsCounter].signers[_signersArray[cnt]] = true;
         }

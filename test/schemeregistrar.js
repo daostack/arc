@@ -192,13 +192,13 @@ contract('SchemeRegistrar', function(accounts) {
           var organizationsProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
           assert.equal(organizationsProposals[2],0);//proposalType
          });
-   it("execute proposeScheme  and execute -yes - autoRegister==TRUE arc scheme", async function() {
+   it("execute proposeScheme  and execute -yes - autoRegisterOrganization==TRUE arc scheme", async function() {
      var testSetup = await setup(accounts);
-     var autoRegister = true;
+     var autoRegisterOrganization = true;
      await testSetup.schemeRegistrar.registerOrganization(testSetup.org.avatar.address);
      var universalScheme = await UniversalScheme.new();
      assert.equal(await universalScheme.isRegistered(testSetup.org.avatar.address),false);
-     var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,0,false,testSetup.standardTokenMock.address,0,autoRegister);
+     var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,0,false,testSetup.standardTokenMock.address,0,autoRegisterOrganization);
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
      await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
@@ -211,11 +211,11 @@ contract('SchemeRegistrar', function(accounts) {
       await testSetup.schemeRegistrar.registerOrganization(testSetup.org.avatar.address);
       var universalScheme = await UniversalScheme.new();
       assert.equal(await universalScheme.isRegistered(testSetup.org.avatar.address),false);
-      var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,0,false,testSetup.standardTokenMock.address,0,autoRegister);
+      var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,0,false,testSetup.standardTokenMock.address,0,autoRegisterOrganization);
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-      assert.equal(await universalScheme.isRegistered(testSetup.org.avatar.address),autoRegister);
+      assert.equal(await universalScheme.isRegistered(testSetup.org.avatar.address),autoRegisterOrganization);
      });
 
     it("execute proposeScheme   auto register non arc scheme should revert in proposal", async function() {
@@ -223,7 +223,7 @@ contract('SchemeRegistrar', function(accounts) {
      await testSetup.schemeRegistrar.registerOrganization(testSetup.org.avatar.address);
      try {
        await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,false,testSetup.standardTokenMock.address,0,true);
-       assert(false,"proposeUpgrade should  revert - due to autoRegister and non-arc scheme !");
+       assert(false,"proposeUpgrade should  revert - due to autoRegisterOrganization and non-arc scheme !");
      }catch(ex){
        helpers.assertVMException(ex);
      }

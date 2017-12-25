@@ -93,9 +93,6 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this));
-        if (organizationsProposals[_avatar][proposalId].proposalType != 0) {
-            revert();
-        }
         organizationsProposals[_avatar][proposalId].proposalType = 1;
         organizationsProposals[_avatar][proposalId].upgradeContract = _newController;
         LogNewUpgradeProposal(_avatar, proposalId, params.intVote, _newController);
