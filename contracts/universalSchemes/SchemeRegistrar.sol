@@ -190,7 +190,7 @@ contract SchemeRegistrar is UniversalScheme {
     * @param _param identifies the action to be taken
     */
     // TODO: this call can be simplified if we save the _avatar together with the proposal
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 

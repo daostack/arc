@@ -1,0 +1,521 @@
+import * as helpers from './helpers';
+const Controller = artifacts.require("./Controller.sol");
+const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
+const VestingScheme = artifacts.require('./VestingScheme.sol');
+const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const GenesisScheme = artifacts.require("./GenesisScheme.sol");
+const Avatar = artifacts.require("./Avatar.sol");
+const DAOToken = artifacts.require("./DAOToken.sol");
+const Reputation = artifacts.require("./Reputation.sol");
+
+
+
+export class VestingSchemeParams {
+  constructor() {
+  }
+}
+
+const setupVestingSchemeParams = async function(
+                                            vestingScheme,
+                                            ) {
+  var vestingSchemeParams = new VestingSchemeParams();
+  vestingSchemeParams.votingMachine = await helpers.setupAbsoluteVote();
+  await vestingScheme.setParameters(vestingSchemeParams.votingMachine.params,vestingSchemeParams.votingMachine.absoluteVote.address);
+  vestingSchemeParams.paramsHash = await vestingScheme.getParametersHash(vestingSchemeParams.votingMachine.params,vestingSchemeParams.votingMachine.absoluteVote.address);
+  return vestingSchemeParams;
+};
+
+
+const setupNewController = async function (permission='0xffffffff') {
+  var accounts = web3.eth.accounts;
+  var token  = await DAOToken.new("TEST","TST");
+  // set up a reputaiton system
+  var reputation = await Reputation.new();
+  var avatar = await Avatar.new('name', token.address, reputation.address);
+  var schemesArray = [accounts[0]];
+  var paramsArray = [100];
+  var permissionArray = [permission];
+  var controller = await Controller.new(avatar.address,schemesArray,paramsArray,permissionArray);
+  return controller;
+};
+
+
+const setup = async function (accounts) {
+   var testSetup = new helpers.TestSetup();
+   testSetup.fee = 10;
+   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
+   testSetup.vestingScheme = await VestingScheme.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
+   testSetup.genesisScheme = await GenesisScheme.deployed();
+   testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
+   testSetup.vestingSchemeParams= await setupVestingSchemeParams(testSetup.vestingScheme);
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.vestingScheme.address],[testSetup.vestingSchemeParams.paramsHash],[testSetup.standardTokenMock.address],[100],["0x0000000F"]);
+   //give some tokens to organization avatar so it could register the univeral scheme.
+   await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
+   return testSetup;
+};
+
+contract('VestingScheme', function(accounts) {
+  before(function() {
+    helpers.etherForEveryone();
+  });
+
+  // it("constructor", async function() {
+  //   var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
+  //   var vestingScheme = await VestingScheme.new(standardTokenMock.address,10,accounts[1]);
+  //   var token = await vestingScheme.nativeToken();
+  //   assert.equal(token,standardTokenMock.address);
+  //   var fee = await vestingScheme.fee();
+  //   assert.equal(fee,10);
+  //   var beneficiary = await vestingScheme.beneficiary();
+  //   assert.equal(beneficiary,accounts[1]);
+  //  });
+  //
+  //  it("setParameters", async function() {
+  //    var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
+  //    var vestingScheme = await VestingScheme.new(standardTokenMock.address,10,accounts[1]);
+  //    var absoluteVote = await AbsoluteVote.new();
+  //    await vestingScheme.setParameters("0x1234",absoluteVote.address);
+  //    var paramHash = await vestingScheme.getParametersHash("0x1234",absoluteVote.address);
+  //    var parameters = await vestingScheme.parameters(paramHash);
+  //    assert.equal(parameters[1],absoluteVote.address);
+  //    });
+  //  //
+  //   it("registerOrganization - check fee payment ", async function() {
+  //     var testSetup = await setup(accounts);
+  //     await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+  //     var balanceOfBeneficiary  = await testSetup.standardTokenMock.balanceOf(accounts[0]);
+  //     assert.equal(balanceOfBeneficiary.toNumber(),testSetup.fee);
+  //   });
+
+    //  it("proposeVestingAgreement log", async function() {
+    //    var testSetup = await setup(accounts);
+    //    await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+    //    var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+    //                                                                   accounts[1],
+    //                                                                   web3.eth.blockNumber,
+    //                                                                  15,
+    //                                                                  2,
+    //                                                                  3,
+    //                                                                  11,
+    //                                                                  3,
+    //                                                                  [accounts[0],accounts[1],accounts[2]],
+    //                                                                  testSetup.org.avatar.address);
+    //    assert.equal(tx.logs.length, 1);
+    //    assert.equal(tx.logs[0].event, "LogAgreementProposal");
+    //    var avatarAddress = await helpers.getValueFromLogs(tx, '_avatar',1);
+    //    assert.equal(avatarAddress,testSetup.org.avatar.address);
+    //   });
+     //
+    //   it("proposeVestingAgreement without regisration -should fail", async function() {
+    //     var testSetup = await setup(accounts);
+    //     try{
+    //       await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+    //                                                                      accounts[1],
+    //                                                                      web3.eth.blockNumber,
+    //                                                                     15,
+    //                                                                     2,
+    //                                                                     3,
+    //                                                                     11,
+    //                                                                     3,
+    //                                                                     [accounts[0],accounts[1],accounts[2]],
+    //                                                                     testSetup.org.avatar.address);
+    //       assert(false,"proposeUpgrade should  fail - due to no registration !");
+    //     }catch(ex){
+    //       helpers.assertVMException(ex);
+    //     }
+    //    });
+
+      //  it("proposeVestingAgreement check owner vote", async function() {
+      //    var testSetup = await setup(accounts);
+      //    await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+      //    var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+      //                                                                   accounts[1],
+      //                                                                   web3.eth.blockNumber,
+      //                                                                   15,
+      //                                                                   2,
+      //                                                                   3,
+      //                                                                   11,
+      //                                                                   3,
+      //                                                                   [accounts[0],accounts[1],accounts[2]],
+      //                                                                   testSetup.org.avatar.address);
+      //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      //    await helpers.checkVoteInfo(testSetup.vestingSchemeParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.vestingSchemeParams.votingMachine.reputationArray[0]]);
+      //   });
+        //
+        it("proposeVestingAgreement check assert _signaturesReqToCancel >= _signersArray.length", async function() {
+          var testSetup = await setup(accounts);
+          var _signaturesReqToCancel = 5;
+          var _signersArray = [];
+          for (var i=0;i<=_signaturesReqToCancel;i++){
+            _signersArray[i] = accounts[i];
+          }
+
+          await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+          try {
+           await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+                                                                         accounts[1],
+                                                                         web3.eth.blockNumber,
+                                                                         15,
+                                                                         2,
+                                                                         3,
+                                                                         11,
+                                                                         _signaturesReqToCancel,
+                                                                         _signersArray,
+                                                                         testSetup.org.avatar.address);
+           assert(false,"proposeVestingAgreement should fail - due to _signaturesReqToCancel >= _signersArray.length !");
+          }catch(ex){
+           helpers.assertVMException(ex);
+          }
+         });
+
+
+
+          //  it("execute proposeVestingAgreement controller -yes - proposal data delete", async function() {
+          //    var testSetup = await setup(accounts);
+           //
+          //    await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+          //    var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+          //                                                                   accounts[1],
+          //                                                                   web3.eth.blockNumber,
+          //                                                                   15,
+          //                                                                   2,
+          //                                                                   3,
+          //                                                                   11,
+          //                                                                   0,
+          //                                                                   [],
+          //                                                                   testSetup.org.avatar.address);
+          //   //Vote with reputation to trigger execution
+          //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+          //    //check organizationsProposals before excution
+          //    var organizationsData = await testSetup.vestingScheme.organizationsData(testSetup.org.avatar.address,proposalId);
+          //    assert.equal(organizationsData[0],testSetup.org.token.address);//proposalType
+          //    await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+          //    //check organizationsData after excution
+          //    organizationsData = await testSetup.vestingScheme.organizationsData(testSetup.org.avatar.address,proposalId);
+          //    assert.equal(organizationsData[0],0x0000000000000000000000000000000000000000);//new contract address
+          //   });
+           //
+          //   it("execute proposeVestingAgreement  -from none voting contact -should fail", async function() {
+          //     var testSetup = await setup(accounts);
+          //     await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+          //     var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+          //                                                                    accounts[1],
+          //                                                                    web3.eth.blockNumber,
+          //                                                                    15,
+          //                                                                    2,
+          //                                                                    3,
+          //                                                                    11,
+          //                                                                    0,
+          //                                                                    [],
+          //                                                                    testSetup.org.avatar.address);
+          //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+          //     //check organizationsProposals before excution
+          //     var organizationsData = await testSetup.vestingScheme.organizationsData(testSetup.org.avatar.address,proposalId);
+          //     assert.equal(organizationsData[0],testSetup.org.token.address);
+          //     try{
+          //     await testSetup.vestingScheme.execute(proposalId,testSetup.org.avatar.address,0);
+          //     assert(false,"execute should fail - due because it is not called from voting contract !");
+          //      }catch(ex){
+          //       helpers.assertVMException(ex);
+          //      }
+          //    });
+           //
+          //   it("executeproposeVestingAgreement - no decision  - proposal data delete", async function() {
+          //     var testSetup = await setup(accounts);
+          //     await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+          //     var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+          //                                                                    accounts[1],
+          //                                                                    web3.eth.blockNumber,
+          //                                                                    15,
+          //                                                                    2,
+          //                                                                    3,
+          //                                                                    11,
+          //                                                                    0,
+          //                                                                    [],
+          //                                                                    testSetup.org.avatar.address);
+          //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+          //     //check organizationsProposals before excution
+          //     var organizationsData = await testSetup.vestingScheme.organizationsData(testSetup.org.avatar.address,proposalId);
+          //     assert.equal(organizationsData[0],testSetup.org.token.address);
+           //
+          //     //Vote with reputation to trigger execution
+          //     await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
+          //     //check organizationsProposals after excution
+          //     organizationsData = await testSetup.vestingScheme.organizationsData(testSetup.org.avatar.address,proposalId);
+          //     assert.equal(organizationsData[0],0x0000000000000000000000000000000000000000);//new contract address
+          //    });
+
+            //  it("execute proposeVestingAgreement controller -yes - check minting", async function() {
+            //    var testSetup = await setup(accounts);
+            //    var amountPerPeriod =3;
+            //    var numberOfAgreedPeriods = 7;
+             //
+            //    await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+            //    var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+            //                                                                   accounts[1],
+            //                                                                   web3.eth.blockNumber,
+            //                                                                   amountPerPeriod,
+            //                                                                   2,
+            //                                                                   numberOfAgreedPeriods,
+            //                                                                   11,
+            //                                                                   0,
+            //                                                                   [],
+            //                                                                   testSetup.org.avatar.address);
+            //   //Vote with reputation to trigger execution
+            //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+            //    //check organizationsProposals before excution
+            //    var organizationsData = await testSetup.vestingScheme.organizationsData(testSetup.org.avatar.address,proposalId);
+            //    assert.equal(organizationsData[0],testSetup.org.token.address);
+            //    assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),0);
+            //    await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+            //    //check organizationsData after excution
+            //    organizationsData = await testSetup.vestingScheme.organizationsData(testSetup.org.avatar.address,proposalId);
+            //    assert.equal(organizationsData[0],0x0000000000000000000000000000000000000000);//new contract address
+            //    assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),amountPerPeriod*numberOfAgreedPeriods);
+            //   });
+             //
+            //   it("createVestedAgreement check agrrement id ", async function() {
+            //     var testSetup = await setup(accounts);
+            //     var amountPerPeriod =3;
+            //     var numberOfAgreedPeriods = 7;
+             //
+            //     await testSetup.standardTokenMock.approve(testSetup.vestingScheme.address,100,{from:accounts[1]});
+            //     var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
+            //                                                                    accounts[0],
+            //                                                                    accounts[1],
+            //                                                                    web3.eth.blockNumber,
+            //                                                                    amountPerPeriod,
+            //                                                                    2,
+            //                                                                    numberOfAgreedPeriods,
+            //                                                                    11,
+            //                                                                    0,
+            //                                                                    [],{from:accounts[1]});
+            //     assert.equal(tx.logs.length, 1);
+            //     assert.equal(tx.logs[0].event, "NewVestedAgreement");
+            //     var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
+            //     assert.equal(agreementId,0);
+            //     tx = await testSetup.vestingScheme.createVestedAgreement( testSetup.standardTokenMock.address,
+            //                                                               accounts[0],
+            //                                                                    accounts[1],
+            //                                                                    web3.eth.blockNumber,
+            //                                                                    amountPerPeriod,
+            //                                                                    2,
+            //                                                                    numberOfAgreedPeriods,
+            //                                                                    11,
+            //                                                                    0,
+            //                                                                    [],
+            //                                                                    {from:accounts[1]});
+            //     assert.equal(tx.logs.length, 1);
+            //     assert.equal(tx.logs[0].event, "NewVestedAgreement");
+            //     agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
+            //     assert.equal(agreementId,1);
+            //    });
+             //
+            //    it("createVestedAgreement check payment", async function() {
+            //      var testSetup = await setup(accounts);
+            //      var amountPerPeriod =3;
+            //      var numberOfAgreedPeriods = 7;
+             //
+            //      await testSetup.standardTokenMock.approve(testSetup.vestingScheme.address,100,{from:accounts[1]});
+            //      await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
+            //                                                                     accounts[0],
+            //                                                                     accounts[1],
+            //                                                                     web3.eth.blockNumber,
+            //                                                                     amountPerPeriod,
+            //                                                                     2,
+            //                                                                     numberOfAgreedPeriods,
+            //                                                                     11,
+            //                                                                     0,
+            //                                                                     [],{from:accounts[1]});
+            //      assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.vestingScheme.address),amountPerPeriod*numberOfAgreedPeriods);
+            //     });
+             //
+            //     it("createVestedAgreement check assert _signaturesReqToCancel >= _signersArray.length", async function() {
+            //       var testSetup = await setup(accounts);
+            //       var _signaturesReqToCancel = 5;
+            //       var amountPerPeriod =3;
+            //       var numberOfAgreedPeriods = 7;
+            //       var _signersArray = [];
+            //       for (var i=0;i<=_signaturesReqToCancel;i++){
+            //         _signersArray[i] = accounts[i];
+            //       }
+             //
+            //       await testSetup.standardTokenMock.approve(testSetup.vestingScheme.address,100,{from:accounts[1]});
+            //       try {
+            //         await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
+            //                                                                        accounts[0],
+            //                                                                        accounts[1],
+            //                                                                        web3.eth.blockNumber,
+            //                                                                        amountPerPeriod,
+            //                                                                        2,
+            //                                                                        numberOfAgreedPeriods,
+            //                                                                        11,
+            //                                                                        _signaturesReqToCancel,
+            //                                                                        _signersArray,{from:accounts[1]});
+            //        assert(false,"createVestedAgreement should fail - due to _signaturesReqToCancel >= _signersArray.length !");
+            //       }catch(ex){
+            //        helpers.assertVMException(ex);
+            //       }
+            //      });
+
+                //  it("signToCancelAgreement log", async function() {
+                //    var testSetup = await setup(accounts);
+                //    var _signaturesReqToCancel = 5;
+                //    var amountPerPeriod =3;
+                //    var numberOfAgreedPeriods = 7;
+                //    var _signersArray = [];
+                //    for (var i=0;i<_signaturesReqToCancel;i++){
+                //      _signersArray[i] = accounts[i];
+                //    }
+                 //
+                //    await testSetup.standardTokenMock.approve(testSetup.vestingScheme.address,100,{from:accounts[1]});
+                //    var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
+                //                                                                   accounts[0],
+                //                                                                   accounts[1],
+                //                                                                   web3.eth.blockNumber,
+                //                                                                   amountPerPeriod,
+                //                                                                   2,
+                //                                                                   numberOfAgreedPeriods,
+                //                                                                   11,
+                //                                                                   _signaturesReqToCancel,
+                //                                                                   _signersArray,{from:accounts[1]});
+                //    var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
+                //    assert.equal(agreementId,0);
+                //    tx = await testSetup.vestingScheme.signToCancelAgreement(agreementId);
+                //    assert.equal(tx.logs.length, 1);
+                //    assert.equal(tx.logs[0].event, "SignToCancelAgreement");
+                //   });
+                 //
+                //   it("signToCancelAgreement from non signer", async function() {
+                //     var testSetup = await setup(accounts);
+                //     var _signaturesReqToCancel = 1;
+                //     var amountPerPeriod =3;
+                //     var numberOfAgreedPeriods = 7;
+                //     var _signersArray = [];
+                //     for (var i=0;i<_signaturesReqToCancel;i++){
+                //       _signersArray[i] = accounts[i];
+                //     }
+                 //
+                //     await testSetup.standardTokenMock.approve(testSetup.vestingScheme.address,100,{from:accounts[1]});
+                //     var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
+                //                                                                    accounts[0],
+                //                                                                    accounts[1],
+                //                                                                    web3.eth.blockNumber,
+                //                                                                    amountPerPeriod,
+                //                                                                    2,
+                //                                                                    numberOfAgreedPeriods,
+                //                                                                    11,
+                //                                                                    _signaturesReqToCancel,
+                //                                                                    _signersArray,{from:accounts[1]});
+                //     var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
+                //     try{
+                //     await testSetup.vestingScheme.signToCancelAgreement(agreementId,{from: accounts[1]});
+                //     assert(false,"signToCancelAgreement should fail - due to accounts[1] is not autorized signer");
+                //     }catch(ex){
+                //       helpers.assertVMException(ex);
+                //     }
+                //    });
+
+                  //  it("signToCancelAgreement wrong agreementId", async function() {
+                  //    var testSetup = await setup(accounts);
+                  //    var _signaturesReqToCancel = 1;
+                  //    var amountPerPeriod =3;
+                  //    var numberOfAgreedPeriods = 7;
+                  //    var _signersArray = [];
+                  //    for (var i=0;i<_signaturesReqToCancel;i++){
+                  //      _signersArray[i] = accounts[i];
+                  //    }
+                   //
+                  //    await testSetup.standardTokenMock.approve(testSetup.vestingScheme.address,100,{from:accounts[1]});
+                  //    var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
+                  //                                                                   accounts[0],
+                  //                                                                   accounts[1],
+                  //                                                                   web3.eth.blockNumber,
+                  //                                                                   amountPerPeriod,
+                  //                                                                   2,
+                  //                                                                   numberOfAgreedPeriods,
+                  //                                                                   11,
+                  //                                                                   _signaturesReqToCancel,
+                  //                                                                   _signersArray,{from:accounts[1]});
+                  //    var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
+                  //    try{
+                  //    await testSetup.vestingScheme.signToCancelAgreement(agreementId+1);
+                  //    assert(false,"signToCancelAgreement should fail - due to wrong agreementId");
+                  //    }catch(ex){
+                  //      helpers.assertVMException(ex);
+                  //    }
+                  //   });
+                   //
+                  //   it("signToCancelAgreement double sign attempt", async function() {
+                  //     var testSetup = await setup(accounts);
+                  //     var _signaturesReqToCancel = 1;
+                  //     var amountPerPeriod =3;
+                  //     var numberOfAgreedPeriods = 7;
+                  //     var _signersArray = [];
+                  //     for (var i=0;i<_signaturesReqToCancel;i++){
+                  //       _signersArray[i] = accounts[i];
+                  //     }
+                   //
+                  //     await testSetup.standardTokenMock.approve(testSetup.vestingScheme.address,100,{from:accounts[1]});
+                  //     var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
+                  //                                                                    accounts[0],
+                  //                                                                    accounts[1],
+                  //                                                                    web3.eth.blockNumber,
+                  //                                                                    amountPerPeriod,
+                  //                                                                    2,
+                  //                                                                    numberOfAgreedPeriods,
+                  //                                                                    11,
+                  //                                                                    _signaturesReqToCancel,
+                  //                                                                    _signersArray,{from:accounts[1]});
+                  //     var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
+                  //     await testSetup.vestingScheme.signToCancelAgreement(agreementId);
+                  //     try{
+                  //     await testSetup.vestingScheme.signToCancelAgreement(agreementId);
+                  //     assert(false,"signToCancelAgreement should fail - due to double sign attempt");
+                  //     }catch(ex){
+                  //       helpers.assertVMException(ex);
+                  //     }
+                  //    });
+
+                     it("signToCancelAgreement check actual cancel", async function() {
+                       var testSetup = await setup(accounts);
+                       var returnOnCancelAddress = accounts[2];
+                       var _signaturesReqToCancel = 2;
+                       var amountPerPeriod =3;
+                       var numberOfAgreedPeriods = 7;
+                       var _signersArray = [];
+                       for (var i=0;i<_signaturesReqToCancel;i++){
+                         _signersArray[i] = accounts[i];
+                       }
+
+                       await testSetup.standardTokenMock.approve(testSetup.vestingScheme.address,100,{from:accounts[1]});
+                       var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
+                                                                                      accounts[0],
+                                                                                      returnOnCancelAddress,
+                                                                                      web3.eth.blockNumber,
+                                                                                      amountPerPeriod,
+                                                                                      2,
+                                                                                      numberOfAgreedPeriods,
+                                                                                      11,
+                                                                                      _signaturesReqToCancel,
+                                                                                      _signersArray,{from:accounts[1]});
+                       var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
+                       tx = await testSetup.vestingScheme.signToCancelAgreement(agreementId);
+                       var agreement = await testSetup.vestingScheme.agreements(agreementId);
+                       assert.equal(agreement[10],1);
+                       tx = await testSetup.vestingScheme.signToCancelAgreement(agreementId,{from:accounts[1]});
+                       assert.equal(tx.logs.length, 2);
+                       assert.equal(tx.logs[1].event, "LogAgreementCancel");
+                       //check agreement deleted
+                       agreement = await testSetup.vestingScheme.agreements(agreementId);
+                       assert.equal(agreement[0],0x0000000000000000000000000000000000000000);
+                       assert.equal(agreement[1],0x0000000000000000000000000000000000000000);
+                       assert.equal(agreement[10],0);
+                       var balance = await testSetup.standardTokenMock.balanceOf(returnOnCancelAddress);
+                       assert.equal(balance.toNumber(),numberOfAgreedPeriods*amountPerPeriod);
+                      });
+
+
+
+
+});

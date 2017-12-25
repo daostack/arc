@@ -15,9 +15,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     event LogRegisterOrg(address indexed _avatar);
     event LogAgreementProposal(address indexed _avatar, bytes32 _proposalId);
     event LogExecutaion(address indexed _avatar, bytes32 _proposalId, int _result);
-    event LogNewVestedAgreenent(uint indexed _agreementId);
-    event LogSignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
-    event LogRevokeSignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
+    event NewVestedAgreement(uint indexed _agreementId);
+    event SignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
+    event RevokeSignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
     event LogAgreementCancel(uint indexed _agreementId);
     event LogCollect(uint indexed _agreementId);
 
@@ -34,9 +34,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         uint cliffInPeriods;
         uint signaturesReqToCancel;
         uint collectedPeriods;
+        uint signaturesReceivedCounter;
         mapping(address=>bool) signers;
         mapping(address=>bool) signaturesReceived;
-        uint signaturesReceivedCounter;
     }
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
@@ -124,21 +124,18 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         address[] _signersArray,
         Avatar _avatar
     )
-    public
+    external
     onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
         // Open voting:
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this));
-        params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
-
         // Write the signers mapping:
         assert(_signaturesReqToCancel >= _signersArray.length);
         for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
             organizationsData[_avatar][proposalId].signers[_signersArray[cnt]] = true;
         }
-
         // Write parameters:
         organizationsData[_avatar][proposalId].token = Avatar(_avatar).nativeToken();
         organizationsData[_avatar][proposalId].beneficiary = _beneficiary;
@@ -149,6 +146,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         organizationsData[_avatar][proposalId].numOfAgreedPeriods = _numOfAgreedPeriods;
         organizationsData[_avatar][proposalId].cliffInPeriods = _cliffInPeriods;
         organizationsData[_avatar][proposalId].signaturesReqToCancel = _signaturesReqToCancel;
+
+        params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
 
         // Log:
         LogAgreementProposal(_avatar, proposalId);
@@ -161,7 +160,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     * @param _avatar address of the controller
     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
     */
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
@@ -172,23 +171,16 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         delete organizationsData[_avatar][_proposalId];
 
         // Check if vote was successful:
-        if (_param != 1) {
-            // ToDo: log
-            return true;
-        }
-
+        if (_param == 1) {
         // Define controller and mint tokens, check minting actually took place:
-        Controller controller = Controller(Avatar(_avatar).owner());
-        uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
-        uint schemeBalanceBefore = proposedAgreement.token.balanceOf(this);
-        controller.mintTokens(tokensToMint, this);
-        uint schemeBalanceAfter = proposedAgreement.token.balanceOf(this);
-        assert(schemeBalanceBefore + tokensToMint == schemeBalanceAfter);
-        agreements[agreementsCounter] = proposedAgreement;
-        agreementsCounter++;
-
+            Controller controller = Controller(Avatar(_avatar).owner());
+            uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
+            controller.mintTokens(tokensToMint, this);
+            agreements[agreementsCounter] = proposedAgreement;
+            agreementsCounter++;
         // Log the new agreement:
-        LogNewVestedAgreenent(agreementsCounter-1);
+            NewVestedAgreement(agreementsCounter-1);
+       }
         return true;
     }
 
@@ -217,7 +209,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         uint _signaturesReqToCancel,
         address[] _signersArray
     )
-        public
+        external
         returns(uint)
     {
         // Collect funds:
@@ -245,7 +237,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         agreementsCounter++;
 
         // Log new agreement and return id:
-        LogNewVestedAgreenent(agreementsCounter-1);
+        NewVestedAgreement(agreementsCounter-1);
         return(agreementsCounter-1);
     }
 
@@ -263,7 +255,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         agreement.signaturesReceived[msg.sender] = true;
         agreement.signaturesReceivedCounter++;
 
-        // ToDo: Log
+        SignToCancelAgreement(_agreementId,msg.sender);
 
         // Check if threshhold crossed:
         if (agreement.signaturesReceivedCounter == agreement.signaturesReqToCancel) {
@@ -285,7 +277,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         agreement.signaturesReceived[msg.sender] = false;
         agreement.signaturesReceivedCounter--;
 
-        // ToDo: Log
+        RevokeSignToCancelAgreement(_agreementId,msg.sender);
     }
 
     /**
@@ -325,7 +317,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         uint periodsLeft = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
         uint tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
         agreement.token.transfer(agreement.returnOnCancelAddress, tokensLeft);
-
         // Log canceling agreement:
         LogAgreementCancel(_agreementId);
     }

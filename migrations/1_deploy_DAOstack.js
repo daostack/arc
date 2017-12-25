@@ -8,7 +8,7 @@ var Reputation = artifacts.require('./schemes/controller/Reputation.sol');
 var SchemeRegistrar = artifacts.require('./schemes/SchemeRegistrar.sol');
 var SimpleICO = artifacts.require('./SimpleICO.sol');
 var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
-var SimpleContributionScheme = artifacts.require('./SimpleContributionScheme.sol');
+var ContributionReward = artifacts.require('./ContributionReward.sol');
 var TokenCapGC = artifacts.require('./TokenCapGC.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
@@ -117,7 +117,7 @@ module.exports = async function(deployer) {
       await upgradeSchemeInst.registerOrganization(AvatarInst.address);
 
       await deployer.deploy(SimpleICO, tokenAddress, UniversalRegisterFee, avatarAddress);
-      await deployer.deploy(SimpleContributionScheme, tokenAddress, 0, avatarAddress);
+      await deployer.deploy(ContributionReward, tokenAddress, 0, avatarAddress);
     });
 
     await deployer.deploy(TokenCapGC);
