@@ -202,12 +202,12 @@ contract('SchemeRegistrar', function(accounts) {
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
      await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-     assert.equal(await universalScheme.isRegistered(testSetup.org.avatar.address),autoRegister);
+     assert.equal(await universalScheme.isRegistered(testSetup.org.avatar.address),autoRegisterOrganization);
     });
 
-    it("execute proposeScheme  and execute -yes - autoRegister==FALSE arc scheme", async function() {
+    it("execute proposeScheme  and execute -yes - autoRegisterOrganization==FALSE arc scheme", async function() {
       var testSetup = await setup(accounts);
-      var autoRegister = false;
+      var autoRegisterOrganization = false;
       await testSetup.schemeRegistrar.registerOrganization(testSetup.org.avatar.address);
       var universalScheme = await UniversalScheme.new();
       assert.equal(await universalScheme.isRegistered(testSetup.org.avatar.address),false);
