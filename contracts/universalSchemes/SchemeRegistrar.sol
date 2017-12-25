@@ -40,13 +40,8 @@ contract SchemeRegistrar is UniversalScheme {
         bool autoRegister;
     }
 
-    // For each organization, the registrar records the proposals made for this organization
-    struct Organization {
-        bool isRegistered;
-        mapping(bytes32=>SchemeProposal) proposals;
-    }
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) public organizations;
+    mapping(address=>mapping(bytes32=>SchemeProposal)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
@@ -88,30 +83,7 @@ contract SchemeRegistrar is UniversalScheme {
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        bytes32 paramsHash = (keccak256(_voteRegisterParams, _voteRemoveParams, _intVote));
-        return paramsHash;
-    }
-
-    /**
-    * @dev add or update an organisation to this register.
-    * @dev the sender pays a fee (in nativeToken) for using this function, and must approve it before calling the transaction
-    * @param _avatar the address of the organization
-    */
-    function registerOrganization(Avatar _avatar) public {
-        // Pay fees for using scheme
-        if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
-            nativeToken.transferFrom(_avatar, beneficiary, fee);
-        }
-
-        // update the organization in the organizations mapping
-        Organization memory org;
-        org.isRegistered = true;
-        organizations[_avatar] = org;
-        OrganizationRegistered(_avatar);
-    }
-
-    function isRegistered(address _avatar) public constant returns(bool) {
-        return organizations[_avatar].isRegistered;
+        return keccak256(_voteRegisterParams, _voteRemoveParams, _intVote);
     }
 
     /**
@@ -137,18 +109,22 @@ contract SchemeRegistrar is UniversalScheme {
         StandardToken _tokenFee,
         uint _fee,
         bool _autoRegister
-    ) public returns(bytes32)
+    )
+    public
+    onlyRegisteredOrganization(_avatar)
+    returns(bytes32)
     {
-        Organization memory org = organizations[_avatar];
-        // Check if org is registered to use this universal scheme
-        require(org.isRegistered);
-
+        if (_autoRegister) {
+            //This should revert for non arc scheme which do not have Fallback functions.
+            //We do it here to prevent revert at the proposal execution after the voting proccess.
+            UniversalScheme(_scheme).isRegistered(Avatar(_avatar));
+        }
         // propose
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
         bytes32 proposalId = controllerParams.intVote.propose(2, controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this));
 
-        if (organizations[_avatar].proposals[proposalId].proposalType != 0) {
+        if (organizationsProposals[_avatar][proposalId].proposalType != 0) {
             revert();
         }
 
@@ -171,7 +147,7 @@ contract SchemeRegistrar is UniversalScheme {
             _fee,
             _autoRegister
         );
-        organizations[_avatar].proposals[proposalId] = proposal;
+        organizationsProposals[_avatar][proposalId] = proposal;
 
         // vote for this proposal
         controllerParams.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
@@ -185,22 +161,21 @@ contract SchemeRegistrar is UniversalScheme {
     *
     * NB: not only registers the proposal, but also votes for it
     */
-    function proposeToRemoveScheme(Avatar _avatar, address _scheme) public returns(bytes32) {
-        Organization memory org = organizations[_avatar];
-
-        // Check if the orgazation is registred to use this universal scheme.
-        require(org.isRegistered);
-
+    function proposeToRemoveScheme(Avatar _avatar, address _scheme)
+    public
+    onlyRegisteredOrganization(_avatar)
+    returns(bytes32)
+    {
         bytes32 paramsHash = getParametersFromController(_avatar);
         Parameters memory params = parameters[paramsHash];
 
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, _avatar, ExecutableInterface(this));
-        if (organizations[_avatar].proposals[proposalId].proposalType != 0) {
+        if (organizationsProposals[_avatar][proposalId].proposalType != 0) {
             revert();
         }
-        organizations[_avatar].proposals[proposalId].proposalType = 2;
-        organizations[_avatar].proposals[proposalId].scheme = _scheme;
+        organizationsProposals[_avatar][proposalId].proposalType = 2;
+        organizationsProposals[_avatar][proposalId].scheme = _scheme;
         LogRemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);
         // vote for this proposal
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
@@ -219,43 +194,40 @@ contract SchemeRegistrar is UniversalScheme {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
-        if (_param != 1) {
-            delete organizations[_avatar].proposals[_proposalId];
-            LogProposalExecuted(_avatar, _proposalId);
-            return true;
-        }
+        if (_param == 1) {
+
         // Define controller and get the parmas:
-        Controller controller = Controller(Avatar(_avatar).owner());
-        SchemeProposal memory proposal = organizations[_avatar].proposals[_proposalId];
+            Controller controller = Controller(Avatar(_avatar).owner());
+            SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // Add a scheme:
-        if (proposal.proposalType == 1) {
-            if (proposal.fee != 0) {
-                if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.scheme, proposal.fee)) {
-                    revert();
+            if (proposal.proposalType == 1) {
+                if (proposal.fee != 0) {
+                    if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.scheme, proposal.fee)) {
+                        revert();
+                      }
+                    }
+                if (proposal.isRegistering == false) {
+                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
+                        revert();
+                      }
+                      } else {
+                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
+                        revert();
+                    }
                 }
-            }
-            if (proposal.isRegistering == false) {
-                if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
-                    revert();
+                if (proposal.autoRegister) {
+                    UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
+                  }
                 }
-            } else {
-                if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
-                    revert();
-                }
-            }
-            if (proposal.autoRegister) {
-                UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
-            }
-        }
         // Remove a scheme:
-        if ( proposal.proposalType == 2 ) {
-            if (!controller.unregisterScheme(proposal.scheme)) {
-                revert();
-            }
-        }
-
-        delete organizations[_avatar].proposals[_proposalId];
+            if ( proposal.proposalType == 2 ) {
+                if (!controller.unregisterScheme(proposal.scheme)) {
+                    revert();
+                  }
+                }
+          }
+        delete organizationsProposals[_avatar][_proposalId];
         LogProposalExecuted(_avatar, _proposalId);
         return true;
     }

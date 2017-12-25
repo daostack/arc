@@ -6,6 +6,7 @@ import "zeppelin-solidity/test/helpers/StandardTokenMock.sol";
     A contract you can inherit from that has some useful Events to print statements.
 */
 
+
 contract Debug {
     event LogAddress(address _msg);
     event LogInt(int _msg);

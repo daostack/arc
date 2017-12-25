@@ -10,11 +10,6 @@ import "./UniversalScheme.sol";
 
 
 contract OrganizationRegister is UniversalScheme {
-    // Struct holding the data for each organization
-    struct Organization {
-        bool isRegistered;
-        mapping(address=>uint) registry;
-    }
 
     struct Parameters {
         uint fee;
@@ -23,7 +18,7 @@ contract OrganizationRegister is UniversalScheme {
     }
 
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) organizations;
+    mapping(address=>mapping(address=>uint)) organizationsRegistery;
 
     mapping(bytes32=>Parameters) parameters;
 
@@ -55,33 +50,21 @@ contract OrganizationRegister is UniversalScheme {
         return (keccak256(_token, _fee, _beneficiary));
     }
 
-    // Adding an organization to the universal scheme:
-    function registerOrganization(Avatar _avatar) public {
-        // Pay fees for using scheme:
-        if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
-            nativeToken.transferFrom(_avatar, beneficiary, fee);
-        }
-
-        Organization memory org;
-        org.isRegistered = true;
-        organizations[_avatar] = org;
-    }
-
     // Adding or promoting an organization on the registry.
-    function addOrPromoteOrg(Avatar _avatar, address _record, uint _amount) public {
-        Organization storage org = organizations[_avatar];
+    function addOrPromoteOrg(Avatar _avatar, address _record, uint _amount)
+    onlyRegisteredOrganization(_avatar)
+    public
+    {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
-        require(org.isRegistered); // Check org is registred to use this universal scheme.
-
         // Pay promotion, if the org was not listed the minimum is the fee:
-        if ((org.registry[_record] == 0) && (_amount < params.fee) ) {
+        if ((organizationsRegistery[_avatar][_record] == 0) && (_amount < params.fee) ) {
             revert();
         }
 
         params.token.transferFrom(msg.sender, params.beneficiary, _amount);
-        if (org.registry[_record] == 0)
+        if (organizationsRegistery[_avatar][_record] == 0)
           OrgAdded(_avatar, _record);
-        org.registry[_record] += _amount;
+        organizationsRegistery[_avatar][_record] += _amount;
         Promotion(_avatar, _record, _amount);
     }
 }

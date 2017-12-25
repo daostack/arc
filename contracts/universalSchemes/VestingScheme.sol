@@ -39,12 +39,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         uint signaturesReceivedCounter;
     }
 
-    // Struct holding the data for each organization
-    struct Organization {
-        bool isRegistered;
-        mapping(bytes32=>Agreement) proposals;
-    }
-
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
         bytes32 voteParams;
@@ -52,7 +46,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) public organizations;
+    mapping(address=>mapping(bytes32=>Agreement)) public organizationsData;
 
     mapping(bytes32=>Parameters) public parameters;
 
@@ -106,29 +100,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-    * @dev Constant function, check if organization is registered.
-    */
-    function isRegistered(address _avatar) public constant returns(bool) {
-        return organizations[_avatar].isRegistered;
-    }
-
-    /**
-    * @dev registering an organization to the univarsal scheme.
-    * @param _avatar avatar of the organization
-    */
-    function registerOrganization(Avatar _avatar) public {
-        // Pay fees for using scheme:
-        if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
-            nativeToken.transferFrom(_avatar, beneficiary, fee);
-        }
-
-        Organization memory org;
-        org.isRegistered = true;
-        organizations[_avatar] = org;
-        OrganizationRegistered(_avatar);
-    }
-
-    /**
     * @dev Proposing a vesting agreement in an organization.
     * @param _beneficiary the beneficiary of the agreement.
     * @param _returnOnCancelAddress where to send the tokens in case of stoping.
@@ -154,11 +125,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         Avatar _avatar
     )
     public
+    onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
-        // Require registered org and get parameters:
-        require(organizations[_avatar].isRegistered);
-
         // Open voting:
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this));
@@ -167,19 +136,19 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Write the signers mapping:
         assert(_signaturesReqToCancel >= _signersArray.length);
         for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
-            organizations[_avatar].proposals[proposalId].signers[_signersArray[cnt]] = true;
+            organizationsData[_avatar][proposalId].signers[_signersArray[cnt]] = true;
         }
 
         // Write parameters:
-        organizations[_avatar].proposals[proposalId].token = Avatar(_avatar).nativeToken();
-        organizations[_avatar].proposals[proposalId].beneficiary = _beneficiary;
-        organizations[_avatar].proposals[proposalId].returnOnCancelAddress = _returnOnCancelAddress;
-        organizations[_avatar].proposals[proposalId].startingBlock = _startingBlock;
-        organizations[_avatar].proposals[proposalId].amountPerPeriod = _amountPerPeriod;
-        organizations[_avatar].proposals[proposalId].periodLength = _periodLength;
-        organizations[_avatar].proposals[proposalId].numOfAgreedPeriods = _numOfAgreedPeriods;
-        organizations[_avatar].proposals[proposalId].cliffInPeriods = _cliffInPeriods;
-        organizations[_avatar].proposals[proposalId].signaturesReqToCancel = _signaturesReqToCancel;
+        organizationsData[_avatar][proposalId].token = Avatar(_avatar).nativeToken();
+        organizationsData[_avatar][proposalId].beneficiary = _beneficiary;
+        organizationsData[_avatar][proposalId].returnOnCancelAddress = _returnOnCancelAddress;
+        organizationsData[_avatar][proposalId].startingBlock = _startingBlock;
+        organizationsData[_avatar][proposalId].amountPerPeriod = _amountPerPeriod;
+        organizationsData[_avatar][proposalId].periodLength = _periodLength;
+        organizationsData[_avatar][proposalId].numOfAgreedPeriods = _numOfAgreedPeriods;
+        organizationsData[_avatar][proposalId].cliffInPeriods = _cliffInPeriods;
+        organizationsData[_avatar][proposalId].signaturesReqToCancel = _signaturesReqToCancel;
 
         // Log:
         LogAgreementProposal(_avatar, proposalId);
@@ -199,8 +168,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Log execition:
         LogExecutaion(_avatar, _proposalId, _param);
 
-        Agreement memory proposedAgreement = organizations[_avatar].proposals[_proposalId];
-        delete organizations[_avatar].proposals[_proposalId];
+        Agreement memory proposedAgreement = organizationsData[_avatar][_proposalId];
+        delete organizationsData[_avatar][_proposalId];
 
         // Check if vote was successful:
         if (_param != 1) {

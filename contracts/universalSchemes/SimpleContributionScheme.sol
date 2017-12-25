@@ -28,7 +28,7 @@ contract SimpleContributionScheme is UniversalScheme {
 
     // A struct holding the data for a contribution proposal
     struct ContributionProposal {
-        bytes32 contributionDescriptionHash; // Hash of contributtion document.
+        bytes32 contributionDescriptionHash; // Hash of contribution document.
         uint nativeTokenReward; // Reward asked in the native token of the organization.
         uint reputationReward; // Organization reputation reward requested.
         uint ethReward;
@@ -37,23 +37,18 @@ contract SimpleContributionScheme is UniversalScheme {
         address beneficiary;
     }
 
-    // Struct holding the data for each organization
-    struct Organization {
-        bool isRegistered;
-        mapping(bytes32=>ContributionProposal) proposals;
-    }
-
-    // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) public organizations;
+    // A mapping from the organization (Avatar) address to the saved data of the organization:
+    mapping(address=>mapping(bytes32=>ContributionProposal)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+    // A contibution fee can be in the organization token or the scheme token or a combination
     struct Parameters {
         uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
         bytes32 voteApproveParams;
         uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
         IntVoteInterface intVote;
     }
-      // A contibution fee can be in the organization token or the scheme token or a combination
+    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
 
     /**
@@ -105,22 +100,6 @@ contract SimpleContributionScheme is UniversalScheme {
         return (keccak256(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _intVote));
     }
 
-    function registerOrganization(Avatar _avatar) public {
-        // Pay fees for using scheme
-        if ((fee > 0) && (!organizations[_avatar].isRegistered)) {
-            nativeToken.transferFrom(_avatar, beneficiary, fee);
-        }
-
-        // TODO: should we check if the current registrar is registered already on the controller?
-        /*require(checkParameterHashMatch(_avatar, _voteRegisterParams, _voteRemoveParams, _intVote));*/
-
-        // update the organization in the organizations mapping
-        Organization memory org;
-        org.isRegistered = true;
-        organizations[_avatar] = org;
-        OrganizationRegistered(_avatar);
-    }
-
     /**
     * @dev Submit a proposal for a reward for a contribution:
     * @param _avatar Avatar of the organization that the contribution was made for
@@ -141,14 +120,13 @@ contract SimpleContributionScheme is UniversalScheme {
         StandardToken _externalToken,
         uint _externalTokenReward,
         address _beneficiary
-    ) public returns(bytes32)
+    ) public
+      returns(bytes32)
     {
-        require(organizations[_avatar].isRegistered);
-
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
-
+        require(organizations[_avatar]);
         // Pay fees for submitting the contribution:
-        if (controllerParams.schemeNativeTokenFee > 0) {
+        if (controllerParams.orgNativeTokenFee > 0) {
             _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
         }
         if (controllerParams.schemeNativeTokenFee > 0) {
@@ -172,7 +150,7 @@ contract SimpleContributionScheme is UniversalScheme {
             externalTokenReward: _externalTokenReward,
             beneficiary: _beneficiary
         });
-        organizations[_avatar].proposals[contributionId] = proposal;
+        organizationsProposals[_avatar][contributionId] = proposal;
 
         LogNewContributionProposal(
             _avatar,
@@ -202,39 +180,29 @@ contract SimpleContributionScheme is UniversalScheme {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         // Check if vote was successful:
-        if (_param != 1) {
-            delete organizations[_avatar].proposals[_proposalId];
-            LogProposalDeleted(_avatar, _proposalId);
-            return true;
-        }
-
+        if (_param == 1) {
         // Define controller and get the parmas:
-        ContributionProposal memory proposal = organizations[_avatar].proposals[_proposalId];
+            ContributionProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // pay the funds:
-        Controller controller = Controller(Avatar(_avatar).owner());
-        if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) {
-            revert();
-        }
-        if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) {
-            revert();
-        }
-        if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) {
-            revert();
-        }
-
-        if (proposal.externalToken != address(0) && proposal.externalTokenReward > 0) {
-            if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward)) {
+            Controller controller = Controller(Avatar(_avatar).owner());
+            if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) {
                 revert();
-            }
-        }
-        delete organizations[_avatar].proposals[_proposalId];
+              }
+            if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) {
+                revert();
+              }
+            if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) {
+                revert();
+              }
+            if (proposal.externalToken != address(0) && proposal.externalTokenReward > 0) {
+                if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward)) {
+                    revert();
+                  }
+                }
+          }
+        delete organizationsProposals[_avatar][_proposalId];
         LogProposalExecuted(_avatar, _proposalId);
         return true;
     }
-
-    function isRegistered(address _avatar) public constant returns(bool) {
-        return organizations[_avatar].isRegistered;
-    }
-
 }

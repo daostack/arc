@@ -30,14 +30,8 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         uint originalNumOfChoices;
     }
 
-    // Struct holding the data for each organization
-    struct Organization {
-        bool isRegistered;
-        mapping(bytes32=>VoteProposal) proposals;
-    }
-
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) public organizations;
+    mapping(address=>mapping(bytes32=>VoteProposal)) public organizationsData;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
@@ -80,37 +74,19 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         return paramsHash;
     }
 
-    function isRegistered(address _avatar) public constant returns(bool) {
-        return organizations[_avatar].isRegistered;
-    }
-
-    /**
-    * @dev registering an organization to the univarsal scheme
-    * @param _avatar avatar of the organization
-    */
-    function registerOrganization(Avatar _avatar) public {
-        // Pay fees for using scheme:
-        if ((fee > 0) && (! organizations[_avatar].isRegistered)) {
-            nativeToken.transferFrom(_avatar, beneficiary, fee);
-        }
-
-        Organization memory org;
-        org.isRegistered = true;
-        organizations[_avatar] = org;
-        OrganizationRegistered(_avatar);
-    }
-
-    function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId) public returns(bytes32) {
-        Organization memory org = organizations[_avatar];
-        require(org.isRegistered); // Check org is registred to use this universal scheme.
+    function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId)
+    public
+    onlyRegisteredOrganization(_avatar)
+    returns(bytes32)
+    {
         uint numOfChoices = _originalIntVote.getNumberOfChoices(_originalProposalId);
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(numOfChoices+1, params.voteParams, _avatar, ExecutableInterface(this));
-        if (organizations[_avatar].proposals[proposalId].originalNumOfChoices != 0) {
+        if (organizationsData[_avatar][proposalId].originalNumOfChoices != 0) {
             revert();
         }
-        organizations[_avatar].proposals[proposalId] = VoteProposal({
+        organizationsData[_avatar][proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
             originalProposalId: _originalProposalId,
             originalNumOfChoices: numOfChoices
@@ -137,8 +113,8 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
         // Save proposal to memory and delete from storage:
-        VoteProposal memory proposal = organizations[_avatar].proposals[_proposalId];
-        delete organizations[_avatar].proposals[_proposalId];
+        VoteProposal memory proposal = organizationsData[_avatar][_proposalId];
+        delete organizationsData[_avatar][_proposalId];
 
         // If no decision do nothing:
         if (_param == 0) {
