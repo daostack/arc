@@ -9,7 +9,7 @@ import "./UniversalScheme.sol";
  * @dev The scheme is used to register or remove new global constraints
  */
 contract GlobalConstraintRegistrar is UniversalScheme {
-    event LogNewGlobalConstraintsProposal(
+    event NewGlobalConstraintsProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
@@ -17,13 +17,13 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         bytes32 _params,
         bytes32 _removeParams
     );
-    event LogRemoveGlobalConstraintsProposal(
+    event RemoveGlobalConstraintsProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _gc
     );
-    event LogProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
     event LogProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // The struct that holds the information of a global constraint proposed to be added or removed.
@@ -104,11 +104,8 @@ contract GlobalConstraintRegistrar is UniversalScheme {
             removeParams: _removeParams
         });
 
-        if (organizationsData[_avatar].proposals[proposalId].proposalType != 0) {
-            revert();
-        }
         organizationsData[_avatar].proposals[proposalId] = proposal;
-        LogNewGlobalConstraintsProposal(
+        NewGlobalConstraintsProposal(
             _avatar,
             proposalId,
             intVote,
@@ -123,6 +120,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // Proposing to remove a new GC:
     function proposeToRemoveGC(Avatar _avatar, address _gc) public onlyRegisteredOrganization(_avatar) returns(bytes32) {
         Organization storage org = organizationsData[_avatar];
+        require(org.removeParams[_gc] != bytes32(0));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, org.removeParams[_gc], _avatar, ExecutableInterface(this));
@@ -134,11 +132,8 @@ contract GlobalConstraintRegistrar is UniversalScheme {
             removeParams: 0
         });
 
-        if (organizationsData[_avatar].proposals[proposalId].proposalType != 0) {
-            revert();
-        }
         organizationsData[_avatar].proposals[proposalId] = proposal;
-        LogRemoveGlobalConstraintsProposal(_avatar, proposalId, intVote, _gc);
+        RemoveGlobalConstraintsProposal(_avatar, proposalId, intVote, _gc);
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
     }
@@ -154,30 +149,29 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
         // Check if vote was successful:
-        if (_param != 1 ) {
-            delete organizationsData[_avatar].proposals[_proposalId];
-            LogProposalDeleted(_avatar, _proposalId);
-            return true;
-        }
+        if (_param == 1 ) {
+
         // Define controller and get the parmas:
-        Controller controller = Controller(Avatar(_avatar).owner());
-        GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
+            Controller controller = Controller(Avatar(_avatar).owner());
+            GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
 
         // Adding a GC
-        if (proposal.proposalType == 1) {
-            if (!controller.addGlobalConstraint(proposal.gc, proposal.params)) {
-                revert();
-            }
-        }
+            if (proposal.proposalType == 1) {
+                if (!controller.addGlobalConstraint(proposal.gc, proposal.params)) {
+                    revert();
+                  }
+                organizationsData[_avatar].removeParams[proposal.gc] = proposal.removeParams;
+              }
 
         // Removing a GC
-        if (proposal.proposalType == 2) {
-            if (!controller.removeGlobalConstraint(proposal.gc)) {
-                revert();
-            }
+            if (proposal.proposalType == 2) {
+                if (!controller.removeGlobalConstraint(proposal.gc)) {
+                    revert();
+                  }
+                }
         }
         delete organizationsData[_avatar].proposals[_proposalId];
-        LogProposalExecuted(_avatar, _proposalId);
+        ProposalExecuted(_avatar, _proposalId);
         return true;
     }
 }
