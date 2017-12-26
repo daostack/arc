@@ -270,7 +270,9 @@ contract Controller {
 
         if (globalConstraintRegister.register) {
             if (globalConstraintRegister.index < globalConstraints.length-1) {
-                globalConstraints[globalConstraintRegister.index] = globalConstraints[globalConstraints.length-1];
+                GlobalConstraint memory globalConstraint = globalConstraints[globalConstraints.length-1];
+                globalConstraints[globalConstraintRegister.index] = globalConstraint;
+                globalConstraintsRegister[globalConstraint.gcAddress].index = globalConstraintRegister.index;
             }
             globalConstraints.length--;
             delete globalConstraintsRegister[_globalConstraint];
