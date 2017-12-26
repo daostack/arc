@@ -1,14 +1,18 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.18;
+
+import "zeppelin-solidity/test/helpers/StandardTokenMock.sol";
 
 /*
     A contract you can inherit from that has some useful Events to print statements.
 */
+
+
 contract Debug {
-    event LogAddress(address msg);
-    event LogInt(int msg);
-    event LogString(string msg);
-    event LogUint(uint msg);
-    event LogBytes(bytes msg);
-    event LogBytes32(bytes32 msg);
-    event LogBool(bool msg);
+    event LogAddress(address _msg);
+    event LogInt(int _msg);
+    event LogString(string _msg);
+    event LogUint(uint _msg);
+    event LogBytes(bytes _msg);
+    event LogBytes32(bytes32 _msg);
+    event LogBool(bool _msg);
 }

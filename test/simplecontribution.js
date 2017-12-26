@@ -1,195 +1,306 @@
-import { SimpleContributionScheme } from '../lib/simplecontributionscheme.js';
 import * as helpers from './helpers';
+const SimpleContributionScheme = artifacts.require("./SimpleContributionScheme.sol");
+const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const GenesisScheme = artifacts.require("./GenesisScheme.sol");
+const Avatar = artifacts.require("./Avatar.sol");
 
-const SoliditySimpleContributionScheme = artifacts.require("./SimpleContributionScheme.sol");
 
-contract('SimpleContribution scheme', function(accounts) {
-  let params, paramsHash, tx, proposal, proposalId;
+export class SimpleContributionParams {
+  constructor() {
+  }
+}
 
-  before(function() {
-    helpers.etherForEveryone();
-  });
+const setupSimpleContributionParams = async function(
+                                            simpleContribution,
+                                            orgNativeTokenFee=0,
+                                            schemeNativeTokenFee=0
+                                            ) {
+  var simpleContributionParams = new SimpleContributionParams();
+  simpleContributionParams.votingMachine = await helpers.setupAbsoluteVote();
+  simpleContributionParams.orgNativeTokenFee =  orgNativeTokenFee;
+  simpleContributionParams.schemeNativeTokenFee = schemeNativeTokenFee;
+  await simpleContribution.setParameters(simpleContributionParams.orgNativeTokenFee,
+                                         simpleContributionParams.schemeNativeTokenFee,
+                                         simpleContributionParams.votingMachine.params,
+                                         simpleContributionParams.votingMachine.absoluteVote.address);
+  simpleContributionParams.paramsHash = await simpleContribution.getParametersHash(simpleContributionParams.orgNativeTokenFee,
+                                                                                   simpleContributionParams.schemeNativeTokenFee,
+                                                                                   simpleContributionParams.votingMachine.params,
+                                                                                   simpleContributionParams.votingMachine.absoluteVote.address);
+  return simpleContributionParams;
+};
 
-  it("submit and accept a contribution - complete workflow", async function(){
-    const organization = await helpers.forgeOrganization();
-    proposalId = await organization.proposeScheme({contract: 'SimpleContributionScheme' });
-    // vote with the majority and accept the proposal
-    organization.vote(proposalId, true, {from: accounts[2]});
+const setup = async function (accounts,orgNativeTokenFee=0,schemeNativeTokenFee=0) {
+   var testSetup = new helpers.TestSetup();
+   testSetup.fee = 10;
+   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
+   testSetup.simpleContribution = await SimpleContributionScheme.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
+   testSetup.genesisScheme = await GenesisScheme.deployed();
+   testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
+   testSetup.simpleContributionParams= await setupSimpleContributionParams(testSetup.simpleContribution,orgNativeTokenFee,schemeNativeTokenFee);
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.simpleContribution.address],[testSetup.simpleContributionParams.paramsHash],[testSetup.standardTokenMock.address],[100],["0x0000000F"]);
+   //give some tokens to organization avatar so it could register the univeral scheme.
+   await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
+   return testSetup;
+};
+contract('SimpleContribution', function(accounts) {
 
-    const scheme = await organization.scheme('SimpleContributionScheme');
+   it("constructor", async function() {
+    var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
+    var simpleContribution = await SimpleContributionScheme.new(standardTokenMock.address,10,accounts[1]);
+    var token = await simpleContribution.nativeToken();
+    assert.equal(token,standardTokenMock.address);
+    var fee = await simpleContribution.fee();
+    assert.equal(fee,10);
+    var beneficiary = await simpleContribution.beneficiary();
+    assert.equal(beneficiary,accounts[1]);
+   });
 
-    // register the organization on the contribution scheme
-    await scheme.registerOrganization(organization.avatar.address);
+   it("setParameters", async function() {
+     var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
+     var simpleContribution = await SimpleContributionScheme.new(standardTokenMock.address,10,accounts[1]);
+     var params = await setupSimpleContributionParams(simpleContribution);
+     var parameters = await simpleContribution.parameters(params.paramsHash);
+     assert.equal(parameters[3],params.votingMachine.absoluteVote.address);
+     });
 
-    // we can now submit a contribution
-    proposalId = await scheme.submitContribution({
-      avatar: organization.avatar.address,  // Avatar _avatar,
-      description: 'A new contribution', // string _contributionDesciption,
-      beneficiary: web3.eth.accounts[1], // address _beneficiary
+   it("registerOrganization - check fee payment ", async function() {
+     var testSetup = await setup(accounts);
+     await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+     var balanceOfBeneficiary  = await testSetup.standardTokenMock.balanceOf(accounts[0]);
+     assert.equal(balanceOfBeneficiary.toNumber(),testSetup.fee);
+     assert.equal(await testSetup.simpleContribution.isRegistered(testSetup.org.avatar.address),true);
     });
-    // now vote with a majority account and accept this contribution
-    organization.vote(proposalId, true, {from: accounts[2]});
 
-    // TODO: check that the proposal is indeed accepted
-  });
+    it("submitContribution log", async function() {
+      var testSetup = await setup(accounts,0,0);
+      await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+      var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                     "description",
+                                                                     0,
+                                                                     0,
+                                                                     0,
+                                                                     testSetup.standardTokenMock.address,
+                                                                     0,
+                                                                     accounts[0]);
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "LogNewContributionProposal");
+     });
 
-  it("submit and accept a contribution - complete workflow with payments [TODO]", async function(){
-    // TODO: write a similar test as the previous one, but with all different forms of payment
+     it("submitContribution fees", async function() {
+       var testSetup = await setup(accounts,14,10);
 
-  });
+       await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+       var balanceBefore  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);
+       //give approval to scheme to do the fees transfer
+       await testSetup.org.token.approve(testSetup.simpleContribution.address,100);
+       await testSetup.standardTokenMock.approve(testSetup.simpleContribution.address,100);
+       var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                      "description",
+                                                                      0,
+                                                                      0,
+                                                                      0,
+                                                                      testSetup.standardTokenMock.address,
+                                                                      0,
+                                                                      accounts[0],
+                                                                      {from:accounts[0]}
+                                                                    );
+       assert.equal(tx.logs.length, 1);
+       assert.equal(tx.logs[0].event, "LogNewContributionProposal");
+       var balance  = await testSetup.org.token.balanceOf(testSetup.org.avatar.address);
+       assert.equal(balance.toNumber(),testSetup.simpleContributionParams.orgNativeTokenFee);
+       balance  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);
+       assert.equal(balance.toNumber(),testSetup.simpleContributionParams.schemeNativeTokenFee+balanceBefore.toNumber());
+      });
 
-  it("submit and accept a contribution - using the ABI Contract", async function(){
-    const founders = [
-      {
-        address: accounts[0],
-        tokens: 30,
-        reputation: 30,
-      },
-      {
-        address: accounts[1],
-        tokens: 70,
-        reputation: 70,
-      },
-    ];
+     it("submitContribution without regisration -should fail", async function() {
+       var testSetup = await setup(accounts);
+       try{
+         await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                        "description",
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        testSetup.standardTokenMock.address,
+                                                                        0,
+                                                                        accounts[0]
+                                                                      );
+       assert(false,"proposeScheme should  fail - due to no registration !");
+       }catch(ex){
+         helpers.assertVMException(ex);
+       }
+      });
 
-    const org = await helpers.forgeOrganization({founders});
+      it("submitContribution check owner vote", async function() {
+        var testSetup = await setup(accounts);
+        await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+        var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                       "description",
+                                                                       0,
+                                                                       0,
+                                                                       0,
+                                                                       testSetup.standardTokenMock.address,
+                                                                       0,
+                                                                       accounts[0]
+                                                                     );
+        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+        await helpers.checkVoteInfo(testSetup.simpleContributionParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.simpleContributionParams.votingMachine.reputationArray[0]]);
+       });
 
-    const avatar = org.avatar;
-    const controller = org.controller;
+       it("submitContribution check beneficiary==0", async function() {
+         var testSetup = await setup(accounts);
+         var beneficiary = 0;
+         await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+         var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                        "description",
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        testSetup.standardTokenMock.address,
+                                                                        0,
+                                                                        beneficiary
+                                                                      );
+         assert.equal(await helpers.getValueFromLogs(tx, '_beneficiary'),accounts[0]);
+        });
 
-    // we creaet a SimpleContributionScheme
-    const tokenAddress = await controller.nativeToken();
-    const votingMachine = org.votingMachine;
+    it("execute submitContribution  yes ", async function() {
+      var testSetup = await setup(accounts);
+      await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+      var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                     "description",
+                                                                     0,
+                                                                     0,
+                                                                     0,
+                                                                     testSetup.standardTokenMock.address,
+                                                                     0,
+                                                                     accounts[0]
+                                                                   );
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.simpleContributionParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+      var organizationsProposals = await testSetup.simpleContribution.organizationsProposals(testSetup.org.avatar.address,proposalId);
+      assert.equal(organizationsProposals[6],0);//beneficiary
+     });
 
-    // create a contribution Scheme
-    const contributionScheme = await SoliditySimpleContributionScheme.new(
-      tokenAddress,
-      0, // register with 0 fee
-      accounts[0],
-    );
+      it("execute submitContribution  mint reputation ", async function() {
+        var testSetup = await setup(accounts);
+        var reputationReward = 12;
+        await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+        var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                       "description",
+                                                                       0,
+                                                                       reputationReward,
+                                                                       0,
+                                                                       testSetup.standardTokenMock.address,
+                                                                       0,
+                                                                       accounts[1]
+                                                                     );
+        //Vote with reputation to trigger execution
+        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+        await testSetup.simpleContributionParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+        var rep = await testSetup.org.reputation.reputationOf(accounts[1]);
+        assert.equal(rep.toNumber(),reputationReward);
+       });
 
-    // propose a SimpleContributionScheme
-    proposalId = await org.proposeScheme({
-      contract: 'SimpleContributionScheme',
-      address: contributionScheme.address,
-    });
-    // this will vote-and-execute
-    tx = await votingMachine.vote(proposalId, true, accounts[1], {from: accounts[1]});
+       it("execute submitContribution  mint tokens ", async function() {
+         var testSetup = await setup(accounts);
+         var reputationReward = 12;
+         var nativeTokenReward = 12;
+         await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+         var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                        "description",
+                                                                        nativeTokenReward,
+                                                                        reputationReward,
+                                                                        0,
+                                                                        testSetup.standardTokenMock.address,
+                                                                        0,
+                                                                        accounts[1]
+                                                                      );
+         //Vote with reputation to trigger execution
+         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+         await testSetup.simpleContributionParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+         var tokens = await testSetup.org.token.balanceOf(accounts[1]);
+         assert.equal(tokens.toNumber(),nativeTokenReward);
+        });
 
-    // now our scheme should be registered on the controller
-    const schemeFromController = await controller.schemes(contributionScheme.address);
-    // we expect to have only the first bit set (it is a registered scheme without nay particular permissions)
-    assert.equal(schemeFromController[1], '0x00000001');
+        it("execute submitContribution  send ethers ", async function() {
+          var testSetup = await setup(accounts);
+          var reputationReward = 12;
+          var nativeTokenReward = 12;
+          var ethReward = 12;
+          await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+          //send some ether to the org avatar
+          var otherAvatar = await Avatar.new();
+          web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+          var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                         "description",
+                                                                         nativeTokenReward,
+                                                                         reputationReward,
+                                                                         ethReward,
+                                                                         testSetup.standardTokenMock.address,
+                                                                         0,
+                                                                         otherAvatar.address
+                                                                       );
+          //Vote with reputation to trigger execution
+          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+          await testSetup.simpleContributionParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+          var eth = web3.eth.getBalance(otherAvatar.address);
+          assert.equal(eth.toNumber(),ethReward);
+         });
 
-    //  Our organization is not registered with the contribution scheme yet at this point
-    let orgFromContributionScheme = await contributionScheme.organizations(avatar.address);
-    assert.equal(orgFromContributionScheme, false);
+         it("execute submitContribution  send externalToken ", async function() {
+           var testSetup = await setup(accounts);
+           var reputationReward = 12;
+           var nativeTokenReward = 12;
+           var ethReward = 12;
+           var externalTokenReward = 12;
+           await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+           //send some ether to the org avatar
+           var otherAvatar = await Avatar.new();
+           web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+           var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                          "description",
+                                                                          nativeTokenReward,
+                                                                          reputationReward,
+                                                                          ethReward,
+                                                                          testSetup.standardTokenMock.address,
+                                                                          externalTokenReward,
+                                                                          otherAvatar.address
+                                                                        );
+           //Vote with reputation to trigger execution
+           var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+           await testSetup.simpleContributionParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+           var tokens = await testSetup.standardTokenMock.balanceOf(otherAvatar.address);
+           assert.equal(tokens.toNumber(),externalTokenReward);
+          });
 
-    // check if we have the fee to register the contribution
-    const contributionSchemeRegisterFee = await contributionScheme.fee();
-    // console.log('contributionSchemeRegisterFee: ' + contributionSchemeRegisterFee);
-    // our fee is 0, so that's easy  (TODO: write a test with non-zero fees)
-    assert.equal(contributionSchemeRegisterFee, 0);
-
-    // now we register it
-    await contributionScheme.registerOrganization(avatar.address);
-
-    // is the organization actually registered?
-    orgFromContributionScheme = await contributionScheme.organizations(avatar.address);
-    // console.log('orgFromContributionScheme after registering');
-    assert.equal(orgFromContributionScheme, true);
-
-    // check the configuration for proposing new contributions
-
-    paramsHash = await controller.getSchemeParameters(contributionScheme.address);
-    // params are: uint orgNativeTokenFee; bytes32 voteApproveParams; uint schemeNativeTokenFee;         BoolVoteInterface boolVote;
-    params = await contributionScheme.parameters(paramsHash);
-    // check if they are not trivial - the 4th item should be a valid boolVote address
-    assert.notEqual(params[3], '0x0000000000000000000000000000000000000000');
-    assert.equal(params[3], votingMachine.address);
-
-    // now we can propose a contribution
-    tx = await contributionScheme.submitContribution(
-      avatar.address, // Avatar _avatar,
-      'a fair play', // string _contributionDesciption,
-      0, // uint _nativeTokenReward,
-      0, // uint _reputationReward,
-      0, // uint _ethReward,
-      '0x0008e8314d3f08fd072e06b6253d62ed526038a0', // StandardToken _externalToken, we provide some arbitrary address
-      0, // uint _externalTokenReward,
-      accounts[2], // address _beneficiary
-    );
-
-    // console.log(tx.logs);
-    const contributionId = tx.logs[0].args.proposalId;
-    // let us vote for it (is there a way to get the votingmachine from the contributionScheme?)
-    // this is a minority vote for 'yes'
-    // check preconditions for the vote
-    proposal = await votingMachine.proposals(contributionId);
-    // a propsoal has the following structure
-    // 0. address owner;
-    // 1. address avatar;
-    // 2. ExecutableInterface executable;
-    // 3. bytes32 paramsHash;
-    // 4. uint yes; // total 'yes' votes
-    // 5. uint no; // total 'no' votes
-    // MAPPING is skipped in the reutnr value...
-    // X.mapping(address=>int) voted; // save the amount of reputation voted by an agent (positive sign is yes, negatice is no)
-    // 6. bool opened; // voting opened flag
-    // 7. bool ended; // voting had ended flag
-    assert.isOk(proposal[6]); // proposal.opened is true
-    assert.notOk(proposal[7]); // proposal.Ended is false
-    // first we check if our executable (proposal[2]) is indeed the contributionScheme
-    assert.equal(proposal[2], contributionScheme.address);
-
-    tx = await votingMachine.vote(contributionId, true, accounts[0], {from: accounts[0]});
-    // and this is the majority vote (which will also call execute on the executable
-    tx = await votingMachine.vote(contributionId, true, accounts[1], {from: accounts[1]});
-
-    // check if proposal was deleted from contribution Scheme
-    proposal = await contributionScheme.proposals(contributionId);
-    assert.equal(proposal[0], helpers.NULL_HASH);
-
-    // check if proposal was deleted from voting machine
-    proposal = await votingMachine.proposals(contributionId);
-    // TODO: proposal is not deleted from voting machine: is that feature or bug?
-    // assert.notOk(proposal[6]); // proposal.opened is false
-
-    // TODO: no payments have been made. Write another test for that.
-
-  });
-
-  it('Can set and get parameters', async function() {
-      let params;
-
-      // create a contribution Scheme
-      const contributionScheme = await SimpleContributionScheme.new(
-        helpers.SOME_ADDRESS,
-        0, // register with 0 fee
-        accounts[0],
-      );
-
-      const contributionSchemeParamsHash = await contributionScheme.getParametersHash(
-        0,
-        0,
-        helpers.SOME_HASH,
-        helpers.SOME_ADDRESS,
-      );
-
-      // these parameters are not registered yet at this point
-      params = await contributionScheme.parameters(contributionSchemeParamsHash);
-      assert.equal(params[3], '0x0000000000000000000000000000000000000000');
-
-      // register the parameters are registers in the contribution scheme
-      await contributionScheme.setParameters(
-        0,
-        0,
-        helpers.SOME_HASH,
-        helpers.SOME_ADDRESS,
-      );
-
-      params = await contributionScheme.parameters(contributionSchemeParamsHash);
-      assert.notEqual(params[3], '0x0000000000000000000000000000000000000000');
-
-    });
+          it("execute submitContribution proposal decision=='no' send externalToken  ", async function() {
+            var testSetup = await setup(accounts);
+            var reputationReward = 12;
+            var nativeTokenReward = 12;
+            var ethReward = 12;
+            var externalTokenReward = 12;
+            await testSetup.simpleContribution.registerOrganization(testSetup.org.avatar.address);
+            //send some ether to the org avatar
+            var otherAvatar = await Avatar.new();
+            web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+            var tx = await testSetup.simpleContribution.submitContribution(testSetup.org.avatar.address,
+                                                                           "description",
+                                                                           nativeTokenReward,
+                                                                           reputationReward,
+                                                                           ethReward,
+                                                                           testSetup.standardTokenMock.address,
+                                                                           externalTokenReward,
+                                                                           otherAvatar.address
+                                                                         );
+            //Vote with reputation to trigger execution
+            var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+            var organizationsProposals = await testSetup.simpleContribution.organizationsProposals(testSetup.org.avatar.address,proposalId);
+            assert.equal(organizationsProposals[6],otherAvatar.address);//beneficiary
+            await testSetup.simpleContributionParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
+            var tokens = await testSetup.standardTokenMock.balanceOf(otherAvatar.address);
+            assert.equal(tokens.toNumber(),0);
+            organizationsProposals = await testSetup.simpleContribution.organizationsProposals(testSetup.org.avatar.address,proposalId);
+            assert.equal(organizationsProposals[6],0);//beneficiary
+           });
 });

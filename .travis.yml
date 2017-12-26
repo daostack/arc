@@ -14,13 +14,14 @@ before_install:
   - sudo apt-get install geth -y -qq
 
 install:
-  - yarn install
-  - rm -rf contracts/zeppelin # remove any remaining artifacts from a previous build
+  - yarn
+  - rm -rf build/ # remove any remaining artifacts from a previous build
   - nohup yarn run testrpc &
   - truffle version
 
 script:
-  - yarn run test
-  - yarn run lint
+  - yarn test
+  - yarn lint
+  - yarn solium
 notifications:
   slack: daostack:fGuaFPsiQiV5mgmzRcSzbYqw
