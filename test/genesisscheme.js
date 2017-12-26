@@ -42,11 +42,6 @@ contract('GenesisScheme', function(accounts) {
             tokens: 3,
             reputation: 21,
           },
-          {
-            address: accounts[3],
-            tokens: 5,
-            reputation: 34,
-          },
         ];
         const organization = await helpers.forgeOrganization({founders});
         const controller = organization.controller;
