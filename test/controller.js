@@ -180,6 +180,7 @@ contract('Controller', function (accounts)  {
       it("addGlobalConstraint ", async () => {
         controller = await setup();
         var tx = await controller.addGlobalConstraint(accounts[1],0);
+        assert.equal(await controller.isGlobalConstraintRegister(accounts[1]),true);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "AddGlobalConstraint");
         var count = await controller.globalConstraintsCount();
@@ -188,8 +189,11 @@ contract('Controller', function (accounts)  {
 
        it("removeGlobalConstraint ", async () => {
          controller = await setup();
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[1]),false);
          await controller.addGlobalConstraint(accounts[1],0);
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[1]),true);
          var tx = await controller.removeGlobalConstraint(accounts[1]);
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[1]),false);
          assert.equal(tx.logs.length, 1);
          assert.equal(tx.logs[0].event, "RemoveGlobalConstraint");
         });

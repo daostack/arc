@@ -29,6 +29,11 @@ contract Controller {
         bytes32 params;
     }
 
+    struct GlobalConstraintRegister {
+        bool register; //is register
+        uint index;    //index at globalConstraints
+    }
+
     mapping(address=>Scheme) public schemes;
 
     Avatar public avatar;
@@ -38,6 +43,10 @@ contract Controller {
     address public newController;
   // globalConstraints that determine pre- and post-conditions for all actions on the controller
     GlobalConstraint[] public globalConstraints;
+  // globalConstraintsRegister indicate is a globalConstraints is register or not
+    mapping(address=>GlobalConstraintRegister) public globalConstraintsRegister;
+
+
 
     event MintReputation (address indexed _sender, address indexed _beneficiary, int256 _amount);
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
@@ -226,6 +235,10 @@ contract Controller {
         return globalConstraints.length;
     }
 
+    function isGlobalConstraintRegister(address _globalConstraint) public constant returns(bool) {
+        return globalConstraintsRegister[_globalConstraint].register;
+    }
+
     /**
      * @dev add Global Constraint
      * @param _globalConstraint the address of the global constraint to be added.
@@ -239,6 +252,8 @@ contract Controller {
         gc.gcAddress = _globalConstraint;
         gc.params = _params;
         globalConstraints.push(gc);
+        globalConstraintsRegister[_globalConstraint].register = true;
+        globalConstraintsRegister[_globalConstraint].index = globalConstraints.length-1;
         AddGlobalConstraint(_globalConstraint, _params);
         return true;
     }
@@ -251,15 +266,16 @@ contract Controller {
     function removeGlobalConstraint (address _globalConstraint)
     public onlyGlobalConstraintsScheme returns(bool)
     {
-        for (uint index = 0 ;index<globalConstraints.length;index++) {
-            if (globalConstraints[index].gcAddress == _globalConstraint) {
-                if (index < globalConstraints.length-1) {
-                    globalConstraints[index] = globalConstraints[globalConstraints.length-1];
-                }
-                globalConstraints.length--;
-                RemoveGlobalConstraint(_globalConstraint,index);
-                return true;
+        GlobalConstraintRegister memory globalConstraintRegister = globalConstraintsRegister[_globalConstraint];
+
+        if (globalConstraintRegister.register) {
+            if (globalConstraintRegister.index < globalConstraints.length-1) {
+                globalConstraints[globalConstraintRegister.index] = globalConstraints[globalConstraints.length-1];
             }
+            globalConstraints.length--;
+            delete globalConstraintsRegister[_globalConstraint];
+            RemoveGlobalConstraint(_globalConstraint,globalConstraintRegister.index);
+            return true;
         }
         return false;
     }
