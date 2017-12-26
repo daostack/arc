@@ -108,7 +108,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     * @param _avatar address of the controller
     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
     */
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
@@ -124,13 +124,15 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
 
         // Define controller and get the parmas:
         Controller controller = Controller(Avatar(_avatar).owner());
+        int tmpParam = _param;
         if (_param > int(proposal.originalNumOfChoices)) {
-            _param = 0;
+
+            tmpParam = 0;
         }
         bytes32[] memory tmp = new bytes32[](3);
         tmp[0] = bytes32(address(proposal.originalIntVote));
         tmp[2] = proposal.originalProposalId;
-        tmp[3] = bytes32(_param);
+        tmp[3] = bytes32(tmpParam);
         controller.genericAction(tmp);
         LogProposalExecuted(_avatar, _proposalId);
         return true;

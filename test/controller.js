@@ -180,6 +180,7 @@ contract('Controller', function (accounts)  {
       it("addGlobalConstraint ", async () => {
         controller = await setup();
         var tx = await controller.addGlobalConstraint(accounts[1],0);
+        assert.equal(await controller.isGlobalConstraintRegister(accounts[1]),true);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "AddGlobalConstraint");
         var count = await controller.globalConstraintsCount();
@@ -188,10 +189,24 @@ contract('Controller', function (accounts)  {
 
        it("removeGlobalConstraint ", async () => {
          controller = await setup();
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[1]),false);
          await controller.addGlobalConstraint(accounts[1],0);
-         var tx = await controller.removeGlobalConstraint(accounts[1]);
+         await controller.addGlobalConstraint(accounts[2],0);
+         await controller.addGlobalConstraint(accounts[3],0);
+         await controller.addGlobalConstraint(accounts[4],0);
+         await controller.addGlobalConstraint(accounts[5],0);
+         var tx = await controller.removeGlobalConstraint(accounts[3]);
          assert.equal(tx.logs.length, 1);
          assert.equal(tx.logs[0].event, "RemoveGlobalConstraint");
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[1]),true);
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[2]),true);
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[3]),false);
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[4]),true);
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[5]),true);
+         assert.equal(await controller.globalConstraintsCount(),4);
+         await controller.removeGlobalConstraint(accounts[5]);
+         assert.equal(await controller.isGlobalConstraintRegister(accounts[5]),false);
+         assert.equal(await controller.globalConstraintsCount(),3);
         });
 
         it("upgrade controller ", async () => {

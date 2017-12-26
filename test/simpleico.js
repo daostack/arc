@@ -93,12 +93,15 @@ contract('SimpleICO', function(accounts) {
     //give some tokens to organization avatar so it could register the univeral scheme.
     await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
     await simpleICO.registerOrganization(org.avatar.address);
+
     await simpleICO.start(org.avatar.address);
+
     balanceOfBeneficiary  = await standardTokenMock.balanceOf(beneficiary);
     assert.equal(balanceOfBeneficiary.toNumber(),fee);
     });
 
     it("simpleICO start with cap zero should revert ", async function() {
+
       var beneficiary = accounts[0];
       var fee =10;
       var standardTokenMock = await StandardTokenMock.new(accounts[1],100);

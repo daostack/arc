@@ -10,17 +10,17 @@ import "./UniversalScheme.sol";
  * him with token, reputation, ether or any combination.
  */
 
-contract SimpleContributionScheme is UniversalScheme {
+contract ContributionReward is UniversalScheme {
     event LogNewContributionProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        string _contributionDesciption,
+        bytes32 _contributionDesciption,
         uint _nativeTokenReward,
         uint _reputationReward,
         uint _ethReward,
-        StandardToken _externalToken,
         uint _externalTokenReward,
+        StandardToken _externalToken,
         address _beneficiary
     );
     event LogProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
@@ -54,7 +54,7 @@ contract SimpleContributionScheme is UniversalScheme {
     /**
     * @dev the constructor takes a token address, fee and beneficiary
     */
-    function SimpleContributionScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
+    function ContributionReward(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
@@ -103,28 +103,26 @@ contract SimpleContributionScheme is UniversalScheme {
     /**
     * @dev Submit a proposal for a reward for a contribution:
     * @param _avatar Avatar of the organization that the contribution was made for
-    * @param _contributionDesciption A description of the contribution
-    * @param _nativeTokenReward The amount of tokens requested
-    * @param _reputationReward The amount of rewards requested
-    * @param _ethReward Amount of ETH requested
+    * @param _contributionDesciptionHash A hash of the contribution's description
+    * @param _rewards rewards array:
+    *         rewards[0] - Amount of tokens requested
+    *         rewards[1] - Amount of reputation requested
+    *         rewards[2] - Amount of ETH requested
+    *         rewards[3] - Amount of extenral tokens requested
     * @param _externalToken Address of external token, if reward is requested there
-    * @param _externalTokenReward Amount of extenral tokens requested
     * @param _beneficiary Who gets the rewards
     */
     function submitContribution(
         Avatar _avatar,
-        string _contributionDesciption,
-        uint _nativeTokenReward,
-        uint _reputationReward,
-        uint _ethReward,
+        bytes32 _contributionDesciptionHash,
+        uint[4] _rewards,
         StandardToken _externalToken,
-        uint _externalTokenReward,
         address _beneficiary
     ) public
+      onlyRegisteredOrganization(_avatar)
       returns(bytes32)
     {
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
-        require(organizations[_avatar]);
         // Pay fees for submitting the contribution:
         if (controllerParams.orgNativeTokenFee > 0) {
             _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
@@ -142,12 +140,12 @@ contract SimpleContributionScheme is UniversalScheme {
 
         // Set the struct:
         ContributionProposal memory proposal = ContributionProposal({
-            contributionDescriptionHash: keccak256(_contributionDesciption),
-            nativeTokenReward: _nativeTokenReward,
-            reputationReward: _reputationReward,
-            ethReward: _ethReward,
+            contributionDescriptionHash: _contributionDesciptionHash,
+            nativeTokenReward: _rewards[0],
+            reputationReward: _rewards[1],
+            ethReward: _rewards[2],
             externalToken: _externalToken,
-            externalTokenReward: _externalTokenReward,
+            externalTokenReward: _rewards[3],
             beneficiary: _beneficiary
         });
         organizationsProposals[_avatar][contributionId] = proposal;
@@ -156,12 +154,12 @@ contract SimpleContributionScheme is UniversalScheme {
             _avatar,
             contributionId,
             controllerParams.intVote,
-            _contributionDesciption,
-            _nativeTokenReward,
-            _reputationReward,
-            _ethReward,
+            _contributionDesciptionHash,
+            _rewards[0],
+            _rewards[1],
+            _rewards[2],
+            _rewards[3],
             _externalToken,
-            _externalTokenReward,
             _beneficiary
         );
 
