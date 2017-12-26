@@ -167,9 +167,7 @@ contract SchemeRegistrar is UniversalScheme {
 
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, _avatar, ExecutableInterface(this));
-        if (organizationsProposals[_avatar][proposalId].proposalType != 0) {
-            revert();
-        }
+        
         organizationsProposals[_avatar][proposalId].proposalType = 2;
         organizationsProposals[_avatar][proposalId].scheme = _scheme;
         LogRemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);

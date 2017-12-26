@@ -240,7 +240,7 @@ contract Controller {
     }
 
     /**
-     * @dev add Global Constraint
+     * @dev add or update Global Constraint
      * @param _globalConstraint the address of the global constraint to be added.
      * @param _params the constraint parameters hash.
      * @return bool which represents a success
@@ -248,12 +248,12 @@ contract Controller {
     function addGlobalConstraint(address _globalConstraint, bytes32 _params)
     public onlyGlobalConstraintsScheme returns(bool)
     {
-        GlobalConstraint memory gc;
-        gc.gcAddress = _globalConstraint;
-        gc.params = _params;
-        globalConstraints.push(gc);
-        globalConstraintsRegister[_globalConstraint].register = true;
-        globalConstraintsRegister[_globalConstraint].index = globalConstraints.length-1;
+        if (!globalConstraintsRegister[_globalConstraint].register) {
+            globalConstraints.push(GlobalConstraint(_globalConstraint,_params));
+            globalConstraintsRegister[_globalConstraint] = GlobalConstraintRegister(true,globalConstraints.length-1);
+        }else {
+            globalConstraints[globalConstraintsRegister[_globalConstraint].index].params = _params;
+        }
         AddGlobalConstraint(_globalConstraint, _params);
         return true;
     }

@@ -155,7 +155,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     * @param _avatar address of the controller
     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
     */
-    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         // Check if vote was successful:

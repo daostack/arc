@@ -167,34 +167,29 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
     * @return bool which represents a successful of the function.
     */
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
         // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
+        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        bool retVal = true;
         // Check if vote was successful:
         if (_param == 1 ) {
 
         // Define controller and get the parmas:
             Controller controller = Controller(Avatar(_avatar).owner());
             GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
-
         // Adding a GC
             if (proposal.proposalType == 1) {
-                if (!controller.addGlobalConstraint(proposal.gc, proposal.params)) {
-                    revert();
-                  }
+                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params);
                 organizationsData[_avatar].voteToRemoveParams[proposal.gc] = proposal.voteToRemoveParams;
               }
-
         // Removing a GC
             if (proposal.proposalType == 2) {
-                if (!controller.removeGlobalConstraint(proposal.gc)) {
-                    revert();
-                  }
-                }
+                retVal = controller.removeGlobalConstraint(proposal.gc);
+              }
         }
         delete organizationsData[_avatar].proposals[_proposalId];
         ProposalExecuted(_avatar, _proposalId);
-        return true;
+        return retVal;
     }
 }
