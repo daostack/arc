@@ -39,7 +39,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         mapping(address=>bool) signaturesReceived;
     }
 
-    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+
     struct Parameters {
         bytes32 voteParams;
         IntVoteInterface intVote;
@@ -48,8 +48,10 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>mapping(bytes32=>Agreement)) public organizationsData;
 
+    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
 
+    // A mapping from index to Agreement
     mapping(uint=>Agreement) public agreements;
 
     uint agreementsCounter;
@@ -67,14 +69,20 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-    * @dev the constructor takes a token address, fee and beneficiary
-    */
+     * @dev Constructor, Updating the initial prarmeters
+     * @param _nativeToken The native token of the ICO
+     * @param _fee The fee for intiating the ICO
+     * @param _beneficiary The address that will receive the ethers
+     */
     function VestingScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
     /**
-    * @dev Constant function, hash the parameters, save them if necessary, and return the hash value
+    * @dev Hash the parameters, save them if necessary, and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
     */
     function setParameters(
         bytes32 _voteParams,
@@ -88,15 +96,17 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-    * @dev Constant function, return a hash of the given parameters
+    * @dev Hash the parameters,and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
     */
     function getParametersHash(
         bytes32 _voteParams,
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        bytes32 paramsHash = (keccak256(_voteParams, _intVote));
-        return paramsHash;
+        return  (keccak256(_voteParams, _intVote));
     }
 
     /**
@@ -111,6 +121,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     * @param _signaturesReqToCancel number of signatures required to cancel agreement.
     * @param _signersArray avatar array of adresses that can sign to cancel agreement.
     * @param _avatar avatar of the organization.
+    * @return bytes32 the proposalId
     */
     function proposeVestingAgreement(
         address _beneficiary,
@@ -160,6 +171,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
+    * @return bool which represents a successful of the function
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
         // Check the caller is indeed the voting machine:
@@ -197,6 +209,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     * @param _cliffInPeriods the length of the cliff in periods.
     * @param _signaturesReqToCancel number of signatures required to cancel agreement.
     * @param _signersArray avatar array of adresses that can sign to cancel agreement.
+    * @return uint the agreement index.
     */
     function createVestedAgreement(
         StandardToken _token,
