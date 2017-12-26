@@ -1,6 +1,4 @@
-master: [![Build Status](https://travis-ci.org/daostack/daostack.svg?branch=master)](https://travis-ci.org/daostack/daostack)
-
-dev: [![Build Status](https://travis-ci.org/daostack/daostack.svg?branch=dev)](https://travis-ci.org/daostack/daostack)
+[![Build Status](https://travis-ci.org/daostack/daostack.svg?branch=master)](https://travis-ci.org/daostack/daostack)
 
 
 # Mission Statement
