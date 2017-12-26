@@ -33,13 +33,14 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
     mapping(address=>mapping(bytes32=>VoteProposal)) public organizationsData;
 
-    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+
     struct Parameters {
         IntVoteInterface intVote;
         bytes32 voteParams;
     }
 
-    mapping(bytes32=>Parameters) parameters;
+    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+    mapping(bytes32=>Parameters) public parameters;
 
     /**
     * @dev the constructor takes a token address, fee and beneficiary
@@ -70,8 +71,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        bytes32 paramsHash = (keccak256(_voteParams, _intVote));
-        return paramsHash;
+        return keccak256(_voteParams, _intVote);
     }
 
     function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId)
@@ -83,9 +83,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(numOfChoices+1, params.voteParams, _avatar, ExecutableInterface(this));
-        if (organizationsData[_avatar][proposalId].originalNumOfChoices != 0) {
-            revert();
-        }
+
         organizationsData[_avatar][proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
             originalProposalId: _originalProposalId,
@@ -108,33 +106,30 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     * @param _avatar address of the controller
     * @param _param a parameter of the voting result, 0 is no and 1 is yes.
     */
-    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
         // Save proposal to memory and delete from storage:
         VoteProposal memory proposal = organizationsData[_avatar][_proposalId];
         delete organizationsData[_avatar][_proposalId];
+        LogProposalDeleted(_avatar, _proposalId);
 
         // If no decision do nothing:
-        if (_param == 0) {
-            LogProposalDeleted(_avatar, _proposalId);
-            return true;
-        }
-
+        if (_param != 0) {
         // Define controller and get the parmas:
-        Controller controller = Controller(Avatar(_avatar).owner());
-        int tmpParam = _param;
-        if (_param > int(proposal.originalNumOfChoices)) {
-
-            tmpParam = 0;
-        }
-        bytes32[] memory tmp = new bytes32[](3);
-        tmp[0] = bytes32(address(proposal.originalIntVote));
-        tmp[2] = proposal.originalProposalId;
-        tmp[3] = bytes32(tmpParam);
-        controller.genericAction(tmp);
-        LogProposalExecuted(_avatar, _proposalId);
+            Controller controller = Controller(Avatar(_avatar).owner());
+            int tmpParam = _param;
+            if (_param > int(proposal.originalNumOfChoices)) {
+                tmpParam = 0;
+              }
+            bytes32[] memory tmp = new bytes32[](3);
+            tmp[0] = bytes32(address(proposal.originalIntVote));
+            tmp[2] = proposal.originalProposalId;
+            tmp[3] = bytes32(tmpParam);
+            controller.genericAction(tmp);
+            LogProposalExecuted(_avatar, _proposalId);
+          }
         return true;
     }
 
