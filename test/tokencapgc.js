@@ -53,10 +53,10 @@ contract('TokenCapGC', function (accounts)  {
     // transaction should fail.
     try{
       await web3.eth.call({to: addr, data: 0x231ef231ef231ef});
-      assert.fail(true,false);
+      assert.fail(false,'The transaction should fail because it makes no sense');
     }
     catch(e){
-      assert.equal(true,true);
+      helpers.assertVMException(ex);
     }
   });
 });
