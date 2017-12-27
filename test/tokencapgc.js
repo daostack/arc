@@ -1,3 +1,4 @@
+const helpers = require('./helpers');
 const DAOToken   = artifacts.require("./DAOToken.sol");
 const TokenCapGC = artifacts.require('./globalConstraints/TokenCapGC.sol');
 
@@ -44,5 +45,19 @@ contract('TokenCapGC', function (accounts)  {
     post = await tokenCapGC.post(token.address,1,0);
     //token total supply is 101
     assert.equal(post,true);
+  });
+
+  it('garbage transaction test', async () => {
+    const tokenCapGC = await TokenCapGC.new();
+    const addr = tokenCapGC.address;
+
+    // transaction should fail.
+    try{
+      await web3.eth.call({to: addr, data: 0x231ef231ef231ef});
+      assert.fail(false,'The transaction should fail because it makes no sense');
+    }
+    catch(ex){
+      helpers.assertVMException(ex);
+    }
   });
 });
