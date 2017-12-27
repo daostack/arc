@@ -14,7 +14,7 @@ const setupQuorumVote = async function (isOwnedVote=true, precReq=50) {
   quorumVote = await QuorumVote.new();
   executable = await ExecutableTest.new();
 
-  // set up a reputaiton system
+  // set up a reputation system
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
   reputationArray = [20, 10, 70 ];
@@ -117,15 +117,15 @@ contract('QuorumVote', function (accounts) {
     // the decisive vote is cast now and the proposal will be executed with option 5
     tx = await QuorumVote.ownerVote(proposalId, 5, accounts[2]);
     await checkVoteInfo(proposalId, accounts[2], [5, reputationArray[2]]);
-    // Porposal should be empty (being deleted after execution)
+    // Proposal should be empty (being deleted after execution)
     await checkProposalInfo(proposalId, [helpers.NULL_ADDRESS, helpers.NULL_ADDRESS, 0, helpers.NULL_ADDRESS, helpers.NULL_HASH, 0, false]);
     // TODO: Adam: option[0] should be 0 rep, I don't know why it's still 10 rep. do you have any idea why?
     await checkVotesStatus(proposalId, [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
-  it("Quorum porposals should be executed when reaching the precentage required", async function () {
+  it("Quorum proposals should be executed when reaching the percentage required", async function () {
 
-    // 25% precReq porposal
+    // 25% precReq proposal
     quorumVote = await setupQuorumVote(true, 25);
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 25, true);
     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
@@ -150,7 +150,7 @@ contract('QuorumVote', function (accounts) {
 
   it("Invalid inputs shouldn't work (precReq, vote)", async function () {
 
-    // Lets try to create a porposal with precReq=-1
+    // Lets try to create a proposal with precReq=-1
     try {
       quorumVote = await setupQuorumVote(true, -1);
       throw 'an error'; // make sure that an error is thrown
@@ -158,7 +158,7 @@ contract('QuorumVote', function (accounts) {
       helpers.assertVMException(error);
     }
 
-    // Lets try to create a porposal with precReq=200
+    // Lets try to create a proposal with precReq=200
     try {
       quorumVote = await setupQuorumVote(true, 200);
       throw 'an error'; // make sure that an error is thrown
@@ -166,7 +166,7 @@ contract('QuorumVote', function (accounts) {
       helpers.assertVMException(error);
     }
 
-    // Lets try to create a porposal with numOfChoices=99
+    // Lets try to create a proposal with numOfChoices=99
     try {
       let quorumVote = await setupQuorumVote(true, 22);
       const paramsHash = await quorumVote.getParametersHash(reputation.address, 22, true);
@@ -176,7 +176,7 @@ contract('QuorumVote', function (accounts) {
       helpers.assertVMException(error);
     }
 
-    // Lets try to create a porposal with numOfChoices=-1
+    // Lets try to create a proposal with numOfChoices=-1
     try {
       let quorumVote = await setupQuorumVote(true, 22);
       const paramsHash = await quorumVote.getParametersHash(reputation.address, 22, true);
@@ -186,7 +186,7 @@ contract('QuorumVote', function (accounts) {
       helpers.assertVMException(error);
     }
 
-    // propose a porposal
+    // propose a proposal
     quorumVote = await setupQuorumVote(true, 3);
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 3, true);
     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
@@ -337,7 +337,7 @@ contract('QuorumVote', function (accounts) {
     await checkVotesStatus(proposalId, [0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]);
   });
 
-  it("As allowOwner is set to false, Vote on the beahlf of someone elase should NOT work", async function() {
+  it("As allowOwner is set to false, Vote on the behalf of someone else should NOT work", async function() {
     let quorumVote = await setupQuorumVote(false, 50);
 
     // propose a vote
@@ -359,7 +359,7 @@ contract('QuorumVote', function (accounts) {
   it("if the voter is not the proposal's owner, he shouldn't be able to vote on the behalf of someone else", async function () {
     let quorumVote = await setupQuorumVote(true, 50);
 
-    // propose a porposal
+    // propose a proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -379,12 +379,12 @@ contract('QuorumVote', function (accounts) {
     // The vote should not be counted
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, 0, true]);
   });
-    // [TODO] Check why this test doesnt work
-    // it("Non-existent parameters hash should'nt work", async function() {
+    // [TODO] Check why this test doesn't work
+    // it("Non-existent parameters hash shouldn't work", async function() {
     //   let quorumVote = await setupQuorumVote(true, 50);
     //   let paramsHash;
     //
-    //   // propose a porposal
+    //   // propose a proposal
     //   paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
     //   await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
     //
@@ -405,58 +405,58 @@ contract('QuorumVote', function (accounts) {
     //   }
     // });
 
-  it("Should not able to vote / cancel vote / porposal after porposal has been executed", async function () {
+  it("Should not able to vote / cancel vote / proposal after proposal has been executed", async function () {
 
-    // propose a vote with precrequired=19%
+    // propose a vote with precRequired=19%
     let quorumVote = await setupQuorumVote(true, 19);
 
-    // propose a porposal
+    // propose a proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 19, true);
     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
-    // After that voting the porposal should be executed
+    // After that voting the proposal should be executed
     await quorumVote.vote(proposalId, 0);
 
-    // Should not be able to cancel the porposal because it's already been executed
+    // Should not be able to cancel the proposal because it's already been executed
     try {
       await quorumVote.cancelProposal(proposalId);
-      assert(false, "Can't cancel porposal because it's already been executed.");
+      assert(false, "Can't cancel proposal because it's already been executed.");
     } catch (error) {
       helpers.assertVMException(error);
     }
 
-    // Should not be able to cancel the vote because the porposal has been executed
+    // Should not be able to cancel the vote because the proposal has been executed
     try {
         await quorumVote.cancelVote(proposalId);
-        assert(false, "Can't cancel vote because porposal already been executed.");
+        assert(false, "Can't cancel vote because proposal already been executed.");
     } catch (error) {
         helpers.assertVMException(error);
     }
 
-    // Should not be able to vote because the porposal has been executed
+    // Should not be able to vote because the proposal has been executed
     try {
         await quorumVote.vote(proposalId, 1, { from: accounts[1] });
-        assert(false, "Can't vote because porposal already been executed.");
+        assert(false, "Can't vote because proposal already been executed.");
     } catch (error) {
         helpers.assertVMException(error);
     }
 
   });
 
-  it("Only the owner of the porposal can cancel it", async function () {
+  it("Only the owner of the proposal can cancel it", async function () {
 
-    // propose a vote with precrequired=19%
+    // propose a vote with precRequired=19%
     let quorumVote = await setupQuorumVote(true, 19);
 
-    // propose a porposal
+    // propose a proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 19, true);
     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
-    // Account 1 is not the owner of the porposal, he can't cancel it
+    // Account 1 is not the owner of the proposal, he can't cancel it
     try {
         await quorumVote.cancelProposal(proposalId, { from: accounts[1] });
         throw 'an error'; // make sure that an error is thrown
@@ -464,11 +464,11 @@ contract('QuorumVote', function (accounts) {
         helpers.assertVMException(error);
     }
 
-    // Shouldn't throw an exception because account 0 is the owner of the porposal
+    // Shouldn't throw an exception because account 0 is the owner of the proposal
     await quorumVote.cancelProposal(proposalId);
   });
 
-  it("log the LogNewProposal event on porposing new porposal", async function() {
+  it("log the LogNewProposal event on proposing new proposal", async function() {
     let quorumVote = await setupQuorumVote(true, 50);
 
     // propose a vote
@@ -484,7 +484,7 @@ contract('QuorumVote', function (accounts) {
     assert.equal(tx.logs[0].args._paramsHash, paramsHash);
   });
 
-  it("Should log the LogCancelProposal event on canceling a porposal", async () => {
+  it("Should log the LogCancelProposal event on canceling a proposal", async () => {
     quorumVote = await setupQuorumVote();
 
     // propose a vote
@@ -500,7 +500,7 @@ contract('QuorumVote', function (accounts) {
     assert.equal(newtx.logs[0].args._proposalId, proposalId);
   });
 
-  it("Should log the LogVoteProposal and LogCancelVoting events on voting and caceling the vote", async () => {
+  it("Should log the LogVoteProposal and LogCancelVoting events on voting and canceling the vote", async () => {
     quorumVote = await setupQuorumVote();
 
     // propose a vote
@@ -526,9 +526,9 @@ contract('QuorumVote', function (accounts) {
     assert.equal(cancelVoteTX.logs[0].args._voter, accounts[0]);
   });
 
-  it("Should log the LogExecuteProposal event on executing qourum porposal with 'no' decision", async () => {
+  it("Should log the LogExecuteProposal event on executing quorum proposal with 'no' decision", async () => {
 
-    // propose a porposal with precrequired=19%
+    // propose a proposal with precRequired=19%
     quorumVote = await setupQuorumVote(true, 19);
 
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 19, true);
@@ -547,7 +547,7 @@ contract('QuorumVote', function (accounts) {
   it('cannot vote for another user', async function () {
     let quorumVote = await setupQuorumVote(true, 50);
 
-    // propose a new porposal
+    // propose a new proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -560,8 +560,8 @@ contract('QuorumVote', function (accounts) {
       helpers.assertVMException(ex);
     }
   });
-  // [TODO] Check why this test doesnt work
-  // it("Shoud behave sensibly when voting with an empty reputation system", async function () {
+  // [TODO] Check why this test doesn't work
+  // it("Should behave sensibly when voting with an empty reputation system", async function () {
   //   // Initiate objects
   //   const quorumVote = await QuorumVote.new();
   //   const reputation = await Reputation.new();
@@ -572,7 +572,7 @@ contract('QuorumVote', function (accounts) {
   //   await quorumVote.setParameters(helpers.NULL_ADDRESS, 50, true);
   //   const paramsHash = await quorumVote.getParametersHash(helpers.NULL_ADDRESS, 50, true);
   //
-  //   // Try to porpose - an exception should be raised
+  //   // Try to propose - an exception should be raised
   //   try {
   //     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
   //     assert(false, 'Should throw an exception but didn\'t');
@@ -581,7 +581,7 @@ contract('QuorumVote', function (accounts) {
   //   }
   // });
 
-  it("Shoud behave sensibly without an executable [TODO] execution isn't implemented yet", async function () {
+  it("Should behave sensibly without an executable [TODO] execution isn't implemented yet", async function () {
 
     // Initiate objects & give reputation
     const quorumVote = await QuorumVote.new();
@@ -607,7 +607,7 @@ contract('QuorumVote', function (accounts) {
   it('Test voteWithSpecifiedAmounts - More reputation than I own, negative reputation, etc..', async function () {
     let quorumVote = await setupQuorumVote(true, 50);
 
-    // propose a new porposal
+    // propose a new proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -647,7 +647,7 @@ contract('QuorumVote', function (accounts) {
 
     let quorumVote = await setupQuorumVote(true, 50);
 
-    // propose a new porposal
+    // propose a new proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -672,52 +672,52 @@ contract('QuorumVote', function (accounts) {
     }
   });
 
-  it("Try to send wrong porposal id to the voting/cancel functions", async () => {
+  it("Try to send wrong proposal id to the voting/cancel functions", async () => {
 
     quorumVote = await setupQuorumVote(true, 50);
 
-    // propose a new porposal
+    // propose a new proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
-    // Lets try to call vote with invalid porposal id
+    // Lets try to call vote with invalid proposal id
     try {
       await quorumVote.vote('asdsada', 1, {from: accounts[0]});
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
-    // Lets try to call voteWithSpecifiedAmounts with invalid porposal id
+    // Lets try to call voteWithSpecifiedAmounts with invalid proposal id
     try {
       await quorumVote.voteWithSpecifiedAmounts('asdsada', 1, 1, 1);
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
-    // Lets try to call execute with invalid porposal id
+    // Lets try to call execute with invalid proposal id
     try {
       await quorumVote.execute('asdsada');
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
-    // Lets try to call ownerVote with invalid porposal id
+    // Lets try to call ownerVote with invalid proposal id
     try {
       await quorumVote.ownerVote('asdsada', 1, accounts[0]);
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
-    // Lets try to call cancel a vote with invalid porposal id
+    // Lets try to call cancel a vote with invalid proposal id
     try {
       await quorumVote.cancelVote('asdsada');
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }

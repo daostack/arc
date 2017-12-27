@@ -4,7 +4,7 @@ const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken   = artifacts.require("./DAOToken.sol");
 const StandardTokenMock = artifacts.require('./StandardTokenMock.sol');
-//todo : find out how to import this directly from zeppline.
+//todo : find out how to import this directly from zeppelin.
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
 
 var uint32 = require('uint32');
@@ -16,7 +16,7 @@ var amountToMint = 10;
 const setup = async function (permission='0xffffffff') {
   accounts = web3.eth.accounts;
   token  = await DAOToken.new("TEST","TST");
-  // set up a reputaiton system
+  // set up a reputation system
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', token.address, reputation.address);
   var schemesArray = [accounts[0]];
@@ -71,7 +71,7 @@ contract('Controller', function (accounts)  {
       // Check scheme has at least the permissions it is changing, and at least the current permissions.
       var i,j;
       for(j = 0; j <= 15; j++ ){
-        //registered scheme has already permmision to register(2)
+        //registered scheme has already permission to register(2)
         controller = await setup('0x'+uint32.toHex(j|2));
         var  register;
         for(i = 0; i <= 15; i++ ){
@@ -79,7 +79,7 @@ contract('Controller', function (accounts)  {
           try {
                 await controller.registerScheme(accounts[1],0,'0x'+uint32.toHex(i));
               } catch (ex) {
-                //registered scheme has already permmision to register(2) and is registed(1).
+                //registered scheme has already permission to register(2) and is register(1).
                 assert.notEqual(i&(~(j|3),0));
                 register = false;
               }
@@ -130,7 +130,7 @@ contract('Controller', function (accounts)  {
       var registeredScheme = accounts[1];
       var unregisteredScheme = accounts[2];
       for(i = 0; i <= 15; i++ ){
-        //registered scheme has already permmision to register(2)
+        //registered scheme has already permission to register(2)
         tx = await controller.registerScheme(registeredScheme,0,'0x'+uint32.toHex(i|3));
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "RegisterScheme");

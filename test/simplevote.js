@@ -13,7 +13,7 @@
 //     simpleVote = await SimpleVote.new();
 //     executable = await ExecutableTest.new();
 
-//     // set up a reputaiton system
+//     // set up a reputation system
 //     reputation = await Reputation.new();
 //     await reputation.mint(accounts[0], 20);
 //     await reputation.mint(accounts[1], 10);
@@ -53,7 +53,7 @@
 //         assert.equal(proposalInfo[4], 0);
 //         // uint no; // total 'no' votes
 //         assert.equal(proposalInfo[5], 0);
-//         // mapping(address=>int) voted; // save the amount of reputation voted by an agent (positive sign is yes, negatice is no);
+//         // mapping(address=>int) voted; // save the amount of reputation voted by an agent (positive sign is yes, negative is no);
 //         // - the mapping is simply not returned at all in the array
 //         // bool opened; // voting opened flag
 //         assert.equal(proposalInfo[6], true);
@@ -107,7 +107,7 @@
 //         proposalInfo = await simpleVote.proposals(proposalId);
 //         assert.equal(proposalInfo[4].toNumber(), 0);
 
-//         // We are the owner of the poposal, let's try to vote on the behalf of someone else.
+//         // We are the owner of the proposal, let's try to vote on the behalf of someone else.
 //         await simpleVote.vote(proposalId, true, accounts[0]);
 //         await simpleVote.vote(proposalId, true, accounts[1]);
 //         // total 'yes' is supposed to be equal to the voters 0 + 1 reputation
@@ -118,21 +118,21 @@
 
 //         // lets try to vote on the behalf of someone else without being the proposal owner.
 //         await simpleVote.vote(proposalId, true, accounts[0], { from: accounts[1] });
-//         // total 'yes' is supposed to be account 1's reputaton because he's the one who actually voted(he's the sender but not the owner).
+//         // total 'yes' is supposed to be account 1's reputation because he's the one who actually voted(he's the sender but not the owner).
 //         proposalInfo = await simpleVote.proposals(proposalId);
 //         assert.equal(proposalInfo[4].toNumber(), rep1);
 //         await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
 
 //         // lets try to vote with empty address
 //         await simpleVote.vote(proposalId, true, helpers.NULL_ADDRESS, { from: accounts[1] });
-//         // total 'yes' is supposed to be account 1's reputaton because he's the one who actually voted(he's the sender but not the owner).
+//         // total 'yes' is supposed to be account 1's reputation because he's the one who actually voted(he's the sender but not the owner).
 //         proposalInfo = await simpleVote.proposals(proposalId);
 //         assert.equal(proposalInfo[4].toNumber(), rep1);
 //         await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
 
 //         // lets try to vote with null address
 //         await simpleVote.vote(proposalId, true, null, { from: accounts[1] });
-//         // total 'yes' is supposed to be account 1's reputaton because he's the one who actually voted(he's the sender but not the owner).
+//         // total 'yes' is supposed to be account 1's reputation because he's the one who actually voted(he's the sender but not the owner).
 //         proposalInfo = await simpleVote.proposals(proposalId);
 //         assert.equal(proposalInfo[4].toNumber(), rep1);
 //         await simpleVote.cancelVote(proposalId, accounts[1], { from: accounts[1] }); // Cleaning the vote for the next test.
@@ -154,7 +154,7 @@
 //         assert.equal(proposalInfo[4].toNumber(), 0);
 //         assert.equal(proposalInfo[5].toNumber(), 0);
 
-//         // Let's try to change user voting choice. and also check that if i'ts the same choice, ignore.
+//         // Let's try to change user voting choice. and also check that if it's the same choice, ignore.
 //         await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[1] });
 //         await simpleVote.vote(proposalId, true, accounts[1], { from: accounts[1] });
 //         await simpleVote.vote(proposalId, false, accounts[1], { from: accounts[1] });
@@ -165,12 +165,12 @@
 //         assert.equal(proposalInfo[5].toNumber(), rep1);
 
 //         // proposalInfo = await simpleVote.proposals(proposalId);
-//         // console.log("accounts[1] commited reputation: " + await simpleVote.voteInfo(proposalId, accounts[1]));
+//         // console.log("accounts[1] committed reputation: " + await simpleVote.voteInfo(proposalId, accounts[1]));
 //         //console.log("yes: " + proposalInfo[4] + ", no: " + proposalInfo[5]);
 //     });
 
 
-//     it("shoud behave sensibly when voting with an empty reputation system [TODO]", async function () {
+//     it("should behave sensibly when voting with an empty reputation system [TODO]", async function () {
 //         // const accounts = web3.eth.accounts; // Commented to avoid linter error.
 //         const simpleVote = await SimpleVote.new();
 //         const reputation = await Reputation.new();
@@ -182,7 +182,7 @@
 //         await simpleVote.propose(paramsHash, helpers.NULL_ADDRESS, executable.address);
 //     });
 
-//     it("shoud behave sensibly without an executable [TODO]", async function () {
+//     it("should behave sensibly without an executable [TODO]", async function () {
 
 //     });
 

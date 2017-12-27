@@ -81,10 +81,10 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-    * @dev porpose an upgrade of the organization's controller
+    * @dev propose an upgrade of the organization's controller
     * @param _avatar avatar of the organization
-    * @param _newController address of the new controller that is being porposed
-    * @return an id which represents the porposal
+    * @param _newController address of the new controller that is being proposed
+    * @return an id which represents the proposal
     */
     function proposeUpgrade(Avatar _avatar, address _newController)
         public
@@ -101,13 +101,13 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-    * @dev porpose to replace this scheme by another upgrading scheme
+    * @dev propose to replace this scheme by another upgrading scheme
     * @param _avatar avatar of the organization
     * @param _scheme address of the new upgrading scheme
     * @param _params ???
     * @param _tokenFee  ???
     * @param _fee ???
-    * @return an id which represents the porposal
+    * @return an id which represents the proposal
     */
     function proposeChangeUpgradingScheme(
         Avatar _avatar,

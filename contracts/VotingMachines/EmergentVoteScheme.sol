@@ -13,23 +13,23 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     struct Organization {
         bool isRegistered;
         uint boostedProposals; // Currently amount of boosted proposals
-        bytes32[] awaitingBoostProposals; // Array that contains a waiting list of porposals to be boosted
+        bytes32[] awaitingBoostProposals; // Array that contains a waiting list of proposals to be boosted
     }
 
     struct OrgParameters {
         Reputation reputationSystem; // the reputation system that is being used
-        StandardToken boostToken; // The token that will be used in order to boost porposals
-        address beneficiary; // The tokens that has been spent for boosting porposals will be transfered to this address
+        StandardToken boostToken; // The token that will be used in order to boost proposals
+        address beneficiary; // The tokens that has been spent for boosting proposals will be transfered to this address
         uint attentionBandwidth; // Limit the amount of boosted proposals
         uint minBoostTimeFrame; // The boost time can not be less than that time frame
         uint maxBoostTimeFrame; // The boost time can not be more than that time frame
-        uint minBoost; // Minimum amount of token can be paid for boosting porposals
-        bool allowOwner; // does this porposal has a owner who has owner rights?
+        uint minBoost; // Minimum amount of token can be paid for boosting proposals
+        bool allowOwner; // does this proposal has a owner who has owner rights?
     }
 
     struct ProposalParameters {
-        uint precReq; // how many precentages are required for the porpsal to be passed
-        uint qourum; // Qurum that will be rellevant only if the porposal will get boosted
+        uint precReq; // how many percentages are required for the porpsal to be passed
+        uint quorum; // Qurum that will be rellevant only if the proposal will get boosted
         uint boostTimeFrame; // The time frame that the porpoal will be boosted
     }
 
@@ -39,19 +39,19 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     struct Proposal {
-        address owner; // the porposal's owner
-        address avatar; // the avatar of the organization that owns the porposal
-        uint numOfChoices; // Number of choices in the porposal
+        address owner; // the proposal's owner
+        address avatar; // the avatar of the organization that owns the proposal
+        uint numOfChoices; // Number of choices in the proposal
         ExecutableInterface executable; // will be executed if the perposal will pass
-        bytes32 paramsHash; // the hash of the parameters of the porposal
-        uint totalVotes; // Totals porposal's votes
+        bytes32 paramsHash; // the hash of the parameters of the proposal
+        uint totalVotes; // Totals proposal's votes
         mapping(uint=>uint) votes;
         mapping(address=>Voter) voters;
         bool opened; // voting opened flag
-        bool isBoostModeActive; // Is the porposal boosted?
+        bool isBoostModeActive; // Is the proposal boosted?
         bool isAwaitingBoost; // Is in the waiting list for being boosted
-        uint closingTime; // Will be setted only if the porposal is boosted, will determine the closing time of the porposal
-        uint boostedFunds; // amount of funds that has been invested in this porposal
+        uint closingTime; // Will be setted only if the proposal is boosted, will determine the closing time of the proposal
+        uint boostedFunds; // amount of funds that has been invested in this proposal
     }
 
     event LogNewProposal(bytes32 indexed _proposalId, address _proposer, bytes32 _paramsHash);
@@ -66,10 +66,10 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
 
     uint constant public MAX_NUM_OF_CHOICES = 10;
-    uint proposalsCnt; // Total amount of porposals
+    uint proposalsCnt; // Total amount of proposals
 
     /**
-    * @dev Check that there is owner for the porposal and he sent the transaction
+    * @dev Check that there is owner for the proposal and he sent the transaction
     */
     modifier onlyProposalOwner(bytes32 _proposalId) {
         require(msg.sender == proposals[_proposalId].owner);
@@ -77,7 +77,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     /**
-    * @dev Check that the porposal is votable (opened and not executed yet)
+    * @dev Check that the proposal is votable (opened and not executed yet)
     */
     modifier votable(bytes32 _proposalId) {
         require(proposals[_proposalId].opened);
@@ -153,19 +153,19 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     /**
-    * @dev Set porposals parameters
-    * @param _precReq the precentage that are required for the porposal to be executed
-    * @param _qourum the 'qourum' precentages that are required for the winning choice (will be rellevant only if boosted)
-    * @param _boostTimeFrame the time frame of the porposal after being boosted, after the time passed, a decision will be made
+    * @dev Set proposals parameters
+    * @param _precReq the percentage that are required for the proposal to be executed
+    * @param _quorum the 'quorum' percentages that are required for the winning choice (will be rellevant only if boosted)
+    * @param _boostTimeFrame the time frame of the proposal after being boosted, after the time passed, a decision will be made
     * @return bytes32 the hashed parameters
     */
-    function setProposalParameters(uint _precReq, uint _qourum, uint _boostTimeFrame) public returns(bytes32) {
+    function setProposalParameters(uint _precReq, uint _quorum, uint _boostTimeFrame) public returns(bytes32) {
         require(_precReq <= 100 && _precReq > 0);
-        require(_qourum <= 100 && _qourum > 0);
-        bytes32 hashedParameters = getProposalParametersHash(_precReq, _qourum, _boostTimeFrame);
+        require(_quorum <= 100 && _quorum > 0);
+        bytes32 hashedParameters = getProposalParametersHash(_precReq, _quorum, _boostTimeFrame);
         proposalsParameters[hashedParameters] = ProposalParameters({
             precReq: _precReq,
-            qourum: _qourum,
+            quorum: _quorum,
             boostTimeFrame: _boostTimeFrame
         });
         return hashedParameters;
@@ -174,18 +174,18 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     /**
     * @dev hashParameters returns a hash of the given parameters
     */
-    function getProposalParametersHash(uint _precReq, uint _qourum, uint _boostTimeFrame) public pure returns(bytes32) {
-        return keccak256(_precReq, _qourum, _boostTimeFrame);
+    function getProposalParametersHash(uint _precReq, uint _quorum, uint _boostTimeFrame) public pure returns(bytes32) {
+        return keccak256(_precReq, _quorum, _boostTimeFrame);
     }
 
     /**
-    * @dev register a new proposal with the given parameters. Every porposal has a unique ID which is being
+    * @dev register a new proposal with the given parameters. Every proposal has a unique ID which is being
     * generated by calculating keccak256 of a incremented counter.
-    * @param _numOfChoices the number of choices inthe porposal
+    * @param _numOfChoices the number of choices inthe proposal
     * @param _paramsHash defined the parameters of the voting machine used for this proposal
     * @param _avatar an address to be sent as the payload to the _executable contract.
     * @param _executable This contract will be executed when vote is over.
-    * @return bytes32 porposalId the ID of the porposal
+    * @return bytes32 proposalId the ID of the proposal
     */
     function propose(
         uint _numOfChoices,
@@ -221,9 +221,9 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     /**
-    * @dev Cancel a porposal, only the owner can call this function and only if allowOwner flag is true.
-    * @param _proposalId the porposal ID
-    * @return bool True if the porposal is canceled and False if it wasn't
+    * @dev Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
+    * @param _proposalId the proposal ID
+    * @return bool True if the proposal is canceled and False if it wasn't
     */
     function cancelProposal(bytes32 _proposalId) public onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool) {
         address avatar = proposals[_proposalId].avatar;
@@ -246,10 +246,10 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     /**
-    * @dev Get the score of a specific porposal
+    * @dev Get the score of a specific proposal
     * The score is evaluated by multiplying the number of votes with the funds that are invested
-    * @param _proposalId the porposal ID
-    * @return uint Porposal's score
+    * @param _proposalId the proposal ID
+    * @return uint Proposal's score
     */
     function proposalScore(bytes32 _proposalId) public constant returns(uint) {
         Proposal memory proposal = proposals[_proposalId];
@@ -257,9 +257,9 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     /**
-    * @dev Get the minimum score of a given list porposal ids
-    * @param _idsArray the porposal ids that will be checked
-    * @return uint index the index of the porposal containing the smallest score in the list
+    * @dev Get the minimum score of a given list proposal ids
+    * @param _idsArray the proposal ids that will be checked
+    * @return uint index the index of the proposal containing the smallest score in the list
     * @return uint min the minimum score in the list
     */
     function findMinScore(bytes32[] _idsArray) public constant returns(uint index, uint min) {
@@ -272,9 +272,9 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     /**
-    * @dev Get the maximum score of a given list porposal ids
-    * @param _idsArray the porposal ids that will be checked
-    * @return uint index the index of the porposal containing the highest score in the list
+    * @dev Get the maximum score of a given list proposal ids
+    * @param _idsArray the proposal ids that will be checked
+    * @return uint index the index of the proposal containing the highest score in the list
     * @return uint max the maximum score in the list
     */
     function findMaxScore(bytes32[] _idsArray) public constant returns(uint index, uint max) {
@@ -331,7 +331,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     /**
-    * @dev Move the top porposal form the waiting list to the boosted proposals
+    * @dev Move the top proposal form the waiting list to the boosted proposals
     * @param _avatar avatar of the organization
     */
     // [TODO] event
@@ -396,7 +396,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
 
     /**
     * @dev Cancel the vote of the msg.sender: subtract the reputation amount from the votes
-    * and delete the voter from the porposal struct
+    * and delete the voter from the proposal struct
     * @param _proposalId id of the proposal
     */
     function cancelVote(bytes32 _proposalId) public votable(_proposalId) {
@@ -406,10 +406,10 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     /**
     * @dev check if the proposal has been decided, and if so, execute the proposal
     * @param _proposalId the id of the proposal
-    * @return bool is the porposal has been executed or not?
+    * @return bool is the proposal has been executed or not?
     */
     // TODO: do we want to delete the vote from the proposals mapping?
-    // TODO: add to the event if this porposal was bossted or not
+    // TODO: add to the event if this proposal was bossted or not
     function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
 
@@ -420,10 +420,10 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
 
         // Check boosted propsals:
         if (proposal.isBoostModeActive && block.number >= proposal.closingTime) {
-            uint qourum = proposalsParameters[proposal.paramsHash].qourum;
+            uint quorum = proposalsParameters[proposal.paramsHash].quorum;
 
-            // Check if qourum has been reached
-            if (proposal.totalVotes/totalReputation >= qourum) {
+            // Check if quorum has been reached
+            if (proposal.totalVotes/totalReputation >= quorum) {
                 uint max;
                 uint maxInd;
 
@@ -470,10 +470,10 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     /**
-    * @dev proposalStatus returns the number of yes, no, and abstain and if the porposal is ended of a given porposal id
+    * @dev proposalStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
     * @param _proposalId the ID of the proposal
-    * @return int[10] array that contains the porposal's info:
-    * number of yes, no, and abstain, and if the voting for the porposal has ended
+    * @return int[10] array that contains the proposal's info:
+    * number of yes, no, and abstain, and if the voting for the proposal has ended
     */
     function proposalStatus(bytes32 _proposalId) public constant returns(uint[13]) {
         Proposal storage proposal = proposals[_proposalId];
@@ -496,9 +496,9 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     }
 
     /**
-    * @dev Will try to insert a porposal to the waiting list (if there is place in the waiting list)
+    * @dev Will try to insert a proposal to the waiting list (if there is place in the waiting list)
     * This function will be called only from boostProposal function
-    * @param _proposalId the id of the porposal that is being checked
+    * @param _proposalId the id of the proposal that is being checked
     */
     // [TODO] event
     function tryAwaitingBoostProposals(bytes32 _proposalId) internal {

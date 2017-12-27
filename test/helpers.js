@@ -243,7 +243,7 @@ export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50,re
   var accounts = web3.eth.accounts;
   votingMachine.absoluteVote = await AbsoluteVote.new();
 
-  // set up a reputaiton system
+  // set up a reputation system
   var reputation = await Reputation.new();
   //var avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
   votingMachine.reputationArray = [20, 40 ,70];
