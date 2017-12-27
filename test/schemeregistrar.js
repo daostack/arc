@@ -30,7 +30,7 @@ const setup = async function (accounts) {
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(testSetup.schemeRegistrar);
    await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.schemeRegistrar.address],[testSetup.schemeRegistrarParams.paramsHash],[testSetup.standardTokenMock.address],[100],["0x0000000F"]);
-   //give some tokens to organization avatar so it could register the univeral scheme.
+   //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
    return testSetup;
 };
@@ -70,7 +70,7 @@ contract('SchemeRegistrar', function(accounts) {
       assert.equal(tx.logs[0].event, "LogNewSchemeProposal");
      });
 
-     it("proposeScheme without regisration -should fail", async function() {
+     it("proposeScheme without registration -should fail", async function() {
        var testSetup = await setup(accounts);
        try{
        await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address,0,false,testSetup.standardTokenMock.address,0,true);
@@ -96,7 +96,7 @@ contract('SchemeRegistrar', function(accounts) {
          assert.equal(tx.logs[0].event, "LogRemoveSchemeProposal");
         });
 
-        it("proposeToRemoveScheme without regisration -should fail", async function() {
+        it("proposeToRemoveScheme without registration -should fail", async function() {
           var testSetup = await setup(accounts);
           try{
           await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address);
@@ -164,7 +164,7 @@ contract('SchemeRegistrar', function(accounts) {
          await testSetup.schemeRegistrar.registerOrganization(testSetup.org.avatar.address);
          var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,isRegistering,testSetup.standardTokenMock.address,fee,false);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-         //check organizationsProposals before excution
+         //check organizationsProposals before execution
          var organizationsProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
          assert.equal(organizationsProposals[2].toNumber(),1);//proposalType
 
@@ -173,7 +173,7 @@ contract('SchemeRegistrar', function(accounts) {
          var controller = await Controller.at(await testSetup.org.avatar.owner());
          //should not register because the decision is "no"
          assert.equal(await controller.isSchemeRegistered(accounts[0]),false);
-         //check organizationsProposals after excution
+         //check organizationsProposals after execution
          organizationsProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
          assert.equal(organizationsProposals[2],0);//proposalType
         });
@@ -188,7 +188,7 @@ contract('SchemeRegistrar', function(accounts) {
           //Vote with reputation to trigger execution
           await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
           assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address),false);
-          //check organizationsProposals after excution
+          //check organizationsProposals after execution
           var organizationsProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
           assert.equal(organizationsProposals[2],0);//proposalType
          });

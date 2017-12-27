@@ -17,7 +17,7 @@ contract('DAOToken', accounts => {
 
     it("should be destructible", async () => {
         // we only test that the function actually exists
-        // "real" tests are in zeppelin-solidity/Killable.js
+        // "real" tests are in zeppelin-solidity/Destructible.js
         let token = await DAOToken.new();
         let txnhash = await token.destroy();
         assert.isOk(txnhash);

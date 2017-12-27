@@ -247,7 +247,7 @@ contract AbsoluteVote is IntVoteInterface {
      * @param _proposalId id of the proposal
      * @param _voter used in case the vote is cast for someone else
      * @param _vote a value between 0 to and the proposal's number of choices.
-     * @return true in case of proposal excution otherwise false
+     * @return true in case of proposal execution otherwise false
      * throws if proposal is not open or if it has been executed
      * NB: executes the proposal if a decision has been reached
      */

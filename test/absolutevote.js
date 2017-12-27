@@ -13,7 +13,7 @@ const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
   absoluteVote = await AbsoluteVote.new();
   executable = await ExecutableTest.new();
 
-  // set up a reputaiton system
+  // set up a reputation system
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
   reputationArray = [20, 10, 70 ];
@@ -175,13 +175,13 @@ contract('AbsoluteVote', function (accounts) {
       // the decisive vote is cast now and the proposal will be executed with option 5
       await absoluteVote.ownerVote(proposalId, 5, accounts[2]);
       await checkVoteInfo(proposalId, accounts[2], [5, reputationArray[2]]);
-      // Porposal should be empty (being deleted after execution)
+      // Proposal should be empty (being deleted after execution)
       await checkProposalInfo(proposalId, [helpers.NULL_ADDRESS, helpers.NULL_ADDRESS, 0, helpers.NULL_ADDRESS, helpers.NULL_HASH, 0, false]);
       await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
       await checkIsVotable(proposalId, false);
   });
 
-  it("log the LogNewProposal event on porposing new porposal", async function() {
+  it("log the LogNewProposal event on proposing new proposal", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
@@ -197,7 +197,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(tx.logs[0].args._paramsHash, paramsHash);
   });
 
-  it("should log the LogCancelProposal event on canceling a porposal", async function() {
+  it("should log the LogCancelProposal event on canceling a proposal", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
@@ -213,7 +213,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(newtx.logs[0].args._proposalId, proposalId);
   });
 
-  it("should log the LogVoteProposal and LogCancelVoting events on voting and caceling the vote", async function() {
+  it("should log the LogVoteProposal and LogCancelVoting events on voting and canceling the vote", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
@@ -398,7 +398,7 @@ contract('AbsoluteVote', function (accounts) {
     await checkVotesStatus(proposalId, [0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
-  it("As allowOwner is set to false, Vote on the beahlf of someone elase should NOT work", async function() {
+  it("As allowOwner is set to false, Vote on the behalf of someone else should NOT work", async function() {
     absoluteVote = await setupAbsoluteVote(false, 50);
 
     // propose a vote
@@ -441,7 +441,7 @@ contract('AbsoluteVote', function (accounts) {
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, 0, true]);
   });
 
-  it("Non-existent parameters hash should'nt work", async function() {
+  it("Non-existent parameters hash shouldn't work", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
     var paramsHash;
 
@@ -474,7 +474,7 @@ contract('AbsoluteVote', function (accounts) {
     }
   });
 
-  it("Invalid precentage required( < 0 || > 100) shouldn't work", async function() {
+  it("Invalid percentage required( < 0 || > 100) shouldn't work", async function() {
     try {
       absoluteVote = await setupAbsoluteVote(true, 150);
       assert(false, "setParameters(we call it here: test/absolutevote.js:setupAbsoluteVote()) was supposed to throw but didn't.");
@@ -502,7 +502,7 @@ contract('AbsoluteVote', function (accounts) {
     // After this voting the proposal should be executed
     await absoluteVote.vote(proposalId, 0, {from: accounts[2]});
 
-    // Should not be able to cancel the porposal because it's already been executed
+    // Should not be able to cancel the proposal because it's already been executed
     try {
       await absoluteVote.cancelProposal(proposalId);
       assert(false, "cancelProposal was supposed to throw but didn't.");
@@ -510,7 +510,7 @@ contract('AbsoluteVote', function (accounts) {
       helpers.assertVMException(error);
     }
 
-    // Should not be able to cancel the vote because the porposal has been executed
+    // Should not be able to cancel the vote because the proposal has been executed
     try {
         await absoluteVote.cancelVote(proposalId);
         assert(false, "cancelVote was supposed to throw but didn't.");
@@ -518,7 +518,7 @@ contract('AbsoluteVote', function (accounts) {
         helpers.assertVMException(error);
     }
 
-    // Should not be able to vote because the porposal has been executed
+    // Should not be able to vote because the proposal has been executed
     try {
         await absoluteVote.vote(proposalId, 1, { from: accounts[1] });
         assert(false, "vote was supposed to throw but didn't.");
@@ -650,7 +650,7 @@ contract('AbsoluteVote', function (accounts) {
   it('cannot vote for another user', async function () {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
-    // propose a new porposal
+    // propose a new proposal
     const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
     let tx = await absoluteVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -664,7 +664,7 @@ contract('AbsoluteVote', function (accounts) {
     }
   });
 
-  it("Shoud behave sensibly when voting with an empty reputation system", async function () {
+  it("Should behave sensibly when voting with an empty reputation system", async function () {
       // Initiate objects
       const absoluteVote = await AbsoluteVote.new();
       const reputation = await Reputation.new();
@@ -675,7 +675,7 @@ contract('AbsoluteVote', function (accounts) {
       await absoluteVote.setParameters(helpers.NULL_ADDRESS, 50, true);
       const paramsHash = await absoluteVote.getParametersHash(helpers.NULL_ADDRESS, 50, true);
 
-      // Try to porpose - an exception should be raised
+      // Try to propose - an exception should be raised
       try {
         await absoluteVote.propose(6, paramsHash, avatar.address, executable.address);
         assert(false, 'Should throw an exception but didn\'t');
@@ -684,7 +684,7 @@ contract('AbsoluteVote', function (accounts) {
       }
   });
 
-  it("Shoud behave sensibly without an executable [TODO] execution isn't implemented yet", async function () {
+  it("Should behave sensibly without an executable [TODO] execution isn't implemented yet", async function () {
 
     // Initiate objects & give reputation
     const absoluteVote = await AbsoluteVote.new();
@@ -707,7 +707,7 @@ contract('AbsoluteVote', function (accounts) {
     // await absoluteVote.vote(proposalId, 5, { from: accounts[2] });
   });
 
-  it('Porposal with wrong num of options', async function () {
+  it('Proposal with wrong num of options', async function () {
     // 6 Option - no exception should be raised
     absoluteVote = await setupAbsoluteVote(true, 50);
     const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
@@ -742,7 +742,7 @@ contract('AbsoluteVote', function (accounts) {
   it('Test voteWithSpecifiedAmounts - More reputation than I own, negative reputation, etc..', async function () {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
-    // propose a new porposal
+    // propose a new proposal
     const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
     let tx = await absoluteVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -783,7 +783,7 @@ contract('AbsoluteVote', function (accounts) {
 
     absoluteVote = await setupAbsoluteVote(true, 50);
 
-    // propose a new porposal
+    // propose a new proposal
     const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
     let tx = await absoluteVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -808,58 +808,58 @@ contract('AbsoluteVote', function (accounts) {
     }
   });
 
-  it("Try to send wrong porposal id to the voting/cancel functions", async () => {
+  it("Try to send wrong proposal id to the voting/cancel functions", async () => {
 
     absoluteVote = await setupAbsoluteVote(true, 50);
 
-    // propose a new porposal
+    // propose a new proposal
     const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
     let tx = await absoluteVote.propose(6, paramsHash, avatar.address, executable.address);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
-    // Lets try to call vote with invalid porposal id
+    // Lets try to call vote with invalid proposal id
     try {
       await absoluteVote.vote('asdsada', 1, {from: accounts[0]});
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
-    // Lets try to call voteWithSpecifiedAmounts with invalid porposal id
+    // Lets try to call voteWithSpecifiedAmounts with invalid proposal id
     try {
       await absoluteVote.voteWithSpecifiedAmounts('asdsada', 1, 1, 1);
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
-    // Lets try to call execute with invalid porposal id
+    // Lets try to call execute with invalid proposal id
     try {
       await absoluteVote.execute('asdsada');
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
-    // Lets try to call ownerVote with invalid porposal id
+    // Lets try to call ownerVote with invalid proposal id
     try {
       await absoluteVote.ownerVote('asdsada', 1, accounts[0]);
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
-    // Lets try to call cancel a vote with invalid porposal id
+    // Lets try to call cancel a vote with invalid proposal id
     try {
       await absoluteVote.cancelVote('asdsada');
-      assert(false, 'Invalid porposal ID has been delivered');
+      assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
   });
 
-  it('2 Porposals, 1 Reputation system', async function () {
+  it('2 proposals, 1 Reputation system', async function () {
 
     // Initiate parameters
     accounts = web3.eth.accounts;
@@ -871,7 +871,7 @@ contract('AbsoluteVote', function (accounts) {
     await reputation.mint(accounts[1], reputationArray[1]);
     await reputation.mint(accounts[2], reputationArray[2]);
 
-    // Porposal 1 - 6 choices - 30% - ownerVote disabled
+    // proposal 1 - 6 choices - 30% - ownerVote disabled
     let absoluteVote1 = await AbsoluteVote.new();
     await absoluteVote1.setParameters(reputation.address, 30, false);
     const paramsHash1 = await absoluteVote1.getParametersHash(reputation.address, 30, false);
@@ -879,7 +879,7 @@ contract('AbsoluteVote', function (accounts) {
     const proposalId1 = await getValueFromLogs(tx1, '_proposalId');
     assert.isOk(proposalId1);
 
-    // Porposal 2 - Yes/No - 50% - ownerVote enabled
+    // proposal 2 - Yes/No - 50% - ownerVote enabled
     let absoluteVote2 = await AbsoluteVote.new();
     await absoluteVote2.setParameters(reputation.address, 50, true);
     const paramsHash2 = await absoluteVote2.getParametersHash(reputation.address, 50, true);
@@ -887,21 +887,21 @@ contract('AbsoluteVote', function (accounts) {
     const proposalId2 = await getValueFromLogs(tx2, '_proposalId');
     assert.isOk(proposalId2);
 
-    // Lets check the porposals
+    // Lets check the proposals
     await checkProposalInfoWithAbsoluteVote(proposalId1, [accounts[0], avatar.address, 6, executable.address, paramsHash1, 0, true], absoluteVote1);
     await checkProposalInfoWithAbsoluteVote(proposalId2, [accounts[1], avatar.address, 2, executable.address, paramsHash2, 0, true], absoluteVote2);
 
-    // Account 0 votes in both porposals, and on behalf of Account 1 - should get an exception for that
+    // Account 0 votes in both proposals, and on behalf of Account 1 - should get an exception for that
     await absoluteVote1.voteWithSpecifiedAmounts(proposalId1, 2, 2, 0);
     await absoluteVote2.vote(proposalId2, 0);
     try {
       await absoluteVote2.ownerVote(proposalId2, 0, accounts[1]);
-      assert(false, 'Account 0 is not the owner of porposal 2');
+      assert(false, 'Account 0 is not the owner of proposal 2');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
-    // Account 1 voting on both porposals
+    // Account 1 voting on both proposals
     await absoluteVote1.vote(proposalId1, 4, { from: accounts[1] });
     // Made mistake and changed his vote
     await absoluteVote1.vote(proposalId1, 3, { from: accounts[1] });
@@ -909,7 +909,7 @@ contract('AbsoluteVote', function (accounts) {
     // Account 1 changing Account 0 vote from 0 to 1
     await absoluteVote2.ownerVote(proposalId2, 1, accounts[0], { from: accounts[1] });
 
-    // Lets check the porposalst status
+    // Lets check the proposals status
     await checkVotesStatusWithAbsoluteVote(proposalId1, [0, 0, 2, reputationArray[1], 0, 0, 0, 0, 0, 0], absoluteVote1);
     await checkVotesStatusWithAbsoluteVote(proposalId2, [0, (reputationArray[0] + reputationArray[1]), 0, 0, 0, 0, 0, 0, 0, 0], absoluteVote2);
     await checkIsVotableWithAbsoluteVote(proposalId1,true,absoluteVote1);

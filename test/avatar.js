@@ -19,7 +19,7 @@ contract('Avatar', function (accounts)  {
         let action = await ActionMock.new();
         try{
          await avatar.genericAction(action.address,[0],{ from: accounts[1] });
-         assert(false, "genericDeligateAction should fail due to wrong owner");
+         assert(false, "genericAction should fail due to wrong owner");
          } catch (ex) {
              helpers.assertVMException(ex);
          }
