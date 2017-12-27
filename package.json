@@ -1,20 +1,7 @@
 {
   "name": "daostack-arc",
   "version": "0.0.0-alpha.17",
-  "description": "Building DAOs",
-  "main": "dist/arc.js",
-  "types": "lib/arc.d.ts",
-  "directories": {
-    "lib": "./lib",
-    "doc": "./docs",
-    "contracts": "./build/contracts/"
-  },
-  "files": [
-    "dist/",
-    "lib/",
-    "docs/",
-    "build/contracts/"
-  ],
+  "description": "A platform for building DAOs",
   "scripts": {
     "test": "truffle test",
     "testrpc": "testrpc -l 6500000 --account=\"0x0191ecbd1b150b8a3c27c27010ba51b45521689611e669109e034fd66ae69621,9999999999999999999999999999999999999999999\" --account=\"0x00f360233e89c65970a41d4a85990ec6669526b2230e867c352130151453180d,9999999999999999999999999999999999999999999\" --account=\"0x987a26abca7432016104ce2f24ce639340e25afe06ac69f68791399e7a5d1028,9999999999999999999999999999999999999999999\" --account=\"0x89af34b1b7347834048b99423dad174a14bf14540d720d72c16ae92e94b987cb,9999999999999999999999999999999999999999999\" --account=\"0xc867be647eb2bc51e4c0d61066859875cf3634fe949b6f5f85c69ab90e485b37,9999999999999999999999999999999999999999999\" --account=\"0xefabcc2377dee5e51b5a9e65a3854aec85fbbec3cb584d8ad4f9679869fb33c6,9999999999999999999999999999999999999999999\"",
@@ -47,9 +34,9 @@
     "solc-cli": "^0.3.0",
     "solium": "^1.0.9",
     "truffle": "^4.0.1",
+    "uint32": "^0.2.1",
     "when": "^3.7.8",
-    "zeppelin-solidity": "^1.4.0",
-    "uint32": "^0.2.1"
+    "zeppelin-solidity": "^1.4.0"
   },
   "repository": {
     "type": "git",
@@ -65,12 +52,15 @@
     "backfeed",
     "arc"
   ],
-  "author": "Jelle Gerbrandy <jelle@gerbrandy.com>",
+  "authors": [
+    "Adam Levi <adam@daostack.io>",
+    "Jelle Gerbrandy <jelle@gerbrandy.com>"
+  ],
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/daostack/daostack/issues"
   },
-  "homepage": "https://github.com/daostack/daostack",
+  "homepage": "https://daostack.io",
   "dependencies": {
     "@types/bignumber.js": "^4.0.3",
     "bip39": "^2.4.0",

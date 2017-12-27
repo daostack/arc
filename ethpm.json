@@ -1,0 +1,22 @@
+{
+  "package_name": "daostack-arc",
+  "version": "0.0.0-alpha.17",
+  "description": "A platform for building DAOs",
+  "authors": [
+    "Adam Levi <adam@daostack.io>",
+    "Jelle Gerbrandy <jelle@gerbrandy.com>"
+  ],
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "security",
+    "daostacl",
+    "dao",
+    "decentralized",
+    "autonomous",
+    "organization",
+  ],
+  "license": "GPL-3.0"
+}
