@@ -1,3 +1,4 @@
+const helpers = require('./helpers');
 const DAOToken   = artifacts.require("./DAOToken.sol");
 const TokenCapGC = artifacts.require('./globalConstraints/TokenCapGC.sol');
 
