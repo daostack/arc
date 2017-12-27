@@ -19,7 +19,7 @@ contract SchemeRegistrar is UniversalScheme {
         bool _isRegistering,
         StandardToken _tokenFee,
         uint _fee,
-        bool _autoRegister
+        bool _autoRegisterOrganization
     );
     event LogRemoveSchemeProposal(address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -37,7 +37,7 @@ contract SchemeRegistrar is UniversalScheme {
         bool isRegistering;
         StandardToken tokenFee;
         uint fee;
-        bool autoRegister;
+        bool autoRegisterOrganization;
     }
 
     // A mapping from thr organization (Avatar) address to the saved data of the organization:
@@ -108,13 +108,13 @@ contract SchemeRegistrar is UniversalScheme {
         bool _isRegistering,
         StandardToken _tokenFee,
         uint _fee,
-        bool _autoRegister
+        bool _autoRegisterOrganization
     )
     public
     onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
-        if (_autoRegister) {
+        if (_autoRegisterOrganization) {
             //This should revert for non arc scheme which do not have Fallback functions.
             //We do it here to prevent revert at the proposal execution after the voting proccess.
             UniversalScheme(_scheme).isRegistered(Avatar(_avatar));
@@ -124,10 +124,6 @@ contract SchemeRegistrar is UniversalScheme {
 
         bytes32 proposalId = controllerParams.intVote.propose(2, controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this));
 
-        if (organizationsProposals[_avatar][proposalId].proposalType != 0) {
-            revert();
-        }
-
         SchemeProposal memory proposal = SchemeProposal({
             scheme: _scheme,
             parametersHash: _parametersHash,
@@ -135,7 +131,7 @@ contract SchemeRegistrar is UniversalScheme {
             isRegistering: _isRegistering,
             tokenFee: _tokenFee,
             fee: _fee,
-            autoRegister: _autoRegister
+            autoRegisterOrganization: _autoRegisterOrganization
         });
         LogNewSchemeProposal(
             _avatar,
@@ -145,7 +141,7 @@ contract SchemeRegistrar is UniversalScheme {
             _isRegistering,
             _tokenFee,
             _fee,
-            _autoRegister
+            _autoRegisterOrganization
         );
         organizationsProposals[_avatar][proposalId] = proposal;
 
@@ -171,9 +167,7 @@ contract SchemeRegistrar is UniversalScheme {
 
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, _avatar, ExecutableInterface(this));
-        if (organizationsProposals[_avatar][proposalId].proposalType != 0) {
-            revert();
-        }
+        
         organizationsProposals[_avatar][proposalId].proposalType = 2;
         organizationsProposals[_avatar][proposalId].scheme = _scheme;
         LogRemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);
@@ -190,7 +184,7 @@ contract SchemeRegistrar is UniversalScheme {
     * @param _param identifies the action to be taken
     */
     // TODO: this call can be simplified if we save the _avatar together with the proposal
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
+    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
@@ -216,7 +210,7 @@ contract SchemeRegistrar is UniversalScheme {
                         revert();
                     }
                 }
-                if (proposal.autoRegister) {
+                if (proposal.autoRegisterOrganization) {
                     UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
                   }
                 }

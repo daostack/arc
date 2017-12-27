@@ -42,11 +42,6 @@ contract('GenesisScheme', function(accounts) {
             tokens: 3,
             reputation: 21,
           },
-          {
-            address: accounts[3],
-            tokens: 5,
-            reputation: 34,
-          },
         ];
         const organization = await helpers.forgeOrganization({founders});
         const controller = organization.controller;
@@ -86,31 +81,6 @@ contract('GenesisScheme', function(accounts) {
         assert.equal(founderReputation,10);
     });
 
-    it("forgeOrg check transfer ownership", async function() {
-        //check the forgeOrg transfer ownership to avatar ,reputation and token
-        //to the controller contract
-        var amountToMint = 10;
-        await setup(accounts,amountToMint,amountToMint);
-        var controllerAddress,controller;
-        controllerAddress = await avatar.owner();
-        controller = await Controller.at(controllerAddress);
-
-        var controllerAvatarAddress = await controller.avatar();
-        assert.equal(controllerAvatarAddress,avatar.address);
-        var tokenAddress = await avatar.nativeToken();
-        var token = await DAOToken.at(tokenAddress);
-        controllerAddress = await token.owner();
-        controller = await Controller.at(controllerAddress);
-        var controllerTokenAddress = await controller.nativeToken();
-        assert.equal(controllerTokenAddress,tokenAddress);
-
-        var reputationAddress = await avatar.nativeReputation();
-        var reputation = await Reputation.at(reputationAddress);
-        controllerAddress = await reputation.owner();
-        controller = await Controller.at(controllerAddress);
-        var controllerReputationAddress = await controller.nativeReputation();
-        assert.equal(controllerReputationAddress,reputationAddress);
-    });
 
     it("forgeOrg check transfer ownership", async function() {
         //check the forgeOrg transfer ownership to avatar ,reputation and token
