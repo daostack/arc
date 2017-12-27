@@ -45,4 +45,18 @@ contract('TokenCapGC', function (accounts)  {
     //token total supply is 101
     assert.equal(post,true);
   });
+
+  it('garbage transaction test', async () => {
+    const tokenCapGC = await TokenCapGC.new();
+    const addr = tokenCapGC.address;
+
+    // transaction should fail.
+    try{
+      await web3.eth.call({to: addr, data: 0x231ef231ef231ef});
+      assert.fail(true,false);
+    }
+    catch(e){
+      assert.equal(true,true);
+    }
+  });
 });
