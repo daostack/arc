@@ -12,7 +12,7 @@ import "./UniversalScheme.sol";
 // ToDo: Documentation and tests!
 
 contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, ActionInterface {
-    event LogNewVoteProposal(
+    event NewVoteProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
@@ -20,8 +20,8 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         bytes32 _originalProposalId,
         uint _originalNumOfChoices
     );
-    event LogProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
-    event LogProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // Details of a voting proposal:
     struct VoteProposal {
@@ -43,14 +43,20 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     mapping(bytes32=>Parameters) public parameters;
 
     /**
-    * @dev the constructor takes a token address, fee and beneficiary
-    */
+     * @dev Constructor, Updating the initial prarmeters
+     * @param _nativeToken The native token of the ICO
+     * @param _fee The fee for intiating the ICO
+     * @param _beneficiary The address that will receive the ethers
+     */
     function VoteInOrganizationScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
         updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
     }
 
     /**
-    * @dev hash the parameters, save them if necessary, and return the hash value
+    * @dev Hash the parameters, save them if necessary, and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
     */
     function setParameters(
         bytes32 _voteParams,
@@ -64,7 +70,10 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     }
 
     /**
-    * @dev return a hash of the given parameters
+    * @dev Hash the parameters,and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
     */
     function getParametersHash(
         bytes32 _voteParams,
@@ -74,6 +83,14 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         return keccak256(_voteParams, _intVote);
     }
 
+    /**
+    * @dev porpose to vote in other organization
+    *      The function trigger NewVoteProposal event
+    * @param _avatar avatar of the organization
+    * @param _originalIntVote the other organization voting machine
+    * @param _originalProposalId the other organization proposal id
+    * @return an id which represents the porposal
+    */
     function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId)
     public
     onlyRegisteredOrganization(_avatar)
@@ -89,7 +106,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
             originalProposalId: _originalProposalId,
             originalNumOfChoices: numOfChoices
         });
-        LogNewVoteProposal(
+        NewVoteProposal(
             _avatar,
             proposalId,
             params.intVote,
@@ -102,9 +119,11 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
 
     /**
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    *      This function will trigger ProposalDeleted and ProposalExecuted events
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
-    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
+    * @param _param a parameter of the voting result 0 to numOfChoices .
+    * @return bool which indicate success.
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
@@ -113,30 +132,33 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         // Save proposal to memory and delete from storage:
         VoteProposal memory proposal = organizationsData[_avatar][_proposalId];
         delete organizationsData[_avatar][_proposalId];
-        LogProposalDeleted(_avatar, _proposalId);
-
+        ProposalDeleted(_avatar, _proposalId);
+        bool retVal = true;
         // If no decision do nothing:
         if (_param != 0) {
         // Define controller and get the parmas:
             Controller controller = Controller(Avatar(_avatar).owner());
-            int tmpParam = _param;
-            if (_param > int(proposal.originalNumOfChoices)) {
-                tmpParam = 0;
-              }
             bytes32[] memory tmp = new bytes32[](3);
             tmp[0] = bytes32(address(proposal.originalIntVote));
-            tmp[2] = proposal.originalProposalId;
-            tmp[3] = bytes32(tmpParam);
-            controller.genericAction(tmp);
-            LogProposalExecuted(_avatar, _proposalId);
+            tmp[1] = proposal.originalProposalId;
+            tmp[2] = bytes32(_param);
+            retVal = controller.genericAction(tmp);
           }
-        return true;
+        ProposalExecuted(_avatar, _proposalId);
+        return retVal;
     }
 
+    /**
+    * @dev do the actual voting in the other organization in behalf of the organization's avatar.
+    *      This function is deleted called by the organization.
+    * @param _params array represent the voting .
+    *        _params[0] - the address of the voting machine.
+    *        _params[1] - the proposalId.
+    *        _params[2] - the voting machins params.
+    * @return bool which indicate success.
+    */
     function action(bytes32[] _params) public returns(bool) {
         IntVoteInterface intVote = IntVoteInterface(address(_params[0]));
-        bytes32 proposalId = _params[1];
-        uint vote = uint(_params[2]);
-        intVote.vote(proposalId, vote);
+        return intVote.vote(_params[1], uint(_params[2]));
     }
 }
