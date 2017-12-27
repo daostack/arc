@@ -24,6 +24,7 @@ contract AvatarInterface is Ownable {
     event ExternalTokenDecreaseApproval(StandardToken indexed _externalToken, address _spender, uint _subtractedValue);
     event ReceiveEther(address indexed _sender, uint _value);
 
+    function() public payable;
     function genericAction(address _action, bytes32[] _params) public onlyOwner returns(bool);
     function sendEther(uint _amountInWei, address _to) public onlyOwner returns(bool);
     function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value) public onlyOwner returns(bool);
