@@ -227,7 +227,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     */
     function cancelProposal(bytes32 _proposalId) public onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool) {
         address avatar = proposals[_proposalId].avatar;
-        bytes32 paramsHash = getParametersFromController(Avatar(avatar));
+        bytes32 paramsHash = getParametersFromController(AvatarInterface(avatar));
         if (! organizationsParameters[paramsHash].allowOwner) {
             return false;
         }
@@ -316,7 +316,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
         // Retrieve org and parameters hash:
         address avatar = proposals[_proposalId].avatar;
         require(avatar != address(0)); // Check propsal exists
-        bytes32 orgParamsHash = getParametersFromController(Avatar(avatar));
+        bytes32 orgParamsHash = getParametersFromController(AvatarInterface(avatar));
         OrgParameters memory orgParams = organizationsParameters[orgParamsHash];
 
         // Collect boosting fee and add value to boosted funds:
@@ -338,7 +338,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     function moveTopAwaitingBoostMode(address _avatar) public {
         // Retrieve org and parameters hash:
         require(_avatar != address(0)); // Check propsal exists
-        bytes32 orgParamsHash = getParametersFromController(Avatar(_avatar));
+        bytes32 orgParamsHash = getParametersFromController(AvatarInterface(_avatar));
         OrgParameters memory orgParams = organizationsParameters[orgParamsHash];
         Organization storage org = organizations[_avatar];
 
@@ -386,7 +386,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     * @param _voter will be voted with that voter's address
     */
     function ownerVote(bytes32 _proposalId, uint _vote, address _voter) public onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool) {
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
+        bytes32 paramsHash = getParametersFromController(AvatarInterface(proposals[_proposalId].avatar));
         if (! organizationsParameters[paramsHash].allowOwner) {
             return;
         }
@@ -413,7 +413,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
 
-        bytes32 orgParamsHash = getParametersFromController(Avatar(proposal.avatar));
+        bytes32 orgParamsHash = getParametersFromController(AvatarInterface(proposal.avatar));
         uint totalReputation = organizationsParameters[orgParamsHash].reputationSystem.totalSupply();
         uint precReq = proposalsParameters[proposal.paramsHash].precReq;
         Proposal memory tmpProposal = proposal;
@@ -506,7 +506,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
         // Retrieve org and parameters hash:
         address avatar = proposals[_proposalId].avatar;
         require(avatar != address(0)); // Check propsal exists
-        bytes32 orgParamsHash = getParametersFromController(Avatar(avatar));
+        bytes32 orgParamsHash = getParametersFromController(AvatarInterface(avatar));
         OrgParameters memory orgParams = organizationsParameters[orgParamsHash];
         Organization storage org = organizations[avatar];
 
@@ -575,7 +575,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
     */
     function internalVote(bytes32 _proposalId, uint _vote, address _voter, uint _rep) private returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
-        bytes32 paramsHash = getParametersFromController(Avatar(proposal.avatar));
+        bytes32 paramsHash = getParametersFromController(AvatarInterface(proposal.avatar));
         OrgParameters memory orgParams = organizationsParameters[paramsHash];
 
         // If boosted proposal and ended, exectute:

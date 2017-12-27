@@ -85,7 +85,7 @@ contract GenesisScheme {
       * @param _permissions the schemes permissins.
       */
     function setSchemes (
-        Avatar _avatar,
+        AvatarInterface _avatar,
         address[] _schemes,
         bytes32[] _params,
         StandardToken[] _token,

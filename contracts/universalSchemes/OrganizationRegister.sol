@@ -51,7 +51,7 @@ contract OrganizationRegister is UniversalScheme {
     }
 
     // Adding or promoting an organization on the registry.
-    function addOrPromoteOrg(Avatar _avatar, address _record, uint _amount)
+    function addOrPromoteOrg(AvatarInterface _avatar, address _record, uint _amount)
     onlyRegisteredOrganization(_avatar)
     public
     {

@@ -113,7 +113,7 @@ contract ContributionReward is UniversalScheme {
     * @param _beneficiary Who gets the rewards
     */
     function submitContribution(
-        Avatar _avatar,
+        AvatarInterface _avatar,
         bytes32 _contributionDesciptionHash,
         uint[4] _rewards,
         StandardToken _externalToken,
@@ -176,14 +176,14 @@ contract ContributionReward is UniversalScheme {
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        require(parameters[getParametersFromController(AvatarInterface(_avatar))].intVote == msg.sender);
         // Check if vote was successful:
         if (_param == 1) {
         // Define controller and get the parmas:
             ContributionProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // pay the funds:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            Controller controller = Controller(AvatarInterface(_avatar).owner());
             if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) {
                 revert();
               }

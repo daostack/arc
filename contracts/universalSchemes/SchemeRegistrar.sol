@@ -102,7 +102,7 @@ contract SchemeRegistrar is UniversalScheme {
     // TODO: simplify this by removing the _tokenFee and fee params, which can be derived from
     // the scheme (i.e. are equal to _scheme.fee() and scheme.somethingToken())
     function proposeScheme(
-        Avatar _avatar,
+        AvatarInterface _avatar,
         address _scheme,
         bytes32 _parametersHash,
         bool _isRegistering,
@@ -117,7 +117,7 @@ contract SchemeRegistrar is UniversalScheme {
         if (_autoRegisterOrganization) {
             //This should revert for non arc scheme which do not have Fallback functions.
             //We do it here to prevent revert at the proposal execution after the voting proccess.
-            UniversalScheme(_scheme).isRegistered(Avatar(_avatar));
+            UniversalScheme(_scheme).isRegistered(AvatarInterface(_avatar));
         }
         // propose
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
@@ -157,7 +157,7 @@ contract SchemeRegistrar is UniversalScheme {
     *
     * NB: not only registers the proposal, but also votes for it
     */
-    function proposeToRemoveScheme(Avatar _avatar, address _scheme)
+    function proposeToRemoveScheme(AvatarInterface _avatar, address _scheme)
     public
     onlyRegisteredOrganization(_avatar)
     returns(bytes32)
@@ -186,12 +186,12 @@ contract SchemeRegistrar is UniversalScheme {
     // TODO: this call can be simplified if we save the _avatar together with the proposal
     function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
         // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        require(parameters[getParametersFromController(AvatarInterface(_avatar))].intVote == msg.sender);
 
         if (_param == 1) {
 
         // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            Controller controller = Controller(AvatarInterface(_avatar).owner());
             SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // Add a scheme:
@@ -211,7 +211,7 @@ contract SchemeRegistrar is UniversalScheme {
                     }
                 }
                 if (proposal.autoRegisterOrganization) {
-                    UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
+                    UniversalScheme(proposal.scheme).registerOrganization(AvatarInterface(_avatar));
                   }
                 }
         // Remove a scheme:

@@ -10,7 +10,7 @@ contract UniversalSchemeInterface {
 
     function updateParameters(StandardToken _nativeToken, uint _fee, address _beneficiary, bytes32 _hashedParameters) public;
 
-    function registerOrganization(Avatar _avatar) public;
+    function registerOrganization(AvatarInterface _avatar) public;
 
-    function getParametersFromController(Avatar _avatar) internal constant returns(bytes32);
+    function getParametersFromController(AvatarInterface _avatar) internal constant returns(bytes32);
 }

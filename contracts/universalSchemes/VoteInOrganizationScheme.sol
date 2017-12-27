@@ -74,7 +74,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         return keccak256(_voteParams, _intVote);
     }
 
-    function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId)
+    function proposeVote(AvatarInterface _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId)
     public
     onlyRegisteredOrganization(_avatar)
     returns(bytes32)
@@ -108,7 +108,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        require(parameters[getParametersFromController(AvatarInterface(_avatar))].intVote == msg.sender);
 
         // Save proposal to memory and delete from storage:
         VoteProposal memory proposal = organizationsData[_avatar][_proposalId];
@@ -118,7 +118,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         // If no decision do nothing:
         if (_param != 0) {
         // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            Controller controller = Controller(AvatarInterface(_avatar).owner());
             int tmpParam = _param;
             if (_param > int(proposal.originalNumOfChoices)) {
                 tmpParam = 0;
