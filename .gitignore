@@ -13,3 +13,4 @@ remarks.md
 *.tgz
 testrpc/
 kovan_pass.txt
+.vscode/settings.json

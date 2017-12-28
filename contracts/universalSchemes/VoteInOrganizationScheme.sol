@@ -84,12 +84,12 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     }
 
     /**
-    * @dev porpose to vote in other organization
+    * @dev propose to vote in other organization
     *      The function trigger NewVoteProposal event
     * @param _avatar avatar of the organization
     * @param _originalIntVote the other organization voting machine
     * @param _originalProposalId the other organization proposal id
-    * @return an id which represents the porposal
+    * @return an id which represents the proposal
     */
     function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId)
     public

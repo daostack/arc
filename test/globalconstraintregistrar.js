@@ -33,7 +33,7 @@ const setup = async function (accounts) {
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.globalConstraintRegistrarParams= await setupGlobalConstraintRegistrarParams(testSetup.globalConstraintRegistrar);
    await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.globalConstraintRegistrar.address],[testSetup.globalConstraintRegistrarParams.paramsHash],[testSetup.standardTokenMock.address],[100],['0x0000000F']);
-   //give some tokens to organization avatar so it could register the univeral scheme.
+   //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
    return testSetup;
 };
@@ -79,7 +79,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
      });
 
 
-     it("proposeGlobalConstraint without regisration -should fail", async function() {
+     it("proposeGlobalConstraint without registration -should fail", async function() {
        var testSetup = await setup(accounts);
        var globalConstraintMock = await GlobalConstraintMock.new();
        try{
@@ -139,7 +139,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
         });
 
 
-        it("proposeToRemoveGC without regisration -should fail", async function() {
+        it("proposeToRemoveGC without registration -should fail", async function() {
           var testSetup = await setup(accounts);
           var globalConstraintMock =await GlobalConstraintMock.new();
           try{
