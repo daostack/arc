@@ -11,14 +11,14 @@ import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
  * @dev Allow people to donate by simply sending ether to an address.
  */
 contract MirrorContractICO is Destructible {
-    Avatar public organization; // The organization address (the avatar)
+    AvatarInterface public organization; // The organization address (the avatar)
     SimpleICO public simpleICO;  // The ICO contract address
     /**
     * @dev Constructor, setting the organization and ICO scheme.
     * @param _organization The organization's avatar.
     * @param _simpleICO The ICO Scheme.
     */
-    function MirrorContractICO(Avatar _organization, SimpleICO _simpleICO) public {
+    function MirrorContractICO(AvatarInterface _organization, SimpleICO _simpleICO) public {
         organization = _organization;
         simpleICO = _simpleICO;
     }
@@ -159,7 +159,7 @@ contract SimpleICO is UniversalScheme {
      * @dev start an ICO
      * @param _avatar The Avatar's of the organization
      */
-    function start(Avatar _avatar) public {
+    function start(AvatarInterface _avatar) public {
         require(!isActive(_avatar));
         Organization memory org;
         org.paramsHash = getParametersFromController(_avatar);
@@ -220,7 +220,7 @@ contract SimpleICO is UniversalScheme {
      * @param _beneficiary The donator's address - which will receive the ICO's tokens.
      * @return bool which represents a successful of the function
      */
-    function donate(Avatar _avatar, address _beneficiary) public payable returns(uint) {
+    function donate(AvatarInterface _avatar, address _beneficiary) public payable returns(uint) {
         Organization memory org = organizationsICOInfo[_avatar];
         Parameters memory params = parameters[org.paramsHash];
 

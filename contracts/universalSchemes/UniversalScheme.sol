@@ -24,7 +24,7 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface { //
         _;
     }
 
-    function registerOrganization(Avatar _avatar) public {
+    function registerOrganization(AvatarInterface _avatar) public {
         // Pay fees for using scheme:
         if ((fee > 0) && (! organizations[_avatar])) {
             nativeToken.transferFrom(_avatar, beneficiary, fee);
@@ -55,7 +55,7 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface { //
     /**
     *  @dev get the parameters for the current scheme from the controller
     */
-    function getParametersFromController(Avatar _avatar) internal constant returns(bytes32) {
+    function getParametersFromController(AvatarInterface _avatar) internal constant returns(bytes32) {
         Controller controller = Controller(_avatar.owner());
         return controller.getSchemeParameters(this);
     }

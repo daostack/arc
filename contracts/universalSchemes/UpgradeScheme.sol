@@ -86,7 +86,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     * @param _newController address of the new controller that is being proposed
     * @return an id which represents the proposal
     */
-    function proposeUpgrade(Avatar _avatar, address _newController)
+    function proposeUpgrade(AvatarInterface _avatar, address _newController)
         public
         onlyRegisteredOrganization(_avatar)
         returns(bytes32)
@@ -110,7 +110,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     * @return an id which represents the proposal
     */
     function proposeChangeUpgradingScheme(
-        Avatar _avatar,
+        AvatarInterface _avatar,
         address _scheme,
         bytes32 _params,
         StandardToken _tokenFee,
@@ -157,12 +157,12 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        require(parameters[getParametersFromController(AvatarInterface(_avatar))].intVote == msg.sender);
         // Check if vote was successful:
         if (_param == 1) {
 
         // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            Controller controller = Controller(AvatarInterface(_avatar).owner());
             UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // Upgrading controller:

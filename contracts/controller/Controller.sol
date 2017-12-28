@@ -36,7 +36,7 @@ contract Controller {
 
     mapping(address=>Scheme) public schemes;
 
-    Avatar public avatar;
+    AvatarInterface public avatar;
     DAOToken public nativeToken;
     Reputation public nativeReputation;
   // newController will point to the new controller after the present controller is upgraded
@@ -63,7 +63,7 @@ contract Controller {
     event UpgradeController(address _oldController,address _newController);
 
     function Controller(
-        Avatar _avatar,
+        AvatarInterface _avatar,
         address[] _schemes,
         bytes32[] _params,
         bytes4[] _permissions

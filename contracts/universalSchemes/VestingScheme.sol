@@ -133,7 +133,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         uint _cliffInPeriods,
         uint _signaturesReqToCancel,
         address[] _signersArray,
-        Avatar _avatar
+        AvatarInterface _avatar
     )
     external
     onlyRegisteredOrganization(_avatar)
@@ -149,7 +149,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
             organizationsData[_avatar][proposalId].signers[_signersArray[cnt]] = true;
         }
         // Write parameters:
-        organizationsData[_avatar][proposalId].token = Avatar(_avatar).nativeToken();
+        organizationsData[_avatar][proposalId].token = AvatarInterface(_avatar).nativeToken();
         organizationsData[_avatar][proposalId].beneficiary = _beneficiary;
         organizationsData[_avatar][proposalId].returnOnCancelAddress = _returnOnCancelAddress;
         organizationsData[_avatar][proposalId].startingBlock = _startingBlock;
@@ -175,7 +175,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        require(parameters[getParametersFromController(AvatarInterface(_avatar))].intVote == msg.sender);
 
         // Log execition:
         LogExecutaion(_avatar, _proposalId, _param);
@@ -186,7 +186,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Check if vote was successful:
         if (_param == 1) {
         // Define controller and mint tokens, check minting actually took place:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            Controller controller = Controller(AvatarInterface(_avatar).owner());
             uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
             controller.mintTokens(tokensToMint, this);
             agreements[agreementsCounter] = proposedAgreement;

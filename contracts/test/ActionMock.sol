@@ -12,7 +12,7 @@ contract ActionMock is ActionInterface {
         return true;
     }
 
-    function genericAction(Avatar avatar,bytes32[] params) public returns(bool) {
+    function genericAction(AvatarInterface avatar,bytes32[] params) public returns(bool) {
         return avatar.genericAction(address(this),params);
     }
 

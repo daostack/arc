@@ -103,7 +103,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     * @return bytes32 -the proposal id
     */
     // TODO: do some checks on _voteToRemoveParams - it is very easy to make a mistake and not be able to remove the GC
-    function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _voteToRemoveParams)
+    function proposeGlobalConstraint(AvatarInterface _avatar, address _gc, bytes32 _params, bytes32 _voteToRemoveParams)
     public
     onlyRegisteredOrganization(_avatar)
     returns(bytes32)
@@ -139,9 +139,9 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     * @param _gc the address of the global constraint that is being proposed
     * @return bytes32 -the proposal id
     */
-    function proposeToRemoveGC(Avatar _avatar, address _gc) public onlyRegisteredOrganization(_avatar) returns(bytes32) {
+    function proposeToRemoveGC(AvatarInterface _avatar, address _gc) public onlyRegisteredOrganization(_avatar) returns(bytes32) {
         Organization storage org = organizationsData[_avatar];
-        Controller controller = Controller(Avatar(_avatar).owner());
+        Controller controller = Controller(AvatarInterface(_avatar).owner());
         require(controller.isGlobalConstraintRegister(_gc));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
@@ -170,13 +170,13 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
         // Check the caller is indeed the voting machine:
 
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        require(parameters[getParametersFromController(AvatarInterface(_avatar))].intVote == msg.sender);
         bool retVal = true;
         // Check if vote was successful:
         if (_param == 1 ) {
 
         // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            Controller controller = Controller(AvatarInterface(_avatar).owner());
             GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
         // Adding a GC
             if (proposal.proposalType == 1) {

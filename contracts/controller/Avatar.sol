@@ -11,11 +11,7 @@ contract ActionInterface {
     function action(bytes32[] _params) public returns(bool);
 }
 
-
-/**
- * @title An Avatar holds tokens, reputation and ether for a controller
- */
-contract Avatar is Ownable {
+contract AvatarInterface is Ownable {
     bytes32 public orgName;
     DAOToken public nativeToken;
     Reputation public nativeReputation;
@@ -28,6 +24,24 @@ contract Avatar is Ownable {
     event ExternalTokenDecreaseApproval(StandardToken indexed _externalToken, address _spender, uint _subtractedValue);
     event ReceiveEther(address indexed _sender, uint _value);
 
+    function() public payable;
+    function genericAction(address _action, bytes32[] _params) public onlyOwner returns(bool);
+    function sendEther(uint _amountInWei, address _to) public onlyOwner returns(bool);
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value) public onlyOwner returns(bool);
+    function externalTokenTransferFrom(
+        StandardToken _externalToken,
+        address _from,
+        address _to,
+        uint _value
+    ) public onlyOwner returns(bool);
+    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue) public onlyOwner returns(bool);
+    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue) public onlyOwner returns(bool);
+}
+
+/**
+ * @title An Avatar holds tokens, reputation and ether for a controller
+ */
+contract Avatar is AvatarInterface {
     /**
     * @dev the constructor takes organization name, native token and reputation system
     and creates an avatar for a controller

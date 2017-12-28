@@ -74,7 +74,7 @@ contract OrganizationRegister is UniversalScheme {
      * @param _record The address to add or promote.
      * @param _amount amount to pay for adding or promoting
      */
-    function addOrPromoteAddress(Avatar _avatar, address _record, uint _amount)
+    function addOrPromoteAddress(AvatarInterface _avatar, address _record, uint _amount)
     onlyRegisteredOrganization(_avatar)
     public
     {
