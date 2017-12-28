@@ -13,125 +13,125 @@
         ]
       }
     ]
-  }
+  },
   {
     "contractName": "GenesisScheme",
     "type": "Scheme",
     "deployments": [
-       {
-          "version": "0.1.0",
-          "networks": [
-            {
-              "networkId": 42,
-              "address": "0x6fc15b814cc406a3eccbb8041451f62a1c86811a",
-            }
-          ]
-       },
-    ],
+      {
+        "version": "0.1.0",
+        "networks": [
+          {
+            "networkId": 42,
+            "address": "0x6fc15b814cc406a3eccbb8041451f62a1c86811a"
+          }
+        ]
+      }
+    ]
   },
   {
     "contractName": "GlobalConstraintRegistrar",
     "type": "Scheme",
     "deployments": [
-       {
-          "version": "0.1.0",
-          "networks": [
-            {
-              "networkId": 42,
-              "address": "0xaf832e1447302fe1cfc83a429dde67d3f18a5a8e",
-            }
-          ]
-       },
-    ],
+      {
+        "version": "0.1.0",
+        "networks": [
+          {
+            "networkId": 42,
+            "address": "0xaf832e1447302fe1cfc83a429dde67d3f18a5a8e"
+          }
+        ]
+      }
+    ]
   },
   {
     "contractName": "Migrations",
     "type": "Other",
     "deployments": [
-       {
-          "version": "0.1.0",
-          "networks": [
-            {
-              "networkId": 42,
-              "address": "0x3fa3bc2ac34f9487f679f02e71de522148f2638e",
-            }
-          ]
-       },
-    ],
+      {
+        "version": "0.1.0",
+        "networks": [
+          {
+            "networkId": 42,
+            "address": "0x3fa3bc2ac34f9487f679f02e71de522148f2638e"
+          }
+        ]
+      }
+    ]
   },
   {
     "contractName": "SchemeRegistrar",
     "type": "Scheme",
     "deployments": [
-       {
-          "version": "0.1.0",
-          "networks": [
-            {
-              "networkId": 42,
-              "address": "0xff2eebe9742faec662f805bea56c2f4e08f11575s",
-            }
-          ]
-       },
-    ],
+      {
+        "version": "0.1.0",
+        "networks": [
+          {
+            "networkId": 42,
+            "address": "0xff2eebe9742faec662f805bea56c2f4e08f11575s"
+          }
+        ]
+      }
+    ]
   },
   {
     "contractName": "SimpleContributionScheme",
     "type": "Scheme",
     "deployments": [
-       {
-          "version": "0.1.0",
-          "networks": [
-            {
-              "networkId": 42,
-              "address": "0xb5f09f3357c5c5f6f0c02dea1983fbb140de522b",
-            }
-          ]
-       },
-    ],
+      {
+        "version": "0.1.0",
+        "networks": [
+          {
+            "networkId": 42,
+            "address": "0xb5f09f3357c5c5f6f0c02dea1983fbb140de522b"
+          }
+        ]
+      }
+    ]
   },
   {
     "contractName": "SimpleICO",
     "type": "Scheme",
     "deployments": [
-       {
-          "version": "0.1.0",
-          "networks": [
-            {
-              "networkId": 42,
-              "address": "0xbceb09d49f9b241c1f5b23d1f2bc10d76d59cc14",
-            }
-          ]
-       },
-    ],
+      {
+        "version": "0.1.0",
+        "networks": [
+          {
+            "networkId": 42,
+            "address": "0xbceb09d49f9b241c1f5b23d1f2bc10d76d59cc14"
+          }
+        ]
+      }
+    ]
   },
   {
     "contractName": "TokenCapGC",
     "type": "GlocalConstraint",
     "deployments": [
-       {
-          "version": "0.1.0",
-          "networks": [
-            {
-              "networkId": 42,
-              "address": "0x462ee053e89fede925ed1f70f2c939853a028622",
-            }
-          ]
-       },
-    ],
+      {
+        "version": "0.1.0",
+        "networks": [
+          {
+            "networkId": 42,
+            "address": "0x462ee053e89fede925ed1f70f2c939853a028622"
+          }
+        ]
+      }
+    ]
   },
   {
     "contractName": "UpgradeScheme",
     "type": "Scheme",
     "deployments": [
-       {
-          "version": "0.1.0",
-          "networks": [
-            {
-              "networkId": 42,
-              "address": "0x36eb6fb993d6e5bc02a6caff42b2583dd9431070",
-            }
-          ]
-       },
-    ],
-  },
+      {
+        "version": "0.1.0",
+        "networks": [
+          {
+            "networkId": 42,
+            "address": "0x36eb6fb993d6e5bc02a6caff42b2583dd9431070"
+          }
+        ]
+      }
+    ]
+  }
 ]
