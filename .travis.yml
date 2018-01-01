@@ -16,7 +16,7 @@ before_install:
 install:
   - yarn
   - rm -rf build/ # remove any remaining artifacts from a previous build
-  - nohup yarn run testrpc &
+  - nohup yarn ganache &
   - truffle version
 
 script:
