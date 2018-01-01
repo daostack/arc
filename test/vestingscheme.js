@@ -20,7 +20,7 @@ const setupVestingSchemeParams = async function(
   return vestingSchemeParams;
 };
 
-const setup = async function (accounts) {
+const setup = async function (accounts,isUniversal=true) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
@@ -28,9 +28,10 @@ const setup = async function (accounts) {
    testSetup.genesisScheme = await GenesisScheme.deployed();
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.vestingSchemeParams= await setupVestingSchemeParams(testSetup.vestingScheme);
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.vestingScheme.address],[testSetup.vestingSchemeParams.paramsHash],[testSetup.standardTokenMock.address],[100],["0x0000000F"]);
    //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.vestingScheme.address],[testSetup.vestingSchemeParams.paramsHash],[testSetup.standardTokenMock.address],[isUniversal],["0x0000000F"]);
+
    return testSetup;
 };
 
@@ -87,7 +88,7 @@ contract('VestingScheme', function(accounts) {
       });
 
       it("proposeVestingAgreement without registration -should fail", async function() {
-        var testSetup = await setup(accounts);
+        var testSetup = await setup(accounts,false);
         try{
           await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
                                                                          accounts[1],

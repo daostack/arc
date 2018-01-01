@@ -262,7 +262,6 @@ export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50,re
 
 export const setupOrganization = async function (genesisScheme,genesisSchemeOwner,founderToken,founderReputation) {
   var org = new Organization();
-
   var tx = await genesisScheme.forgeOrg("testOrg","TEST","TST",[genesisSchemeOwner],[founderToken],[founderReputation]);
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");

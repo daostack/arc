@@ -99,7 +99,7 @@ module.exports = async function(deployer) {
       var paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams];
       var permissionArray = ['0x00000003', '0x00000005', '0x00000009'];
       var tokenArray = [tokenAddress, tokenAddress, tokenAddress];
-      var feeArray = [UniversalRegisterFee, UniversalRegisterFee, UniversalRegisterFee];
+      var isUniversalArray = [true, true, true];
 
       // set DAOstack initial schmes:
       await genesisSchemeInst.setSchemes(
@@ -107,14 +107,8 @@ module.exports = async function(deployer) {
         schemesArray,
         paramsArray,
         tokenArray,
-        feeArray,
+        isUniversalArray,
         permissionArray);
-
-      // Set SchemeRegistrar nativeToken and register DAOstack to it:
-      // TODO: how can this work without having the fees?
-      await schemeRegistrarInst.registerOrganization(AvatarInst.address);
-      await globalConstraintRegistrarInst.registerOrganization(AvatarInst.address);
-      await upgradeSchemeInst.registerOrganization(AvatarInst.address);
 
       await deployer.deploy(SimpleICO, tokenAddress, UniversalRegisterFee, avatarAddress);
       await deployer.deploy(ContributionReward, tokenAddress, 0, avatarAddress);
