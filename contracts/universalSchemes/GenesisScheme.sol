@@ -4,6 +4,7 @@ import "../controller/Avatar.sol";
 import "../controller/Controller.sol";
 import "../controller/DAOToken.sol";
 import "../controller/Reputation.sol";
+import "./UniversalScheme.sol";
 
 
 /**
@@ -81,7 +82,7 @@ contract GenesisScheme {
       * @param _params the schemes's params
       * @param _token the tokens these schemes are using and will be allowed to
       *         spend on behalf of the organization's avatar
-      * @param _fee the allowance fee for the schemes to spend.
+      * @param _isUniversal is this scheme is universal scheme (true or false)
       * @param _permissions the schemes permissins.
       */
     function setSchemes (
@@ -89,7 +90,7 @@ contract GenesisScheme {
         address[] _schemes,
         bytes32[] _params,
         StandardToken[] _token,
-        uint[] _fee,
+        bool[] _isUniversal,
         bytes4[] _permissions
     )
         public
@@ -103,10 +104,15 @@ contract GenesisScheme {
         for ( uint i = 0 ; i < _schemes.length ; i++ ) {
             // TODO: the approval here is for paying the fee for that scheme later (with registerOrganization())
             // TODO: (continued)  why not have that separate? And why not ask the scheme for its fee, then, instead of passing it here?
-            if (_fee[i] != 0) {
-                controller.externalTokenIncreaseApproval(_token[i], _schemes[i], _fee[i]);
-            }
-            controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
+            address scheme = _schemes[i];
+            if (_isUniversal[i]) {
+                uint fee = UniversalScheme(scheme).fee();
+                if (fee != 0) {
+                    controller.externalTokenIncreaseApproval(_token[i], scheme, fee);
+                  }
+                UniversalScheme(scheme).registerOrganization(_avatar);
+                }
+            controller.registerScheme(scheme, _params[i], _permissions[i]);
         }
 
         // Unregister self:

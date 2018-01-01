@@ -21,7 +21,7 @@ const setupSchemeRegistrarParams = async function(
   return schemeRegistrarParams;
 };
 
-const setup = async function (accounts) {
+const setup = async function (accounts,isUniversal=true) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
@@ -29,9 +29,10 @@ const setup = async function (accounts) {
    testSetup.genesisScheme = await GenesisScheme.deployed();
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(testSetup.schemeRegistrar);
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.schemeRegistrar.address],[testSetup.schemeRegistrarParams.paramsHash],[testSetup.standardTokenMock.address],[100],["0x0000000F"]);
    //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.schemeRegistrar.address],[testSetup.schemeRegistrarParams.paramsHash],[testSetup.standardTokenMock.address],[isUniversal],["0x0000000F"]);
+
    return testSetup;
 };
 contract('SchemeRegistrar', function(accounts) {
@@ -71,7 +72,7 @@ contract('SchemeRegistrar', function(accounts) {
      });
 
      it("proposeScheme without registration -should fail", async function() {
-       var testSetup = await setup(accounts);
+       var testSetup = await setup(accounts,false);
        try{
        await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address,0,false,testSetup.standardTokenMock.address,0,true);
        assert(false,"proposeScheme should  fail - due to no registration !");
@@ -97,7 +98,7 @@ contract('SchemeRegistrar', function(accounts) {
         });
 
         it("proposeToRemoveScheme without registration -should fail", async function() {
-          var testSetup = await setup(accounts);
+          var testSetup = await setup(accounts,false);
           try{
           await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address);
           assert(false,"proposeScheme should  fail - due to no registration !");

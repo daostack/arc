@@ -7,6 +7,7 @@ const GenesisScheme = artifacts.require("./GenesisScheme.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const Controller = artifacts.require("./Controller.sol");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 
 var avatar,token,reputation,genesisScheme;
 const setup = async function (accounts,founderToken,founderReputation) {
@@ -108,11 +109,22 @@ contract('GenesisScheme', function(accounts) {
         assert.equal(controllerReputationAddress,reputationAddress);
     });
 
-    it("setSchemes log", async function() {
+    it("setSchemes to none UniversalScheme", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var standardTokenMock = await StandardTokenMock.new(accounts[0], 100);
-        var tx = await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[100],["0x0000000F"]);
+        var standardTokenMock = await StandardTokenMock.new(avatar.address, 100);
+        var tx = await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[false],["0x0000000F"]);
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "InitialSchemesSet");
+        assert.equal(tx.logs[0].args._avatar, avatar.address);
+      });
+
+    it("setSchemes to UniversalScheme", async function() {
+        var amountToMint = 10;
+        await setup(accounts,amountToMint,amountToMint);
+        var standardTokenMock = await StandardTokenMock.new(avatar.address, 100);
+        var universalSchemeMock = await UniversalSchemeMock.new(standardTokenMock.address,10,accounts[1]);
+        var tx = await genesisScheme.setSchemes(avatar.address,[universalSchemeMock.address],[0],[standardTokenMock.address],[true],["0x0000000F"]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);
@@ -131,16 +143,19 @@ contract('GenesisScheme', function(accounts) {
         }
     });
 
-    it("setSchemes increase approval for scheme ", async function() {
+    it("setSchemes increase approval for scheme and register org in scheme", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var standardTokenMock = await StandardTokenMock.new(accounts[0], 100);
-        var allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
+        var standardTokenMock = await StandardTokenMock.new(avatar.address, 100);
+        var universalSchemeMock = await UniversalSchemeMock.new(standardTokenMock.address,10,accounts[1]);
+        var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
-
-        await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[100],["0x0000000F"]);
-        allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
-        assert.equal(allowance,100);
+        assert.equal(false,await universalSchemeMock.isRegistered(avatar.address));
+        await genesisScheme.setSchemes(avatar.address,[universalSchemeMock.address],[0],[standardTokenMock.address],[true],["0x0000000F"]);
+        allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
+        assert.equal(allowance,0);
+        //check org registered in scheme
+        assert.equal(true,await universalSchemeMock.isRegistered(avatar.address));
     });
 
     it("setSchemes increase approval for scheme without fee", async function() {
