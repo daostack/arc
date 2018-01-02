@@ -1,6 +1,6 @@
 {
   "name": "daostack-arc",
-  "version": "0.0.0-alpha.19",
+  "version": "0.0.0-alpha.20",
   "description": "A platform for building DAOs",
   "scripts": {
     "test": "truffle test",
