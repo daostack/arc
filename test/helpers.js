@@ -3,9 +3,7 @@
 */
 
 const Avatar = artifacts.require("./Avatar.sol");
-const Controller = artifacts.require("./Controller.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
-const GenesisScheme = artifacts.require("./GenesisScheme.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 
@@ -13,8 +11,6 @@ export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000
 export const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
-
-var dopts = require('default-options');
 
 
 export class TestSetup {
