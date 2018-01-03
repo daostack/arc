@@ -1,5 +1,4 @@
 var shell = require('shelljs');
-var sd = require('solidity-doc');
 var path = require('path');
 
 // This is a simple build script that turns the 
