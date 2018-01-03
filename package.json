@@ -1,6 +1,6 @@
 {
   "name": "daostack-arc",
-  "version": "0.0.0-alpha.23",
+  "version": "0.0.0-alpha.25",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
