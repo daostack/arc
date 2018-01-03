@@ -5,9 +5,6 @@ logs/
 fabfile.py
 node_modules/
 NOTES.md
-test/play.js
-tmp/
-installed_contracts/
 .node-xmlhttprequest-sync*
 *.tgz
 .vscode/
