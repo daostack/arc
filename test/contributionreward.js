@@ -66,7 +66,6 @@ contract('ContributionReward', function(accounts) {
 
    it("registerOrganization - check fee payment ", async function() {
      var testSetup = await setup(accounts);
-     // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
      var balanceOfBeneficiary  = await testSetup.standardTokenMock.balanceOf(accounts[0]);
      assert.equal(balanceOfBeneficiary.toNumber(),testSetup.fee);
      assert.equal(await testSetup.contributionReward.isRegistered(testSetup.org.avatar.address),true);
@@ -74,7 +73,6 @@ contract('ContributionReward', function(accounts) {
 
     it("proposeContributionReward log", async function() {
       var testSetup = await setup(accounts,0,0);
-      // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                      "description",
                                                                      [0,0,0,0],
@@ -87,7 +85,6 @@ contract('ContributionReward', function(accounts) {
      it("proposeContributionReward fees", async function() {
        var testSetup = await setup(accounts,14,10);
 
-       // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
        var balanceBefore  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);
        //give approval to scheme to do the fees transfer
        await testSetup.org.token.approve(testSetup.contributionReward.address,100);
@@ -124,7 +121,6 @@ contract('ContributionReward', function(accounts) {
 
       it("proposeContributionReward check owner vote", async function() {
         var testSetup = await setup(accounts);
-        // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
         var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                        "description",
                                                                        [0,0,0,0],
@@ -138,7 +134,6 @@ contract('ContributionReward', function(accounts) {
        it("proposeContributionReward check beneficiary==0", async function() {
          var testSetup = await setup(accounts);
          var beneficiary = 0;
-         // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
          var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                         "description",
                                                                         [0,0,0,0],
@@ -150,7 +145,6 @@ contract('ContributionReward', function(accounts) {
 
     it("execute proposeContributionReward  yes ", async function() {
       var testSetup = await setup(accounts);
-      // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                      "description",
                                                                     [0,0,0,0],
@@ -167,7 +161,6 @@ contract('ContributionReward', function(accounts) {
       it("execute proposeContributionReward  mint reputation ", async function() {
         var testSetup = await setup(accounts);
         var reputationReward = 12;
-        // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
         var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                        "description",
                                                                        [0,reputationReward,0,0],
@@ -185,7 +178,6 @@ contract('ContributionReward', function(accounts) {
          var testSetup = await setup(accounts);
          var reputationReward = 12;
          var nativeTokenReward = 12;
-         // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
          var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                         "description",
                                                                         [nativeTokenReward,reputationReward,0,0],
@@ -204,7 +196,6 @@ contract('ContributionReward', function(accounts) {
           var reputationReward = 12;
           var nativeTokenReward = 12;
           var ethReward = 12;
-          // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
           //send some ether to the org avatar
           var otherAvatar = await Avatar.new();
           web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
@@ -227,7 +218,6 @@ contract('ContributionReward', function(accounts) {
            var nativeTokenReward = 12;
            var ethReward = 12;
            var externalTokenReward = 12;
-           // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
            //send some ether to the org avatar
            var otherAvatar = await Avatar.new();
            web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
@@ -250,7 +240,6 @@ contract('ContributionReward', function(accounts) {
             var nativeTokenReward = 12;
             var ethReward = 12;
             var externalTokenReward = 12;
-            // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
             //send some ether to the org avatar
             var otherAvatar = await Avatar.new();
             web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
