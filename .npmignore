@@ -1,7 +1,4 @@
 *sublime*
-*.pyc
-build/
-node_modules/
 .node-xmlhttprequest-sync*
 *.tgz
 .vscode/settings.json
