@@ -1,7 +1,14 @@
 {
   "name": "daostack-arc",
-  "version": "0.0.0-alpha.21",
+  "version": "0.0.0-alpha.23",
   "description": "A platform for building DAOs",
+  "files": [
+    "contracts/",
+    "docs/",
+    "build/contracts/",
+    "migrations/",
+    "truffle.js"
+  ],
   "scripts": {
     "test": "truffle test",
     "ganache":
