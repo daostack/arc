@@ -2,9 +2,7 @@
 *.pyc
 build/
 logs/
-fabfile.py
 node_modules/
-NOTES.md
 .node-xmlhttprequest-sync*
 *.tgz
 .vscode/
