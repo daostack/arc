@@ -66,16 +66,14 @@ contract('ContributionReward', function(accounts) {
 
    it("registerOrganization - check fee payment ", async function() {
      var testSetup = await setup(accounts);
-     // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
      var balanceOfBeneficiary  = await testSetup.standardTokenMock.balanceOf(accounts[0]);
      assert.equal(balanceOfBeneficiary.toNumber(),testSetup.fee);
      assert.equal(await testSetup.contributionReward.isRegistered(testSetup.org.avatar.address),true);
     });
 
-    it("submitContribution log", async function() {
+    it("proposeContributionReward log", async function() {
       var testSetup = await setup(accounts,0,0);
-      // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
-      var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+      var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                      "description",
                                                                      [0,0,0,0],
                                                                      testSetup.standardTokenMock.address,
@@ -84,15 +82,14 @@ contract('ContributionReward', function(accounts) {
       assert.equal(tx.logs[0].event, "LogNewContributionProposal");
      });
 
-     it("submitContribution fees", async function() {
+     it("proposeContributionReward fees", async function() {
        var testSetup = await setup(accounts,14,10);
 
-       // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
        var balanceBefore  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);
        //give approval to scheme to do the fees transfer
        await testSetup.org.token.approve(testSetup.contributionReward.address,100);
        await testSetup.standardTokenMock.approve(testSetup.contributionReward.address,100);
-       var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                       "description",
                                                                       [0,0,0,0],
                                                                       testSetup.standardTokenMock.address,
@@ -107,10 +104,10 @@ contract('ContributionReward', function(accounts) {
        assert.equal(balance.toNumber(),testSetup.contributionRewardParams.schemeNativeTokenFee+balanceBefore.toNumber());
       });
 
-     it("submitContribution without registration -should fail", async function() {
+     it("proposeContributionReward without registration -should fail", async function() {
        var testSetup = await setup(accounts,0,0,false);
        try{
-         await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+         await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                         "description",
                                                                         [0,0,0,0],
                                                                         testSetup.standardTokenMock.address,
@@ -122,10 +119,9 @@ contract('ContributionReward', function(accounts) {
        }
       });
 
-      it("submitContribution check owner vote", async function() {
+      it("proposeContributionReward check owner vote", async function() {
         var testSetup = await setup(accounts);
-        // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
-        var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+        var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                        "description",
                                                                        [0,0,0,0],
                                                                        testSetup.standardTokenMock.address,
@@ -135,11 +131,10 @@ contract('ContributionReward', function(accounts) {
         await helpers.checkVoteInfo(testSetup.contributionRewardParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.contributionRewardParams.votingMachine.reputationArray[0]]);
        });
 
-       it("submitContribution check beneficiary==0", async function() {
+       it("proposeContributionReward check beneficiary==0", async function() {
          var testSetup = await setup(accounts);
          var beneficiary = 0;
-         // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
-         var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+         var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                         "description",
                                                                         [0,0,0,0],
                                                                         testSetup.standardTokenMock.address,
@@ -148,10 +143,9 @@ contract('ContributionReward', function(accounts) {
          assert.equal(await helpers.getValueFromLogs(tx, '_beneficiary'),accounts[0]);
         });
 
-    it("execute submitContribution  yes ", async function() {
+    it("execute proposeContributionReward  yes ", async function() {
       var testSetup = await setup(accounts);
-      // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
-      var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+      var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                      "description",
                                                                     [0,0,0,0],
                                                                      testSetup.standardTokenMock.address,
@@ -164,11 +158,10 @@ contract('ContributionReward', function(accounts) {
       assert.equal(organizationsProposals[6],0);//beneficiary
      });
 
-      it("execute submitContribution  mint reputation ", async function() {
+      it("execute proposeContributionReward  mint reputation ", async function() {
         var testSetup = await setup(accounts);
         var reputationReward = 12;
-        // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
-        var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+        var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                        "description",
                                                                        [0,reputationReward,0,0],
                                                                        testSetup.standardTokenMock.address,
@@ -181,12 +174,11 @@ contract('ContributionReward', function(accounts) {
         assert.equal(rep.toNumber(),reputationReward);
        });
 
-       it("execute submitContribution  mint tokens ", async function() {
+       it("execute proposeContributionReward  mint tokens ", async function() {
          var testSetup = await setup(accounts);
          var reputationReward = 12;
          var nativeTokenReward = 12;
-         // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
-         var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+         var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                         "description",
                                                                         [nativeTokenReward,reputationReward,0,0],
                                                                         testSetup.standardTokenMock.address,
@@ -199,16 +191,15 @@ contract('ContributionReward', function(accounts) {
          assert.equal(tokens.toNumber(),nativeTokenReward);
         });
 
-        it("execute submitContribution  send ethers ", async function() {
+        it("execute proposeContributionReward  send ethers ", async function() {
           var testSetup = await setup(accounts);
           var reputationReward = 12;
           var nativeTokenReward = 12;
           var ethReward = 12;
-          // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
           //send some ether to the org avatar
           var otherAvatar = await Avatar.new();
           web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-          var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+          var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                          "description",
                                                                          [nativeTokenReward,reputationReward,ethReward,0],
                                                                          testSetup.standardTokenMock.address,
@@ -221,17 +212,16 @@ contract('ContributionReward', function(accounts) {
           assert.equal(eth.toNumber(),ethReward);
          });
 
-         it("execute submitContribution  send externalToken ", async function() {
+         it("execute proposeContributionReward  send externalToken ", async function() {
            var testSetup = await setup(accounts);
            var reputationReward = 12;
            var nativeTokenReward = 12;
            var ethReward = 12;
            var externalTokenReward = 12;
-           // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
            //send some ether to the org avatar
            var otherAvatar = await Avatar.new();
            web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-           var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+           var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                           "description",
                                                                           [nativeTokenReward,reputationReward,ethReward,externalTokenReward],
                                                                           testSetup.standardTokenMock.address,
@@ -244,17 +234,16 @@ contract('ContributionReward', function(accounts) {
            assert.equal(tokens.toNumber(),externalTokenReward);
           });
 
-          it("execute submitContribution proposal decision=='no' send externalToken  ", async function() {
+          it("execute proposeContributionReward proposal decision=='no' send externalToken  ", async function() {
             var testSetup = await setup(accounts);
             var reputationReward = 12;
             var nativeTokenReward = 12;
             var ethReward = 12;
             var externalTokenReward = 12;
-            // await testSetup.contributionReward.registerOrganization(testSetup.org.avatar.address);
             //send some ether to the org avatar
             var otherAvatar = await Avatar.new();
             web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-            var tx = await testSetup.contributionReward.submitContribution(testSetup.org.avatar.address,
+            var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                            "description",
                                                                            [nativeTokenReward,reputationReward,ethReward,externalTokenReward],
                                                                            testSetup.standardTokenMock.address,

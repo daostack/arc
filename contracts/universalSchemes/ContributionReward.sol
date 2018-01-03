@@ -112,7 +112,7 @@ contract ContributionReward is UniversalScheme {
     * @param _externalToken Address of external token, if reward is requested there
     * @param _beneficiary Who gets the rewards
     */
-    function submitContribution(
+    function proposeContributionReward(
         Avatar _avatar,
         bytes32 _contributionDesciptionHash,
         uint[4] _rewards,
