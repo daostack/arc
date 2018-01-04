@@ -9,7 +9,7 @@ const solparse = require('solparse');
 This is a simple build file that automatically generates 
 `.md` documentation from `.sol` files under `contracts/`.
 
-It uses [twigjs](https://github.com/twigjs/twig.js/wiki) as a templating engine (template can be found at `docs/template.md.twig`).
+It uses [twigjs](https://github.com/twigjs/twig.js/wiki) as a templating engine (template can be found at `docs/gen/contract.md.twig`).
 And [solidity-structure](https://www.npmjs.com/package/solidity-structure) to get parsed info out of `.sol` files.
 
 - The script generates all docs under `docs/ref/`.
