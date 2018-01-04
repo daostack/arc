@@ -1,119 +1,37 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# UniversalSchemeInterface
-
-### UniversalSchemeInterface
-
+# *contract* UniversalSchemeInterface 
 
 
 
 ## Functions
 
 
+###  updateParameters
 
+*Returns:*
 
-### Constant functions
 
+*Params:*
 
+ 1. **_nativeToken** *of type StandardToken*
 
+ 2. **_fee** *of type uint*
 
+ 3. **_beneficiary** *of type address*
 
+ 4. **_hashedParameters** *of type bytes32*
 
 
 
-### State changing functions
 
+###  registerOrganization
 
+*Returns:*
 
-#### registerOrganization
 
+*Params:*
 
+ 1. **_avatar** *of type Avatar*
 
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_avatar|Avatar|||
-
-
-
-
-
-
-#### updateParameters
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_nativeToken|StandardToken|||
-
-
-|1|_fee|uint|||
-
-
-|2|_beneficiary|address|||
-
-
-|3|_hashedParameters|bytes32|||
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
 
 

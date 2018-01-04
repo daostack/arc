@@ -1,122 +1,43 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# GlobalConstraintInterface
-
-### GlobalConstraintInterface
-
+# *contract* GlobalConstraintInterface 
 
 
 
 ## Functions
 
 
+###  pre
 
+*Returns:*
 
-### Constant functions
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. **_scheme** *of type address*
 
+ 2. **_params** *of type bytes32*
 
+ 3. **_method** *of type bytes32*
 
 
 
-### State changing functions
 
+###  post
 
+*Returns:*
 
-#### post
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. **_scheme** *of type address*
 
+ 2. **_params** *of type bytes32*
 
-##### Inputs
+ 3. **_method** *of type bytes32*
 
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_scheme|address|||
-
-
-|1|_params|bytes32|||
-
-
-|2|_method|bytes32|||
-
-
-
-
-
-
-#### pre
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_scheme|address|||
-
-
-|1|_params|bytes32|||
-
-
-|2|_method|bytes32|||
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
 
 

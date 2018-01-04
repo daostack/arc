@@ -1,24 +1,14 @@
 
+# *contract* MirrorContractICO is  
 
 
+## Constructor
 
+*Params:*
 
+ 1. **_organization** *of type Avatar*
 
-
-
-
-
-
-
-
-
-
-
-
-
-# MirrorContractICO
-
-### Allow people to donate by simply sending ether to an address.
+ 2. **_simpleICO** *of type SimpleICO*
 
 
 
@@ -28,117 +18,135 @@
 
 
 
-### Constant functions
+# *contract* SimpleICO is  
 
 
+## Constructor
 
-#### organization
+*Params:*
 
+ 1. **_nativeToken** *of type StandardToken*
 
+ 2. **_fee** *of type uint*
 
+ 3. **_beneficiary** *of type address*
 
 
-##### Inputs
 
 
+## Functions
 
-empty list
 
+###  setParameters
 
+*Returns:*
 
+ 1. unnamed param *of type bytes32*
 
-##### Returns
 
+*Params:*
 
+ 1. **_cap** *of type uint*
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+ 2. **_price** *of type uint*
 
+ 3. **_startBlock** *of type uint*
 
-|0|return0|Avatar||organization|
+ 4. **_endBlock** *of type uint*
 
+ 5. **_beneficiary** *of type address*
 
+ 6. **_admin** *of type address*
 
 
 
 
-#### simpleICO
+###  getParametersHash
 
+*Returns:*
 
+ 1. unnamed param *of type bytes32*
 
 
+*Params:*
 
-##### Inputs
+ 1. **_cap** *of type uint*
 
+ 2. **_price** *of type uint*
 
+ 3. **_startBlock** *of type uint*
 
-empty list
+ 4. **_endBlock** *of type uint*
 
+ 5. **_beneficiary** *of type address*
 
+ 6. **_admin** *of type address*
 
 
-##### Returns
 
 
+###  start
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+*Returns:*
 
 
-|0|return0|SimpleICO||simpleICO|
+*Params:*
 
+ 1. **_avatar** *of type Avatar*
 
 
 
 
+###  haltICO
 
+*Returns:*
 
 
+*Params:*
 
+ 1. **_avatar** *of type address*
 
 
-### State changing functions
 
 
+###  resumeICO
 
-#### 
+*Returns:*
 
-Fallback function, when ether is sent it will donate to the ICO.
-The ether will be returned if the donation is failed.
 
+*Params:*
 
-##### Inputs
+ 1. **_avatar** *of type address*
 
 
 
-empty list
 
+### *constant*  isActive
 
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. **_avatar** *of type address*
 
 
 
 
+###  donate
 
-### Events
+*Returns:*
 
+ 1. unnamed param *of type uint*
 
 
+*Params:*
 
+ 1. **_avatar** *of type Avatar*
 
+ 2. **_beneficiary** *of type address*
 
-
-### Enums
-
-
-
-
-
-
-
-### Structs
 
 

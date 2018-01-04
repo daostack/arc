@@ -1,0 +1,337 @@
+{
+  "contracts": [
+    {
+      "name": "ActionInterface",
+      "parents": [],
+      "structs": [],
+      "events": [],
+      "variables": [],
+      "functions": [
+        {
+          "name": "action",
+          "params": [
+            {
+              "name": "_params",
+              "type": "bytes32"
+            }
+          ],
+          "returns": [
+            {
+              "name": null,
+              "type": "bool"
+            }
+          ],
+          "constant": false,
+          "public": true
+        }
+      ],
+      "constructor": null
+    },
+    {
+      "name": "Avatar",
+      "parents": [
+        "Ownable"
+      ],
+      "structs": [],
+      "events": [
+        {
+          "name": "GenericAction",
+          "params": [
+            {
+              "name": "_action",
+              "type": "address"
+            },
+            {
+              "name": "_params",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "name": "SendEther",
+          "params": [
+            {
+              "name": "_amountInWei",
+              "type": "uint"
+            },
+            {
+              "name": "_to",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "name": "ExternalTokenTransfer",
+          "params": [
+            {
+              "name": "_externalToken",
+              "type": "address"
+            },
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "ExternalTokenTransferFrom",
+          "params": [
+            {
+              "name": "_externalToken",
+              "type": "address"
+            },
+            {
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "ExternalTokenIncreaseApproval",
+          "params": [
+            {
+              "name": "_externalToken",
+              "type": "StandardToken"
+            },
+            {
+              "name": "_spender",
+              "type": "address"
+            },
+            {
+              "name": "_addedValue",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "ExternalTokenDecreaseApproval",
+          "params": [
+            {
+              "name": "_externalToken",
+              "type": "StandardToken"
+            },
+            {
+              "name": "_spender",
+              "type": "address"
+            },
+            {
+              "name": "_subtractedValue",
+              "type": "uint"
+            }
+          ]
+        },
+        {
+          "name": "ReceiveEther",
+          "params": [
+            {
+              "name": "_sender",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint"
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "name": "orgName"
+        },
+        {
+          "name": "nativeToken"
+        },
+        {
+          "name": "nativeReputation"
+        }
+      ],
+      "functions": [
+        {
+          "name": null,
+          "params": [],
+          "returns": [],
+          "constant": false,
+          "public": true
+        },
+        {
+          "name": "genericAction",
+          "params": [
+            {
+              "name": "_action",
+              "type": "address"
+            },
+            {
+              "name": "_params",
+              "type": "bytes32"
+            }
+          ],
+          "returns": [
+            {
+              "name": null,
+              "type": "bool"
+            }
+          ],
+          "constant": false,
+          "public": true
+        },
+        {
+          "name": "sendEther",
+          "params": [
+            {
+              "name": "_amountInWei",
+              "type": "uint"
+            },
+            {
+              "name": "_to",
+              "type": "address"
+            }
+          ],
+          "returns": [
+            {
+              "name": null,
+              "type": "bool"
+            }
+          ],
+          "constant": false,
+          "public": true
+        },
+        {
+          "name": "externalTokenTransfer",
+          "params": [
+            {
+              "name": "_externalToken",
+              "type": "StandardToken"
+            },
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint"
+            }
+          ],
+          "returns": [
+            {
+              "name": null,
+              "type": "bool"
+            }
+          ],
+          "constant": false,
+          "public": true
+        },
+        {
+          "name": "externalTokenTransferFrom",
+          "params": [
+            {
+              "name": "_externalToken",
+              "type": "StandardToken"
+            },
+            {
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint"
+            }
+          ],
+          "returns": [
+            {
+              "name": null,
+              "type": "bool"
+            }
+          ],
+          "constant": false,
+          "public": true
+        },
+        {
+          "name": "externalTokenIncreaseApproval",
+          "params": [
+            {
+              "name": "_externalToken",
+              "type": "StandardToken"
+            },
+            {
+              "name": "_spender",
+              "type": "address"
+            },
+            {
+              "name": "_addedValue",
+              "type": "uint"
+            }
+          ],
+          "returns": [
+            {
+              "name": null,
+              "type": "bool"
+            }
+          ],
+          "constant": false,
+          "public": true
+        },
+        {
+          "name": "externalTokenDecreaseApproval",
+          "params": [
+            {
+              "name": "_externalToken",
+              "type": "StandardToken"
+            },
+            {
+              "name": "_spender",
+              "type": "address"
+            },
+            {
+              "name": "_subtractedValue",
+              "type": "uint"
+            }
+          ],
+          "returns": [
+            {
+              "name": null,
+              "type": "bool"
+            }
+          ],
+          "constant": false,
+          "public": true
+        }
+      ],
+      "constructor": {
+        "name": "Avatar",
+        "params": [
+          {
+            "name": "_orgName",
+            "type": "bytes32"
+          },
+          {
+            "name": "_nativeToken",
+            "type": "DAOToken"
+          },
+          {
+            "name": "_nativeReputation",
+            "type": "Reputation"
+          }
+        ],
+        "returns": [],
+        "constant": false,
+        "public": true
+      }
+    }
+  ]
+}

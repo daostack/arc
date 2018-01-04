@@ -1,68 +1,19 @@
 
+# *contract* UniversalSchemeMock is  
 
 
+## Constructor
 
+*Params:*
 
+ 1. **_nativeToken** *of type StandardToken*
 
+ 2. **_fee** *of type uint*
 
-
-
-
-
-
-
-
-
-
-
-
-# UniversalSchemeMock
-
-### UniversalSchemeMock
+ 3. **_beneficiary** *of type address*
 
 
 
 
 ## Functions
-
-
-
-
-### Constant functions
-
-
-
-
-
-
-
-
-### State changing functions
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
-
 

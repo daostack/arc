@@ -1,0 +1,30 @@
+{% for contract in contracts %}
+# *contract* {{contract.name}} {%if contract.parents %}is {% for parent in contract.parents %}{{parent.name}} {% endfor %}{% endif %}
+
+{% if contract.constructor %}
+## Constructor
+
+*Params:*
+{% for i,param in contract.constructor.params %}
+ {{i + 1}}. {% if param.name %}**{{param.name}}**{%else%}unnamed param{% endif %} *of type {{param.type}}*
+{% endfor %}
+
+{% endif %}
+
+## Functions
+{% for fn in contract.functions %}
+{% if fn.name%}
+### {% if fn.constant %}*constant* {% endif %} {{fn.name}}
+
+*Returns:*
+{% for i,param in fn.returns %}
+ {{i + 1}}. {% if param.name %}**{{param.name}}**{%else%}unnamed param{% endif %} *of type {{param.type}}*
+{% endfor %}
+
+*Params:*
+{% for i,param in fn.params %}
+ {{i + 1}}. {% if param.name %}**{{param.name}}**{%else%}unnamed param{% endif %} *of type {{param.type}}*
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endfor %}

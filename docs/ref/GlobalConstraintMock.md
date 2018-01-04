@@ -1,173 +1,61 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# GlobalConstraintMock
-
-### GlobalConstraintMock
-
+# *contract* GlobalConstraintMock 
 
 
 
 ## Functions
 
 
+###  setConstraint
 
+*Returns:*
 
-### Constant functions
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. **method** *of type bytes*
 
+ 2. **pre** *of type bool*
 
+ 3. **post** *of type bool*
 
 
 
-### State changing functions
 
+###  pre
 
+*Returns:*
 
-#### post
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. unnamed param *of type address*
 
+ 2. unnamed param *of type bytes32*
 
-##### Inputs
+ 3. **method** *of type bytes*
 
 
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
 
+###  post
 
-|0||bytes32|||
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
-|1||bytes32|||
 
+*Params:*
 
-|2|method|bytes|||
+ 1. unnamed param *of type address*
 
+ 2. unnamed param *of type bytes32*
 
-
-
-
-
-#### pre
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0||bytes32|||
-
-
-|1||bytes32|||
-
-
-|2|method|bytes|||
-
-
-
-
-
-
-#### setConstraint
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|method|bytes|||
-
-
-|1|pre|bool|||
-
-
-|2|post|bool|||
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
-
-
-
-#### TestParam
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|pre|bool|||
-
-
-|1|post|bool|||
-
-
+ 3. **method** *of type bytes*
 
 
 
