@@ -75,7 +75,6 @@ function generate(source,cb){
     try{
         const parsed = solparse.parseFile(source);
         const data = transform(parsed);
-        fs.writeFileSync('./docs/gen/transformed-example.json', JSON.stringify(data,undefined,2));
         Twig.renderFile('./docs/gen/contract.md.twig', data, (err,output)=>cb(source, err, output));
     }
     catch(e){
