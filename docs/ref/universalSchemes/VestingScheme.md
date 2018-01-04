@@ -40,7 +40,7 @@
     - [collect](#function-collect)
     - [agreements](#function-agreements)
 ### Constructors
-### *constructor* VestingScheme()
+#### *constructor* VestingScheme()
 
 *Execution cost: **No bound available.***
 
@@ -51,58 +51,58 @@
 
 
 ### Events
-### *event* SignToCancelAgreement
+#### *event* SignToCancelAgreement
 *Params:*
 1. **_agreementId** *of type uint256*
 2. **_signer** *of type address*
 
 
-### *event* RevokeSignToCancelAgreement
+#### *event* RevokeSignToCancelAgreement
 *Params:*
 1. **_agreementId** *of type uint256*
 2. **_signer** *of type address*
 
 
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* NewVestedAgreement
+#### *event* NewVestedAgreement
 *Params:*
 1. **_agreementId** *of type uint256*
 
 
-### *event* LogRegisterOrg
+#### *event* LogRegisterOrg
 *Params:*
 1. **_avatar** *of type address*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **proposalId** *of type bytes32*
 
 
-### *event* LogExecutaion
+#### *event* LogExecutaion
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 3. **_result** *of type int256*
 
 
-### *event* LogCollect
+#### *event* LogCollect
 *Params:*
 1. **_agreementId** *of type uint256*
 
 
-### *event* LogAgreementProposal
+#### *event* LogAgreementProposal
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 
-### *event* LogAgreementCancel
+#### *event* LogAgreementCancel
 *Params:*
 1. **_agreementId** *of type uint256*
 
@@ -110,7 +110,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* revokeSignToCancelAgreement
+#### *function* revokeSignToCancelAgreement
 > Function to revoke vote for canceling agreement.
 
 *Execution cost: **less than 43398 gas.***
@@ -124,7 +124,7 @@
 *Nothing*
 
 
-### *function* parameters
+#### *function* parameters
 
 *Execution cost: **less than 894 gas.***
 
@@ -138,7 +138,7 @@
 2. **intVote** *of type address*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23071 gas.***
@@ -152,7 +152,7 @@
 *Nothing*
 
 
-### *function* updateParameters
+#### *function* updateParameters
 
 *Execution cost: **less than 20572 gas.***
 
@@ -165,7 +165,7 @@
 *Nothing*
 
 
-### *function* signToCancelAgreement
+#### *function* signToCancelAgreement
 > Function to sign to cancel an agreement.
 
 *Execution cost: **No bound available.***
@@ -179,7 +179,7 @@
 *Nothing*
 
 
-### *function* proposeVestingAgreement
+#### *function* proposeVestingAgreement
 
 *Execution cost: **No bound available.***
 
@@ -201,7 +201,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* setParameters
+#### *function* setParameters
 
 *Execution cost: **No bound available.***
 
@@ -215,7 +215,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 787 gas.***
 
@@ -228,7 +228,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* organizationsData
+#### *function* organizationsData
 
 *Execution cost: **No bound available.***
 
@@ -252,7 +252,7 @@
 11. **signaturesReceivedCounter** *of type uint256*
 
 
-### *function* hashedParameters
+#### *function* hashedParameters
 
 *Execution cost: **less than 744 gas.***
 
@@ -265,7 +265,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* getParametersHash
+#### *function* getParametersHash
 
 *Execution cost: **No bound available.***
 
@@ -279,7 +279,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* execute
+#### *function* execute
 
 *Execution cost: **No bound available.***
 
@@ -294,7 +294,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* createVestedAgreement
+#### *function* createVestedAgreement
 
 *Execution cost: **No bound available.***
 
@@ -316,7 +316,7 @@
 1. **unnamed** *of type uint256*
 
 
-### *function* collect
+#### *function* collect
 > Function for a beneficiary to collect.
 
 *Execution cost: **No bound available.***
@@ -330,7 +330,7 @@
 *Nothing*
 
 
-### *function* agreements
+#### *function* agreements
 
 *Execution cost: **less than 3271 gas.***
 

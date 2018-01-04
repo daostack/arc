@@ -36,7 +36,7 @@
 ### Constructors
 
 ### Events
-### *event* LogVoteProposal
+#### *event* LogVoteProposal
 *Params:*
 1. **_proposalId** *of type bytes32*
 2. **_voter** *of type address*
@@ -45,7 +45,7 @@
 5. **_isOwnerVote** *of type bool*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **_proposalId** *of type bytes32*
 2. **_numOfChoices** *of type uint256*
@@ -53,19 +53,19 @@
 4. **_paramsHash** *of type bytes32*
 
 
-### *event* LogExecuteProposal
+#### *event* LogExecuteProposal
 *Params:*
 1. **_proposalId** *of type bytes32*
 2. **_decision** *of type uint256*
 
 
-### *event* LogCancelVoting
+#### *event* LogCancelVoting
 *Params:*
 1. **_proposalId** *of type bytes32*
 2. **_voter** *of type address*
 
 
-### *event* LogCancelProposal
+#### *event* LogCancelProposal
 *Params:*
 1. **_proposalId** *of type bytes32*
 
@@ -73,7 +73,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* votesStatus
+#### *function* votesStatus
 > votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
 
 *Execution cost: **No bound available.***
@@ -85,7 +85,7 @@
 
 votes array of votes for each choice
 
-### *function* setParameters
+#### *function* setParameters
 
 *Execution cost: **No bound available.***
 
@@ -100,7 +100,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bytes32*
 
 
-### *function* voteInfo
+#### *function* voteInfo
 
 *Execution cost: **No bound available.***
 
@@ -115,7 +115,7 @@ votes array of votes for each choice
 2. **unnamed** *of type uint256*
 
 
-### *function* voteWithSpecifiedAmounts
+#### *function* voteWithSpecifiedAmounts
 
 *Execution cost: **No bound available.***
 
@@ -131,7 +131,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bool*
 
 
-### *function* vote
+#### *function* vote
 
 *Execution cost: **No bound available.***
 
@@ -145,7 +145,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bool*
 
 
-### *function* propose
+#### *function* propose
 
 *Execution cost: **No bound available.***
 
@@ -161,7 +161,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bytes32*
 
 
-### *function* proposals
+#### *function* proposals
 
 *Execution cost: **less than 2188 gas.***
 
@@ -180,7 +180,7 @@ votes array of votes for each choice
 7. **open** *of type bool*
 
 
-### *function* parameters
+#### *function* parameters
 
 *Execution cost: **less than 1169 gas.***
 
@@ -195,7 +195,7 @@ votes array of votes for each choice
 3. **allowOwner** *of type bool*
 
 
-### *function* ownerVote
+#### *function* ownerVote
 
 *Execution cost: **No bound available.***
 
@@ -210,7 +210,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bool*
 
 
-### *function* isVotable
+#### *function* isVotable
 > isVotable check if the proposal is votable
 
 *Execution cost: **less than 790 gas.***
@@ -222,7 +222,7 @@ votes array of votes for each choice
 
 bool true or false
 
-### *function* getParametersHash
+#### *function* getParametersHash
 
 *Execution cost: **No bound available.***
 
@@ -237,7 +237,7 @@ bool true or false
 1. **unnamed** *of type bytes32*
 
 
-### *function* getNumberOfChoices
+#### *function* getNumberOfChoices
 > getNumberOfChoices returns the number of choices possible in this proposal
 
 *Execution cost: **less than 734 gas.***
@@ -249,7 +249,7 @@ bool true or false
 
 uint that contains number of choices
 
-### *function* execute
+#### *function* execute
 > execute check if the proposal has been decided, and if so, execute the proposal
 
 *Execution cost: **No bound available.***
@@ -261,7 +261,7 @@ uint that contains number of choices
 
 bool true - the proposal has been executed             false - otherwise.
 
-### *function* cancelVote
+#### *function* cancelVote
 > Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
 *Execution cost: **No bound available.***
@@ -275,7 +275,7 @@ bool true - the proposal has been executed             false - otherwise.
 *Nothing*
 
 
-### *function* cancelProposal
+#### *function* cancelProposal
 > Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
 
 *Execution cost: **No bound available.***

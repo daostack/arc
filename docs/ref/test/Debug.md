@@ -24,37 +24,37 @@
 ### Constructors
 
 ### Events
-### *event* LogUint
+#### *event* LogUint
 *Params:*
 1. **_msg** *of type uint256*
 
 
-### *event* LogString
+#### *event* LogString
 *Params:*
 1. **_msg** *of type string*
 
 
-### *event* LogInt
+#### *event* LogInt
 *Params:*
 1. **_msg** *of type int256*
 
 
-### *event* LogBytes32
+#### *event* LogBytes32
 *Params:*
 1. **_msg** *of type bytes32*
 
 
-### *event* LogBytes
+#### *event* LogBytes
 *Params:*
 1. **_msg** *of type bytes*
 
 
-### *event* LogBool
+#### *event* LogBool
 *Params:*
 1. **_msg** *of type bool*
 
 
-### *event* LogAddress
+#### *event* LogAddress
 *Params:*
 1. **_msg** *of type address*
 

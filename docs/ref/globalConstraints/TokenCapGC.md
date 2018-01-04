@@ -37,7 +37,7 @@ controller.addGlobalConstraint(gc,hash)
 ### Fallback
 *Nothing*
 ### Functions
-### *function* setParameters
+#### *function* setParameters
 
 *Execution cost: **No bound available.***
 
@@ -51,7 +51,7 @@ controller.addGlobalConstraint(gc,hash)
 1. **unnamed** *of type bytes32*
 
 
-### *function* pre
+#### *function* pre
 
 *Execution cost: **No bound available.***
 
@@ -66,7 +66,7 @@ controller.addGlobalConstraint(gc,hash)
 1. **unnamed** *of type bool*
 
 
-### *function* post
+#### *function* post
 
 *Execution cost: **No bound available.***
 
@@ -81,7 +81,7 @@ controller.addGlobalConstraint(gc,hash)
 1. **unnamed** *of type bool*
 
 
-### *function* params
+#### *function* params
 
 *Execution cost: **less than 934 gas.***
 
@@ -95,7 +95,7 @@ controller.addGlobalConstraint(gc,hash)
 2. **cap** *of type uint256*
 
 
-### *function* getParametersHash
+#### *function* getParametersHash
 
 *Execution cost: **No bound available.***
 

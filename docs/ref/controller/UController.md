@@ -49,7 +49,7 @@
     - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
     - [addGlobalConstraint](#function-addglobalconstraint)
 ### Constructors
-### *constructor* UController()
+#### *constructor* UController()
 
 *Execution cost: **No bound available.***
 
@@ -60,7 +60,7 @@
 
 
 ### Events
-### *event* ExternalTokenTransfer
+#### *event* ExternalTokenTransfer
 *Params:*
 1. **_sender** *of type address*
 2. **_externalToken** *of type address*
@@ -68,14 +68,14 @@
 4. **_value** *of type uint256*
 
 
-### *event* UpgradeController
+#### *event* UpgradeController
 *Params:*
 1. **_oldController** *of type address*
 2. **_newController** *of type address*
 3. **_avatar** *of type address*
 
 
-### *event* ExternalTokenTransferFrom
+#### *event* ExternalTokenTransferFrom
 *Params:*
 1. **_sender** *of type address*
 2. **_externalToken** *of type address*
@@ -84,34 +84,34 @@
 5. **_value** *of type uint256*
 
 
-### *event* RegisterScheme
+#### *event* RegisterScheme
 *Params:*
 1. **_sender** *of type address*
 2. **_scheme** *of type address*
 3. **_avatar** *of type address*
 
 
-### *event* RemoveGlobalConstraint
+#### *event* RemoveGlobalConstraint
 *Params:*
 1. **_globalConstraint** *of type address*
 2. **_index** *of type uint256*
 
 
-### *event* SendEther
+#### *event* SendEther
 *Params:*
 1. **_sender** *of type address*
 2. **_amountInWei** *of type uint256*
 3. **_to** *of type address*
 
 
-### *event* UnregisterScheme
+#### *event* UnregisterScheme
 *Params:*
 1. **_sender** *of type address*
 2. **_scheme** *of type address*
 3. **_avatar** *of type address*
 
 
-### *event* MintTokens
+#### *event* MintTokens
 *Params:*
 1. **_sender** *of type address*
 2. **_beneficiary** *of type address*
@@ -119,7 +119,7 @@
 4. **_avatar** *of type address*
 
 
-### *event* MintReputation
+#### *event* MintReputation
 *Params:*
 1. **_sender** *of type address*
 2. **_beneficiary** *of type address*
@@ -127,13 +127,13 @@
 4. **_avatar** *of type address*
 
 
-### *event* GenericAction
+#### *event* GenericAction
 *Params:*
 1. **_sender** *of type address*
 2. **_params** *of type bytes32[]*
 
 
-### *event* ExternalTokenIncreaseApproval
+#### *event* ExternalTokenIncreaseApproval
 *Params:*
 1. **_sender** *of type address*
 2. **_externalToken** *of type address*
@@ -141,7 +141,7 @@
 4. **_value** *of type uint256*
 
 
-### *event* ExternalTokenDecreaseApproval
+#### *event* ExternalTokenDecreaseApproval
 *Params:*
 1. **_sender** *of type address*
 2. **_externalToken** *of type address*
@@ -149,7 +149,7 @@
 4. **_value** *of type uint256*
 
 
-### *event* AddGlobalConstraint
+#### *event* AddGlobalConstraint
 *Params:*
 1. **_globalConstraint** *of type address*
 2. **_params** *of type bytes32*
@@ -158,7 +158,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* mintReputation
+#### *function* mintReputation
 
 *Execution cost: **No bound available.***
 
@@ -173,7 +173,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* unregisterScheme
+#### *function* unregisterScheme
 
 *Execution cost: **No bound available.***
 
@@ -187,7 +187,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* upgradeController
+#### *function* upgradeController
 
 *Execution cost: **No bound available.***
 
@@ -201,7 +201,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* unregisterSelf
+#### *function* unregisterSelf
 > unregister the caller's scheme
 
 *Execution cost: **less than 28509 gas.***
@@ -209,11 +209,11 @@
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address- the organization avatar.*
+1. **_avatar** *of type address- the organization avatar.*
 
 bool which represents a success
 
-### *function* getSchemePermissions
+#### *function* getSchemePermissions
 
 *Execution cost: **No bound available.***
 
@@ -227,7 +227,7 @@ bool which represents a success
 1. **unnamed** *of type bytes4*
 
 
-### *function* newControllers
+#### *function* newControllers
 
 *Execution cost: **less than 824 gas.***
 
@@ -240,7 +240,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 
-### *function* sendEther
+#### *function* sendEther
 
 *Execution cost: **No bound available.***
 
@@ -255,7 +255,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* registerScheme
+#### *function* registerScheme
 
 *Execution cost: **No bound available.***
 
@@ -271,7 +271,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* newOrganization
+#### *function* newOrganization
 > newOrganization set up a new organization with default genesisScheme.
 
 *Execution cost: **No bound available.***
@@ -279,13 +279,13 @@ bool which represents a success
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address- the organization avatar*
+1. **_avatar** *of type address- the organization avatar*
 
 *Returns:*
 *Nothing*
 
 
-### *function* removeGlobalConstraint
+#### *function* removeGlobalConstraint
 
 *Execution cost: **No bound available.***
 
@@ -299,7 +299,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenTransfer
+#### *function* externalTokenTransfer
 
 *Execution cost: **No bound available.***
 
@@ -315,7 +315,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* getSchemeParameters
+#### *function* getSchemeParameters
 
 *Execution cost: **No bound available.***
 
@@ -329,7 +329,7 @@ bool which represents a success
 1. **unnamed** *of type bytes32*
 
 
-### *function* isGlobalConstraintRegistered
+#### *function* isGlobalConstraintRegistered
 
 *Execution cost: **No bound available.***
 
@@ -343,7 +343,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* isSchemeRegistered
+#### *function* isSchemeRegistered
 
 *Execution cost: **No bound available.***
 
@@ -357,7 +357,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* mintTokens
+#### *function* mintTokens
 
 *Execution cost: **No bound available.***
 
@@ -372,7 +372,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* globalConstraintsCount
+#### *function* globalConstraintsCount
 
 *Execution cost: **less than 909 gas.***
 
@@ -385,7 +385,7 @@ bool which represents a success
 1. **unnamed** *of type uint256*
 
 
-### *function* genericAction
+#### *function* genericAction
 
 *Execution cost: **No bound available.***
 
@@ -399,7 +399,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenTransferFrom
+#### *function* externalTokenTransferFrom
 
 *Execution cost: **No bound available.***
 
@@ -416,7 +416,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenIncreaseApproval
+#### *function* externalTokenIncreaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -432,7 +432,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenDecreaseApproval
+#### *function* externalTokenDecreaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -448,7 +448,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* addGlobalConstraint
+#### *function* addGlobalConstraint
 
 *Execution cost: **No bound available.***
 

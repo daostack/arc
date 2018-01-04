@@ -100,7 +100,7 @@ contoller.addGlobalConstraint(address(myGlobalConstraint),hash)
 ### Fallback
 *Nothing*
 ### Functions
-### *function* pre
+#### *function* pre
 
 *Execution cost: **No bound available.***
 
@@ -115,7 +115,7 @@ contoller.addGlobalConstraint(address(myGlobalConstraint),hash)
 1. **unnamed** *of type bool*
 
 
-### *function* post
+#### *function* post
 
 *Execution cost: **No bound available.***
 

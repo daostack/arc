@@ -51,7 +51,7 @@
     - [cancelProposal](#function-cancelproposal)
     - [boostProposal](#function-boostproposal)
 ### Constructors
-### *constructor* EmergentVoteScheme()
+#### *constructor* EmergentVoteScheme()
 
 *Execution cost: **No bound available.***
 
@@ -62,13 +62,13 @@
 
 
 ### Events
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* LogVoteProposal
+#### *event* LogVoteProposal
 *Params:*
 1. **_proposalId** *of type bytes32*
 2. **_voter** *of type address*
@@ -77,31 +77,31 @@
 5. **_isOwnerVote** *of type bool*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **proposalId** *of type bytes32*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **_proposalId** *of type bytes32*
 2. **_proposer** *of type address*
 3. **_paramsHash** *of type bytes32*
 
 
-### *event* LogExecuteProposal
+#### *event* LogExecuteProposal
 *Params:*
 1. **_proposalId** *of type bytes32*
 2. **_decision** *of type uint256*
 
 
-### *event* LogCancelVoting
+#### *event* LogCancelVoting
 *Params:*
 1. **_proposalId** *of type bytes32*
 2. **_voter** *of type address*
 
 
-### *event* LogCancelProposal
+#### *event* LogCancelProposal
 *Params:*
 1. **_proposalId** *of type bytes32*
 
@@ -109,7 +109,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* MAX_NUM_OF_CHOICES
+#### *function* MAX_NUM_OF_CHOICES
 
 *Execution cost: **less than 566 gas.***
 
@@ -122,7 +122,7 @@
 1. **unnamed** *of type uint256*
 
 
-### *function* organizationsParameters
+#### *function* organizationsParameters
 
 *Execution cost: **less than 2370 gas.***
 
@@ -142,7 +142,7 @@
 8. **allowOwner** *of type bool*
 
 
-### *function* voteInfo
+#### *function* voteInfo
 
 *Execution cost: **No bound available.***
 
@@ -156,7 +156,7 @@
 1. **unnamed** *of type uint256[2]*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23470 gas.***
@@ -170,7 +170,7 @@
 *Nothing*
 
 
-### *function* setProposalParameters
+#### *function* setProposalParameters
 
 *Execution cost: **No bound available.***
 
@@ -185,7 +185,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* updateParameters
+#### *function* updateParameters
 
 *Execution cost: **less than 20616 gas.***
 
@@ -198,7 +198,7 @@
 *Nothing*
 
 
-### *function* proposals
+#### *function* proposals
 
 *Execution cost: **less than 2823 gas.***
 
@@ -221,7 +221,7 @@
 11. **boostedFunds** *of type uint256*
 
 
-### *function* ownerVote
+#### *function* ownerVote
 
 *Execution cost: **No bound available.***
 
@@ -236,7 +236,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* voteWithSpecifiedAmounts
+#### *function* voteWithSpecifiedAmounts
 
 *Execution cost: **No bound available.***
 
@@ -252,7 +252,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* proposalScore
+#### *function* proposalScore
 > Get the score of a specific proposal The score is evaluated by multiplying the number of votes with the funds that are invested
 
 *Execution cost: **No bound available.***
@@ -264,7 +264,7 @@
 
 uint Proposal's score
 
-### *function* setOrgParameters
+#### *function* setOrgParameters
 
 *Execution cost: **No bound available.***
 
@@ -284,7 +284,7 @@ uint Proposal's score
 1. **unnamed** *of type bytes32*
 
 
-### *function* proposalsParameters
+#### *function* proposalsParameters
 
 *Execution cost: **less than 1233 gas.***
 
@@ -299,7 +299,7 @@ uint Proposal's score
 3. **boostTimeFrame** *of type uint256*
 
 
-### *function* vote
+#### *function* vote
 
 *Execution cost: **No bound available.***
 
@@ -313,7 +313,7 @@ uint Proposal's score
 1. **unnamed** *of type bool*
 
 
-### *function* proposalStatus
+#### *function* proposalStatus
 > proposalStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
 
 *Execution cost: **No bound available.***
@@ -325,7 +325,7 @@ uint Proposal's score
 
 int[10] array that contains the proposal's info: number of yes, no, and abstain, and if the voting for the proposal has ended
 
-### *function* propose
+#### *function* propose
 
 *Execution cost: **No bound available.***
 
@@ -341,7 +341,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 1. **unnamed** *of type bytes32*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 941 gas.***
 
@@ -354,7 +354,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 1. **unnamed** *of type address*
 
 
-### *function* getProposalParametersHash
+#### *function* getProposalParametersHash
 
 *Execution cost: **No bound available.***
 
@@ -369,7 +369,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 1. **unnamed** *of type bytes32*
 
 
-### *function* findMinScore
+#### *function* findMinScore
 > Get the minimum score of a given list proposal ids
 
 *Execution cost: **No bound available.***
@@ -381,7 +381,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 
 uint index the index of the proposal containing the smallest score in the listuint min the minimum score in the list
 
-### *function* organizations
+#### *function* organizations
 
 *Execution cost: **less than 1104 gas.***
 
@@ -395,7 +395,7 @@ uint index the index of the proposal containing the smallest score in the listu
 2. **boostedProposals** *of type uint256*
 
 
-### *function* getNumberOfChoices
+#### *function* getNumberOfChoices
 
 *Execution cost: **less than 932 gas.***
 
@@ -408,7 +408,7 @@ uint index the index of the proposal containing the smallest score in the listu
 1. **unnamed** *of type uint256*
 
 
-### *function* hashedParameters
+#### *function* hashedParameters
 
 *Execution cost: **less than 1052 gas.***
 
@@ -421,7 +421,7 @@ uint index the index of the proposal containing the smallest score in the listu
 1. **unnamed** *of type bytes32*
 
 
-### *function* getOrgParametersHash
+#### *function* getOrgParametersHash
 
 *Execution cost: **No bound available.***
 
@@ -441,7 +441,7 @@ uint index the index of the proposal containing the smallest score in the listu
 1. **unnamed** *of type bytes32*
 
 
-### *function* isVotable
+#### *function* isVotable
 > isVotable check if the proposal is open
 
 *Execution cost: **less than 1010 gas.***
@@ -453,7 +453,7 @@ uint index the index of the proposal containing the smallest score in the listu
 
 bool true or false
 
-### *function* moveTopAwaitingBoostMode
+#### *function* moveTopAwaitingBoostMode
 > Move the top proposal form the waiting list to the boosted proposals
 
 *Execution cost: **No bound available.***
@@ -467,7 +467,7 @@ bool true or false
 *Nothing*
 
 
-### *function* findMaxScore
+#### *function* findMaxScore
 > Get the maximum score of a given list proposal ids
 
 *Execution cost: **No bound available.***
@@ -479,7 +479,7 @@ bool true or false
 
 uint index the index of the proposal containing the highest score in the listuint max the maximum score in the list
 
-### *function* findInArray
+#### *function* findInArray
 
 *Execution cost: **No bound available.***
 
@@ -494,7 +494,7 @@ uint index the index of the proposal containing the highest score in the listui
 2. **index** *of type uint256*
 
 
-### *function* execute
+#### *function* execute
 > check if the proposal has been decided, and if so, execute the proposal
 
 *Execution cost: **No bound available.***
@@ -506,7 +506,7 @@ uint index the index of the proposal containing the highest score in the listui
 
 bool is the proposal has been executed or not?
 
-### *function* cancelVote
+#### *function* cancelVote
 > Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
 *Execution cost: **No bound available.***
@@ -520,7 +520,7 @@ bool is the proposal has been executed or not?
 *Nothing*
 
 
-### *function* cancelProposal
+#### *function* cancelProposal
 > Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
 
 *Execution cost: **No bound available.***
@@ -532,7 +532,7 @@ bool is the proposal has been executed or not?
 
 bool True if the proposal is canceled and False if it wasn't
 
-### *function* boostProposal
+#### *function* boostProposal
 
 *Execution cost: **No bound available.***
 

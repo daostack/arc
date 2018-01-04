@@ -56,7 +56,7 @@ The *Controller* is the central part of a DAO, it glues together all other compo
     - [avatar](#function-avatar)
     - [addGlobalConstraint](#function-addglobalconstraint)
 ### Constructors
-### *constructor* Controller(address)
+#### *constructor* Controller(address)
 
 *Execution cost: **No bound available.***
 
@@ -67,7 +67,7 @@ The *Controller* is the central part of a DAO, it glues together all other compo
 
 
 ### Events
-### *event* ExternalTokenTransfer
+#### *event* ExternalTokenTransfer
 *Params:*
 1. **_sender** *of type address*
 2. **_externalToken** *of type address*
@@ -75,13 +75,13 @@ The *Controller* is the central part of a DAO, it glues together all other compo
 4. **_value** *of type uint256*
 
 
-### *event* UpgradeController
+#### *event* UpgradeController
 *Params:*
 1. **_oldController** *of type address*
 2. **_newController** *of type address*
 
 
-### *event* ExternalTokenTransferFrom
+#### *event* ExternalTokenTransferFrom
 *Params:*
 1. **_sender** *of type address*
 2. **_externalToken** *of type address*
@@ -90,52 +90,52 @@ The *Controller* is the central part of a DAO, it glues together all other compo
 5. **_value** *of type uint256*
 
 
-### *event* RegisterScheme
+#### *event* RegisterScheme
 *Params:*
 1. **_sender** *of type address*
 2. **_scheme** *of type address*
 
 
-### *event* RemoveGlobalConstraint
+#### *event* RemoveGlobalConstraint
 *Params:*
 1. **_globalConstraint** *of type address*
 2. **_index** *of type uint256*
 
 
-### *event* SendEther
+#### *event* SendEther
 *Params:*
 1. **_sender** *of type address*
 2. **_amountInWei** *of type uint256*
 3. **_to** *of type address*
 
 
-### *event* UnregisterScheme
+#### *event* UnregisterScheme
 *Params:*
 1. **_sender** *of type address*
 2. **_scheme** *of type address*
 
 
-### *event* MintTokens
+#### *event* MintTokens
 *Params:*
 1. **_sender** *of type address*
 2. **_beneficiary** *of type address*
 3. **_amount** *of type uint256*
 
 
-### *event* MintReputation
+#### *event* MintReputation
 *Params:*
 1. **_sender** *of type address*
 2. **_beneficiary** *of type address*
 3. **_amount** *of type int256*
 
 
-### *event* GenericAction
+#### *event* GenericAction
 *Params:*
 1. **_sender** *of type address*
 2. **_params** *of type bytes32[]*
 
 
-### *event* ExternalTokenIncreaseApproval
+#### *event* ExternalTokenIncreaseApproval
 *Params:*
 1. **_sender** *of type address*
 2. **_externalToken** *of type address*
@@ -143,7 +143,7 @@ The *Controller* is the central part of a DAO, it glues together all other compo
 4. **_value** *of type uint256*
 
 
-### *event* ExternalTokenDecreaseApproval
+#### *event* ExternalTokenDecreaseApproval
 *Params:*
 1. **_sender** *of type address*
 2. **_externalToken** *of type address*
@@ -151,7 +151,7 @@ The *Controller* is the central part of a DAO, it glues together all other compo
 4. **_value** *of type uint256*
 
 
-### *event* AddGlobalConstraint
+#### *event* AddGlobalConstraint
 *Params:*
 1. **_globalConstraint** *of type address*
 2. **_params** *of type bytes32*
@@ -165,7 +165,7 @@ The *Controller* is the central part of a DAO, it glues together all other compo
 
 
 ### Functions
-### *function* mintReputation
+#### *function* mintReputation
 
 *Execution cost: **No bound available.***
 
@@ -180,7 +180,7 @@ The *Controller* is the central part of a DAO, it glues together all other compo
 1. **unnamed** *of type bool*
 
 
-### *function* unregisterScheme
+#### *function* unregisterScheme
 
 *Execution cost: **No bound available.***
 
@@ -194,7 +194,7 @@ The *Controller* is the central part of a DAO, it glues together all other compo
 1. **unnamed** *of type bool*
 
 
-### *function* unregisterSelf
+#### *function* unregisterSelf
 > unregister the caller's scheme
 
 *Execution cost: **less than 28009 gas.***
@@ -206,7 +206,7 @@ The *Controller* is the central part of a DAO, it glues together all other compo
 
 bool which represents a success
 
-### *function* upgradeController
+#### *function* upgradeController
 
 *Execution cost: **No bound available.***
 
@@ -220,7 +220,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* nativeReputation
+#### *function* nativeReputation
 
 *Execution cost: **less than 922 gas.***
 
@@ -233,7 +233,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 
-### *function* removeGlobalConstraint
+#### *function* removeGlobalConstraint
 
 *Execution cost: **No bound available.***
 
@@ -247,7 +247,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* schemes
+#### *function* schemes
 
 *Execution cost: **less than 1411 gas.***
 
@@ -261,7 +261,7 @@ bool which represents a success
 2. **permissions** *of type bytes4*
 
 
-### *function* sendEther
+#### *function* sendEther
 
 *Execution cost: **No bound available.***
 
@@ -276,7 +276,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* isSchemeRegistered
+#### *function* isSchemeRegistered
 
 *Execution cost: **No bound available.***
 
@@ -290,7 +290,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* mintTokens
+#### *function* mintTokens
 
 *Execution cost: **No bound available.***
 
@@ -305,7 +305,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* registerScheme
+#### *function* registerScheme
 
 *Execution cost: **No bound available.***
 
@@ -321,7 +321,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* nativeToken
+#### *function* nativeToken
 
 *Execution cost: **less than 1054 gas.***
 
@@ -334,7 +334,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 
-### *function* newController
+#### *function* newController
 
 *Execution cost: **less than 636 gas.***
 
@@ -347,7 +347,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 
-### *function* externalTokenDecreaseApproval
+#### *function* externalTokenDecreaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -363,7 +363,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* getSchemeParameters
+#### *function* getSchemeParameters
 
 *Execution cost: **No bound available.***
 
@@ -377,7 +377,7 @@ bool which represents a success
 1. **unnamed** *of type bytes32*
 
 
-### *function* isGlobalConstraintRegistered
+#### *function* isGlobalConstraintRegistered
 
 *Execution cost: **No bound available.***
 
@@ -391,7 +391,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* getSchemePermissions
+#### *function* getSchemePermissions
 
 *Execution cost: **No bound available.***
 
@@ -405,7 +405,7 @@ bool which represents a success
 1. **unnamed** *of type bytes4*
 
 
-### *function* globalConstraintsRegister
+#### *function* globalConstraintsRegister
 
 *Execution cost: **less than 1060 gas.***
 
@@ -419,7 +419,7 @@ bool which represents a success
 2. **index** *of type uint256*
 
 
-### *function* globalConstraints
+#### *function* globalConstraints
 
 *Execution cost: **less than 1390 gas.***
 
@@ -433,7 +433,7 @@ bool which represents a success
 2. **params** *of type bytes32*
 
 
-### *function* globalConstraintsCount
+#### *function* globalConstraintsCount
 
 *Execution cost: **less than 827 gas.***
 
@@ -446,7 +446,7 @@ bool which represents a success
 1. **unnamed** *of type uint256*
 
 
-### *function* genericAction
+#### *function* genericAction
 
 *Execution cost: **No bound available.***
 
@@ -460,7 +460,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenTransferFrom
+#### *function* externalTokenTransferFrom
 
 *Execution cost: **No bound available.***
 
@@ -477,7 +477,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenTransfer
+#### *function* externalTokenTransfer
 
 *Execution cost: **No bound available.***
 
@@ -493,7 +493,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenIncreaseApproval
+#### *function* externalTokenIncreaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -509,7 +509,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* avatar
+#### *function* avatar
 
 *Execution cost: **less than 702 gas.***
 
@@ -522,7 +522,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 
-### *function* addGlobalConstraint
+#### *function* addGlobalConstraint
 
 *Execution cost: **No bound available.***
 

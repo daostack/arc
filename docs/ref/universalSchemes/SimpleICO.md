@@ -31,7 +31,7 @@
     - [getParametersHash](#function-getparametershash)
     - [donate](#function-donate)
 ### Constructors
-### *constructor* SimpleICO()
+#### *constructor* SimpleICO()
 
 *Execution cost: **No bound available.***
 
@@ -42,18 +42,18 @@
 
 
 ### Events
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **proposalId** *of type bytes32*
 
 
-### *event* DonationReceived
+#### *event* DonationReceived
 *Params:*
 1. **organization** *of type address*
 2. **_beneficiary** *of type address*
@@ -64,7 +64,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 721 gas.***
 
@@ -77,7 +77,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* parameters
+#### *function* parameters
 
 *Execution cost: **less than 1880 gas.***
 
@@ -95,7 +95,7 @@
 6. **admin** *of type address*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23049 gas.***
@@ -109,7 +109,7 @@
 *Nothing*
 
 
-### *function* updateParameters
+#### *function* updateParameters
 
 *Execution cost: **less than 20572 gas.***
 
@@ -122,7 +122,7 @@
 *Nothing*
 
 
-### *function* resumeICO
+#### *function* resumeICO
 > Allowing admin to reopen an ICO.
 
 *Execution cost: **less than 21513 gas.***
@@ -136,7 +136,7 @@
 *Nothing*
 
 
-### *function* start
+#### *function* start
 > start an ICO
 
 *Execution cost: **No bound available.***
@@ -150,7 +150,7 @@
 *Nothing*
 
 
-### *function* setParameters
+#### *function* setParameters
 
 *Execution cost: **No bound available.***
 
@@ -168,7 +168,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* organizationsICOInfo
+#### *function* organizationsICOInfo
 
 *Execution cost: **less than 1559 gas.***
 
@@ -184,7 +184,7 @@
 4. **isHalted** *of type bool*
 
 
-### *function* isActive
+#### *function* isActive
 > Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
 
 *Execution cost: **less than 3761 gas.***
@@ -196,7 +196,7 @@
 
 bool which represents a successful of the function
 
-### *function* hashedParameters
+#### *function* hashedParameters
 
 *Execution cost: **less than 700 gas.***
 
@@ -209,7 +209,7 @@ bool which represents a successful of the function
 1. **unnamed** *of type bytes32*
 
 
-### *function* haltICO
+#### *function* haltICO
 > Allowing admin to halt an ICO.
 
 *Execution cost: **less than 21475 gas.***
@@ -223,7 +223,7 @@ bool which represents a successful of the function
 *Nothing*
 
 
-### *function* getParametersHash
+#### *function* getParametersHash
 
 *Execution cost: **No bound available.***
 
@@ -241,7 +241,7 @@ bool which represents a successful of the function
 1. **unnamed** *of type bytes32*
 
 
-### *function* donate
+#### *function* donate
 
 *Execution cost: **No bound available.***
 

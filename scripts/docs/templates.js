@@ -42,7 +42,7 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
     const gasEstimate = (est) => est ? `less than ${est} gas.` : 'No bound available.';
     const signature = (name,ps) => `${name}(${ps.map(p => `${p.type}`).join(', ')})`;
     const headerLink = (title,link) => `    - [${title}](#${hyphenate(link)})`;
-    const title = (prefix,text) => `### *${prefix}* ${text}`;
+    const title = (prefix,text) => `#### *${prefix}* ${text}`;
     const functionComment = (obj) => obj.details ? `> ${obj.details.trim()}${N}` : '';
     const paramComment = (obj, name) => obj.params && obj.params[name] ? `- ${obj.params[name]}` : '';
 

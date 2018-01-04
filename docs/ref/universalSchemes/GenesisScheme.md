@@ -60,7 +60,7 @@ gs.setSchemes(
     - [setSchemes](#function-setschemes)
     - [forgeOrg](#function-forgeorg)
 ### Constructors
-### *constructor* GenesisScheme()
+#### *constructor* GenesisScheme()
 
 *Execution cost: **No bound available.***
 
@@ -71,12 +71,12 @@ gs.setSchemes(
 
 
 ### Events
-### *event* NewOrg
+#### *event* NewOrg
 *Params:*
 1. **_avatar** *of type address*
 
 
-### *event* InitialSchemesSet
+#### *event* InitialSchemesSet
 *Params:*
 1. **_avatar** *of type address*
 
@@ -84,7 +84,7 @@ gs.setSchemes(
 ### Fallback
 *Nothing*
 ### Functions
-### *function* setSchemes
+#### *function* setSchemes
 
 *Execution cost: **No bound available.***
 
@@ -100,7 +100,7 @@ gs.setSchemes(
 *Nothing*
 
 
-### *function* forgeOrg
+#### *function* forgeOrg
 
 *Execution cost: **No bound available.***
 

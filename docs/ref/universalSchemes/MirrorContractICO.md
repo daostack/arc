@@ -22,7 +22,7 @@
     - [destroyAndSend](#function-destroyandsend)
     - [destroy](#function-destroy)
 ### Constructors
-### *constructor* MirrorContractICO(address, address)
+#### *constructor* MirrorContractICO(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -34,7 +34,7 @@
 
 
 ### Events
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
@@ -48,7 +48,7 @@
 
 
 ### Functions
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **No bound available.***
@@ -62,7 +62,7 @@
 *Nothing*
 
 
-### *function* simpleICO
+#### *function* simpleICO
 
 *Execution cost: **No bound available.***
 
@@ -75,7 +75,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **No bound available.***
 
@@ -88,7 +88,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* organization
+#### *function* organization
 
 *Execution cost: **No bound available.***
 
@@ -101,7 +101,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* destroyAndSend
+#### *function* destroyAndSend
 
 *Execution cost: **No bound available.***
 
@@ -114,7 +114,7 @@
 *Nothing*
 
 
-### *function* destroy
+#### *function* destroy
 > Transfers the current balance to the owner and terminates the contract.
 
 *Execution cost: **No bound available.***

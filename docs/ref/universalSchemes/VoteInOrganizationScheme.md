@@ -31,7 +31,7 @@
     - [execute](#function-execute)
     - [action](#function-action)
 ### Constructors
-### *constructor* VoteInOrganizationScheme()
+#### *constructor* VoteInOrganizationScheme()
 
 *Execution cost: **No bound available.***
 
@@ -42,25 +42,25 @@
 
 
 ### Events
-### *event* ProposalExecuted
+#### *event* ProposalExecuted
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 
-### *event* ProposalDeleted
+#### *event* ProposalDeleted
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* NewVoteProposal
+#### *event* NewVoteProposal
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
@@ -70,7 +70,7 @@
 6. **_originalNumOfChoices** *of type uint256*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **proposalId** *of type bytes32*
 
@@ -78,7 +78,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* proposeVote
+#### *function* proposeVote
 
 *Execution cost: **No bound available.***
 
@@ -93,7 +93,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* parameters
+#### *function* parameters
 
 *Execution cost: **less than 906 gas.***
 
@@ -107,7 +107,7 @@
 2. **voteParams** *of type bytes32*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23005 gas.***
@@ -121,7 +121,7 @@
 *Nothing*
 
 
-### *function* updateParameters
+#### *function* updateParameters
 
 *Execution cost: **less than 20572 gas.***
 
@@ -134,7 +134,7 @@
 *Nothing*
 
 
-### *function* setParameters
+#### *function* setParameters
 
 *Execution cost: **No bound available.***
 
@@ -148,7 +148,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 765 gas.***
 
@@ -161,7 +161,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* organizationsData
+#### *function* organizationsData
 
 *Execution cost: **No bound available.***
 
@@ -177,7 +177,7 @@
 3. **originalNumOfChoices** *of type uint256*
 
 
-### *function* hashedParameters
+#### *function* hashedParameters
 
 *Execution cost: **less than 656 gas.***
 
@@ -190,7 +190,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* getParametersHash
+#### *function* getParametersHash
 
 *Execution cost: **No bound available.***
 
@@ -204,7 +204,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* execute
+#### *function* execute
 
 *Execution cost: **No bound available.***
 
@@ -219,7 +219,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* action
+#### *function* action
 > do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.
 
 *Execution cost: **No bound available.***

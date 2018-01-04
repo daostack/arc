@@ -19,7 +19,7 @@
 ### Constructors
 
 ### Events
-### *event* Action
+#### *event* Action
 *Params:*
 1. **_sender** *of type address*
 2. **_param** *of type bytes32*
@@ -28,7 +28,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* genericAction
+#### *function* genericAction
 
 *Execution cost: **No bound available.***
 
@@ -42,7 +42,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* action
+#### *function* action
 
 *Execution cost: **No bound available.***
 

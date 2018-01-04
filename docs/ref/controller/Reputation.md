@@ -24,7 +24,7 @@ A *Reputation* is a way of assigning importance to participants and their votes.
     - [mint](#function-mint)
     - [decimals](#function-decimals)
 ### Constructors
-### *constructor* Reputation()
+#### *constructor* Reputation()
 
 *Execution cost: **No bound available.***
 
@@ -35,13 +35,13 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 
 
 ### Events
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* Mint
+#### *event* Mint
 *Params:*
 1. **to** *of type address*
 2. **amount** *of type int256*
@@ -50,7 +50,7 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 ### Fallback
 *Nothing*
 ### Functions
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 22832 gas.***
@@ -64,7 +64,7 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 *Nothing*
 
 
-### *function* totalSupply
+#### *function* totalSupply
 
 *Execution cost: **less than 373 gas.***
 
@@ -77,7 +77,7 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 1. **unnamed** *of type uint256*
 
 
-### *function* reputationOf
+#### *function* reputationOf
 > return the reputation amount of a given owner
 
 *Execution cost: **less than 661 gas.***
@@ -85,13 +85,13 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 **constant | view**
 
 *Inputs:*
-1. **_owner** *of type address- an address of the owner which we want to get his reputation*
+1. **_owner** *of type address- an address of the owner which we want to get his reputation*
 
 *Returns:*
 1. **balance** *of type uint256*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 573 gas.***
 
@@ -104,7 +104,7 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 1. **unnamed** *of type address*
 
 
-### *function* mint
+#### *function* mint
 
 *Execution cost: **No bound available.***
 
@@ -118,7 +118,7 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 1. **unnamed** *of type bool*
 
 
-### *function* decimals
+#### *function* decimals
 
 *Execution cost: **less than 395 gas.***
 

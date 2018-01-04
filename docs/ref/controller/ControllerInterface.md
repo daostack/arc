@@ -40,7 +40,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* mintReputation
+#### *function* mintReputation
 
 *Execution cost: **No bound available.***
 
@@ -55,7 +55,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* unregisterScheme
+#### *function* unregisterScheme
 
 *Execution cost: **No bound available.***
 
@@ -69,7 +69,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* upgradeController
+#### *function* upgradeController
 
 *Execution cost: **No bound available.***
 
@@ -83,7 +83,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* unregisterSelf
+#### *function* unregisterSelf
 
 *Execution cost: **No bound available.***
 
@@ -96,7 +96,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* getSchemePermissions
+#### *function* getSchemePermissions
 
 *Execution cost: **No bound available.***
 
@@ -110,7 +110,7 @@
 1. **unnamed** *of type bytes4*
 
 
-### *function* genericAction
+#### *function* genericAction
 
 *Execution cost: **No bound available.***
 
@@ -124,7 +124,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* mintTokens
+#### *function* mintTokens
 
 *Execution cost: **No bound available.***
 
@@ -139,7 +139,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* isGlobalConstraintRegistered
+#### *function* isGlobalConstraintRegistered
 
 *Execution cost: **No bound available.***
 
@@ -153,7 +153,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* removeGlobalConstraint
+#### *function* removeGlobalConstraint
 
 *Execution cost: **No bound available.***
 
@@ -167,7 +167,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* getSchemeParameters
+#### *function* getSchemeParameters
 
 *Execution cost: **No bound available.***
 
@@ -181,7 +181,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* globalConstraintsCount
+#### *function* globalConstraintsCount
 
 *Execution cost: **No bound available.***
 
@@ -194,7 +194,7 @@
 1. **unnamed** *of type uint256*
 
 
-### *function* sendEther
+#### *function* sendEther
 
 *Execution cost: **No bound available.***
 
@@ -209,7 +209,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* isSchemeRegistered
+#### *function* isSchemeRegistered
 
 *Execution cost: **No bound available.***
 
@@ -223,7 +223,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* registerScheme
+#### *function* registerScheme
 
 *Execution cost: **No bound available.***
 
@@ -239,7 +239,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenTransferFrom
+#### *function* externalTokenTransferFrom
 
 *Execution cost: **No bound available.***
 
@@ -256,7 +256,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenTransfer
+#### *function* externalTokenTransfer
 
 *Execution cost: **No bound available.***
 
@@ -272,7 +272,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenIncreaseApproval
+#### *function* externalTokenIncreaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -288,7 +288,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenDecreaseApproval
+#### *function* externalTokenDecreaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -304,7 +304,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* addGlobalConstraint
+#### *function* addGlobalConstraint
 
 *Execution cost: **No bound available.***
 
