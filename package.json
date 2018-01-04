@@ -20,7 +20,8 @@
     "solium": "solium --dir ./contracts/",
     "truffle": "truffle",
     "docs:build": "node docs/gen/build.js",
-    "docs:serve": "node ./node_modules/docsify-cli/bin/docsify serve ./docs"
+    "docs:serve": "node ./node_modules/docsify-cli/bin/docsify serve ./docs",
+    "build": "rimraf build && truffle compile"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
