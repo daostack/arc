@@ -3,7 +3,7 @@ dist: trusty
 language: node_js
 
 node_js:
-  - "7.10.0"
+  - "9.3.0"
 
 before_install:
   - sudo apt-get update -qq
@@ -16,7 +16,6 @@ before_install:
 install:
   - yarn
   - rm -rf build/ # remove any remaining artifacts from a previous build
-  - nohup yarn ganache &
   - truffle version
 
 script:
