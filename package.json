@@ -21,7 +21,6 @@
     "build": "rimraf build && truffle compile"
   },
   "devDependencies": {
-    "@types/bignumber.js": "^4.0.3",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.1.2",
     "babel-plugin-syntax-async-functions": "^6.13.0",
@@ -29,7 +28,6 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-register": "^6.26.0",
     "bignumber.js": "^5.0.0",
-    "bip39": "^2.4.0",
     "default-options": "^1.0.0",
     "eslint": "^4.14.0",
     "eslint-config-defaults": "^9.0.0",
@@ -39,7 +37,6 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-react": "^7.5.1",
     "eslint-plugin-standard": "^3.0.1",
-    "ethers": "^2.1.3",
     "ganache-cli": "^6.0.3",
     "pm2": "^2.9.1",
     "promisify": "^0.0.3",
