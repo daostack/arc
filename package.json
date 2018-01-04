@@ -7,12 +7,12 @@
     "docs/",
     "build/contracts/",
     "migrations/",
-    "truffle.js"
+    "test/",
+    "truffle.js",
+    "tsconfig.json"
   ],
   "scripts": {
-    "test": "truffle test",
-    "ganache":
-      "ganache-cli -l 6500000 --account=\"0x0191ecbd1b150b8a3c27c27010ba51b45521689611e669109e034fd66ae69621,9999999999999999999999999999999999999999999\" --account=\"0x00f360233e89c65970a41d4a85990ec6669526b2230e867c352130151453180d,9999999999999999999999999999999999999999999\" --account=\"0x987a26abca7432016104ce2f24ce639340e25afe06ac69f68791399e7a5d1028,9999999999999999999999999999999999999999999\" --account=\"0x89af34b1b7347834048b99423dad174a14bf14540d720d72c16ae92e94b987cb,9999999999999999999999999999999999999999999\" --account=\"0xc867be647eb2bc51e4c0d61066859875cf3634fe949b6f5f85c69ab90e485b37,9999999999999999999999999999999999999999999\" --account=\"0xefabcc2377dee5e51b5a9e65a3854aec85fbbec3cb584d8ad4f9679869fb33c6,9999999999999999999999999999999999999999999\"",
+    "test": "./node_modules/.bin/run-with-testrpc  'truffle test'",
     "start": "pm2 start truffle -- serve",
     "lint": "eslint .",
     "lint --fix": "eslint --fix .",
@@ -45,6 +45,7 @@
     "promisify": "^0.0.3",
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
+    "run-with-testrpc": "^0.3.0",
     "solc": "^0.4.19",
     "solc-cli": "^0.3.0",
     "solium": "^1.1.0",
