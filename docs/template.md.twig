@@ -1,0 +1,114 @@
+{% macro showParams (params, paramsSeq) %}
+{%  if paramsSeq | length  %}
+|#  |Param|Type|TypeHint|Description|
+|---|-----|----|--------|-----------|
+{%  for pos,paramName in paramsSeq %}
+{%  set param = params[paramName] %}
+|{{ pos }}|{{ paramName }}|{{ param.type }}|{{ param.typeHint }}|{{ param.description }}|
+{%  endfor %}
+{% else %}
+empty list
+{%  endif %}
+{% endmacro %}
+
+
+
+{% macro inputParams (func, title) %}
+##### {{ title }}
+
+{{ _self.showParams (func.params, func.paramsSeq) }}
+{% endmacro %}
+
+
+{% macro returnParams (func) %}
+##### Returns
+
+{{ _self.showParams (func.returns, func.returnsSeq) }}
+{% endmacro %}
+
+
+
+{% macro header (block) %}
+#### {{ block.name }}
+
+{{ block.title != block.name ? block.title : ''}}
+{{ block.description }}
+{% endmacro %}
+
+
+
+{% import _self as doc %}
+
+
+# {{ contract.name  }}
+
+### {{  contract.title }}
+
+{{ contract.description}}
+
+{%  if functions or  constantFunctions %}
+## Functions
+
+
+{% if constantFunctions  %}
+
+### Constant functions
+
+{% for func in constantFunctions  %}
+{{  doc.header (func) }}
+{{  doc.inputParams (func, 'Inputs') }}
+{{  doc.returnParams (func) }}
+{% endfor %}
+
+{%  endif  %}
+
+
+{% if functions  %}
+
+### State changing functions
+
+{% for func in functions  %}
+{{  doc.header (func) }}
+{{  doc.inputParams (func, 'Inputs') }}
+{% endfor %}
+
+{%  endif  %}
+{%  endif %}
+
+
+
+{% if events  %}
+### Events
+
+{% for event in events  %}
+{{  doc.header (event) }}
+{{  doc.inputParams (event, 'Params') }}
+{% endfor %}
+{%  endif  %}
+
+
+
+{% if enums  %}
+### Enums
+
+{% for enum in enums  %}
+{{  doc.header (enum) }}
+|#  |Member|Description|
+|---|------|-----------|
+{%  for pos, member in enum.members %}
+|{{ pos }}|{{ member }}|{{ enum.params[member].description }}|
+{%  endfor %}
+
+{%  endfor %}
+{%  endif  %}
+
+
+
+{% if structs  %}
+### Structs
+
+{% for struct in structs  %}
+{{  doc.header (struct) }}
+{{  doc.inputParams (struct, 'Params') }}
+{%  endfor %}
+{%  endif  %}
