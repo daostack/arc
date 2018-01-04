@@ -18,3 +18,8 @@ An automatic build process generates `docs/ref/*.md` from files under `contracts
 ### Commands:
 - `npm run docs:build` - builds the the reference docs from `contracts/**.sol`.
 - `npm run docs:serce` - view the docs locally on your machine, on the url: http://localhost:3000
+
+### Further work:
+1. Automatically generate links to those pages on the homepage.
+2. Integrate with travis.
+4. Actually writing some docs.
