@@ -2,7 +2,7 @@ var shell = require('shelljs');
 var path = require('path');
 
 // This is a simple build script that turns the 
-// .sol files in /contracts into .md files in /docs
+// .sol files in /contracts into .md files under /docs/ref
 shell.mkdir('./docs/ref');
 shell.ls('./contracts/*/*.sol').forEach(function (file) {
     var newname = './docs/ref/' + path.basename(file).replace('.sol','.md');
