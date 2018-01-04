@@ -21,6 +21,7 @@ An automatic build process generates `docs/ref/*.md` from files under `contracts
 - `npm run docs:serce` - view the docs locally on your machine, on the url: http://localhost:3000
 
 ### Further work:
+1. Generate a directory tree instead of a flat list
 2. Integrate with travis.
 3. Work on the templates.
 4. Actually writing some docs.
