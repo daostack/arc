@@ -14,7 +14,7 @@ An automatic build process generates `docs/ref/*.md` from files under `contracts
 ### We use:
 - [docsify](https://docsify.js.org) as our static site engine. It pulls `.md` files from under `docs/` and makes them look great.
 - [twigjs](https://github.com/twigjs/twig.js/wiki) as a templating engine (templates can be found at `docs/gen/*.twig`).
-- [solidity-structure](https://www.npmjs.com/package/solidity-structure) to get parsed info out of `.sol` files.
+- [solparse](https://www.npmjs.com/package/solparse)(to be compatible with `solium`) to get parsed info out of `.sol` files. 
 
 ### Commands:
 - `npm run docs:build` - builds the the reference docs from `contracts/*/*.sol`.
