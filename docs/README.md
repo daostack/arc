@@ -8,7 +8,7 @@
 # About the docs
 
 All documentation lives in `docs` and is served via github pages.
-An automatic build process generates `docs/ref/*.md` files under `contracts/**.sol` as a reference documentation
+An automatic build process generates `docs/ref/*.md` from files under `contracts/**.sol` as a reference documentation
 
 ### We use:
 - [docsify](https://docsify.js.org) as our static site engine. It pulls `.md` files from under `docs/` and makes them look great.
