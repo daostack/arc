@@ -12,7 +12,7 @@
     "tsconfig.json"
   ],
   "scripts": {
-    "test": "./node_modules/.bin/run-with-testrpc  'truffle test'",
+    "test": "./node_modules/.bin/run-with-testrpc --testrpc-cmd ganache-cli --gasLimit 6500000 'truffle compile && truffle migrate && truffle test'",
     "start": "pm2 start truffle -- serve",
     "lint": "eslint .",
     "lint --fix": "eslint --fix .",
