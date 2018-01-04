@@ -1,781 +1,217 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# AbsoluteVote
-
-### AbsoluteVote
-
+# *contract* AbsoluteVote is  
 
 
 
 ## Functions
 
 
+###  setParameters
 
+*Returns:*
 
-### Constant functions
+ 1. unnamed param *of type bytes32*
 
 
+*Params:*
 
-#### getNumberOfChoices
+ 1. **_reputationSystem** *of type Reputation*
 
-getNumberOfChoices returns the number of choices possible in this proposal
+ 2. **_precReq** *of type uint*
 
+ 3. **_allowOwner** *of type bool*
 
 
-##### Inputs
 
 
+###  getParametersHash
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+*Returns:*
 
+ 1. unnamed param *of type bytes32*
 
-|0|_proposalId|bytes32||the ID of the proposal|
 
+*Params:*
 
+ 1. **_reputationSystem** *of type Reputation*
 
+ 2. **_precReq** *of type uint*
 
+ 3. **_allowOwner** *of type bool*
 
-##### Returns
 
 
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+###  propose
 
+*Returns:*
 
-|0|param0|uint|||
+ 1. unnamed param *of type bytes32*
 
 
+*Params:*
 
+ 1. **_numOfChoices** *of type uint*
 
+ 2. **_paramsHash** *of type bytes32*
 
+ 3. **_avatar** *of type address*
 
-#### isVotable
+ 4. **_executable** *of type ExecutableInterface*
 
-isVotable check if the proposal is votable
 
 
 
-##### Inputs
+###  cancelProposal
 
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
 
+*Params:*
 
-|0|_proposalId|bytes32||the ID of the proposal|
+ 1. **_proposalId** *of type bytes32*
 
 
 
 
+###  vote
 
-##### Returns
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
-|0|param0|bool|||
+ 2. **_vote** *of type uint*
 
 
 
 
+###  ownerVote
 
+*Returns:*
 
-#### parameters
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
+ 2. **_vote** *of type uint*
 
-##### Inputs
+ 3. **_voter** *of type address*
 
 
 
-empty list
 
+###  voteWithSpecifiedAmounts
 
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
-##### Returns
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+ 2. **_vote** *of type uint*
 
+ 3. **_rep** *of type uint*
 
-|0|return0|[object Object]||parameters|
+ 4. unnamed param *of type uint*
 
 
 
 
+###  cancelVote
 
+*Returns:*
 
-#### proposals
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
 
 
-##### Inputs
 
+###  execute
 
+*Returns:*
 
-empty list
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
-##### Returns
 
 
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+### *constant*  getNumberOfChoices
 
+*Returns:*
 
-|0|return0|[object Object]||proposals|
+ 1. unnamed param *of type uint*
 
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
 
 
-#### voteInfo
 
-voteInfo returns the vote and the amount of reputation of the user committed to this proposal
-uint reputation - amount of reputation committed by _voter to _proposalId
+### *constant*  voteInfo
 
+*Returns:*
 
-##### Inputs
+ 1. unnamed param *of type uint*
 
+ 2. unnamed param *of type uint*
 
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
-|0|_proposalId|bytes32||the ID of the proposal|
+ 2. **_voter** *of type address*
 
 
-|1|_voter|address||the address of the voter|
 
 
+### *constant*  votesStatus
 
+*Returns:*
 
+ 1. **votes** *of type uint*
 
-##### Returns
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
 
 
-|0|param0|uint|||
 
+### *constant*  isVotable
 
-|1|param1|uint|||
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
-
-
-#### votesStatus
-
-votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32||the ID of the proposal|
-
-
-
-
-
-##### Returns
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|votes|uint||array of votes for each choice|
-
-
-
-
-
-
-
-
-
-
-
-### State changing functions
-
-
-
-#### cancelProposal
-
-Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32||the proposal ID|
-
-
-
-
-
-
-#### cancelVote
-
-Cancel the vote of the msg.sender: subtract the reputation amount from the votes
-and delete the voter from the proposal struct
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32||id of the proposal|
-
-
-
-
-
-
-#### deleteProposal
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-
-
-
-
-#### execute
-
-execute check if the proposal has been decided, and if so, execute the proposal
-false - otherwise.
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32||the id of the proposal|
-
-
-
-
-
-
-#### getParametersHash
-
-hashParameters returns a hash of the given parameters
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_reputationSystem|Reputation|||
-
-
-|1|_precReq|uint|||
-
-
-|2|_allowOwner|bool|||
-
-
-
-
-
-
-#### internalVote
-
-Vote for a proposal, if the voter already voted, cancel the last vote and set a new one instead
-throws if proposal is not open or if it has been executedNB: executes the proposal if a decision has been reached
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32||id of the proposal|
-
-
-|1|_voter|address||used in case the vote is cast for someone else|
-
-
-|2|_vote|uint||a value between 0 to and the proposal's number of choices.|
-
-
-|3|_rep|uint|||
-
-
-
-
-
-
-#### ownerVote
-
-voting function with owner functionality (can vote on behalf of someone else)
-false - otherwise.
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32||id of the proposal|
-
-
-|1|_vote|uint||a value between 0 to and the proposal number of choices.|
-
-
-|2|_voter|address||will be voted with that voter's address|
-
-
-
-
-
-
-#### propose
-
-register a new proposal with the given parameters. Every proposal has a unique ID which is being
-generated by calculating keccak256 of a incremented counter.TODO: Maybe we need to check the 0 < precReq <= 100 ??
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_numOfChoices|uint|||
-
-
-|1|_paramsHash|bytes32||defined the parameters of the voting machine used for this proposal|
-
-
-|2|_avatar|address||an address to be sent as the payload to the _executable contract.|
-
-
-|3|_executable|ExecutableInterface||This contract will be executed when vote is over.|
-
-
-
-
-
-
-#### setParameters
-
-hash the parameters, save them if necessary, and return the hash value
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_reputationSystem|Reputation|||
-
-
-|1|_precReq|uint|||
-
-
-|2|_allowOwner|bool|||
-
-
-
-
-
-
-#### vote
-
-voting function
-false - otherwise.
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32||id of the proposal|
-
-
-|1|_vote|uint||a value between 0 to and the proposal number of choices.|
-
-
-
-
-
-
-#### voteWithSpecifiedAmounts
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_vote|uint|||
-
-
-|2|_rep|uint|||
-
-
-|3||uint|||
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-#### LogNewProposal
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_numOfChoices|uint|||
-
-
-|2|_proposer|address|||
-
-
-|3|_paramsHash|bytes32|||
-
-
-
-
-
-
-#### LogCancelProposal
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-
-
-
-
-#### LogExecuteProposal
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_decision|uint|||
-
-
-
-
-
-
-#### LogVoteProposal
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_voter|address|||
-
-
-|2|_vote|uint|||
-
-
-|3|_reputation|uint|||
-
-
-|4|_isOwnerVote|bool|||
-
-
-
-
-
-
-#### LogCancelVoting
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_voter|address|||
-
-
-
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
-
-
-
-#### Parameters
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|reputationSystem|Reputation|||
-
-
-|1|precReq|uint|||
-
-
-|2|allowOwner|bool|||
-
-
-
-
-
-
-#### Voter
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|vote|uint|||
-
-
-|1|reputation|uint|||
-
-
-
-
-
-
-#### Proposal
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|owner|address|||
-
-
-|1|avatar|address|||
-
-
-|2|numOfChoices|uint|||
-
-
-|3|executable|ExecutableInterface|||
-
-
-|4|paramsHash|bytes32|||
-
-
-|5|totalVotes|uint|||
-
-
-|6|votes|[object Object]|||
-
-
-|7|voters|[object Object]|||
-
-
-|8|open|bool|||
-
-
+ 1. **_proposalId** *of type bytes32*
 
 
 

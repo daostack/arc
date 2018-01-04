@@ -1,89 +1,21 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# QuorumVote
-
-### QuorumVote
-
+# *contract* QuorumVote is   
 
 
 
 ## Functions
 
 
+###  execute
+
+*Returns:*
+
+ 1. unnamed param *of type bool*
 
 
-### Constant functions
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
-
-
-
-
-
-
-### State changing functions
-
-
-
-#### execute
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
 
 

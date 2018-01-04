@@ -1,95 +1,25 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ExecutableTest
-
-### ExecutableTest
-
+# *contract* ExecutableTest is   
 
 
 
 ## Functions
 
 
+###  execute
+
+*Returns:*
+
+ 1. unnamed param *of type bool*
 
 
-### Constant functions
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
+ 2. **_avatar** *of type address*
 
+ 3. **_param** *of type int*
 
-
-
-
-
-### State changing functions
-
-
-
-#### execute
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_avatar|address|||
-
-
-|2|_param|int|||
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
 
 

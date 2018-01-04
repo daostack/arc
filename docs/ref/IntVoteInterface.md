@@ -1,312 +1,149 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# IntVoteInterface
-
-### IntVoteInterface
-
+# *contract* IntVoteInterface 
 
 
 
 ## Functions
 
 
+###  propose
 
+*Returns:*
 
-### Constant functions
+ 1. unnamed param *of type bytes32*
 
 
+*Params:*
 
-#### getNumberOfChoices
+ 1. **_numOfChoices** *of type uint*
 
+ 2. **_proposalParameters** *of type bytes32*
 
+ 3. **_avatar** *of type address*
 
+ 4. **_executable** *of type ExecutableInterface*
 
 
-##### Inputs
 
 
+###  cancelProposal
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
-|0|_proposalId|bytes32|||
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
 
 
-##### Returns
 
+###  ownerVote
 
+*Returns:*
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+ 1. unnamed param *of type bool*
 
 
-|0|param0|uint|||
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
+ 2. **_vote** *of type uint*
 
+ 3. **_voter** *of type address*
 
 
 
-#### isVotable
 
+###  vote
 
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
 
-##### Inputs
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
+ 2. **_vote** *of type uint*
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
 
 
-|0|_proposalId|bytes32|||
 
+###  voteWithSpecifiedAmounts
 
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
 
-##### Returns
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
+ 2. **_vote** *of type uint*
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+ 3. **_rep** *of type uint*
 
+ 4. **_token** *of type uint*
 
-|0|param0|bool|||
 
 
 
+###  cancelVote
 
+*Returns:*
 
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
 
 
 
-### State changing functions
+###  execute
 
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
-#### cancelProposal
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
 
 
-##### Inputs
 
+### *constant*  getNumberOfChoices
 
+*Returns:*
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+ 1. unnamed param *of type uint*
 
 
-|0|_proposalId|bytes32|||
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
 
 
 
+### *constant*  isVotable
 
-#### cancelVote
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. **_proposalId** *of type bytes32*
 
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-
-
-
-
-#### execute
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-
-
-
-
-#### ownerVote
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_vote|uint|||
-
-
-|2|_voter|address|||
-
-
-
-
-
-
-#### propose
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_numOfChoices|uint|||
-
-
-|1|_proposalParameters|bytes32|||
-
-
-|2|_avatar|address|||
-
-
-|3|_executable|ExecutableInterface|||
-
-
-
-
-
-
-#### vote
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_vote|uint|||
-
-
-
-
-
-
-#### voteWithSpecifiedAmounts
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_vote|uint|||
-
-
-|2|_rep|uint|||
-
-
-|3|_token|uint|||
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
 
 

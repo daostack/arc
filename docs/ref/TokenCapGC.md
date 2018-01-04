@@ -1,224 +1,75 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# TokenCapGC
-
-### A simple global contraint to cap the number of tokens.
-
+# *contract* TokenCapGC 
 
 
 
 ## Functions
 
 
+###  setParameters
 
+*Returns:*
 
-### Constant functions
+ 1. unnamed param *of type bytes32*
 
 
+*Params:*
 
-#### params
+ 1. **_token** *of type StandardToken*
 
+ 2. **_cap** *of type uint*
 
 
 
 
-##### Inputs
+###  getParametersHash
 
+*Returns:*
 
+ 1. unnamed param *of type bytes32*
 
-empty list
 
+*Params:*
 
+ 1. **_token** *of type StandardToken*
 
+ 2. **_cap** *of type uint*
 
-##### Returns
 
 
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
+###  pre
 
+*Returns:*
 
-|0|return0|[object Object]||params|
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. unnamed param *of type address*
 
+ 2. unnamed param *of type bytes32*
 
+ 3. unnamed param *of type bytes*
 
 
 
 
+###  post
 
+*Returns:*
 
-### State changing functions
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
-#### getParametersHash
+ 1. unnamed param *of type address*
 
-calculate and returns the hash of the given parameters
+ 2. **_paramsHash** *of type bytes32*
 
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_token|StandardToken|||
-
-
-|1|_cap|uint||the cap to check the total supply against.|
-
-
-
-
-
-
-#### post
-
-check the total supply cap.
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0||bytes|||
-
-
-|1|_paramsHash|bytes32|||
-
-
-|2||bytes|||
-
-
-
-
-
-
-#### pre
-
-check the constraint after the action.
-This global contraint only checks the state after the action, so here we just return true:
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0||bytes|||
-
-
-|1||bytes|||
-
-
-|2||bytes|||
-
-
-
-
-
-
-#### setParameters
-
-adding a new set of parametrs
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_token|StandardToken|||
-
-
-|1|_cap|uint||the cap to check the total supply against.|
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
-
-
-
-#### Parameters
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|token|StandardToken|||
-
-
-|1|cap|uint|||
-
-
+ 3. unnamed param *of type bytes*
 
 
 

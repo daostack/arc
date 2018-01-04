@@ -1,24 +1,16 @@
 
+# *contract* SchemeRegistrar is  
 
 
+## Constructor
 
+*Params:*
 
+ 1. **_nativeToken** *of type StandardToken*
 
+ 2. **_fee** *of type uint*
 
-
-
-
-
-
-
-
-
-
-
-
-# SchemeRegistrar
-
-### The SchemeRegistrar is used for registering and unregistering schemes at organizations
+ 3. **_beneficiary** *of type address*
 
 
 
@@ -26,436 +18,80 @@
 ## Functions
 
 
+###  setParameters
 
+*Returns:*
 
-### Constant functions
+ 1. unnamed param *of type bytes32*
 
 
+*Params:*
 
-#### organizationsProposals
+ 1. **_voteRegisterParams** *of type bytes32*
 
+ 2. **_voteRemoveParams** *of type bytes32*
 
+ 3. **_intVote** *of type IntVoteInterface*
 
 
 
-##### Inputs
 
+###  getParametersHash
 
+*Returns:*
 
-empty list
+ 1. unnamed param *of type bytes32*
 
 
+*Params:*
 
+ 1. **_voteRegisterParams** *of type bytes32*
 
-##### Returns
+ 2. **_voteRemoveParams** *of type bytes32*
 
+ 3. **_intVote** *of type IntVoteInterface*
 
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
 
 
-|0|return0|[object Object]||organizationsProposals|
+###  proposeScheme
 
+*Returns:*
 
+ 1. unnamed param *of type bytes32*
 
 
+*Params:*
 
+ 1. **_avatar** *of type Avatar*
 
-#### parameters
+ 2. **_scheme** *of type address*
 
+ 3. **_parametersHash** *of type bytes32*
 
+ 4. **_isRegistering** *of type bool*
 
+ 5. **_tokenFee** *of type StandardToken*
 
+ 6. **_fee** *of type uint*
 
-##### Inputs
+ 7. **_autoRegisterOrganization** *of type bool*
 
 
 
-empty list
 
+###  proposeToRemoveScheme
 
+*Returns:*
 
+ 1. unnamed param *of type bytes32*
 
-##### Returns
 
+*Params:*
 
+ 1. **_avatar** *of type Avatar*
 
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|return0|[object Object]||parameters|
-
-
-
-
-
-
-
-
-
-
-
-### State changing functions
-
-
-
-#### execute
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_proposalId|bytes32|||
-
-
-|1|_avatar|address|||
-
-
-|2|_param|int|||
-
-
-
-
-
-
-#### getParametersHash
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_voteRegisterParams|bytes32|||
-
-
-|1|_voteRemoveParams|bytes32|||
-
-
-|2|_intVote|IntVoteInterface|||
-
-
-
-
-
-
-#### proposeScheme
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_avatar|Avatar|||
-
-
-|1|_scheme|address|||
-
-
-|2|_parametersHash|bytes32|||
-
-
-|3|_isRegistering|bool|||
-
-
-|4|_tokenFee|StandardToken|||
-
-
-|5|_fee|uint|||
-
-
-|6|_autoRegisterOrganization|bool|||
-
-
-
-
-
-
-#### proposeToRemoveScheme
-
-propose to remove a scheme for a controller
-NB: not only registers the proposal, but also votes for it
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_avatar|Avatar||the address of the controller from which we want to remove a scheme|
-
-
-|1|_scheme|address||the address of the scheme we want to remove|
-
-
-
-
-
-
-#### setParameters
-
-hash the parameters, save them if necessary, and return the hash value
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_voteRegisterParams|bytes32|||
-
-
-|1|_voteRemoveParams|bytes32|||
-
-
-|2|_intVote|IntVoteInterface|||
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-#### LogNewSchemeProposal
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_avatar|address|||
-
-
-|1|_proposalId|bytes32|||
-
-
-|2|_intVoteInterface|address|||
-
-
-|3|_scheme|address|||
-
-
-|4|_parametersHash|bytes32|||
-
-
-|5|_isRegistering|bool|||
-
-
-|6|_tokenFee|StandardToken|||
-
-
-|7|_fee|uint|||
-
-
-|8|_autoRegisterOrganization|bool|||
-
-
-
-
-
-
-#### LogRemoveSchemeProposal
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_avatar|address|||
-
-
-|1|_proposalId|bytes32|||
-
-
-|2|_intVoteInterface|address|||
-
-
-|3|_scheme|address|||
-
-
-
-
-
-
-#### LogProposalExecuted
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_avatar|address|||
-
-
-|1|_proposalId|bytes32|||
-
-
-
-
-
-
-#### LogProposalDeleted
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_avatar|address|||
-
-
-|1|_proposalId|bytes32|||
-
-
-
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
-
-
-
-#### SchemeProposal
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|scheme|address|||
-
-
-|1|parametersHash|bytes32|||
-
-
-|2|proposalType|uint|||
-
-
-|3|isRegistering|bool|||
-
-
-|4|tokenFee|StandardToken|||
-
-
-|5|fee|uint|||
-
-
-|6|autoRegisterOrganization|bool|||
-
-
-
-
-
-
-#### Parameters
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|voteRegisterParams|bytes32|||
-
-
-|1|voteRemoveParams|bytes32|||
-
-
-|2|intVote|IntVoteInterface|||
-
-
+ 2. **_scheme** *of type address*
 
 
 

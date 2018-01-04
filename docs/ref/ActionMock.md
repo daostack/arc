@@ -1,137 +1,37 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ActionMock
-
-### ActionMock
-
+# *contract* ActionMock is  
 
 
 
 ## Functions
 
 
+###  action
 
+*Returns:*
 
-### Constant functions
+ 1. unnamed param *of type bool*
 
 
+*Params:*
 
+ 1. **params** *of type bytes32*
 
 
 
 
+###  genericAction
 
-### State changing functions
+*Returns:*
 
+ 1. unnamed param *of type bool*
 
 
-#### action
+*Params:*
 
+ 1. **avatar** *of type Avatar*
 
+ 2. **params** *of type bytes32*
 
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|params|bytes32|||
-
-
-
-
-
-
-#### genericAction
-
-
-
-
-
-##### Inputs
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|avatar|Avatar|||
-
-
-|1|params|bytes32|||
-
-
-
-
-
-
-
-
-
-
-
-
-### Events
-
-
-
-#### Action
-
-
-
-
-
-##### Params
-
-
-
-|#  |Param|Type|TypeHint|Description|
-|---|-----|----|--------|-----------|
-
-
-|0|_sender|address|||
-
-
-|1|_param|bytes32|||
-
-
-
-
-
-
-
-
-
-
-### Enums
-
-
-
-
-
-
-
-### Structs
 
 
