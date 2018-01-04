@@ -38,10 +38,8 @@ const cb =
     (file, err,output)=>{
         if(err){
             shell.echo(format('Could not generate doc for `{0}`: {1}',file,err));
-            //shell.rm('-rf','./docs/ref');
-            //shell.exit(1);
-            if(files.length)
-                generate(files.pop(),cb);
+            shell.rm('-rf','./docs/ref');
+            shell.exit(1);
         }
         else{
             shell.echo(format('Generating doc for file `{0}` ...', file));
