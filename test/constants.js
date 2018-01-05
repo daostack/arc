@@ -1,0 +1,1 @@
+export const GENESIS_SCHEME_GAS_LIMIT = 6500000;

@@ -1,7 +1,5 @@
 const helpers = require('./helpers');
-
-
-
+const constants = require('./constants');
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const GenesisScheme = artifacts.require("./GenesisScheme.sol");
@@ -27,7 +25,7 @@ const setupSimpleICOParams = async function(accounts,
 var genesisScheme;
 const setupOrganization = async function (genesisSchemeOwner,founderToken,founderReputation) {
   var org = new helpers.Organization();
-  genesisScheme = await GenesisScheme.deployed();
+  genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
   var tx = await genesisScheme.forgeOrg("testOrg","TEST","TST",[genesisSchemeOwner],[founderToken],[founderReputation]);
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");

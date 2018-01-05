@@ -1,4 +1,5 @@
 import * as helpers from './helpers';
+const constants = require('./constants');
 const ContributionReward = artifacts.require("./ContributionReward.sol");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const GenesisScheme = artifacts.require("./GenesisScheme.sol");
@@ -35,7 +36,7 @@ const setup = async function (accounts,orgNativeTokenFee=0,schemeNativeTokenFee=
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.contributionReward = await ContributionReward.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
-   testSetup.genesisScheme = await GenesisScheme.deployed();
+   testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.contributionRewardParams= await setupContributionRewardParams(testSetup.contributionReward,orgNativeTokenFee,schemeNativeTokenFee);
    //give some tokens to organization avatar so it could register the universal scheme.
