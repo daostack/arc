@@ -1,2 +1,3 @@
-var contracts = require('./contract_deployments.json');
-module.exports = contracts;
+export function requireContract(contractName) {
+  return require(__dirname + `/build/contracts/${contractName}.json`)
+}
