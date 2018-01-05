@@ -1,0 +1,251 @@
+{
+  "contractName": "ExecutableInterface",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_proposalId",
+          "type": "bytes32"
+        },
+        {
+          "name": "_avatar",
+          "type": "address"
+        },
+        {
+          "name": "_param",
+          "type": "int256"
+        }
+      ],
+      "name": "execute",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.4.18;\n\nimport \"../controller/Controller.sol\";\n\n\ncontract ExecutableInterface {\n    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool);\n}\n",
+  "sourcePath": "/Users/tibet/Dev/Emergence/daostack/contracts/universalSchemes/ExecutableInterface.sol",
+  "ast": {
+    "attributes": {
+      "absolutePath": "/Users/tibet/Dev/Emergence/daostack/contracts/universalSchemes/ExecutableInterface.sol",
+      "exportedSymbols": {
+        "ExecutableInterface": [
+          5180
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.4",
+            ".18"
+          ]
+        },
+        "id": 5167,
+        "name": "PragmaDirective",
+        "src": "0:24:17"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 4158,
+          "absolutePath": "/Users/tibet/Dev/Emergence/daostack/contracts/controller/Controller.sol",
+          "file": "../controller/Controller.sol",
+          "scope": 5181,
+          "symbolAliases": [
+            null
+          ],
+          "unitAlias": ""
+        },
+        "id": 5168,
+        "name": "ImportDirective",
+        "src": "26:38:17"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            5180
+          ],
+          "name": "ExecutableInterface",
+          "scope": 5181
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "constant": false,
+              "implemented": false,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "execute",
+              "payable": false,
+              "scope": 5180,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_proposalId",
+                      "scope": 5179,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bytes32",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bytes32",
+                          "type": "bytes32"
+                        },
+                        "id": 5169,
+                        "name": "ElementaryTypeName",
+                        "src": "119:7:17"
+                      }
+                    ],
+                    "id": 5170,
+                    "name": "VariableDeclaration",
+                    "src": "119:19:17"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_avatar",
+                      "scope": 5179,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 5171,
+                        "name": "ElementaryTypeName",
+                        "src": "140:7:17"
+                      }
+                    ],
+                    "id": 5172,
+                    "name": "VariableDeclaration",
+                    "src": "140:15:17"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_param",
+                      "scope": 5179,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "int256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "int",
+                          "type": "int256"
+                        },
+                        "id": 5173,
+                        "name": "ElementaryTypeName",
+                        "src": "157:3:17"
+                      }
+                    ],
+                    "id": 5174,
+                    "name": "VariableDeclaration",
+                    "src": "157:10:17"
+                  }
+                ],
+                "id": 5175,
+                "name": "ParameterList",
+                "src": "118:50:17"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "",
+                      "scope": 5179,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bool",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bool",
+                          "type": "bool"
+                        },
+                        "id": 5176,
+                        "name": "ElementaryTypeName",
+                        "src": "184:4:17"
+                      }
+                    ],
+                    "id": 5177,
+                    "name": "VariableDeclaration",
+                    "src": "184:4:17"
+                  }
+                ],
+                "id": 5178,
+                "name": "ParameterList",
+                "src": "183:6:17"
+              }
+            ],
+            "id": 5179,
+            "name": "FunctionDefinition",
+            "src": "102:88:17"
+          }
+        ],
+        "id": 5180,
+        "name": "ContractDefinition",
+        "src": "67:125:17"
+      }
+    ],
+    "id": 5181,
+    "name": "SourceUnit",
+    "src": "0:193:17"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.18+commit.9cf6e910.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "1.0.1",
+  "updatedAt": "2018-01-04T22:14:02.766Z"
+}

@@ -1,0 +1,483 @@
+{
+  "contractName": "Debug",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_msg",
+          "type": "address"
+        }
+      ],
+      "name": "LogAddress",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_msg",
+          "type": "int256"
+        }
+      ],
+      "name": "LogInt",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_msg",
+          "type": "string"
+        }
+      ],
+      "name": "LogString",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_msg",
+          "type": "uint256"
+        }
+      ],
+      "name": "LogUint",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_msg",
+          "type": "bytes"
+        }
+      ],
+      "name": "LogBytes",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_msg",
+          "type": "bytes32"
+        }
+      ],
+      "name": "LogBytes32",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_msg",
+          "type": "bool"
+        }
+      ],
+      "name": "LogBool",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a723058206c85ee98242d30da83814a851c71e530e9154d6e9a84cd4be2325cac26fcd77b0029",
+  "deployedBytecode": "0x6060604052600080fd00a165627a7a723058206c85ee98242d30da83814a851c71e530e9154d6e9a84cd4be2325cac26fcd77b0029",
+  "sourceMap": "186:244:12:-;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "186:244:12:-;;;;;",
+  "source": "pragma solidity ^0.4.18;\n\nimport \"zeppelin-solidity/contracts/mocks/StandardTokenMock.sol\";\n\n/*\n    A contract you can inherit from that has some useful Events to print statements.\n*/\n\n\ncontract Debug {\n    event LogAddress(address _msg);\n    event LogInt(int _msg);\n    event LogString(string _msg);\n    event LogUint(uint _msg);\n    event LogBytes(bytes _msg);\n    event LogBytes32(bytes32 _msg);\n    event LogBool(bool _msg);\n}\n",
+  "sourcePath": "/Users/tibet/Dev/Emergence/daostack/contracts/test/Debug.sol",
+  "ast": {
+    "attributes": {
+      "absolutePath": "/Users/tibet/Dev/Emergence/daostack/contracts/test/Debug.sol",
+      "exportedSymbols": {
+        "Debug": [
+          4580
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.4",
+            ".18"
+          ]
+        },
+        "id": 4550,
+        "name": "PragmaDirective",
+        "src": "0:24:12"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 9153,
+          "absolutePath": "zeppelin-solidity/contracts/mocks/StandardTokenMock.sol",
+          "file": "zeppelin-solidity/contracts/mocks/StandardTokenMock.sol",
+          "scope": 4581,
+          "symbolAliases": [
+            null
+          ],
+          "unitAlias": ""
+        },
+        "id": 4551,
+        "name": "ImportDirective",
+        "src": "26:65:12"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            4580
+          ],
+          "name": "Debug",
+          "scope": 4581
+        },
+        "children": [
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "LogAddress"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "name": "_msg",
+                      "scope": 4555,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 4552,
+                        "name": "ElementaryTypeName",
+                        "src": "224:7:12"
+                      }
+                    ],
+                    "id": 4553,
+                    "name": "VariableDeclaration",
+                    "src": "224:12:12"
+                  }
+                ],
+                "id": 4554,
+                "name": "ParameterList",
+                "src": "223:14:12"
+              }
+            ],
+            "id": 4555,
+            "name": "EventDefinition",
+            "src": "207:31:12"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "LogInt"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "name": "_msg",
+                      "scope": 4559,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "int256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "int",
+                          "type": "int256"
+                        },
+                        "id": 4556,
+                        "name": "ElementaryTypeName",
+                        "src": "256:3:12"
+                      }
+                    ],
+                    "id": 4557,
+                    "name": "VariableDeclaration",
+                    "src": "256:8:12"
+                  }
+                ],
+                "id": 4558,
+                "name": "ParameterList",
+                "src": "255:10:12"
+              }
+            ],
+            "id": 4559,
+            "name": "EventDefinition",
+            "src": "243:23:12"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "LogString"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "name": "_msg",
+                      "scope": 4563,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "string memory",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string storage pointer"
+                        },
+                        "id": 4560,
+                        "name": "ElementaryTypeName",
+                        "src": "287:6:12"
+                      }
+                    ],
+                    "id": 4561,
+                    "name": "VariableDeclaration",
+                    "src": "287:11:12"
+                  }
+                ],
+                "id": 4562,
+                "name": "ParameterList",
+                "src": "286:13:12"
+              }
+            ],
+            "id": 4563,
+            "name": "EventDefinition",
+            "src": "271:29:12"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "LogUint"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "name": "_msg",
+                      "scope": 4567,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint",
+                          "type": "uint256"
+                        },
+                        "id": 4564,
+                        "name": "ElementaryTypeName",
+                        "src": "319:4:12"
+                      }
+                    ],
+                    "id": 4565,
+                    "name": "VariableDeclaration",
+                    "src": "319:9:12"
+                  }
+                ],
+                "id": 4566,
+                "name": "ParameterList",
+                "src": "318:11:12"
+              }
+            ],
+            "id": 4567,
+            "name": "EventDefinition",
+            "src": "305:25:12"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "LogBytes"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "name": "_msg",
+                      "scope": 4571,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bytes memory",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bytes",
+                          "type": "bytes storage pointer"
+                        },
+                        "id": 4568,
+                        "name": "ElementaryTypeName",
+                        "src": "350:5:12"
+                      }
+                    ],
+                    "id": 4569,
+                    "name": "VariableDeclaration",
+                    "src": "350:10:12"
+                  }
+                ],
+                "id": 4570,
+                "name": "ParameterList",
+                "src": "349:12:12"
+              }
+            ],
+            "id": 4571,
+            "name": "EventDefinition",
+            "src": "335:27:12"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "LogBytes32"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "name": "_msg",
+                      "scope": 4575,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bytes32",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bytes32",
+                          "type": "bytes32"
+                        },
+                        "id": 4572,
+                        "name": "ElementaryTypeName",
+                        "src": "384:7:12"
+                      }
+                    ],
+                    "id": 4573,
+                    "name": "VariableDeclaration",
+                    "src": "384:12:12"
+                  }
+                ],
+                "id": 4574,
+                "name": "ParameterList",
+                "src": "383:14:12"
+              }
+            ],
+            "id": 4575,
+            "name": "EventDefinition",
+            "src": "367:31:12"
+          },
+          {
+            "attributes": {
+              "anonymous": false,
+              "name": "LogBool"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": false,
+                      "name": "_msg",
+                      "scope": 4579,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bool",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bool",
+                          "type": "bool"
+                        },
+                        "id": 4576,
+                        "name": "ElementaryTypeName",
+                        "src": "417:4:12"
+                      }
+                    ],
+                    "id": 4577,
+                    "name": "VariableDeclaration",
+                    "src": "417:9:12"
+                  }
+                ],
+                "id": 4578,
+                "name": "ParameterList",
+                "src": "416:11:12"
+              }
+            ],
+            "id": 4579,
+            "name": "EventDefinition",
+            "src": "403:25:12"
+          }
+        ],
+        "id": 4580,
+        "name": "ContractDefinition",
+        "src": "186:244:12"
+      }
+    ],
+    "id": 4581,
+    "name": "SourceUnit",
+    "src": "0:431:12"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.18+commit.9cf6e910.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "1.0.1",
+  "updatedAt": "2018-01-04T22:14:02.764Z"
+}

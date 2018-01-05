@@ -1,0 +1,613 @@
+{
+  "contractName": "UniversalSchemeMock",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "beneficiary",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_nativeToken",
+          "type": "address"
+        },
+        {
+          "name": "_fee",
+          "type": "uint256"
+        },
+        {
+          "name": "_beneficiary",
+          "type": "address"
+        },
+        {
+          "name": "_hashedParameters",
+          "type": "bytes32"
+        }
+      ],
+      "name": "updateParameters",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "organizations",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_avatar",
+          "type": "address"
+        }
+      ],
+      "name": "registerOrganization",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_avatar",
+          "type": "address"
+        }
+      ],
+      "name": "isRegistered",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "fee",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "nativeToken",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "hashedParameters",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_nativeToken",
+          "type": "address"
+        },
+        {
+          "name": "_fee",
+          "type": "uint256"
+        },
+        {
+          "name": "_beneficiary",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_avatar",
+          "type": "address"
+        }
+      ],
+      "name": "OrganizationRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "proposalId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "LogNewProposal",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x6060604052341561000f57600080fd5b60405160608061059d83398101604052808051919060200180519190602001805160008054600160a060020a03191633600160a060020a031617815590925061006b915084908490849064010000000061007381026102021704565b5050506100c6565b60005433600160a060020a0390811691161461008e57600080fd5b60018054600160a060020a0319908116600160a060020a03968716179091556002939093556003805490931691909316179055600455565b6104c8806100d56000396000f3006060604052600436106100a35763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166338af3eed81146100a85780634345a610146100d75780635a1f7406146101055780638da5cb5b1461013857806390be003c1461014b578063c3c5a5471461016a578063ddca3f4314610189578063e1758bd8146101ae578063f2fde38b146101c1578063f98e87ba146101e0575b600080fd5b34156100b357600080fd5b6100bb6101f3565b604051600160a060020a03909116815260200160405180910390f35b34156100e257600080fd5b610103600160a060020a036004358116906024359060443516606435610202565b005b341561011057600080fd5b610124600160a060020a0360043516610262565b604051901515815260200160405180910390f35b341561014357600080fd5b6100bb610277565b341561015657600080fd5b610103600160a060020a0360043516610286565b341561017557600080fd5b610124600160a060020a03600435166103c8565b341561019457600080fd5b61019c6103e6565b60405190815260200160405180910390f35b34156101b957600080fd5b6100bb6103ec565b34156101cc57600080fd5b610103600160a060020a03600435166103fb565b34156101eb57600080fd5b61019c610496565b600354600160a060020a031681565b60005433600160a060020a0390811691161461021d57600080fd5b6001805473ffffffffffffffffffffffffffffffffffffffff19908116600160a060020a03968716179091556002939093556003805490931691909316179055600455565b60056020526000908152604090205460ff1681565b600054600160a060020a031681565b60006002541180156102b15750600160a060020a03811660009081526005602052604090205460ff16155b1561036357600154600354600254600160a060020a03928316926323b872dd9285929116906000604051602001526040517c010000000000000000000000000000000000000000000000000000000063ffffffff8616028152600160a060020a0393841660048201529190921660248201526044810191909152606401602060405180830381600087803b151561034757600080fd5b6102c65a03f1151561035857600080fd5b505050604051805150505b600160a060020a03811660009081526005602052604090819020805460ff191660011790557f2178e9c576507a4c15d3deab489af3f699a3dedbff9a7ef27c43a017027710e590829051600160a060020a03909116815260200160405180910390a150565b600160a060020a031660009081526005602052604090205460ff1690565b60025481565b600154600160a060020a031681565b60005433600160a060020a0390811691161461041657600080fd5b600160a060020a038116151561042b57600080fd5b600054600160a060020a0380831691167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a36000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0392909216919091179055565b600454815600a165627a7a7230582008305e751494836394f84f9c73ab3f6687712c3f2399304c330372a280ef57640029",
+  "deployedBytecode": "0x6060604052600436106100a35763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166338af3eed81146100a85780634345a610146100d75780635a1f7406146101055780638da5cb5b1461013857806390be003c1461014b578063c3c5a5471461016a578063ddca3f4314610189578063e1758bd8146101ae578063f2fde38b146101c1578063f98e87ba146101e0575b600080fd5b34156100b357600080fd5b6100bb6101f3565b604051600160a060020a03909116815260200160405180910390f35b34156100e257600080fd5b610103600160a060020a036004358116906024359060443516606435610202565b005b341561011057600080fd5b610124600160a060020a0360043516610262565b604051901515815260200160405180910390f35b341561014357600080fd5b6100bb610277565b341561015657600080fd5b610103600160a060020a0360043516610286565b341561017557600080fd5b610124600160a060020a03600435166103c8565b341561019457600080fd5b61019c6103e6565b60405190815260200160405180910390f35b34156101b957600080fd5b6100bb6103ec565b34156101cc57600080fd5b610103600160a060020a03600435166103fb565b34156101eb57600080fd5b61019c610496565b600354600160a060020a031681565b60005433600160a060020a0390811691161461021d57600080fd5b6001805473ffffffffffffffffffffffffffffffffffffffff19908116600160a060020a03968716179091556002939093556003805490931691909316179055600455565b60056020526000908152604090205460ff1681565b600054600160a060020a031681565b60006002541180156102b15750600160a060020a03811660009081526005602052604090205460ff16155b1561036357600154600354600254600160a060020a03928316926323b872dd9285929116906000604051602001526040517c010000000000000000000000000000000000000000000000000000000063ffffffff8616028152600160a060020a0393841660048201529190921660248201526044810191909152606401602060405180830381600087803b151561034757600080fd5b6102c65a03f1151561035857600080fd5b505050604051805150505b600160a060020a03811660009081526005602052604090819020805460ff191660011790557f2178e9c576507a4c15d3deab489af3f699a3dedbff9a7ef27c43a017027710e590829051600160a060020a03909116815260200160405180910390a150565b600160a060020a031660009081526005602052604090205460ff1690565b60025481565b600154600160a060020a031681565b60005433600160a060020a0390811691161461041657600080fd5b600160a060020a038116151561042b57600080fd5b600054600160a060020a0380831691167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a36000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0392909216919091179055565b600454815600a165627a7a7230582008305e751494836394f84f9c73ab3f6687712c3f2399304c330372a280ef57640029",
+  "sourceMap": "78:233:15:-;;;133:176;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;501:5:31;:18;;-1:-1:-1;;;;;;501:18:31;509:10;-1:-1:-1;;;;;501:18:31;;;;133:176:15;;-1:-1:-1;240:62:15;;-1:-1:-1;257:12:15;;271:4;;133:176;;240:16;;;;;;:62;:::i;:::-;133:176;;;78:233;;1275:334:23;654:5:31;;640:10;-1:-1:-1;;;;;640:19:31;;;654:5;;640:19;632:28;;;;;;1474:11:23;:26;;-1:-1:-1;;;;;;1474:26:23;;;-1:-1:-1;;;;;1474:26:23;;;;;;;1510:3;:10;;;;1530:11;:26;;;;;;;;;;;;1566:16;:36;1275:334::o;78:233:15:-;;;;;;;",
+  "deployedSourceMap": "78:233:15:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;395:26:23;;;;;;;;;;;;;;;-1:-1:-1;;;;;395:26:23;;;;;;;;;;;;;;1275:334;;;;;;;;;;-1:-1:-1;;;;;1275:334:23;;;;;;;;;;;;;;;;;575:43;;;;;;;;;;-1:-1:-1;;;;;575:43:23;;;;;;;;;;;;;;;;;;;;;;238:20:31;;;;;;;;;;;;840:308:23;;;;;;;;;;-1:-1:-1;;;;;840:308:23;;;;;1154:115;;;;;;;;;;-1:-1:-1;;;;;1154:115:23;;;;;374:15;;;;;;;;;;;;;;;;;;;;;;;;;;;336:32;;;;;;;;;;;;834:169:31;;;;;;;;;;-1:-1:-1;;;;;834:169:31;;;;;427:31:23;;;;;;;;;;;;395:26;;;-1:-1:-1;;;;;395:26:23;;:::o;1275:334::-;654:5:31;;640:10;-1:-1:-1;;;;;640:19:31;;;654:5;;640:19;632:28;;;;;;1474:11:23;:26;;-1:-1:-1;;1474:26:23;;;-1:-1:-1;;;;;1474:26:23;;;;;;;1510:3;:10;;;;1530:11;:26;;;;;;;;;;;;1566:16;:36;1275:334::o;575:43::-;;;;;;;;;;;;;;;:::o;238:20:31:-;;;-1:-1:-1;;;;;238:20:31;;:::o;840:308:23:-;952:1;946:3;;:7;945:39;;;;-1:-1:-1;;;;;;961:22:23;;;;;;:13;:22;;;;;;;;959:24;945:39;941:121;;;1000:11;;1034;;1047:3;;-1:-1:-1;;;;;1000:11:23;;;;:24;;1025:7;;1034:11;;;1000;:51;;;;;;;;;;;;;;-1:-1:-1;;;;;1000:51:23;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;941:121:23;-1:-1:-1;;;;;1071:22:23;;;;;;:13;:22;;;;;;;:29;;-1:-1:-1;;1071:29:23;1096:4;1071:29;;;1110:31;;1085:7;;1110:31;-1:-1:-1;;;;;1110:31:23;;;;;;;;;;;;;;840:308;:::o;1154:115::-;-1:-1:-1;;;;;1240:22:23;1217:4;1240:22;;;:13;:22;;;;;;;;;1154:115::o;374:15::-;;;;:::o;336:32::-;;;-1:-1:-1;;;;;336:32:23;;:::o;834:169:31:-;654:5;;640:10;-1:-1:-1;;;;;640:19:31;;;654:5;;640:19;632:28;;;;;;-1:-1:-1;;;;;910:22:31;;;;902:31;;;;;;960:5;;-1:-1:-1;;;;;939:37:31;;;;960:5;939:37;;;;;;;;;;982:5;:16;;-1:-1:-1;;982:16:31;-1:-1:-1;;;;;982:16:31;;;;;;;;;;834:169::o;427:31:23:-;;;;:::o",
+  "source": "pragma solidity ^0.4.18;\n\nimport \"../universalSchemes/UniversalScheme.sol\";\n\n\ncontract UniversalSchemeMock is UniversalScheme {\n\n    function UniversalSchemeMock(StandardToken _nativeToken, uint _fee, address _beneficiary) public {\n        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));\n    }\n}\n",
+  "sourcePath": "/Users/tibet/Dev/Emergence/daostack/contracts/test/UniversalSchemeMock.sol",
+  "ast": {
+    "attributes": {
+      "absolutePath": "/Users/tibet/Dev/Emergence/daostack/contracts/test/UniversalSchemeMock.sol",
+      "exportedSymbols": {
+        "UniversalSchemeMock": [
+          4712
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.4",
+            ".18"
+          ]
+        },
+        "id": 4689,
+        "name": "PragmaDirective",
+        "src": "0:24:15"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 7274,
+          "absolutePath": "/Users/tibet/Dev/Emergence/daostack/contracts/universalSchemes/UniversalScheme.sol",
+          "file": "../universalSchemes/UniversalScheme.sol",
+          "scope": 4713,
+          "symbolAliases": [
+            null
+          ],
+          "unitAlias": ""
+        },
+        "id": 4690,
+        "name": "ImportDirective",
+        "src": "26:49:15"
+      },
+      {
+        "attributes": {
+          "contractDependencies": [
+            7273,
+            7303,
+            9208
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            4712,
+            7273,
+            7303,
+            9208
+          ],
+          "name": "UniversalSchemeMock",
+          "scope": 4713
+        },
+        "children": [
+          {
+            "attributes": {
+              "arguments": [
+                null
+              ]
+            },
+            "children": [
+              {
+                "attributes": {
+                  "contractScope": null,
+                  "name": "UniversalScheme",
+                  "referencedDeclaration": 7273,
+                  "type": "contract UniversalScheme"
+                },
+                "id": 4691,
+                "name": "UserDefinedTypeName",
+                "src": "110:15:15"
+              }
+            ],
+            "id": 4692,
+            "name": "InheritanceSpecifier",
+            "src": "110:15:15"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "implemented": true,
+              "isConstructor": true,
+              "modifiers": [
+                null
+              ],
+              "name": "UniversalSchemeMock",
+              "payable": false,
+              "scope": 4712,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_nativeToken",
+                      "scope": 4711,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "contract StandardToken",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "contractScope": null,
+                          "name": "StandardToken",
+                          "referencedDeclaration": 9762,
+                          "type": "contract StandardToken"
+                        },
+                        "id": 4693,
+                        "name": "UserDefinedTypeName",
+                        "src": "162:13:15"
+                      }
+                    ],
+                    "id": 4694,
+                    "name": "VariableDeclaration",
+                    "src": "162:26:15"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_fee",
+                      "scope": 4711,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint",
+                          "type": "uint256"
+                        },
+                        "id": 4695,
+                        "name": "ElementaryTypeName",
+                        "src": "190:4:15"
+                      }
+                    ],
+                    "id": 4696,
+                    "name": "VariableDeclaration",
+                    "src": "190:9:15"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_beneficiary",
+                      "scope": 4711,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 4697,
+                        "name": "ElementaryTypeName",
+                        "src": "201:7:15"
+                      }
+                    ],
+                    "id": 4698,
+                    "name": "VariableDeclaration",
+                    "src": "201:20:15"
+                  }
+                ],
+                "id": 4699,
+                "name": "ParameterList",
+                "src": "161:61:15"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 4700,
+                "name": "ParameterList",
+                "src": "230:0:15"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "isStructConstructorCall": false,
+                          "lValueRequested": false,
+                          "names": [
+                            null
+                          ],
+                          "type": "tuple()",
+                          "type_conversion": false
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_contract$_StandardToken_$9762",
+                                  "typeString": "contract StandardToken"
+                                },
+                                {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                },
+                                {
+                                  "typeIdentifier": "t_address",
+                                  "typeString": "address"
+                                },
+                                {
+                                  "typeIdentifier": "t_bytes32",
+                                  "typeString": "bytes32"
+                                }
+                              ],
+                              "overloadedDeclarations": [
+                                7251
+                              ],
+                              "referencedDeclaration": 7251,
+                              "type": "function (contract StandardToken,uint256,address,bytes32)",
+                              "value": "updateParameters"
+                            },
+                            "id": 4701,
+                            "name": "Identifier",
+                            "src": "240:16:15"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 4694,
+                              "type": "contract StandardToken",
+                              "value": "_nativeToken"
+                            },
+                            "id": 4702,
+                            "name": "Identifier",
+                            "src": "257:12:15"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 4696,
+                              "type": "uint256",
+                              "value": "_fee"
+                            },
+                            "id": 4703,
+                            "name": "Identifier",
+                            "src": "271:4:15"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 4698,
+                              "type": "address",
+                              "value": "_beneficiary"
+                            },
+                            "id": 4704,
+                            "name": "Identifier",
+                            "src": "277:12:15"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "isStructConstructorCall": false,
+                              "lValueRequested": false,
+                              "names": [
+                                null
+                              ],
+                              "type": "bytes32",
+                              "type_conversion": true
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_rational_0_by_1",
+                                      "typeString": "int_const 0"
+                                    }
+                                  ],
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": true,
+                                  "lValueRequested": false,
+                                  "type": "type(bytes32)",
+                                  "value": "bytes32"
+                                },
+                                "id": 4705,
+                                "name": "ElementaryTypeNameExpression",
+                                "src": "291:7:15"
+                              },
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "hexvalue": "30",
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": true,
+                                  "lValueRequested": false,
+                                  "subdenomination": null,
+                                  "token": "number",
+                                  "type": "int_const 0",
+                                  "value": "0"
+                                },
+                                "id": 4706,
+                                "name": "Literal",
+                                "src": "299:1:15"
+                              }
+                            ],
+                            "id": 4707,
+                            "name": "FunctionCall",
+                            "src": "291:10:15"
+                          }
+                        ],
+                        "id": 4708,
+                        "name": "FunctionCall",
+                        "src": "240:62:15"
+                      }
+                    ],
+                    "id": 4709,
+                    "name": "ExpressionStatement",
+                    "src": "240:62:15"
+                  }
+                ],
+                "id": 4710,
+                "name": "Block",
+                "src": "230:79:15"
+              }
+            ],
+            "id": 4711,
+            "name": "FunctionDefinition",
+            "src": "133:176:15"
+          }
+        ],
+        "id": 4712,
+        "name": "ContractDefinition",
+        "src": "78:233:15"
+      }
+    ],
+    "id": 4713,
+    "name": "SourceUnit",
+    "src": "0:312:15"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.18+commit.9cf6e910.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "1.0.1",
+  "updatedAt": "2018-01-04T22:14:02.764Z"
+}

@@ -6,9 +6,9 @@
 
 DAOStack ARC is the lower layer on the DAOStack stack.
 It provides a set of smart contracts which can be used as a building blocks for DAOs.
-Using this set of smart contracts one can define and setup organization with high level of flexibility by choosing the organization's components and schemes . 
+Using this set of smart contracts one can define and setup organization with high level of flexibility by choosing the organization's components and schemes .
 
-## Getting Started 
+## Getting Started
 
 DAOStack integrates with [Truffle](https://github.com/ConsenSys/truffle), an Ethereum development environment.
 Please install truffle.
@@ -17,7 +17,7 @@ Please install truffle.
 npm install -g truffle
 ```
 
-### test 
+### test
 ```sh
 npm test
 ```
@@ -37,11 +37,11 @@ To install the daostack-arc library, run:
 npm init
 npm install daostack-arc
 ```
-You should be able to find all daostack-arc contracts under `node_modules/doastack-arc/contracts` folder. 
+You should be able to find all daostack-arc contracts under `node_modules/doastack-arc/contracts` folder.
 Using the contracts in the library can be done like so:
 
 ```js
-import 'daostack-arc/contracts/universalShchems/UniversalScheme.sol';
+import 'daostack-arc/contracts/universalSchemes/UniversalScheme.sol';
 
 contract MyContract is UniversalScheme {
   ...
