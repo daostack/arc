@@ -40,7 +40,7 @@ const setup = async function (accounts,orgNativeTokenFee=0,schemeNativeTokenFee=
    testSetup.contributionRewardParams= await setupContributionRewardParams(testSetup.contributionReward,orgNativeTokenFee,schemeNativeTokenFee);
    //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.contributionReward.address],[testSetup.contributionRewardParams.paramsHash],[testSetup.standardTokenMock.address],[universalSchemes],["0x0000000F"]);
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.contributionReward.address],[testSetup.contributionRewardParams.paramsHash],[universalSchemes],["0x0000000F"]);
    return testSetup;
 };
 contract('ContributionReward', function(accounts) {

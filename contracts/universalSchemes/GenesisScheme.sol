@@ -80,8 +80,6 @@ contract GenesisScheme {
       * @param _avatar organization avatar (returns from forgeOrg)
       * @param _schemes the schemes to register for the organization
       * @param _params the schemes's params
-      * @param _token the tokens these schemes are using and will be allowed to
-      *         spend on behalf of the organization's avatar
       * @param _isUniversal is this scheme is universal scheme (true or false)
       * @param _permissions the schemes permissins.
       */
@@ -89,7 +87,6 @@ contract GenesisScheme {
         Avatar _avatar,
         address[] _schemes,
         bytes32[] _params,
-        StandardToken[] _token,
         bool[] _isUniversal,
         bytes4[] _permissions
     )
@@ -108,7 +105,8 @@ contract GenesisScheme {
             if (_isUniversal[i]) {
                 uint fee = UniversalScheme(scheme).fee();
                 if (fee != 0) {
-                    controller.externalTokenIncreaseApproval(_token[i], scheme, fee);
+                    StandardToken token = UniversalScheme(scheme).nativeToken();
+                    controller.externalTokenIncreaseApproval(token, scheme, fee);
                   }
                 UniversalScheme(scheme).registerOrganization(_avatar);
                 }

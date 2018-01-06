@@ -69,8 +69,7 @@ contract('GenesisScheme', function(accounts) {
     it("setSchemes to none UniversalScheme", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var standardTokenMock = await StandardTokenMock.new(avatar.address, 100);
-        var tx = await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[false],["0x0000000F"]);
+        var tx = await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[false],["0x0000000F"]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);
@@ -81,7 +80,7 @@ contract('GenesisScheme', function(accounts) {
         await setup(accounts,amountToMint,amountToMint);
         var standardTokenMock = await StandardTokenMock.new(avatar.address, 100);
         var universalSchemeMock = await UniversalSchemeMock.new(standardTokenMock.address,10,accounts[1]);
-        var tx = await genesisScheme.setSchemes(avatar.address,[universalSchemeMock.address],[0],[standardTokenMock.address],[true],["0x0000000F"]);
+        var tx = await genesisScheme.setSchemes(avatar.address,[universalSchemeMock.address],[0],[true],["0x0000000F"]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);
@@ -90,9 +89,8 @@ contract('GenesisScheme', function(accounts) {
     it("setSchemes from account that does not hold the lock", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var standardTokenMock = await StandardTokenMock.new(accounts[0], 100);
         try {
-         await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[100],["0x0000000F"],{ from: accounts[1]});
+         await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[false],["0x0000000F"],{ from: accounts[1]});
          assert(false,"should fail because accounts[1] does not hold the lock");
         }
         catch(ex){
@@ -108,7 +106,7 @@ contract('GenesisScheme', function(accounts) {
         var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
         assert.equal(false,await universalSchemeMock.isRegistered(avatar.address));
-        await genesisScheme.setSchemes(avatar.address,[universalSchemeMock.address],[0],[standardTokenMock.address],[true],["0x0000000F"]);
+        await genesisScheme.setSchemes(avatar.address,[universalSchemeMock.address],[0],[true],["0x0000000F"]);
         allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
         //check org registered in scheme
@@ -122,7 +120,7 @@ contract('GenesisScheme', function(accounts) {
         var allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
 
-        await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[0],["0x0000000F"]);
+        await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[false],["0x0000000F"]);
         allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
     });
@@ -131,8 +129,7 @@ contract('GenesisScheme', function(accounts) {
         var amountToMint = 10;
         var controllerAddress,controller;
         await setup(accounts,amountToMint,amountToMint);
-        var standardTokenMock = await StandardTokenMock.new(accounts[0], 100);
-        await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[0],["0x0000000F"]);
+        await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[false],["0x0000000F"]);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
         var isSchemeRegistered = await controller.isSchemeRegistered(accounts[1]);
@@ -147,8 +144,7 @@ contract('GenesisScheme', function(accounts) {
         controller = await Controller.at(controllerAddress);
         var isSchemeRegistered = await controller.isSchemeRegistered(genesisScheme.address);
         assert.equal(isSchemeRegistered,true);
-        var standardTokenMock = await StandardTokenMock.new(accounts[0], 100);
-        await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[0],["0x0000000F"]);
+        await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[false],["0x0000000F"]);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
         isSchemeRegistered = await controller.isSchemeRegistered(genesisScheme.address);
@@ -158,10 +154,9 @@ contract('GenesisScheme', function(accounts) {
     it("setSchemes delete lock", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var standardTokenMock = await StandardTokenMock.new(accounts[0], 100);
-        await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[0],["0x0000000F"]);
+        await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[false],["0x0000000F"]);
         try {
-         await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[standardTokenMock.address],[100],["0x0000000F"],{ from: accounts[1]});
+         await genesisScheme.setSchemes(avatar.address,[accounts[1]],[0],[false],["0x0000000F"],{ from: accounts[1]});
          assert(false,"should fail because lock for account[0] suppose to be deleted by the first call");
         }
         catch(ex){

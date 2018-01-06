@@ -50,7 +50,7 @@ const setup = async function (accounts,cap =10000,price=1) {
   testSetup.paramHash= await setupSimpleICOParams(accounts,testSetup.simpleICO,testSetup.org,cap,price);
   //give some tokens to organization avatar so it could register the universal scheme.
   await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-  await genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.simpleICO.address],[testSetup.paramHash],[testSetup.standardTokenMock.address],[true],["0x0000000F"]);
+  await genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.simpleICO.address],[testSetup.paramHash],[true],["0x0000000F"]);
   return testSetup;
 };
 
@@ -130,7 +130,7 @@ contract('SimpleICO', function(accounts) {
         var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,1000,1,web3.eth.blockNumber+100,web3.eth.blockNumber+100+500);
         //give some tokens to organization avatar so it could register the universal scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
-        await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[standardTokenMock.address],[true],["0x0000000F"]);
+        await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[true],["0x0000000F"]);
         await simpleICO.start(org.avatar.address);
         assert.equal(await simpleICO.isActive(org.avatar.address),false);
         });
@@ -144,7 +144,7 @@ contract('SimpleICO', function(accounts) {
         var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,1000,1,web3.eth.blockNumber,web3.eth.blockNumber);
         //give some tokens to organization avatar so it could register the universal scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
-        await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[standardTokenMock.address],[false],["0x0000000F"]);
+        await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[true],["0x0000000F"]);
         await simpleICO.start(org.avatar.address);
         var isActive = await simpleICO.isActive(org.avatar.address);
         assert.equal(isActive,false);
@@ -161,7 +161,7 @@ contract('SimpleICO', function(accounts) {
         var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,cap,price);
         //give some tokens to organization avatar so it could register the universal scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
-        await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[standardTokenMock.address],[true],["0x0000000F"]);
+        await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[true],["0x0000000F"]);
         await simpleICO.start(org.avatar.address);
         var donationEther = cap;
         await simpleICO.donate(org.avatar.address,accounts[3],{value:donationEther});
@@ -191,7 +191,7 @@ contract('SimpleICO', function(accounts) {
         var paramHash= await setupSimpleICOParams(accounts,simpleICO,org);
         //give some tokens to organization avatar so it could register the universal scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
-        await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[standardTokenMock.address],[true],["0x0000000F"]);
+        await genesisScheme.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],[true],["0x0000000F"]);
         organization = await simpleICO.organizationsICOInfo(org.avatar.address);
         assert.equal(organization[3],false);
         await simpleICO.start(org.avatar.address);
