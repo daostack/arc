@@ -32,7 +32,11 @@ const setup = async function (accounts,isUniversal=true,reputationAccount=0) {
    testSetup.voteInOrganizationParams= await setupVoteInOrganizationParams(testSetup.voteInOrganization,reputationAccount);
    //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.voteInOrganization.address],[testSetup.voteInOrganizationParams.paramsHash],[isUniversal],["0x0000000F"]);
+   var permissions = "0x0000000F";
+   if (isUniversal){
+      permissions = "0x8000000F";
+    }
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.voteInOrganization.address],[testSetup.voteInOrganizationParams.paramsHash],[permissions]);
 
    return testSetup;
 };

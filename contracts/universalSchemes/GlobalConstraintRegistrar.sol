@@ -142,7 +142,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     function proposeToRemoveGC(Avatar _avatar, address _gc) public onlyRegisteredOrganization(_avatar) returns(bytes32) {
         Organization storage org = organizationsData[_avatar];
         Controller controller = Controller(Avatar(_avatar).owner());
-        require(controller.isGlobalConstraintRegister(_gc));
+        require(controller.isGlobalConstraintRegister(_gc,address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, org.voteToRemoveParams[_gc], _avatar, ExecutableInterface(this));
@@ -176,16 +176,16 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         if (_param == 1 ) {
 
         // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
         // Adding a GC
             if (proposal.proposalType == 1) {
-                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params);
+                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params,_avatar);
                 organizationsData[_avatar].voteToRemoveParams[proposal.gc] = proposal.voteToRemoveParams;
               }
         // Removing a GC
             if (proposal.proposalType == 2) {
-                retVal = controller.removeGlobalConstraint(proposal.gc);
+                retVal = controller.removeGlobalConstraint(proposal.gc,_avatar);
               }
         }
         delete organizationsData[_avatar].proposals[_proposalId];

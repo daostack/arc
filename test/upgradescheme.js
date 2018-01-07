@@ -51,7 +51,11 @@ const setup = async function (accounts,isUniversal=true) {
    testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(testSetup.upgradeScheme);
    //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.upgradeScheme.address],[testSetup.upgradeSchemeParams.paramsHash],[isUniversal],["0x0000000F"]);
+   var permissions = "0x0000000F";
+   if (isUniversal){
+      permissions = "0x8000000F";
+    }
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.upgradeScheme.address],[testSetup.upgradeSchemeParams.paramsHash],[permissions]);
 
    return testSetup;
 };
@@ -204,8 +208,8 @@ contract('UpgradeScheme', function(accounts) {
 
                //check schemes registration before execution
                var controller = await Controller.at(await testSetup.org.avatar.owner());
-               assert.equal(await controller.isSchemeRegistered(accounts[0]),false);
-               assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),true);
+               assert.equal(await controller.isSchemeRegistered(accounts[0],0),false);
+               assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address,0),true);
 
                await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
 
@@ -215,8 +219,8 @@ contract('UpgradeScheme', function(accounts) {
                assert.equal(organizationsProposals[2],0);//proposalType
 
                //check if scheme upgraded
-               assert.equal(await controller.isSchemeRegistered(accounts[0]),true);
-               assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),false);
+               assert.equal(await controller.isSchemeRegistered(accounts[0],0),true);
+               assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address,0),false);
               });
 
               it("execute proposal ChangeUpgradingScheme - yes decision - check approve increase fee ", async function() {
@@ -234,8 +238,8 @@ contract('UpgradeScheme', function(accounts) {
 
                 //check schemes registration before execution
                 var controller = await Controller.at(await testSetup.org.avatar.owner());
-                assert.equal(await controller.isSchemeRegistered(accounts[0]),false);
-                assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),true);
+                assert.equal(await controller.isSchemeRegistered(accounts[0],0),false);
+                assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address,0),true);
 
                 await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
 
@@ -245,8 +249,8 @@ contract('UpgradeScheme', function(accounts) {
                 assert.equal(organizationsProposals[2],0);//proposalType
 
                 //check if scheme upgraded
-                assert.equal(await controller.isSchemeRegistered(accounts[0]),true);
-                assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),false);
+                assert.equal(await controller.isSchemeRegistered(accounts[0],0),true);
+                assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address,0),false);
                 //check allowance of new scheme.
                 assert.equal(await testSetup.standardTokenMock.allowance(testSetup.org.avatar.address,accounts[0]),10);
                });
@@ -261,7 +265,7 @@ contract('UpgradeScheme', function(accounts) {
 
                  //check schemes registration before execution
                  var controller = await Controller.at(await testSetup.org.avatar.owner());
-                 assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),true);
+                 assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address,0),true);
 
                  await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
 
@@ -271,6 +275,6 @@ contract('UpgradeScheme', function(accounts) {
                  assert.equal(organizationsProposals[2],0);//proposalType
 
                  //schemes should still be registered
-                 assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),true);
+                 assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address,0),true);
                 });
 });

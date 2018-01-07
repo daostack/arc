@@ -2,6 +2,7 @@
 var constants = require('../test/constants');
 var Avatar = artifacts.require('./Avatar.sol');
 var Controller = artifacts.require('./Controller.sol');
+var UController = artifacts.require('./UController.sol');
 var GenesisScheme = artifacts.require('./GenesisScheme.sol');
 var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.sol');
 var DAOToken = artifacts.require('./DAOToken.sol');
@@ -39,7 +40,7 @@ module.exports = async function(deployer) {
       var genesisSchemeInst = await GenesisScheme.deployed();
       // Create DAOstack:
       var returnedParams = await genesisSchemeInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei);
+          initTokenInWei, initRepInWei,0);
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       var ControllerInst = await Controller.at(await AvatarInst.owner());
       var tokenAddress = await ControllerInst.nativeToken();
@@ -61,7 +62,7 @@ module.exports = async function(deployer) {
       await deployer.deploy(SimpleICO, tokenAddress, UniversalRegisterFee, AvatarInst.address);
       var simpleICOInst = await SimpleICO.deployed();
 
-      await deployer.deploy(ContributionReward, tokenAddress, 0, AvatarInst.address);
+      await deployer.deploy(ContributionReward, tokenAddress, UniversalRegisterFee, AvatarInst.address);
       var contributionRewardInst = await ContributionReward.deployed();
 
       // Voting parameters and schemes params:
@@ -91,15 +92,26 @@ module.exports = async function(deployer) {
                           simpleICOInst.address,
                           contributionRewardInst.address];
       const paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams,simpleICOParams,contributionRewardParams];
-      const permissionArray = ['0x00000003', '0x00000005', '0x00000009','0x00000001','0x00000001'];
-      const isUniversalArray = [true, true, true,true,true];
+      const permissionArray = ['0x80000003', '0x80000005', '0x80000009','0x80000001','0x80000001'];
 
       // set DAOstack initial schmes:
       await genesisSchemeInst.setSchemes(
         AvatarInst.address,
         schemesArray,
         paramsArray,
-        isUniversalArray,
         permissionArray);
+      //now deploy with universal controller
+      await deployer.deploy(UController);
+      var uController = await UController.deployed();
+      var returnedParams = await genesisSchemeInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
+          initTokenInWei, initRepInWei,uController.address);
+      AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
+      await DAOTokenInst.transfer(AvatarInst.address, 5*UniversalRegisterFee);
+      await genesisSchemeInst.setSchemes(
+          AvatarInst.address,
+          schemesArray,
+          paramsArray,
+          permissionArray);
     });
+
   }

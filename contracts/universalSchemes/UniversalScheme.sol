@@ -1,7 +1,7 @@
 pragma solidity ^0.4.15;
 
 import "./UniversalSchemeInterface.sol";
-import "../controller/Controller.sol";
+import "../controller/ControllerInterface.sol";
 import "../controller/Avatar.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/token/StandardToken.sol";
@@ -56,8 +56,7 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface { //
     *  @dev get the parameters for the current scheme from the controller
     */
     function getParametersFromController(Avatar _avatar) internal constant returns(bytes32) {
-        Controller controller = Controller(_avatar.owner());
-        return controller.getSchemeParameters(this);
+        return ControllerInterface(_avatar.owner()).getSchemeParameters(this,address(_avatar));
     }
 
 }

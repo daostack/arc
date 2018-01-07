@@ -162,29 +162,29 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         if (_param == 1) {
 
         // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // Upgrading controller:
             if (proposal.proposalType == 1) {
-                if (!controller.upgradeController(proposal.upgradeContract)) {
+                if (!controller.upgradeController(proposal.upgradeContract,_avatar)) {
                     revert();
                   }
                 }
 
         // Changing upgrade scheme:
             if (proposal.proposalType == 2) {
-                bytes4 permissions = controller.getSchemePermissions(this);
+                bytes4 permissions = controller.getSchemePermissions(this,_avatar);
                 if (proposal.fee != 0) {
-                    if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.upgradeContract, proposal.fee)) {
+                    if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.upgradeContract, proposal.fee,_avatar)) {
                         revert();
                       }
                     }
-                if (!controller.registerScheme(proposal.upgradeContract, proposal.params, permissions)) {
+                if (!controller.registerScheme(proposal.upgradeContract, proposal.params, permissions,_avatar)) {
                     revert();
                   }
                 if (proposal.upgradeContract != address(this) ) {
-                    if (!controller.unregisterSelf()) {
+                    if (!controller.unregisterSelf(_avatar)) {
                         revert();
                       }
                     }

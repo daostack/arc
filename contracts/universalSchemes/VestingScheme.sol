@@ -186,9 +186,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Check if vote was successful:
         if (_param == 1) {
         // Define controller and mint tokens, check minting actually took place:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
-            controller.mintTokens(tokensToMint, this);
+            controller.mintTokens(tokensToMint, this,_avatar);
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:

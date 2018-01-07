@@ -16,10 +16,7 @@ contract ContributionReward is UniversalScheme {
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         bytes32 _contributionDesciption,
-        uint _nativeTokenReward,
-        uint _reputationReward,
-        uint _ethReward,
-        uint _externalTokenReward,
+        uint[4]  _rewards,
         StandardToken _externalToken,
         address _beneficiary
     );
@@ -134,8 +131,9 @@ contract ContributionReward is UniversalScheme {
         bytes32 contributionId = controllerParams.intVote.propose(2, controllerParams.voteApproveParams, _avatar, ExecutableInterface(this));
 
         // Check beneficiary is not null:
-        if (_beneficiary == address(0)) {
-            _beneficiary = msg.sender;
+        address beneficiary = _beneficiary;
+        if (beneficiary == address(0)) {
+            beneficiary = msg.sender;
         }
 
         // Set the struct:
@@ -146,7 +144,7 @@ contract ContributionReward is UniversalScheme {
             ethReward: _rewards[2],
             externalToken: _externalToken,
             externalTokenReward: _rewards[3],
-            beneficiary: _beneficiary
+            beneficiary: beneficiary
         });
         organizationsProposals[_avatar][contributionId] = proposal;
 
@@ -155,12 +153,9 @@ contract ContributionReward is UniversalScheme {
             contributionId,
             controllerParams.intVote,
             _contributionDesciptionHash,
-            _rewards[0],
-            _rewards[1],
-            _rewards[2],
-            _rewards[3],
+            _rewards,
             _externalToken,
-            _beneficiary
+            beneficiary
         );
 
         // vote for this proposal
@@ -183,18 +178,18 @@ contract ContributionReward is UniversalScheme {
             ContributionProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // pay the funds:
-            Controller controller = Controller(Avatar(_avatar).owner());
-            if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) {
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+            if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary,_avatar)) {
                 revert();
               }
-            if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) {
+            if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary,_avatar)) {
                 revert();
               }
-            if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) {
+            if (!controller.sendEther(proposal.ethReward, proposal.beneficiary,_avatar)) {
                 revert();
               }
             if (proposal.externalToken != address(0) && proposal.externalTokenReward > 0) {
-                if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward)) {
+                if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward,_avatar)) {
                     revert();
                   }
                 }

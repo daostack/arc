@@ -137,12 +137,12 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         // If no decision do nothing:
         if (_param != 0) {
         // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             bytes32[] memory tmp = new bytes32[](3);
             tmp[0] = bytes32(address(proposal.originalIntVote));
             tmp[1] = proposal.originalProposalId;
             tmp[2] = bytes32(_param);
-            retVal = controller.genericAction(tmp);
+            retVal = controller.genericAction(tmp,_avatar);
           }
         ProposalExecuted(_avatar, _proposalId);
         return retVal;

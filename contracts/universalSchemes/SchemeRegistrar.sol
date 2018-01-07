@@ -167,7 +167,7 @@ contract SchemeRegistrar is UniversalScheme {
 
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, _avatar, ExecutableInterface(this));
-        
+
         organizationsProposals[_avatar][proposalId].proposalType = 2;
         organizationsProposals[_avatar][proposalId].scheme = _scheme;
         LogRemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);
@@ -191,22 +191,22 @@ contract SchemeRegistrar is UniversalScheme {
         if (_param == 1) {
 
         // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // Add a scheme:
             if (proposal.proposalType == 1) {
                 if (proposal.fee != 0) {
-                    if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.scheme, proposal.fee)) {
+                    if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.scheme, proposal.fee,_avatar)) {
                         revert();
                       }
                     }
                 if (proposal.isRegistering == false) {
-                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1))) {
+                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1),_avatar)) {
                         revert();
                       }
                       } else {
-                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3))) {
+                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3),_avatar)) {
                         revert();
                     }
                 }
@@ -216,7 +216,7 @@ contract SchemeRegistrar is UniversalScheme {
                 }
         // Remove a scheme:
             if ( proposal.proposalType == 2 ) {
-                if (!controller.unregisterScheme(proposal.scheme)) {
+                if (!controller.unregisterScheme(proposal.scheme,_avatar)) {
                     revert();
                   }
                 }
