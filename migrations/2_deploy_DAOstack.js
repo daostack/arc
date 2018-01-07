@@ -98,7 +98,6 @@ module.exports = async function(deployer) {
       var schemesArray = [schemeRegistrarInst.address, globalConstraintRegistrarInst.address, upgradeSchemeInst.address];
       var paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams];
       var permissionArray = ['0x00000003', '0x00000005', '0x00000009'];
-      var tokenArray = [tokenAddress, tokenAddress, tokenAddress];
       var isUniversalArray = [true, true, true];
 
       // set DAOstack initial schmes:
@@ -106,7 +105,6 @@ module.exports = async function(deployer) {
         AvatarInst.address,
         schemesArray,
         paramsArray,
-        tokenArray,
         isUniversalArray,
         permissionArray);
 

@@ -31,7 +31,7 @@ const setup = async function (accounts,isUniversal=true) {
    testSetup.organizationRegisterParams= await setupOrganizationRegisterParams(testSetup.organizationRegister,testSetup.standardTokenMock.address,accounts[2]);
    //give some tokens to organization avatar so it could register the univeral scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.organizationRegister.address],[testSetup.organizationRegisterParams.paramsHash],[testSetup.standardTokenMock.address],[isUniversal],["0x0000000F"]);
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.organizationRegister.address],[testSetup.organizationRegisterParams.paramsHash],[isUniversal],["0x0000000F"]);
 
    return testSetup;
 };
