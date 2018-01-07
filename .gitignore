@@ -1,6 +1,5 @@
 *sublime*
 *.pyc
-build/
 logs/
 node_modules/
 .node-xmlhttprequest-sync*
