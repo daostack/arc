@@ -1,4 +1,5 @@
 import * as helpers from './helpers';
+const constants = require('./constants');
 const Controller = artifacts.require("./Controller.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
@@ -45,7 +46,7 @@ const setup = async function (accounts,isUniversal=true) {
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.upgradeScheme = await UpgradeScheme.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
-   testSetup.genesisScheme = await GenesisScheme.deployed();
+   testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(testSetup.upgradeScheme);
    //give some tokens to organization avatar so it could register the universal scheme.

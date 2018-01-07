@@ -1,4 +1,5 @@
 import * as helpers from './helpers';
+const constants = require('./constants');
 const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const GenesisScheme = artifacts.require("./GenesisScheme.sol");
@@ -26,7 +27,7 @@ const setup = async function (accounts,isUniversal=true) {
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.schemeRegistrar = await SchemeRegistrar.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
-   testSetup.genesisScheme = await GenesisScheme.deployed();
+   testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(testSetup.schemeRegistrar);
    //give some tokens to organization avatar so it could register the universal scheme.

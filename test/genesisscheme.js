@@ -1,4 +1,6 @@
 const helpers = require('./helpers');
+const constants = require('./constants');
+
 var Web3Utils = require('web3-utils');
 
 const DAOToken = artifacts.require("./DAOToken.sol");
@@ -11,7 +13,7 @@ const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 
 var avatar,token,reputation,genesisScheme;
 const setup = async function (accounts,founderToken,founderReputation) {
-  genesisScheme = await GenesisScheme.deployed();
+  genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
   var tx = await genesisScheme.forgeOrg("testOrg","TEST","TST",[accounts[0]],[founderToken],[founderReputation]);
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
