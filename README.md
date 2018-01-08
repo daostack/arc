@@ -59,4 +59,3 @@ daostack-arc is meant to provide secure, tested and community-audited code, but 
 Contributions and pull requests are very welcome. Check out [The DAOStack roadmap](docs/roadmap.md), and join us on [Slack](https://daostack.slack.com).
 
 If you want to contribute to the code, check out  [CONTRIBUTING.md](CONTRIBUTING.md).
-d).
