@@ -22,7 +22,7 @@ function main(){
         const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
         const functions = abi.filter(x => x.type === 'function').sort((x,y) => x.name <= y.name);
         const methods = devdoc.methods || {};
-        const title = devdoc.title || {};
+        const title = devdoc.title || '';
 
         /* This is very ugly, but in order for the generated markdown to be clean,
            we cannot use any indentation which doesn't apprear in the `.md` file
@@ -68,8 +68,7 @@ ${
 `);
     }
     
-
-    const files = shell.ls('./contracts/*/*.sol'); // TODO: arbitrary nesting:
+    const files = shell.ls('./contracts/*/*.sol'); // TODO: arbitrary nesting
 
     // organize all inputs for the compiler.
     const input = {

@@ -1,5 +1,5 @@
 # *contract* UniversalSchemeMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/UniversalSchemeMock.sol))
-[object Object]
+
 
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)

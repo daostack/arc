@@ -1,5 +1,5 @@
 # *contract* AbsoluteVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/AbsoluteVote.sol))
-[object Object]
+
 
 - [Events](#events)
     - [LogVoteProposal](#event-logvoteproposal)

@@ -1,5 +1,5 @@
 # *contract* UniversalSchemeInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UniversalSchemeInterface.sol))
-[object Object]
+
 
 - [Events](#events)
 

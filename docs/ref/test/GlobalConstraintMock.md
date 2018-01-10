@@ -1,5 +1,5 @@
 # *contract* GlobalConstraintMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/GlobalConstraintMock.sol))
-[object Object]
+
 
 - [Events](#events)
 

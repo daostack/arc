@@ -1,5 +1,5 @@
 # *contract* ActionMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/ActionMock.sol))
-[object Object]
+
 
 - [Events](#events)
     - [Action](#event-action)

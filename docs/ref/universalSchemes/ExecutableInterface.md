@@ -1,5 +1,5 @@
 # *contract* ExecutableInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ExecutableInterface.sol))
-[object Object]
+
 
 - [Events](#events)
 
