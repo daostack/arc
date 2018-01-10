@@ -27,6 +27,7 @@ Simple static reputation storage
 ## Functions
 ### *function* transferOwnership
 **nonpayable**
+
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
@@ -47,6 +48,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* setReputation
 **nonpayable**
+
 setting reputation amount for a given address, updating the total supply as well
 *Inputs:*
 1. **_to** *of type address* - the address which we set it's reputation amount
@@ -59,6 +61,7 @@ bool which represents a success
 **constant**
 **payable**
 **view**
+
 return the reputation amount of a given owner
 *Inputs:*
 1. **_owner** *of type address* - an address of the owner which we want to get his reputation
@@ -79,6 +82,7 @@ return the reputation amount of a given owner
 
 ### *function* mint
 **nonpayable**
+
 adding/reducing reputation of a given address, updating the total supply, and triggering an event of the operation
 *Inputs:*
 1. **_to** *of type address* - the address which we gives/takes reputation amount

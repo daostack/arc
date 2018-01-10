@@ -52,6 +52,7 @@ A universal organization registry.
 ## Functions
 ### *function* setParameters
 **nonpayable**
+
 Hash the parameters,save if needed and return the hash value
 *Inputs:*
 1. **_token** *of type address* - -  the token to pay for register or promotion an address.
@@ -67,7 +68,7 @@ bytes32 -the parameters hash
 **view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32* - 
+1. **unnamed** *of type bytes32*
 
 *Returns:*
 1. **uint256**
@@ -76,6 +77,7 @@ bytes32 -the parameters hash
 
 ### *function* transferOwnership
 **nonpayable**
+
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
@@ -87,7 +89,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
@@ -96,10 +98,10 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address* - 
-2. **_fee** *of type uint256* - 
-3. **_beneficiary** *of type address* - 
-4. **_hashedParameters** *of type bytes32* - 
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
+4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
@@ -121,8 +123,8 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **view**
 
 *Inputs:*
-1. **unnamed** *of type address* - 
-2. **unnamed** *of type address* - 
+1. **unnamed** *of type address*
+2. **unnamed** *of type address*
 
 *Returns:*
 1. **uint256**
@@ -133,7 +135,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **view**
 
 *Inputs:*
-1. **unnamed** *of type address* - 
+1. **unnamed** *of type address*
 
 *Returns:*
 1. **bool**
@@ -155,7 +157,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **view**
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **_avatar** *of type address*
 
 *Returns:*
 1. **bool**
@@ -175,6 +177,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **constant**
 **payable**
 **pure**
+
 Hash the parameters,and return the hash value
 *Inputs:*
 1. **_token** *of type address* - -  the token to pay for register or promotion an address.
@@ -208,6 +211,7 @@ bytes32 -the parameters hash
 
 ### *function* addOrPromoteAddress
 **nonpayable**
+
 Adding or promoting an address on the registry.     An address(record) to add or promote can be organization address or any contract address.     Adding a record is done by paying at least the minimum required by the registery params.     Promoting a record is done by paying(adding)amount of token to the registery beneficiary.
 *Inputs:*
 1. **_avatar** *of type address* - The _avatar of the organization which own the registery.

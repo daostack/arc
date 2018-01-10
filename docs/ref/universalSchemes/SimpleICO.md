@@ -53,7 +53,7 @@ SimpleICO scheme.
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
@@ -64,7 +64,7 @@ SimpleICO scheme.
 **view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32* - 
+1. **unnamed** *of type bytes32*
 
 *Returns:*
 1. **uint256**
@@ -76,6 +76,7 @@ SimpleICO scheme.
 
 ### *function* transferOwnership
 **nonpayable**
+
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
@@ -85,6 +86,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* resumeICO
 **nonpayable**
+
 Allowing admin to reopen an ICO.
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization
@@ -96,16 +98,17 @@ Allowing admin to reopen an ICO.
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address* - 
-2. **_fee** *of type uint256* - 
-3. **_beneficiary** *of type address* - 
-4. **_hashedParameters** *of type bytes32* - 
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
+4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
 
 ### *function* start
 **nonpayable**
+
 start an ICO
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization
@@ -115,6 +118,7 @@ start an ICO
 
 ### *function* setParameters
 **nonpayable**
+
 Hash the parameters, save them if necessary, and return the hash value
 *Inputs:*
 1. **_cap** *of type uint256* - the ico cap
@@ -133,7 +137,7 @@ bytes32 -the params hash
 **view**
 
 *Inputs:*
-1. **unnamed** *of type address* - 
+1. **unnamed** *of type address*
 
 *Returns:*
 1. **bytes32**
@@ -147,7 +151,7 @@ bytes32 -the params hash
 **view**
 
 *Inputs:*
-1. **unnamed** *of type address* - 
+1. **unnamed** *of type address*
 
 *Returns:*
 1. **bool**
@@ -180,7 +184,7 @@ bytes32 -the params hash
 **view**
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **_avatar** *of type address*
 
 *Returns:*
 1. **bool**
@@ -189,6 +193,7 @@ bytes32 -the params hash
 **constant**
 **payable**
 **view**
+
 Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization
@@ -209,6 +214,7 @@ bool which represents a successful of the function
 
 ### *function* haltICO
 **nonpayable**
+
 Allowing admin to halt an ICO.
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization
@@ -220,6 +226,7 @@ Allowing admin to halt an ICO.
 **constant**
 **payable**
 **pure**
+
 Hash the parameters and return the hash value
 *Inputs:*
 1. **_cap** *of type uint256* - the ico cap
@@ -245,6 +252,7 @@ bytes32 -the params hash
 
 ### *function* donate
 **payable**
+
 Donating ethers to get tokens. If the donation is higher than the remaining ethers in the "cap", The donator will get the change in ethers.
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization.

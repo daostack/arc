@@ -20,6 +20,7 @@ An avatar contract for ICO.
 ## Functions
 ### *function* transferOwnership
 **nonpayable**
+
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
@@ -64,13 +65,14 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **nonpayable**
 
 *Inputs:*
-1. **_recipient** *of type address* - 
+1. **_recipient** *of type address*
 
 *Returns:*
 *Nothing*
 
 ### *function* destroy
 **nonpayable**
+
 Transfers the current balance to the owner and terminates the contract.
 *Inputs:*
 *Nothing*

@@ -13,7 +13,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_params** *of type bytes32[]* - 
+1. **_params** *of type bytes32[]*
 
 *Returns:*
 1. **bool**

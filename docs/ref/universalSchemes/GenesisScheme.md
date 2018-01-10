@@ -23,6 +23,7 @@ Genesis Scheme that creates organizations
 ## Functions
 ### *function* setSchemes
 **nonpayable**
+
 Set initial schemes for the organization.
 *Inputs:*
 1. **_avatar** *of type address* - organization avatar (returns from forgeOrg)
@@ -36,6 +37,7 @@ Set initial schemes for the organization.
 
 ### *function* forgeOrg
 **nonpayable**
+
 Create a new organization
 *Inputs:*
 1. **_orgName** *of type bytes32* - The name of the new organization
@@ -54,7 +56,7 @@ The address of the avatar of the controller
 **view**
 
 *Inputs:*
-1. **unnamed** *of type uint256* - 
+1. **unnamed** *of type uint256*
 
 *Returns:*
 1. **bytes4**
@@ -65,7 +67,7 @@ The address of the avatar of the controller
 **view**
 
 *Inputs:*
-1. **unnamed** *of type uint256* - 
+1. **unnamed** *of type uint256*
 
 *Returns:*
 1. **bytes32**
@@ -76,7 +78,7 @@ The address of the avatar of the controller
 **view**
 
 *Inputs:*
-1. **unnamed** *of type uint256* - 
+1. **unnamed** *of type uint256*
 
 *Returns:*
 1. **address**

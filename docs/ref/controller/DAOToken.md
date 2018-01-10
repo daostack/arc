@@ -66,6 +66,7 @@ DAOToken, base on zeppelin contract.
 **constant**
 **payable**
 **view**
+
 Gets the balance of the specified address.
 *Inputs:*
 1. **_owner** *of type address* - The address to query the the balance of.
@@ -86,6 +87,7 @@ An uint256 representing the amount owned by the passed address.
 
 ### *function* transferOwnership
 **nonpayable**
+
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
@@ -106,6 +108,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* transferFrom
 **nonpayable**
+
 Transfer tokens from one address to another
 *Inputs:*
 1. **_from** *of type address* - address The address which you want to send tokens from
@@ -117,6 +120,7 @@ Transfer tokens from one address to another
 
 ### *function* transfer
 **nonpayable**
+
 transfer token for a specified address
 *Inputs:*
 1. **_to** *of type address* - The address to transfer to.
@@ -160,6 +164,7 @@ transfer token for a specified address
 
 ### *function* mint
 **nonpayable**
+
 Function to mint tokens
 *Inputs:*
 1. **_to** *of type address* - The address that will receive the minted tokens.
@@ -170,6 +175,7 @@ A boolean that indicates if the operation was successful.
 
 ### *function* increaseApproval
 **nonpayable**
+
 Increase the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
 *Inputs:*
 1. **_spender** *of type address* - The address which will spend the funds.
@@ -180,6 +186,7 @@ Increase the amount of tokens that an owner allowed to a spender.   * approve sh
 
 ### *function* finishMinting
 **nonpayable**
+
 Function to stop minting new tokens.
 *Inputs:*
 *Nothing*
@@ -191,13 +198,14 @@ True if the operation was successful.
 **nonpayable**
 
 *Inputs:*
-1. **_recipient** *of type address* - 
+1. **_recipient** *of type address*
 
 *Returns:*
 *Nothing*
 
 ### *function* destroy
 **nonpayable**
+
 Transfers the current balance to the owner and terminates the contract.
 *Inputs:*
 *Nothing*
@@ -207,6 +215,7 @@ Transfers the current balance to the owner and terminates the contract.
 
 ### *function* decreaseApproval
 **nonpayable**
+
 Decrease the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
 *Inputs:*
 1. **_spender** *of type address* - The address which will spend the funds.
@@ -217,6 +226,7 @@ Decrease the amount of tokens that an owner allowed to a spender.   * approve sh
 
 ### *function* burn
 **nonpayable**
+
 Burns a specific amount of tokens.
 *Inputs:*
 1. **_value** *of type uint256* - The amount of token to be burned.
@@ -226,6 +236,7 @@ Burns a specific amount of tokens.
 
 ### *function* approve
 **nonpayable**
+
 Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.   * Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 *Inputs:*
 1. **_spender** *of type address* - The address which will spend the funds.
@@ -238,6 +249,7 @@ Approve the passed address to spend the specified amount of tokens on behalf of 
 **constant**
 **payable**
 **view**
+
 Function to check the amount of tokens that an owner allowed to a spender.
 *Inputs:*
 1. **_owner** *of type address* - address The address which owns the funds.

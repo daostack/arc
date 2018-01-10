@@ -36,16 +36,17 @@
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address* - 
-2. **_fee** *of type uint256* - 
-3. **_beneficiary** *of type address* - 
-4. **_hashedParameters** *of type bytes32* - 
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
+4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
 
 ### *function* transferOwnership
 **nonpayable**
+
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
@@ -57,7 +58,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
@@ -79,7 +80,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **view**
 
 *Inputs:*
-1. **unnamed** *of type address* - 
+1. **unnamed** *of type address*
 
 *Returns:*
 1. **bool**
@@ -101,7 +102,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 **view**
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **_avatar** *of type address*
 
 *Returns:*
 1. **bool**

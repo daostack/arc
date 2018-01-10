@@ -15,6 +15,7 @@ Token Cap Global Constraint
 ## Functions
 ### *function* setParameters
 **nonpayable**
+
 adding a new set of parametrs
 *Inputs:*
 1. **_token** *of type address* - the token to add to the params.
@@ -27,11 +28,12 @@ the calculated parameters hash
 **constant**
 **payable**
 **pure**
+
 check the constraint after the action. This global contraint only checks the state after the action, so here we just return true:
 *Inputs:*
-1. **unnamed** *of type address* - 
-2. **unnamed** *of type bytes32* - 
-3. **unnamed** *of type bytes* - 
+1. **unnamed** *of type address*
+2. **unnamed** *of type bytes32*
+3. **unnamed** *of type bytes*
 
 *Returns:*
 true
@@ -40,6 +42,7 @@ true
 **constant**
 **payable**
 **view**
+
 check the total supply cap.
 *Inputs:*
 1. **unnamed** *of type address* - undefined
@@ -55,7 +58,7 @@ bool which represents a success
 **view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32* - 
+1. **unnamed** *of type bytes32*
 
 *Returns:*
 1. **address**
@@ -65,6 +68,7 @@ bool which represents a success
 **constant**
 **payable**
 **pure**
+
 calculate and returns the hash of the given parameters
 *Inputs:*
 1. **_token** *of type address* - the token to add to the params.

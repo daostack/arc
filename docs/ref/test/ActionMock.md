@@ -18,8 +18,8 @@
 **nonpayable**
 
 *Inputs:*
-1. **avatar** *of type address* - 
-2. **params** *of type bytes32[]* - 
+1. **avatar** *of type address*
+2. **params** *of type bytes32[]*
 
 *Returns:*
 1. **bool**
@@ -28,7 +28,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **params** *of type bytes32[]* - 
+1. **params** *of type bytes32[]*
 
 *Returns:*
 1. **bool**

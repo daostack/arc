@@ -68,7 +68,7 @@ A scheme for proposing and rewarding contributions to an organization
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
@@ -79,7 +79,7 @@ A scheme for proposing and rewarding contributions to an organization
 **view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32* - 
+1. **unnamed** *of type bytes32*
 
 *Returns:*
 1. **uint256**
@@ -89,6 +89,7 @@ A scheme for proposing and rewarding contributions to an organization
 
 ### *function* transferOwnership
 **nonpayable**
+
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
@@ -98,12 +99,13 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* setParameters
 **nonpayable**
+
 hash the parameters, save them if necessary, and return the hash value
 *Inputs:*
-1. **_orgNativeTokenFee** *of type uint256* - 
-2. **_schemeNativeTokenFee** *of type uint256* - 
-3. **_voteApproveParams** *of type bytes32* - 
-4. **_intVote** *of type address* - 
+1. **_orgNativeTokenFee** *of type uint256*
+2. **_schemeNativeTokenFee** *of type uint256*
+3. **_voteApproveParams** *of type bytes32*
+4. **_intVote** *of type address*
 
 *Returns:*
 *Nothing*
@@ -112,16 +114,17 @@ hash the parameters, save them if necessary, and return the hash value
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address* - 
-2. **_fee** *of type uint256* - 
-3. **_beneficiary** *of type address* - 
-4. **_hashedParameters** *of type bytes32* - 
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
+4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
 
 ### *function* proposeContributionReward
 **nonpayable**
+
 Submit a proposal for a reward for a contribution:
 *Inputs:*
 1. **_avatar** *of type address* - Avatar of the organization that the contribution was made for
@@ -150,8 +153,8 @@ Submit a proposal for a reward for a contribution:
 **view**
 
 *Inputs:*
-1. **unnamed** *of type address* - 
-2. **unnamed** *of type bytes32* - 
+1. **unnamed** *of type address*
+2. **unnamed** *of type bytes32*
 
 *Returns:*
 1. **bytes32**
@@ -168,7 +171,7 @@ Submit a proposal for a reward for a contribution:
 **view**
 
 *Inputs:*
-1. **unnamed** *of type address* - 
+1. **unnamed** *of type address*
 
 *Returns:*
 1. **bool**
@@ -190,7 +193,7 @@ Submit a proposal for a reward for a contribution:
 **view**
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **_avatar** *of type address*
 
 *Returns:*
 1. **bool**
@@ -210,6 +213,7 @@ Submit a proposal for a reward for a contribution:
 **constant**
 **payable**
 **pure**
+
 return a hash of the given parameters
 *Inputs:*
 1. **_orgNativeTokenFee** *of type uint256* - the fee for submitting a contribution in organizations native token
@@ -233,6 +237,7 @@ a hash of the parameters
 
 ### *function* execute
 **nonpayable**
+
 execution of proposals, can only be called by the voting machine in which the vote is held.
 *Inputs:*
 1. **_proposalId** *of type bytes32* - the ID of the voting in the voting machine

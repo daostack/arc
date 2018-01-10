@@ -21,10 +21,10 @@
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - 
-2. **_vote** *of type uint256* - 
-3. **_rep** *of type uint256* - 
-4. **_token** *of type uint256* - 
+1. **_proposalId** *of type bytes32*
+2. **_vote** *of type uint256*
+3. **_rep** *of type uint256*
+4. **_token** *of type uint256*
 
 *Returns:*
 1. **bool**
@@ -33,8 +33,8 @@
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - 
-2. **_vote** *of type uint256* - 
+1. **_proposalId** *of type bytes32*
+2. **_vote** *of type uint256*
 
 *Returns:*
 1. **bool**
@@ -43,10 +43,10 @@
 **nonpayable**
 
 *Inputs:*
-1. **_numOfChoices** *of type uint256* - 
-2. **_proposalParameters** *of type bytes32* - 
-3. **_avatar** *of type address* - 
-4. **_executable** *of type address* - 
+1. **_numOfChoices** *of type uint256*
+2. **_proposalParameters** *of type bytes32*
+3. **_avatar** *of type address*
+4. **_executable** *of type address*
 
 *Returns:*
 1. **bytes32**
@@ -55,9 +55,9 @@
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - 
-2. **_vote** *of type uint256* - 
-3. **_voter** *of type address* - 
+1. **_proposalId** *of type bytes32*
+2. **_vote** *of type uint256*
+3. **_voter** *of type address*
 
 *Returns:*
 1. **bool**
@@ -68,7 +68,7 @@
 **view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - 
+1. **_proposalId** *of type bytes32*
 
 *Returns:*
 1. **bool**
@@ -79,7 +79,7 @@
 **view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - 
+1. **_proposalId** *of type bytes32*
 
 *Returns:*
 1. **uint256**
@@ -88,7 +88,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - 
+1. **_proposalId** *of type bytes32*
 
 *Returns:*
 1. **bool**
@@ -97,7 +97,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - 
+1. **_proposalId** *of type bytes32*
 
 *Returns:*
 *Nothing*
@@ -106,7 +106,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - 
+1. **_proposalId** *of type bytes32*
 
 *Returns:*
 1. **bool**

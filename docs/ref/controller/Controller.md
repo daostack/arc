@@ -128,7 +128,7 @@ Controller contract
 **view**
 
 *Inputs:*
-1. **_scheme** *of type address* - 
+1. **_scheme** *of type address*
 
 *Returns:*
 1. **bool**
@@ -150,7 +150,7 @@ Controller contract
 **view**
 
 *Inputs:*
-1. **unnamed** *of type address* - 
+1. **unnamed** *of type address*
 
 *Returns:*
 1. **bytes32**
@@ -158,6 +158,7 @@ Controller contract
 
 ### *function* sendEther
 **nonpayable**
+
 send some ether
 *Inputs:*
 1. **_amountInWei** *of type uint256* - the amount of ether (in Wei) to send
@@ -179,6 +180,7 @@ bool which represents a success
 
 ### *function* upgradeController
 **nonpayable**
+
 upgrade the Controller     The function will trigger an event 'UpgradeController'.
 *Inputs:*
 1. **_newController** *of type address* - the address of the new controller.
@@ -188,6 +190,7 @@ bool which represents a success
 
 ### *function* registerScheme
 **nonpayable**
+
 register a scheme
 *Inputs:*
 1. **_scheme** *of type address* - the address of the scheme
@@ -199,6 +202,7 @@ bool which represents a success
 
 ### *function* removeGlobalConstraint
 **nonpayable**
+
 remove Global Constraint
 *Inputs:*
 1. **_globalConstraint** *of type address* - the address of the global constraint to be remove.
@@ -208,6 +212,7 @@ bool which represents a success
 
 ### *function* unregisterSelf
 **nonpayable**
+
 unregister the caller's scheme
 *Inputs:*
 *Nothing*
@@ -217,6 +222,7 @@ bool which represents a success
 
 ### *function* unregisterScheme
 **nonpayable**
+
 unregister a scheme
 *Inputs:*
 1. **_scheme** *of type address* - the address of the scheme
@@ -226,6 +232,7 @@ bool which represents a success
 
 ### *function* externalTokenTransferFrom
 **nonpayable**
+
 transfer token "from" address "to" address     One must to approve the amount of tokens which can be spend from the     "from" account.This can be done using externalTokenApprove.
 *Inputs:*
 1. **_externalToken** *of type address* - the address of the Token Contract
@@ -242,13 +249,14 @@ bool which represents a success
 **view**
 
 *Inputs:*
-1. **_globalConstraint** *of type address* - 
+1. **_globalConstraint** *of type address*
 
 *Returns:*
 1. **bool**
 
 ### *function* mintReputation
 **nonpayable**
+
 mint reputation .
 *Inputs:*
 1. **_amount** *of type int256* - amount of reputation to mint
@@ -259,6 +267,7 @@ bool which represents a success
 
 ### *function* mintTokens
 **nonpayable**
+
 mint tokens .
 *Inputs:*
 1. **_amount** *of type uint256* - amount of token to mint
@@ -280,6 +289,7 @@ bool which represents a success
 
 ### *function* genericAction
 **nonpayable**
+
 do a generic deligate call to the contract which called us. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
 *Inputs:*
 1. **_params** *of type bytes32[]* - the params for the call.
@@ -293,7 +303,7 @@ bool which represents success
 **view**
 
 *Inputs:*
-1. **unnamed** *of type address* - 
+1. **unnamed** *of type address*
 
 *Returns:*
 1. **bool**
@@ -316,7 +326,7 @@ bool which represents success
 **view**
 
 *Inputs:*
-1. **unnamed** *of type uint256* - 
+1. **unnamed** *of type uint256*
 
 *Returns:*
 1. **address**
@@ -328,7 +338,7 @@ bool which represents success
 **view**
 
 *Inputs:*
-1. **_scheme** *of type address* - 
+1. **_scheme** *of type address*
 
 *Returns:*
 1. **bytes4**
@@ -339,13 +349,14 @@ bool which represents success
 **view**
 
 *Inputs:*
-1. **_scheme** *of type address* - 
+1. **_scheme** *of type address*
 
 *Returns:*
 1. **bytes32**
 
 ### *function* externalTokenTransfer
 **nonpayable**
+
 send some amount of arbitrary ERC20 Tokens
 *Inputs:*
 1. **_externalToken** *of type address* - the address of the Token Contract
@@ -357,6 +368,7 @@ bool which represents a success
 
 ### *function* externalTokenIncreaseApproval
 **nonpayable**
+
 increase approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
 *Inputs:*
 1. **_externalToken** *of type address* - the address of the Token Contract
@@ -368,6 +380,7 @@ bool which represents a success
 
 ### *function* externalTokenDecreaseApproval
 **nonpayable**
+
 decrease approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
 *Inputs:*
 1. **_externalToken** *of type address* - the address of the Token Contract
@@ -390,6 +403,7 @@ bool which represents a success
 
 ### *function* addGlobalConstraint
 **nonpayable**
+
 add or update Global Constraint
 *Inputs:*
 1. **_globalConstraint** *of type address* - the address of the global constraint to be added.

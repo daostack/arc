@@ -72,6 +72,7 @@ An Avatar holds tokens, reputation and ether for a controller
 ## Functions
 ### *function* externalTokenTransferFrom
 **nonpayable**
+
 external token transfer from a specific account
 *Inputs:*
 1. **_externalToken** *of type address* - the token contract
@@ -84,6 +85,7 @@ bool which represents success
 
 ### *function* transferOwnership
 **nonpayable**
+
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
@@ -93,6 +95,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* sendEther
 **nonpayable**
+
 send ethers from the avatar's wallet
 *Inputs:*
 1. **_amountInWei** *of type uint256* - amount to send in Wei units
@@ -147,6 +150,7 @@ bool which represents success
 
 ### *function* genericAction
 **nonpayable**
+
 call an action function on an ActionInterface. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
 *Inputs:*
 1. **_action** *of type address* - the address of the contract to call.
@@ -157,6 +161,7 @@ bool which represents success
 
 ### *function* externalTokenTransfer
 **nonpayable**
+
 external token transfer
 *Inputs:*
 1. **_externalToken** *of type address* - the token contract
@@ -168,6 +173,7 @@ bool which represents success
 
 ### *function* externalTokenIncreaseApproval
 **nonpayable**
+
 increase approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
 *Inputs:*
 1. **_externalToken** *of type address* - the address of the Token Contract
@@ -179,6 +185,7 @@ bool which represents a success
 
 ### *function* externalTokenDecreaseApproval
 **nonpayable**
+
 decrease approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
 *Inputs:*
 1. **_externalToken** *of type address* - the address of the Token Contract
