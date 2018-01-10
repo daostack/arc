@@ -11,7 +11,7 @@ import "./ControllerInterface.sol";
  * @title Controller contract
  * @dev A controller controls the organizations tokens,reputation and avatar.
  * It is subject to a set of schemes and constraints that determine its behavior.
- * Each scheme has it own parameters and operation permmisions.
+ * Each scheme has it own parameters and operation permissions.
  */
 contract Controller is ControllerInterface {
 
@@ -21,8 +21,8 @@ contract Controller is ControllerInterface {
                              // All 0: Not registered,
                              // 1st bit: Flag if the scheme is registered,
                              // 2nd bit: Scheme can register other schemes
-                             // 3th bit: Scheme can add/remove global constraints
-                             // 4rd bit: Scheme can upgrade the controller
+                             // 3rd bit: Scheme can add/remove global constraints
+                             // 4th bit: Scheme can upgrade the controller
     }
 
     struct GlobalConstraint {
@@ -229,7 +229,7 @@ contract Controller is ControllerInterface {
         return schemes[_scheme].permissions;
     }
 
-  // Global Contraints:
+  // Global constraints:
     function globalConstraintsCount(address) public constant returns(uint) {
         return globalConstraints.length;
     }
@@ -305,8 +305,8 @@ contract Controller is ControllerInterface {
     }
 
     /**
-    * @dev do a generic deligate call to the contract which called us.
-    * This function use deligatecall and might expose the organization to security
+    * @dev do a generic delegate call to the contract which called us.
+    * This function use delegatecall and might expose the organization to security
     * risk. Use this function only if you really knows what you are doing.
     * @param _params the params for the call.
     * @return bool which represents success
@@ -324,7 +324,7 @@ contract Controller is ControllerInterface {
   /**
    * @dev send some ether
    * @param _amountInWei the amount of ether (in Wei) to send
-   * @param _to address of the beneficary
+   * @param _to address of the beneficiary
    * @return bool which represents a success
    */
     function sendEther(uint _amountInWei, address _to,address)
@@ -340,7 +340,7 @@ contract Controller is ControllerInterface {
     /**
     * @dev send some amount of arbitrary ERC20 Tokens
     * @param _externalToken the address of the Token Contract
-    * @param _to address of the beneficary
+    * @param _to address of the beneficiary
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
@@ -360,7 +360,7 @@ contract Controller is ControllerInterface {
     *      "from" account.This can be done using externalTokenApprove.
     * @param _externalToken the address of the Token Contract
     * @param _from address of the account to send from
-    * @param _to address of the beneficary
+    * @param _to address of the beneficiary
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
@@ -379,7 +379,7 @@ contract Controller is ControllerInterface {
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _addedValue the amount of ether (in Wei) which the approval is refering to.
+    * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
     function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue,address)
@@ -396,8 +396,8 @@ contract Controller is ControllerInterface {
     * @dev decrease approval for the spender address to spend a specified amount of tokens
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
-    * @param _spender addresså
-    * @param _subtractedValue the amount of ether (in Wei) which the approval is refering to.
+    * @param _spender address
+    * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
     function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address)
