@@ -73,13 +73,9 @@ A registrar for Schemes for organizations
 
 ## Functions
 ### *function* organizations
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -88,13 +84,9 @@ A registrar for Schemes for organizations
 1. **bool**
 
 ### *function* parameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type bytes32* - 
@@ -105,12 +97,8 @@ A registrar for Schemes for organizations
 3. **address**
 
 ### *function* setParameters
-
 **nonpayable**
-
-
 hash the parameters, save them if necessary, and return the hash value
-
 *Inputs:*
 1. **_voteRegisterParams** *of type bytes32* - 
 2. **_voteRemoveParams** *of type bytes32* - 
@@ -120,12 +108,8 @@ hash the parameters, save them if necessary, and return the hash value
 *Nothing*
 
 ### *function* proposeScheme
-
 **nonpayable**
-
-
 create a proposal to register a schemeNB: not only proposes the vote, but also votes for it
-
 *Inputs:*
 1. **_avatar** *of type address* - the address of the organization the scheme will be registered for
 2. **_scheme** *of type address* - the address of the scheme to be registered
@@ -139,12 +123,8 @@ create a proposal to register a schemeNB: not only proposes the vote, but also 
 a proposal Id
 
 ### *function* transferOwnership
-
 **nonpayable**
-
-
 Allows the current owner to transfer control of the contract to a newOwner.
-
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
 
@@ -152,11 +132,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -165,11 +141,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* updateParameters
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_nativeToken** *of type address* - 
@@ -181,12 +153,8 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* proposeToRemoveScheme
-
 **nonpayable**
-
-
 propose to remove a scheme for a controller
-
 *Inputs:*
 1. **_avatar** *of type address* - the address of the controller from which we want to remove a scheme
 2. **_scheme** *of type address* - the address of the scheme we want to remove     * NB: not only registers the proposal, but also votes for it
@@ -195,13 +163,9 @@ propose to remove a scheme for a controller
 *Nothing*
 
 ### *function* owner
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -210,13 +174,9 @@ propose to remove a scheme for a controller
 1. **address**
 
 ### *function* organizationsProposals
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -232,13 +192,9 @@ propose to remove a scheme for a controller
 7. **bool**
 
 ### *function* nativeToken
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -247,13 +203,9 @@ propose to remove a scheme for a controller
 1. **address**
 
 ### *function* isRegistered
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -262,13 +214,9 @@ propose to remove a scheme for a controller
 1. **bool**
 
 ### *function* hashedParameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -277,13 +225,9 @@ propose to remove a scheme for a controller
 1. **bytes32**
 
 ### *function* getParametersHash
-
 **constant**
 **payable**
 **pure**
-
-
-
 
 *Inputs:*
 1. **_voteRegisterParams** *of type bytes32* - 
@@ -294,13 +238,9 @@ propose to remove a scheme for a controller
 1. **bytes32**
 
 ### *function* fee
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -309,12 +249,8 @@ propose to remove a scheme for a controller
 1. **uint256**
 
 ### *function* execute
-
 **nonpayable**
-
-
 execute a  proposal This method can only be called by the voting machine in which the vote is held.
-
 *Inputs:*
 1. **_proposalId** *of type bytes32* - the ID of the proposal in the voting machine
 2. **_avatar** *of type address* - address of the controller
@@ -324,13 +260,9 @@ execute a  proposal This method can only be called by the voting machine in whi
 *Nothing*
 
 ### *function* beneficiary
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*

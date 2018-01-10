@@ -71,12 +71,8 @@ An Avatar holds tokens, reputation and ether for a controller
 
 ## Functions
 ### *function* externalTokenTransferFrom
-
 **nonpayable**
-
-
 external token transfer from a specific account
-
 *Inputs:*
 1. **_externalToken** *of type address* - the token contract
 2. **_from** *of type address* - the account to spend token from
@@ -87,12 +83,8 @@ external token transfer from a specific account
 bool which represents success
 
 ### *function* transferOwnership
-
 **nonpayable**
-
-
 Allows the current owner to transfer control of the contract to a newOwner.
-
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
 
@@ -100,12 +92,8 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* sendEther
-
 **nonpayable**
-
-
 send ethers from the avatar's wallet
-
 *Inputs:*
 1. **_amountInWei** *of type uint256* - amount to send in Wei units
 2. **_to** *of type address* - send the ethers to this address
@@ -114,13 +102,9 @@ send ethers from the avatar's wallet
 bool which represents success
 
 ### *function* owner
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -129,13 +113,9 @@ bool which represents success
 1. **address**
 
 ### *function* orgName
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -144,13 +124,9 @@ bool which represents success
 1. **bytes32**
 
 ### *function* nativeToken
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -159,13 +135,9 @@ bool which represents success
 1. **address**
 
 ### *function* nativeReputation
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -174,12 +146,8 @@ bool which represents success
 1. **address**
 
 ### *function* genericAction
-
 **nonpayable**
-
-
 call an action function on an ActionInterface. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
-
 *Inputs:*
 1. **_action** *of type address* - the address of the contract to call.
 2. **_params** *of type bytes32[]* - the params for the call.
@@ -188,12 +156,8 @@ call an action function on an ActionInterface. This function use deligatecall a
 bool which represents success
 
 ### *function* externalTokenTransfer
-
 **nonpayable**
-
-
 external token transfer
-
 *Inputs:*
 1. **_externalToken** *of type address* - the token contract
 2. **_to** *of type address* - the destination address
@@ -203,12 +167,8 @@ external token transfer
 bool which represents success
 
 ### *function* externalTokenIncreaseApproval
-
 **nonpayable**
-
-
 increase approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
-
 *Inputs:*
 1. **_externalToken** *of type address* - the address of the Token Contract
 2. **_spender** *of type address* - address
@@ -218,12 +178,8 @@ increase approval for the spender address to spend a specified amount of tokens
 bool which represents a success
 
 ### *function* externalTokenDecreaseApproval
-
 **nonpayable**
-
-
 decrease approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
-
 *Inputs:*
 1. **_externalToken** *of type address* - the address of the Token Contract
 2. **_spender** *of type address* - address

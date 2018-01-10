@@ -11,11 +11,7 @@
 
 ## Functions
 ### *function* pre
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_scheme** *of type address* - 
@@ -26,11 +22,7 @@
 1. **bool**
 
 ### *function* post
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_scheme** *of type address* - 

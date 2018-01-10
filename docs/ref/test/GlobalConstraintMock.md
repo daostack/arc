@@ -12,11 +12,7 @@
 
 ## Functions
 ### *function* setConstraint
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **method** *of type bytes* - 
@@ -27,13 +23,9 @@
 1. **bool**
 
 ### *function* pre
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -44,13 +36,9 @@
 1. **bool**
 
 ### *function* post
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 

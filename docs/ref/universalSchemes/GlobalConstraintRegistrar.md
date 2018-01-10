@@ -70,12 +70,8 @@ A scheme to manage global constaintg for organizations
 
 ## Functions
 ### *function* setParameters
-
 **nonpayable**
-
-
 Hash the parameters, save them if necessary, and return the hash value
-
 *Inputs:*
 1. **_voteRegisterParams** *of type bytes32* - -  voting parameters for register global constraint
 2. **_intVote** *of type address* - - voting machine contract.
@@ -84,13 +80,9 @@ Hash the parameters, save them if necessary, and return the hash value
 bytes32 -the parameters hash
 
 ### *function* parameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type bytes32* - 
@@ -100,12 +92,8 @@ bytes32 -the parameters hash
 2. **address**
 
 ### *function* proposeToRemoveGC
-
 **nonpayable**
-
-
 propose to remove a global constraint:
-
 *Inputs:*
 1. **_avatar** *of type address* - the avatar of the organization that the constraint is proposed for
 2. **_gc** *of type address* - the address of the global constraint that is being proposed
@@ -114,12 +102,8 @@ propose to remove a global constraint:
 bytes32 -the proposal id
 
 ### *function* transferOwnership
-
 **nonpayable**
-
-
 Allows the current owner to transfer control of the contract to a newOwner.
-
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
 
@@ -127,11 +111,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -140,12 +120,8 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* proposeGlobalConstraint
-
 **nonpayable**
-
-
 propose to add a new global constraint:
-
 *Inputs:*
 1. **_avatar** *of type address* - the avatar of the organization that the constraint is proposed for
 2. **_gc** *of type address* - the address of the global constraint that is being proposed
@@ -156,11 +132,7 @@ propose to add a new global constraint:
 bytes32 -the proposal id
 
 ### *function* updateParameters
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_nativeToken** *of type address* - 
@@ -172,13 +144,9 @@ bytes32 -the proposal id
 *Nothing*
 
 ### *function* owner
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -187,13 +155,9 @@ bytes32 -the proposal id
 1. **address**
 
 ### *function* organizationsData
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -203,13 +167,9 @@ bytes32 -the proposal id
 2. **address**
 
 ### *function* organizations
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -218,13 +178,9 @@ bytes32 -the proposal id
 1. **bool**
 
 ### *function* nativeToken
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -233,13 +189,9 @@ bytes32 -the proposal id
 1. **address**
 
 ### *function* isRegistered
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -248,13 +200,9 @@ bytes32 -the proposal id
 1. **bool**
 
 ### *function* hashedParameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -263,14 +211,10 @@ bytes32 -the proposal id
 1. **bytes32**
 
 ### *function* getParametersHash
-
 **constant**
 **payable**
 **pure**
-
-
 Hash the parameters,and return the hash value
-
 *Inputs:*
 1. **_voteRegisterParams** *of type bytes32* - -  voting parameters
 2. **_intVote** *of type address* - - voting machine contract.
@@ -279,13 +223,9 @@ Hash the parameters,and return the hash value
 bytes32 -the parameters hash
 
 ### *function* fee
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -294,12 +234,8 @@ bytes32 -the parameters hash
 1. **uint256**
 
 ### *function* execute
-
 **nonpayable**
-
-
 execution of proposals, can only be called by the voting machine in which the vote is held.
-
 *Inputs:*
 1. **_proposalId** *of type bytes32* - the ID of the voting in the voting machine
 2. **_avatar** *of type address* - address of the controller
@@ -309,13 +245,9 @@ execution of proposals, can only be called by the voting machine in which the vo
 bool which represents a successful of the function.
 
 ### *function* beneficiary
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*

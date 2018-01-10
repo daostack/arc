@@ -33,11 +33,7 @@
 
 ## Functions
 ### *function* updateParameters
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_nativeToken** *of type address* - 
@@ -49,12 +45,8 @@
 *Nothing*
 
 ### *function* transferOwnership
-
 **nonpayable**
-
-
 Allows the current owner to transfer control of the contract to a newOwner.
-
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
 
@@ -62,11 +54,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -75,13 +63,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* owner
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -90,13 +74,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* organizations
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -105,13 +85,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bool**
 
 ### *function* nativeToken
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -120,13 +96,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* isRegistered
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -135,13 +107,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bool**
 
 ### *function* hashedParameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -150,13 +118,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bytes32**
 
 ### *function* fee
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -165,13 +129,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **uint256**
 
 ### *function* beneficiary
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*

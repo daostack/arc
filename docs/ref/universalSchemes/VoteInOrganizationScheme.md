@@ -62,12 +62,8 @@ VoteInOrganizationScheme.
 
 ## Functions
 ### *function* setParameters
-
 **nonpayable**
-
-
 Hash the parameters, save them if necessary, and return the hash value
-
 *Inputs:*
 1. **_voteParams** *of type bytes32* - -  voting parameters
 2. **_intVote** *of type address* - - voting machine contract.
@@ -76,13 +72,9 @@ Hash the parameters, save them if necessary, and return the hash value
 bytes32 -the parameters hash
 
 ### *function* parameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type bytes32* - 
@@ -92,12 +84,8 @@ bytes32 -the parameters hash
 2. **bytes32**
 
 ### *function* transferOwnership
-
 **nonpayable**
-
-
 Allows the current owner to transfer control of the contract to a newOwner.
-
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
 
@@ -105,11 +93,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -118,12 +102,8 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* proposeVote
-
 **nonpayable**
-
-
 propose to vote in other organization     The function trigger NewVoteProposal event
-
 *Inputs:*
 1. **_avatar** *of type address* - avatar of the organization
 2. **_originalIntVote** *of type address* - the other organization voting machine
@@ -133,11 +113,7 @@ propose to vote in other organization     The function trigger NewVoteProposal 
 an id which represents the proposal
 
 ### *function* updateParameters
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_nativeToken** *of type address* - 
@@ -149,12 +125,8 @@ an id which represents the proposal
 *Nothing*
 
 ### *function* execute
-
 **nonpayable**
-
-
 execution of proposals, can only be called by the voting machine in which the vote is held.     This function will trigger ProposalDeleted and ProposalExecuted events
-
 *Inputs:*
 1. **_proposalId** *of type bytes32* - the ID of the voting in the voting machine
 2. **_avatar** *of type address* - address of the controller
@@ -164,13 +136,9 @@ execution of proposals, can only be called by the voting machine in which the vo
 bool which indicate success.
 
 ### *function* hashedParameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -179,13 +147,9 @@ bool which indicate success.
 1. **bytes32**
 
 ### *function* organizationsData
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -197,13 +161,9 @@ bool which indicate success.
 3. **uint256**
 
 ### *function* nativeToken
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -212,13 +172,9 @@ bool which indicate success.
 1. **address**
 
 ### *function* owner
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -227,13 +183,9 @@ bool which indicate success.
 1. **address**
 
 ### *function* organizations
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -242,13 +194,9 @@ bool which indicate success.
 1. **bool**
 
 ### *function* isRegistered
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -257,14 +205,10 @@ bool which indicate success.
 1. **bool**
 
 ### *function* getParametersHash
-
 **constant**
 **payable**
 **pure**
-
-
 Hash the parameters,and return the hash value
-
 *Inputs:*
 1. **_voteParams** *of type bytes32* - -  voting parameters
 2. **_intVote** *of type address* - - voting machine contract.
@@ -273,13 +217,9 @@ Hash the parameters,and return the hash value
 bytes32 -the parameters hash
 
 ### *function* fee
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -288,13 +228,9 @@ bytes32 -the parameters hash
 1. **uint256**
 
 ### *function* beneficiary
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -303,12 +239,8 @@ bytes32 -the parameters hash
 1. **address**
 
 ### *function* action
-
 **nonpayable**
-
-
 do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.
-
 *Inputs:*
 1. **_params** *of type bytes32[]* - array represent the voting .       _params[0] - the address of the voting machine.       _params[1] - the proposalId.       _params[2] - the voting machins params.
 

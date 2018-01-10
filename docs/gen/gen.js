@@ -48,11 +48,7 @@ ${e.inputs.length ? e.inputs.map((input,i) =>
 ## Functions
 ${functions.map(f => 
 `### *function* ${f.name || '*default*'}
-
-${f.constant? '**constant**\n' : ''}${f.constant? '**payable**\n' : ''}${f.stateMutability? `**${f.stateMutability}**\n` : ''}
-
-${methods[signature(f)] ? methods[signature(f)].details : ''}
-
+${f.constant? '**constant**\n' : ''}${f.constant? '**payable**\n' : ''}${f.stateMutability? `**${f.stateMutability}**\n` : ''}${methods[signature(f)] ? methods[signature(f)].details : ''}
 *Inputs:*
 ${f.inputs.length ? f.inputs.map((input,i) => 
 `${i+1}. **${input.name || 'unnamed'}** *of type ${input.type}* - ${methods[signature(f)] && methods[signature(f)].params ? methods[signature(f)].params[input.name] : ''}`
@@ -98,7 +94,7 @@ ${
         const split = contract.split(':');
         const file = split[0];
         const contractName = split[1];
-        const destination = file.replace('contracts','docs/ref').replace('.sol',`_${contractName}.md`);
+        const destination = path.resolve(path.dirname(file.replace('contracts','docs/ref')),`${contractName}.md`);
         
         if(files.indexOf(file) === -1)
             continue;

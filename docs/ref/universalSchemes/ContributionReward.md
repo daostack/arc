@@ -65,11 +65,7 @@ A scheme for proposing and rewarding contributions to an organization
 
 ## Functions
 ### *function* registerOrganization
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -78,13 +74,9 @@ A scheme for proposing and rewarding contributions to an organization
 *Nothing*
 
 ### *function* parameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type bytes32* - 
@@ -96,12 +88,8 @@ A scheme for proposing and rewarding contributions to an organization
 4. **address**
 
 ### *function* transferOwnership
-
 **nonpayable**
-
-
 Allows the current owner to transfer control of the contract to a newOwner.
-
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
 
@@ -109,12 +97,8 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* setParameters
-
 **nonpayable**
-
-
 hash the parameters, save them if necessary, and return the hash value
-
 *Inputs:*
 1. **_orgNativeTokenFee** *of type uint256* - 
 2. **_schemeNativeTokenFee** *of type uint256* - 
@@ -125,11 +109,7 @@ hash the parameters, save them if necessary, and return the hash value
 *Nothing*
 
 ### *function* updateParameters
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_nativeToken** *of type address* - 
@@ -141,12 +121,8 @@ hash the parameters, save them if necessary, and return the hash value
 *Nothing*
 
 ### *function* proposeContributionReward
-
 **nonpayable**
-
-
 Submit a proposal for a reward for a contribution:
-
 *Inputs:*
 1. **_avatar** *of type address* - Avatar of the organization that the contribution was made for
 2. **_contributionDesciptionHash** *of type bytes32* - A hash of the contribution's description
@@ -158,13 +134,9 @@ Submit a proposal for a reward for a contribution:
 *Nothing*
 
 ### *function* owner
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -173,13 +145,9 @@ Submit a proposal for a reward for a contribution:
 1. **address**
 
 ### *function* organizationsProposals
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -195,13 +163,9 @@ Submit a proposal for a reward for a contribution:
 7. **address**
 
 ### *function* organizations
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -210,13 +174,9 @@ Submit a proposal for a reward for a contribution:
 1. **bool**
 
 ### *function* nativeToken
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -225,13 +185,9 @@ Submit a proposal for a reward for a contribution:
 1. **address**
 
 ### *function* isRegistered
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -240,13 +196,9 @@ Submit a proposal for a reward for a contribution:
 1. **bool**
 
 ### *function* hashedParameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -255,14 +207,10 @@ Submit a proposal for a reward for a contribution:
 1. **bytes32**
 
 ### *function* getParametersHash
-
 **constant**
 **payable**
 **pure**
-
-
 return a hash of the given parameters
-
 *Inputs:*
 1. **_orgNativeTokenFee** *of type uint256* - the fee for submitting a contribution in organizations native token
 2. **_schemeNativeTokenFee** *of type uint256* - the fee for submitting a contribution if paied in schemes native token
@@ -273,13 +221,9 @@ return a hash of the given parameters
 a hash of the parameters
 
 ### *function* fee
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -288,12 +232,8 @@ a hash of the parameters
 1. **uint256**
 
 ### *function* execute
-
 **nonpayable**
-
-
 execution of proposals, can only be called by the voting machine in which the vote is held.
-
 *Inputs:*
 1. **_proposalId** *of type bytes32* - the ID of the voting in the voting machine
 2. **_avatar** *of type address* - address of the controller
@@ -303,13 +243,9 @@ execution of proposals, can only be called by the voting machine in which the vo
 *Nothing*
 
 ### *function* beneficiary
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*

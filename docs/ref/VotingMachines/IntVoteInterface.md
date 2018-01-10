@@ -18,11 +18,7 @@
 
 ## Functions
 ### *function* voteWithSpecifiedAmounts
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
@@ -34,11 +30,7 @@
 1. **bool**
 
 ### *function* vote
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
@@ -48,11 +40,7 @@
 1. **bool**
 
 ### *function* propose
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_numOfChoices** *of type uint256* - 
@@ -64,11 +52,7 @@
 1. **bytes32**
 
 ### *function* ownerVote
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
@@ -79,13 +63,9 @@
 1. **bool**
 
 ### *function* isVotable
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
@@ -94,13 +74,9 @@
 1. **bool**
 
 ### *function* getNumberOfChoices
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
@@ -109,11 +85,7 @@
 1. **uint256**
 
 ### *function* execute
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
@@ -122,11 +94,7 @@
 1. **bool**
 
 ### *function* cancelVote
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
@@ -135,11 +103,7 @@
 *Nothing*
 
 ### *function* cancelProposal
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 

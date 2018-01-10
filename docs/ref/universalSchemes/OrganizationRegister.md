@@ -51,12 +51,8 @@ A universal organization registry.
 
 ## Functions
 ### *function* setParameters
-
 **nonpayable**
-
-
 Hash the parameters,save if needed and return the hash value
-
 *Inputs:*
 1. **_token** *of type address* - -  the token to pay for register or promotion an address.
 2. **_fee** *of type uint256* - - fee needed for register an address.
@@ -66,13 +62,9 @@ Hash the parameters,save if needed and return the hash value
 bytes32 -the parameters hash
 
 ### *function* parameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type bytes32* - 
@@ -83,12 +75,8 @@ bytes32 -the parameters hash
 3. **address**
 
 ### *function* transferOwnership
-
 **nonpayable**
-
-
 Allows the current owner to transfer control of the contract to a newOwner.
-
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
 
@@ -96,11 +84,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -109,11 +93,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* updateParameters
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_nativeToken** *of type address* - 
@@ -125,13 +105,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* owner
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -140,13 +116,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* organizationsRegistery
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -156,13 +128,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **uint256**
 
 ### *function* organizations
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -171,13 +139,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bool**
 
 ### *function* nativeToken
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -186,13 +150,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* isRegistered
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -201,13 +161,9 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bool**
 
 ### *function* hashedParameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -216,14 +172,10 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bytes32**
 
 ### *function* getParametersHash
-
 **constant**
 **payable**
 **pure**
-
-
 Hash the parameters,and return the hash value
-
 *Inputs:*
 1. **_token** *of type address* - -  the token to pay for register or promotion an address.
 2. **_fee** *of type uint256* - - fee needed for register an address.
@@ -233,13 +185,9 @@ Hash the parameters,and return the hash value
 bytes32 -the parameters hash
 
 ### *function* fee
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -248,13 +196,9 @@ bytes32 -the parameters hash
 1. **uint256**
 
 ### *function* beneficiary
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -263,12 +207,8 @@ bytes32 -the parameters hash
 1. **address**
 
 ### *function* addOrPromoteAddress
-
 **nonpayable**
-
-
 Adding or promoting an address on the registry.     An address(record) to add or promote can be organization address or any contract address.     Adding a record is done by paying at least the minimum required by the registery params.     Promoting a record is done by paying(adding)amount of token to the registery beneficiary.
-
 *Inputs:*
 1. **_avatar** *of type address* - The _avatar of the organization which own the registery.
 2. **_record** *of type address* - The address to add or promote.

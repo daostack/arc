@@ -50,11 +50,7 @@ SimpleICO scheme.
 
 ## Functions
 ### *function* registerOrganization
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -63,13 +59,9 @@ SimpleICO scheme.
 *Nothing*
 
 ### *function* parameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type bytes32* - 
@@ -83,12 +75,8 @@ SimpleICO scheme.
 6. **address**
 
 ### *function* transferOwnership
-
 **nonpayable**
-
-
 Allows the current owner to transfer control of the contract to a newOwner.
-
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
 
@@ -96,12 +84,8 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* resumeICO
-
 **nonpayable**
-
-
 Allowing admin to reopen an ICO.
-
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization
 
@@ -109,11 +93,7 @@ Allowing admin to reopen an ICO.
 *Nothing*
 
 ### *function* updateParameters
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_nativeToken** *of type address* - 
@@ -125,12 +105,8 @@ Allowing admin to reopen an ICO.
 *Nothing*
 
 ### *function* start
-
 **nonpayable**
-
-
 start an ICO
-
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization
 
@@ -138,12 +114,8 @@ start an ICO
 *Nothing*
 
 ### *function* setParameters
-
 **nonpayable**
-
-
 Hash the parameters, save them if necessary, and return the hash value
-
 *Inputs:*
 1. **_cap** *of type uint256* - the ico cap
 2. **_price** *of type uint256* - represents Tokens per 1 Eth
@@ -156,13 +128,9 @@ Hash the parameters, save them if necessary, and return the hash value
 bytes32 -the params hash
 
 ### *function* organizationsICOInfo
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -174,13 +142,9 @@ bytes32 -the params hash
 4. **bool**
 
 ### *function* organizations
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -189,13 +153,9 @@ bytes32 -the params hash
 1. **bool**
 
 ### *function* owner
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -204,13 +164,9 @@ bytes32 -the params hash
 1. **address**
 
 ### *function* nativeToken
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -219,13 +175,9 @@ bytes32 -the params hash
 1. **address**
 
 ### *function* isRegistered
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -234,14 +186,10 @@ bytes32 -the params hash
 1. **bool**
 
 ### *function* isActive
-
 **constant**
 **payable**
 **view**
-
-
 Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
-
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization
 
@@ -249,13 +197,9 @@ Check is an ICO is active (halted is still considered active). Active ICO: 1. T
 bool which represents a successful of the function
 
 ### *function* hashedParameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -264,12 +208,8 @@ bool which represents a successful of the function
 1. **bytes32**
 
 ### *function* haltICO
-
 **nonpayable**
-
-
 Allowing admin to halt an ICO.
-
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization
 
@@ -277,14 +217,10 @@ Allowing admin to halt an ICO.
 *Nothing*
 
 ### *function* getParametersHash
-
 **constant**
 **payable**
 **pure**
-
-
 Hash the parameters and return the hash value
-
 *Inputs:*
 1. **_cap** *of type uint256* - the ico cap
 2. **_price** *of type uint256* - represents Tokens per 1 Eth
@@ -297,13 +233,9 @@ Hash the parameters and return the hash value
 bytes32 -the params hash
 
 ### *function* fee
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -312,12 +244,8 @@ bytes32 -the params hash
 1. **uint256**
 
 ### *function* donate
-
 **payable**
-
-
 Donating ethers to get tokens. If the donation is higher than the remaining ethers in the "cap", The donator will get the change in ethers.
-
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization.
 2. **_beneficiary** *of type address* - The donator's address - which will receive the ICO's tokens.
@@ -326,13 +254,9 @@ Donating ethers to get tokens. If the donation is higher than the remaining eth
 bool which represents a successful of the function
 
 ### *function* beneficiary
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*

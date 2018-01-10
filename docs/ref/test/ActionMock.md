@@ -15,11 +15,7 @@
 
 ## Functions
 ### *function* genericAction
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **avatar** *of type address* - 
@@ -29,11 +25,7 @@
 1. **bool**
 
 ### *function* action
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **params** *of type bytes32[]* - 

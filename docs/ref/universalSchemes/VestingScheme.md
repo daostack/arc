@@ -89,12 +89,8 @@ A schme for vesting.
 
 ## Functions
 ### *function* signToCancelAgreement
-
 **nonpayable**
-
-
 Function to sign to cancel an agreement.
-
 *Inputs:*
 1. **_agreementId** *of type uint256* - the relevant agreement.
 
@@ -102,13 +98,9 @@ Function to sign to cancel an agreement.
 *Nothing*
 
 ### *function* parameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type bytes32* - 
@@ -118,12 +110,8 @@ Function to sign to cancel an agreement.
 2. **address**
 
 ### *function* transferOwnership
-
 **nonpayable**
-
-
 Allows the current owner to transfer control of the contract to a newOwner.
-
 *Inputs:*
 1. **newOwner** *of type address* - The address to transfer ownership to.
 
@@ -131,11 +119,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -144,12 +128,8 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* revokeSignToCancelAgreement
-
 **nonpayable**
-
-
 Function to revoke vote for canceling agreement.
-
 *Inputs:*
 1. **_agreementId** *of type uint256* - the relevant agreement.
 
@@ -157,11 +137,7 @@ Function to revoke vote for canceling agreement.
 *Nothing*
 
 ### *function* updateParameters
-
 **nonpayable**
-
-
-
 
 *Inputs:*
 1. **_nativeToken** *of type address* - 
@@ -173,12 +149,8 @@ Function to revoke vote for canceling agreement.
 *Nothing*
 
 ### *function* setParameters
-
 **nonpayable**
-
-
 Hash the parameters, save them if necessary, and return the hash value
-
 *Inputs:*
 1. **_voteParams** *of type bytes32* - -  voting parameters
 2. **_intVote** *of type address* - - voting machine contract.
@@ -187,12 +159,8 @@ Hash the parameters, save them if necessary, and return the hash value
 bytes32 -the parameters hash
 
 ### *function* proposeVestingAgreement
-
 **nonpayable**
-
-
 Proposing a vesting agreement in an organization.
-
 *Inputs:*
 1. **_beneficiary** *of type address* - the beneficiary of the agreement.
 2. **_returnOnCancelAddress** *of type address* - where to send the tokens in case of stoping.
@@ -209,13 +177,9 @@ Proposing a vesting agreement in an organization.
 bytes32 the proposalId
 
 ### *function* isRegistered
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **_avatar** *of type address* - 
@@ -224,13 +188,9 @@ bytes32 the proposalId
 1. **bool**
 
 ### *function* organizations
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -239,13 +199,9 @@ bytes32 the proposalId
 1. **bool**
 
 ### *function* organizationsData
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type address* - 
@@ -265,13 +221,9 @@ bytes32 the proposalId
 11. **uint256**
 
 ### *function* owner
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -280,13 +232,9 @@ bytes32 the proposalId
 1. **address**
 
 ### *function* nativeToken
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -295,13 +243,9 @@ bytes32 the proposalId
 1. **address**
 
 ### *function* hashedParameters
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -310,14 +254,10 @@ bytes32 the proposalId
 1. **bytes32**
 
 ### *function* getParametersHash
-
 **constant**
 **payable**
 **pure**
-
-
 Hash the parameters,and return the hash value
-
 *Inputs:*
 1. **_voteParams** *of type bytes32* - -  voting parameters
 2. **_intVote** *of type address* - - voting machine contract.
@@ -326,13 +266,9 @@ Hash the parameters,and return the hash value
 bytes32 -the parameters hash
 
 ### *function* fee
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -341,12 +277,8 @@ bytes32 -the parameters hash
 1. **uint256**
 
 ### *function* execute
-
 **nonpayable**
-
-
 execution of proposals, can only be called by the voting machine in which the vote is held.
-
 *Inputs:*
 1. **_proposalId** *of type bytes32* - the ID of the voting in the voting machine
 2. **_avatar** *of type address* - address of the controller
@@ -356,12 +288,8 @@ execution of proposals, can only be called by the voting machine in which the vo
 bool which represents a successful of the function
 
 ### *function* createVestedAgreement
-
 **nonpayable**
-
-
 Creating a vesting agreement.
-
 *Inputs:*
 1. **_token** *of type address* - the relevant token in the agreement.
 2. **_beneficiary** *of type address* - the beneficiary of the agreement.
@@ -378,12 +306,8 @@ Creating a vesting agreement.
 uint the agreement index.
 
 ### *function* collect
-
 **nonpayable**
-
-
 Function for a beneficiary to collect.
-
 *Inputs:*
 1. **_agreementId** *of type uint256* - the relevant agreement.
 
@@ -391,13 +315,9 @@ Function for a beneficiary to collect.
 *Nothing*
 
 ### *function* beneficiary
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 *Nothing*
@@ -406,13 +326,9 @@ Function for a beneficiary to collect.
 1. **address**
 
 ### *function* agreements
-
 **constant**
 **payable**
 **view**
-
-
-
 
 *Inputs:*
 1. **unnamed** *of type uint256* - 
