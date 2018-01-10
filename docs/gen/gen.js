@@ -3,17 +3,30 @@ const fs = require('fs');
 const path = require('path');
 const shell = require('shelljs');
 
+/*
+ * This is a simple build script which renders all `.sol` files under `contracts/`
+ * as markdown files for use in the documentation.
+ * it uses 
+ *   - `solcjs` to compile the files and get the metadata.
+ *   - `shelljs` to do some general file system commands.
+ * 
+ * author: Matan Tsuberi (dev.matan.tsuberi@gmail.com)
+ */
 function main(){
     function signature(f){
         return `${f.name}(${f.inputs.map(i => i.type).join(',')})`;
     }
     
+    // returns an `.md` string based on given data.
     function render(contractName,abi,devdoc){
         const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
         const functions = abi.filter(x => x.type === 'function').sort((x,y) => x.name <= y.name);
         const methods = devdoc.methods || {};
         const title = devdoc.title || {};
-    
+
+        /* This is very ugly, but in order for the generated markdown to be clean,
+           we cannot use any indentation which doesn't apprear in the `.md` file
+        */
         return (
 `# *contract* ${contractName}
 ${title}
@@ -59,9 +72,10 @@ ${
 `);
     }
     
-    // TODO: arbitrary nesting:
-    const files = shell.ls('./contracts/*/*.sol');
-    
+
+    const files = shell.ls('./contracts/*/*.sol'); // TODO: arbitrary nesting:
+
+    // organize all inputs for the compiler.
     const input = {
         sources: files.reduce((acc,file)=>({...acc,[file]: fs.readFileSync(file,'utf-8')}),{})
     };
@@ -69,19 +83,27 @@ ${
     shell.rm('-rf','./docs/ref');
     shell.echo('Compiling contracts ...');
     const output = solc.compile(input,1,file => {
+        /* we need to resolve imports for the compiler. 
+         * This is not ideal, but does have some benefits:
+         *  - gives all information about the files (including natspec).
+         *  - always up to date and according to spec.
+         *  - compatible with everything.
+         */
         const node_path = path.resolve('node_modules',file);
         return {contents: fs.readFileSync(fs.existsSync(node_path) ? node_path : file,'utf-8')};
     });
     
     for(let contract in output.contracts){
+        // The compile returns output in the form of {'somefile.sol:somecontract': ...} 
         const split = contract.split(':');
         const file = split[0];
         const contractName = split[1];
-        const destination = file.replace('contracts','docs/ref').replace('.sol','.md');
+        const destination = file.replace('contracts','docs/ref').replace('.sol',`_${contractName}.md`);
         
         if(files.indexOf(file) === -1)
             continue;
     
+        // Get some info
         const data = output.contracts[contract];
         const abi = JSON.parse(data.interface);
         const metadata = data.metadata !== '' ? JSON.parse(data.metadata).output : {};
