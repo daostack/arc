@@ -19,9 +19,9 @@ function main(){
 ${title}
 
 - [Events](#events)
-${events.map(e => `    - [${e.name}](#event-${e.name})`).join('\n')}
+${events.map(e => `    - [${e.name}](#event-${e.name.toLowerCase()})`).join('\n')}
 - [Functions](#functions)
-${functions.map(f => `    - [${f.name}](#function-${f.name})`).join('\n')}
+${functions.map(f => `    - [${f.name}](#function-${f.name.toLowerCase()})`).join('\n')}
 
 ## Events
 ${events.map(e => 

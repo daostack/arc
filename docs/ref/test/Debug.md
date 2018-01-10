@@ -2,13 +2,13 @@
 [object Object]
 
 - [Events](#events)
-    - [LogUint](#event-LogUint)
-    - [LogString](#event-LogString)
-    - [LogInt](#event-LogInt)
-    - [LogBytes32](#event-LogBytes32)
-    - [LogBytes](#event-LogBytes)
-    - [LogBool](#event-LogBool)
-    - [LogAddress](#event-LogAddress)
+    - [LogUint](#event-loguint)
+    - [LogString](#event-logstring)
+    - [LogInt](#event-logint)
+    - [LogBytes32](#event-logbytes32)
+    - [LogBytes](#event-logbytes)
+    - [LogBool](#event-logbool)
+    - [LogAddress](#event-logaddress)
 - [Functions](#functions)
 
 

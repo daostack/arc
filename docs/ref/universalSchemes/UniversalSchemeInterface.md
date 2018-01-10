@@ -4,8 +4,8 @@
 - [Events](#events)
 
 - [Functions](#functions)
-    - [updateParameters](#function-updateParameters)
-    - [registerOrganization](#function-registerOrganization)
+    - [updateParameters](#function-updateparameters)
+    - [registerOrganization](#function-registerorganization)
 
 ## Events
 

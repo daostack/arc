@@ -4,11 +4,11 @@ Token Cap Global Constraint
 - [Events](#events)
 
 - [Functions](#functions)
-    - [setParameters](#function-setParameters)
+    - [setParameters](#function-setparameters)
     - [pre](#function-pre)
     - [post](#function-post)
     - [params](#function-params)
-    - [getParametersHash](#function-getParametersHash)
+    - [getParametersHash](#function-getparametershash)
 
 ## Events
 

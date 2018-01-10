@@ -2,9 +2,9 @@
 [object Object]
 
 - [Events](#events)
-    - [Action](#event-Action)
+    - [Action](#event-action)
 - [Functions](#functions)
-    - [genericAction](#function-genericAction)
+    - [genericAction](#function-genericaction)
     - [action](#function-action)
 
 ## Events

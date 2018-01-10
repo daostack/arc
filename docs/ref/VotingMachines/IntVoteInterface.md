@@ -4,15 +4,15 @@
 - [Events](#events)
 
 - [Functions](#functions)
-    - [voteWithSpecifiedAmounts](#function-voteWithSpecifiedAmounts)
+    - [voteWithSpecifiedAmounts](#function-votewithspecifiedamounts)
     - [vote](#function-vote)
     - [propose](#function-propose)
-    - [ownerVote](#function-ownerVote)
-    - [isVotable](#function-isVotable)
-    - [getNumberOfChoices](#function-getNumberOfChoices)
+    - [ownerVote](#function-ownervote)
+    - [isVotable](#function-isvotable)
+    - [getNumberOfChoices](#function-getnumberofchoices)
     - [execute](#function-execute)
-    - [cancelVote](#function-cancelVote)
-    - [cancelProposal](#function-cancelProposal)
+    - [cancelVote](#function-cancelvote)
+    - [cancelProposal](#function-cancelproposal)
 
 ## Events
 

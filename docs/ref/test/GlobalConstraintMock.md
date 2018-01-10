@@ -4,7 +4,7 @@
 - [Events](#events)
 
 - [Functions](#functions)
-    - [setConstraint](#function-setConstraint)
+    - [setConstraint](#function-setconstraint)
     - [pre](#function-pre)
     - [post](#function-post)
 

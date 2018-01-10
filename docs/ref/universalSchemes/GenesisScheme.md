@@ -2,14 +2,14 @@
 Genesis Scheme that creates organizations
 
 - [Events](#events)
-    - [NewOrg](#event-NewOrg)
-    - [InitialSchemesSet](#event-InitialSchemesSet)
+    - [NewOrg](#event-neworg)
+    - [InitialSchemesSet](#event-initialschemesset)
 - [Functions](#functions)
-    - [setSchemes](#function-setSchemes)
-    - [forgeOrg](#function-forgeOrg)
-    - [bytes4Array](#function-bytes4Array)
-    - [bytes32Array](#function-bytes32Array)
-    - [addressArray](#function-addressArray)
+    - [setSchemes](#function-setschemes)
+    - [forgeOrg](#function-forgeorg)
+    - [bytes4Array](#function-bytes4array)
+    - [bytes32Array](#function-bytes32array)
+    - [addressArray](#function-addressarray)
 
 ## Events
 ### *event* NewOrg
