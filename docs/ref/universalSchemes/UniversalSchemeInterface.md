@@ -1,5 +1,12 @@
 # *contract* UniversalSchemeInterface
 [object Object]
+
+- [Events](#events)
+
+- [Functions](#functions)
+    - [updateParameters](#function-updateParameters)
+    - [registerOrganization](#function-registerOrganization)
+
 ## Events
 
 ## Functions

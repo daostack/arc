@@ -1,5 +1,16 @@
 # *contract* GenesisScheme
 Genesis Scheme that creates organizations
+
+- [Events](#events)
+    - [NewOrg](#event-NewOrg)
+    - [InitialSchemesSet](#event-InitialSchemesSet)
+- [Functions](#functions)
+    - [setSchemes](#function-setSchemes)
+    - [forgeOrg](#function-forgeOrg)
+    - [bytes4Array](#function-bytes4Array)
+    - [bytes32Array](#function-bytes32Array)
+    - [addressArray](#function-addressArray)
+
 ## Events
 ### *event* NewOrg
 *Parameters:*
@@ -10,35 +21,22 @@ Genesis Scheme that creates organizations
 1. **_avatar** *of type address*
 
 ## Functions
-### *function* bytes4Array
+### *function* setSchemes
 
-**constant**
-**payable**
-**view**
+**nonpayable**
 
 
-
+Set initial schemes for the organization.
 
 *Inputs:*
-1. **unnamed** *of type uint256* - 
+1. **_avatar** *of type address* - organization avatar (returns from forgeOrg)
+2. **_schemes** *of type address[]* - the schemes to register for the organization
+3. **_params** *of type bytes32[]* - the schemes's params
+4. **_isUniversal** *of type bool[]* - is this scheme is universal scheme (true or false)
+5. **_permissions** *of type bytes4[]* - the schemes permissins.
 
 *Returns:*
-1. **bytes4**
-
-### *function* addressArray
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **unnamed** *of type uint256* - 
-
-*Returns:*
-1. **address**
+*Nothing*
 
 ### *function* forgeOrg
 
@@ -58,22 +56,20 @@ Create a new organization
 *Returns:*
 The address of the avatar of the controller
 
-### *function* setSchemes
+### *function* bytes4Array
 
-**nonpayable**
+**constant**
+**payable**
+**view**
 
 
-Set initial schemes for the organization.
+
 
 *Inputs:*
-1. **_avatar** *of type address* - organization avatar (returns from forgeOrg)
-2. **_schemes** *of type address[]* - the schemes to register for the organization
-3. **_params** *of type bytes32[]* - the schemes's params
-4. **_isUniversal** *of type bool[]* - is this scheme is universal scheme (true or false)
-5. **_permissions** *of type bytes4[]* - the schemes permissins.
+1. **unnamed** *of type uint256* - 
 
 *Returns:*
-*Nothing*
+1. **bytes4**
 
 ### *function* bytes32Array
 
@@ -89,4 +85,19 @@ Set initial schemes for the organization.
 
 *Returns:*
 1. **bytes32**
+
+### *function* addressArray
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **unnamed** *of type uint256* - 
+
+*Returns:*
+1. **address**
 

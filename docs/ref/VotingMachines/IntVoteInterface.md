@@ -1,9 +1,23 @@
 # *contract* IntVoteInterface
 [object Object]
+
+- [Events](#events)
+
+- [Functions](#functions)
+    - [voteWithSpecifiedAmounts](#function-voteWithSpecifiedAmounts)
+    - [vote](#function-vote)
+    - [propose](#function-propose)
+    - [ownerVote](#function-ownerVote)
+    - [isVotable](#function-isVotable)
+    - [getNumberOfChoices](#function-getNumberOfChoices)
+    - [execute](#function-execute)
+    - [cancelVote](#function-cancelVote)
+    - [cancelProposal](#function-cancelProposal)
+
 ## Events
 
 ## Functions
-### *function* ownerVote
+### *function* voteWithSpecifiedAmounts
 
 **nonpayable**
 
@@ -13,12 +27,13 @@
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
 2. **_vote** *of type uint256* - 
-3. **_voter** *of type address* - 
+3. **_rep** *of type uint256* - 
+4. **_token** *of type uint256* - 
 
 *Returns:*
 1. **bool**
 
-### *function* cancelProposal
+### *function* vote
 
 **nonpayable**
 
@@ -27,6 +42,7 @@
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
+2. **_vote** *of type uint256* - 
 
 *Returns:*
 1. **bool**
@@ -47,20 +63,7 @@
 *Returns:*
 1. **bytes32**
 
-### *function* cancelVote
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_proposalId** *of type bytes32* - 
-
-*Returns:*
-*Nothing*
-
-### *function* vote
+### *function* ownerVote
 
 **nonpayable**
 
@@ -70,37 +73,7 @@
 *Inputs:*
 1. **_proposalId** *of type bytes32* - 
 2. **_vote** *of type uint256* - 
-
-*Returns:*
-1. **bool**
-
-### *function* getNumberOfChoices
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **_proposalId** *of type bytes32* - 
-
-*Returns:*
-1. **uint256**
-
-### *function* voteWithSpecifiedAmounts
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_proposalId** *of type bytes32* - 
-2. **_vote** *of type uint256* - 
-3. **_rep** *of type uint256* - 
-4. **_token** *of type uint256* - 
+3. **_voter** *of type address* - 
 
 *Returns:*
 1. **bool**
@@ -120,7 +93,48 @@
 *Returns:*
 1. **bool**
 
+### *function* getNumberOfChoices
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **_proposalId** *of type bytes32* - 
+
+*Returns:*
+1. **uint256**
+
 ### *function* execute
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_proposalId** *of type bytes32* - 
+
+*Returns:*
+1. **bool**
+
+### *function* cancelVote
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_proposalId** *of type bytes32* - 
+
+*Returns:*
+*Nothing*
+
+### *function* cancelProposal
 
 **nonpayable**
 

@@ -1,17 +1,43 @@
 # *contract* Reputation
 Simple static reputation storage
-## Events
-### *event* Mint
-*Parameters:*
-1. **to** *of type address*
-2. **amount** *of type int256*
 
+- [Events](#events)
+    - [OwnershipTransferred](#event-OwnershipTransferred)
+    - [Mint](#event-Mint)
+- [Functions](#functions)
+    - [transferOwnership](#function-transferOwnership)
+    - [totalSupply](#function-totalSupply)
+    - [setReputation](#function-setReputation)
+    - [reputationOf](#function-reputationOf)
+    - [owner](#function-owner)
+    - [mint](#function-mint)
+    - [decimals](#function-decimals)
+
+## Events
 ### *event* OwnershipTransferred
 *Parameters:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
+### *event* Mint
+*Parameters:*
+1. **to** *of type address*
+2. **amount** *of type int256*
+
 ## Functions
+### *function* transferOwnership
+
+**nonpayable**
+
+
+Allows the current owner to transfer control of the contract to a newOwner.
+
+*Inputs:*
+1. **newOwner** *of type address* - The address to transfer ownership to.
+
+*Returns:*
+*Nothing*
+
 ### *function* totalSupply
 
 **constant**
@@ -26,36 +52,6 @@ Simple static reputation storage
 
 *Returns:*
 1. **uint256**
-
-### *function* decimals
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **uint256**
-
-### *function* owner
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
 
 ### *function* setReputation
 
@@ -86,18 +82,20 @@ return the reputation amount of a given owner
 *Returns:*
 *Nothing*
 
-### *function* transferOwnership
+### *function* owner
 
-**nonpayable**
+**constant**
+**payable**
+**view**
 
 
-Allows the current owner to transfer control of the contract to a newOwner.
+
 
 *Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
+*Nothing*
 
 *Returns:*
-*Nothing*
+1. **address**
 
 ### *function* mint
 
@@ -112,4 +110,19 @@ adding/reducing reputation of a given address, updating the total supply, and t
 
 *Returns:*
 bool which represents a successful of the function
+
+### *function* decimals
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **uint256**
 

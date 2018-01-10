@@ -1,20 +1,61 @@
 # *contract* EmergentVoteScheme
 [object Object]
+
+- [Events](#events)
+    - [OwnershipTransferred](#event-OwnershipTransferred)
+    - [OrganizationRegistered](#event-OrganizationRegistered)
+    - [LogVoteProposal](#event-LogVoteProposal)
+    - [LogNewProposal](#event-LogNewProposal)
+    - [LogNewProposal](#event-LogNewProposal)
+    - [LogExecuteProposal](#event-LogExecuteProposal)
+    - [LogCancelVoting](#event-LogCancelVoting)
+    - [LogCancelProposal](#event-LogCancelProposal)
+- [Functions](#functions)
+    - [owner](#function-owner)
+    - [organizationsParameters](#function-organizationsParameters)
+    - [voteInfo](#function-voteInfo)
+    - [transferOwnership](#function-transferOwnership)
+    - [setProposalParameters](#function-setProposalParameters)
+    - [proposals](#function-proposals)
+    - [ownerVote](#function-ownerVote)
+    - [voteWithSpecifiedAmounts](#function-voteWithSpecifiedAmounts)
+    - [proposalScore](#function-proposalScore)
+    - [vote](#function-vote)
+    - [updateParameters](#function-updateParameters)
+    - [setOrgParameters](#function-setOrgParameters)
+    - [proposalsParameters](#function-proposalsParameters)
+    - [registerOrganization](#function-registerOrganization)
+    - [proposalStatus](#function-proposalStatus)
+    - [propose](#function-propose)
+    - [isRegistered](#function-isRegistered)
+    - [boostProposal](#function-boostProposal)
+    - [organizations](#function-organizations)
+    - [cancelVote](#function-cancelVote)
+    - [hashedParameters](#function-hashedParameters)
+    - [getNumberOfChoices](#function-getNumberOfChoices)
+    - [cancelProposal](#function-cancelProposal)
+    - [getOrgParametersHash](#function-getOrgParametersHash)
+    - [isVotable](#function-isVotable)
+    - [findMinScore](#function-findMinScore)
+    - [getProposalParametersHash](#function-getProposalParametersHash)
+    - [findMaxScore](#function-findMaxScore)
+    - [fee](#function-fee)
+    - [nativeToken](#function-nativeToken)
+    - [execute](#function-execute)
+    - [findInArray](#function-findInArray)
+    - [moveTopAwaitingBoostMode](#function-moveTopAwaitingBoostMode)
+    - [beneficiary](#function-beneficiary)
+    - [MAX_NUM_OF_CHOICES](#function-MAX_NUM_OF_CHOICES)
+
 ## Events
-### *event* LogNewProposal
+### *event* OwnershipTransferred
 *Parameters:*
-1. **_proposalId** *of type bytes32*
-2. **_proposer** *of type address*
-3. **_paramsHash** *of type bytes32*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
 
-### *event* LogCancelProposal
+### *event* OrganizationRegistered
 *Parameters:*
-1. **_proposalId** *of type bytes32*
-
-### *event* LogExecuteProposal
-*Parameters:*
-1. **_proposalId** *of type bytes32*
-2. **_decision** *of type uint256*
+1. **_avatar** *of type address*
 
 ### *event* LogVoteProposal
 *Parameters:*
@@ -24,25 +65,46 @@
 4. **_reputation** *of type uint256*
 5. **_isOwnerVote** *of type bool*
 
+### *event* LogNewProposal
+*Parameters:*
+1. **proposalId** *of type bytes32*
+
+### *event* LogNewProposal
+*Parameters:*
+1. **_proposalId** *of type bytes32*
+2. **_proposer** *of type address*
+3. **_paramsHash** *of type bytes32*
+
+### *event* LogExecuteProposal
+*Parameters:*
+1. **_proposalId** *of type bytes32*
+2. **_decision** *of type uint256*
+
 ### *event* LogCancelVoting
 *Parameters:*
 1. **_proposalId** *of type bytes32*
 2. **_voter** *of type address*
 
-### *event* OrganizationRegistered
+### *event* LogCancelProposal
 *Parameters:*
-1. **_avatar** *of type address*
-
-### *event* LogNewProposal
-*Parameters:*
-1. **proposalId** *of type bytes32*
-
-### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+1. **_proposalId** *of type bytes32*
 
 ## Functions
+### *function* owner
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
+
 ### *function* organizationsParameters
 
 **constant**
@@ -65,21 +127,6 @@
 7. **uint256**
 8. **bool**
 
-### *function* findMinScore
-
-**constant**
-**payable**
-**view**
-
-
-Get the minimum score of a given list proposal ids
-
-*Inputs:*
-1. **_idsArray** *of type bytes32[]* - the proposal ids that will be checked
-
-*Returns:*
-uint index the index of the proposal containing the smallest score in the listuint min the minimum score in the list
-
 ### *function* voteInfo
 
 **constant**
@@ -96,33 +143,33 @@ voteInfo returns the vote and the amount of reputation of the user committed to 
 *Returns:*
 uint[2] array that contains the vote's info: amount of reputation committed by _voter to _proposalId, and the voters vote (1/-1/-0)
 
-### *function* moveTopAwaitingBoostMode
+### *function* transferOwnership
 
 **nonpayable**
 
 
-Move the top proposal form the waiting list to the boosted proposals
+Allows the current owner to transfer control of the contract to a newOwner.
 
 *Inputs:*
-1. **_avatar** *of type address* - avatar of the organization
+1. **newOwner** *of type address* - The address to transfer ownership to.
 
 *Returns:*
 *Nothing*
 
-### *function* findMaxScore
+### *function* setProposalParameters
 
-**constant**
-**payable**
-**view**
+**nonpayable**
 
 
-Get the maximum score of a given list proposal ids
+Set proposals parameters
 
 *Inputs:*
-1. **_idsArray** *of type bytes32[]* - the proposal ids that will be checked
+1. **_precReq** *of type uint256* - the percentage that are required for the proposal to be executed
+2. **_quorum** *of type uint256* - the 'quorum' percentages that are required for the winning choice (will be rellevant only if boosted)
+3. **_boostTimeFrame** *of type uint256* - the time frame of the proposal after being boosted, after the time passed, a decision will be made
 
 *Returns:*
-uint index the index of the proposal containing the highest score in the listuint max the maximum score in the list
+bytes32 the hashed parameters
 
 ### *function* proposals
 
@@ -164,18 +211,21 @@ voting function with owner functionality (can vote on behalf of someone else)
 *Returns:*
 *Nothing*
 
-### *function* cancelProposal
+### *function* voteWithSpecifiedAmounts
 
 **nonpayable**
 
 
-Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
+
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the proposal ID
+1. **_proposalId** *of type bytes32* - 
+2. **_vote** *of type uint256* - 
+3. **_rep** *of type uint256* - 
+4. **unnamed** *of type uint256* - 
 
 *Returns:*
-bool True if the proposal is canceled and False if it wasn't
+1. **bool**
 
 ### *function* proposalScore
 
@@ -192,20 +242,19 @@ Get the score of a specific proposal The score is evaluated by multiplying the 
 *Returns:*
 uint Proposal's score
 
-### *function* beneficiary
+### *function* vote
 
-**constant**
-**payable**
-**view**
+**nonpayable**
 
 
-
+voting function
 
 *Inputs:*
-*Nothing*
+1. **_proposalId** *of type bytes32* - id of the proposal
+2. **_vote** *of type uint256* - yes (1) / no (-1) / abstain (0)
 
 *Returns:*
-1. **address**
+*Nothing*
 
 ### *function* updateParameters
 
@@ -260,21 +309,18 @@ hash the parameters, save them if necessary, and return the hash value
 2. **uint256**
 3. **uint256**
 
-### *function* organizations
+### *function* registerOrganization
 
-**constant**
-**payable**
-**view**
+**nonpayable**
 
 
 
 
 *Inputs:*
-1. **unnamed** *of type address* - 
+1. **_avatar** *of type address* - 
 
 *Returns:*
-1. **bool**
-2. **uint256**
+*Nothing*
 
 ### *function* proposalStatus
 
@@ -307,39 +353,11 @@ register a new proposal with the given parameters. Every proposal has a unique I
 *Returns:*
 bytes32 proposalId the ID of the proposal
 
-### *function* MAX_NUM_OF_CHOICES
+### *function* isRegistered
 
 **constant**
 **payable**
 **view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **uint256**
-
-### *function* owner
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
-
-### *function* registerOrganization
-
-**nonpayable**
 
 
 
@@ -348,7 +366,37 @@ bytes32 proposalId the ID of the proposal
 1. **_avatar** *of type address* - 
 
 *Returns:*
+1. **bool**
+
+### *function* boostProposal
+
+**nonpayable**
+
+
+Internal function to boost a proposal
+
+*Inputs:*
+1. **_proposalId** *of type bytes32* - the id of the proposal that is being checked
+2. **_boostValue** *of type uint256* - amount of tokens to use for boosting, must be greater then minBoost
+
+*Returns:*
 *Nothing*
+
+### *function* organizations
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **unnamed** *of type address* - 
+
+*Returns:*
+1. **bool**
+2. **uint256**
 
 ### *function* cancelVote
 
@@ -363,19 +411,20 @@ Cancel the vote of the msg.sender: subtract the reputation amount from the votes
 *Returns:*
 *Nothing*
 
-### *function* vote
+### *function* hashedParameters
 
-**nonpayable**
+**constant**
+**payable**
+**view**
 
 
-voting function
+
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - id of the proposal
-2. **_vote** *of type uint256* - yes (1) / no (-1) / abstain (0)
+*Nothing*
 
 *Returns:*
-*Nothing*
+1. **bytes32**
 
 ### *function* getNumberOfChoices
 
@@ -392,21 +441,18 @@ voting function
 *Returns:*
 1. **uint256**
 
-### *function* voteWithSpecifiedAmounts
+### *function* cancelProposal
 
 **nonpayable**
 
 
-
+Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - 
-2. **_vote** *of type uint256* - 
-3. **_rep** *of type uint256* - 
-4. **unnamed** *of type uint256* - 
+1. **_proposalId** *of type bytes32* - the proposal ID
 
 *Returns:*
-1. **bool**
+bool True if the proposal is canceled and False if it wasn't
 
 ### *function* getOrgParametersHash
 
@@ -445,20 +491,20 @@ isVotable check if the proposal is open
 *Returns:*
 bool true or false
 
-### *function* isRegistered
+### *function* findMinScore
 
 **constant**
 **payable**
 **view**
 
 
-
+Get the minimum score of a given list proposal ids
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **_idsArray** *of type bytes32[]* - the proposal ids that will be checked
 
 *Returns:*
-1. **bool**
+uint index the index of the proposal containing the smallest score in the listuint min the minimum score in the list
 
 ### *function* getProposalParametersHash
 
@@ -477,20 +523,20 @@ hashParameters returns a hash of the given parameters
 *Returns:*
 *Nothing*
 
-### *function* setProposalParameters
+### *function* findMaxScore
 
-**nonpayable**
+**constant**
+**payable**
+**view**
 
 
-Set proposals parameters
+Get the maximum score of a given list proposal ids
 
 *Inputs:*
-1. **_precReq** *of type uint256* - the percentage that are required for the proposal to be executed
-2. **_quorum** *of type uint256* - the 'quorum' percentages that are required for the winning choice (will be rellevant only if boosted)
-3. **_boostTimeFrame** *of type uint256* - the time frame of the proposal after being boosted, after the time passed, a decision will be made
+1. **_idsArray** *of type bytes32[]* - the proposal ids that will be checked
 
 *Returns:*
-bytes32 the hashed parameters
+uint index the index of the proposal containing the highest score in the listuint max the maximum score in the list
 
 ### *function* fee
 
@@ -551,20 +597,20 @@ Helper function to find an ID in a given array
 *Returns:*
 bool isFound that indicated if the id has been found in the arrayuint index the index of the id in the array
 
-### *function* transferOwnership
+### *function* moveTopAwaitingBoostMode
 
 **nonpayable**
 
 
-Allows the current owner to transfer control of the contract to a newOwner.
+Move the top proposal form the waiting list to the boosted proposals
 
 *Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
+1. **_avatar** *of type address* - avatar of the organization
 
 *Returns:*
 *Nothing*
 
-### *function* hashedParameters
+### *function* beneficiary
 
 **constant**
 **payable**
@@ -577,19 +623,20 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 *Returns:*
-1. **bytes32**
+1. **address**
 
-### *function* boostProposal
+### *function* MAX_NUM_OF_CHOICES
 
-**nonpayable**
+**constant**
+**payable**
+**view**
 
 
-Internal function to boost a proposal
+
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the id of the proposal that is being checked
-2. **_boostValue** *of type uint256* - amount of tokens to use for boosting, must be greater then minBoost
+*Nothing*
 
 *Returns:*
-*Nothing*
+1. **uint256**
 

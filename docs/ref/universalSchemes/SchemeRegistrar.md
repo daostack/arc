@@ -1,17 +1,42 @@
 # *contract* SchemeRegistrar
 A registrar for Schemes for organizations
+
+- [Events](#events)
+    - [OwnershipTransferred](#event-OwnershipTransferred)
+    - [OrganizationRegistered](#event-OrganizationRegistered)
+    - [LogRemoveSchemeProposal](#event-LogRemoveSchemeProposal)
+    - [LogProposalExecuted](#event-LogProposalExecuted)
+    - [LogProposalDeleted](#event-LogProposalDeleted)
+    - [LogNewSchemeProposal](#event-LogNewSchemeProposal)
+    - [LogNewProposal](#event-LogNewProposal)
+- [Functions](#functions)
+    - [organizations](#function-organizations)
+    - [parameters](#function-parameters)
+    - [setParameters](#function-setParameters)
+    - [proposeScheme](#function-proposeScheme)
+    - [transferOwnership](#function-transferOwnership)
+    - [registerOrganization](#function-registerOrganization)
+    - [updateParameters](#function-updateParameters)
+    - [proposeToRemoveScheme](#function-proposeToRemoveScheme)
+    - [owner](#function-owner)
+    - [organizationsProposals](#function-organizationsProposals)
+    - [nativeToken](#function-nativeToken)
+    - [isRegistered](#function-isRegistered)
+    - [hashedParameters](#function-hashedParameters)
+    - [getParametersHash](#function-getParametersHash)
+    - [fee](#function-fee)
+    - [execute](#function-execute)
+    - [beneficiary](#function-beneficiary)
+
 ## Events
-### *event* LogNewSchemeProposal
+### *event* OwnershipTransferred
+*Parameters:*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
+
+### *event* OrganizationRegistered
 *Parameters:*
 1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-3. **_intVoteInterface** *of type address*
-4. **_scheme** *of type address*
-5. **_parametersHash** *of type bytes32*
-6. **_isRegistering** *of type bool*
-7. **_tokenFee** *of type address*
-8. **_fee** *of type uint256*
-9. **_autoRegisterOrganization** *of type bool*
 
 ### *event* LogRemoveSchemeProposal
 *Parameters:*
@@ -30,20 +55,38 @@ A registrar for Schemes for organizations
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
-### *event* OrganizationRegistered
+### *event* LogNewSchemeProposal
 *Parameters:*
 1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
+3. **_intVoteInterface** *of type address*
+4. **_scheme** *of type address*
+5. **_parametersHash** *of type bytes32*
+6. **_isRegistering** *of type bool*
+7. **_tokenFee** *of type address*
+8. **_fee** *of type uint256*
+9. **_autoRegisterOrganization** *of type bool*
 
 ### *event* LogNewProposal
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
-### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
-
 ## Functions
+### *function* organizations
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **unnamed** *of type address* - 
+
+*Returns:*
+1. **bool**
+
 ### *function* parameters
 
 **constant**
@@ -60,28 +103,6 @@ A registrar for Schemes for organizations
 1. **bytes32**
 2. **bytes32**
 3. **address**
-
-### *function* organizationsProposals
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **unnamed** *of type address* - 
-2. **unnamed** *of type bytes32* - 
-
-*Returns:*
-1. **address**
-2. **bytes32**
-3. **uint256**
-4. **bool**
-5. **address**
-6. **uint256**
-7. **bool**
 
 ### *function* setParameters
 
@@ -117,35 +138,31 @@ create a proposal to register a schemeNB: not only proposes the vote, but also 
 *Returns:*
 a proposal Id
 
-### *function* execute
+### *function* transferOwnership
 
 **nonpayable**
 
 
-execute a  proposal This method can only be called by the voting machine in which the vote is held.
+Allows the current owner to transfer control of the contract to a newOwner.
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the ID of the proposal in the voting machine
-2. **_avatar** *of type address* - address of the controller
-3. **_param** *of type int256* - identifies the action to be taken
+1. **newOwner** *of type address* - The address to transfer ownership to.
 
 *Returns:*
 *Nothing*
 
-### *function* beneficiary
+### *function* registerOrganization
 
-**constant**
-**payable**
-**view**
+**nonpayable**
 
 
 
 
 *Inputs:*
-*Nothing*
+1. **_avatar** *of type address* - 
 
 *Returns:*
-1. **address**
+*Nothing*
 
 ### *function* updateParameters
 
@@ -177,7 +194,22 @@ propose to remove a scheme for a controller
 *Returns:*
 *Nothing*
 
-### *function* organizations
+### *function* owner
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
+
+### *function* organizationsProposals
 
 **constant**
 **payable**
@@ -188,9 +220,61 @@ propose to remove a scheme for a controller
 
 *Inputs:*
 1. **unnamed** *of type address* - 
+2. **unnamed** *of type bytes32* - 
+
+*Returns:*
+1. **address**
+2. **bytes32**
+3. **uint256**
+4. **bool**
+5. **address**
+6. **uint256**
+7. **bool**
+
+### *function* nativeToken
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
+
+### *function* isRegistered
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **_avatar** *of type address* - 
 
 *Returns:*
 1. **bool**
+
+### *function* hashedParameters
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **bytes32**
 
 ### *function* getParametersHash
 
@@ -209,49 +293,6 @@ propose to remove a scheme for a controller
 *Returns:*
 1. **bytes32**
 
-### *function* owner
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
-
-### *function* registerOrganization
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_avatar** *of type address* - 
-
-*Returns:*
-*Nothing*
-
-### *function* isRegistered
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **_avatar** *of type address* - 
-
-*Returns:*
-1. **bool**
-
 ### *function* fee
 
 **constant**
@@ -267,7 +308,22 @@ propose to remove a scheme for a controller
 *Returns:*
 1. **uint256**
 
-### *function* nativeToken
+### *function* execute
+
+**nonpayable**
+
+
+execute a  proposal This method can only be called by the voting machine in which the vote is held.
+
+*Inputs:*
+1. **_proposalId** *of type bytes32* - the ID of the proposal in the voting machine
+2. **_avatar** *of type address* - address of the controller
+3. **_param** *of type int256* - identifies the action to be taken
+
+*Returns:*
+*Nothing*
+
+### *function* beneficiary
 
 **constant**
 **payable**
@@ -281,32 +337,4 @@ propose to remove a scheme for a controller
 
 *Returns:*
 1. **address**
-
-### *function* transferOwnership
-
-**nonpayable**
-
-
-Allows the current owner to transfer control of the contract to a newOwner.
-
-*Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
-
-*Returns:*
-*Nothing*
-
-### *function* hashedParameters
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **bytes32**
 

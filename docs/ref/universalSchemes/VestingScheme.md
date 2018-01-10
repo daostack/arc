@@ -1,44 +1,66 @@
 # *contract* VestingScheme
 A schme for vesting.
+
+- [Events](#events)
+    - [RevokeSignToCancelAgreement](#event-RevokeSignToCancelAgreement)
+    - [OwnershipTransferred](#event-OwnershipTransferred)
+    - [SignToCancelAgreement](#event-SignToCancelAgreement)
+    - [OrganizationRegistered](#event-OrganizationRegistered)
+    - [NewVestedAgreement](#event-NewVestedAgreement)
+    - [LogRegisterOrg](#event-LogRegisterOrg)
+    - [LogNewProposal](#event-LogNewProposal)
+    - [LogExecutaion](#event-LogExecutaion)
+    - [LogCollect](#event-LogCollect)
+    - [LogAgreementProposal](#event-LogAgreementProposal)
+    - [LogAgreementCancel](#event-LogAgreementCancel)
+- [Functions](#functions)
+    - [signToCancelAgreement](#function-signToCancelAgreement)
+    - [parameters](#function-parameters)
+    - [transferOwnership](#function-transferOwnership)
+    - [registerOrganization](#function-registerOrganization)
+    - [revokeSignToCancelAgreement](#function-revokeSignToCancelAgreement)
+    - [updateParameters](#function-updateParameters)
+    - [setParameters](#function-setParameters)
+    - [proposeVestingAgreement](#function-proposeVestingAgreement)
+    - [isRegistered](#function-isRegistered)
+    - [organizations](#function-organizations)
+    - [organizationsData](#function-organizationsData)
+    - [owner](#function-owner)
+    - [nativeToken](#function-nativeToken)
+    - [hashedParameters](#function-hashedParameters)
+    - [getParametersHash](#function-getParametersHash)
+    - [fee](#function-fee)
+    - [execute](#function-execute)
+    - [createVestedAgreement](#function-createVestedAgreement)
+    - [collect](#function-collect)
+    - [beneficiary](#function-beneficiary)
+    - [agreements](#function-agreements)
+
 ## Events
-### *event* LogRegisterOrg
-*Parameters:*
-1. **_avatar** *of type address*
-
-### *event* LogAgreementProposal
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-
-### *event* LogExecutaion
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-3. **_result** *of type int256*
-
-### *event* NewVestedAgreement
+### *event* RevokeSignToCancelAgreement
 *Parameters:*
 1. **_agreementId** *of type uint256*
+2. **_signer** *of type address*
+
+### *event* OwnershipTransferred
+*Parameters:*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
 
 ### *event* SignToCancelAgreement
 *Parameters:*
 1. **_agreementId** *of type uint256*
 2. **_signer** *of type address*
 
-### *event* RevokeSignToCancelAgreement
-*Parameters:*
-1. **_agreementId** *of type uint256*
-2. **_signer** *of type address*
-
-### *event* LogAgreementCancel
-*Parameters:*
-1. **_agreementId** *of type uint256*
-
-### *event* LogCollect
-*Parameters:*
-1. **_agreementId** *of type uint256*
-
 ### *event* OrganizationRegistered
+*Parameters:*
+1. **_avatar** *of type address*
+
+### *event* NewVestedAgreement
+*Parameters:*
+1. **_agreementId** *of type uint256*
+
+### *event* LogRegisterOrg
 *Parameters:*
 1. **_avatar** *of type address*
 
@@ -46,12 +68,39 @@ A schme for vesting.
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
-### *event* OwnershipTransferred
+### *event* LogExecutaion
 *Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
+3. **_result** *of type int256*
+
+### *event* LogCollect
+*Parameters:*
+1. **_agreementId** *of type uint256*
+
+### *event* LogAgreementProposal
+*Parameters:*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
+
+### *event* LogAgreementCancel
+*Parameters:*
+1. **_agreementId** *of type uint256*
 
 ## Functions
+### *function* signToCancelAgreement
+
+**nonpayable**
+
+
+Function to sign to cancel an agreement.
+
+*Inputs:*
+1. **_agreementId** *of type uint256* - the relevant agreement.
+
+*Returns:*
+*Nothing*
+
 ### *function* parameters
 
 **constant**
@@ -67,6 +116,127 @@ A schme for vesting.
 *Returns:*
 1. **bytes32**
 2. **address**
+
+### *function* transferOwnership
+
+**nonpayable**
+
+
+Allows the current owner to transfer control of the contract to a newOwner.
+
+*Inputs:*
+1. **newOwner** *of type address* - The address to transfer ownership to.
+
+*Returns:*
+*Nothing*
+
+### *function* registerOrganization
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_avatar** *of type address* - 
+
+*Returns:*
+*Nothing*
+
+### *function* revokeSignToCancelAgreement
+
+**nonpayable**
+
+
+Function to revoke vote for canceling agreement.
+
+*Inputs:*
+1. **_agreementId** *of type uint256* - the relevant agreement.
+
+*Returns:*
+*Nothing*
+
+### *function* updateParameters
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_nativeToken** *of type address* - 
+2. **_fee** *of type uint256* - 
+3. **_beneficiary** *of type address* - 
+4. **_hashedParameters** *of type bytes32* - 
+
+*Returns:*
+*Nothing*
+
+### *function* setParameters
+
+**nonpayable**
+
+
+Hash the parameters, save them if necessary, and return the hash value
+
+*Inputs:*
+1. **_voteParams** *of type bytes32* - -  voting parameters
+2. **_intVote** *of type address* - - voting machine contract.
+
+*Returns:*
+bytes32 -the parameters hash
+
+### *function* proposeVestingAgreement
+
+**nonpayable**
+
+
+Proposing a vesting agreement in an organization.
+
+*Inputs:*
+1. **_beneficiary** *of type address* - the beneficiary of the agreement.
+2. **_returnOnCancelAddress** *of type address* - where to send the tokens in case of stoping.
+3. **_startingBlock** *of type uint256* - the block from which the agreement starts.
+4. **_amountPerPeriod** *of type uint256* - amount of tokens per period.
+5. **_periodLength** *of type uint256* - period length in blocks.
+6. **_numOfAgreedPeriods** *of type uint256* - how many periods agreed on.
+7. **_cliffInPeriods** *of type uint256* - the length of the cliff in periods.
+8. **_signaturesReqToCancel** *of type uint256* - number of signatures required to cancel agreement.
+9. **_signersArray** *of type address[]* - avatar array of adresses that can sign to cancel agreement.
+10. **_avatar** *of type address* - avatar of the organization.
+
+*Returns:*
+bytes32 the proposalId
+
+### *function* isRegistered
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **_avatar** *of type address* - 
+
+*Returns:*
+1. **bool**
+
+### *function* organizations
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **unnamed** *of type address* - 
+
+*Returns:*
+1. **bool**
 
 ### *function* organizationsData
 
@@ -94,6 +264,51 @@ A schme for vesting.
 10. **uint256**
 11. **uint256**
 
+### *function* owner
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
+
+### *function* nativeToken
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
+
+### *function* hashedParameters
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **bytes32**
+
 ### *function* getParametersHash
 
 **constant**
@@ -110,6 +325,21 @@ Hash the parameters,and return the hash value
 *Returns:*
 bytes32 -the parameters hash
 
+### *function* fee
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **uint256**
+
 ### *function* execute
 
 **nonpayable**
@@ -125,6 +355,41 @@ execution of proposals, can only be called by the voting machine in which the vo
 *Returns:*
 bool which represents a successful of the function
 
+### *function* createVestedAgreement
+
+**nonpayable**
+
+
+Creating a vesting agreement.
+
+*Inputs:*
+1. **_token** *of type address* - the relevant token in the agreement.
+2. **_beneficiary** *of type address* - the beneficiary of the agreement.
+3. **_returnOnCancelAddress** *of type address* - where to send the tokens in case of stoping.
+4. **_startingBlock** *of type uint256* - the block from which the agreement starts.
+5. **_amountPerPeriod** *of type uint256* - amount of tokens per period.
+6. **_periodLength** *of type uint256* - period length in blocks.
+7. **_numOfAgreedPeriods** *of type uint256* - how many periods agreed on.
+8. **_cliffInPeriods** *of type uint256* - the length of the cliff in periods.
+9. **_signaturesReqToCancel** *of type uint256* - number of signatures required to cancel agreement.
+10. **_signersArray** *of type address[]* - avatar array of adresses that can sign to cancel agreement.
+
+*Returns:*
+uint the agreement index.
+
+### *function* collect
+
+**nonpayable**
+
+
+Function for a beneficiary to collect.
+
+*Inputs:*
+1. **_agreementId** *of type uint256* - the relevant agreement.
+
+*Returns:*
+*Nothing*
+
 ### *function* beneficiary
 
 **constant**
@@ -139,127 +404,6 @@ bool which represents a successful of the function
 
 *Returns:*
 1. **address**
-
-### *function* updateParameters
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_nativeToken** *of type address* - 
-2. **_fee** *of type uint256* - 
-3. **_beneficiary** *of type address* - 
-4. **_hashedParameters** *of type bytes32* - 
-
-*Returns:*
-*Nothing*
-
-### *function* organizations
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **unnamed** *of type address* - 
-
-*Returns:*
-1. **bool**
-
-### *function* proposeVestingAgreement
-
-**nonpayable**
-
-
-Proposing a vesting agreement in an organization.
-
-*Inputs:*
-1. **_beneficiary** *of type address* - the beneficiary of the agreement.
-2. **_returnOnCancelAddress** *of type address* - where to send the tokens in case of stoping.
-3. **_startingBlock** *of type uint256* - the block from which the agreement starts.
-4. **_amountPerPeriod** *of type uint256* - amount of tokens per period.
-5. **_periodLength** *of type uint256* - period length in blocks.
-6. **_numOfAgreedPeriods** *of type uint256* - how many periods agreed on.
-7. **_cliffInPeriods** *of type uint256* - the length of the cliff in periods.
-8. **_signaturesReqToCancel** *of type uint256* - number of signatures required to cancel agreement.
-9. **_signersArray** *of type address[]* - avatar array of adresses that can sign to cancel agreement.
-10. **_avatar** *of type address* - avatar of the organization.
-
-*Returns:*
-bytes32 the proposalId
-
-### *function* setParameters
-
-**nonpayable**
-
-
-Hash the parameters, save them if necessary, and return the hash value
-
-*Inputs:*
-1. **_voteParams** *of type bytes32* - -  voting parameters
-2. **_intVote** *of type address* - - voting machine contract.
-
-*Returns:*
-bytes32 -the parameters hash
-
-### *function* revokeSignToCancelAgreement
-
-**nonpayable**
-
-
-Function to revoke vote for canceling agreement.
-
-*Inputs:*
-1. **_agreementId** *of type uint256* - the relevant agreement.
-
-*Returns:*
-*Nothing*
-
-### *function* signToCancelAgreement
-
-**nonpayable**
-
-
-Function to sign to cancel an agreement.
-
-*Inputs:*
-1. **_agreementId** *of type uint256* - the relevant agreement.
-
-*Returns:*
-*Nothing*
-
-### *function* owner
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
-
-### *function* registerOrganization
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_avatar** *of type address* - 
-
-*Returns:*
-*Nothing*
 
 ### *function* agreements
 
@@ -285,112 +429,4 @@ Function to sign to cancel an agreement.
 9. **uint256**
 10. **uint256**
 11. **uint256**
-
-### *function* isRegistered
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **_avatar** *of type address* - 
-
-*Returns:*
-1. **bool**
-
-### *function* collect
-
-**nonpayable**
-
-
-Function for a beneficiary to collect.
-
-*Inputs:*
-1. **_agreementId** *of type uint256* - the relevant agreement.
-
-*Returns:*
-*Nothing*
-
-### *function* fee
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **uint256**
-
-### *function* nativeToken
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
-
-### *function* transferOwnership
-
-**nonpayable**
-
-
-Allows the current owner to transfer control of the contract to a newOwner.
-
-*Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
-
-*Returns:*
-*Nothing*
-
-### *function* createVestedAgreement
-
-**nonpayable**
-
-
-Creating a vesting agreement.
-
-*Inputs:*
-1. **_token** *of type address* - the relevant token in the agreement.
-2. **_beneficiary** *of type address* - the beneficiary of the agreement.
-3. **_returnOnCancelAddress** *of type address* - where to send the tokens in case of stoping.
-4. **_startingBlock** *of type uint256* - the block from which the agreement starts.
-5. **_amountPerPeriod** *of type uint256* - amount of tokens per period.
-6. **_periodLength** *of type uint256* - period length in blocks.
-7. **_numOfAgreedPeriods** *of type uint256* - how many periods agreed on.
-8. **_cliffInPeriods** *of type uint256* - the length of the cliff in periods.
-9. **_signaturesReqToCancel** *of type uint256* - number of signatures required to cancel agreement.
-10. **_signersArray** *of type address[]* - avatar array of adresses that can sign to cancel agreement.
-
-*Returns:*
-uint the agreement index.
-
-### *function* hashedParameters
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **bytes32**
 

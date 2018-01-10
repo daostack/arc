@@ -1,24 +1,59 @@
 # *contract* DAOToken
 DAOToken, base on zeppelin contract.
+
+- [Events](#events)
+    - [Transfer](#event-Transfer)
+    - [OwnershipTransferred](#event-OwnershipTransferred)
+    - [MintFinished](#event-MintFinished)
+    - [Mint](#event-Mint)
+    - [Burn](#event-Burn)
+    - [Approval](#event-Approval)
+- [Functions](#functions)
+    - [balanceOf](#function-balanceOf)
+    - [mintingFinished](#function-mintingFinished)
+    - [transferOwnership](#function-transferOwnership)
+    - [totalSupply](#function-totalSupply)
+    - [transferFrom](#function-transferFrom)
+    - [transfer](#function-transfer)
+    - [symbol](#function-symbol)
+    - [owner](#function-owner)
+    - [name](#function-name)
+    - [mint](#function-mint)
+    - [increaseApproval](#function-increaseApproval)
+    - [finishMinting](#function-finishMinting)
+    - [destroyAndSend](#function-destroyAndSend)
+    - [destroy](#function-destroy)
+    - [decreaseApproval](#function-decreaseApproval)
+    - [burn](#function-burn)
+    - [approve](#function-approve)
+    - [allowance](#function-allowance)
+    - [DECIMAL](#function-DECIMAL)
+
 ## Events
-### *event* Burn
+### *event* Transfer
 *Parameters:*
-1. **burner** *of type address*
-2. **value** *of type uint256*
+1. **from** *of type address*
+2. **to** *of type address*
+3. **value** *of type uint256*
+
+### *event* OwnershipTransferred
+*Parameters:*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
+
+### *event* MintFinished
+*Parameters:*
+*Nothing*
 
 ### *event* Mint
 *Parameters:*
 1. **to** *of type address*
 2. **amount** *of type uint256*
 
-### *event* MintFinished
+### *event* Burn
 *Parameters:*
-*Nothing*
-
-### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+1. **burner** *of type address*
+2. **value** *of type uint256*
 
 ### *event* Approval
 *Parameters:*
@@ -26,13 +61,22 @@ DAOToken, base on zeppelin contract.
 2. **spender** *of type address*
 3. **value** *of type uint256*
 
-### *event* Transfer
-*Parameters:*
-1. **from** *of type address*
-2. **to** *of type address*
-3. **value** *of type uint256*
-
 ## Functions
+### *function* balanceOf
+
+**constant**
+**payable**
+**view**
+
+
+Gets the balance of the specified address.
+
+*Inputs:*
+1. **_owner** *of type address* - The address to query the the balance of.
+
+*Returns:*
+An uint256 representing the amount owned by the passed address.
+
 ### *function* mintingFinished
 
 **constant**
@@ -48,31 +92,15 @@ DAOToken, base on zeppelin contract.
 *Returns:*
 1. **bool**
 
-### *function* name
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **string**
-
-### *function* approve
+### *function* transferOwnership
 
 **nonpayable**
 
 
-Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.   * Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+Allows the current owner to transfer control of the contract to a newOwner.
 
 *Inputs:*
-1. **_spender** *of type address* - The address which will spend the funds.
-2. **_value** *of type uint256* - The amount of tokens to be spent.
+1. **newOwner** *of type address* - The address to transfer ownership to.
 
 *Returns:*
 *Nothing*
@@ -107,6 +135,65 @@ Transfer tokens from one address to another
 *Returns:*
 *Nothing*
 
+### *function* transfer
+
+**nonpayable**
+
+
+transfer token for a specified address
+
+*Inputs:*
+1. **_to** *of type address* - The address to transfer to.
+2. **_value** *of type uint256* - The amount to be transferred.
+
+*Returns:*
+*Nothing*
+
+### *function* symbol
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **string**
+
+### *function* owner
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
+
+### *function* name
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **string**
+
 ### *function* mint
 
 **nonpayable**
@@ -121,15 +208,55 @@ Function to mint tokens
 *Returns:*
 A boolean that indicates if the operation was successful.
 
-### *function* burn
+### *function* increaseApproval
 
 **nonpayable**
 
 
-Burns a specific amount of tokens.
+Increase the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
 
 *Inputs:*
-1. **_value** *of type uint256* - The amount of token to be burned.
+1. **_spender** *of type address* - The address which will spend the funds.
+2. **_addedValue** *of type uint256* - The amount of tokens to increase the allowance by.
+
+*Returns:*
+*Nothing*
+
+### *function* finishMinting
+
+**nonpayable**
+
+
+Function to stop minting new tokens.
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+True if the operation was successful.
+
+### *function* destroyAndSend
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_recipient** *of type address* - 
+
+*Returns:*
+*Nothing*
+
+### *function* destroy
+
+**nonpayable**
+
+
+Transfers the current balance to the owner and terminates the contract.
+
+*Inputs:*
+*Nothing*
 
 *Returns:*
 *Nothing*
@@ -148,116 +275,29 @@ Decrease the amount of tokens that an owner allowed to a spender.   * approve sh
 *Returns:*
 *Nothing*
 
-### *function* DECIMAL
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **uint256**
-
-### *function* balanceOf
-
-**constant**
-**payable**
-**view**
-
-
-Gets the balance of the specified address.
-
-*Inputs:*
-1. **_owner** *of type address* - The address to query the the balance of.
-
-*Returns:*
-An uint256 representing the amount owned by the passed address.
-
-### *function* finishMinting
+### *function* burn
 
 **nonpayable**
 
 
-Function to stop minting new tokens.
+Burns a specific amount of tokens.
 
 *Inputs:*
-*Nothing*
+1. **_value** *of type uint256* - The amount of token to be burned.
 
 *Returns:*
-True if the operation was successful.
+*Nothing*
 
-### *function* destroy
+### *function* approve
 
 **nonpayable**
 
 
-Transfers the current balance to the owner and terminates the contract.
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-*Nothing*
-
-### *function* owner
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
-
-### *function* symbol
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **string**
-
-### *function* transfer
-
-**nonpayable**
-
-
-transfer token for a specified address
-
-*Inputs:*
-1. **_to** *of type address* - The address to transfer to.
-2. **_value** *of type uint256* - The amount to be transferred.
-
-*Returns:*
-*Nothing*
-
-### *function* increaseApproval
-
-**nonpayable**
-
-
-Increase the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
+Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.   * Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 
 *Inputs:*
 1. **_spender** *of type address* - The address which will spend the funds.
-2. **_addedValue** *of type uint256* - The amount of tokens to increase the allowance by.
+2. **_value** *of type uint256* - The amount of tokens to be spent.
 
 *Returns:*
 *Nothing*
@@ -278,29 +318,18 @@ Function to check the amount of tokens that an owner allowed to a spender.
 *Returns:*
 A uint256 specifying the amount of tokens still available for the spender.
 
-### *function* transferOwnership
+### *function* DECIMAL
 
-**nonpayable**
-
-
-Allows the current owner to transfer control of the contract to a newOwner.
-
-*Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
-
-*Returns:*
-*Nothing*
-
-### *function* destroyAndSend
-
-**nonpayable**
+**constant**
+**payable**
+**view**
 
 
 
 
 *Inputs:*
-1. **_recipient** *of type address* - 
+*Nothing*
 
 *Returns:*
-*Nothing*
+1. **uint256**
 

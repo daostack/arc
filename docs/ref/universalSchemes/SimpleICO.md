@@ -1,12 +1,37 @@
 # *contract* SimpleICO
 SimpleICO scheme.
+
+- [Events](#events)
+    - [OwnershipTransferred](#event-OwnershipTransferred)
+    - [OrganizationRegistered](#event-OrganizationRegistered)
+    - [LogNewProposal](#event-LogNewProposal)
+    - [DonationReceived](#event-DonationReceived)
+- [Functions](#functions)
+    - [registerOrganization](#function-registerOrganization)
+    - [parameters](#function-parameters)
+    - [transferOwnership](#function-transferOwnership)
+    - [resumeICO](#function-resumeICO)
+    - [updateParameters](#function-updateParameters)
+    - [start](#function-start)
+    - [setParameters](#function-setParameters)
+    - [organizationsICOInfo](#function-organizationsICOInfo)
+    - [organizations](#function-organizations)
+    - [owner](#function-owner)
+    - [nativeToken](#function-nativeToken)
+    - [isRegistered](#function-isRegistered)
+    - [isActive](#function-isActive)
+    - [hashedParameters](#function-hashedParameters)
+    - [haltICO](#function-haltICO)
+    - [getParametersHash](#function-getParametersHash)
+    - [fee](#function-fee)
+    - [donate](#function-donate)
+    - [beneficiary](#function-beneficiary)
+
 ## Events
-### *event* DonationReceived
+### *event* OwnershipTransferred
 *Parameters:*
-1. **organization** *of type address*
-2. **_beneficiary** *of type address*
-3. **_incomingEther** *of type uint256*
-4. **_tokensAmount** *of type uint256*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
 
 ### *event* OrganizationRegistered
 *Parameters:*
@@ -16,12 +41,27 @@ SimpleICO scheme.
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
-### *event* OwnershipTransferred
+### *event* DonationReceived
 *Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+1. **organization** *of type address*
+2. **_beneficiary** *of type address*
+3. **_incomingEther** *of type uint256*
+4. **_tokensAmount** *of type uint256*
 
 ## Functions
+### *function* registerOrganization
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_avatar** *of type address* - 
+
+*Returns:*
+*Nothing*
+
 ### *function* parameters
 
 **constant**
@@ -42,6 +82,61 @@ SimpleICO scheme.
 5. **address**
 6. **address**
 
+### *function* transferOwnership
+
+**nonpayable**
+
+
+Allows the current owner to transfer control of the contract to a newOwner.
+
+*Inputs:*
+1. **newOwner** *of type address* - The address to transfer ownership to.
+
+*Returns:*
+*Nothing*
+
+### *function* resumeICO
+
+**nonpayable**
+
+
+Allowing admin to reopen an ICO.
+
+*Inputs:*
+1. **_avatar** *of type address* - The Avatar's of the organization
+
+*Returns:*
+*Nothing*
+
+### *function* updateParameters
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_nativeToken** *of type address* - 
+2. **_fee** *of type uint256* - 
+3. **_beneficiary** *of type address* - 
+4. **_hashedParameters** *of type bytes32* - 
+
+*Returns:*
+*Nothing*
+
+### *function* start
+
+**nonpayable**
+
+
+start an ICO
+
+*Inputs:*
+1. **_avatar** *of type address* - The Avatar's of the organization
+
+*Returns:*
+*Nothing*
+
 ### *function* setParameters
 
 **nonpayable**
@@ -60,51 +155,6 @@ Hash the parameters, save them if necessary, and return the hash value
 *Returns:*
 bytes32 -the params hash
 
-### *function* donate
-
-**payable**
-
-
-Donating ethers to get tokens. If the donation is higher than the remaining ethers in the "cap", The donator will get the change in ethers.
-
-*Inputs:*
-1. **_avatar** *of type address* - The Avatar's of the organization.
-2. **_beneficiary** *of type address* - The donator's address - which will receive the ICO's tokens.
-
-*Returns:*
-bool which represents a successful of the function
-
-### *function* beneficiary
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
-
-### *function* updateParameters
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_nativeToken** *of type address* - 
-2. **_fee** *of type uint256* - 
-3. **_beneficiary** *of type address* - 
-4. **_hashedParameters** *of type bytes32* - 
-
-*Returns:*
-*Nothing*
-
 ### *function* organizationsICOInfo
 
 **constant**
@@ -122,26 +172,6 @@ bool which represents a successful of the function
 2. **address**
 3. **uint256**
 4. **bool**
-
-### *function* getParametersHash
-
-**constant**
-**payable**
-**pure**
-
-
-Hash the parameters and return the hash value
-
-*Inputs:*
-1. **_cap** *of type uint256* - the ico cap
-2. **_price** *of type uint256* - represents Tokens per 1 Eth
-3. **_startBlock** *of type uint256* - ico start block
-4. **_endBlock** *of type uint256* - ico end
-5. **_beneficiary** *of type address* - the ico ether beneficiary
-6. **_admin** *of type address* - the address of the ico admin which can hald and resume the ICO.
-
-*Returns:*
-bytes32 -the params hash
 
 ### *function* organizations
 
@@ -173,46 +203,20 @@ bytes32 -the params hash
 *Returns:*
 1. **address**
 
-### *function* registerOrganization
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_avatar** *of type address* - 
-
-*Returns:*
-*Nothing*
-
-### *function* isActive
+### *function* nativeToken
 
 **constant**
 **payable**
 **view**
 
 
-Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
+
 
 *Inputs:*
-1. **_avatar** *of type address* - The Avatar's of the organization
-
-*Returns:*
-bool which represents a successful of the function
-
-### *function* haltICO
-
-**nonpayable**
-
-
-Allowing admin to halt an ICO.
-
-*Inputs:*
-1. **_avatar** *of type address* - The Avatar's of the organization
-
-*Returns:*
 *Nothing*
+
+*Returns:*
+1. **address**
 
 ### *function* isRegistered
 
@@ -229,18 +233,68 @@ Allowing admin to halt an ICO.
 *Returns:*
 1. **bool**
 
-### *function* start
+### *function* isActive
+
+**constant**
+**payable**
+**view**
+
+
+Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
+
+*Inputs:*
+1. **_avatar** *of type address* - The Avatar's of the organization
+
+*Returns:*
+bool which represents a successful of the function
+
+### *function* hashedParameters
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **bytes32**
+
+### *function* haltICO
 
 **nonpayable**
 
 
-start an ICO
+Allowing admin to halt an ICO.
 
 *Inputs:*
 1. **_avatar** *of type address* - The Avatar's of the organization
 
 *Returns:*
 *Nothing*
+
+### *function* getParametersHash
+
+**constant**
+**payable**
+**pure**
+
+
+Hash the parameters and return the hash value
+
+*Inputs:*
+1. **_cap** *of type uint256* - the ico cap
+2. **_price** *of type uint256* - represents Tokens per 1 Eth
+3. **_startBlock** *of type uint256* - ico start block
+4. **_endBlock** *of type uint256* - ico end
+5. **_beneficiary** *of type address* - the ico ether beneficiary
+6. **_admin** *of type address* - the address of the ico admin which can hald and resume the ICO.
+
+*Returns:*
+bytes32 -the params hash
 
 ### *function* fee
 
@@ -257,7 +311,21 @@ start an ICO
 *Returns:*
 1. **uint256**
 
-### *function* nativeToken
+### *function* donate
+
+**payable**
+
+
+Donating ethers to get tokens. If the donation is higher than the remaining ethers in the "cap", The donator will get the change in ethers.
+
+*Inputs:*
+1. **_avatar** *of type address* - The Avatar's of the organization.
+2. **_beneficiary** *of type address* - The donator's address - which will receive the ICO's tokens.
+
+*Returns:*
+bool which represents a successful of the function
+
+### *function* beneficiary
 
 **constant**
 **payable**
@@ -271,45 +339,4 @@ start an ICO
 
 *Returns:*
 1. **address**
-
-### *function* resumeICO
-
-**nonpayable**
-
-
-Allowing admin to reopen an ICO.
-
-*Inputs:*
-1. **_avatar** *of type address* - The Avatar's of the organization
-
-*Returns:*
-*Nothing*
-
-### *function* transferOwnership
-
-**nonpayable**
-
-
-Allows the current owner to transfer control of the contract to a newOwner.
-
-*Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
-
-*Returns:*
-*Nothing*
-
-### *function* hashedParameters
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **bytes32**
 

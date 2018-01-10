@@ -1,6 +1,55 @@
 # *contract* ContributionReward
 A scheme for proposing and rewarding contributions to an organization
+
+- [Events](#events)
+    - [OwnershipTransferred](#event-OwnershipTransferred)
+    - [OrganizationRegistered](#event-OrganizationRegistered)
+    - [LogProposalExecuted](#event-LogProposalExecuted)
+    - [LogProposalDeleted](#event-LogProposalDeleted)
+    - [LogNewProposal](#event-LogNewProposal)
+    - [LogNewContributionProposal](#event-LogNewContributionProposal)
+- [Functions](#functions)
+    - [registerOrganization](#function-registerOrganization)
+    - [parameters](#function-parameters)
+    - [transferOwnership](#function-transferOwnership)
+    - [setParameters](#function-setParameters)
+    - [updateParameters](#function-updateParameters)
+    - [proposeContributionReward](#function-proposeContributionReward)
+    - [owner](#function-owner)
+    - [organizationsProposals](#function-organizationsProposals)
+    - [organizations](#function-organizations)
+    - [nativeToken](#function-nativeToken)
+    - [isRegistered](#function-isRegistered)
+    - [hashedParameters](#function-hashedParameters)
+    - [getParametersHash](#function-getParametersHash)
+    - [fee](#function-fee)
+    - [execute](#function-execute)
+    - [beneficiary](#function-beneficiary)
+
 ## Events
+### *event* OwnershipTransferred
+*Parameters:*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
+
+### *event* OrganizationRegistered
+*Parameters:*
+1. **_avatar** *of type address*
+
+### *event* LogProposalExecuted
+*Parameters:*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
+
+### *event* LogProposalDeleted
+*Parameters:*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
+
+### *event* LogNewProposal
+*Parameters:*
+1. **proposalId** *of type bytes32*
+
 ### *event* LogNewContributionProposal
 *Parameters:*
 1. **_avatar** *of type address*
@@ -14,30 +63,20 @@ A scheme for proposing and rewarding contributions to an organization
 9. **_externalToken** *of type address*
 10. **_beneficiary** *of type address*
 
-### *event* LogProposalExecuted
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-
-### *event* LogProposalDeleted
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-
-### *event* OrganizationRegistered
-*Parameters:*
-1. **_avatar** *of type address*
-
-### *event* LogNewProposal
-*Parameters:*
-1. **proposalId** *of type bytes32*
-
-### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
-
 ## Functions
+### *function* registerOrganization
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_avatar** *of type address* - 
+
+*Returns:*
+*Nothing*
+
 ### *function* parameters
 
 **constant**
@@ -56,57 +95,34 @@ A scheme for proposing and rewarding contributions to an organization
 3. **uint256**
 4. **address**
 
-### *function* organizationsProposals
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **unnamed** *of type address* - 
-2. **unnamed** *of type bytes32* - 
-
-*Returns:*
-1. **bytes32**
-2. **uint256**
-3. **uint256**
-4. **uint256**
-5. **address**
-6. **uint256**
-7. **address**
-
-### *function* execute
+### *function* transferOwnership
 
 **nonpayable**
 
 
-execution of proposals, can only be called by the voting machine in which the vote is held.
+Allows the current owner to transfer control of the contract to a newOwner.
 
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the ID of the voting in the voting machine
-2. **_avatar** *of type address* - address of the controller
-3. **_param** *of type int256* - a parameter of the voting result, 0 is no and 1 is yes.
+1. **newOwner** *of type address* - The address to transfer ownership to.
 
 *Returns:*
 *Nothing*
 
-### *function* beneficiary
+### *function* setParameters
 
-**constant**
-**payable**
-**view**
+**nonpayable**
 
 
-
+hash the parameters, save them if necessary, and return the hash value
 
 *Inputs:*
-*Nothing*
+1. **_orgNativeTokenFee** *of type uint256* - 
+2. **_schemeNativeTokenFee** *of type uint256* - 
+3. **_voteApproveParams** *of type bytes32* - 
+4. **_intVote** *of type address* - 
 
 *Returns:*
-1. **address**
+*Nothing*
 
 ### *function* updateParameters
 
@@ -123,21 +139,6 @@ execution of proposals, can only be called by the voting machine in which the vo
 
 *Returns:*
 *Nothing*
-
-### *function* organizations
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **unnamed** *of type address* - 
-
-*Returns:*
-1. **bool**
 
 ### *function* proposeContributionReward
 
@@ -171,9 +172,63 @@ Submit a proposal for a reward for a contribution:
 *Returns:*
 1. **address**
 
-### *function* registerOrganization
+### *function* organizationsProposals
 
-**nonpayable**
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **unnamed** *of type address* - 
+2. **unnamed** *of type bytes32* - 
+
+*Returns:*
+1. **bytes32**
+2. **uint256**
+3. **uint256**
+4. **uint256**
+5. **address**
+6. **uint256**
+7. **address**
+
+### *function* organizations
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **unnamed** *of type address* - 
+
+*Returns:*
+1. **bool**
+
+### *function* nativeToken
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
+
+### *function* isRegistered
+
+**constant**
+**payable**
+**view**
 
 
 
@@ -182,7 +237,22 @@ Submit a proposal for a reward for a contribution:
 1. **_avatar** *of type address* - 
 
 *Returns:*
+1. **bool**
+
+### *function* hashedParameters
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
 *Nothing*
+
+*Returns:*
+1. **bytes32**
 
 ### *function* getParametersHash
 
@@ -202,37 +272,6 @@ return a hash of the given parameters
 *Returns:*
 a hash of the parameters
 
-### *function* setParameters
-
-**nonpayable**
-
-
-hash the parameters, save them if necessary, and return the hash value
-
-*Inputs:*
-1. **_orgNativeTokenFee** *of type uint256* - 
-2. **_schemeNativeTokenFee** *of type uint256* - 
-3. **_voteApproveParams** *of type bytes32* - 
-4. **_intVote** *of type address* - 
-
-*Returns:*
-*Nothing*
-
-### *function* isRegistered
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **_avatar** *of type address* - 
-
-*Returns:*
-1. **bool**
-
 ### *function* fee
 
 **constant**
@@ -248,7 +287,22 @@ hash the parameters, save them if necessary, and return the hash value
 *Returns:*
 1. **uint256**
 
-### *function* nativeToken
+### *function* execute
+
+**nonpayable**
+
+
+execution of proposals, can only be called by the voting machine in which the vote is held.
+
+*Inputs:*
+1. **_proposalId** *of type bytes32* - the ID of the voting in the voting machine
+2. **_avatar** *of type address* - address of the controller
+3. **_param** *of type int256* - a parameter of the voting result, 0 is no and 1 is yes.
+
+*Returns:*
+*Nothing*
+
+### *function* beneficiary
 
 **constant**
 **payable**
@@ -262,32 +316,4 @@ hash the parameters, save them if necessary, and return the hash value
 
 *Returns:*
 1. **address**
-
-### *function* transferOwnership
-
-**nonpayable**
-
-
-Allows the current owner to transfer control of the contract to a newOwner.
-
-*Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
-
-*Returns:*
-*Nothing*
-
-### *function* hashedParameters
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **bytes32**
 

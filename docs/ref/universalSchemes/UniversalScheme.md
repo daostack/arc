@@ -1,6 +1,28 @@
 # *contract* UniversalScheme
 [object Object]
+
+- [Events](#events)
+    - [OwnershipTransferred](#event-OwnershipTransferred)
+    - [OrganizationRegistered](#event-OrganizationRegistered)
+    - [LogNewProposal](#event-LogNewProposal)
+- [Functions](#functions)
+    - [updateParameters](#function-updateParameters)
+    - [transferOwnership](#function-transferOwnership)
+    - [registerOrganization](#function-registerOrganization)
+    - [owner](#function-owner)
+    - [organizations](#function-organizations)
+    - [nativeToken](#function-nativeToken)
+    - [isRegistered](#function-isRegistered)
+    - [hashedParameters](#function-hashedParameters)
+    - [fee](#function-fee)
+    - [beneficiary](#function-beneficiary)
+
 ## Events
+### *event* OwnershipTransferred
+*Parameters:*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
+
 ### *event* OrganizationRegistered
 *Parameters:*
 1. **_avatar** *of type address*
@@ -9,27 +31,7 @@
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
-### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
-
 ## Functions
-### *function* beneficiary
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
-
 ### *function* updateParameters
 
 **nonpayable**
@@ -46,20 +48,31 @@
 *Returns:*
 *Nothing*
 
-### *function* organizations
+### *function* transferOwnership
 
-**constant**
-**payable**
-**view**
+**nonpayable**
+
+
+Allows the current owner to transfer control of the contract to a newOwner.
+
+*Inputs:*
+1. **newOwner** *of type address* - The address to transfer ownership to.
+
+*Returns:*
+*Nothing*
+
+### *function* registerOrganization
+
+**nonpayable**
 
 
 
 
 *Inputs:*
-1. **unnamed** *of type address* - 
+1. **_avatar** *of type address* - 
 
 *Returns:*
-1. **bool**
+*Nothing*
 
 ### *function* owner
 
@@ -76,20 +89,7 @@
 *Returns:*
 1. **address**
 
-### *function* registerOrganization
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_avatar** *of type address* - 
-
-*Returns:*
-*Nothing*
-
-### *function* isRegistered
+### *function* organizations
 
 **constant**
 **payable**
@@ -99,25 +99,10 @@
 
 
 *Inputs:*
-1. **_avatar** *of type address* - 
+1. **unnamed** *of type address* - 
 
 *Returns:*
 1. **bool**
-
-### *function* fee
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **uint256**
 
 ### *function* nativeToken
 
@@ -134,18 +119,20 @@
 *Returns:*
 1. **address**
 
-### *function* transferOwnership
+### *function* isRegistered
 
-**nonpayable**
+**constant**
+**payable**
+**view**
 
 
-Allows the current owner to transfer control of the contract to a newOwner.
+
 
 *Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
+1. **_avatar** *of type address* - 
 
 *Returns:*
-*Nothing*
+1. **bool**
 
 ### *function* hashedParameters
 
@@ -161,4 +148,34 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 *Returns:*
 1. **bytes32**
+
+### *function* fee
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **uint256**
+
+### *function* beneficiary
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
 

@@ -1,33 +1,24 @@
 # *contract* TokenCapGC
 Token Cap Global Constraint
+
+- [Events](#events)
+
+- [Functions](#functions)
+    - [setParameters](#function-setParameters)
+    - [pre](#function-pre)
+    - [post](#function-post)
+    - [params](#function-params)
+    - [getParametersHash](#function-getParametersHash)
+
 ## Events
 
 ## Functions
-### *function* post
+### *function* setParameters
 
-**constant**
-**payable**
-**view**
+**nonpayable**
 
 
-check the total supply cap.
-
-*Inputs:*
-1. **unnamed** *of type address* - undefined
-2. **_paramsHash** *of type bytes32* - the parameters hash to check the total supply cap against.
-3. **unnamed** *of type bytes* - undefined
-
-*Returns:*
-bool which represents a success
-
-### *function* getParametersHash
-
-**constant**
-**payable**
-**pure**
-
-
-calculate and returns the hash of the given parameters
+adding a new set of parametrs
 
 *Inputs:*
 1. **_token** *of type address* - the token to add to the params.
@@ -53,19 +44,22 @@ check the constraint after the action. This global contraint only checks the st
 *Returns:*
 true
 
-### *function* setParameters
+### *function* post
 
-**nonpayable**
+**constant**
+**payable**
+**view**
 
 
-adding a new set of parametrs
+check the total supply cap.
 
 *Inputs:*
-1. **_token** *of type address* - the token to add to the params.
-2. **_cap** *of type uint256* - the cap to check the total supply against.
+1. **unnamed** *of type address* - undefined
+2. **_paramsHash** *of type bytes32* - the parameters hash to check the total supply cap against.
+3. **unnamed** *of type bytes* - undefined
 
 *Returns:*
-the calculated parameters hash
+bool which represents a success
 
 ### *function* params
 
@@ -82,4 +76,20 @@ the calculated parameters hash
 *Returns:*
 1. **address**
 2. **uint256**
+
+### *function* getParametersHash
+
+**constant**
+**payable**
+**pure**
+
+
+calculate and returns the hash of the given parameters
+
+*Inputs:*
+1. **_token** *of type address* - the token to add to the params.
+2. **_cap** *of type uint256* - the cap to check the total supply against.
+
+*Returns:*
+the calculated parameters hash
 

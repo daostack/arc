@@ -1,33 +1,45 @@
 # *contract* Debug
 [object Object]
-## Events
-### *event* LogAddress
-*Parameters:*
-1. **_msg** *of type address*
 
-### *event* LogInt
+- [Events](#events)
+    - [LogUint](#event-LogUint)
+    - [LogString](#event-LogString)
+    - [LogInt](#event-LogInt)
+    - [LogBytes32](#event-LogBytes32)
+    - [LogBytes](#event-LogBytes)
+    - [LogBool](#event-LogBool)
+    - [LogAddress](#event-LogAddress)
+- [Functions](#functions)
+
+
+## Events
+### *event* LogUint
 *Parameters:*
-1. **_msg** *of type int256*
+1. **_msg** *of type uint256*
 
 ### *event* LogString
 *Parameters:*
 1. **_msg** *of type string*
 
-### *event* LogUint
+### *event* LogInt
 *Parameters:*
-1. **_msg** *of type uint256*
-
-### *event* LogBytes
-*Parameters:*
-1. **_msg** *of type bytes*
+1. **_msg** *of type int256*
 
 ### *event* LogBytes32
 *Parameters:*
 1. **_msg** *of type bytes32*
 
+### *event* LogBytes
+*Parameters:*
+1. **_msg** *of type bytes*
+
 ### *event* LogBool
 *Parameters:*
 1. **_msg** *of type bool*
+
+### *event* LogAddress
+*Parameters:*
+1. **_msg** *of type address*
 
 ## Functions
 

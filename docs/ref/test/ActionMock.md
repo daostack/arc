@@ -1,5 +1,12 @@
 # *contract* ActionMock
 [object Object]
+
+- [Events](#events)
+    - [Action](#event-Action)
+- [Functions](#functions)
+    - [genericAction](#function-genericAction)
+    - [action](#function-action)
+
 ## Events
 ### *event* Action
 *Parameters:*

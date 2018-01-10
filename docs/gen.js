@@ -9,14 +9,20 @@ function main(){
     }
     
     function render(contractName,abi,devdoc){
-        const events = abi.filter(x => x.type === 'event');
-        const functions = abi.filter(x => x.type === 'function');
+        const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
+        const functions = abi.filter(x => x.type === 'function').sort((x,y) => x.name <= y.name);
         const methods = devdoc.methods || {};
         const title = devdoc.title || {};
     
         return (
 `# *contract* ${contractName}
 ${title}
+
+- [Events](#events)
+${events.map(e => `    - [${e.name}](#event-${e.name})`).join('\n')}
+- [Functions](#functions)
+${functions.map(f => `    - [${f.name}](#function-${f.name})`).join('\n')}
+
 ## Events
 ${events.map(e => 
 `### *event* ${e.name}

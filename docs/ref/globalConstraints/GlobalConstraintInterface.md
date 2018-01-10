@@ -1,9 +1,16 @@
 # *contract* GlobalConstraintInterface
 [object Object]
+
+- [Events](#events)
+
+- [Functions](#functions)
+    - [pre](#function-pre)
+    - [post](#function-post)
+
 ## Events
 
 ## Functions
-### *function* post
+### *function* pre
 
 **nonpayable**
 
@@ -18,7 +25,7 @@
 *Returns:*
 1. **bool**
 
-### *function* pre
+### *function* post
 
 **nonpayable**
 

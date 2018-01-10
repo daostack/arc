@@ -1,5 +1,11 @@
 # *contract* ExecutableInterface
 [object Object]
+
+- [Events](#events)
+
+- [Functions](#functions)
+    - [execute](#function-execute)
+
 ## Events
 
 ## Functions

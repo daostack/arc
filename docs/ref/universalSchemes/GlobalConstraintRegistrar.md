@@ -1,15 +1,34 @@
 # *contract* GlobalConstraintRegistrar
 A scheme to manage global constaintg for organizations
-## Events
-### *event* NewGlobalConstraintsProposal
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-3. **_intVoteInterface** *of type address*
-4. **_gc** *of type address*
-5. **_params** *of type bytes32*
-6. **_voteToRemoveParams** *of type bytes32*
 
+- [Events](#events)
+    - [RemoveGlobalConstraintsProposal](#event-RemoveGlobalConstraintsProposal)
+    - [ProposalExecuted](#event-ProposalExecuted)
+    - [OwnershipTransferred](#event-OwnershipTransferred)
+    - [OrganizationRegistered](#event-OrganizationRegistered)
+    - [NewGlobalConstraintsProposal](#event-NewGlobalConstraintsProposal)
+    - [LogProposalDeleted](#event-LogProposalDeleted)
+    - [LogNewProposal](#event-LogNewProposal)
+- [Functions](#functions)
+    - [setParameters](#function-setParameters)
+    - [parameters](#function-parameters)
+    - [proposeToRemoveGC](#function-proposeToRemoveGC)
+    - [transferOwnership](#function-transferOwnership)
+    - [registerOrganization](#function-registerOrganization)
+    - [proposeGlobalConstraint](#function-proposeGlobalConstraint)
+    - [updateParameters](#function-updateParameters)
+    - [owner](#function-owner)
+    - [organizationsData](#function-organizationsData)
+    - [organizations](#function-organizations)
+    - [nativeToken](#function-nativeToken)
+    - [isRegistered](#function-isRegistered)
+    - [hashedParameters](#function-hashedParameters)
+    - [getParametersHash](#function-getParametersHash)
+    - [fee](#function-fee)
+    - [execute](#function-execute)
+    - [beneficiary](#function-beneficiary)
+
+## Events
 ### *event* RemoveGlobalConstraintsProposal
 *Parameters:*
 1. **_avatar** *of type address*
@@ -22,25 +41,48 @@ A scheme to manage global constaintg for organizations
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
-### *event* LogProposalDeleted
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-
-### *event* OrganizationRegistered
-*Parameters:*
-1. **_avatar** *of type address*
-
-### *event* LogNewProposal
-*Parameters:*
-1. **proposalId** *of type bytes32*
-
 ### *event* OwnershipTransferred
 *Parameters:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
+### *event* OrganizationRegistered
+*Parameters:*
+1. **_avatar** *of type address*
+
+### *event* NewGlobalConstraintsProposal
+*Parameters:*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
+3. **_intVoteInterface** *of type address*
+4. **_gc** *of type address*
+5. **_params** *of type bytes32*
+6. **_voteToRemoveParams** *of type bytes32*
+
+### *event* LogProposalDeleted
+*Parameters:*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
+
+### *event* LogNewProposal
+*Parameters:*
+1. **proposalId** *of type bytes32*
+
 ## Functions
+### *function* setParameters
+
+**nonpayable**
+
+
+Hash the parameters, save them if necessary, and return the hash value
+
+*Inputs:*
+1. **_voteRegisterParams** *of type bytes32* - -  voting parameters for register global constraint
+2. **_intVote** *of type address* - - voting machine contract.
+
+*Returns:*
+bytes32 -the parameters hash
+
 ### *function* parameters
 
 **constant**
@@ -56,6 +98,46 @@ A scheme to manage global constaintg for organizations
 *Returns:*
 1. **bytes32**
 2. **address**
+
+### *function* proposeToRemoveGC
+
+**nonpayable**
+
+
+propose to remove a global constraint:
+
+*Inputs:*
+1. **_avatar** *of type address* - the avatar of the organization that the constraint is proposed for
+2. **_gc** *of type address* - the address of the global constraint that is being proposed
+
+*Returns:*
+bytes32 -the proposal id
+
+### *function* transferOwnership
+
+**nonpayable**
+
+
+Allows the current owner to transfer control of the contract to a newOwner.
+
+*Inputs:*
+1. **newOwner** *of type address* - The address to transfer ownership to.
+
+*Returns:*
+*Nothing*
+
+### *function* registerOrganization
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_avatar** *of type address* - 
+
+*Returns:*
+*Nothing*
 
 ### *function* proposeGlobalConstraint
 
@@ -73,6 +155,37 @@ propose to add a new global constraint:
 *Returns:*
 bytes32 -the proposal id
 
+### *function* updateParameters
+
+**nonpayable**
+
+
+
+
+*Inputs:*
+1. **_nativeToken** *of type address* - 
+2. **_fee** *of type uint256* - 
+3. **_beneficiary** *of type address* - 
+4. **_hashedParameters** *of type bytes32* - 
+
+*Returns:*
+*Nothing*
+
+### *function* owner
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
+
 ### *function* organizationsData
 
 **constant**
@@ -89,6 +202,66 @@ bytes32 -the proposal id
 1. **bytes32**
 2. **address**
 
+### *function* organizations
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **unnamed** *of type address* - 
+
+*Returns:*
+1. **bool**
+
+### *function* nativeToken
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **address**
+
+### *function* isRegistered
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+1. **_avatar** *of type address* - 
+
+*Returns:*
+1. **bool**
+
+### *function* hashedParameters
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **bytes32**
+
 ### *function* getParametersHash
 
 **constant**
@@ -104,6 +277,21 @@ Hash the parameters,and return the hash value
 
 *Returns:*
 bytes32 -the parameters hash
+
+### *function* fee
+
+**constant**
+**payable**
+**view**
+
+
+
+
+*Inputs:*
+*Nothing*
+
+*Returns:*
+1. **uint256**
 
 ### *function* execute
 
@@ -134,164 +322,4 @@ bool which represents a successful of the function.
 
 *Returns:*
 1. **address**
-
-### *function* updateParameters
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_nativeToken** *of type address* - 
-2. **_fee** *of type uint256* - 
-3. **_beneficiary** *of type address* - 
-4. **_hashedParameters** *of type bytes32* - 
-
-*Returns:*
-*Nothing*
-
-### *function* organizations
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **unnamed** *of type address* - 
-
-*Returns:*
-1. **bool**
-
-### *function* setParameters
-
-**nonpayable**
-
-
-Hash the parameters, save them if necessary, and return the hash value
-
-*Inputs:*
-1. **_voteRegisterParams** *of type bytes32* - -  voting parameters for register global constraint
-2. **_intVote** *of type address* - - voting machine contract.
-
-*Returns:*
-bytes32 -the parameters hash
-
-### *function* owner
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
-
-### *function* registerOrganization
-
-**nonpayable**
-
-
-
-
-*Inputs:*
-1. **_avatar** *of type address* - 
-
-*Returns:*
-*Nothing*
-
-### *function* isRegistered
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-1. **_avatar** *of type address* - 
-
-*Returns:*
-1. **bool**
-
-### *function* fee
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **uint256**
-
-### *function* nativeToken
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **address**
-
-### *function* transferOwnership
-
-**nonpayable**
-
-
-Allows the current owner to transfer control of the contract to a newOwner.
-
-*Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
-
-*Returns:*
-*Nothing*
-
-### *function* proposeToRemoveGC
-
-**nonpayable**
-
-
-propose to remove a global constraint:
-
-*Inputs:*
-1. **_avatar** *of type address* - the avatar of the organization that the constraint is proposed for
-2. **_gc** *of type address* - the address of the global constraint that is being proposed
-
-*Returns:*
-bytes32 -the proposal id
-
-### *function* hashedParameters
-
-**constant**
-**payable**
-**view**
-
-
-
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **bytes32**
 
