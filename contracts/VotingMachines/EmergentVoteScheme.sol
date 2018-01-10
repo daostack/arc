@@ -84,12 +84,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
         _;
     }
 
-    function EmergentVoteScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(
-            _nativeToken,
-            _fee, _beneficiary,
-            bytes32(0));
-    }
+    function EmergentVoteScheme() public {}
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value

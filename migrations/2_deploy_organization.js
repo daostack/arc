@@ -50,19 +50,19 @@ module.exports = async function(deployer) {
       // Deploy AbsoluteVote:
       var AbsoluteVoteInst = await AbsoluteVote.deployed();
       // Deploy SchemeRegistrar:
-      await deployer.deploy(SchemeRegistrar, tokenAddress, UniversalRegisterFee, AvatarInst.address);
+      await deployer.deploy(SchemeRegistrar);
       var schemeRegistrarInst = await SchemeRegistrar.deployed();
       // Deploy UniversalUpgrade:
-      await deployer.deploy(UpgradeScheme, tokenAddress, UniversalRegisterFee, AvatarInst.address);
+      await deployer.deploy(UpgradeScheme);
       var upgradeSchemeInst = await UpgradeScheme.deployed();
       // Deploy UniversalGCScheme register:
-      await deployer.deploy(GlobalConstraintRegistrar, tokenAddress, UniversalRegisterFee, AvatarInst.address);
+      await deployer.deploy(GlobalConstraintRegistrar);
       var globalConstraintRegistrarInst = await GlobalConstraintRegistrar.deployed();
 
-      await deployer.deploy(SimpleICO, tokenAddress, UniversalRegisterFee, AvatarInst.address);
+      await deployer.deploy(SimpleICO);
       var simpleICOInst = await SimpleICO.deployed();
 
-      await deployer.deploy(ContributionReward, tokenAddress, UniversalRegisterFee, AvatarInst.address);
+      await deployer.deploy(ContributionReward);
       var contributionRewardInst = await ContributionReward.deployed();
 
       // Voting parameters and schemes params:
@@ -77,11 +77,11 @@ module.exports = async function(deployer) {
       await upgradeSchemeInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
       var schemeUpgradeParams = await upgradeSchemeInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
 
+
       await simpleICOInst.setParameters(1000, 1, 1, 2, web3.eth.accounts[0], web3.eth.accounts[0]);
       var simpleICOParams = await simpleICOInst.getParametersHash(1000, 1, 1, 2, web3.eth.accounts[0], web3.eth.accounts[0]);
-
-      await contributionRewardInst.setParameters(10, 10,voteParametersHash, AbsoluteVoteInst.address);
-      var contributionRewardParams = await contributionRewardInst.getParametersHash(10, 10,voteParametersHash, AbsoluteVoteInst.address);
+      await contributionRewardInst.setParameters(10,voteParametersHash, AbsoluteVoteInst.address);
+      var contributionRewardParams = await contributionRewardInst.getParametersHash(10,voteParametersHash, AbsoluteVoteInst.address);
 
       // Transferring tokens to org to pay fees:
       await DAOTokenInst.transfer(AvatarInst.address, 5*UniversalRegisterFee);

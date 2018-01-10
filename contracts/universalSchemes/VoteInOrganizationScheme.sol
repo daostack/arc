@@ -43,14 +43,9 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     mapping(bytes32=>Parameters) public parameters;
 
     /**
-     * @dev Constructor, Updating the initial prarmeters
-     * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for intiating the ICO
-     * @param _beneficiary The address that will receive the ethers
+     * @dev Constructor
      */
-    function VoteInOrganizationScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function VoteInOrganizationScheme() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -93,7 +88,6 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     */
     function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId)
     public
-    onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
         uint numOfChoices = _originalIntVote.getNumberOfChoices(_originalProposalId);

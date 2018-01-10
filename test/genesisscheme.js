@@ -113,12 +113,9 @@ contract('GenesisScheme', function(accounts) {
         var universalSchemeMock = await UniversalSchemeMock.new(standardTokenMock.address,10,accounts[1]);
         var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
-        assert.equal(false,await universalSchemeMock.isRegistered(avatar.address));
         await genesisScheme.setSchemes(avatar.address,[universalSchemeMock.address],[0],["0x8000000F"]);
         allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
-        //check org registered in scheme
-        assert.equal(true,await universalSchemeMock.isRegistered(avatar.address));
     });
 
     it("setSchemes increase approval for scheme without fee", async function() {
@@ -236,12 +233,10 @@ contract('GenesisScheme', function(accounts) {
         var universalSchemeMock = await UniversalSchemeMock.new(standardTokenMock.address,10,accounts[1]);
         var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
-        assert.equal(false,await universalSchemeMock.isRegistered(avatar.address));
         await genesisScheme.setSchemes(avatar.address,[universalSchemeMock.address],[0],["0x8000000F"]);
         allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
         //check org registered in scheme
-        assert.equal(true,await universalSchemeMock.isRegistered(avatar.address));
     });
 
     it("setSchemes with universal controller increase approval for scheme without fee", async function() {

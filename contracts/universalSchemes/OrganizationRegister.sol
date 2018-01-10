@@ -26,14 +26,9 @@ contract OrganizationRegister is UniversalScheme {
     event Promotion( address indexed _registry, address indexed _org, uint _amount);
 
     /**
-     * @dev Constructor, Updating the initial parameters
-     * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for initiating the ICO
-     * @param _beneficiary The address that will receive the ethers
+     * @dev Constructor
      */
-    function OrganizationRegister(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function OrganizationRegister() public {}
 
     /**
     * @dev Hash the parameters, save if needed and return the hash value
@@ -75,7 +70,6 @@ contract OrganizationRegister is UniversalScheme {
      * @param _amount amount to pay for adding or promoting
      */
     function addOrPromoteAddress(Avatar _avatar, address _record, uint _amount)
-    onlyRegisteredOrganization(_avatar)
     public
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];

@@ -42,37 +42,31 @@ contract ContributionReward is UniversalScheme {
     struct Parameters {
         uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
         bytes32 voteApproveParams;
-        uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
         IntVoteInterface intVote;
     }
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
 
     /**
-    * @dev the constructor takes a token address, fee and beneficiary
+    * @dev constructor
     */
-    function ContributionReward(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function ContributionReward() public {}
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value
     */
     function setParameters(
         uint _orgNativeTokenFee,
-        uint _schemeNativeTokenFee,
         bytes32 _voteApproveParams,
         IntVoteInterface _intVote
     ) public returns(bytes32)
     {
         bytes32 paramsHash = getParametersHash(
             _orgNativeTokenFee,
-            _schemeNativeTokenFee,
             _voteApproveParams,
             _intVote
         );
         parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
-        parameters[paramsHash].schemeNativeTokenFee = _schemeNativeTokenFee;
         parameters[paramsHash].voteApproveParams = _voteApproveParams;
         parameters[paramsHash].intVote = _intVote;
         return paramsHash;
@@ -81,7 +75,6 @@ contract ContributionReward is UniversalScheme {
     /**
     * @dev return a hash of the given parameters
     * @param _orgNativeTokenFee the fee for submitting a contribution in organizations native token
-    * @param _schemeNativeTokenFee the fee for submitting a contribution if payed in schemes native token
     * @param _voteApproveParams parameters for the voting machine used to approve a contribution
     * @param _intVote the voting machine used to approve a contribution
     * @return a hash of the parameters
@@ -89,12 +82,11 @@ contract ContributionReward is UniversalScheme {
     // TODO: These fees are messy. Better to have a _fee and _feeToken pair, just as in some other contract (which one?) with some sane default
     function getParametersHash(
         uint _orgNativeTokenFee,
-        uint _schemeNativeTokenFee,
         bytes32 _voteApproveParams,
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        return (keccak256(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _intVote));
+        return (keccak256(_voteApproveParams, _orgNativeTokenFee, _intVote));
     }
 
     /**
@@ -116,16 +108,12 @@ contract ContributionReward is UniversalScheme {
         StandardToken _externalToken,
         address _beneficiary
     ) public
-      onlyRegisteredOrganization(_avatar)
       returns(bytes32)
     {
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
         // Pay fees for submitting the contribution:
         if (controllerParams.orgNativeTokenFee > 0) {
             _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
-        }
-        if (controllerParams.schemeNativeTokenFee > 0) {
-            nativeToken.transferFrom(msg.sender, _avatar, controllerParams.schemeNativeTokenFee);
         }
 
         bytes32 contributionId = controllerParams.intVote.propose(2, controllerParams.voteApproveParams, _avatar, ExecutableInterface(this));
@@ -174,7 +162,7 @@ contract ContributionReward is UniversalScheme {
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         // Check if vote was successful:
         if (_param == 1) {
-        // Define controller and get the parmas:
+        // Define controller and get the params:
             ContributionProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // pay the funds:

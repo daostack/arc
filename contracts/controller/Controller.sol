@@ -62,21 +62,13 @@ contract Controller is ControllerInterface {
     event UpgradeController(address _oldController,address _newController);
 
     function Controller(
-        Avatar _avatar,
-        address[] _schemes,
-        bytes32[] _params,
-        bytes4[] _permissions
+        Avatar _avatar
     ) public
     {
         avatar = _avatar;
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
-
-    // Register the schemes:
-        for (uint i = 0; i < _schemes.length; i++) {
-            schemes[_schemes[i]] = Scheme({paramsHash: _params[i],permissions: _permissions[i]|bytes4(1)});
-            RegisterScheme(msg.sender, _schemes[i]);
-        }
+        schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0xF)});
     }
 
   // Do not allow mistaken calls:

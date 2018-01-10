@@ -22,20 +22,17 @@ const setupVoteInOrganizationParams = async function(
   return voteInOrganizationParams;
 };
 
-const setup = async function (accounts,isUniversal=true,reputationAccount=0) {
+const setup = async function (accounts,reputationAccount=0) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-   testSetup.voteInOrganization = await VoteInOrganizationScheme.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
+   testSetup.voteInOrganization = await VoteInOrganizationScheme.new();
    testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.voteInOrganizationParams= await setupVoteInOrganizationParams(testSetup.voteInOrganization,reputationAccount);
    //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
    var permissions = "0x0000000F";
-   if (isUniversal){
-      permissions = "0x8000000F";
-    }
    await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.voteInOrganization.address],[testSetup.voteInOrganizationParams.paramsHash],[permissions]);
 
    return testSetup;
@@ -45,18 +42,6 @@ contract('VoteInOrganizationScheme', function(accounts) {
   before(function() {
     helpers.etherForEveryone();
   });
-
-  it("constructor", async function() {
-    var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-    var voteInOrganization = await VoteInOrganizationScheme.new(standardTokenMock.address,10,accounts[1]);
-    var token = await voteInOrganization.nativeToken();
-    assert.equal(token,standardTokenMock.address);
-    var fee = await voteInOrganization.fee();
-    assert.equal(fee,10);
-    var beneficiary = await voteInOrganization.beneficiary();
-    assert.equal(beneficiary,accounts[1]);
-   });
-
    it("setParameters", async function() {
      var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
      var voteInOrganization = await VoteInOrganizationScheme.new(standardTokenMock.address,10,accounts[1]);
@@ -67,16 +52,10 @@ contract('VoteInOrganizationScheme', function(accounts) {
      assert.equal(parameters[0],absoluteVote.address);
      });
 
-    it("registerOrganization - check fee payment ", async function() {
-      var testSetup = await setup(accounts);
-      await testSetup.voteInOrganization.registerOrganization(testSetup.org.avatar.address);
-      var balanceOfBeneficiary  = await testSetup.standardTokenMock.balanceOf(accounts[0]);
-      assert.equal(balanceOfBeneficiary.toNumber(),testSetup.fee);
-    });
 
      it("proposeVote log", async function() {
        var testSetup = await setup(accounts);
-       await testSetup.voteInOrganization.registerOrganization(testSetup.org.avatar.address);
+
        var anotherTestSetup =  await setup(accounts);
        var executable = await ExecutableTest.new();
        var tx = await anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.propose(5,
@@ -91,29 +70,9 @@ contract('VoteInOrganizationScheme', function(accounts) {
        assert.equal(tx.logs[0].event, "NewVoteProposal");
       });
 
-      it("proposeVote without registration -should fail", async function() {
-        var testSetup = await setup(accounts,false);
-        var anotherTestSetup =  await setup(accounts);
-        var executable = await ExecutableTest.new();
-        var tx = await anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.propose(5,
-                                                                           anotherTestSetup.voteInOrganizationParams.votingMachine.params,
-                                                                           anotherTestSetup.org.avatar.address,
-                                                                           executable.address);
-        const proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-        try{
-          await testSetup.voteInOrganization.proposeVote(testSetup.org.avatar.address,
-                                                         anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address,
-                                                         proposalId);
-          assert(false,"proposeVote should  fail - due to no registration !");
-        }catch(ex){
-          helpers.assertVMException(ex);
-        }
-       });
-
-
            it("execute proposeVote -no decision - proposal data delete", async function() {
              var testSetup = await setup(accounts);
-             await testSetup.voteInOrganization.registerOrganization(testSetup.org.avatar.address);
+
              var anotherTestSetup =  await setup(accounts);
              var executable = await ExecutableTest.new();
              var tx = await anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.propose(2,
@@ -133,7 +92,7 @@ contract('VoteInOrganizationScheme', function(accounts) {
 
             it("execute proposeVote -positive decision - proposal data delete", async function() {
               var testSetup = await setup(accounts);
-              await testSetup.voteInOrganization.registerOrganization(testSetup.org.avatar.address);
+
               var anotherTestSetup =  await setup(accounts);
               var executable = await ExecutableTest.new();
               var tx = await anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.propose(2,
@@ -155,8 +114,8 @@ contract('VoteInOrganizationScheme', function(accounts) {
 
              it("execute proposeVote -positive decision - check action", async function() {
                var testSetup = await setup(accounts);
-               await testSetup.voteInOrganization.registerOrganization(testSetup.org.avatar.address);
-               var anotherTestSetup =  await setup(accounts,true,testSetup.org.avatar.address);
+
+               var anotherTestSetup =  await setup(accounts,testSetup.org.avatar.address);
                var executable = await ExecutableTest.new();
                var tx = await anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.propose(2,
                                                                                   anotherTestSetup.voteInOrganizationParams.votingMachine.params,

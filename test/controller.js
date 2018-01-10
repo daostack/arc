@@ -10,20 +10,26 @@ const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol'
 var uint32 = require('uint32');
 
 
-let reputation, avatar, accounts,controller,token;
+let reputation, avatar, accounts,token,controller;
 var amountToMint = 10;
 
-const setup = async function (permission='0xffffffff') {
+const setup = async function (permission='0') {
+  var _controller;
   accounts = web3.eth.accounts;
   token  = await DAOToken.new("TEST","TST");
   // set up a reputation system
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', token.address, reputation.address);
-  var schemesArray = [accounts[0]];
-  var paramsArray = [100];
-  var permissionArray = [permission];
-  controller = await Controller.new(avatar.address,schemesArray,paramsArray,permissionArray);
-  return controller;
+  if (permission!='0'){
+    _controller = await Controller.new(avatar.address,{from:accounts[1]});
+    await _controller.registerScheme(accounts[0],0,permission,0,{from:accounts[1]});
+    await _controller.unregisterSelf(0,{from:accounts[1]});
+  }
+  else {
+    _controller = await Controller.new(avatar.address);
+  }
+  controller = _controller;
+  return _controller;
 };
 
 const constraint = async function (method) {
@@ -70,6 +76,7 @@ contract('Controller', function (accounts)  {
     it("register schemes - check permissions for register new scheme", async () => {
       // Check scheme has at least the permissions it is changing, and at least the current permissions.
       var i,j;
+    //  controller;
       for(j = 0; j <= 15; j++ ){
         //registered scheme has already permission to register(2)
         controller = await setup('0x'+uint32.toHex(j|2));

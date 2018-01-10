@@ -8,9 +8,7 @@ import "zeppelin-solidity/contracts/token/StandardToken.sol";
 
 contract UniversalSchemeInterface {
 
-    function updateParameters(StandardToken _nativeToken, uint _fee, address _beneficiary, bytes32 _hashedParameters) public;
-
-    function registerOrganization(Avatar _avatar) public;
+    function updateParameters(bytes32 _hashedParameters) public;
 
     function getParametersFromController(Avatar _avatar) internal constant returns(bytes32);
 }

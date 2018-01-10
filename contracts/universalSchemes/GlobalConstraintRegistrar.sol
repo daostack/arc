@@ -54,14 +54,9 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     mapping(bytes32=>Parameters) public parameters;
 
     /**
-     * @dev Constructor, Updating the initial parameters
-     * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for initiating the ICO
-     * @param _beneficiary The address that will receive the ethers
+     * @dev Constructor
      */
-    function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function GlobalConstraintRegistrar() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -105,7 +100,6 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     // TODO: do some checks on _voteToRemoveParams - it is very easy to make a mistake and not be able to remove the GC
     function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _voteToRemoveParams)
     public
-    onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
         Parameters memory votingParams = parameters[getParametersFromController(_avatar)];
@@ -139,7 +133,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     * @param _gc the address of the global constraint that is being proposed
     * @return bytes32 -the proposal id
     */
-    function proposeToRemoveGC(Avatar _avatar, address _gc) public onlyRegisteredOrganization(_avatar) returns(bytes32) {
+    function proposeToRemoveGC(Avatar _avatar, address _gc) public returns(bytes32) {
         Organization storage org = organizationsData[_avatar];
         Controller controller = Controller(Avatar(_avatar).owner());
         require(controller.isGlobalConstraintRegister(_gc,address(_avatar)));

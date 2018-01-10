@@ -16,10 +16,7 @@ contract SchemeRegistrar is UniversalScheme {
         address indexed _intVoteInterface,
         address _scheme,
         bytes32 _parametersHash,
-        bool _isRegistering,
-        StandardToken _tokenFee,
-        uint _fee,
-        bool _autoRegisterOrganization
+        bool _isRegistering
     );
     event LogRemoveSchemeProposal(address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -35,9 +32,6 @@ contract SchemeRegistrar is UniversalScheme {
         bytes32 parametersHash;
         uint proposalType; // 1: add a scheme, 2: remove a scheme.
         bool isRegistering;
-        StandardToken tokenFee;
-        uint fee;
-        bool autoRegisterOrganization;
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
@@ -52,14 +46,9 @@ contract SchemeRegistrar is UniversalScheme {
     mapping(bytes32=>Parameters) public parameters;
 
     /**
-    * @dev The constructor
-    * @param _nativeToken a Token that is used for paying fees for registering
-    * @param _fee the fee to pay
-    * @param _beneficiary to whom the fee is payed
+    * @dev The Constructor
     */
-    function SchemeRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function SchemeRegistrar() public {}
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value
@@ -88,37 +77,23 @@ contract SchemeRegistrar is UniversalScheme {
 
     /**
     * @dev create a proposal to register a scheme
+    * @param _avatar the address of the organization the scheme will be registered for
     * @param _scheme the address of the scheme to be registered
     * @param _parametersHash a hash of the configuration of the _scheme
     * @param _isRegistering a boolean represent if the scheme is a registering scheme
     *      that can register other schemes
-    * @param _tokenFee a token that will be used to pay any fees needed for registering the avatar
-    * @param _fee the fee to be paid
-    * @param _avatar the address of the organization the scheme will be registered for
     * @return a proposal Id
     * @dev NB: not only proposes the vote, but also votes for it
     */
-    // TODO: check if we cannot derive isRegistering from the _scheme itself
-    // TODO: simplify this by removing the _tokenFee and fee params, which can be derived from
-    // the scheme (i.e. are equal to _scheme.fee() and scheme.somethingToken())
     function proposeScheme(
         Avatar _avatar,
         address _scheme,
         bytes32 _parametersHash,
-        bool _isRegistering,
-        StandardToken _tokenFee,
-        uint _fee,
-        bool _autoRegisterOrganization
+        bool _isRegistering
     )
     public
-    onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
-        if (_autoRegisterOrganization) {
-            //This should revert for non arc scheme which do not have Fallback functions.
-            //We do it here to prevent revert at the proposal execution after the voting proccess.
-            UniversalScheme(_scheme).isRegistered(Avatar(_avatar));
-        }
         // propose
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
@@ -128,20 +103,14 @@ contract SchemeRegistrar is UniversalScheme {
             scheme: _scheme,
             parametersHash: _parametersHash,
             proposalType: 1,
-            isRegistering: _isRegistering,
-            tokenFee: _tokenFee,
-            fee: _fee,
-            autoRegisterOrganization: _autoRegisterOrganization
+            isRegistering: _isRegistering
         });
         LogNewSchemeProposal(
             _avatar,
             proposalId,
             controllerParams.intVote,
             _scheme, _parametersHash,
-            _isRegistering,
-            _tokenFee,
-            _fee,
-            _autoRegisterOrganization
+            _isRegistering
         );
         organizationsProposals[_avatar][proposalId] = proposal;
 
@@ -159,7 +128,6 @@ contract SchemeRegistrar is UniversalScheme {
     */
     function proposeToRemoveScheme(Avatar _avatar, address _scheme)
     public
-    onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
         bytes32 paramsHash = getParametersFromController(_avatar);
@@ -190,17 +158,12 @@ contract SchemeRegistrar is UniversalScheme {
 
         if (_param == 1) {
 
-        // Define controller and get the parmas:
+        // Define controller and get the params:
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // Add a scheme:
             if (proposal.proposalType == 1) {
-                if (proposal.fee != 0) {
-                    if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.scheme, proposal.fee,_avatar)) {
-                        revert();
-                      }
-                    }
                 if (proposal.isRegistering == false) {
                     if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1),_avatar)) {
                         revert();
@@ -210,9 +173,6 @@ contract SchemeRegistrar is UniversalScheme {
                         revert();
                     }
                 }
-                if (proposal.autoRegisterOrganization) {
-                    UniversalScheme(proposal.scheme).registerOrganization(Avatar(_avatar));
-                  }
                 }
         // Remove a scheme:
             if ( proposal.proposalType == 2 ) {

@@ -44,6 +44,7 @@ contract UController is ControllerInterface {
         GlobalConstraint[] globalConstraints;
       // globalConstraintsRegister indicate is a globalConstraints is register or not
         mapping(address=>GlobalConstraintRegister) globalConstraintsRegister;
+        bool exist;
     }
 
     //mapping between organization's avatar address to Organization
@@ -68,20 +69,21 @@ contract UController is ControllerInterface {
 
     function UController()public {}
 
+   /**
+    * @dev newOrganization set up a new organization with default genesisScheme.
+    * @param _avatar the organization avatar
+    */
     function newOrganization(
-        Avatar _avatar,
-        address[] _schemes,
-        bytes32[] _params,
-        bytes4[] _permissions
+        Avatar _avatar
     ) public
     {
+        require(!organizations[address(_avatar)].exist);
+        require(_avatar.owner() == address(this));
+        organizations[address(_avatar)].exist = true;
         organizations[address(_avatar)].nativeToken = _avatar.nativeToken();
         organizations[address(_avatar)].nativeReputation = _avatar.nativeReputation();
-        // Register the schemes:
-        for (uint i = 0; i < _schemes.length; i++) {
-            organizations[address(_avatar)].schemes[_schemes[i]] = Scheme({paramsHash: _params[i],permissions: _permissions[i]|bytes4(1)});
-            RegisterScheme(msg.sender, _schemes[i],_avatar);
-        }
+        organizations[address(_avatar)].schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0xF)});
+        RegisterScheme(msg.sender, msg.sender,_avatar);
     }
 
   // Modifiers:

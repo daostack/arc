@@ -13,18 +13,22 @@ var uint32 = require('uint32');
 let reputation, avatar, accounts,token,controller;
 var amountToMint = 10;
 
-const setup = async function (permission='0xffffffff') {
+const setup = async function (permission='0x00000000') {
   var uController = await UController.new();
   accounts = web3.eth.accounts;
   token  = await DAOToken.new("TEST","TST");
   // set up a reputation system
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', token.address, reputation.address);
-  var schemesArray = [accounts[0]];
-  var paramsArray = [100];
-  var permissionArray = [permission];
-//  await avatar.transferOwnership(uController.address);
-  await uController.newOrganization(avatar.address,schemesArray,paramsArray,permissionArray);
+  await avatar.transferOwnership(uController.address);
+  if (permission!='0x00000000'){
+    await uController.newOrganization(avatar.address,{from:accounts[1]});
+    await uController.registerScheme(accounts[0],0,permission,avatar.address,{from:accounts[1]});
+    await uController.unregisterSelf(0,{from:accounts[1]});
+  }
+  else {
+    await uController.newOrganization(avatar.address);
+  }
   return uController;
 };
 
@@ -214,9 +218,9 @@ contract('UController', function (accounts)  {
 
         it("upgrade controller ", async () => {
           controller = await  setup();
+
           await reputation.transferOwnership(controller.address);
           await token.transferOwnership(controller.address);
-          await avatar.transferOwnership(controller.address);
           var tx = await controller.upgradeController(accounts[1],avatar.address);
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "UpgradeController");
@@ -224,9 +228,8 @@ contract('UController', function (accounts)  {
 
         it("upgrade controller check permission", async () => {
           controller = await  setup('0x00000007');
-          await reputation.transferOwnership(controller.address);
           await token.transferOwnership(controller.address);
-          await avatar.transferOwnership(controller.address);
+          await reputation.transferOwnership(controller.address);
           try{
             await controller.upgradeController(accounts[1],avatar.address);
             assert(false,"scheme with permission 0x00000007 is not allowed to upgrade ");
@@ -237,7 +240,6 @@ contract('UController', function (accounts)  {
 
         it("generic call", async () => {
           controller = await  setup();
-          await avatar.transferOwnership(controller.address);
           var tx = await controller.genericAction([0],avatar.address);
           assert.equal(tx.logs.length, 2);
           assert.equal(tx.logs[0].event, "GenericAction");
@@ -246,7 +248,6 @@ contract('UController', function (accounts)  {
         it("sendEther", async () => {
           controller = await  setup();
           let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-          await avatar.transferOwnership(controller.address);
           //send some ether to the avatar
           web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.toWei('1', "ether")});
           //send some ether from an organization's avatar to the otherAvatar
@@ -265,7 +266,6 @@ contract('UController', function (accounts)  {
           var standardToken = await StandardTokenMock.new(avatar.address, 100);
           let balanceAvatar = await standardToken.balanceOf(avatar.address);
           assert.equal(balanceAvatar, 100);
-          await avatar.transferOwnership(controller.address);
           var tx = await controller.externalTokenTransfer(standardToken.address,accounts[1],50,avatar.address);
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "ExternalTokenTransfer");
@@ -280,7 +280,6 @@ contract('UController', function (accounts)  {
           var to   = accounts[1];
           controller = await  setup();
           var standardToken = await StandardTokenMock.new(avatar.address, 100);
-          await avatar.transferOwnership(controller.address);
           tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "ExternalTokenIncreaseApproval");
@@ -298,7 +297,6 @@ contract('UController', function (accounts)  {
           var to   = accounts[1];
           controller = await  setup();
           var standardToken = await StandardTokenMock.new(avatar.address, 100);
-          await avatar.transferOwnership(controller.address);
           tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
           tx = await controller.externalTokenDecreaseApproval(standardToken.address,avatar.address,50,avatar.address);
           assert.equal(tx.logs.length, 1);
@@ -404,7 +402,6 @@ contract('UController', function (accounts)  {
                  it("globalConstraints generic call  add & remove", async () => {
                     controller = await  setup();
                     var globalConstraints = await constraint("genericAction");
-                    await avatar.transferOwnership(controller.address);
 
                     try {
                     await controller.genericAction([0],avatar.address);
@@ -425,7 +422,6 @@ contract('UController', function (accounts)  {
                        controller = await  setup();
                        var globalConstraints = await constraint("sendEther");
                        let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-                       await avatar.transferOwnership(controller.address);
                        web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.toWei('1', "ether")});
 
                        try {
@@ -453,7 +449,6 @@ contract('UController', function (accounts)  {
                           var standardToken = await StandardTokenMock.new(avatar.address, 100);
                           let balanceAvatar = await standardToken.balanceOf(avatar.address);
                           assert.equal(balanceAvatar, 100);
-                          await avatar.transferOwnership(controller.address);
 
                           try {
                            await controller.externalTokenTransfer(standardToken.address,accounts[1],50,avatar.address);
@@ -480,8 +475,6 @@ contract('UController', function (accounts)  {
                              controller = await  setup();
                              var globalConstraints = await constraint("externalTokenIncreaseApproval");
                              var standardToken = await StandardTokenMock.new(avatar.address, 100);
-                             await avatar.transferOwnership(controller.address);
-
                              try {
                               await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
                               assert(false,"externalTokenIncreaseApproval should fail due to the global constraint ");

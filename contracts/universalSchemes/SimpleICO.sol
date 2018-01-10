@@ -31,7 +31,7 @@ contract MirrorContractICO is Destructible {
         // Not to waste gas, if no value.
         require(msg.value != 0);
 
-        // Return ether if couln't donate.
+        // Return ether if couldn't donate.
         if (simpleICO.donate.value(msg.value)(organization, msg.sender) == 0) {
             revert();
         }
@@ -72,14 +72,9 @@ contract SimpleICO is UniversalScheme {
     event DonationReceived(address indexed organization, address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
 
     /**
-     * @dev Constructor, Updating the initial parameters
-     * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for initiating the ICO
-     * @param _beneficiary The address that will receive the ethers
+     * @dev Constructor
      */
-    function SimpleICO(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function SimpleICO() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -130,7 +125,7 @@ contract SimpleICO is UniversalScheme {
     * @param _startBlock  ico start block
     * @param _endBlock ico end
     * @param _beneficiary the ico ether beneficiary
-    * @param _admin the address of the ico admin which can hald and resume the ICO.
+    * @param _admin the address of the ico admin which can hold and resume the ICO.
     * @return bytes32 -the params hash
     */
     function getParametersHash(
@@ -197,9 +192,7 @@ contract SimpleICO is UniversalScheme {
     function isActive(address _avatar) public constant returns(bool) {
         Organization memory org = organizationsICOInfo[_avatar];
         Parameters memory params = parameters[org.paramsHash];
-        if (! organizations[_avatar]) {
-            return false;
-        }
+
         if (org.totalEthRaised >= params.cap) {
             return false;
         }

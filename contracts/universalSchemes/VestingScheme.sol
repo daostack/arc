@@ -69,14 +69,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-     * @dev Constructor, Updating the initial parameters
-     * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for initiating the ICO
-     * @param _beneficiary The address that will receive the ethers
+     * @dev Constructor
      */
-    function VestingScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function VestingScheme() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -136,7 +131,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         Avatar _avatar
     )
     external
-    onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
         // Open voting:
@@ -272,7 +266,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
 
         SignToCancelAgreement(_agreementId,msg.sender);
 
-        // Check if threshhold crossed:
+        // Check if threshold crossed:
         if (agreement.signaturesReceivedCounter == agreement.signaturesReqToCancel) {
             cancelAgreement(_agreementId);
         }

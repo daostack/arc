@@ -43,7 +43,7 @@ const setup = async function (accounts,cap =10000,price=1) {
   testSetup.beneficiary = accounts[0];
   testSetup.fee =10;
   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-  testSetup.simpleICO = await SimpleICO.new(testSetup.standardTokenMock.address,testSetup.fee,testSetup.beneficiary);
+  testSetup.simpleICO = await SimpleICO.new();
   testSetup.org = await setupOrganization(accounts[0],1000,1000);
   testSetup.paramHash= await setupSimpleICOParams(accounts,testSetup.simpleICO,testSetup.org,cap,price);
   //give some tokens to organization avatar so it could register the universal scheme.
@@ -56,17 +56,6 @@ contract('SimpleICO', function(accounts) {
 
   before(function() {
     helpers.etherForEveryone();
-  });
-
-  it("simpleICO constructor", async function() {
-    var standardTokenMock = await new StandardTokenMock(accounts[0],100);
-    var simpleICO = await SimpleICO.new(standardTokenMock.address,10,accounts[1]);
-    var token = await simpleICO.nativeToken();
-    assert.equal(token,standardTokenMock.address);
-    var fee = await simpleICO.fee();
-    assert.equal(fee,10);
-    var beneficiary = await simpleICO.beneficiary();
-    assert.equal(beneficiary,accounts[1]);
   });
 
   it("simpleICO send ether to contract - should revert", async function() {
@@ -91,14 +80,6 @@ contract('SimpleICO', function(accounts) {
     var paramHash = await simpleICO.getParametersHash(1000,2,0,0,accounts[1],accounts[1]);
     var parameters = await simpleICO.parameters(paramHash);
     assert.equal(parameters[0].toNumber(),1000);
-    });
-
-  it("simpleICO registerOrganization - check fee payment ", async function() {
-    var balanceOfBeneficiary;
-    var testSetup = await setup(accounts);
-    await testSetup.simpleICO.start(testSetup.org.avatar.address);
-    balanceOfBeneficiary  = await testSetup.standardTokenMock.balanceOf(testSetup.beneficiary);
-    assert.equal(balanceOfBeneficiary.toNumber(),testSetup.fee);
     });
 
     it("simpleICO start with cap zero should revert ", async function() {
