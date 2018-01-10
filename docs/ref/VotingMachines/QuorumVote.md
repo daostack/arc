@@ -1,4 +1,4 @@
-# *contract* AbsoluteVote
+# *contract* QuorumVote
 [object Object]
 ## Events
 ### *event* LogNewProposal
@@ -239,13 +239,13 @@ bool true or false
 **nonpayable**
 
 
-execute check if the proposal has been decided, and if so, execute the proposal
+check if the proposal has been decided, and if so, execute the proposal
 
 *Inputs:*
 1. **_proposalId** *of type bytes32* - the id of the proposal
 
 *Returns:*
-bool true - the proposal has been executed             false - otherwise.
+*Nothing*
 
 ### *function* setParameters
 
