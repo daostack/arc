@@ -4,10 +4,14 @@ const path = require('path')
 const shell = require('shelljs')
 const format = require('string-format')
 
+
+// TODO: Find a decent renderer to actually render the file
 function render(contractName,abi,devdoc,userdoc){
-    return contractName
+    return 'TODO...'
 }
 
+// TODO: Fix this bug:
+// const files = ['./contracts/VotingMachines/IntVoteInterface.sol'] // Fails
 const files = ['./contracts/VotingMachines/AbsoluteVote.sol']
 const input = {
     sources: files.reduce((acc,file)=>({...acc,[file]: fs.readFileSync(file,'utf-8')}),{})
