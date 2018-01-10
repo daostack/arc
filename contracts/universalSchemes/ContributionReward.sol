@@ -38,7 +38,7 @@ contract ContributionReward is UniversalScheme {
     mapping(address=>mapping(bytes32=>ContributionProposal)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
-    // A contibution fee can be in the organization token or the scheme token or a combination
+    // A contribution fee can be in the organization token or the scheme token or a combination
     struct Parameters {
         uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
         bytes32 voteApproveParams;
@@ -81,7 +81,7 @@ contract ContributionReward is UniversalScheme {
     /**
     * @dev return a hash of the given parameters
     * @param _orgNativeTokenFee the fee for submitting a contribution in organizations native token
-    * @param _schemeNativeTokenFee the fee for submitting a contribution if paied in schemes native token
+    * @param _schemeNativeTokenFee the fee for submitting a contribution if payed in schemes native token
     * @param _voteApproveParams parameters for the voting machine used to approve a contribution
     * @param _intVote the voting machine used to approve a contribution
     * @return a hash of the parameters
@@ -105,7 +105,7 @@ contract ContributionReward is UniversalScheme {
     *         rewards[0] - Amount of tokens requested
     *         rewards[1] - Amount of reputation requested
     *         rewards[2] - Amount of ETH requested
-    *         rewards[3] - Amount of extenral tokens requested
+    *         rewards[3] - Amount of external tokens requested
     * @param _externalToken Address of external token, if reward is requested there
     * @param _beneficiary Who gets the rewards
     */

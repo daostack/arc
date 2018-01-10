@@ -48,8 +48,8 @@ contract SimpleICO is UniversalScheme {
 
     // Struct holding the data for each organization
     struct Organization {
-        bytes32 paramsHash; // Save the parameters approved by the org to open the ICO, so reules of ICO will not change.
-        address avatarContractICO; // Avatar is a contract for users that want to send eth without calling a funciton.
+        bytes32 paramsHash; // Save the parameters approved by the org to open the ICO, so reuse of ICO will not change.
+        address avatarContractICO; // Avatar is a contract for users that want to send ether without calling a function.
         uint totalEthRaised;
         bool isHalted; // The admin of the ICO can halt the ICO at any time, and also resume it.
     }
@@ -60,7 +60,7 @@ contract SimpleICO is UniversalScheme {
         uint price; // Price represents Tokens per 1 Eth
         uint startBlock;
         uint endBlock;
-        address beneficiary; // all funds received will be transffered to this address.
+        address beneficiary; // all funds received will be transferred to this address.
         address admin; // The admin can halt or resume ICO.
     }
 
@@ -72,9 +72,9 @@ contract SimpleICO is UniversalScheme {
     event DonationReceived(address indexed organization, address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
 
     /**
-     * @dev Constructor, Updating the initial prarmeters
+     * @dev Constructor, Updating the initial parameters
      * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for intiating the ICO
+     * @param _fee The fee for initiating the ICO
      * @param _beneficiary The address that will receive the ethers
      */
     function SimpleICO(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
@@ -88,7 +88,7 @@ contract SimpleICO is UniversalScheme {
     * @param _startBlock  ico start block
     * @param _endBlock ico end
     * @param _beneficiary the ico ether beneficiary
-    * @param _admin the address of the ico admin which can hald and resume the ICO.
+    * @param _admin the address of the ico admin which can hold and resume the ICO.
     * @return bytes32 -the params hash
     */
     function setParameters(

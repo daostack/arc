@@ -61,7 +61,7 @@ contract Reputation is Ownable {
     /**
     * @dev setting reputation amount for a given address, updating the total supply as well
     * @param _to the address which we set it's reputation amount
-    * @param _amount the new reputation amount to be setted
+    * @param _amount the new reputation amount to be set
     * @return bool which represents a success
     */
     function setReputation(address _to, uint256 _amount) public onlyOwner returns (bool) {

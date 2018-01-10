@@ -29,18 +29,18 @@ contract SchemeRegistrar is UniversalScheme {
     event LogProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
     event LogProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
-    // a SchemeProposal is a  proposal to add or remove a scheme to/from the an orgaization
+    // a SchemeProposal is a  proposal to add or remove a scheme to/from the an organization
     struct SchemeProposal {
         address scheme; //
         bytes32 parametersHash;
-        uint proposalType; // 1: add a schme, 2: remove a scheme.
+        uint proposalType; // 1: add a scheme, 2: remove a scheme.
         bool isRegistering;
         StandardToken tokenFee;
         uint fee;
         bool autoRegisterOrganization;
     }
 
-    // A mapping from thr organization (Avatar) address to the saved data of the organization:
+    // A mapping from the organization (Avatar) address to the saved data of the organization:
     mapping(address=>mapping(bytes32=>SchemeProposal)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)

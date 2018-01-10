@@ -22,7 +22,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     event LogCollect(uint indexed _agreementId);
 
 
-    // The data for each vesterd agreement:
+    // The data for each vested agreement:
     struct Agreement {
         StandardToken token;
         address beneficiary;
@@ -45,7 +45,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         IntVoteInterface intVote;
     }
 
-    // A mapping from thr organization (Avatar) address to the saved data of the organization:
+    // A mapping from the organization (Avatar) address to the saved data of the organization:
     mapping(address=>mapping(bytes32=>Agreement)) public organizationsData;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
@@ -69,9 +69,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-     * @dev Constructor, Updating the initial prarmeters
+     * @dev Constructor, Updating the initial parameters
      * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for intiating the ICO
+     * @param _fee The fee for initiating the ICO
      * @param _beneficiary The address that will receive the ethers
      */
     function VestingScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
@@ -96,7 +96,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-    * @dev Hash the parameters,and return the hash value
+    * @dev Hash the parameters, and return the hash value
     * @param _voteParams -  voting parameters
     * @param _intVote  - voting machine contract.
     * @return bytes32 -the parameters hash
@@ -119,7 +119,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     * @param _numOfAgreedPeriods how many periods agreed on.
     * @param _cliffInPeriods the length of the cliff in periods.
     * @param _signaturesReqToCancel number of signatures required to cancel agreement.
-    * @param _signersArray avatar array of adresses that can sign to cancel agreement.
+    * @param _signersArray avatar array of addresses that can sign to cancel agreement.
     * @param _avatar avatar of the organization.
     * @return bytes32 the proposalId
     */
@@ -208,7 +208,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     * @param _numOfAgreedPeriods how many periods agreed on.
     * @param _cliffInPeriods the length of the cliff in periods.
     * @param _signaturesReqToCancel number of signatures required to cancel agreement.
-    * @param _signersArray avatar array of adresses that can sign to cancel agreement.
+    * @param _signersArray avatar array of addresses that can sign to cancel agreement.
     * @return uint the agreement index.
     */
     function createVestedAgreement(

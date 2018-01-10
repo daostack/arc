@@ -7,9 +7,9 @@ import "../globalConstraints/GlobalConstraintInterface.sol";
 
 /**
  * @title Controller contract
- * @dev A controller controls the organizations tokens,reputation and avatar.
+ * @dev A controller controls the organizations tokens ,reputation and avatar.
  * It is subject to a set of schemes and constraints that determine its behavior.
- * Each scheme has it own parameters and operation permmisions.
+ * Each scheme has it own parameters and operation permissions.
  */
 interface ControllerInterface {
 
@@ -103,8 +103,8 @@ interface ControllerInterface {
     function upgradeController(address _newController,address _avatar)
     public returns(bool);
     /**
-    * @dev do a generic deligate call to the contract which called us.
-    * This function use deligatecall and might expose the organization to security
+    * @dev do a generic delegate call to the contract which called us.
+    * This function use delegatecall and might expose the organization to security
     * risk. Use this function only if you really knows what you are doing.
     * @param _params the params for the call.
     * @param _avatar address
@@ -116,7 +116,7 @@ interface ControllerInterface {
   /**
    * @dev send some ether
    * @param _amountInWei the amount of ether (in Wei) to send
-   * @param _to address of the beneficary
+   * @param _to address of the beneficiary
    * @param _avatar address
    * @return bool which represents a success
    */
@@ -126,7 +126,7 @@ interface ControllerInterface {
     /**
     * @dev send some amount of arbitrary ERC20 Tokens
     * @param _externalToken the address of the Token Contract
-    * @param _to address of the beneficary
+    * @param _to address of the beneficiary
     * @param _value the amount of ether (in Wei) to send
     * @param _avatar address
     * @return bool which represents a success
@@ -141,7 +141,7 @@ interface ControllerInterface {
     *      "from" account.This can be done using externalTokenApprove.
     * @param _externalToken the address of the Token Contract
     * @param _from address of the account to send from
-    * @param _to address of the beneficary
+    * @param _to address of the beneficiary
     * @param _value the amount of ether (in Wei) to send
     * @param _avatar address
     * @return bool which represents a success
@@ -155,7 +155,7 @@ interface ControllerInterface {
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _addedValue the amount of ether (in Wei) which the approval is refering to.
+    * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
     * @param _avatar address
     * @return bool which represents a success
     */
@@ -168,7 +168,7 @@ interface ControllerInterface {
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _subtractedValue the amount of ether (in Wei) which the approval is refering to.
+    * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
     * @param _avatar address
     * @return bool which represents a success
     */

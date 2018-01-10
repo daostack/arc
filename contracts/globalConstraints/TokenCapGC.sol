@@ -5,7 +5,7 @@ import "zeppelin-solidity/contracts/token/StandardToken.sol";
 
 /**
  * @title Token Cap Global Constraint
- * @dev A simple global contraint to cap the number of tokens.
+ * @dev A simple global constraint to cap the number of tokens.
  */
 
 contract TokenCapGC {
@@ -20,7 +20,7 @@ contract TokenCapGC {
 
 
     /**
-     * @dev adding a new set of parametrs
+     * @dev adding a new set of parameters
      * @param  _token the token to add to the params.
      * @param _cap the cap to check the total supply against.
      * @return the calculated parameters hash
@@ -44,7 +44,7 @@ contract TokenCapGC {
 
     /**
      * @dev check the constraint after the action.
-     * This global contraint only checks the state after the action, so here we just return true:
+     * This global constraint only checks the state after the action, so here we just return true:
      * @return true
      */
     function pre(address, bytes32, bytes) public pure returns(bool) {

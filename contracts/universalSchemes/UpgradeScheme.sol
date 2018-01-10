@@ -5,8 +5,8 @@ import "./UniversalScheme.sol";
 
 
 /**
- * @title A schme to manage the upgrade of an organization.
- * @dev The schme is used to upgrade the controller of an organization to a new controller.
+ * @title A scheme to manage the upgrade of an organization.
+ * @dev The scheme is used to upgrade the controller of an organization to a new controller.
  */
 
 contract UpgradeScheme is UniversalScheme, ExecutableInterface {
@@ -30,7 +30,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
 
     // Details of an upgrade proposal:
     struct UpgradeProposal {
-        address upgradeContract; // Either the new conroller we upgrade to, or the new upgrading scheme.
+        address upgradeContract; // Either the new controller we upgrade to, or the new upgrading scheme.
         bytes32 params; // Params for the new upgrading scheme.
         uint proposalType; // 1: Upgrade controller, 2: change upgrade scheme.
         StandardToken tokenFee;

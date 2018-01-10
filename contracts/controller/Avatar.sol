@@ -47,7 +47,7 @@ contract Avatar is Ownable {
 
     /**
     * @dev call an action function on an ActionInterface.
-    * This function use deligatecall and might expose the organization to security
+    * This function use delegatecall and might expose the organization to security
     * risk. Use this function only if you really knows what you are doing.
     * @param _action the address of the contract to call.
     * @param _params the params for the call.
@@ -117,7 +117,7 @@ contract Avatar is Ownable {
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _addedValue the amount of ether (in Wei) which the approval is refering to.
+    * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
     function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue)
@@ -133,7 +133,7 @@ contract Avatar is Ownable {
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _subtractedValue the amount of ether (in Wei) which the approval is refering to.
+    * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
     function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue )

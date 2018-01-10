@@ -13,7 +13,7 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface { //
     address public beneficiary;
     bytes32 public hashedParameters; // For other parameters.
 
-    // A mapping from the organization (Avatar) address to the rergistration boolean
+    // A mapping from the organization (Avatar) address to the registration boolean
     mapping(address=>bool) public organizations;
 
     event OrganizationRegistered (address _avatar);
