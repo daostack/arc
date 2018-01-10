@@ -19,7 +19,8 @@
     "lint --fix": "eslint --fix .",
     "solium": "solium --dir ./contracts/",
     "truffle": "truffle",
-    "build": "rimraf build && truffle compile"
+    "build": "rimraf build && truffle compile",
+    "docs:gen": "node docs/gen/gen.js"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
