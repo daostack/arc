@@ -92,7 +92,6 @@ contract('SchemeRegistrar', function(accounts) {
 
      it("execute proposeScheme  and execute -yes - isRegistering==TRUE ", async function() {
        var testSetup = await setup(accounts);
-       var fee = 0;
        var isRegistering = true;
 
        var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,isRegistering);
