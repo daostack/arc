@@ -1,4 +1,4 @@
-# *contract* IntVoteInterface
+# *contract* IntVoteInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/IntVoteInterface.sol))
 [object Object]
 
 - [Events](#events)

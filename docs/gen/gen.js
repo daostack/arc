@@ -18,7 +18,7 @@ function main(){
     }
     
     // returns an `.md` string based on given data.
-    function render(contractName,abi,devdoc){
+    function render(file,contractName,abi,devdoc){
         const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
         const functions = abi.filter(x => x.type === 'function').sort((x,y) => x.name <= y.name);
         const methods = devdoc.methods || {};
@@ -28,7 +28,7 @@ function main(){
            we cannot use any indentation which doesn't apprear in the `.md` file
         */
         return (
-`# *contract* ${contractName}
+`# *contract* ${contractName} ([source](${'https://github.com/daostack/daostack/tree/master/'+file}))
 ${title}
 
 - [Events](#events)
@@ -109,7 +109,7 @@ ${
         shell.mkdir('-p',path.dirname(destination));
         fs.writeFileSync(
             destination,
-            render(contractName,abi,devdoc)
+            render(file,contractName,abi,devdoc)
         );
     }
 }

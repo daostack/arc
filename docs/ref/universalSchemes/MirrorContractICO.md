@@ -1,4 +1,4 @@
-# *contract* MirrorContractICO
+# *contract* MirrorContractICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
 An avatar contract for ICO.
 
 - [Events](#events)

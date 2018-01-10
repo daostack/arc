@@ -1,4 +1,4 @@
-# *contract* Controller
+# *contract* Controller ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Controller.sol))
 Controller contract
 
 - [Events](#events)

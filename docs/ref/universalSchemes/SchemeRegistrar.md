@@ -1,4 +1,4 @@
-# *contract* SchemeRegistrar
+# *contract* SchemeRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SchemeRegistrar.sol))
 A registrar for Schemes for organizations
 
 - [Events](#events)

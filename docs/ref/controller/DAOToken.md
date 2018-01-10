@@ -1,4 +1,4 @@
-# *contract* DAOToken
+# *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
 DAOToken, base on zeppelin contract.
 
 - [Events](#events)

@@ -1,4 +1,4 @@
-# *contract* ActionInterface
+# *contract* ActionInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
 [object Object]
 
 - [Events](#events)

@@ -1,4 +1,4 @@
-# *contract* GlobalConstraintInterface
+# *contract* GlobalConstraintInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/GlobalConstraintInterface.sol))
 [object Object]
 
 - [Events](#events)

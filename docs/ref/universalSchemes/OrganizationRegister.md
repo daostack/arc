@@ -1,4 +1,4 @@
-# *contract* OrganizationRegister
+# *contract* OrganizationRegister ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/OrganizationRegister.sol))
 A universal organization registry.
 
 - [Events](#events)

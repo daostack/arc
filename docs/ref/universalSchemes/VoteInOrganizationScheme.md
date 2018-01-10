@@ -1,4 +1,4 @@
-# *contract* VoteInOrganizationScheme
+# *contract* VoteInOrganizationScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VoteInOrganizationScheme.sol))
 VoteInOrganizationScheme.
 
 - [Events](#events)

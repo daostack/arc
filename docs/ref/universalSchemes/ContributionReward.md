@@ -1,4 +1,4 @@
-# *contract* ContributionReward
+# *contract* ContributionReward ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ContributionReward.sol))
 A scheme for proposing and rewarding contributions to an organization
 
 - [Events](#events)

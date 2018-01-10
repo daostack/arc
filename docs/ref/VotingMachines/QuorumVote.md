@@ -1,4 +1,4 @@
-# *contract* QuorumVote
+# *contract* QuorumVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/QuorumVote.sol))
 [object Object]
 
 - [Events](#events)

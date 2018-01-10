@@ -1,4 +1,4 @@
-# *contract* EmergentVoteScheme
+# *contract* EmergentVoteScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/EmergentVoteScheme.sol))
 [object Object]
 
 - [Events](#events)

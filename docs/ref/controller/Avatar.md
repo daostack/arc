@@ -1,4 +1,4 @@
-# *contract* Avatar
+# *contract* Avatar ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
 An Avatar holds tokens, reputation and ether for a controller
 
 - [Events](#events)

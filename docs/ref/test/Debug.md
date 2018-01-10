@@ -1,4 +1,4 @@
-# *contract* Debug
+# *contract* Debug ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/Debug.sol))
 [object Object]
 
 - [Events](#events)

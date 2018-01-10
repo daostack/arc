@@ -1,4 +1,4 @@
-# *contract* GenesisScheme
+# *contract* GenesisScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GenesisScheme.sol))
 Genesis Scheme that creates organizations
 
 - [Events](#events)

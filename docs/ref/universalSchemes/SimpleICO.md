@@ -1,4 +1,4 @@
-# *contract* SimpleICO
+# *contract* SimpleICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
 SimpleICO scheme.
 
 - [Events](#events)
