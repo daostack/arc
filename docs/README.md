@@ -1,5 +1,4 @@
 # DAOStack Documentation
-
 * [Roadmap](roadmap.md)
 * [Library Documentation](library/README.md)
 * [DAO protocol](DAO-protocol.md)
