@@ -40,7 +40,8 @@ function main(){
            we cannot use any indentation which doesn't appear in the `.md` file */
         return (
 `# *contract* ${contractName} ([source](${'https://github.com/daostack/daostack/tree/master/'+file}))
-*Total creation gas: **${gas.creation[1] || 'Infinite'}***
+*Code deposit gas: **${gas.creation[1] || 'Infinite'}***
+*Execution gas: **${gas.creation[0] || 'Infinite'}***
 ${title}
 
 - [Constructors](#constructors)
