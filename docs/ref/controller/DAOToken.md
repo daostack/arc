@@ -1,8 +1,12 @@
 # *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
-*Code deposit upper limit: **683600 gas***
-*Executionas upper limit: **Infinite gas***
+> DAOToken, base on zeppelin contract.
 
-DAOToken, base on zeppelin contract.
+*Code deposit cost: **less than 683600 gas***
+
+*Execution cost: **No bound available.***
+
+*Total deploy cost(deposit + execution): **less than 683600 gas***
+
 - [Constructors](#constructors)
     - [DAOToken(string, string)](#constructor-daotokenstring-string)
 - [Events](#events)
@@ -35,26 +39,28 @@ DAOToken, base on zeppelin contract.
     - [DECIMAL](#function-decimal)
 ## Constructors
 ### *constructor* DAOToken(string, string)
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Params:*
-    1. **_name** *of type string*
-    2. **_symbol** *of type string*
+1. **_name** *of type string*
+2. **_symbol** *of type string*
 
 
 ## Events
 ### *event* Transfer
 *Params:*
-    1. **from** *of type address*
-    2. **to** *of type address*
-    3. **value** *of type uint256*
+1. **from** *of type address*
+2. **to** *of type address*
+3. **value** *of type uint256*
 
 
 ### *event* OwnershipTransferred
 *Params:*
-    1. **previousOwner** *of type address*
-    2. **newOwner** *of type address*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
 
 
 ### *event* MintFinished
@@ -64,174 +70,202 @@ DAOToken, base on zeppelin contract.
 
 ### *event* Mint
 *Params:*
-    1. **to** *of type address*
-    2. **amount** *of type uint256*
+1. **to** *of type address*
+2. **amount** *of type uint256*
 
 
 ### *event* Burn
 *Params:*
-    1. **burner** *of type address*
-    2. **value** *of type uint256*
+1. **burner** *of type address*
+2. **value** *of type uint256*
 
 
 ### *event* Approval
 *Params:*
-    1. **owner** *of type address*
-    2. **spender** *of type address*
-    3. **value** *of type uint256*
+1. **owner** *of type address*
+2. **spender** *of type address*
+3. **value** *of type uint256*
 
 
 ## Fallback
 *Nothing*
 ## Functions
 ### *function* balanceOf
-*Execution cost upper limit: **793 gas***
+> Gets the balance of the specified address.
+*Execution cost: **less than 793 gas***
+
 **constant | view**
-Gets the balance of the specified address.
+
 *Inputs:*
-    1. **_owner** *of type address- The address to query the the balance of.*
+1. **_owner** *of type address- The address to query the the balance of.*
 
 An uint256 representing the amount owned by the passed address.
 
 ### *function* mintingFinished
-*Execution cost upper limit: **459 gas***
+
+*Execution cost: **less than 459 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* transferOwnership
-*Execution cost upper limit: **23118 gas***
+> Allows the current owner to transfer control of the contract to a newOwner.
+*Execution cost: **less than 23118 gas***
+
 **nonpayable**
-Allows the current owner to transfer control of the contract to a newOwner.
+
 *Inputs:*
-    1. **newOwner** *of type address- The address to transfer ownership to.*
+1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* totalSupply
-*Execution cost upper limit: **439 gas***
+
+*Execution cost: **less than 439 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type uint256*
+1. **unnamed** *of type uint256*
 
 
 ### *function* transferFrom
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_from** *of type address*
-    2. **_to** *of type address*
-    3. **_value** *of type uint256*
+1. **_from** *of type address*
+2. **_to** *of type address*
+3. **_value** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* transfer
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_to** *of type address*
-    2. **_value** *of type uint256*
+1. **_to** *of type address*
+2. **_value** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* symbol
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type string*
+1. **unnamed** *of type string*
 
 
 ### *function* owner
-*Execution cost upper limit: **793 gas***
+
+*Execution cost: **less than 793 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* name
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type string*
+1. **unnamed** *of type string*
 
 
 ### *function* mint
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_to** *of type address*
-    2. **_amount** *of type uint256*
+1. **_to** *of type address*
+2. **_amount** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* increaseApproval
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_spender** *of type address*
-    2. **_addedValue** *of type uint256*
+1. **_spender** *of type address*
+2. **_addedValue** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* finishMinting
-*Execution cost upper limit: **22080 gas***
+> Function to stop minting new tokens.
+*Execution cost: **less than 22080 gas***
+
 **nonpayable**
-Function to stop minting new tokens.
+
 *Inputs:*
 *Nothing*
 
 True if the operation was successful.
 
 ### *function* destroyAndSend
-*Execution cost upper limit: **30980 gas***
+
+*Execution cost: **less than 30980 gas***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_recipient** *of type address*
+1. **_recipient** *of type address*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* destroy
-*Execution cost upper limit: **30945 gas***
+> Transfers the current balance to the owner and terminates the contract.
+*Execution cost: **less than 30945 gas***
+
 **nonpayable**
-Transfers the current balance to the owner and terminates the contract.
+
 *Inputs:*
 *Nothing*
 
@@ -240,60 +274,70 @@ Transfers the current balance to the owner and terminates the contract.
 
 
 ### *function* decreaseApproval
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_spender** *of type address*
-    2. **_subtractedValue** *of type uint256*
+1. **_spender** *of type address*
+2. **_subtractedValue** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* burn
-*Execution cost upper limit: **Infinite gas***
+> Burns a specific amount of tokens.
+*Execution cost: **No bound available.***
+
 **nonpayable**
-Burns a specific amount of tokens.
+
 *Inputs:*
-    1. **_value** *of type uint256- The amount of token to be burned.*
+1. **_value** *of type uint256- The amount of token to be burned.*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* approve
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_spender** *of type address*
-    2. **_value** *of type uint256*
+1. **_spender** *of type address*
+2. **_value** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* allowance
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **constant | view**
 
 *Inputs:*
-    1. **_owner** *of type address*
-    2. **_spender** *of type address*
+1. **_owner** *of type address*
+2. **_spender** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type uint256*
+1. **unnamed** *of type uint256*
 
 
 ### *function* DECIMAL
-*Execution cost upper limit: **349 gas***
+
+*Execution cost: **less than 349 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type uint256*
+1. **unnamed** *of type uint256*
 
 

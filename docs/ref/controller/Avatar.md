@@ -1,8 +1,12 @@
 # *contract* Avatar ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
-*Code deposit upper limit: **475800 gas***
-*Executionas upper limit: **81478 gas***
+> An Avatar holds tokens, reputation and ether for a controller
 
-An Avatar holds tokens, reputation and ether for a controller
+*Code deposit cost: **less than 475800 gas***
+
+*Execution cost: **less than 81478 gas***
+
+*Total deploy cost(deposit + execution): **less than 557278 gas***
+
 - [Constructors](#constructors)
     - [Avatar(bytes32, address, address)](#constructor-avatarbytes32-address-address)
 - [Events](#events)
@@ -29,204 +33,230 @@ An Avatar holds tokens, reputation and ether for a controller
     - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
 ## Constructors
 ### *constructor* Avatar(bytes32, address, address)
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Params:*
-    1. **_orgName** *of type bytes32*
-    2. **_nativeToken** *of type address*
-    3. **_nativeReputation** *of type address*
+1. **_orgName** *of type bytes32*
+2. **_nativeToken** *of type address*
+3. **_nativeReputation** *of type address*
 
 
 ## Events
 ### *event* SendEther
 *Params:*
-    1. **_amountInWei** *of type uint256*
-    2. **_to** *of type address*
+1. **_amountInWei** *of type uint256*
+2. **_to** *of type address*
 
 
 ### *event* ReceiveEther
 *Params:*
-    1. **_sender** *of type address*
-    2. **_value** *of type uint256*
+1. **_sender** *of type address*
+2. **_value** *of type uint256*
 
 
 ### *event* OwnershipTransferred
 *Params:*
-    1. **previousOwner** *of type address*
-    2. **newOwner** *of type address*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
 
 
 ### *event* GenericAction
 *Params:*
-    1. **_action** *of type address*
-    2. **_params** *of type bytes32[]*
+1. **_action** *of type address*
+2. **_params** *of type bytes32[]*
 
 
 ### *event* ExternalTokenTransferFrom
 *Params:*
-    1. **_externalToken** *of type address*
-    2. **_from** *of type address*
-    3. **_to** *of type address*
-    4. **_value** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_from** *of type address*
+3. **_to** *of type address*
+4. **_value** *of type uint256*
 
 
 ### *event* ExternalTokenTransfer
 *Params:*
-    1. **_externalToken** *of type address*
-    2. **_to** *of type address*
-    3. **_value** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_to** *of type address*
+3. **_value** *of type uint256*
 
 
 ### *event* ExternalTokenIncreaseApproval
 *Params:*
-    1. **_externalToken** *of type address*
-    2. **_spender** *of type address*
-    3. **_addedValue** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_spender** *of type address*
+3. **_addedValue** *of type uint256*
 
 
 ### *event* ExternalTokenDecreaseApproval
 *Params:*
-    1. **_externalToken** *of type address*
-    2. **_spender** *of type address*
-    3. **_subtractedValue** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_spender** *of type address*
+3. **_subtractedValue** *of type uint256*
 
 
 ## Fallback
-*Execution cost upper limit: **1870 gas***
+*Execution cost: **less than 1870 gas***
+
 **payable**
+
 
 
 ## Functions
 ### *function* externalTokenTransferFrom
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_externalToken** *of type address*
-    2. **_from** *of type address*
-    3. **_to** *of type address*
-    4. **_value** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_from** *of type address*
+3. **_to** *of type address*
+4. **_value** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* transferOwnership
-*Execution cost upper limit: **23027 gas***
+> Allows the current owner to transfer control of the contract to a newOwner.
+*Execution cost: **less than 23027 gas***
+
 **nonpayable**
-Allows the current owner to transfer control of the contract to a newOwner.
+
 *Inputs:*
-    1. **newOwner** *of type address- The address to transfer ownership to.*
+1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* sendEther
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_amountInWei** *of type uint256*
-    2. **_to** *of type address*
+1. **_amountInWei** *of type uint256*
+2. **_to** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* owner
-*Execution cost upper limit: **1545 gas***
+
+*Execution cost: **less than 1545 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* orgName
-*Execution cost upper limit: **1545 gas***
+
+*Execution cost: **less than 1545 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type bytes32*
+1. **unnamed** *of type bytes32*
 
 
 ### *function* nativeToken
-*Execution cost upper limit: **1545 gas***
+
+*Execution cost: **less than 1545 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* nativeReputation
-*Execution cost upper limit: **1545 gas***
+
+*Execution cost: **less than 1545 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* genericAction
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_action** *of type address*
-    2. **_params** *of type bytes32[]*
+1. **_action** *of type address*
+2. **_params** *of type bytes32[]*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* externalTokenTransfer
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_externalToken** *of type address*
-    2. **_to** *of type address*
-    3. **_value** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_to** *of type address*
+3. **_value** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* externalTokenIncreaseApproval
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_externalToken** *of type address*
-    2. **_spender** *of type address*
-    3. **_addedValue** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_spender** *of type address*
+3. **_addedValue** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* externalTokenDecreaseApproval
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_externalToken** *of type address*
-    2. **_spender** *of type address*
-    3. **_subtractedValue** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_spender** *of type address*
+3. **_subtractedValue** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 

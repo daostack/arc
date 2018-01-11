@@ -1,8 +1,12 @@
 # *contract* Reputation ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Reputation.sol))
-*Code deposit upper limit: **222600 gas***
-*Executionas upper limit: **50712 gas***
+> Simple static reputation storage
 
-Simple static reputation storage
+*Code deposit cost: **less than 222600 gas***
+
+*Execution cost: **less than 50712 gas***
+
+*Total deploy cost(deposit + execution): **less than 273312 gas***
+
 - [Constructors](#constructors)
     - [Reputation()](#constructor-reputation)
 - [Events](#events)
@@ -19,7 +23,9 @@ Simple static reputation storage
     - [decimals](#function-decimals)
 ## Constructors
 ### *constructor* Reputation()
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Params:*
@@ -29,95 +35,109 @@ Simple static reputation storage
 ## Events
 ### *event* OwnershipTransferred
 *Params:*
-    1. **previousOwner** *of type address*
-    2. **newOwner** *of type address*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
 
 
 ### *event* Mint
 *Params:*
-    1. **to** *of type address*
-    2. **amount** *of type int256*
+1. **to** *of type address*
+2. **amount** *of type int256*
 
 
 ## Fallback
 *Nothing*
 ## Functions
 ### *function* transferOwnership
-*Execution cost upper limit: **22854 gas***
+> Allows the current owner to transfer control of the contract to a newOwner.
+*Execution cost: **less than 22854 gas***
+
 **nonpayable**
-Allows the current owner to transfer control of the contract to a newOwner.
+
 *Inputs:*
-    1. **newOwner** *of type address- The address to transfer ownership to.*
+1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* totalSupply
-*Execution cost upper limit: **373 gas***
+
+*Execution cost: **less than 373 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type uint256*
+1. **unnamed** *of type uint256*
 
 
 ### *function* setReputation
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_to** *of type address*
-    2. **_amount** *of type uint256*
+1. **_to** *of type address*
+2. **_amount** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* reputationOf
-*Execution cost upper limit: **683 gas***
+> return the reputation amount of a given owner
+*Execution cost: **less than 683 gas***
+
 **constant | view**
-return the reputation amount of a given owner
+
 *Inputs:*
-    1. **_owner** *of type address- an address of the owner which we want to get his reputation*
+1. **_owner** *of type address- an address of the owner which we want to get his reputation*
 
 *Returns:*
-    1. **balance** *of type uint256*
+1. **balance** *of type uint256*
 
 
 ### *function* owner
-*Execution cost upper limit: **573 gas***
+
+*Execution cost: **less than 573 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* mint
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_to** *of type address*
-    2. **_amount** *of type int256*
+1. **_to** *of type address*
+2. **_amount** *of type int256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* decimals
-*Execution cost upper limit: **395 gas***
+
+*Execution cost: **less than 395 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type uint256*
+1. **unnamed** *of type uint256*
 
 

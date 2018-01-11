@@ -1,6 +1,10 @@
 # *contract* UniversalScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UniversalScheme.sol))
-*Code deposit upper limit: **244800 gas***
-*Executionas upper limit: **20636 gas***
+> 
+*Code deposit cost: **less than 244800 gas***
+
+*Execution cost: **less than 20636 gas***
+
+*Total deploy cost(deposit + execution): **less than 265436 gas***
 
 - [Constructors](#constructors)
 
@@ -25,133 +29,153 @@
 ## Events
 ### *event* OwnershipTransferred
 *Params:*
-    1. **previousOwner** *of type address*
-    2. **newOwner** *of type address*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
 
 
 ### *event* OrganizationRegistered
 *Params:*
-    1. **_avatar** *of type address*
+1. **_avatar** *of type address*
 
 
 ### *event* LogNewProposal
 *Params:*
-    1. **proposalId** *of type bytes32*
+1. **proposalId** *of type bytes32*
 
 
 ## Fallback
 *Nothing*
 ## Functions
 ### *function* updateParameters
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_nativeToken** *of type address*
-    2. **_fee** *of type uint256*
-    3. **_beneficiary** *of type address*
-    4. **_hashedParameters** *of type bytes32*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
+4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* transferOwnership
-*Execution cost upper limit: **22920 gas***
+> Allows the current owner to transfer control of the contract to a newOwner.
+*Execution cost: **less than 22920 gas***
+
 **nonpayable**
-Allows the current owner to transfer control of the contract to a newOwner.
+
 *Inputs:*
-    1. **newOwner** *of type address- The address to transfer ownership to.*
+1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* registerOrganization
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_avatar** *of type address*
+1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* owner
-*Execution cost upper limit: **592 gas***
+
+*Execution cost: **less than 592 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* organizations
-*Execution cost upper limit: **576 gas***
+
+*Execution cost: **less than 576 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* nativeToken
-*Execution cost upper limit: **680 gas***
+
+*Execution cost: **less than 680 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* isRegistered
-*Execution cost upper limit: **717 gas***
+
+*Execution cost: **less than 717 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **_avatar** *of type address*
+1. **_avatar** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* hashedParameters
-*Execution cost upper limit: **571 gas***
+
+*Execution cost: **less than 571 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type bytes32*
+1. **unnamed** *of type bytes32*
 
 
 ### *function* fee
-*Execution cost upper limit: **505 gas***
+
+*Execution cost: **less than 505 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type uint256*
+1. **unnamed** *of type uint256*
 
 
 ### *function* beneficiary
-*Execution cost upper limit: **526 gas***
+
+*Execution cost: **less than 526 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 

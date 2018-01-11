@@ -1,8 +1,12 @@
 # *contract* MirrorContractICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
-*Code deposit upper limit: **158400 gas***
-*Executionas upper limit: **61130 gas***
+> An avatar contract for ICO.
 
-An avatar contract for ICO.
+*Code deposit cost: **less than 158400 gas***
+
+*Execution cost: **less than 61130 gas***
+
+*Total deploy cost(deposit + execution): **less than 219530 gas***
+
 - [Constructors](#constructors)
     - [MirrorContractICO(address, address)](#constructor-mirrorcontracticoaddress-address)
 - [Events](#events)
@@ -17,86 +21,102 @@ An avatar contract for ICO.
     - [destroy](#function-destroy)
 ## Constructors
 ### *constructor* MirrorContractICO(address, address)
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Params:*
-    1. **_organization** *of type address*
-    2. **_simpleICO** *of type address*
+1. **_organization** *of type address*
+2. **_simpleICO** *of type address*
 
 
 ## Events
 ### *event* OwnershipTransferred
 *Params:*
-    1. **previousOwner** *of type address*
-    2. **newOwner** *of type address*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
 
 
 ## Fallback
-*Execution cost upper limit: **Infinite gas***
+*Execution cost: **No bound available.***
+
 **payable**
+
 
 
 ## Functions
 ### *function* transferOwnership
-*Execution cost upper limit: **Infinite gas***
+> Allows the current owner to transfer control of the contract to a newOwner.
+*Execution cost: **No bound available.***
+
 **nonpayable**
-Allows the current owner to transfer control of the contract to a newOwner.
+
 *Inputs:*
-    1. **newOwner** *of type address- The address to transfer ownership to.*
+1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* simpleICO
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* owner
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* organization
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* destroyAndSend
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_recipient** *of type address*
+1. **_recipient** *of type address*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* destroy
-*Execution cost upper limit: **Infinite gas***
+> Transfers the current balance to the owner and terminates the contract.
+*Execution cost: **No bound available.***
+
 **nonpayable**
-Transfers the current balance to the owner and terminates the contract.
+
 *Inputs:*
 *Nothing*
 

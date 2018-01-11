@@ -1,8 +1,12 @@
 # *contract* GlobalConstraintRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GlobalConstraintRegistrar.sol))
-*Code deposit upper limit: **851800 gas***
-*Executionas upper limit: **Infinite gas***
+> A scheme to manage global constaintg for organizations
 
-A scheme to manage global constaintg for organizations
+*Code deposit cost: **less than 851800 gas***
+
+*Execution cost: **No bound available.***
+
+*Total deploy cost(deposit + execution): **less than 851800 gas***
+
 - [Constructors](#constructors)
     - [GlobalConstraintRegistrar(address, uint256, address)](#constructor-globalconstraintregistraraddress-uint256-address)
 - [Events](#events)
@@ -34,262 +38,298 @@ A scheme to manage global constaintg for organizations
     - [beneficiary](#function-beneficiary)
 ## Constructors
 ### *constructor* GlobalConstraintRegistrar(address, uint256, address)
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Params:*
-    1. **_nativeToken** *of type address*
-    2. **_fee** *of type uint256*
-    3. **_beneficiary** *of type address*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 
 ## Events
 ### *event* RemoveGlobalConstraintsProposal
 *Params:*
-    1. **_avatar** *of type address*
-    2. **_proposalId** *of type bytes32*
-    3. **_intVoteInterface** *of type address*
-    4. **_gc** *of type address*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
+3. **_intVoteInterface** *of type address*
+4. **_gc** *of type address*
 
 
 ### *event* ProposalExecuted
 *Params:*
-    1. **_avatar** *of type address*
-    2. **_proposalId** *of type bytes32*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
 
 
 ### *event* OwnershipTransferred
 *Params:*
-    1. **previousOwner** *of type address*
-    2. **newOwner** *of type address*
+1. **previousOwner** *of type address*
+2. **newOwner** *of type address*
 
 
 ### *event* OrganizationRegistered
 *Params:*
-    1. **_avatar** *of type address*
+1. **_avatar** *of type address*
 
 
 ### *event* NewGlobalConstraintsProposal
 *Params:*
-    1. **_avatar** *of type address*
-    2. **_proposalId** *of type bytes32*
-    3. **_intVoteInterface** *of type address*
-    4. **_gc** *of type address*
-    5. **_params** *of type bytes32*
-    6. **_voteToRemoveParams** *of type bytes32*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
+3. **_intVoteInterface** *of type address*
+4. **_gc** *of type address*
+5. **_params** *of type bytes32*
+6. **_voteToRemoveParams** *of type bytes32*
 
 
 ### *event* LogProposalDeleted
 *Params:*
-    1. **_avatar** *of type address*
-    2. **_proposalId** *of type bytes32*
+1. **_avatar** *of type address*
+2. **_proposalId** *of type bytes32*
 
 
 ### *event* LogNewProposal
 *Params:*
-    1. **proposalId** *of type bytes32*
+1. **proposalId** *of type bytes32*
 
 
 ## Fallback
 *Nothing*
 ## Functions
 ### *function* setParameters
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_voteRegisterParams** *of type bytes32*
-    2. **_intVote** *of type address*
+1. **_voteRegisterParams** *of type bytes32*
+2. **_intVote** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bytes32*
+1. **unnamed** *of type bytes32*
 
 
 ### *function* parameters
-*Execution cost upper limit: **894 gas***
+
+*Execution cost: **less than 894 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **unnamed** *of type bytes32*
+1. **unnamed** *of type bytes32*
 
 *Returns:*
-    1. **voteRegisterParams** *of type bytes32*
-    2. **intVote** *of type address*
+1. **voteRegisterParams** *of type bytes32*
+2. **intVote** *of type address*
 
 
 ### *function* proposeToRemoveGC
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_avatar** *of type address*
-    2. **_gc** *of type address*
+1. **_avatar** *of type address*
+2. **_gc** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bytes32*
+1. **unnamed** *of type bytes32*
 
 
 ### *function* transferOwnership
-*Execution cost upper limit: **23184 gas***
+> Allows the current owner to transfer control of the contract to a newOwner.
+*Execution cost: **less than 23184 gas***
+
 **nonpayable**
-Allows the current owner to transfer control of the contract to a newOwner.
+
 *Inputs:*
-    1. **newOwner** *of type address- The address to transfer ownership to.*
+1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* registerOrganization
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_avatar** *of type address*
+1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* proposeGlobalConstraint
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_avatar** *of type address*
-    2. **_gc** *of type address*
-    3. **_params** *of type bytes32*
-    4. **_voteToRemoveParams** *of type bytes32*
+1. **_avatar** *of type address*
+2. **_gc** *of type address*
+3. **_params** *of type bytes32*
+4. **_voteToRemoveParams** *of type bytes32*
 
 *Returns:*
-    1. **unnamed** *of type bytes32*
+1. **unnamed** *of type bytes32*
 
 
 ### *function* updateParameters
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_nativeToken** *of type address*
-    2. **_fee** *of type uint256*
-    3. **_beneficiary** *of type address*
-    4. **_hashedParameters** *of type bytes32*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
+4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
 
 
 ### *function* owner
-*Execution cost upper limit: **787 gas***
+
+*Execution cost: **less than 787 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* organizationsData
-*Execution cost upper limit: **1013 gas***
+
+*Execution cost: **less than 1013 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 *Returns:*
-    1. **voteRegisterParams** *of type bytes32*
-    2. **intVote** *of type address*
+1. **voteRegisterParams** *of type bytes32*
+2. **intVote** *of type address*
 
 
 ### *function* organizations
-*Execution cost upper limit: **749 gas***
+
+*Execution cost: **less than 749 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* nativeToken
-*Execution cost upper limit: **875 gas***
+
+*Execution cost: **less than 875 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* isRegistered
-*Execution cost upper limit: **912 gas***
+
+*Execution cost: **less than 912 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **_avatar** *of type address*
+1. **_avatar** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* hashedParameters
-*Execution cost upper limit: **788 gas***
+
+*Execution cost: **less than 788 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type bytes32*
+1. **unnamed** *of type bytes32*
 
 
 ### *function* getParametersHash
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **constant | pure**
 
 *Inputs:*
-    1. **_voteRegisterParams** *of type bytes32*
-    2. **_intVote** *of type address*
+1. **_voteRegisterParams** *of type bytes32*
+2. **_intVote** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bytes32*
+1. **unnamed** *of type bytes32*
 
 
 ### *function* fee
-*Execution cost upper limit: **700 gas***
+
+*Execution cost: **less than 700 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type uint256*
+1. **unnamed** *of type uint256*
 
 
 ### *function* execute
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_proposalId** *of type bytes32*
-    2. **_avatar** *of type address*
-    3. **_param** *of type int256*
+1. **_proposalId** *of type bytes32*
+2. **_avatar** *of type address*
+3. **_param** *of type int256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* beneficiary
-*Execution cost upper limit: **699 gas***
+
+*Execution cost: **less than 699 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 

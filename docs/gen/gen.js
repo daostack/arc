@@ -35,21 +35,21 @@ function main(){
             .trim()
             .replace(new RegExp('[ ]+','g'),'-');
 
-        const gasEstimate = (est) => est || 'Infinite';
+        const gasEstimate = (est) => est ? `less than ${est} gas` : 'No bound available.';
         const signature = (name,ps) => `${name}(${ps.map(p => `${p.type}`).join(', ')})`;
         const headerLink = (title,link) => `    - [${title}](#${hyphenate(link)})`;
         const title = (prefix,text) => `### *${prefix}* ${text}`;
-        const functionComment = (obj) => obj.details ? obj.details : '';
+        const functionComment = (obj) => obj.details ? `> ${obj.details}` : '';
         const paramComment = (obj, name) => obj.params && obj.params[name] ? `- ${obj.params[name]}` : '';
 
         const modifiers = (fn) => 
-            `**${
+            `${N}**${
                 [...fn.payable ? ['payable'] : [],
                 ...fn.constant ? ['constant'] : [],
                 ...fn.stateMutability && !fn.payable ? [fn.stateMutability] : []]
-                .join(' | ')}**`;
+                .join(' | ')}**${N}`;
 
-        const param = (obj,p,i) => `    ${i+1}. **${p.name || 'unnamed'}** *of type ${p.type}${paramComment(obj,p.name)}*`;
+        const param = (obj,p,i) => `${i+1}. **${p.name || 'unnamed'}** *of type ${p.type}${paramComment(obj,p.name)}*`;
         const params = (obj,title,ps) =>
             `*${title}:*${N
             }${ps.length ? ps.map((p,i) => param(obj,p,i)).join(N) : '*Nothing*'}${N
@@ -60,9 +60,9 @@ function main(){
             const obj = methods[sign] || {};
             return (
             `${title('constructor',sign)}${N
-            }*Execution cost upper limit: **${gasEstimate(gas.external[sign])} gas***${N
-            }${modifiers(fn)}${N
             }${functionComment(obj)}${N
+            }*Execution cost: **${gasEstimate(gas.external[sign])}***${N
+            }${modifiers(fn)}${N
             }${params(obj,'Params',fn.inputs)}${N
             }`);
         };
@@ -77,9 +77,9 @@ function main(){
             const obj = methods[sign] || {};
             return (
             `${title('function',fn.name)}${N
-            }*Execution cost upper limit: **${gasEstimate(gas.external[sign])} gas***${N
-            }${modifiers(fn)}${N
             }${functionComment(obj)}${N
+            }*Execution cost: **${gasEstimate(gas.external[sign])}***${N
+            }${modifiers(fn)}${N
             }${params(obj,'Inputs',fn.inputs)}${N
             }${obj.return ? obj.return : params({},'Returns',fn.outputs)}${N
             }`);
@@ -88,19 +88,20 @@ function main(){
         const fb = (fn) =>{
             const obj = methods[''] || {};
             return (
-            `*Execution cost upper limit: **${gasEstimate(gas.external[''])} gas***${N
+            `*Execution cost: **${gasEstimate(gas.external[''])}***${N
             }${modifiers(fn)}${N
             }${functionComment(obj)}${N
             }`);
         };
 
-        const description = devdoc.title ? `\n${devdoc.title}` : '';
+        const description = devdoc.title ? `${devdoc.title}${N}` : '';
 
         const res = (
             `# *contract* ${contractName} ([source](https://github.com/daostack/daostack/tree/master/${file}))${N
-            }*Code deposit upper limit: **${gasEstimate(gas.creation[1])} gas***${N
-            }*Executionas upper limit: **${gasEstimate(gas.creation[0])} gas***${N
-            }${description}${N
+            }> ${description}${N    
+            }*Code deposit cost: **${gasEstimate(gas.creation[1])}***${N}${N
+            }*Execution cost: **${gasEstimate(gas.creation[0])}***${N}${N
+            }*Total deploy cost(deposit + execution): **${gasEstimate(gas.creation[0]+gas.creation[1])}***${N}${N
             }- [Constructors](#constructors)${N
             }${constructors.map(c => headerLink(signature(contractName,c.inputs),title('constructor',signature(contractName,c.inputs)))).join(N)}${N
             }- [Events](#events)${N

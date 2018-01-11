@@ -1,8 +1,12 @@
 # *contract* Controller ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Controller.sol))
-*Code deposit upper limit: **2327200 gas***
-*Executionas upper limit: **Infinite gas***
+> Controller contract
 
-Controller contract
+*Code deposit cost: **less than 2327200 gas***
+
+*Execution cost: **No bound available.***
+
+*Total deploy cost(deposit + execution): **less than 2327200 gas***
+
 - [Constructors](#constructors)
     - [Controller(address, address[], bytes32[], bytes4[])](#constructor-controlleraddress-address[]-bytes32[]-bytes4[])
 - [Events](#events)
@@ -49,404 +53,460 @@ Controller contract
     - [addGlobalConstraint](#function-addglobalconstraint)
 ## Constructors
 ### *constructor* Controller(address, address[], bytes32[], bytes4[])
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Params:*
-    1. **_avatar** *of type address*
-    2. **_schemes** *of type address[]*
-    3. **_params** *of type bytes32[]*
-    4. **_permissions** *of type bytes4[]*
+1. **_avatar** *of type address*
+2. **_schemes** *of type address[]*
+3. **_params** *of type bytes32[]*
+4. **_permissions** *of type bytes4[]*
 
 
 ## Events
 ### *event* ExternalTokenTransfer
 *Params:*
-    1. **_sender** *of type address*
-    2. **_externalToken** *of type address*
-    3. **_to** *of type address*
-    4. **_value** *of type uint256*
+1. **_sender** *of type address*
+2. **_externalToken** *of type address*
+3. **_to** *of type address*
+4. **_value** *of type uint256*
 
 
 ### *event* UpgradeController
 *Params:*
-    1. **_oldController** *of type address*
-    2. **_newController** *of type address*
+1. **_oldController** *of type address*
+2. **_newController** *of type address*
 
 
 ### *event* ExternalTokenTransferFrom
 *Params:*
-    1. **_sender** *of type address*
-    2. **_externalToken** *of type address*
-    3. **_from** *of type address*
-    4. **_to** *of type address*
-    5. **_value** *of type uint256*
+1. **_sender** *of type address*
+2. **_externalToken** *of type address*
+3. **_from** *of type address*
+4. **_to** *of type address*
+5. **_value** *of type uint256*
 
 
 ### *event* RegisterScheme
 *Params:*
-    1. **_sender** *of type address*
-    2. **_scheme** *of type address*
+1. **_sender** *of type address*
+2. **_scheme** *of type address*
 
 
 ### *event* RemoveGlobalConstraint
 *Params:*
-    1. **_globalConstraint** *of type address*
-    2. **_index** *of type uint256*
+1. **_globalConstraint** *of type address*
+2. **_index** *of type uint256*
 
 
 ### *event* SendEther
 *Params:*
-    1. **_sender** *of type address*
-    2. **_amountInWei** *of type uint256*
-    3. **_to** *of type address*
+1. **_sender** *of type address*
+2. **_amountInWei** *of type uint256*
+3. **_to** *of type address*
 
 
 ### *event* UnregisterScheme
 *Params:*
-    1. **_sender** *of type address*
-    2. **_scheme** *of type address*
+1. **_sender** *of type address*
+2. **_scheme** *of type address*
 
 
 ### *event* MintTokens
 *Params:*
-    1. **_sender** *of type address*
-    2. **_beneficiary** *of type address*
-    3. **_amount** *of type uint256*
+1. **_sender** *of type address*
+2. **_beneficiary** *of type address*
+3. **_amount** *of type uint256*
 
 
 ### *event* MintReputation
 *Params:*
-    1. **_sender** *of type address*
-    2. **_beneficiary** *of type address*
-    3. **_amount** *of type int256*
+1. **_sender** *of type address*
+2. **_beneficiary** *of type address*
+3. **_amount** *of type int256*
 
 
 ### *event* GenericAction
 *Params:*
-    1. **_sender** *of type address*
-    2. **_params** *of type bytes32[]*
+1. **_sender** *of type address*
+2. **_params** *of type bytes32[]*
 
 
 ### *event* ExternalTokenIncreaseApproval
 *Params:*
-    1. **_sender** *of type address*
-    2. **_externalToken** *of type address*
-    3. **_spender** *of type address*
-    4. **_value** *of type uint256*
+1. **_sender** *of type address*
+2. **_externalToken** *of type address*
+3. **_spender** *of type address*
+4. **_value** *of type uint256*
 
 
 ### *event* ExternalTokenDecreaseApproval
 *Params:*
-    1. **_sender** *of type address*
-    2. **_externalToken** *of type address*
-    3. **_spender** *of type address*
-    4. **_value** *of type uint256*
+1. **_sender** *of type address*
+2. **_externalToken** *of type address*
+3. **_spender** *of type address*
+4. **_value** *of type uint256*
 
 
 ### *event* AddGlobalConstraint
 *Params:*
-    1. **_globalconstraint** *of type address*
-    2. **_params** *of type bytes32*
+1. **_globalconstraint** *of type address*
+2. **_params** *of type bytes32*
 
 
 ## Fallback
-*Execution cost upper limit: **720 gas***
+*Execution cost: **less than 720 gas***
+
 **nonpayable**
+
 
 
 ## Functions
 ### *function* isSchemeRegistered
-*Execution cost upper limit: **1045 gas***
+
+*Execution cost: **less than 1045 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **_scheme** *of type address*
+1. **_scheme** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* nativeToken
-*Execution cost upper limit: **1142 gas***
+
+*Execution cost: **less than 1142 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* schemes
-*Execution cost upper limit: **1499 gas***
+
+*Execution cost: **less than 1499 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 *Returns:*
-    1. **paramsHash** *of type bytes32*
-    2. **permissions** *of type bytes4*
+1. **paramsHash** *of type bytes32*
+2. **permissions** *of type bytes4*
 
 
 ### *function* sendEther
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_amountInWei** *of type uint256*
-    2. **_to** *of type address*
+1. **_amountInWei** *of type uint256*
+2. **_to** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* newController
-*Execution cost upper limit: **680 gas***
+
+*Execution cost: **less than 680 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* upgradeController
-*Execution cost upper limit: **Infinite gas***
+> upgrade the Controller     The function will trigger an event 'UpgradeController'.
+*Execution cost: **No bound available.***
+
 **nonpayable**
-upgrade the Controller     The function will trigger an event 'UpgradeController'.
+
 *Inputs:*
-    1. **_newController** *of type address- the address of the new controller.*
+1. **_newController** *of type address- the address of the new controller.*
 
 bool which represents a success
 
 ### *function* registerScheme
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_scheme** *of type address*
-    2. **_paramsHash** *of type bytes32*
-    3. **_permissions** *of type bytes4*
+1. **_scheme** *of type address*
+2. **_paramsHash** *of type bytes32*
+3. **_permissions** *of type bytes4*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* removeGlobalConstraint
-*Execution cost upper limit: **Infinite gas***
+> remove Global Constraint
+*Execution cost: **No bound available.***
+
 **nonpayable**
-remove Global Constraint
+
 *Inputs:*
-    1. **_globalConstraint** *of type address- the address of the global constraint to be remove.*
+1. **_globalConstraint** *of type address- the address of the global constraint to be remove.*
 
 bool which represents a success
 
 ### *function* unregisterSelf
-*Execution cost upper limit: **27918 gas***
+> unregister the caller's scheme
+*Execution cost: **less than 27918 gas***
+
 **nonpayable**
-unregister the caller's scheme
+
 *Inputs:*
 *Nothing*
 
 bool which represents a success
 
 ### *function* unregisterScheme
-*Execution cost upper limit: **Infinite gas***
+> unregister a scheme
+*Execution cost: **No bound available.***
+
 **nonpayable**
-unregister a scheme
+
 *Inputs:*
-    1. **_scheme** *of type address- the address of the scheme*
+1. **_scheme** *of type address- the address of the scheme*
 
 bool which represents a success
 
 ### *function* externalTokenTransferFrom
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_externalToken** *of type address*
-    2. **_from** *of type address*
-    3. **_to** *of type address*
-    4. **_value** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_from** *of type address*
+3. **_to** *of type address*
+4. **_value** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* isGlobalConstraintRegister
-*Execution cost upper limit: **670 gas***
+
+*Execution cost: **less than 670 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **_globalConstraint** *of type address*
+1. **_globalConstraint** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* mintReputation
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_amount** *of type int256*
-    2. **_beneficiary** *of type address*
+1. **_amount** *of type int256*
+2. **_beneficiary** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* mintTokens
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_amount** *of type uint256*
-    2. **_beneficiary** *of type address*
+1. **_amount** *of type uint256*
+2. **_beneficiary** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* nativeReputation
-*Execution cost upper limit: **900 gas***
+
+*Execution cost: **less than 900 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* genericAction
-*Execution cost upper limit: **Infinite gas***
+> do a generic deligate call to the contract which called us. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
+*Execution cost: **No bound available.***
+
 **nonpayable**
-do a generic deligate call to the contract which called us. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
+
 *Inputs:*
-    1. **_params** *of type bytes32[]- the params for the call.*
+1. **_params** *of type bytes32[]- the params for the call.*
 
 bool which represents success
 
 ### *function* globalConstraintsRegister
-*Execution cost upper limit: **1038 gas***
+
+*Execution cost: **less than 1038 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 *Returns:*
-    1. **register** *of type bool*
-    2. **index** *of type uint256*
+1. **register** *of type bool*
+2. **index** *of type uint256*
 
 
 ### *function* globalConstraintsCount
-*Execution cost upper limit: **920 gas***
+
+*Execution cost: **less than 920 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type uint256*
+1. **unnamed** *of type uint256*
 
 
 ### *function* globalConstraints
-*Execution cost upper limit: **1390 gas***
+
+*Execution cost: **less than 1390 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **unnamed** *of type uint256*
+1. **unnamed** *of type uint256*
 
 *Returns:*
-    1. **gcAddress** *of type address*
-    2. **params** *of type bytes32*
+1. **gcAddress** *of type address*
+2. **params** *of type bytes32*
 
 
 ### *function* getSchemePermissions
-*Execution cost upper limit: **1174 gas***
+
+*Execution cost: **less than 1174 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **_scheme** *of type address*
+1. **_scheme** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bytes4*
+1. **unnamed** *of type bytes4*
 
 
 ### *function* getSchemeParameters
-*Execution cost upper limit: **793 gas***
+
+*Execution cost: **less than 793 gas***
+
 **constant | view**
 
 *Inputs:*
-    1. **_scheme** *of type address*
+1. **_scheme** *of type address*
 
 *Returns:*
-    1. **unnamed** *of type bytes32*
+1. **unnamed** *of type bytes32*
 
 
 ### *function* externalTokenTransfer
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_externalToken** *of type address*
-    2. **_to** *of type address*
-    3. **_value** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_to** *of type address*
+3. **_value** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* externalTokenIncreaseApproval
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_externalToken** *of type address*
-    2. **_spender** *of type address*
-    3. **_addedValue** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_spender** *of type address*
+3. **_addedValue** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* externalTokenDecreaseApproval
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_externalToken** *of type address*
-    2. **_spender** *of type address*
-    3. **_subtractedValue** *of type uint256*
+1. **_externalToken** *of type address*
+2. **_spender** *of type address*
+3. **_subtractedValue** *of type uint256*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
 ### *function* avatar
-*Execution cost upper limit: **768 gas***
+
+*Execution cost: **less than 768 gas***
+
 **constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-    1. **unnamed** *of type address*
+1. **unnamed** *of type address*
 
 
 ### *function* addGlobalConstraint
-*Execution cost upper limit: **Infinite gas***
+
+*Execution cost: **No bound available.***
+
 **nonpayable**
 
 *Inputs:*
-    1. **_globalConstraint** *of type address*
-    2. **_params** *of type bytes32*
+1. **_globalConstraint** *of type address*
+2. **_params** *of type bytes32*
 
 *Returns:*
-    1. **unnamed** *of type bool*
+1. **unnamed** *of type bool*
 
 
