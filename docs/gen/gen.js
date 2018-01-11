@@ -18,7 +18,7 @@ const shell = require('shelljs');
 function main(){
     // returns an `.md` string based on given data.
     function render(file,contractName,abi,devdoc,gas){
-        /* This is a little trick to make templates more readable. used like `line1${n}line2`*/
+        /* This is a little trick to make templates more readable. used like `line1${N}line2`*/
         const N = '\n';
 
         const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
