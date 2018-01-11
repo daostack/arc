@@ -4,12 +4,9 @@ const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken   = artifacts.require("./DAOToken.sol");
 const StandardTokenMock = artifacts.require('./StandardTokenMock.sol');
-//todo : find out how to import this directly from zeppelin.
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
 
 var uint32 = require('uint32');
-
-
 let reputation, avatar, accounts,token,controller;
 var amountToMint = 10;
 

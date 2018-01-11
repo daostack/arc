@@ -44,6 +44,31 @@ const constraint = async function (method) {
 };
 
 contract('UController', function (accounts)  {
+  it("newOrganization without controller owner of the avatar", async () => {
+    var uController = await UController.new();
+    accounts = web3.eth.accounts;
+    token  = await DAOToken.new("TEST","TST");
+    // set up a reputation system
+    reputation = await Reputation.new();
+    avatar = await Avatar.new('name', token.address, reputation.address);
+    try {
+    await uController.newOrganization(avatar.address);
+    assert(false, 'newOrganization should fail because controller is not the avatar owner');
+    } catch (ex) {
+     helpers.assertVMException(ex);
+    }
+  });
+
+  it("newOrganization with same avatar", async () => {
+    controller = await  setup();
+    try {
+    await controller.newOrganization(avatar.address);
+    assert(false, 'trying to call new organization with an avatar which already registered should fail.');
+    } catch (ex) {
+     helpers.assertVMException(ex);
+    }
+  });
+
     it("mint reputation via controller", async () => {
         controller = await  setup();
         await reputation.transferOwnership(controller.address);
