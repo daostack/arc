@@ -10,6 +10,7 @@
     },
     "rules": {
         "semi": 2,
-        "no-undef": "off"
+        "no-undef": "off",
+        "eol-last": 2
     }
 }
