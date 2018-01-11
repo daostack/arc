@@ -1,5 +1,6 @@
 # *contract* Avatar ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
-*Total creation gas: **475800***
+*Code deposit gas: **475800***
+*Execution gas: **81478***
 An Avatar holds tokens, reputation and ether for a controller
 
 - [Constructors](#constructors)

@@ -1,5 +1,6 @@
 # *contract* GenesisScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GenesisScheme.sol))
-*Total creation gas: **4733600***
+*Code deposit gas: **4733600***
+*Execution gas: **Infinite***
 Genesis Scheme that creates organizations
 
 - [Constructors](#constructors)

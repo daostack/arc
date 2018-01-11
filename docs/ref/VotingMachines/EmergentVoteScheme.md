@@ -1,5 +1,6 @@
 # *contract* EmergentVoteScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/EmergentVoteScheme.sol))
-*Total creation gas: **2035400***
+*Code deposit gas: **2035400***
+*Execution gas: **Infinite***
 
 
 - [Constructors](#constructors)

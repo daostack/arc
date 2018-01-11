@@ -1,5 +1,6 @@
 # *contract* Debug ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/Debug.sol))
-*Total creation gas: **10600***
+*Code deposit gas: **10600***
+*Execution gas: **61***
 
 
 - [Constructors](#constructors)

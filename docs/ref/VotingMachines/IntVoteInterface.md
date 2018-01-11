@@ -1,5 +1,6 @@
 # *contract* IntVoteInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/IntVoteInterface.sol))
-*Total creation gas: **Infinite***
+*Code deposit gas: **Infinite***
+*Execution gas: **Infinite***
 
 
 - [Constructors](#constructors)

@@ -1,5 +1,6 @@
 # *contract* GlobalConstraintRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GlobalConstraintRegistrar.sol))
-*Total creation gas: **851800***
+*Code deposit gas: **851800***
+*Execution gas: **Infinite***
 A scheme to manage global constaintg for organizations
 
 - [Constructors](#constructors)

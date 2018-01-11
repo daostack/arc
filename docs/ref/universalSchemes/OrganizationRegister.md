@@ -1,5 +1,6 @@
 # *contract* OrganizationRegister ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/OrganizationRegister.sol))
-*Total creation gas: **507200***
+*Code deposit gas: **507200***
+*Execution gas: **Infinite***
 A universal organization registry.
 
 - [Constructors](#constructors)

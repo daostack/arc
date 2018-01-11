@@ -1,5 +1,6 @@
 # *contract* ContributionReward ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ContributionReward.sol))
-*Total creation gas: **911000***
+*Code deposit gas: **911000***
+*Execution gas: **Infinite***
 A scheme for proposing and rewarding contributions to an organization
 
 - [Constructors](#constructors)

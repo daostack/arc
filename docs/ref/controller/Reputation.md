@@ -1,5 +1,6 @@
 # *contract* Reputation ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Reputation.sol))
-*Total creation gas: **222600***
+*Code deposit gas: **222600***
+*Execution gas: **50712***
 Simple static reputation storage
 
 - [Constructors](#constructors)

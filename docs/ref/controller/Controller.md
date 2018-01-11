@@ -1,5 +1,6 @@
 # *contract* Controller ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Controller.sol))
-*Total creation gas: **2327200***
+*Code deposit gas: **2327200***
+*Execution gas: **Infinite***
 Controller contract
 
 - [Constructors](#constructors)

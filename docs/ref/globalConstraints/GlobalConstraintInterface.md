@@ -1,5 +1,6 @@
 # *contract* GlobalConstraintInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/GlobalConstraintInterface.sol))
-*Total creation gas: **Infinite***
+*Code deposit gas: **Infinite***
+*Execution gas: **Infinite***
 
 
 - [Constructors](#constructors)

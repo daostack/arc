@@ -1,5 +1,6 @@
 # *contract* QuorumVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/QuorumVote.sol))
-*Total creation gas: **923000***
+*Code deposit gas: **923000***
+*Execution gas: **957***
 
 
 - [Constructors](#constructors)

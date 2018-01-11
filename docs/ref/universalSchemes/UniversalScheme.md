@@ -1,5 +1,6 @@
 # *contract* UniversalScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UniversalScheme.sol))
-*Total creation gas: **244800***
+*Code deposit gas: **244800***
+*Execution gas: **20636***
 
 
 - [Constructors](#constructors)

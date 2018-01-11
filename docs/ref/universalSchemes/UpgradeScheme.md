@@ -1,5 +1,6 @@
 # *contract* UpgradeScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UpgradeScheme.sol))
-*Total creation gas: **911400***
+*Code deposit gas: **911400***
+*Execution gas: **Infinite***
 A schme to manage the upgrade of an organization.
 
 - [Constructors](#constructors)

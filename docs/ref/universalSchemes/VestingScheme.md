@@ -1,5 +1,6 @@
 # *contract* VestingScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VestingScheme.sol))
-*Total creation gas: **1537200***
+*Code deposit gas: **1537200***
+*Execution gas: **Infinite***
 A schme for vesting.
 
 - [Constructors](#constructors)

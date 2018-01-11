@@ -1,5 +1,6 @@
 # *contract* ActionMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/ActionMock.sol))
-*Total creation gas: **142000***
+*Code deposit gas: **142000***
+*Execution gas: **185***
 
 
 - [Constructors](#constructors)

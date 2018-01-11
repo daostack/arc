@@ -1,5 +1,6 @@
 # *contract* UniversalSchemeInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UniversalSchemeInterface.sol))
-*Total creation gas: **Infinite***
+*Code deposit gas: **Infinite***
+*Execution gas: **Infinite***
 
 
 - [Constructors](#constructors)

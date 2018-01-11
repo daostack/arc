@@ -1,5 +1,6 @@
 # *contract* UniversalSchemeMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/UniversalSchemeMock.sol))
-*Total creation gas: **244800***
+*Code deposit gas: **244800***
+*Execution gas: **Infinite***
 
 
 - [Constructors](#constructors)

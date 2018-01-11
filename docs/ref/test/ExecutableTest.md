@@ -1,5 +1,6 @@
 # *contract* ExecutableTest ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/ExecutableTest.sol))
-*Total creation gas: **74000***
+*Code deposit gas: **74000***
+*Execution gas: **118***
 
 
 - [Constructors](#constructors)

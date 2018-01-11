@@ -1,5 +1,6 @@
 # *contract* GlobalConstraintMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/GlobalConstraintMock.sol))
-*Total creation gas: **192400***
+*Code deposit gas: **192400***
+*Execution gas: **233***
 
 
 - [Constructors](#constructors)

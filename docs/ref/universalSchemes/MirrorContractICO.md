@@ -1,5 +1,6 @@
 # *contract* MirrorContractICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
-*Total creation gas: **158400***
+*Code deposit gas: **158400***
+*Execution gas: **61130***
 An avatar contract for ICO.
 
 - [Constructors](#constructors)

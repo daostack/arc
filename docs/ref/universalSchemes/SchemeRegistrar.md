@@ -1,5 +1,6 @@
 # *contract* SchemeRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SchemeRegistrar.sol))
-*Total creation gas: **1008400***
+*Code deposit gas: **1008400***
+*Execution gas: **Infinite***
 A registrar for Schemes for organizations
 
 - [Constructors](#constructors)

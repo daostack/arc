@@ -1,5 +1,6 @@
 # *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
-*Total creation gas: **683600***
+*Code deposit gas: **683600***
+*Execution gas: **Infinite***
 DAOToken, base on zeppelin contract.
 
 - [Constructors](#constructors)

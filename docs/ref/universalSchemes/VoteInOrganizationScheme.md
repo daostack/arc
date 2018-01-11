@@ -1,5 +1,6 @@
 # *contract* VoteInOrganizationScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VoteInOrganizationScheme.sol))
-*Total creation gas: **734000***
+*Code deposit gas: **734000***
+*Execution gas: **Infinite***
 VoteInOrganizationScheme.
 
 - [Constructors](#constructors)

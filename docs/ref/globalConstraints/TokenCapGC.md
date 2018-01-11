@@ -1,5 +1,6 @@
 # *contract* TokenCapGC ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/TokenCapGC.sol))
-*Total creation gas: **183400***
+*Code deposit gas: **183400***
+*Execution gas: **221***
 Token Cap Global Constraint
 
 - [Constructors](#constructors)

@@ -1,5 +1,6 @@
 # *contract* SimpleICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
-*Total creation gas: **1018400***
+*Code deposit gas: **1018400***
+*Execution gas: **Infinite***
 SimpleICO scheme.
 
 - [Constructors](#constructors)

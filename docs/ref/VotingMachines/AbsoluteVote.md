@@ -1,5 +1,6 @@
 # *contract* AbsoluteVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/AbsoluteVote.sol))
-*Total creation gas: **861000***
+*Code deposit gas: **861000***
+*Execution gas: **891***
 
 
 - [Constructors](#constructors)

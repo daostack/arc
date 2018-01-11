@@ -1,5 +1,6 @@
 # *contract* ExecutableInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ExecutableInterface.sol))
-*Total creation gas: **Infinite***
+*Code deposit gas: **Infinite***
+*Execution gas: **Infinite***
 
 
 - [Constructors](#constructors)
