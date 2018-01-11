@@ -1,6 +1,8 @@
 # *contract* VoteInOrganizationScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VoteInOrganizationScheme.sol))
 VoteInOrganizationScheme.
 
+- [Constructors](#constructors)
+    - [VoteInOrganizationScheme(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-voteinorganizationschemeaddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [ProposalExecuted](#event-proposalexecuted)
     - [ProposalDeleted](#event-proposaldeleted)
@@ -8,6 +10,7 @@ VoteInOrganizationScheme.
     - [OrganizationRegistered](#event-organizationregistered)
     - [NewVoteProposal](#event-newvoteproposal)
     - [LogNewProposal](#event-lognewproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [setParameters](#function-setparameters)
     - [parameters](#function-parameters)
@@ -26,6 +29,12 @@ VoteInOrganizationScheme.
     - [fee](#function-fee)
     - [beneficiary](#function-beneficiary)
     - [action](#function-action)
+## Constructors
+### *constructor* VoteInOrganizationScheme(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* ProposalExecuted
@@ -60,6 +69,8 @@ VoteInOrganizationScheme.
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* setParameters
 **nonpayable**

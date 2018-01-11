@@ -1,6 +1,8 @@
 # *contract* ContributionReward ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ContributionReward.sol))
 A scheme for proposing and rewarding contributions to an organization
 
+- [Constructors](#constructors)
+    - [ContributionReward(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-contributionrewardaddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
@@ -8,6 +10,7 @@ A scheme for proposing and rewarding contributions to an organization
     - [LogProposalDeleted](#event-logproposaldeleted)
     - [LogNewProposal](#event-lognewproposal)
     - [LogNewContributionProposal](#event-lognewcontributionproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [registerOrganization](#function-registerorganization)
     - [parameters](#function-parameters)
@@ -25,6 +28,12 @@ A scheme for proposing and rewarding contributions to an organization
     - [fee](#function-fee)
     - [execute](#function-execute)
     - [beneficiary](#function-beneficiary)
+## Constructors
+### *constructor* ContributionReward(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* OwnershipTransferred
@@ -63,6 +72,8 @@ A scheme for proposing and rewarding contributions to an organization
 9. **_externalToken** *of type address*
 10. **_beneficiary** *of type address*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* registerOrganization
 **nonpayable**

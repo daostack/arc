@@ -1,11 +1,15 @@
 # *contract* ActionMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/ActionMock.sol))
 
 
+- [Constructors](#constructors)
+
 - [Events](#events)
     - [Action](#event-action)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [genericAction](#function-genericaction)
     - [action](#function-action)
+## Constructors
 
 ## Events
 ### *event* Action
@@ -13,6 +17,8 @@
 1. **_sender** *of type address*
 2. **_param** *of type bytes32*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* genericAction
 **nonpayable**

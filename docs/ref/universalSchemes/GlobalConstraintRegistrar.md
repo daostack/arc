@@ -1,6 +1,8 @@
 # *contract* GlobalConstraintRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GlobalConstraintRegistrar.sol))
 A scheme to manage global constaintg for organizations
 
+- [Constructors](#constructors)
+    - [GlobalConstraintRegistrar(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-globalconstraintregistraraddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [RemoveGlobalConstraintsProposal](#event-removeglobalconstraintsproposal)
     - [ProposalExecuted](#event-proposalexecuted)
@@ -9,6 +11,7 @@ A scheme to manage global constaintg for organizations
     - [NewGlobalConstraintsProposal](#event-newglobalconstraintsproposal)
     - [LogProposalDeleted](#event-logproposaldeleted)
     - [LogNewProposal](#event-lognewproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [setParameters](#function-setparameters)
     - [parameters](#function-parameters)
@@ -27,6 +30,12 @@ A scheme to manage global constaintg for organizations
     - [fee](#function-fee)
     - [execute](#function-execute)
     - [beneficiary](#function-beneficiary)
+## Constructors
+### *constructor* GlobalConstraintRegistrar(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* RemoveGlobalConstraintsProposal
@@ -68,6 +77,8 @@ A scheme to manage global constaintg for organizations
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* setParameters
 **nonpayable**

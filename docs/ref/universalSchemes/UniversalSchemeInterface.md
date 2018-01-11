@@ -1,14 +1,20 @@
 # *contract* UniversalSchemeInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UniversalSchemeInterface.sol))
 
 
+- [Constructors](#constructors)
+
 - [Events](#events)
 
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [updateParameters](#function-updateparameters)
     - [registerOrganization](#function-registerorganization)
+## Constructors
 
 ## Events
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* updateParameters
 **nonpayable**

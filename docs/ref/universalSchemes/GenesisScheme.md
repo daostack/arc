@@ -1,15 +1,22 @@
 # *contract* GenesisScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GenesisScheme.sol))
 Genesis Scheme that creates organizations
 
+- [Constructors](#constructors)
+    - [GenesisScheme()](#constructor-genesisscheme)
 - [Events](#events)
     - [NewOrg](#event-neworg)
     - [InitialSchemesSet](#event-initialschemesset)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [setSchemes](#function-setschemes)
     - [forgeOrg](#function-forgeorg)
     - [bytes4Array](#function-bytes4array)
     - [bytes32Array](#function-bytes32array)
     - [addressArray](#function-addressarray)
+## Constructors
+### *constructor* GenesisScheme()
+*Parameters:*
+*Nothing*
 
 ## Events
 ### *event* NewOrg
@@ -20,6 +27,8 @@ Genesis Scheme that creates organizations
 *Parameters:*
 1. **_avatar** *of type address*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* setSchemes
 **nonpayable**

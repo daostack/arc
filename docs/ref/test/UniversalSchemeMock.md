@@ -1,10 +1,13 @@
 # *contract* UniversalSchemeMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/UniversalSchemeMock.sol))
 
 
+- [Constructors](#constructors)
+    - [UniversalSchemeMock(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-universalschememockaddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
     - [LogNewProposal](#event-lognewproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [updateParameters](#function-updateparameters)
     - [transferOwnership](#function-transferownership)
@@ -16,6 +19,12 @@
     - [hashedParameters](#function-hashedparameters)
     - [fee](#function-fee)
     - [beneficiary](#function-beneficiary)
+## Constructors
+### *constructor* UniversalSchemeMock(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* OwnershipTransferred
@@ -31,6 +40,8 @@
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* updateParameters
 **nonpayable**

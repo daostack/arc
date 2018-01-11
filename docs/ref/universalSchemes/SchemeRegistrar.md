@@ -1,6 +1,8 @@
 # *contract* SchemeRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SchemeRegistrar.sol))
 A registrar for Schemes for organizations
 
+- [Constructors](#constructors)
+    - [SchemeRegistrar(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-schemeregistraraddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
@@ -9,6 +11,7 @@ A registrar for Schemes for organizations
     - [LogProposalDeleted](#event-logproposaldeleted)
     - [LogNewSchemeProposal](#event-lognewschemeproposal)
     - [LogNewProposal](#event-lognewproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [organizations](#function-organizations)
     - [parameters](#function-parameters)
@@ -27,6 +30,12 @@ A registrar for Schemes for organizations
     - [fee](#function-fee)
     - [execute](#function-execute)
     - [beneficiary](#function-beneficiary)
+## Constructors
+### *constructor* SchemeRegistrar(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* OwnershipTransferred
@@ -71,6 +80,8 @@ A registrar for Schemes for organizations
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* organizations
 **constant**

@@ -1,17 +1,23 @@
 # *contract* TokenCapGC ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/TokenCapGC.sol))
 Token Cap Global Constraint
 
+- [Constructors](#constructors)
+
 - [Events](#events)
 
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [setParameters](#function-setparameters)
     - [pre](#function-pre)
     - [post](#function-post)
     - [params](#function-params)
     - [getParametersHash](#function-getparametershash)
+## Constructors
 
 ## Events
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* setParameters
 **nonpayable**

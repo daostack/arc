@@ -1,11 +1,14 @@
 # *contract* SimpleICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
 SimpleICO scheme.
 
+- [Constructors](#constructors)
+    - [SimpleICO(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-simpleicoaddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
     - [LogNewProposal](#event-lognewproposal)
     - [DonationReceived](#event-donationreceived)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [registerOrganization](#function-registerorganization)
     - [parameters](#function-parameters)
@@ -26,6 +29,12 @@ SimpleICO scheme.
     - [fee](#function-fee)
     - [donate](#function-donate)
     - [beneficiary](#function-beneficiary)
+## Constructors
+### *constructor* SimpleICO(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* OwnershipTransferred
@@ -48,6 +57,8 @@ SimpleICO scheme.
 3. **_incomingEther** *of type uint256*
 4. **_tokensAmount** *of type uint256*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* registerOrganization
 **nonpayable**
@@ -241,7 +252,6 @@ bytes32 -the params hash
 1. **uint256**
 
 ### *function* donate
-**payable**
 **payable**
 
 Donating ethers to get tokens. If the donation is higher than the remaining ethers in the "cap", The donator will get the change in ethers.

@@ -1,6 +1,8 @@
 # *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
 DAOToken, base on zeppelin contract.
 
+- [Constructors](#constructors)
+    - [DAOToken(string _name, string _symbol)](#constructor-daotokenstring-_name-string-_symbol)
 - [Events](#events)
     - [Transfer](#event-transfer)
     - [OwnershipTransferred](#event-ownershiptransferred)
@@ -8,6 +10,7 @@ DAOToken, base on zeppelin contract.
     - [Mint](#event-mint)
     - [Burn](#event-burn)
     - [Approval](#event-approval)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [balanceOf](#function-balanceof)
     - [mintingFinished](#function-mintingfinished)
@@ -28,6 +31,11 @@ DAOToken, base on zeppelin contract.
     - [approve](#function-approve)
     - [allowance](#function-allowance)
     - [DECIMAL](#function-decimal)
+## Constructors
+### *constructor* DAOToken(string _name, string _symbol)
+*Parameters:*
+1. **_name** *of type string*
+2. **_symbol** *of type string*
 
 ## Events
 ### *event* Transfer
@@ -61,6 +69,8 @@ DAOToken, base on zeppelin contract.
 2. **spender** *of type address*
 3. **value** *of type uint256*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* balanceOf
 **constant**

@@ -1,6 +1,8 @@
 # *contract* Debug ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/Debug.sol))
 
 
+- [Constructors](#constructors)
+
 - [Events](#events)
     - [LogUint](#event-loguint)
     - [LogString](#event-logstring)
@@ -9,8 +11,10 @@
     - [LogBytes](#event-logbytes)
     - [LogBool](#event-logbool)
     - [LogAddress](#event-logaddress)
+- [Fallback](#fallback)
 - [Functions](#functions)
 
+## Constructors
 
 ## Events
 ### *event* LogUint
@@ -41,5 +45,7 @@
 *Parameters:*
 1. **_msg** *of type address*
 
+## Fallback
+*Nothing*
 ## Functions
 

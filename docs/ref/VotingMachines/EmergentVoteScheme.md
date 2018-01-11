@@ -1,6 +1,8 @@
 # *contract* EmergentVoteScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/EmergentVoteScheme.sol))
 
 
+- [Constructors](#constructors)
+    - [EmergentVoteScheme(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-emergentvoteschemeaddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
@@ -10,6 +12,7 @@
     - [LogExecuteProposal](#event-logexecuteproposal)
     - [LogCancelVoting](#event-logcancelvoting)
     - [LogCancelProposal](#event-logcancelproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [owner](#function-owner)
     - [organizationsParameters](#function-organizationsparameters)
@@ -46,6 +49,12 @@
     - [moveTopAwaitingBoostMode](#function-movetopawaitingboostmode)
     - [beneficiary](#function-beneficiary)
     - [MAX_NUM_OF_CHOICES](#function-max_num_of_choices)
+## Constructors
+### *constructor* EmergentVoteScheme(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* OwnershipTransferred
@@ -89,6 +98,8 @@
 *Parameters:*
 1. **_proposalId** *of type bytes32*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* owner
 **constant**

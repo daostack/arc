@@ -1,6 +1,8 @@
 # *contract* ExecutableTest ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/ExecutableTest.sol))
 
 
+- [Constructors](#constructors)
+
 - [Events](#events)
     - [LogUint](#event-loguint)
     - [LogString](#event-logstring)
@@ -9,8 +11,10 @@
     - [LogBytes](#event-logbytes)
     - [LogBool](#event-logbool)
     - [LogAddress](#event-logaddress)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [execute](#function-execute)
+## Constructors
 
 ## Events
 ### *event* LogUint
@@ -41,6 +45,8 @@
 *Parameters:*
 1. **_msg** *of type address*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* execute
 **nonpayable**

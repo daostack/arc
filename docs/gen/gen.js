@@ -16,13 +16,25 @@ function main(){
     function signature(f){
         return `${f.name}(${f.inputs.map(i => i.type).join(',')})`;
     }
+
+    function hyphenate(s){
+        return s.toLowerCase()
+        .replace(new RegExp('[,\\(\\)]','g'),'')
+        .replace(new RegExp('[^a-z0-9_]+','g'),'-')
+        .replace(/-+$/, "");
+    }
     
     // returns an `.md` string based on given data.
     function render(file,contractName,abi,devdoc){
         const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
         const functions = abi.filter(x => x.type === 'function').sort((x,y) => x.name <= y.name);
+        const constructors = abi.filter(x => x.type === 'constructor').sort((x,y) => x.name <= y.name);
+        const fallbacks = abi.filter(x => x.type === 'fallback').sort((x,y) => x.name <= y.name);
+        const fallback = fallbacks.length ? fallbacks[0] : null;
         const methods = devdoc.methods || {};
         const title = devdoc.title || '';
+
+        const constructorSignature = (c) => `${contractName}(${c.inputs.map(i => `${i.type} ${i.name}`).join(', ')})`;
 
         /* This is very ugly, but in order for the generated markdown to be clean,
            we cannot use any indentation which doesn't appear in the `.md` file */
@@ -30,11 +42,22 @@ function main(){
 `# *contract* ${contractName} ([source](${'https://github.com/daostack/daostack/tree/master/'+file}))
 ${title}
 
+- [Constructors](#constructors)
+${constructors.map(c => `    - [${constructorSignature(c)}](#constructor-${hyphenate(constructorSignature(c))})`).join('\n')}
 - [Events](#events)
 ${events.map(e => `    - [${e.name}](#event-${e.name.toLowerCase()})`).join('\n')}
+- [Fallback](#fallback)
 - [Functions](#functions)
 ${functions.map(f => `    - [${f.name}](#function-${f.name.toLowerCase()})`).join('\n')}
-
+## Constructors
+${constructors.map(c => 
+`### *constructor* ${constructorSignature(c)}
+*Parameters:*
+${c.inputs.length ? c.inputs.map((input,i) => 
+`${i+1}. **${input.name || 'unnamed'}** *of type ${input.type}*`
+).join('\n') : '*Nothing*'}
+`)
+.join('\n')}
 ## Events
 ${events.map(e => 
 `### *event* ${e.name}
@@ -44,10 +67,15 @@ ${e.inputs.length ? e.inputs.map((input,i) =>
 ).join('\n') : '*Nothing*'}
 `)
 .join('\n')}
+## Fallback
+${fallback ? 
+    `${fallback.constant? '**constant**\n' : ''}${fallback.stateMutability? `**${fallback.stateMutability}**\n` : ''}`: 
+    '*Nothing*'
+}
 ## Functions
 ${functions.map(f => 
 `### *function* ${f.name || '*default*'}
-${f.constant? '**constant**\n' : ''}${f.payable? '**payable**\n' : ''}${f.stateMutability? `**${f.stateMutability}**\n` : ''}${methods[signature(f)] ? '\n' + methods[signature(f)].details : ''}
+${f.constant? '**constant**\n' : ''}${f.stateMutability? `**${f.stateMutability}**\n` : ''}${methods[signature(f)] ? '\n' + methods[signature(f)].details : ''}
 *Inputs:*
 ${f.inputs.length ? f.inputs.map((input,i) => 
 `${i+1}. **${input.name || 'unnamed'}** *of type ${input.type}*${methods[signature(f)] && methods[signature(f)].params ? ' - ' + methods[signature(f)].params[input.name] : ''}`

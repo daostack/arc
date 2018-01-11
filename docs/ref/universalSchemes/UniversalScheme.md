@@ -1,10 +1,13 @@
 # *contract* UniversalScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UniversalScheme.sol))
 
 
+- [Constructors](#constructors)
+
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
     - [LogNewProposal](#event-lognewproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [updateParameters](#function-updateparameters)
     - [transferOwnership](#function-transferownership)
@@ -16,6 +19,7 @@
     - [hashedParameters](#function-hashedparameters)
     - [fee](#function-fee)
     - [beneficiary](#function-beneficiary)
+## Constructors
 
 ## Events
 ### *event* OwnershipTransferred
@@ -31,6 +35,8 @@
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* updateParameters
 **nonpayable**

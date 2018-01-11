@@ -1,12 +1,15 @@
 # *contract* AbsoluteVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/AbsoluteVote.sol))
 
 
+- [Constructors](#constructors)
+
 - [Events](#events)
     - [LogVoteProposal](#event-logvoteproposal)
     - [LogNewProposal](#event-lognewproposal)
     - [LogExecuteProposal](#event-logexecuteproposal)
     - [LogCancelVoting](#event-logcancelvoting)
     - [LogCancelProposal](#event-logcancelproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [votesStatus](#function-votesstatus)
     - [setParameters](#function-setparameters)
@@ -23,6 +26,7 @@
     - [execute](#function-execute)
     - [cancelVote](#function-cancelvote)
     - [cancelProposal](#function-cancelproposal)
+## Constructors
 
 ## Events
 ### *event* LogVoteProposal
@@ -54,6 +58,8 @@
 *Parameters:*
 1. **_proposalId** *of type bytes32*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* votesStatus
 **constant**

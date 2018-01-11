@@ -1,6 +1,8 @@
 # *contract* VestingScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VestingScheme.sol))
 A schme for vesting.
 
+- [Constructors](#constructors)
+    - [VestingScheme(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-vestingschemeaddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [RevokeSignToCancelAgreement](#event-revokesigntocancelagreement)
     - [OwnershipTransferred](#event-ownershiptransferred)
@@ -13,6 +15,7 @@ A schme for vesting.
     - [LogCollect](#event-logcollect)
     - [LogAgreementProposal](#event-logagreementproposal)
     - [LogAgreementCancel](#event-logagreementcancel)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [signToCancelAgreement](#function-signtocancelagreement)
     - [parameters](#function-parameters)
@@ -35,6 +38,12 @@ A schme for vesting.
     - [collect](#function-collect)
     - [beneficiary](#function-beneficiary)
     - [agreements](#function-agreements)
+## Constructors
+### *constructor* VestingScheme(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* RevokeSignToCancelAgreement
@@ -87,6 +96,8 @@ A schme for vesting.
 *Parameters:*
 1. **_agreementId** *of type uint256*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* signToCancelAgreement
 **nonpayable**

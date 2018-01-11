@@ -1,12 +1,15 @@
 # *contract* OrganizationRegister ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/OrganizationRegister.sol))
 A universal organization registry.
 
+- [Constructors](#constructors)
+    - [OrganizationRegister(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-organizationregisteraddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [Promotion](#event-promotion)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
     - [OrgAdded](#event-orgadded)
     - [LogNewProposal](#event-lognewproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [setParameters](#function-setparameters)
     - [parameters](#function-parameters)
@@ -23,6 +26,12 @@ A universal organization registry.
     - [fee](#function-fee)
     - [beneficiary](#function-beneficiary)
     - [addOrPromoteAddress](#function-addorpromoteaddress)
+## Constructors
+### *constructor* OrganizationRegister(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* Promotion
@@ -49,6 +58,8 @@ A universal organization registry.
 *Parameters:*
 1. **proposalId** *of type bytes32*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* setParameters
 **nonpayable**

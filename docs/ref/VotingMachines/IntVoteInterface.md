@@ -1,8 +1,11 @@
 # *contract* IntVoteInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/IntVoteInterface.sol))
 
 
+- [Constructors](#constructors)
+
 - [Events](#events)
 
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [voteWithSpecifiedAmounts](#function-votewithspecifiedamounts)
     - [vote](#function-vote)
@@ -13,9 +16,12 @@
     - [execute](#function-execute)
     - [cancelVote](#function-cancelvote)
     - [cancelProposal](#function-cancelproposal)
+## Constructors
 
 ## Events
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* voteWithSpecifiedAmounts
 **nonpayable**

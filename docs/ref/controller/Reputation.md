@@ -1,9 +1,12 @@
 # *contract* Reputation ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Reputation.sol))
 Simple static reputation storage
 
+- [Constructors](#constructors)
+    - [Reputation()](#constructor-reputation)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [Mint](#event-mint)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [transferOwnership](#function-transferownership)
     - [totalSupply](#function-totalsupply)
@@ -12,6 +15,10 @@ Simple static reputation storage
     - [owner](#function-owner)
     - [mint](#function-mint)
     - [decimals](#function-decimals)
+## Constructors
+### *constructor* Reputation()
+*Parameters:*
+*Nothing*
 
 ## Events
 ### *event* OwnershipTransferred
@@ -24,6 +31,8 @@ Simple static reputation storage
 1. **to** *of type address*
 2. **amount** *of type int256*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* transferOwnership
 **nonpayable**

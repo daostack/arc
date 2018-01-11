@@ -1,6 +1,8 @@
 # *contract* Avatar ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
 An Avatar holds tokens, reputation and ether for a controller
 
+- [Constructors](#constructors)
+    - [Avatar(bytes32 _orgName, address _nativeToken, address _nativeReputation)](#constructor-avatarbytes32-_orgname-address-_nativetoken-address-_nativereputation)
 - [Events](#events)
     - [SendEther](#event-sendether)
     - [ReceiveEther](#event-receiveether)
@@ -10,6 +12,7 @@ An Avatar holds tokens, reputation and ether for a controller
     - [ExternalTokenTransfer](#event-externaltokentransfer)
     - [ExternalTokenIncreaseApproval](#event-externaltokenincreaseapproval)
     - [ExternalTokenDecreaseApproval](#event-externaltokendecreaseapproval)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [externalTokenTransferFrom](#function-externaltokentransferfrom)
     - [transferOwnership](#function-transferownership)
@@ -22,6 +25,12 @@ An Avatar holds tokens, reputation and ether for a controller
     - [externalTokenTransfer](#function-externaltokentransfer)
     - [externalTokenIncreaseApproval](#function-externaltokenincreaseapproval)
     - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
+## Constructors
+### *constructor* Avatar(bytes32 _orgName, address _nativeToken, address _nativeReputation)
+*Parameters:*
+1. **_orgName** *of type bytes32*
+2. **_nativeToken** *of type address*
+3. **_nativeReputation** *of type address*
 
 ## Events
 ### *event* SendEther
@@ -68,6 +77,9 @@ An Avatar holds tokens, reputation and ether for a controller
 1. **_externalToken** *of type address*
 2. **_spender** *of type address*
 3. **_subtractedValue** *of type uint256*
+
+## Fallback
+**payable**
 
 ## Functions
 ### *function* externalTokenTransferFrom

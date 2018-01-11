@@ -1,6 +1,8 @@
 # *contract* UpgradeScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UpgradeScheme.sol))
 A schme to manage the upgrade of an organization.
 
+- [Constructors](#constructors)
+    - [UpgradeScheme(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-upgradeschemeaddress-_nativetoken-uint256-_fee-address-_beneficiary)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
@@ -9,6 +11,7 @@ A schme to manage the upgrade of an organization.
     - [LogNewUpgradeProposal](#event-lognewupgradeproposal)
     - [LogNewProposal](#event-lognewproposal)
     - [LogChangeUpgradeSchemeProposal](#event-logchangeupgradeschemeproposal)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [setParameters](#function-setparameters)
     - [parameters](#function-parameters)
@@ -27,6 +30,12 @@ A schme to manage the upgrade of an organization.
     - [fee](#function-fee)
     - [execute](#function-execute)
     - [beneficiary](#function-beneficiary)
+## Constructors
+### *constructor* UpgradeScheme(address _nativeToken, uint256 _fee, address _beneficiary)
+*Parameters:*
+1. **_nativeToken** *of type address*
+2. **_fee** *of type uint256*
+3. **_beneficiary** *of type address*
 
 ## Events
 ### *event* OwnershipTransferred
@@ -69,6 +78,8 @@ A schme to manage the upgrade of an organization.
 6. **tokenFee** *of type address*
 7. **fee** *of type uint256*
 
+## Fallback
+*Nothing*
 ## Functions
 ### *function* setParameters
 **nonpayable**

@@ -1,6 +1,8 @@
 # *contract* Controller ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Controller.sol))
 Controller contract
 
+- [Constructors](#constructors)
+    - [Controller(address _avatar, address[] _schemes, bytes32[] _params, bytes4[] _permissions)](#constructor-controlleraddress-_avatar-address-_schemes-bytes32-_params-bytes4-_permissions)
 - [Events](#events)
     - [ExternalTokenTransfer](#event-externaltokentransfer)
     - [UpgradeController](#event-upgradecontroller)
@@ -15,6 +17,7 @@ Controller contract
     - [ExternalTokenIncreaseApproval](#event-externaltokenincreaseapproval)
     - [ExternalTokenDecreaseApproval](#event-externaltokendecreaseapproval)
     - [AddGlobalConstraint](#event-addglobalconstraint)
+- [Fallback](#fallback)
 - [Functions](#functions)
     - [isSchemeRegistered](#function-isschemeregistered)
     - [nativeToken](#function-nativetoken)
@@ -42,6 +45,13 @@ Controller contract
     - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
     - [avatar](#function-avatar)
     - [addGlobalConstraint](#function-addglobalconstraint)
+## Constructors
+### *constructor* Controller(address _avatar, address[] _schemes, bytes32[] _params, bytes4[] _permissions)
+*Parameters:*
+1. **_avatar** *of type address*
+2. **_schemes** *of type address[]*
+3. **_params** *of type bytes32[]*
+4. **_permissions** *of type bytes4[]*
 
 ## Events
 ### *event* ExternalTokenTransfer
@@ -120,6 +130,9 @@ Controller contract
 *Parameters:*
 1. **_globalconstraint** *of type address*
 2. **_params** *of type bytes32*
+
+## Fallback
+**nonpayable**
 
 ## Functions
 ### *function* isSchemeRegistered
