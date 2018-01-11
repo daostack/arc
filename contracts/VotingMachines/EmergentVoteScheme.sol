@@ -84,12 +84,7 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
         _;
     }
 
-    function EmergentVoteScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(
-            _nativeToken,
-            _fee, _beneficiary,
-            bytes32(0));
-    }
+    function EmergentVoteScheme() public {}
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value
@@ -588,9 +583,10 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
 
         // Check voter has enough reputation:
         uint reputation = orgParams.reputationSystem.reputationOf(_voter);
+        uint rep = _rep;
         require(reputation >= _rep);
-        if (_rep == 0) {
-            _rep = reputation;
+        if (rep == 0) {
+            rep = reputation;
         }
 
         // If this voter has already voted, first cancel the vote:
@@ -599,10 +595,10 @@ contract EmergentVoteScheme is IntVoteInterface, UniversalScheme {
         }
 
         // The voting itself:
-        proposal.votes[_vote] = _rep.add(proposal.votes[_vote]);
-        proposal.totalVotes = _rep.add(proposal.totalVotes);
+        proposal.votes[_vote] = rep.add(proposal.votes[_vote]);
+        proposal.totalVotes = rep.add(proposal.totalVotes);
         proposal.voters[_voter] = Voter({
-            reputation: _rep,
+            reputation: rep,
             vote: _vote
         });
 

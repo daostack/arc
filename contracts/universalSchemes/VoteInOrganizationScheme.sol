@@ -30,7 +30,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         uint originalNumOfChoices;
     }
 
-    // A mapping from thr organization (Avatar) address to the saved data of the organization:
+    // A mapping from the organization (Avatar) address to the saved data of the organization:
     mapping(address=>mapping(bytes32=>VoteProposal)) public organizationsData;
 
 
@@ -43,14 +43,9 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     mapping(bytes32=>Parameters) public parameters;
 
     /**
-     * @dev Constructor, Updating the initial prarmeters
-     * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for intiating the ICO
-     * @param _beneficiary The address that will receive the ethers
+     * @dev Constructor
      */
-    function VoteInOrganizationScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function VoteInOrganizationScheme() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -70,7 +65,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     }
 
     /**
-    * @dev Hash the parameters,and return the hash value
+    * @dev Hash the parameters, and return the hash value
     * @param _voteParams -  voting parameters
     * @param _intVote  - voting machine contract.
     * @return bytes32 -the parameters hash
@@ -93,7 +88,6 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     */
     function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId)
     public
-    onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
         uint numOfChoices = _originalIntVote.getNumberOfChoices(_originalProposalId);
@@ -136,13 +130,13 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         bool retVal = true;
         // If no decision do nothing:
         if (_param != 0) {
-        // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+        // Define controller and get the params:
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             bytes32[] memory tmp = new bytes32[](3);
             tmp[0] = bytes32(address(proposal.originalIntVote));
             tmp[1] = proposal.originalProposalId;
             tmp[2] = bytes32(_param);
-            retVal = controller.genericAction(tmp);
+            retVal = controller.genericAction(tmp,_avatar);
           }
         ProposalExecuted(_avatar, _proposalId);
         return retVal;
@@ -154,7 +148,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     * @param _params array represent the voting .
     *        _params[0] - the address of the voting machine.
     *        _params[1] - the proposalId.
-    *        _params[2] - the voting machins params.
+    *        _params[2] - the voting machine params.
     * @return bool which indicate success.
     */
     function action(bytes32[] _params) public returns(bool) {

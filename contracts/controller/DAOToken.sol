@@ -8,7 +8,7 @@ import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
 
 /**
  * @title DAOToken, base on zeppelin contract.
- * @dev ERC20 comptible token. It is a mintable, destructable, burnable token.
+ * @dev ERC20 compatible token. It is a mintable, destructible, burnable token.
  */
 
 contract DAOToken is MintableToken,Destructible,BurnableToken {

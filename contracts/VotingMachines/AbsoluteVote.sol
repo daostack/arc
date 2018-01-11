@@ -259,18 +259,19 @@ contract AbsoluteVote is IntVoteInterface {
         // Check voter has enough reputation:
         uint reputation = params.reputationSystem.reputationOf(_voter);
         require(reputation >= _rep);
-        if (_rep == 0) {
-            _rep = reputation;
+        uint rep = _rep;
+        if (rep == 0) {
+            rep = reputation;
         }
         // If this voter has already voted, first cancel the vote:
         if (proposal.voters[_voter].reputation != 0) {
             cancelVoteInternal(_proposalId, _voter);
         }
         // The voting itself:
-        proposal.votes[_vote] = _rep.add(proposal.votes[_vote]);
-        proposal.totalVotes = _rep.add(proposal.totalVotes);
+        proposal.votes[_vote] = rep.add(proposal.votes[_vote]);
+        proposal.totalVotes = rep.add(proposal.totalVotes);
         proposal.voters[_voter] = Voter({
-            reputation: _rep,
+            reputation: rep,
             vote: _vote
         });
         // Event:

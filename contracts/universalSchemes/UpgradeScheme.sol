@@ -5,8 +5,8 @@ import "./UniversalScheme.sol";
 
 
 /**
- * @title A schme to manage the upgrade of an organization.
- * @dev The schme is used to upgrade the controller of an organization to a new controller.
+ * @title A scheme to manage the upgrade of an organization.
+ * @dev The scheme is used to upgrade the controller of an organization to a new controller.
  */
 
 contract UpgradeScheme is UniversalScheme, ExecutableInterface {
@@ -21,20 +21,16 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address newUpgradeScheme,
-        bytes32 _params,
-        StandardToken tokenFee,
-        uint fee
+        bytes32 _params
     );
     event LogProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
     event LogProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // Details of an upgrade proposal:
     struct UpgradeProposal {
-        address upgradeContract; // Either the new conroller we upgrade to, or the new upgrading scheme.
+        address upgradeContract; // Either the new controller we upgrade to, or the new upgrading scheme.
         bytes32 params; // Params for the new upgrading scheme.
         uint proposalType; // 1: Upgrade controller, 2: change upgrade scheme.
-        StandardToken tokenFee;
-        uint fee;
     }
 
     // A mapping from the organization's (Avatar) address to the saved data of the organization:
@@ -49,11 +45,9 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     mapping(bytes32=>Parameters) public parameters;
 
     /**
-    * @dev the constructor takes a token address, fee and beneficiary
+    * @dev Constructor
     */
-    function UpgradeScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function UpgradeScheme() public {}
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value
@@ -88,7 +82,6 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     */
     function proposeUpgrade(Avatar _avatar, address _newController)
         public
-        onlyRegisteredOrganization(_avatar)
         returns(bytes32)
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
@@ -105,19 +98,14 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     * @param _avatar avatar of the organization
     * @param _scheme address of the new upgrading scheme
     * @param _params ???
-    * @param _tokenFee  ???
-    * @param _fee ???
     * @return an id which represents the proposal
     */
     function proposeChangeUpgradingScheme(
         Avatar _avatar,
         address _scheme,
-        bytes32 _params,
-        StandardToken _tokenFee,
-        uint _fee
+        bytes32 _params
     )
         public
-        onlyRegisteredOrganization(_avatar)
         returns(bytes32)
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
@@ -130,9 +118,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 2,
             upgradeContract: _scheme,
-            params: _params,
-            tokenFee: _tokenFee,
-            fee: _fee
+            params: _params
         });
         organizationsProposals[_avatar][proposalId] = proposal;
 
@@ -141,9 +127,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
             proposalId,
             params.intVote,
             _scheme,
-            _params,
-            _tokenFee,
-            _fee
+            _params
         );
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
@@ -161,30 +145,26 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         // Check if vote was successful:
         if (_param == 1) {
 
-        // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+        // Define controller and get the params:
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // Upgrading controller:
             if (proposal.proposalType == 1) {
-                if (!controller.upgradeController(proposal.upgradeContract)) {
+                if (!controller.upgradeController(proposal.upgradeContract,_avatar)) {
                     revert();
                   }
                 }
 
         // Changing upgrade scheme:
             if (proposal.proposalType == 2) {
-                bytes4 permissions = controller.getSchemePermissions(this);
-                if (proposal.fee != 0) {
-                    if (!controller.externalTokenIncreaseApproval(proposal.tokenFee, proposal.upgradeContract, proposal.fee)) {
-                        revert();
-                      }
-                    }
-                if (!controller.registerScheme(proposal.upgradeContract, proposal.params, permissions)) {
+                bytes4 permissions = controller.getSchemePermissions(this,_avatar);
+
+                if (!controller.registerScheme(proposal.upgradeContract, proposal.params, permissions,_avatar)) {
                     revert();
                   }
                 if (proposal.upgradeContract != address(this) ) {
-                    if (!controller.unregisterSelf()) {
+                    if (!controller.unregisterSelf(_avatar)) {
                         revert();
                       }
                     }

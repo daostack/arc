@@ -22,7 +22,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     event LogCollect(uint indexed _agreementId);
 
 
-    // The data for each vesterd agreement:
+    // The data for each vested agreement:
     struct Agreement {
         StandardToken token;
         address beneficiary;
@@ -45,7 +45,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         IntVoteInterface intVote;
     }
 
-    // A mapping from thr organization (Avatar) address to the saved data of the organization:
+    // A mapping from the organization (Avatar) address to the saved data of the organization:
     mapping(address=>mapping(bytes32=>Agreement)) public organizationsData;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
@@ -69,14 +69,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-     * @dev Constructor, Updating the initial prarmeters
-     * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for intiating the ICO
-     * @param _beneficiary The address that will receive the ethers
+     * @dev Constructor
      */
-    function VestingScheme(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function VestingScheme() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -96,7 +91,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
-    * @dev Hash the parameters,and return the hash value
+    * @dev Hash the parameters, and return the hash value
     * @param _voteParams -  voting parameters
     * @param _intVote  - voting machine contract.
     * @return bytes32 -the parameters hash
@@ -119,7 +114,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     * @param _numOfAgreedPeriods how many periods agreed on.
     * @param _cliffInPeriods the length of the cliff in periods.
     * @param _signaturesReqToCancel number of signatures required to cancel agreement.
-    * @param _signersArray avatar array of adresses that can sign to cancel agreement.
+    * @param _signersArray avatar array of addresses that can sign to cancel agreement.
     * @param _avatar avatar of the organization.
     * @return bytes32 the proposalId
     */
@@ -136,7 +131,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         Avatar _avatar
     )
     external
-    onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
         // Open voting:
@@ -186,9 +180,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Check if vote was successful:
         if (_param == 1) {
         // Define controller and mint tokens, check minting actually took place:
-            Controller controller = Controller(Avatar(_avatar).owner());
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
-            controller.mintTokens(tokensToMint, this);
+            controller.mintTokens(tokensToMint, this,_avatar);
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:
@@ -208,7 +202,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     * @param _numOfAgreedPeriods how many periods agreed on.
     * @param _cliffInPeriods the length of the cliff in periods.
     * @param _signaturesReqToCancel number of signatures required to cancel agreement.
-    * @param _signersArray avatar array of adresses that can sign to cancel agreement.
+    * @param _signersArray avatar array of addresses that can sign to cancel agreement.
     * @return uint the agreement index.
     */
     function createVestedAgreement(
@@ -272,7 +266,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
 
         SignToCancelAgreement(_agreementId,msg.sender);
 
-        // Check if threshhold crossed:
+        // Check if threshold crossed:
         if (agreement.signaturesReceivedCounter == agreement.signaturesReqToCancel) {
             cancelAgreement(_agreementId);
         }

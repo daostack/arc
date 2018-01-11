@@ -16,10 +16,7 @@ contract ContributionReward is UniversalScheme {
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         bytes32 _contributionDesciption,
-        uint _nativeTokenReward,
-        uint _reputationReward,
-        uint _ethReward,
-        uint _externalTokenReward,
+        uint[4]  _rewards,
         StandardToken _externalToken,
         address _beneficiary
     );
@@ -41,41 +38,35 @@ contract ContributionReward is UniversalScheme {
     mapping(address=>mapping(bytes32=>ContributionProposal)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
-    // A contibution fee can be in the organization token or the scheme token or a combination
+    // A contribution fee can be in the organization token or the scheme token or a combination
     struct Parameters {
         uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
         bytes32 voteApproveParams;
-        uint schemeNativeTokenFee; // a fee (in the present schemes token)  that is to be paid for submission
         IntVoteInterface intVote;
     }
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
 
     /**
-    * @dev the constructor takes a token address, fee and beneficiary
+    * @dev constructor
     */
-    function ContributionReward(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function ContributionReward() public {}
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value
     */
     function setParameters(
         uint _orgNativeTokenFee,
-        uint _schemeNativeTokenFee,
         bytes32 _voteApproveParams,
         IntVoteInterface _intVote
     ) public returns(bytes32)
     {
         bytes32 paramsHash = getParametersHash(
             _orgNativeTokenFee,
-            _schemeNativeTokenFee,
             _voteApproveParams,
             _intVote
         );
         parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
-        parameters[paramsHash].schemeNativeTokenFee = _schemeNativeTokenFee;
         parameters[paramsHash].voteApproveParams = _voteApproveParams;
         parameters[paramsHash].intVote = _intVote;
         return paramsHash;
@@ -84,7 +75,6 @@ contract ContributionReward is UniversalScheme {
     /**
     * @dev return a hash of the given parameters
     * @param _orgNativeTokenFee the fee for submitting a contribution in organizations native token
-    * @param _schemeNativeTokenFee the fee for submitting a contribution if paied in schemes native token
     * @param _voteApproveParams parameters for the voting machine used to approve a contribution
     * @param _intVote the voting machine used to approve a contribution
     * @return a hash of the parameters
@@ -92,12 +82,11 @@ contract ContributionReward is UniversalScheme {
     // TODO: These fees are messy. Better to have a _fee and _feeToken pair, just as in some other contract (which one?) with some sane default
     function getParametersHash(
         uint _orgNativeTokenFee,
-        uint _schemeNativeTokenFee,
         bytes32 _voteApproveParams,
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        return (keccak256(_voteApproveParams, _orgNativeTokenFee, _schemeNativeTokenFee, _intVote));
+        return (keccak256(_voteApproveParams, _orgNativeTokenFee, _intVote));
     }
 
     /**
@@ -108,7 +97,7 @@ contract ContributionReward is UniversalScheme {
     *         rewards[0] - Amount of tokens requested
     *         rewards[1] - Amount of reputation requested
     *         rewards[2] - Amount of ETH requested
-    *         rewards[3] - Amount of extenral tokens requested
+    *         rewards[3] - Amount of external tokens requested
     * @param _externalToken Address of external token, if reward is requested there
     * @param _beneficiary Who gets the rewards
     */
@@ -119,7 +108,6 @@ contract ContributionReward is UniversalScheme {
         StandardToken _externalToken,
         address _beneficiary
     ) public
-      onlyRegisteredOrganization(_avatar)
       returns(bytes32)
     {
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
@@ -127,15 +115,13 @@ contract ContributionReward is UniversalScheme {
         if (controllerParams.orgNativeTokenFee > 0) {
             _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
         }
-        if (controllerParams.schemeNativeTokenFee > 0) {
-            nativeToken.transferFrom(msg.sender, _avatar, controllerParams.schemeNativeTokenFee);
-        }
 
         bytes32 contributionId = controllerParams.intVote.propose(2, controllerParams.voteApproveParams, _avatar, ExecutableInterface(this));
 
         // Check beneficiary is not null:
-        if (_beneficiary == address(0)) {
-            _beneficiary = msg.sender;
+        address beneficiary = _beneficiary;
+        if (beneficiary == address(0)) {
+            beneficiary = msg.sender;
         }
 
         // Set the struct:
@@ -146,7 +132,7 @@ contract ContributionReward is UniversalScheme {
             ethReward: _rewards[2],
             externalToken: _externalToken,
             externalTokenReward: _rewards[3],
-            beneficiary: _beneficiary
+            beneficiary: beneficiary
         });
         organizationsProposals[_avatar][contributionId] = proposal;
 
@@ -155,12 +141,9 @@ contract ContributionReward is UniversalScheme {
             contributionId,
             controllerParams.intVote,
             _contributionDesciptionHash,
-            _rewards[0],
-            _rewards[1],
-            _rewards[2],
-            _rewards[3],
+            _rewards,
             _externalToken,
-            _beneficiary
+            beneficiary
         );
 
         // vote for this proposal
@@ -179,22 +162,22 @@ contract ContributionReward is UniversalScheme {
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         // Check if vote was successful:
         if (_param == 1) {
-        // Define controller and get the parmas:
+        // Define controller and get the params:
             ContributionProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
         // pay the funds:
-            Controller controller = Controller(Avatar(_avatar).owner());
-            if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary)) {
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+            if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary,_avatar)) {
                 revert();
               }
-            if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary)) {
+            if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary,_avatar)) {
                 revert();
               }
-            if (!controller.sendEther(proposal.ethReward, proposal.beneficiary)) {
+            if (!controller.sendEther(proposal.ethReward, proposal.beneficiary,_avatar)) {
                 revert();
               }
             if (proposal.externalToken != address(0) && proposal.externalTokenReward > 0) {
-                if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward)) {
+                if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward,_avatar)) {
                     revert();
                   }
                 }

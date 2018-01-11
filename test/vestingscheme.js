@@ -21,17 +21,18 @@ const setupVestingSchemeParams = async function(
   return vestingSchemeParams;
 };
 
-const setup = async function (accounts,isUniversal=true) {
+const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-   testSetup.vestingScheme = await VestingScheme.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
+   testSetup.vestingScheme = await VestingScheme.new();
    testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.vestingSchemeParams= await setupVestingSchemeParams(testSetup.vestingScheme);
    //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.vestingScheme.address],[testSetup.vestingSchemeParams.paramsHash],[isUniversal],["0x0000000F"]);
+   var permissions = "0x0000000F";
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.vestingScheme.address],[testSetup.vestingSchemeParams.paramsHash],[permissions]);
 
    return testSetup;
 };
@@ -40,17 +41,6 @@ contract('VestingScheme', function(accounts) {
   before(function() {
     helpers.etherForEveryone();
   });
-
-  it("constructor", async function() {
-    var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-    var vestingScheme = await VestingScheme.new(standardTokenMock.address,10,accounts[1]);
-    var token = await vestingScheme.nativeToken();
-    assert.equal(token,standardTokenMock.address);
-    var fee = await vestingScheme.fee();
-    assert.equal(fee,10);
-    var beneficiary = await vestingScheme.beneficiary();
-    assert.equal(beneficiary,accounts[1]);
-   });
 
    it("setParameters", async function() {
      var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
@@ -61,17 +51,10 @@ contract('VestingScheme', function(accounts) {
      var parameters = await vestingScheme.parameters(paramHash);
      assert.equal(parameters[1],absoluteVote.address);
      });
-   //
-    it("registerOrganization - check fee payment ", async function() {
-      var testSetup = await setup(accounts);
-      await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
-      var balanceOfBeneficiary  = await testSetup.standardTokenMock.balanceOf(accounts[0]);
-      assert.equal(balanceOfBeneficiary.toNumber(),testSetup.fee);
-    });
 
      it("proposeVestingAgreement log", async function() {
        var testSetup = await setup(accounts);
-       await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+
        var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
                                                                       accounts[1],
                                                                       web3.eth.blockNumber,
@@ -88,28 +71,9 @@ contract('VestingScheme', function(accounts) {
        assert.equal(avatarAddress,testSetup.org.avatar.address);
       });
 
-      it("proposeVestingAgreement without registration -should fail", async function() {
-        var testSetup = await setup(accounts,false);
-        try{
-          await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
-                                                                         accounts[1],
-                                                                         web3.eth.blockNumber,
-                                                                        15,
-                                                                        2,
-                                                                        3,
-                                                                        11,
-                                                                        3,
-                                                                        [accounts[0],accounts[1],accounts[2]],
-                                                                        testSetup.org.avatar.address);
-          assert(false,"proposeUpgrade should  fail - due to no registration !");
-        }catch(ex){
-          helpers.assertVMException(ex);
-        }
-       });
-
        it("proposeVestingAgreement check owner vote", async function() {
          var testSetup = await setup(accounts);
-         await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+
          var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
                                                                         accounts[1],
                                                                         web3.eth.blockNumber,
@@ -132,7 +96,7 @@ contract('VestingScheme', function(accounts) {
             _signersArray[i] = accounts[i];
           }
 
-          await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+
           try {
            await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
                                                                          accounts[1],
@@ -153,7 +117,7 @@ contract('VestingScheme', function(accounts) {
            it("execute proposeVestingAgreement controller -yes - proposal data delete", async function() {
              var testSetup = await setup(accounts);
 
-             await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+
              var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
                                                                             accounts[1],
                                                                             web3.eth.blockNumber,
@@ -177,7 +141,7 @@ contract('VestingScheme', function(accounts) {
 
             it("execute proposeVestingAgreement  -from none voting contact -should fail", async function() {
               var testSetup = await setup(accounts);
-              await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+
               var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
                                                                              accounts[1],
                                                                              web3.eth.blockNumber,
@@ -202,7 +166,7 @@ contract('VestingScheme', function(accounts) {
 
             it("executeProposeVestingAgreement - no decision  - proposal data delete", async function() {
               var testSetup = await setup(accounts);
-              await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+
               var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
                                                                              accounts[1],
                                                                              web3.eth.blockNumber,
@@ -230,7 +194,7 @@ contract('VestingScheme', function(accounts) {
                var amountPerPeriod =3;
                var numberOfAgreedPeriods = 7;
 
-               await testSetup.vestingScheme.registerOrganization(testSetup.org.avatar.address);
+
                var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
                                                                               accounts[1],
                                                                               web3.eth.blockNumber,

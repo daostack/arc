@@ -5,7 +5,7 @@ import "./UniversalScheme.sol";
 
 
 /**
- * @title A scheme to manage global constaintg for organizations
+ * @title A scheme to manage global constraint for organizations
  * @dev The scheme is used to register or remove new global constraints
  */
 contract GlobalConstraintRegistrar is UniversalScheme {
@@ -28,7 +28,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
     // The struct that holds the information of a global constraint proposed to be added or removed.
     struct GCProposal {
-        address gc; // The address of the global contraint contract.
+        address gc; // The address of the global constraint contract.
         bytes32 params; // Parameters for global constraint.
         uint proposalType; // 1: add a GC, 2: remove a GC.
         bytes32 voteToRemoveParams; // Voting parameters for removing this GC.
@@ -54,14 +54,9 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     mapping(bytes32=>Parameters) public parameters;
 
     /**
-     * @dev Constructor, Updating the initial prarmeters
-     * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for intiating the ICO
-     * @param _beneficiary The address that will receive the ethers
+     * @dev Constructor
      */
-    function GlobalConstraintRegistrar(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function GlobalConstraintRegistrar() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -81,7 +76,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
 
     /**
-    * @dev Hash the parameters,and return the hash value
+    * @dev Hash the parameters and return the hash value
     * @param _voteRegisterParams -  voting parameters
     * @param _intVote  - voting machine contract.
     * @return bytes32 -the parameters hash
@@ -98,14 +93,13 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     * @dev propose to add a new global constraint:
     * @param _avatar the avatar of the organization that the constraint is proposed for
     * @param _gc the address of the global constraint that is being proposed
-    * @param _params the parameters for the global contraint
+    * @param _params the parameters for the global constraint
     * @param _voteToRemoveParams the conditions (on the voting machine) for removing this global constraint
     * @return bytes32 -the proposal id
     */
     // TODO: do some checks on _voteToRemoveParams - it is very easy to make a mistake and not be able to remove the GC
     function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _voteToRemoveParams)
     public
-    onlyRegisteredOrganization(_avatar)
     returns(bytes32)
     {
         Parameters memory votingParams = parameters[getParametersFromController(_avatar)];
@@ -139,10 +133,10 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     * @param _gc the address of the global constraint that is being proposed
     * @return bytes32 -the proposal id
     */
-    function proposeToRemoveGC(Avatar _avatar, address _gc) public onlyRegisteredOrganization(_avatar) returns(bytes32) {
+    function proposeToRemoveGC(Avatar _avatar, address _gc) public returns(bytes32) {
         Organization storage org = organizationsData[_avatar];
         Controller controller = Controller(Avatar(_avatar).owner());
-        require(controller.isGlobalConstraintRegister(_gc));
+        require(controller.isGlobalConstraintRegister(_gc,address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, org.voteToRemoveParams[_gc], _avatar, ExecutableInterface(this));
@@ -175,17 +169,17 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         // Check if vote was successful:
         if (_param == 1 ) {
 
-        // Define controller and get the parmas:
-            Controller controller = Controller(Avatar(_avatar).owner());
+        // Define controller and get the params:
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
         // Adding a GC
             if (proposal.proposalType == 1) {
-                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params);
+                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params,_avatar);
                 organizationsData[_avatar].voteToRemoveParams[proposal.gc] = proposal.voteToRemoveParams;
               }
         // Removing a GC
             if (proposal.proposalType == 2) {
-                retVal = controller.removeGlobalConstraint(proposal.gc);
+                retVal = controller.removeGlobalConstraint(proposal.gc,_avatar);
               }
         }
         delete organizationsData[_avatar].proposals[_proposalId];

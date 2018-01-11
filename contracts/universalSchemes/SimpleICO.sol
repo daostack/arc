@@ -31,7 +31,7 @@ contract MirrorContractICO is Destructible {
         // Not to waste gas, if no value.
         require(msg.value != 0);
 
-        // Return ether if couln't donate.
+        // Return ether if couldn't donate.
         if (simpleICO.donate.value(msg.value)(organization, msg.sender) == 0) {
             revert();
         }
@@ -48,8 +48,8 @@ contract SimpleICO is UniversalScheme {
 
     // Struct holding the data for each organization
     struct Organization {
-        bytes32 paramsHash; // Save the parameters approved by the org to open the ICO, so reules of ICO will not change.
-        address avatarContractICO; // Avatar is a contract for users that want to send eth without calling a funciton.
+        bytes32 paramsHash; // Save the parameters approved by the org to open the ICO, so reuse of ICO will not change.
+        address avatarContractICO; // Avatar is a contract for users that want to send ether without calling a function.
         uint totalEthRaised;
         bool isHalted; // The admin of the ICO can halt the ICO at any time, and also resume it.
     }
@@ -60,7 +60,7 @@ contract SimpleICO is UniversalScheme {
         uint price; // Price represents Tokens per 1 Eth
         uint startBlock;
         uint endBlock;
-        address beneficiary; // all funds received will be transffered to this address.
+        address beneficiary; // all funds received will be transferred to this address.
         address admin; // The admin can halt or resume ICO.
     }
 
@@ -72,14 +72,9 @@ contract SimpleICO is UniversalScheme {
     event DonationReceived(address indexed organization, address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
 
     /**
-     * @dev Constructor, Updating the initial prarmeters
-     * @param _nativeToken The native token of the ICO
-     * @param _fee The fee for intiating the ICO
-     * @param _beneficiary The address that will receive the ethers
+     * @dev Constructor
      */
-    function SimpleICO(StandardToken _nativeToken, uint _fee, address _beneficiary) public {
-        updateParameters(_nativeToken, _fee, _beneficiary, bytes32(0));
-    }
+    function SimpleICO() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -88,7 +83,7 @@ contract SimpleICO is UniversalScheme {
     * @param _startBlock  ico start block
     * @param _endBlock ico end
     * @param _beneficiary the ico ether beneficiary
-    * @param _admin the address of the ico admin which can hald and resume the ICO.
+    * @param _admin the address of the ico admin which can hold and resume the ICO.
     * @return bytes32 -the params hash
     */
     function setParameters(
@@ -130,7 +125,7 @@ contract SimpleICO is UniversalScheme {
     * @param _startBlock  ico start block
     * @param _endBlock ico end
     * @param _beneficiary the ico ether beneficiary
-    * @param _admin the address of the ico admin which can hald and resume the ICO.
+    * @param _admin the address of the ico admin which can hold and resume the ICO.
     * @return bytes32 -the params hash
     */
     function getParametersHash(
@@ -197,9 +192,7 @@ contract SimpleICO is UniversalScheme {
     function isActive(address _avatar) public constant returns(bool) {
         Organization memory org = organizationsICOInfo[_avatar];
         Parameters memory params = parameters[org.paramsHash];
-        if (! organizations[_avatar]) {
-            return false;
-        }
+
         if (org.totalEthRaised >= params.cap) {
             return false;
         }
@@ -245,8 +238,8 @@ contract SimpleICO is UniversalScheme {
         // Send ether to the defined address, mint, and send change to beneficiary:
         params.beneficiary.transfer(incomingEther);
 
-        Controller controller = Controller(_avatar.owner());
-        if (!controller.mintTokens(tokens, _beneficiary)) {
+        ControllerInterface controller = ControllerInterface(_avatar.owner());
+        if (!controller.mintTokens(tokens, _beneficiary,address(_avatar))) {
             revert();
         }
         if (change != 0) {

@@ -14,66 +14,45 @@ export class ContributionRewardParams {
 const setupContributionRewardParams = async function(
                                             contributionReward,
                                             orgNativeTokenFee=0,
-                                            schemeNativeTokenFee=0
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote();
   contributionRewardParams.orgNativeTokenFee =  orgNativeTokenFee;
-  contributionRewardParams.schemeNativeTokenFee = schemeNativeTokenFee;
   await contributionReward.setParameters(contributionRewardParams.orgNativeTokenFee,
-                                         contributionRewardParams.schemeNativeTokenFee,
                                          contributionRewardParams.votingMachine.params,
                                          contributionRewardParams.votingMachine.absoluteVote.address);
   contributionRewardParams.paramsHash = await contributionReward.getParametersHash(contributionRewardParams.orgNativeTokenFee,
-                                                                                   contributionRewardParams.schemeNativeTokenFee,
                                                                                    contributionRewardParams.votingMachine.params,
                                                                                    contributionRewardParams.votingMachine.absoluteVote.address);
   return contributionRewardParams;
 };
 
-const setup = async function (accounts,orgNativeTokenFee=0,schemeNativeTokenFee=0,universalSchemes=true) {
+const setup = async function (accounts,orgNativeTokenFee=0) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-   testSetup.contributionReward = await ContributionReward.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
+   testSetup.contributionReward = await ContributionReward.new();
    testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
-   testSetup.contributionRewardParams= await setupContributionRewardParams(testSetup.contributionReward,orgNativeTokenFee,schemeNativeTokenFee);
+   testSetup.contributionRewardParams= await setupContributionRewardParams(testSetup.contributionReward,orgNativeTokenFee);
    //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.contributionReward.address],[testSetup.contributionRewardParams.paramsHash],[universalSchemes],["0x0000000F"]);
+   var permissions = "0x0000000F";
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.contributionReward.address],[testSetup.contributionRewardParams.paramsHash],[permissions]);
    return testSetup;
 };
 contract('ContributionReward', function(accounts) {
 
-   it("constructor", async function() {
-    var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-    var contributionReward = await ContributionReward.new(standardTokenMock.address,10,accounts[1]);
-    var token = await contributionReward.nativeToken();
-    assert.equal(token,standardTokenMock.address);
-    var fee = await contributionReward.fee();
-    assert.equal(fee,10);
-    var beneficiary = await contributionReward.beneficiary();
-    assert.equal(beneficiary,accounts[1]);
-   });
-
    it("setParameters", async function() {
-     var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-     var contributionReward = await ContributionReward.new(standardTokenMock.address,10,accounts[1]);
+     var contributionReward = await ContributionReward.new();
      var params = await setupContributionRewardParams(contributionReward);
      var parameters = await contributionReward.parameters(params.paramsHash);
-     assert.equal(parameters[3],params.votingMachine.absoluteVote.address);
+     assert.equal(parameters[2],params.votingMachine.absoluteVote.address);
      });
 
-   it("registerOrganization - check fee payment ", async function() {
-     var testSetup = await setup(accounts);
-     var balanceOfBeneficiary  = await testSetup.standardTokenMock.balanceOf(accounts[0]);
-     assert.equal(balanceOfBeneficiary.toNumber(),testSetup.fee);
-     assert.equal(await testSetup.contributionReward.isRegistered(testSetup.org.avatar.address),true);
-    });
 
     it("proposeContributionReward log", async function() {
-      var testSetup = await setup(accounts,0,0);
+      var testSetup = await setup(accounts,0);
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                      "description",
                                                                      [0,0,0,0],
@@ -84,7 +63,7 @@ contract('ContributionReward', function(accounts) {
      });
 
      it("proposeContributionReward fees", async function() {
-       var testSetup = await setup(accounts,14,10);
+       var testSetup = await setup(accounts,14);
 
        var balanceBefore  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);
        //give approval to scheme to do the fees transfer
@@ -102,22 +81,7 @@ contract('ContributionReward', function(accounts) {
        var balance  = await testSetup.org.token.balanceOf(testSetup.org.avatar.address);
        assert.equal(balance.toNumber(),testSetup.contributionRewardParams.orgNativeTokenFee);
        balance  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);
-       assert.equal(balance.toNumber(),testSetup.contributionRewardParams.schemeNativeTokenFee+balanceBefore.toNumber());
-      });
-
-     it("proposeContributionReward without registration -should fail", async function() {
-       var testSetup = await setup(accounts,0,0,false);
-       try{
-         await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                        "description",
-                                                                        [0,0,0,0],
-                                                                        testSetup.standardTokenMock.address,
-                                                                        accounts[0]
-                                                                      );
-       assert(false,"proposeScheme should  fail - due to no registration !");
-       }catch(ex){
-         helpers.assertVMException(ex);
-       }
+       assert.equal(balance.toNumber(),balanceBefore.toNumber());
       });
 
       it("proposeContributionReward check owner vote", async function() {

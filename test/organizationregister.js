@@ -22,17 +22,18 @@ const setupOrganizationRegisterParams = async function(
   return organizationRegisterParams;
 };
 
-const setup = async function (accounts,isUniversal=true) {
+const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-   testSetup.organizationRegister = await OrganizationRegister.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
+   testSetup.organizationRegister = await OrganizationRegister.new();
    testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
    testSetup.organizationRegisterParams= await setupOrganizationRegisterParams(testSetup.organizationRegister,testSetup.standardTokenMock.address,accounts[2]);
    //give some tokens to organization avatar so it could register the univeral scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.organizationRegister.address],[testSetup.organizationRegisterParams.paramsHash],[isUniversal],["0x0000000F"]);
+   var permissions = "0x0000000F";
+   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.organizationRegister.address],[testSetup.organizationRegisterParams.paramsHash],[permissions]);
 
    return testSetup;
 };
@@ -41,17 +42,6 @@ contract('OrganizationRegister', function(accounts) {
   before(function() {
     helpers.etherForEveryone();
   });
-
-  it("constructor", async function() {
-    var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-    var organizationRegister = await OrganizationRegister.new(standardTokenMock.address,10,accounts[1]);
-    var token = await organizationRegister.nativeToken();
-    assert.equal(token,standardTokenMock.address);
-    var fee = await organizationRegister.fee();
-    assert.equal(fee,10);
-    var beneficiary = await organizationRegister.beneficiary();
-    assert.equal(beneficiary,accounts[1]);
-   });
 
    it("setParameters", async function() {
      var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
@@ -64,18 +54,12 @@ contract('OrganizationRegister', function(accounts) {
      assert.equal(parameters[2],accounts[2]);
      });
 
-    it("registerOrganization - check fee payment ", async function() {
-      var testSetup = await setup(accounts);
-      await testSetup.organizationRegister.registerOrganization(testSetup.org.avatar.address);
-      var balanceOfBeneficiary  = await testSetup.standardTokenMock.balanceOf(accounts[0]);
-      assert.equal(balanceOfBeneficiary.toNumber(),testSetup.fee);
-    });
 
      it("addOrPromoteAddress add and promote ", async function() {
        var testSetup = await setup(accounts);
        var record = accounts[4];
        var amount = 13;
-       await testSetup.organizationRegister.registerOrganization(testSetup.org.avatar.address);
+
 
        await testSetup.standardTokenMock.approve(testSetup.organizationRegister.address,100,{from:accounts[1]});
 
@@ -105,7 +89,7 @@ contract('OrganizationRegister', function(accounts) {
         var testSetup = await setup(accounts);
         var record = accounts[4];
         var amount = 12;
-        await testSetup.organizationRegister.registerOrganization(testSetup.org.avatar.address);
+
 
         await testSetup.standardTokenMock.approve(testSetup.organizationRegister.address,100,{from:accounts[1]});
 
@@ -118,21 +102,4 @@ contract('OrganizationRegister', function(accounts) {
            helpers.assertVMException(ex);
         }
        });
-
-       it("addOrPromoteAddress add  without regisration -should fail ", async function() {
-         var testSetup = await setup(accounts,false);
-         var record = accounts[4];
-         var amount = 13;
-
-         await testSetup.standardTokenMock.approve(testSetup.organizationRegister.address,100,{from:accounts[1]});
-
-         try{
-         await testSetup.organizationRegister.addOrPromoteAddress(testSetup.org.avatar.address,
-                                                                       record,
-                                                                       amount,{from:accounts[1]});
-         assert(false,"addOrPromoteAddress should  fail - due to no registratin !");
-         }catch(ex){
-            helpers.assertVMException(ex);
-         }
-        });
 });

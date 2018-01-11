@@ -4,15 +4,16 @@ import "./Avatar.sol";
 import "./Reputation.sol";
 import "./DAOToken.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
+import "./ControllerInterface.sol";
 
 
 /**
  * @title Controller contract
  * @dev A controller controls the organizations tokens,reputation and avatar.
  * It is subject to a set of schemes and constraints that determine its behavior.
- * Each scheme has it own parameters and operation permmisions.
+ * Each scheme has it own parameters and operation permissions.
  */
-contract Controller {
+contract Controller is ControllerInterface {
 
     struct Scheme {
         bytes32 paramsHash;  // a hash "configuration" of the scheme
@@ -20,8 +21,8 @@ contract Controller {
                              // All 0: Not registered,
                              // 1st bit: Flag if the scheme is registered,
                              // 2nd bit: Scheme can register other schemes
-                             // 3th bit: Scheme can add/remove global constraints
-                             // 4rd bit: Scheme can upgrade the controller
+                             // 3rd bit: Scheme can add/remove global constraints
+                             // 4th bit: Scheme can upgrade the controller
     }
 
     struct GlobalConstraint {
@@ -46,8 +47,6 @@ contract Controller {
   // globalConstraintsRegister indicate is a globalConstraints is register or not
     mapping(address=>GlobalConstraintRegister) public globalConstraintsRegister;
 
-
-
     event MintReputation (address indexed _sender, address indexed _beneficiary, int256 _amount);
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
     event RegisterScheme (address indexed _sender, address indexed _scheme);
@@ -63,21 +62,13 @@ contract Controller {
     event UpgradeController(address _oldController,address _newController);
 
     function Controller(
-        Avatar _avatar,
-        address[] _schemes,
-        bytes32[] _params,
-        bytes4[] _permissions
+        Avatar _avatar
     ) public
     {
         avatar = _avatar;
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
-
-    // Register the schemes:
-        for (uint i = 0; i < _schemes.length; i++) {
-            schemes[_schemes[i]] = Scheme({paramsHash: _params[i],permissions: _permissions[i]|bytes4(1)});
-            RegisterScheme(msg.sender, _schemes[i]);
-        }
+        schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0xF)});
     }
 
   // Do not allow mistaken calls:
@@ -123,7 +114,7 @@ contract Controller {
      * @param _beneficiary beneficiary address
      * @return bool which represents a success
      */
-    function mintReputation(int256 _amount, address _beneficiary)
+    function mintReputation(int256 _amount, address _beneficiary,address)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("mintReputation")
@@ -139,7 +130,7 @@ contract Controller {
      * @param _beneficiary beneficiary address
      * @return bool which represents a success
      */
-    function mintTokens(uint256 _amount, address _beneficiary)
+    function mintTokens(uint256 _amount, address _beneficiary,address)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("mintTokens")
@@ -156,7 +147,7 @@ contract Controller {
    * @param _permissions the permissions the new scheme will have
    * @return bool which represents a success
    */
-    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions)
+    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions,address)
     public
     onlyRegisteringSchemes
     onlySubjectToConstraint("registerScheme")
@@ -186,7 +177,7 @@ contract Controller {
      * @param _scheme the address of the scheme
      * @return bool which represents a success
      */
-    function unregisterScheme( address _scheme )
+    function unregisterScheme( address _scheme,address)
     public
     onlyRegisteringSchemes
     onlySubjectToConstraint("unregisterScheme")
@@ -209,8 +200,8 @@ contract Controller {
      * @dev unregister the caller's scheme
      * @return bool which represents a success
      */
-    function unregisterSelf() public returns(bool) {
-        if (isSchemeRegistered(msg.sender) == false) {
+    function unregisterSelf(address) public returns(bool) {
+        if (isSchemeRegistered(msg.sender,address(0)) == false) {
             return false;
         }
         delete schemes[msg.sender];
@@ -218,24 +209,24 @@ contract Controller {
         return true;
     }
 
-    function isSchemeRegistered(address _scheme) public constant returns(bool) {
+    function isSchemeRegistered(address _scheme,address) public constant returns(bool) {
         return (schemes[_scheme].permissions&bytes4(1) != bytes4(0));
     }
 
-    function getSchemeParameters(address _scheme) public constant returns(bytes32) {
+    function getSchemeParameters(address _scheme,address) public constant returns(bytes32) {
         return schemes[_scheme].paramsHash;
     }
 
-    function getSchemePermissions(address _scheme) public constant returns(bytes4) {
+    function getSchemePermissions(address _scheme,address) public constant returns(bytes4) {
         return schemes[_scheme].permissions;
     }
 
-  // Global Contraints:
-    function globalConstraintsCount() public constant returns(uint) {
+  // Global constraints:
+    function globalConstraintsCount(address) public constant returns(uint) {
         return globalConstraints.length;
     }
 
-    function isGlobalConstraintRegister(address _globalConstraint) public constant returns(bool) {
+    function isGlobalConstraintRegister(address _globalConstraint,address) public constant returns(bool) {
         return globalConstraintsRegister[_globalConstraint].register;
     }
 
@@ -245,7 +236,7 @@ contract Controller {
      * @param _params the constraint parameters hash.
      * @return bool which represents a success
      */
-    function addGlobalConstraint(address _globalConstraint, bytes32 _params)
+    function addGlobalConstraint(address _globalConstraint, bytes32 _params,address)
     public onlyGlobalConstraintsScheme returns(bool)
     {
         if (!globalConstraintsRegister[_globalConstraint].register) {
@@ -263,7 +254,7 @@ contract Controller {
      * @param _globalConstraint the address of the global constraint to be remove.
      * @return bool which represents a success
      */
-    function removeGlobalConstraint (address _globalConstraint)
+    function removeGlobalConstraint (address _globalConstraint,address)
     public onlyGlobalConstraintsScheme returns(bool)
     {
         GlobalConstraintRegister memory globalConstraintRegister = globalConstraintsRegister[_globalConstraint];
@@ -288,7 +279,7 @@ contract Controller {
     * @param  _newController the address of the new controller.
     * @return bool which represents a success
     */
-    function upgradeController(address _newController)
+    function upgradeController(address _newController,address)
     public onlyUpgradingScheme returns(bool)
     {
         require(newController == address(0));   // so the upgrade could be done once for a contract.
@@ -306,13 +297,13 @@ contract Controller {
     }
 
     /**
-    * @dev do a generic deligate call to the contract which called us.
-    * This function use deligatecall and might expose the organization to security
+    * @dev do a generic delegate call to the contract which called us.
+    * This function use delegatecall and might expose the organization to security
     * risk. Use this function only if you really knows what you are doing.
     * @param _params the params for the call.
     * @return bool which represents success
     */
-    function genericAction(bytes32[] _params)
+    function genericAction(bytes32[] _params,address)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("genericAction")
@@ -325,10 +316,10 @@ contract Controller {
   /**
    * @dev send some ether
    * @param _amountInWei the amount of ether (in Wei) to send
-   * @param _to address of the beneficary
+   * @param _to address of the beneficiary
    * @return bool which represents a success
    */
-    function sendEther(uint _amountInWei, address _to)
+    function sendEther(uint _amountInWei, address _to,address)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("sendEther")
@@ -341,11 +332,11 @@ contract Controller {
     /**
     * @dev send some amount of arbitrary ERC20 Tokens
     * @param _externalToken the address of the Token Contract
-    * @param _to address of the beneficary
+    * @param _to address of the beneficiary
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value,address)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenTransfer")
@@ -361,11 +352,11 @@ contract Controller {
     *      "from" account.This can be done using externalTokenApprove.
     * @param _externalToken the address of the Token Contract
     * @param _from address of the account to send from
-    * @param _to address of the beneficary
+    * @param _to address of the beneficiary
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value)
+    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value,address)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenTransferFrom")
@@ -380,10 +371,10 @@ contract Controller {
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _addedValue the amount of ether (in Wei) which the approval is refering to.
+    * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue)
+    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue,address)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenIncreaseApproval")
@@ -398,10 +389,10 @@ contract Controller {
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _subtractedValue the amount of ether (in Wei) which the approval is refering to.
+    * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue)
+    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenDecreaseApproval")
@@ -410,5 +401,4 @@ contract Controller {
         ExternalTokenDecreaseApproval(msg.sender,_externalToken,_spender,_subtractedValue);
         return avatar.externalTokenDecreaseApproval(_externalToken, _spender, _subtractedValue);
     }
-
 }
