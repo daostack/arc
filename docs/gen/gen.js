@@ -88,7 +88,7 @@ ${
     });
     
     for(let contract in output.contracts){
-        // The compile returns output in the form of {'somefile.sol:somecontract': ...} 
+        // The compiler returns output in the form of {'somefile.sol:somecontract': ...} 
         const split = contract.split(':');
         const file = split[0];
         const contractName = split[1];
