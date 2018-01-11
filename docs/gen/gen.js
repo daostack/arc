@@ -25,8 +25,7 @@ function main(){
         const title = devdoc.title || '';
 
         /* This is very ugly, but in order for the generated markdown to be clean,
-           we cannot use any indentation which doesn't apprear in the `.md` file
-        */
+           we cannot use any indentation which doesn't appear in the `.md` file */
         return (
 `# *contract* ${contractName} ([source](${'https://github.com/daostack/daostack/tree/master/'+file}))
 ${title}
