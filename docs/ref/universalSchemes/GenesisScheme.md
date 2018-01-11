@@ -52,7 +52,6 @@ The address of the avatar of the controller
 
 ### *function* bytes4Array
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -63,7 +62,6 @@ The address of the avatar of the controller
 
 ### *function* bytes32Array
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -74,7 +72,6 @@ The address of the avatar of the controller
 
 ### *function* addressArray
 **constant**
-**payable**
 **view**
 
 *Inputs:*

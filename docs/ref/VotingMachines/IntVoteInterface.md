@@ -64,7 +64,6 @@
 
 ### *function* isVotable
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -75,7 +74,6 @@
 
 ### *function* getNumberOfChoices
 **constant**
-**payable**
 **view**
 
 *Inputs:*

@@ -30,7 +30,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* simpleICO
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -41,7 +40,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -52,7 +50,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* organization
 **constant**
-**payable**
 **view**
 
 *Inputs:*

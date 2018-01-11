@@ -83,7 +83,6 @@ hash the parameters, save them if necessary, and return the hash value
 
 ### *function* parameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -151,7 +150,6 @@ an id which represents the proposal
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -162,7 +160,6 @@ an id which represents the proposal
 
 ### *function* organizationsProposals
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -178,7 +175,6 @@ an id which represents the proposal
 
 ### *function* organizations
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -189,7 +185,6 @@ an id which represents the proposal
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -200,7 +195,6 @@ an id which represents the proposal
 
 ### *function* isRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -211,7 +205,6 @@ an id which represents the proposal
 
 ### *function* hashedParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -222,7 +215,6 @@ an id which represents the proposal
 
 ### *function* getParametersHash
 **constant**
-**payable**
 **pure**
 
 return a hash of the given parameters
@@ -235,7 +227,6 @@ return a hash of the given parameters
 
 ### *function* fee
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -258,7 +249,6 @@ execution of proposals, can only be called by the voting machine in which the vo
 
 ### *function* beneficiary
 **constant**
-**payable**
 **view**
 
 *Inputs:*

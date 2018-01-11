@@ -65,7 +65,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -76,7 +75,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* organizations
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -87,7 +85,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -98,7 +95,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* isRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -109,7 +105,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* hashedParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -120,7 +115,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* fee
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -131,7 +125,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* beneficiary
 **constant**
-**payable**
 **view**
 
 *Inputs:*

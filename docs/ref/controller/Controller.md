@@ -124,7 +124,6 @@ Controller contract
 ## Functions
 ### *function* isSchemeRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -135,7 +134,6 @@ Controller contract
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -146,7 +144,6 @@ Controller contract
 
 ### *function* schemes
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -169,7 +166,6 @@ bool which represents a success
 
 ### *function* newController
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -245,7 +241,6 @@ bool which represents a success
 
 ### *function* isGlobalConstraintRegister
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -278,7 +273,6 @@ bool which represents a success
 
 ### *function* nativeReputation
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -299,7 +293,6 @@ bool which represents success
 
 ### *function* globalConstraintsRegister
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -311,7 +304,6 @@ bool which represents success
 
 ### *function* globalConstraintsCount
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -322,7 +314,6 @@ bool which represents success
 
 ### *function* globalConstraints
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -334,7 +325,6 @@ bool which represents success
 
 ### *function* getSchemePermissions
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -345,7 +335,6 @@ bool which represents success
 
 ### *function* getSchemeParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -392,7 +381,6 @@ bool which represents a success
 
 ### *function* avatar
 **constant**
-**payable**
 **view**
 
 *Inputs:*

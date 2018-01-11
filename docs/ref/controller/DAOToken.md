@@ -64,7 +64,6 @@ DAOToken, base on zeppelin contract.
 ## Functions
 ### *function* balanceOf
 **constant**
-**payable**
 **view**
 
 Gets the balance of the specified address.
@@ -76,7 +75,6 @@ An uint256 representing the amount owned by the passed address.
 
 ### *function* mintingFinished
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -97,7 +95,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* totalSupply
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -131,7 +128,6 @@ transfer token for a specified address
 
 ### *function* symbol
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -142,7 +138,6 @@ transfer token for a specified address
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -153,7 +148,6 @@ transfer token for a specified address
 
 ### *function* name
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -247,7 +241,6 @@ Approve the passed address to spend the specified amount of tokens on behalf of 
 
 ### *function* allowance
 **constant**
-**payable**
 **view**
 
 Function to check the amount of tokens that an owner allowed to a spender.
@@ -260,7 +253,6 @@ A uint256 specifying the amount of tokens still available for the spender.
 
 ### *function* DECIMAL
 **constant**
-**payable**
 **view**
 
 *Inputs:*

@@ -75,7 +75,6 @@ A scheme for proposing and rewarding contributions to an organization
 
 ### *function* parameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -138,7 +137,6 @@ Submit a proposal for a reward for a contribution:
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -149,7 +147,6 @@ Submit a proposal for a reward for a contribution:
 
 ### *function* organizationsProposals
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -167,7 +164,6 @@ Submit a proposal for a reward for a contribution:
 
 ### *function* organizations
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -178,7 +174,6 @@ Submit a proposal for a reward for a contribution:
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -189,7 +184,6 @@ Submit a proposal for a reward for a contribution:
 
 ### *function* isRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -200,7 +194,6 @@ Submit a proposal for a reward for a contribution:
 
 ### *function* hashedParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -211,7 +204,6 @@ Submit a proposal for a reward for a contribution:
 
 ### *function* getParametersHash
 **constant**
-**payable**
 **pure**
 
 return a hash of the given parameters
@@ -226,7 +218,6 @@ a hash of the parameters
 
 ### *function* fee
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -249,7 +240,6 @@ execution of proposals, can only be called by the voting machine in which the vo
 
 ### *function* beneficiary
 **constant**
-**payable**
 **view**
 
 *Inputs:*

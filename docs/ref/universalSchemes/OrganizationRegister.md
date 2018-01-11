@@ -64,7 +64,6 @@ bytes32 -the parameters hash
 
 ### *function* parameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -108,7 +107,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -119,7 +117,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* organizationsRegistery
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -131,7 +128,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* organizations
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -142,7 +138,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -153,7 +148,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* isRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -164,7 +158,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* hashedParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -175,7 +168,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* getParametersHash
 **constant**
-**payable**
 **pure**
 
 Hash the parameters,and return the hash value
@@ -189,7 +181,6 @@ bytes32 -the parameters hash
 
 ### *function* fee
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -200,7 +191,6 @@ bytes32 -the parameters hash
 
 ### *function* beneficiary
 **constant**
-**payable**
 **view**
 
 *Inputs:*

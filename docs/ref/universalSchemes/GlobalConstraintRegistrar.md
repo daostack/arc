@@ -82,7 +82,6 @@ bytes32 -the parameters hash
 
 ### *function* parameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -149,7 +148,6 @@ bytes32 -the proposal id
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -160,7 +158,6 @@ bytes32 -the proposal id
 
 ### *function* organizationsData
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -172,7 +169,6 @@ bytes32 -the proposal id
 
 ### *function* organizations
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -183,7 +179,6 @@ bytes32 -the proposal id
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -194,7 +189,6 @@ bytes32 -the proposal id
 
 ### *function* isRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -205,7 +199,6 @@ bytes32 -the proposal id
 
 ### *function* hashedParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -216,7 +209,6 @@ bytes32 -the proposal id
 
 ### *function* getParametersHash
 **constant**
-**payable**
 **pure**
 
 Hash the parameters,and return the hash value
@@ -229,7 +221,6 @@ bytes32 -the parameters hash
 
 ### *function* fee
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -252,7 +243,6 @@ bool which represents a successful of the function.
 
 ### *function* beneficiary
 **constant**
-**payable**
 **view**
 
 *Inputs:*

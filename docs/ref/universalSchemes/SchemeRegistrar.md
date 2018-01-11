@@ -74,7 +74,6 @@ A registrar for Schemes for organizations
 ## Functions
 ### *function* organizations
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -85,7 +84,6 @@ A registrar for Schemes for organizations
 
 ### *function* parameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -168,7 +166,6 @@ propose to remove a scheme for a controller
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -179,7 +176,6 @@ propose to remove a scheme for a controller
 
 ### *function* organizationsProposals
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -197,7 +193,6 @@ propose to remove a scheme for a controller
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -208,7 +203,6 @@ propose to remove a scheme for a controller
 
 ### *function* isRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -219,7 +213,6 @@ propose to remove a scheme for a controller
 
 ### *function* hashedParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -230,7 +223,6 @@ propose to remove a scheme for a controller
 
 ### *function* getParametersHash
 **constant**
-**payable**
 **pure**
 
 *Inputs:*
@@ -243,7 +235,6 @@ propose to remove a scheme for a controller
 
 ### *function* fee
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -266,7 +257,6 @@ execute a  proposal This method can only be called by the voting machine in whi
 
 ### *function* beneficiary
 **constant**
-**payable**
 **view**
 
 *Inputs:*

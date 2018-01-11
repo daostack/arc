@@ -100,7 +100,6 @@ Function to sign to cancel an agreement.
 
 ### *function* parameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -183,7 +182,6 @@ bytes32 the proposalId
 
 ### *function* isRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -194,7 +192,6 @@ bytes32 the proposalId
 
 ### *function* organizations
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -205,7 +202,6 @@ bytes32 the proposalId
 
 ### *function* organizationsData
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -227,7 +223,6 @@ bytes32 the proposalId
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -238,7 +233,6 @@ bytes32 the proposalId
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -249,7 +243,6 @@ bytes32 the proposalId
 
 ### *function* hashedParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -260,7 +253,6 @@ bytes32 the proposalId
 
 ### *function* getParametersHash
 **constant**
-**payable**
 **pure**
 
 Hash the parameters,and return the hash value
@@ -273,7 +265,6 @@ bytes32 -the parameters hash
 
 ### *function* fee
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -325,7 +316,6 @@ Function for a beneficiary to collect.
 
 ### *function* beneficiary
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -336,7 +326,6 @@ Function for a beneficiary to collect.
 
 ### *function* agreements
 **constant**
-**payable**
 **view**
 
 *Inputs:*

@@ -60,7 +60,6 @@ SimpleICO scheme.
 
 ### *function* parameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -133,7 +132,6 @@ bytes32 -the params hash
 
 ### *function* organizationsICOInfo
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -147,7 +145,6 @@ bytes32 -the params hash
 
 ### *function* organizations
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -158,7 +155,6 @@ bytes32 -the params hash
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -169,7 +165,6 @@ bytes32 -the params hash
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -180,7 +175,6 @@ bytes32 -the params hash
 
 ### *function* isRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -191,7 +185,6 @@ bytes32 -the params hash
 
 ### *function* isActive
 **constant**
-**payable**
 **view**
 
 Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
@@ -203,7 +196,6 @@ bool which represents a successful of the function
 
 ### *function* hashedParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -224,7 +216,6 @@ Allowing admin to halt an ICO.
 
 ### *function* getParametersHash
 **constant**
-**payable**
 **pure**
 
 Hash the parameters and return the hash value
@@ -241,7 +232,6 @@ bytes32 -the params hash
 
 ### *function* fee
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -251,6 +241,7 @@ bytes32 -the params hash
 1. **uint256**
 
 ### *function* donate
+**payable**
 **payable**
 
 Donating ethers to get tokens. If the donation is higher than the remaining ethers in the "cap", The donator will get the change in ethers.
@@ -263,7 +254,6 @@ bool which represents a successful of the function
 
 ### *function* beneficiary
 **constant**
-**payable**
 **view**
 
 *Inputs:*

@@ -37,7 +37,6 @@ Allows the current owner to transfer control of the contract to a newOwner.
 
 ### *function* totalSupply
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -59,7 +58,6 @@ bool which represents a success
 
 ### *function* reputationOf
 **constant**
-**payable**
 **view**
 
 return the reputation amount of a given owner
@@ -71,7 +69,6 @@ return the reputation amount of a given owner
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -93,7 +90,6 @@ bool which represents a successful of the function
 
 ### *function* decimals
 **constant**
-**payable**
 **view**
 
 *Inputs:*

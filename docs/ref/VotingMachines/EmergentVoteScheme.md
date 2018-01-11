@@ -92,7 +92,6 @@
 ## Functions
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -103,7 +102,6 @@
 
 ### *function* organizationsParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -121,7 +119,6 @@
 
 ### *function* voteInfo
 **constant**
-**payable**
 **view**
 
 voteInfo returns the vote and the amount of reputation of the user committed to this proposal
@@ -156,7 +153,6 @@ bytes32 the hashed parameters
 
 ### *function* proposals
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -201,7 +197,6 @@ voting function with owner functionality (can vote on behalf of someone else)
 
 ### *function* proposalScore
 **constant**
-**payable**
 **view**
 
 Get the score of a specific proposal The score is evaluated by multiplying the number of votes with the funds that are invested
@@ -253,7 +248,6 @@ hash the parameters, save them if necessary, and return the hash value
 
 ### *function* proposalsParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -275,7 +269,6 @@ hash the parameters, save them if necessary, and return the hash value
 
 ### *function* proposalStatus
 **constant**
-**payable**
 **view**
 
 proposalStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
@@ -300,7 +293,6 @@ bytes32 proposalId the ID of the proposal
 
 ### *function* isRegistered
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -322,7 +314,6 @@ Internal function to boost a proposal
 
 ### *function* organizations
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -344,7 +335,6 @@ Cancel the vote of the msg.sender: subtract the reputation amount from the votes
 
 ### *function* hashedParameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -355,7 +345,6 @@ Cancel the vote of the msg.sender: subtract the reputation amount from the votes
 
 ### *function* getNumberOfChoices
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -376,7 +365,6 @@ bool True if the proposal is canceled and False if it wasn't
 
 ### *function* getOrgParametersHash
 **constant**
-**payable**
 **pure**
 
 *Inputs:*
@@ -394,7 +382,6 @@ bool True if the proposal is canceled and False if it wasn't
 
 ### *function* isVotable
 **constant**
-**payable**
 **view**
 
 isVotable check if the proposal is open
@@ -406,7 +393,6 @@ bool true or false
 
 ### *function* findMinScore
 **constant**
-**payable**
 **view**
 
 Get the minimum score of a given list proposal ids
@@ -418,7 +404,6 @@ uint index the index of the proposal containing the smallest score in the listu
 
 ### *function* getProposalParametersHash
 **constant**
-**payable**
 **pure**
 
 hashParameters returns a hash of the given parameters
@@ -432,7 +417,6 @@ hashParameters returns a hash of the given parameters
 
 ### *function* findMaxScore
 **constant**
-**payable**
 **view**
 
 Get the maximum score of a given list proposal ids
@@ -444,7 +428,6 @@ uint index the index of the proposal containing the highest score in the listui
 
 ### *function* fee
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -455,7 +438,6 @@ uint index the index of the proposal containing the highest score in the listui
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -476,7 +458,6 @@ bool is the proposal has been executed or not?
 
 ### *function* findInArray
 **constant**
-**payable**
 **pure**
 
 Helper function to find an ID in a given array
@@ -499,7 +480,6 @@ Move the top proposal form the waiting list to the boosted proposals
 
 ### *function* beneficiary
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -510,7 +490,6 @@ Move the top proposal form the waiting list to the boosted proposals
 
 ### *function* MAX_NUM_OF_CHOICES
 **constant**
-**payable**
 **view**
 
 *Inputs:*

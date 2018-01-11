@@ -57,7 +57,6 @@
 ## Functions
 ### *function* votesStatus
 **constant**
-**payable**
 **view**
 
 votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
@@ -81,7 +80,6 @@ hash the parameters, save them if necessary, and return the hash value
 
 ### *function* voteInfo
 **constant**
-**payable**
 **view**
 
 voteInfo returns the vote and the amount of reputation of the user committed to this proposal
@@ -130,7 +128,6 @@ register a new proposal with the given parameters. Every proposal has a unique I
 
 ### *function* proposals
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -147,7 +144,6 @@ register a new proposal with the given parameters. Every proposal has a unique I
 
 ### *function* parameters
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -172,7 +168,6 @@ bool true - the proposal has been executed             false - otherwise.
 
 ### *function* isVotable
 **constant**
-**payable**
 **view**
 
 isVotable check if the proposal is votable
@@ -184,7 +179,6 @@ bool true or false
 
 ### *function* getParametersHash
 **constant**
-**payable**
 **pure**
 
 hashParameters returns a hash of the given parameters
@@ -198,7 +192,6 @@ hashParameters returns a hash of the given parameters
 
 ### *function* getNumberOfChoices
 **constant**
-**payable**
 **view**
 
 getNumberOfChoices returns the number of choices possible in this proposal

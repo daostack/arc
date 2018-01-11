@@ -106,7 +106,6 @@ bool which represents success
 
 ### *function* owner
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -117,7 +116,6 @@ bool which represents success
 
 ### *function* orgName
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -128,7 +126,6 @@ bool which represents success
 
 ### *function* nativeToken
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -139,7 +136,6 @@ bool which represents success
 
 ### *function* nativeReputation
 **constant**
-**payable**
 **view**
 
 *Inputs:*

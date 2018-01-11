@@ -24,7 +24,6 @@
 
 ### *function* pre
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -37,7 +36,6 @@
 
 ### *function* post
 **constant**
-**payable**
 **view**
 
 *Inputs:*

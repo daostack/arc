@@ -26,7 +26,6 @@ the calculated parameters hash
 
 ### *function* pre
 **constant**
-**payable**
 **pure**
 
 check the constraint after the action. This global contraint only checks the state after the action, so here we just return true:
@@ -40,7 +39,6 @@ true
 
 ### *function* post
 **constant**
-**payable**
 **view**
 
 check the total supply cap.
@@ -54,7 +52,6 @@ bool which represents a success
 
 ### *function* params
 **constant**
-**payable**
 **view**
 
 *Inputs:*
@@ -66,7 +63,6 @@ bool which represents a success
 
 ### *function* getParametersHash
 **constant**
-**payable**
 **pure**
 
 calculate and returns the hash of the given parameters
