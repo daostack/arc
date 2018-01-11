@@ -35,11 +35,11 @@ function main(){
             .trim()
             .replace(new RegExp('[ ]+','g'),'-');
 
-        const gasEstimate = (est) => est ? `less than ${est} gas` : 'No bound available.';
+        const gasEstimate = (est) => est ? `less than ${est} gas.` : 'No bound available.';
         const signature = (name,ps) => `${name}(${ps.map(p => `${p.type}`).join(', ')})`;
         const headerLink = (title,link) => `    - [${title}](#${hyphenate(link)})`;
         const title = (prefix,text) => `### *${prefix}* ${text}`;
-        const functionComment = (obj) => obj.details ? `> ${obj.details}` : '';
+        const functionComment = (obj) => obj.details ? `> ${obj.details}${N}` : '';
         const paramComment = (obj, name) => obj.params && obj.params[name] ? `- ${obj.params[name]}` : '';
 
         const modifiers = (fn) => 

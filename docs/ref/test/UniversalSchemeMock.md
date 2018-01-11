@@ -1,10 +1,10 @@
 # *contract* UniversalSchemeMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/UniversalSchemeMock.sol))
 > 
-*Code deposit cost: **less than 244800 gas***
+*Code deposit cost: **less than 244800 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 244800 gas***
+*Total deploy cost(deposit + execution): **less than 244800 gas.***
 
 - [Constructors](#constructors)
     - [UniversalSchemeMock(address, uint256, address)](#constructor-universalschememockaddress-uint256-address)
@@ -75,7 +75,8 @@
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 22920 gas***
+
+*Execution cost: **less than 22920 gas.***
 
 **nonpayable**
 
@@ -101,7 +102,7 @@
 
 ### *function* owner
 
-*Execution cost: **less than 592 gas***
+*Execution cost: **less than 592 gas.***
 
 **constant | view**
 
@@ -114,7 +115,7 @@
 
 ### *function* organizations
 
-*Execution cost: **less than 576 gas***
+*Execution cost: **less than 576 gas.***
 
 **constant | view**
 
@@ -127,7 +128,7 @@
 
 ### *function* nativeToken
 
-*Execution cost: **less than 680 gas***
+*Execution cost: **less than 680 gas.***
 
 **constant | view**
 
@@ -140,7 +141,7 @@
 
 ### *function* isRegistered
 
-*Execution cost: **less than 717 gas***
+*Execution cost: **less than 717 gas.***
 
 **constant | view**
 
@@ -153,7 +154,7 @@
 
 ### *function* hashedParameters
 
-*Execution cost: **less than 571 gas***
+*Execution cost: **less than 571 gas.***
 
 **constant | view**
 
@@ -166,7 +167,7 @@
 
 ### *function* fee
 
-*Execution cost: **less than 505 gas***
+*Execution cost: **less than 505 gas.***
 
 **constant | view**
 
@@ -179,7 +180,7 @@
 
 ### *function* beneficiary
 
-*Execution cost: **less than 526 gas***
+*Execution cost: **less than 526 gas.***
 
 **constant | view**
 

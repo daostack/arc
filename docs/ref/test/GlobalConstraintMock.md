@@ -1,10 +1,10 @@
 # *contract* GlobalConstraintMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/GlobalConstraintMock.sol))
 > 
-*Code deposit cost: **less than 192400 gas***
+*Code deposit cost: **less than 192400 gas.***
 
-*Execution cost: **less than 233 gas***
+*Execution cost: **less than 233 gas.***
 
-*Total deploy cost(deposit + execution): **less than 192633 gas***
+*Total deploy cost(deposit + execution): **less than 192633 gas.***
 
 - [Constructors](#constructors)
 

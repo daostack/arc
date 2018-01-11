@@ -1,10 +1,10 @@
 # *contract* EmergentVoteScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/EmergentVoteScheme.sol))
 > 
-*Code deposit cost: **less than 2035400 gas***
+*Code deposit cost: **less than 2035400 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 2035400 gas***
+*Total deploy cost(deposit + execution): **less than 2035400 gas.***
 
 - [Constructors](#constructors)
     - [EmergentVoteScheme(address, uint256, address)](#constructor-emergentvoteschemeaddress-uint256-address)
@@ -122,7 +122,7 @@
 ## Functions
 ### *function* owner
 
-*Execution cost: **less than 963 gas***
+*Execution cost: **less than 963 gas.***
 
 **constant | view**
 
@@ -135,7 +135,7 @@
 
 ### *function* organizationsParameters
 
-*Execution cost: **less than 2370 gas***
+*Execution cost: **less than 2370 gas.***
 
 **constant | view**
 
@@ -169,7 +169,8 @@
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 23580 gas***
+
+*Execution cost: **less than 23580 gas.***
 
 **nonpayable**
 
@@ -197,7 +198,7 @@
 
 ### *function* proposals
 
-*Execution cost: **less than 2807 gas***
+*Execution cost: **less than 2807 gas.***
 
 **constant | view**
 
@@ -251,6 +252,7 @@
 
 ### *function* proposalScore
 > Get the score of a specific proposal The score is evaluated by multiplying the number of votes with the funds that are invested
+
 *Execution cost: **No bound available.***
 
 **constant | view**
@@ -312,7 +314,7 @@ uint Proposal's score
 
 ### *function* proposalsParameters
 
-*Execution cost: **less than 1255 gas***
+*Execution cost: **less than 1255 gas.***
 
 **constant | view**
 
@@ -340,6 +342,7 @@ uint Proposal's score
 
 ### *function* proposalStatus
 > proposalStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
+
 *Execution cost: **No bound available.***
 
 **constant | view**
@@ -367,7 +370,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 
 ### *function* isRegistered
 
-*Execution cost: **less than 1220 gas***
+*Execution cost: **less than 1220 gas.***
 
 **constant | view**
 
@@ -394,7 +397,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 
 ### *function* organizations
 
-*Execution cost: **less than 1126 gas***
+*Execution cost: **less than 1126 gas.***
 
 **constant | view**
 
@@ -408,6 +411,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 
 ### *function* cancelVote
 > Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -421,7 +425,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 
 ### *function* hashedParameters
 
-*Execution cost: **less than 1162 gas***
+*Execution cost: **less than 1162 gas.***
 
 **constant | view**
 
@@ -434,7 +438,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 
 ### *function* getNumberOfChoices
 
-*Execution cost: **less than 976 gas***
+*Execution cost: **less than 976 gas.***
 
 **constant | view**
 
@@ -447,6 +451,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 
 ### *function* cancelProposal
 > Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -478,7 +483,8 @@ bool True if the proposal is canceled and False if it wasn't
 
 ### *function* isVotable
 > isVotable check if the proposal is open
-*Execution cost: **less than 1054 gas***
+
+*Execution cost: **less than 1054 gas.***
 
 **constant | view**
 
@@ -489,6 +495,7 @@ bool true or false
 
 ### *function* findMinScore
 > Get the minimum score of a given list proposal ids
+
 *Execution cost: **No bound available.***
 
 **constant | view**
@@ -515,6 +522,7 @@ uint index the index of the proposal containing the smallest score in the listu
 
 ### *function* findMaxScore
 > Get the maximum score of a given list proposal ids
+
 *Execution cost: **No bound available.***
 
 **constant | view**
@@ -526,7 +534,7 @@ uint index the index of the proposal containing the highest score in the listui
 
 ### *function* fee
 
-*Execution cost: **less than 1052 gas***
+*Execution cost: **less than 1052 gas.***
 
 **constant | view**
 
@@ -539,7 +547,7 @@ uint index the index of the proposal containing the highest score in the listui
 
 ### *function* nativeToken
 
-*Execution cost: **less than 1227 gas***
+*Execution cost: **less than 1227 gas.***
 
 **constant | view**
 
@@ -552,6 +560,7 @@ uint index the index of the proposal containing the highest score in the listui
 
 ### *function* execute
 > check if the proposal has been decided, and if so, execute the proposal
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -578,6 +587,7 @@ bool is the proposal has been executed or not?
 
 ### *function* moveTopAwaitingBoostMode
 > Move the top proposal form the waiting list to the boosted proposals
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -591,7 +601,7 @@ bool is the proposal has been executed or not?
 
 ### *function* beneficiary
 
-*Execution cost: **less than 787 gas***
+*Execution cost: **less than 787 gas.***
 
 **constant | view**
 
@@ -604,7 +614,7 @@ bool is the proposal has been executed or not?
 
 ### *function* MAX_NUM_OF_CHOICES
 
-*Execution cost: **less than 588 gas***
+*Execution cost: **less than 588 gas.***
 
 **constant | view**
 

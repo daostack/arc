@@ -1,11 +1,11 @@
 # *contract* Avatar ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
 > An Avatar holds tokens, reputation and ether for a controller
 
-*Code deposit cost: **less than 475800 gas***
+*Code deposit cost: **less than 475800 gas.***
 
-*Execution cost: **less than 81478 gas***
+*Execution cost: **less than 81478 gas.***
 
-*Total deploy cost(deposit + execution): **less than 557278 gas***
+*Total deploy cost(deposit + execution): **less than 557278 gas.***
 
 - [Constructors](#constructors)
     - [Avatar(bytes32, address, address)](#constructor-avatarbytes32-address-address)
@@ -99,7 +99,7 @@
 
 
 ## Fallback
-*Execution cost: **less than 1870 gas***
+*Execution cost: **less than 1870 gas.***
 
 **payable**
 
@@ -124,7 +124,8 @@
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 23027 gas***
+
+*Execution cost: **less than 23027 gas.***
 
 **nonpayable**
 
@@ -151,7 +152,7 @@
 
 ### *function* owner
 
-*Execution cost: **less than 1545 gas***
+*Execution cost: **less than 1545 gas.***
 
 **constant | view**
 
@@ -164,7 +165,7 @@
 
 ### *function* orgName
 
-*Execution cost: **less than 1545 gas***
+*Execution cost: **less than 1545 gas.***
 
 **constant | view**
 
@@ -177,7 +178,7 @@
 
 ### *function* nativeToken
 
-*Execution cost: **less than 1545 gas***
+*Execution cost: **less than 1545 gas.***
 
 **constant | view**
 
@@ -190,7 +191,7 @@
 
 ### *function* nativeReputation
 
-*Execution cost: **less than 1545 gas***
+*Execution cost: **less than 1545 gas.***
 
 **constant | view**
 

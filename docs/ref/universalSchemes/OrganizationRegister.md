@@ -1,11 +1,11 @@
 # *contract* OrganizationRegister ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/OrganizationRegister.sol))
 > A universal organization registry.
 
-*Code deposit cost: **less than 507200 gas***
+*Code deposit cost: **less than 507200 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 507200 gas***
+*Total deploy cost(deposit + execution): **less than 507200 gas.***
 
 - [Constructors](#constructors)
     - [OrganizationRegister(address, uint256, address)](#constructor-organizationregisteraddress-uint256-address)
@@ -95,7 +95,7 @@
 
 ### *function* parameters
 
-*Execution cost: **less than 1157 gas***
+*Execution cost: **less than 1157 gas.***
 
 **constant | view**
 
@@ -110,7 +110,8 @@
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 23093 gas***
+
+*Execution cost: **less than 23093 gas.***
 
 **nonpayable**
 
@@ -152,7 +153,7 @@
 
 ### *function* owner
 
-*Execution cost: **less than 721 gas***
+*Execution cost: **less than 721 gas.***
 
 **constant | view**
 
@@ -179,7 +180,7 @@
 
 ### *function* organizations
 
-*Execution cost: **less than 705 gas***
+*Execution cost: **less than 705 gas.***
 
 **constant | view**
 
@@ -192,7 +193,7 @@
 
 ### *function* nativeToken
 
-*Execution cost: **less than 853 gas***
+*Execution cost: **less than 853 gas.***
 
 **constant | view**
 
@@ -205,7 +206,7 @@
 
 ### *function* isRegistered
 
-*Execution cost: **less than 890 gas***
+*Execution cost: **less than 890 gas.***
 
 **constant | view**
 
@@ -218,7 +219,7 @@
 
 ### *function* hashedParameters
 
-*Execution cost: **less than 744 gas***
+*Execution cost: **less than 744 gas.***
 
 **constant | view**
 
@@ -246,7 +247,7 @@
 
 ### *function* fee
 
-*Execution cost: **less than 678 gas***
+*Execution cost: **less than 678 gas.***
 
 **constant | view**
 
@@ -259,7 +260,7 @@
 
 ### *function* beneficiary
 
-*Execution cost: **less than 655 gas***
+*Execution cost: **less than 655 gas.***
 
 **constant | view**
 

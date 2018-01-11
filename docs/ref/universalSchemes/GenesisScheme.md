@@ -1,11 +1,11 @@
 # *contract* GenesisScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GenesisScheme.sol))
 > Genesis Scheme that creates organizations
 
-*Code deposit cost: **less than 4733600 gas***
+*Code deposit cost: **less than 4733600 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 4733600 gas***
+*Total deploy cost(deposit + execution): **less than 4733600 gas.***
 
 - [Constructors](#constructors)
     - [GenesisScheme()](#constructor-genesisscheme)
@@ -81,7 +81,7 @@
 
 ### *function* bytes4Array
 
-*Execution cost: **less than 2476 gas***
+*Execution cost: **less than 2476 gas.***
 
 **constant | view**
 
@@ -94,7 +94,7 @@
 
 ### *function* bytes32Array
 
-*Execution cost: **less than 824 gas***
+*Execution cost: **less than 824 gas.***
 
 **constant | view**
 
@@ -107,7 +107,7 @@
 
 ### *function* addressArray
 
-*Execution cost: **less than 911 gas***
+*Execution cost: **less than 911 gas.***
 
 **constant | view**
 

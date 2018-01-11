@@ -1,11 +1,11 @@
 # *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
 > DAOToken, base on zeppelin contract.
 
-*Code deposit cost: **less than 683600 gas***
+*Code deposit cost: **less than 683600 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 683600 gas***
+*Total deploy cost(deposit + execution): **less than 683600 gas.***
 
 - [Constructors](#constructors)
     - [DAOToken(string, string)](#constructor-daotokenstring-string)
@@ -92,7 +92,8 @@
 ## Functions
 ### *function* balanceOf
 > Gets the balance of the specified address.
-*Execution cost: **less than 793 gas***
+
+*Execution cost: **less than 793 gas.***
 
 **constant | view**
 
@@ -103,7 +104,7 @@ An uint256 representing the amount owned by the passed address.
 
 ### *function* mintingFinished
 
-*Execution cost: **less than 459 gas***
+*Execution cost: **less than 459 gas.***
 
 **constant | view**
 
@@ -116,7 +117,8 @@ An uint256 representing the amount owned by the passed address.
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 23118 gas***
+
+*Execution cost: **less than 23118 gas.***
 
 **nonpayable**
 
@@ -129,7 +131,7 @@ An uint256 representing the amount owned by the passed address.
 
 ### *function* totalSupply
 
-*Execution cost: **less than 439 gas***
+*Execution cost: **less than 439 gas.***
 
 **constant | view**
 
@@ -184,7 +186,7 @@ An uint256 representing the amount owned by the passed address.
 
 ### *function* owner
 
-*Execution cost: **less than 793 gas***
+*Execution cost: **less than 793 gas.***
 
 **constant | view**
 
@@ -238,7 +240,8 @@ An uint256 representing the amount owned by the passed address.
 
 ### *function* finishMinting
 > Function to stop minting new tokens.
-*Execution cost: **less than 22080 gas***
+
+*Execution cost: **less than 22080 gas.***
 
 **nonpayable**
 
@@ -249,7 +252,7 @@ True if the operation was successful.
 
 ### *function* destroyAndSend
 
-*Execution cost: **less than 30980 gas***
+*Execution cost: **less than 30980 gas.***
 
 **nonpayable**
 
@@ -262,7 +265,8 @@ True if the operation was successful.
 
 ### *function* destroy
 > Transfers the current balance to the owner and terminates the contract.
-*Execution cost: **less than 30945 gas***
+
+*Execution cost: **less than 30945 gas.***
 
 **nonpayable**
 
@@ -289,6 +293,7 @@ True if the operation was successful.
 
 ### *function* burn
 > Burns a specific amount of tokens.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -330,7 +335,7 @@ True if the operation was successful.
 
 ### *function* DECIMAL
 
-*Execution cost: **less than 349 gas***
+*Execution cost: **less than 349 gas.***
 
 **constant | view**
 

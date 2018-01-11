@@ -1,11 +1,11 @@
 # *contract* Controller ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Controller.sol))
 > Controller contract
 
-*Code deposit cost: **less than 2327200 gas***
+*Code deposit cost: **less than 2327200 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 2327200 gas***
+*Total deploy cost(deposit + execution): **less than 2327200 gas.***
 
 - [Constructors](#constructors)
     - [Controller(address, address[], bytes32[], bytes4[])](#constructor-controlleraddress-address[]-bytes32[]-bytes4[])
@@ -157,7 +157,7 @@
 
 
 ## Fallback
-*Execution cost: **less than 720 gas***
+*Execution cost: **less than 720 gas.***
 
 **nonpayable**
 
@@ -166,7 +166,7 @@
 ## Functions
 ### *function* isSchemeRegistered
 
-*Execution cost: **less than 1045 gas***
+*Execution cost: **less than 1045 gas.***
 
 **constant | view**
 
@@ -179,7 +179,7 @@
 
 ### *function* nativeToken
 
-*Execution cost: **less than 1142 gas***
+*Execution cost: **less than 1142 gas.***
 
 **constant | view**
 
@@ -192,7 +192,7 @@
 
 ### *function* schemes
 
-*Execution cost: **less than 1499 gas***
+*Execution cost: **less than 1499 gas.***
 
 **constant | view**
 
@@ -220,7 +220,7 @@
 
 ### *function* newController
 
-*Execution cost: **less than 680 gas***
+*Execution cost: **less than 680 gas.***
 
 **constant | view**
 
@@ -233,6 +233,7 @@
 
 ### *function* upgradeController
 > upgrade the Controller     The function will trigger an event 'UpgradeController'.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -259,6 +260,7 @@ bool which represents a success
 
 ### *function* removeGlobalConstraint
 > remove Global Constraint
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -270,7 +272,8 @@ bool which represents a success
 
 ### *function* unregisterSelf
 > unregister the caller's scheme
-*Execution cost: **less than 27918 gas***
+
+*Execution cost: **less than 27918 gas.***
 
 **nonpayable**
 
@@ -281,6 +284,7 @@ bool which represents a success
 
 ### *function* unregisterScheme
 > unregister a scheme
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -308,7 +312,7 @@ bool which represents a success
 
 ### *function* isGlobalConstraintRegister
 
-*Execution cost: **less than 670 gas***
+*Execution cost: **less than 670 gas.***
 
 **constant | view**
 
@@ -349,7 +353,7 @@ bool which represents a success
 
 ### *function* nativeReputation
 
-*Execution cost: **less than 900 gas***
+*Execution cost: **less than 900 gas.***
 
 **constant | view**
 
@@ -362,6 +366,7 @@ bool which represents a success
 
 ### *function* genericAction
 > do a generic deligate call to the contract which called us. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -373,7 +378,7 @@ bool which represents success
 
 ### *function* globalConstraintsRegister
 
-*Execution cost: **less than 1038 gas***
+*Execution cost: **less than 1038 gas.***
 
 **constant | view**
 
@@ -387,7 +392,7 @@ bool which represents success
 
 ### *function* globalConstraintsCount
 
-*Execution cost: **less than 920 gas***
+*Execution cost: **less than 920 gas.***
 
 **constant | view**
 
@@ -400,7 +405,7 @@ bool which represents success
 
 ### *function* globalConstraints
 
-*Execution cost: **less than 1390 gas***
+*Execution cost: **less than 1390 gas.***
 
 **constant | view**
 
@@ -414,7 +419,7 @@ bool which represents success
 
 ### *function* getSchemePermissions
 
-*Execution cost: **less than 1174 gas***
+*Execution cost: **less than 1174 gas.***
 
 **constant | view**
 
@@ -427,7 +432,7 @@ bool which represents success
 
 ### *function* getSchemeParameters
 
-*Execution cost: **less than 793 gas***
+*Execution cost: **less than 793 gas.***
 
 **constant | view**
 
@@ -485,7 +490,7 @@ bool which represents success
 
 ### *function* avatar
 
-*Execution cost: **less than 768 gas***
+*Execution cost: **less than 768 gas.***
 
 **constant | view**
 

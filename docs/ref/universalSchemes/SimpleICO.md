@@ -1,11 +1,11 @@
 # *contract* SimpleICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
 > SimpleICO scheme.
 
-*Code deposit cost: **less than 1018400 gas***
+*Code deposit cost: **less than 1018400 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 1018400 gas***
+*Total deploy cost(deposit + execution): **less than 1018400 gas.***
 
 - [Constructors](#constructors)
     - [SimpleICO(address, uint256, address)](#constructor-simpleicoaddress-uint256-address)
@@ -91,7 +91,7 @@
 
 ### *function* parameters
 
-*Execution cost: **less than 1871 gas***
+*Execution cost: **less than 1871 gas.***
 
 **constant | view**
 
@@ -109,7 +109,8 @@
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 23181 gas***
+
+*Execution cost: **less than 23181 gas.***
 
 **nonpayable**
 
@@ -122,7 +123,8 @@
 
 ### *function* resumeICO
 > Allowing admin to reopen an ICO.
-*Execution cost: **less than 21645 gas***
+
+*Execution cost: **less than 21645 gas.***
 
 **nonpayable**
 
@@ -151,6 +153,7 @@
 
 ### *function* start
 > start an ICO
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -182,7 +185,7 @@
 
 ### *function* organizationsICOInfo
 
-*Execution cost: **less than 1575 gas***
+*Execution cost: **less than 1575 gas.***
 
 **constant | view**
 
@@ -198,7 +201,7 @@
 
 ### *function* organizations
 
-*Execution cost: **less than 749 gas***
+*Execution cost: **less than 749 gas.***
 
 **constant | view**
 
@@ -211,7 +214,7 @@
 
 ### *function* owner
 
-*Execution cost: **less than 765 gas***
+*Execution cost: **less than 765 gas.***
 
 **constant | view**
 
@@ -224,7 +227,7 @@
 
 ### *function* nativeToken
 
-*Execution cost: **less than 919 gas***
+*Execution cost: **less than 919 gas.***
 
 **constant | view**
 
@@ -237,7 +240,7 @@
 
 ### *function* isRegistered
 
-*Execution cost: **less than 934 gas***
+*Execution cost: **less than 934 gas.***
 
 **constant | view**
 
@@ -250,7 +253,8 @@
 
 ### *function* isActive
 > Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
-*Execution cost: **less than 4143 gas***
+
+*Execution cost: **less than 4143 gas.***
 
 **constant | view**
 
@@ -261,7 +265,7 @@ bool which represents a successful of the function
 
 ### *function* hashedParameters
 
-*Execution cost: **less than 832 gas***
+*Execution cost: **less than 832 gas.***
 
 **constant | view**
 
@@ -274,7 +278,8 @@ bool which represents a successful of the function
 
 ### *function* haltICO
 > Allowing admin to halt an ICO.
-*Execution cost: **less than 21541 gas***
+
+*Execution cost: **less than 21541 gas.***
 
 **nonpayable**
 
@@ -305,7 +310,7 @@ bool which represents a successful of the function
 
 ### *function* fee
 
-*Execution cost: **less than 744 gas***
+*Execution cost: **less than 744 gas.***
 
 **constant | view**
 
@@ -332,7 +337,7 @@ bool which represents a successful of the function
 
 ### *function* beneficiary
 
-*Execution cost: **less than 655 gas***
+*Execution cost: **less than 655 gas.***
 
 **constant | view**
 

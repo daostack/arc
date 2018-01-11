@@ -1,11 +1,11 @@
 # *contract* MirrorContractICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
 > An avatar contract for ICO.
 
-*Code deposit cost: **less than 158400 gas***
+*Code deposit cost: **less than 158400 gas.***
 
-*Execution cost: **less than 61130 gas***
+*Execution cost: **less than 61130 gas.***
 
-*Total deploy cost(deposit + execution): **less than 219530 gas***
+*Total deploy cost(deposit + execution): **less than 219530 gas.***
 
 - [Constructors](#constructors)
     - [MirrorContractICO(address, address)](#constructor-mirrorcontracticoaddress-address)
@@ -48,6 +48,7 @@
 ## Functions
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -113,6 +114,7 @@
 
 ### *function* destroy
 > Transfers the current balance to the owner and terminates the contract.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**

@@ -1,11 +1,11 @@
 # *contract* VestingScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VestingScheme.sol))
 > A schme for vesting.
 
-*Code deposit cost: **less than 1537200 gas***
+*Code deposit cost: **less than 1537200 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 1537200 gas***
+*Total deploy cost(deposit + execution): **less than 1537200 gas.***
 
 - [Constructors](#constructors)
     - [VestingScheme(address, uint256, address)](#constructor-vestingschemeaddress-uint256-address)
@@ -124,6 +124,7 @@
 ## Functions
 ### *function* signToCancelAgreement
 > Function to sign to cancel an agreement.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -137,7 +138,7 @@
 
 ### *function* parameters
 
-*Execution cost: **less than 894 gas***
+*Execution cost: **less than 894 gas.***
 
 **constant | view**
 
@@ -151,7 +152,8 @@
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 23272 gas***
+
+*Execution cost: **less than 23272 gas.***
 
 **nonpayable**
 
@@ -177,7 +179,8 @@
 
 ### *function* revokeSignToCancelAgreement
 > Function to revoke vote for canceling agreement.
-*Execution cost: **less than 43442 gas***
+
+*Execution cost: **less than 43442 gas.***
 
 **nonpayable**
 
@@ -242,7 +245,7 @@
 
 ### *function* isRegistered
 
-*Execution cost: **less than 978 gas***
+*Execution cost: **less than 978 gas.***
 
 **constant | view**
 
@@ -255,7 +258,7 @@
 
 ### *function* organizations
 
-*Execution cost: **less than 727 gas***
+*Execution cost: **less than 727 gas.***
 
 **constant | view**
 
@@ -292,7 +295,7 @@
 
 ### *function* owner
 
-*Execution cost: **less than 831 gas***
+*Execution cost: **less than 831 gas.***
 
 **constant | view**
 
@@ -305,7 +308,7 @@
 
 ### *function* nativeToken
 
-*Execution cost: **less than 963 gas***
+*Execution cost: **less than 963 gas.***
 
 **constant | view**
 
@@ -318,7 +321,7 @@
 
 ### *function* hashedParameters
 
-*Execution cost: **less than 876 gas***
+*Execution cost: **less than 876 gas.***
 
 **constant | view**
 
@@ -345,7 +348,7 @@
 
 ### *function* fee
 
-*Execution cost: **less than 788 gas***
+*Execution cost: **less than 788 gas.***
 
 **constant | view**
 
@@ -395,6 +398,7 @@
 
 ### *function* collect
 > Function for a beneficiary to collect.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -408,7 +412,7 @@
 
 ### *function* beneficiary
 
-*Execution cost: **less than 677 gas***
+*Execution cost: **less than 677 gas.***
 
 **constant | view**
 
@@ -421,7 +425,7 @@
 
 ### *function* agreements
 
-*Execution cost: **less than 3340 gas***
+*Execution cost: **less than 3340 gas.***
 
 **constant | view**
 

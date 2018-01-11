@@ -1,10 +1,10 @@
 # *contract* Debug ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/Debug.sol))
 > 
-*Code deposit cost: **less than 10600 gas***
+*Code deposit cost: **less than 10600 gas.***
 
-*Execution cost: **less than 61 gas***
+*Execution cost: **less than 61 gas.***
 
-*Total deploy cost(deposit + execution): **less than 10661 gas***
+*Total deploy cost(deposit + execution): **less than 10661 gas.***
 
 - [Constructors](#constructors)
 

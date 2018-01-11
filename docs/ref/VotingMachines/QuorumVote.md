@@ -1,10 +1,10 @@
 # *contract* QuorumVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/QuorumVote.sol))
 > 
-*Code deposit cost: **less than 923000 gas***
+*Code deposit cost: **less than 923000 gas.***
 
-*Execution cost: **less than 957 gas***
+*Execution cost: **less than 957 gas.***
 
-*Total deploy cost(deposit + execution): **less than 923957 gas***
+*Total deploy cost(deposit + execution): **less than 923957 gas.***
 
 - [Constructors](#constructors)
 
@@ -73,6 +73,7 @@
 ## Functions
 ### *function* votesStatus
 > votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
+
 *Execution cost: **No bound available.***
 
 **constant | view**
@@ -160,7 +161,7 @@ votes array of votes for each choice
 
 ### *function* proposals
 
-*Execution cost: **less than 2188 gas***
+*Execution cost: **less than 2188 gas.***
 
 **constant | view**
 
@@ -179,7 +180,7 @@ votes array of votes for each choice
 
 ### *function* parameters
 
-*Execution cost: **less than 1169 gas***
+*Execution cost: **less than 1169 gas.***
 
 **constant | view**
 
@@ -209,7 +210,8 @@ votes array of votes for each choice
 
 ### *function* isVotable
 > isVotable check if the proposal is votable
-*Execution cost: **less than 790 gas***
+
+*Execution cost: **less than 790 gas.***
 
 **constant | view**
 
@@ -235,7 +237,8 @@ bool true or false
 
 ### *function* getNumberOfChoices
 > getNumberOfChoices returns the number of choices possible in this proposal
-*Execution cost: **less than 734 gas***
+
+*Execution cost: **less than 734 gas.***
 
 **constant | view**
 
@@ -246,6 +249,7 @@ uint that contains number of choices
 
 ### *function* execute
 > check if the proposal has been decided, and if so, execute the proposal
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -259,6 +263,7 @@ uint that contains number of choices
 
 ### *function* cancelVote
 > Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
@@ -272,6 +277,7 @@ uint that contains number of choices
 
 ### *function* cancelProposal
 > Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**

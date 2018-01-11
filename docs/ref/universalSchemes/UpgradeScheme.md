@@ -1,11 +1,11 @@
 # *contract* UpgradeScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UpgradeScheme.sol))
 > A schme to manage the upgrade of an organization.
 
-*Code deposit cost: **less than 911400 gas***
+*Code deposit cost: **less than 911400 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 911400 gas***
+*Total deploy cost(deposit + execution): **less than 911400 gas.***
 
 - [Constructors](#constructors)
     - [UpgradeScheme(address, uint256, address)](#constructor-upgradeschemeaddress-uint256-address)
@@ -116,7 +116,7 @@
 
 ### *function* parameters
 
-*Execution cost: **less than 894 gas***
+*Execution cost: **less than 894 gas.***
 
 **constant | view**
 
@@ -130,7 +130,8 @@
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 23206 gas***
+
+*Execution cost: **less than 23206 gas.***
 
 **nonpayable**
 
@@ -203,7 +204,7 @@
 
 ### *function* owner
 
-*Execution cost: **less than 809 gas***
+*Execution cost: **less than 809 gas.***
 
 **constant | view**
 
@@ -234,7 +235,7 @@
 
 ### *function* organizations
 
-*Execution cost: **less than 749 gas***
+*Execution cost: **less than 749 gas.***
 
 **constant | view**
 
@@ -247,7 +248,7 @@
 
 ### *function* nativeToken
 
-*Execution cost: **less than 897 gas***
+*Execution cost: **less than 897 gas.***
 
 **constant | view**
 
@@ -260,7 +261,7 @@
 
 ### *function* isRegistered
 
-*Execution cost: **less than 934 gas***
+*Execution cost: **less than 934 gas.***
 
 **constant | view**
 
@@ -273,7 +274,7 @@
 
 ### *function* hashedParameters
 
-*Execution cost: **less than 788 gas***
+*Execution cost: **less than 788 gas.***
 
 **constant | view**
 
@@ -300,7 +301,7 @@
 
 ### *function* fee
 
-*Execution cost: **less than 722 gas***
+*Execution cost: **less than 722 gas.***
 
 **constant | view**
 
@@ -328,7 +329,7 @@
 
 ### *function* beneficiary
 
-*Execution cost: **less than 677 gas***
+*Execution cost: **less than 677 gas.***
 
 **constant | view**
 

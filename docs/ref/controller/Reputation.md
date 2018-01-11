@@ -1,11 +1,11 @@
 # *contract* Reputation ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Reputation.sol))
 > Simple static reputation storage
 
-*Code deposit cost: **less than 222600 gas***
+*Code deposit cost: **less than 222600 gas.***
 
-*Execution cost: **less than 50712 gas***
+*Execution cost: **less than 50712 gas.***
 
-*Total deploy cost(deposit + execution): **less than 273312 gas***
+*Total deploy cost(deposit + execution): **less than 273312 gas.***
 
 - [Constructors](#constructors)
     - [Reputation()](#constructor-reputation)
@@ -50,7 +50,8 @@
 ## Functions
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 22854 gas***
+
+*Execution cost: **less than 22854 gas.***
 
 **nonpayable**
 
@@ -63,7 +64,7 @@
 
 ### *function* totalSupply
 
-*Execution cost: **less than 373 gas***
+*Execution cost: **less than 373 gas.***
 
 **constant | view**
 
@@ -90,7 +91,8 @@
 
 ### *function* reputationOf
 > return the reputation amount of a given owner
-*Execution cost: **less than 683 gas***
+
+*Execution cost: **less than 683 gas.***
 
 **constant | view**
 
@@ -103,7 +105,7 @@
 
 ### *function* owner
 
-*Execution cost: **less than 573 gas***
+*Execution cost: **less than 573 gas.***
 
 **constant | view**
 
@@ -130,7 +132,7 @@
 
 ### *function* decimals
 
-*Execution cost: **less than 395 gas***
+*Execution cost: **less than 395 gas.***
 
 **constant | view**
 

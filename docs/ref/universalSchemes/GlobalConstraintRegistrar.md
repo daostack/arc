@@ -1,11 +1,11 @@
 # *contract* GlobalConstraintRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GlobalConstraintRegistrar.sol))
 > A scheme to manage global constaintg for organizations
 
-*Code deposit cost: **less than 851800 gas***
+*Code deposit cost: **less than 851800 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 851800 gas***
+*Total deploy cost(deposit + execution): **less than 851800 gas.***
 
 - [Constructors](#constructors)
     - [GlobalConstraintRegistrar(address, uint256, address)](#constructor-globalconstraintregistraraddress-uint256-address)
@@ -115,7 +115,7 @@
 
 ### *function* parameters
 
-*Execution cost: **less than 894 gas***
+*Execution cost: **less than 894 gas.***
 
 **constant | view**
 
@@ -143,7 +143,8 @@
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 23184 gas***
+
+*Execution cost: **less than 23184 gas.***
 
 **nonpayable**
 
@@ -201,7 +202,7 @@
 
 ### *function* owner
 
-*Execution cost: **less than 787 gas***
+*Execution cost: **less than 787 gas.***
 
 **constant | view**
 
@@ -214,7 +215,7 @@
 
 ### *function* organizationsData
 
-*Execution cost: **less than 1013 gas***
+*Execution cost: **less than 1013 gas.***
 
 **constant | view**
 
@@ -228,7 +229,7 @@
 
 ### *function* organizations
 
-*Execution cost: **less than 749 gas***
+*Execution cost: **less than 749 gas.***
 
 **constant | view**
 
@@ -241,7 +242,7 @@
 
 ### *function* nativeToken
 
-*Execution cost: **less than 875 gas***
+*Execution cost: **less than 875 gas.***
 
 **constant | view**
 
@@ -254,7 +255,7 @@
 
 ### *function* isRegistered
 
-*Execution cost: **less than 912 gas***
+*Execution cost: **less than 912 gas.***
 
 **constant | view**
 
@@ -267,7 +268,7 @@
 
 ### *function* hashedParameters
 
-*Execution cost: **less than 788 gas***
+*Execution cost: **less than 788 gas.***
 
 **constant | view**
 
@@ -294,7 +295,7 @@
 
 ### *function* fee
 
-*Execution cost: **less than 700 gas***
+*Execution cost: **less than 700 gas.***
 
 **constant | view**
 
@@ -322,7 +323,7 @@
 
 ### *function* beneficiary
 
-*Execution cost: **less than 699 gas***
+*Execution cost: **less than 699 gas.***
 
 **constant | view**
 

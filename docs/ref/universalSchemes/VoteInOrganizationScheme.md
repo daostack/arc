@@ -1,11 +1,11 @@
 # *contract* VoteInOrganizationScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VoteInOrganizationScheme.sol))
 > VoteInOrganizationScheme.
 
-*Code deposit cost: **less than 734000 gas***
+*Code deposit cost: **less than 734000 gas.***
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 734000 gas***
+*Total deploy cost(deposit + execution): **less than 734000 gas.***
 
 - [Constructors](#constructors)
     - [VoteInOrganizationScheme(address, uint256, address)](#constructor-voteinorganizationschemeaddress-uint256-address)
@@ -106,7 +106,7 @@
 
 ### *function* parameters
 
-*Execution cost: **less than 906 gas***
+*Execution cost: **less than 906 gas.***
 
 **constant | view**
 
@@ -120,7 +120,8 @@
 
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
-*Execution cost: **less than 23137 gas***
+
+*Execution cost: **less than 23137 gas.***
 
 **nonpayable**
 
@@ -192,7 +193,7 @@
 
 ### *function* hashedParameters
 
-*Execution cost: **less than 788 gas***
+*Execution cost: **less than 788 gas.***
 
 **constant | view**
 
@@ -221,7 +222,7 @@
 
 ### *function* nativeToken
 
-*Execution cost: **less than 897 gas***
+*Execution cost: **less than 897 gas.***
 
 **constant | view**
 
@@ -234,7 +235,7 @@
 
 ### *function* owner
 
-*Execution cost: **less than 809 gas***
+*Execution cost: **less than 809 gas.***
 
 **constant | view**
 
@@ -247,7 +248,7 @@
 
 ### *function* organizations
 
-*Execution cost: **less than 749 gas***
+*Execution cost: **less than 749 gas.***
 
 **constant | view**
 
@@ -260,7 +261,7 @@
 
 ### *function* isRegistered
 
-*Execution cost: **less than 934 gas***
+*Execution cost: **less than 934 gas.***
 
 **constant | view**
 
@@ -287,7 +288,7 @@
 
 ### *function* fee
 
-*Execution cost: **less than 722 gas***
+*Execution cost: **less than 722 gas.***
 
 **constant | view**
 
@@ -300,7 +301,7 @@
 
 ### *function* beneficiary
 
-*Execution cost: **less than 677 gas***
+*Execution cost: **less than 677 gas.***
 
 **constant | view**
 
@@ -313,6 +314,7 @@
 
 ### *function* action
 > do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.
+
 *Execution cost: **No bound available.***
 
 **nonpayable**
