@@ -1,10 +1,10 @@
 # *contract* VoteInOrganizationScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VoteInOrganizationScheme.sol))
-*Code deposit gas: **734000***
-*Execution gas: **Infinite***
-VoteInOrganizationScheme.
+*Code deposit upper limit: **734000 gas***
+*Executionas upper limit: **Infinite gas***
 
+VoteInOrganizationScheme.
 - [Constructors](#constructors)
-    - [VoteInOrganizationScheme(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-voteinorganizationschemeaddress-_nativetoken-uint256-_fee-address-_beneficiary)
+    - [VoteInOrganizationScheme(address, uint256, address)](#constructor-voteinorganizationschemeaddress-uint256-address)
 - [Events](#events)
     - [ProposalExecuted](#event-proposalexecuted)
     - [ProposalDeleted](#event-proposaldeleted)
@@ -32,246 +32,253 @@ VoteInOrganizationScheme.
     - [beneficiary](#function-beneficiary)
     - [action](#function-action)
 ## Constructors
-### *constructor* VoteInOrganizationScheme(address _nativeToken, uint256 _fee, address _beneficiary)
-*Parameters:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
+### *constructor* VoteInOrganizationScheme(address, uint256, address)
+*Execution cost upper limit: **Infinite gas***
+**nonpayable**
+
+*Params:*
+    1. **_nativeToken** *of type address*
+    2. **_fee** *of type uint256*
+    3. **_beneficiary** *of type address*
+
 
 ## Events
 ### *event* ProposalExecuted
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
+*Params:*
+    1. **_avatar** *of type address*
+    2. **_proposalId** *of type bytes32*
+
 
 ### *event* ProposalDeleted
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
+*Params:*
+    1. **_avatar** *of type address*
+    2. **_proposalId** *of type bytes32*
+
 
 ### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+*Params:*
+    1. **previousOwner** *of type address*
+    2. **newOwner** *of type address*
+
 
 ### *event* OrganizationRegistered
-*Parameters:*
-1. **_avatar** *of type address*
+*Params:*
+    1. **_avatar** *of type address*
+
 
 ### *event* NewVoteProposal
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-3. **_intVoteInterface** *of type address*
-4. **_originalIntVote** *of type address*
-5. **_originalProposalId** *of type bytes32*
-6. **_originalNumOfChoices** *of type uint256*
+*Params:*
+    1. **_avatar** *of type address*
+    2. **_proposalId** *of type bytes32*
+    3. **_intVoteInterface** *of type address*
+    4. **_originalIntVote** *of type address*
+    5. **_originalProposalId** *of type bytes32*
+    6. **_originalNumOfChoices** *of type uint256*
+
 
 ### *event* LogNewProposal
-*Parameters:*
-1. **proposalId** *of type bytes32*
+*Params:*
+    1. **proposalId** *of type bytes32*
+
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* setParameters
-*Execution gas: **41143***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Hash the parameters, save them if necessary, and return the hash value
 *Inputs:*
-1. **_voteParams** *of type bytes32* - -  voting parameters
-2. **_intVote** *of type address* - - voting machine contract.
+    1. **_voteParams** *of type bytes32*
+    2. **_intVote** *of type address*
 
 *Returns:*
-bytes32 -the parameters hash
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* parameters
-*Execution gas: **906***
-**constant**
-**view**
+*Execution cost upper limit: **906 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32*
+    1. **unnamed** *of type bytes32*
 
 *Returns:*
-1. **address**
-2. **bytes32**
+    1. **intVote** *of type address*
+    2. **voteParams** *of type bytes32*
+
 
 ### *function* transferOwnership
-*Execution gas: **23137***
+*Execution cost upper limit: **23137 gas***
 **nonpayable**
-
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
+    1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* registerOrganization
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address*
+    1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* proposeVote
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-propose to vote in other organization     The function trigger NewVoteProposal event
 *Inputs:*
-1. **_avatar** *of type address* - avatar of the organization
-2. **_originalIntVote** *of type address* - the other organization voting machine
-3. **_originalProposalId** *of type bytes32* - the other organization proposal id
+    1. **_avatar** *of type address*
+    2. **_originalIntVote** *of type address*
+    3. **_originalProposalId** *of type bytes32*
 
 *Returns:*
-an id which represents the proposal
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* updateParameters
-*Execution gas: **81277***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
-4. **_hashedParameters** *of type bytes32*
+    1. **_nativeToken** *of type address*
+    2. **_fee** *of type uint256*
+    3. **_beneficiary** *of type address*
+    4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* execute
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-execution of proposals, can only be called by the voting machine in which the vote is held.     This function will trigger ProposalDeleted and ProposalExecuted events
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the ID of the voting in the voting machine
-2. **_avatar** *of type address* - address of the controller
-3. **_param** *of type int256* - a parameter of the voting result 0 to numOfChoices .
+    1. **_proposalId** *of type bytes32*
+    2. **_avatar** *of type address*
+    3. **_param** *of type int256*
 
 *Returns:*
-bool which indicate success.
+    1. **unnamed** *of type bool*
+
 
 ### *function* hashedParameters
-*Execution gas: **788***
-**constant**
-**view**
+*Execution cost upper limit: **788 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **bytes32**
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* organizationsData
-*Execution gas: **1329***
-**constant**
-**view**
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type address*
-2. **unnamed** *of type bytes32*
+    1. **unnamed** *of type address*
+    2. **unnamed** *of type bytes32*
 
 *Returns:*
-1. **address**
-2. **bytes32**
-3. **uint256**
+    1. **originalIntVote** *of type address*
+    2. **originalProposalId** *of type bytes32*
+    3. **originalNumOfChoices** *of type uint256*
+
 
 ### *function* nativeToken
-*Execution gas: **897***
-**constant**
-**view**
+*Execution cost upper limit: **897 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* owner
-*Execution gas: **809***
-**constant**
-**view**
+*Execution cost upper limit: **809 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* organizations
-*Execution gas: **749***
-**constant**
-**view**
+*Execution cost upper limit: **749 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type address*
+    1. **unnamed** *of type address*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* isRegistered
-*Execution gas: **934***
-**constant**
-**view**
+*Execution cost upper limit: **934 gas***
+**constant | view**
 
 *Inputs:*
-1. **_avatar** *of type address*
+    1. **_avatar** *of type address*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* getParametersHash
-*Execution gas: **564***
-**constant**
-**pure**
+*Execution cost upper limit: **Infinite gas***
+**constant | pure**
 
-Hash the parameters,and return the hash value
 *Inputs:*
-1. **_voteParams** *of type bytes32* - -  voting parameters
-2. **_intVote** *of type address* - - voting machine contract.
+    1. **_voteParams** *of type bytes32*
+    2. **_intVote** *of type address*
 
 *Returns:*
-bytes32 -the parameters hash
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* fee
-*Execution gas: **722***
-**constant**
-**view**
+*Execution cost upper limit: **722 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 
 ### *function* beneficiary
-*Execution gas: **677***
-**constant**
-**view**
+*Execution cost upper limit: **677 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* action
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
-
 do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.
 *Inputs:*
-1. **_params** *of type bytes32[]* - array represent the voting .       _params[0] - the address of the voting machine.       _params[1] - the proposalId.       _params[2] - the voting machins params.
+    1. **_params** *of type bytes32[]- array represent the voting .       _params[0] - the address of the voting machine.       _params[1] - the proposalId.       _params[2] - the voting machins params.*
 
-*Returns:*
 bool which indicate success.
 

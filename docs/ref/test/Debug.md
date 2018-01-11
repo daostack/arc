@@ -1,7 +1,6 @@
 # *contract* Debug ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/Debug.sol))
-*Code deposit gas: **10600***
-*Execution gas: **61***
-
+*Code deposit upper limit: **10600 gas***
+*Executionas upper limit: **61 gas***
 
 - [Constructors](#constructors)
 
@@ -20,36 +19,41 @@
 
 ## Events
 ### *event* LogUint
-*Parameters:*
-1. **_msg** *of type uint256*
+*Params:*
+    1. **_msg** *of type uint256*
+
 
 ### *event* LogString
-*Parameters:*
-1. **_msg** *of type string*
+*Params:*
+    1. **_msg** *of type string*
+
 
 ### *event* LogInt
-*Parameters:*
-1. **_msg** *of type int256*
+*Params:*
+    1. **_msg** *of type int256*
+
 
 ### *event* LogBytes32
-*Parameters:*
-1. **_msg** *of type bytes32*
+*Params:*
+    1. **_msg** *of type bytes32*
+
 
 ### *event* LogBytes
-*Parameters:*
-1. **_msg** *of type bytes*
+*Params:*
+    1. **_msg** *of type bytes*
+
 
 ### *event* LogBool
-*Parameters:*
-1. **_msg** *of type bool*
+*Params:*
+    1. **_msg** *of type bool*
+
 
 ### *event* LogAddress
-*Parameters:*
-1. **_msg** *of type address*
+*Params:*
+    1. **_msg** *of type address*
+
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 

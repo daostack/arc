@@ -1,10 +1,9 @@
 # *contract* EmergentVoteScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/EmergentVoteScheme.sol))
-*Code deposit gas: **2035400***
-*Execution gas: **Infinite***
-
+*Code deposit upper limit: **2035400 gas***
+*Executionas upper limit: **Infinite gas***
 
 - [Constructors](#constructors)
-    - [EmergentVoteScheme(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-emergentvoteschemeaddress-_nativetoken-uint256-_fee-address-_beneficiary)
+    - [EmergentVoteScheme(address, uint256, address)](#constructor-emergentvoteschemeaddress-uint256-address)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
@@ -50,501 +49,493 @@
     - [findInArray](#function-findinarray)
     - [moveTopAwaitingBoostMode](#function-movetopawaitingboostmode)
     - [beneficiary](#function-beneficiary)
-    - [MAX_NUM_OF_CHOICES](#function-max_num_of_choices)
+    - [MAX_NUM_OF_CHOICES](#function-maxnumofchoices)
 ## Constructors
-### *constructor* EmergentVoteScheme(address _nativeToken, uint256 _fee, address _beneficiary)
-*Parameters:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
+### *constructor* EmergentVoteScheme(address, uint256, address)
+*Execution cost upper limit: **Infinite gas***
+**nonpayable**
+
+*Params:*
+    1. **_nativeToken** *of type address*
+    2. **_fee** *of type uint256*
+    3. **_beneficiary** *of type address*
+
 
 ## Events
 ### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+*Params:*
+    1. **previousOwner** *of type address*
+    2. **newOwner** *of type address*
+
 
 ### *event* OrganizationRegistered
-*Parameters:*
-1. **_avatar** *of type address*
+*Params:*
+    1. **_avatar** *of type address*
+
 
 ### *event* LogVoteProposal
-*Parameters:*
-1. **_proposalId** *of type bytes32*
-2. **_voter** *of type address*
-3. **_vote** *of type uint256*
-4. **_reputation** *of type uint256*
-5. **_isOwnerVote** *of type bool*
+*Params:*
+    1. **_proposalId** *of type bytes32*
+    2. **_voter** *of type address*
+    3. **_vote** *of type uint256*
+    4. **_reputation** *of type uint256*
+    5. **_isOwnerVote** *of type bool*
+
 
 ### *event* LogNewProposal
-*Parameters:*
-1. **proposalId** *of type bytes32*
+*Params:*
+    1. **proposalId** *of type bytes32*
+
 
 ### *event* LogNewProposal
-*Parameters:*
-1. **_proposalId** *of type bytes32*
-2. **_proposer** *of type address*
-3. **_paramsHash** *of type bytes32*
+*Params:*
+    1. **_proposalId** *of type bytes32*
+    2. **_proposer** *of type address*
+    3. **_paramsHash** *of type bytes32*
+
 
 ### *event* LogExecuteProposal
-*Parameters:*
-1. **_proposalId** *of type bytes32*
-2. **_decision** *of type uint256*
+*Params:*
+    1. **_proposalId** *of type bytes32*
+    2. **_decision** *of type uint256*
+
 
 ### *event* LogCancelVoting
-*Parameters:*
-1. **_proposalId** *of type bytes32*
-2. **_voter** *of type address*
+*Params:*
+    1. **_proposalId** *of type bytes32*
+    2. **_voter** *of type address*
+
 
 ### *event* LogCancelProposal
-*Parameters:*
-1. **_proposalId** *of type bytes32*
+*Params:*
+    1. **_proposalId** *of type bytes32*
+
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* owner
-*Execution gas: **963***
-**constant**
-**view**
+*Execution cost upper limit: **963 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* organizationsParameters
-*Execution gas: **2370***
-**constant**
-**view**
+*Execution cost upper limit: **2370 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32*
+    1. **unnamed** *of type bytes32*
 
 *Returns:*
-1. **address**
-2. **address**
-3. **address**
-4. **uint256**
-5. **uint256**
-6. **uint256**
-7. **uint256**
-8. **bool**
+    1. **reputationSystem** *of type address*
+    2. **boostToken** *of type address*
+    3. **beneficiary** *of type address*
+    4. **attentionBandwidth** *of type uint256*
+    5. **minBoostTimeFrame** *of type uint256*
+    6. **maxBoostTimeFrame** *of type uint256*
+    7. **minBoost** *of type uint256*
+    8. **allowOwner** *of type bool*
+
 
 ### *function* voteInfo
-*Execution gas: **Infinite***
-**constant**
-**view**
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 
-voteInfo returns the vote and the amount of reputation of the user committed to this proposal
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the ID of the proposal
-2. **_voter** *of type address* - the address of the voter
+    1. **_proposalId** *of type bytes32*
+    2. **_voter** *of type address*
 
 *Returns:*
-uint[2] array that contains the vote's info: amount of reputation committed by _voter to _proposalId, and the voters vote (1/-1/-0)
+    1. **unnamed** *of type uint256[2]*
+
 
 ### *function* transferOwnership
-*Execution gas: **23580***
+*Execution cost upper limit: **23580 gas***
 **nonpayable**
-
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
+    1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* setProposalParameters
-*Execution gas: **61398***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Set proposals parameters
 *Inputs:*
-1. **_precReq** *of type uint256* - the percentage that are required for the proposal to be executed
-2. **_quorum** *of type uint256* - the 'quorum' percentages that are required for the winning choice (will be rellevant only if boosted)
-3. **_boostTimeFrame** *of type uint256* - the time frame of the proposal after being boosted, after the time passed, a decision will be made
+    1. **_precReq** *of type uint256*
+    2. **_quorum** *of type uint256*
+    3. **_boostTimeFrame** *of type uint256*
 
 *Returns:*
-bytes32 the hashed parameters
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* proposals
-*Execution gas: **2807***
-**constant**
-**view**
+*Execution cost upper limit: **2807 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32*
+    1. **unnamed** *of type bytes32*
 
 *Returns:*
-1. **address**
-2. **address**
-3. **uint256**
-4. **address**
-5. **bytes32**
-6. **uint256**
-7. **bool**
-8. **bool**
-9. **bool**
-10. **uint256**
-11. **uint256**
+    1. **owner** *of type address*
+    2. **avatar** *of type address*
+    3. **numOfChoices** *of type uint256*
+    4. **executable** *of type address*
+    5. **paramsHash** *of type bytes32*
+    6. **totalVotes** *of type uint256*
+    7. **opened** *of type bool*
+    8. **isBoostModeActive** *of type bool*
+    9. **isAwaitingBoost** *of type bool*
+    10. **closingTime** *of type uint256*
+    11. **boostedFunds** *of type uint256*
+
 
 ### *function* ownerVote
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-voting function with owner functionality (can vote on behalf of someone else)
 *Inputs:*
-1. **_proposalId** *of type bytes32* - id of the proposal
-2. **_vote** *of type uint256* - yes (1) / no (-1) / abstain (0)
-3. **_voter** *of type address* - will be voted with that voter's address
+    1. **_proposalId** *of type bytes32*
+    2. **_vote** *of type uint256*
+    3. **_voter** *of type address*
 
 *Returns:*
-*Nothing*
+    1. **unnamed** *of type bool*
+
 
 ### *function* voteWithSpecifiedAmounts
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
-2. **_vote** *of type uint256*
-3. **_rep** *of type uint256*
-4. **unnamed** *of type uint256*
+    1. **_proposalId** *of type bytes32*
+    2. **_vote** *of type uint256*
+    3. **_rep** *of type uint256*
+    4. **unnamed** *of type uint256*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* proposalScore
-*Execution gas: **Infinite***
-**constant**
-**view**
-
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 Get the score of a specific proposal The score is evaluated by multiplying the number of votes with the funds that are invested
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the proposal ID
+    1. **_proposalId** *of type bytes32- the proposal ID*
 
-*Returns:*
 uint Proposal's score
 
 ### *function* vote
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-voting function
 *Inputs:*
-1. **_proposalId** *of type bytes32* - id of the proposal
-2. **_vote** *of type uint256* - yes (1) / no (-1) / abstain (0)
+    1. **_proposalId** *of type bytes32*
+    2. **_vote** *of type uint256*
 
 *Returns:*
-*Nothing*
+    1. **unnamed** *of type bool*
+
 
 ### *function* updateParameters
-*Execution gas: **81456***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
-4. **_hashedParameters** *of type bytes32*
+    1. **_nativeToken** *of type address*
+    2. **_fee** *of type uint256*
+    3. **_beneficiary** *of type address*
+    4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* setOrgParameters
-*Execution gas: **162999***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-hash the parameters, save them if necessary, and return the hash value
 *Inputs:*
-1. **_reputationSystem** *of type address*
-2. **_boostToken** *of type address*
-3. **_beneficiary** *of type address*
-4. **_attentionBandwidth** *of type uint256*
-5. **_minBoostTimeFrame** *of type uint256*
-6. **_maxBoostTimeFrame** *of type uint256*
-7. **_minBoost** *of type uint256*
-8. **_allowOwner** *of type bool*
+    1. **_reputationSystem** *of type address*
+    2. **_boostToken** *of type address*
+    3. **_beneficiary** *of type address*
+    4. **_attentionBandwidth** *of type uint256*
+    5. **_minBoostTimeFrame** *of type uint256*
+    6. **_maxBoostTimeFrame** *of type uint256*
+    7. **_minBoost** *of type uint256*
+    8. **_allowOwner** *of type bool*
 
 *Returns:*
-*Nothing*
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* proposalsParameters
-*Execution gas: **1255***
-**constant**
-**view**
+*Execution cost upper limit: **1255 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32*
+    1. **unnamed** *of type bytes32*
 
 *Returns:*
-1. **uint256**
-2. **uint256**
-3. **uint256**
+    1. **precReq** *of type uint256*
+    2. **quorum** *of type uint256*
+    3. **boostTimeFrame** *of type uint256*
+
 
 ### *function* registerOrganization
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address*
+    1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
 
-### *function* proposalStatus
-*Execution gas: **Infinite***
-**constant**
-**view**
 
+### *function* proposalStatus
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 proposalStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the ID of the proposal
+    1. **_proposalId** *of type bytes32- the ID of the proposal*
 
-*Returns:*
 int[10] array that contains the proposal's info: number of yes, no, and abstain, and if the voting for the proposal has ended
 
 ### *function* propose
-*Execution gas: **201452***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-register a new proposal with the given parameters. Every proposal has a unique ID which is being generated by calculating keccak256 of a incremented counter.
 *Inputs:*
-1. **_numOfChoices** *of type uint256* - the number of choices inthe proposal
-2. **_paramsHash** *of type bytes32* - defined the parameters of the voting machine used for this proposal
-3. **_avatar** *of type address* - an address to be sent as the payload to the _executable contract.
-4. **_executable** *of type address* - This contract will be executed when vote is over.
+    1. **_numOfChoices** *of type uint256*
+    2. **_paramsHash** *of type bytes32*
+    3. **_avatar** *of type address*
+    4. **_executable** *of type address*
 
 *Returns:*
-bytes32 proposalId the ID of the proposal
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* isRegistered
-*Execution gas: **1220***
-**constant**
-**view**
+*Execution cost upper limit: **1220 gas***
+**constant | view**
 
 *Inputs:*
-1. **_avatar** *of type address*
+    1. **_avatar** *of type address*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* boostProposal
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Internal function to boost a proposal
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the id of the proposal that is being checked
-2. **_boostValue** *of type uint256* - amount of tokens to use for boosting, must be greater then minBoost
+    1. **_proposalId** *of type bytes32*
+    2. **_boostValue** *of type uint256*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* organizations
-*Execution gas: **1126***
-**constant**
-**view**
+*Execution cost upper limit: **1126 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type address*
+    1. **unnamed** *of type address*
 
 *Returns:*
-1. **bool**
-2. **uint256**
+    1. **isRegistered** *of type bool*
+    2. **boostedProposals** *of type uint256*
+
 
 ### *function* cancelVote
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
-
 Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 *Inputs:*
-1. **_proposalId** *of type bytes32* - id of the proposal
+    1. **_proposalId** *of type bytes32- id of the proposal*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* hashedParameters
-*Execution gas: **1162***
-**constant**
-**view**
+*Execution cost upper limit: **1162 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **bytes32**
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* getNumberOfChoices
-*Execution gas: **976***
-**constant**
-**view**
+*Execution cost upper limit: **976 gas***
+**constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
+    1. **_proposalId** *of type bytes32*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 
 ### *function* cancelProposal
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
-
 Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the proposal ID
+    1. **_proposalId** *of type bytes32- the proposal ID*
 
-*Returns:*
 bool True if the proposal is canceled and False if it wasn't
 
 ### *function* getOrgParametersHash
-*Execution gas: **1316***
-**constant**
-**pure**
+*Execution cost upper limit: **Infinite gas***
+**constant | pure**
 
 *Inputs:*
-1. **_reputationSystem** *of type address*
-2. **_boostToken** *of type address*
-3. **_beneficiary** *of type address*
-4. **_attentionBandwidth** *of type uint256*
-5. **_minBoostTimeFrame** *of type uint256*
-6. **_maxBoostTimeFrame** *of type uint256*
-7. **_minBoost** *of type uint256*
-8. **_allowOwner** *of type bool*
+    1. **_reputationSystem** *of type address*
+    2. **_boostToken** *of type address*
+    3. **_beneficiary** *of type address*
+    4. **_attentionBandwidth** *of type uint256*
+    5. **_minBoostTimeFrame** *of type uint256*
+    6. **_maxBoostTimeFrame** *of type uint256*
+    7. **_minBoost** *of type uint256*
+    8. **_allowOwner** *of type bool*
 
 *Returns:*
-1. **bytes32**
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* isVotable
-*Execution gas: **1054***
-**constant**
-**view**
-
+*Execution cost upper limit: **1054 gas***
+**constant | view**
 isVotable check if the proposal is open
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the ID of the proposal
+    1. **_proposalId** *of type bytes32- the ID of the proposal*
 
-*Returns:*
 bool true or false
 
 ### *function* findMinScore
-*Execution gas: **Infinite***
-**constant**
-**view**
-
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 Get the minimum score of a given list proposal ids
 *Inputs:*
-1. **_idsArray** *of type bytes32[]* - the proposal ids that will be checked
+    1. **_idsArray** *of type bytes32[]- the proposal ids that will be checked*
 
-*Returns:*
 uint index the index of the proposal containing the smallest score in the listuint min the minimum score in the list
 
 ### *function* getProposalParametersHash
-*Execution gas: **986***
-**constant**
-**pure**
+*Execution cost upper limit: **Infinite gas***
+**constant | pure**
 
-hashParameters returns a hash of the given parameters
 *Inputs:*
-1. **_precReq** *of type uint256*
-2. **_quorum** *of type uint256*
-3. **_boostTimeFrame** *of type uint256*
+    1. **_precReq** *of type uint256*
+    2. **_quorum** *of type uint256*
+    3. **_boostTimeFrame** *of type uint256*
 
 *Returns:*
-*Nothing*
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* findMaxScore
-*Execution gas: **Infinite***
-**constant**
-**view**
-
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 Get the maximum score of a given list proposal ids
 *Inputs:*
-1. **_idsArray** *of type bytes32[]* - the proposal ids that will be checked
+    1. **_idsArray** *of type bytes32[]- the proposal ids that will be checked*
 
-*Returns:*
 uint index the index of the proposal containing the highest score in the listuint max the maximum score in the list
 
 ### *function* fee
-*Execution gas: **1052***
-**constant**
-**view**
+*Execution cost upper limit: **1052 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 
 ### *function* nativeToken
-*Execution gas: **1227***
-**constant**
-**view**
+*Execution cost upper limit: **1227 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* execute
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
-
 check if the proposal has been decided, and if so, execute the proposal
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the id of the proposal
+    1. **_proposalId** *of type bytes32- the id of the proposal*
 
-*Returns:*
 bool is the proposal has been executed or not?
 
 ### *function* findInArray
-*Execution gas: **Infinite***
-**constant**
-**pure**
+*Execution cost upper limit: **Infinite gas***
+**constant | pure**
 
-Helper function to find an ID in a given array
 *Inputs:*
-1. **_idsArray** *of type bytes32[]* - an array of id's
-2. **_id** *of type bytes32* - the id we want ot find in the array
+    1. **_idsArray** *of type bytes32[]*
+    2. **_id** *of type bytes32*
 
 *Returns:*
-bool isFound that indicated if the id has been found in the arrayuint index the index of the id in the array
+    1. **isFound** *of type bool*
+    2. **index** *of type uint256*
+
 
 ### *function* moveTopAwaitingBoostMode
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
-
 Move the top proposal form the waiting list to the boosted proposals
 *Inputs:*
-1. **_avatar** *of type address* - avatar of the organization
+    1. **_avatar** *of type address- avatar of the organization*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* beneficiary
-*Execution gas: **787***
-**constant**
-**view**
+*Execution cost upper limit: **787 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* MAX_NUM_OF_CHOICES
-*Execution gas: **588***
-**constant**
-**view**
+*Execution cost upper limit: **588 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 

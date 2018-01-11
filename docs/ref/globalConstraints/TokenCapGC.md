@@ -1,8 +1,8 @@
 # *contract* TokenCapGC ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/TokenCapGC.sol))
-*Code deposit gas: **183400***
-*Execution gas: **221***
-Token Cap Global Constraint
+*Code deposit upper limit: **183400 gas***
+*Executionas upper limit: **221 gas***
 
+Token Cap Global Constraint
 - [Constructors](#constructors)
 
 - [Events](#events)
@@ -19,72 +19,67 @@ Token Cap Global Constraint
 ## Events
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* setParameters
-*Execution gas: **40976***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-adding a new set of parametrs
 *Inputs:*
-1. **_token** *of type address* - the token to add to the params.
-2. **_cap** *of type uint256* - the cap to check the total supply against.
+    1. **_token** *of type address*
+    2. **_cap** *of type uint256*
 
 *Returns:*
-the calculated parameters hash
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* pre
-*Execution gas: **Infinite***
-**constant**
-**pure**
+*Execution cost upper limit: **Infinite gas***
+**constant | pure**
 
-check the constraint after the action. This global contraint only checks the state after the action, so here we just return true:
 *Inputs:*
-1. **unnamed** *of type address*
-2. **unnamed** *of type bytes32*
-3. **unnamed** *of type bytes*
+    1. **unnamed** *of type address*
+    2. **unnamed** *of type bytes32*
+    3. **unnamed** *of type bytes*
 
 *Returns:*
-true
+    1. **unnamed** *of type bool*
+
 
 ### *function* post
-*Execution gas: **Infinite***
-**constant**
-**view**
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 
-check the total supply cap.
 *Inputs:*
-1. **unnamed** *of type address* - undefined
-2. **_paramsHash** *of type bytes32* - the parameters hash to check the total supply cap against.
-3. **unnamed** *of type bytes* - undefined
+    1. **unnamed** *of type address*
+    2. **_paramsHash** *of type bytes32*
+    3. **unnamed** *of type bytes*
 
 *Returns:*
-bool which represents a success
+    1. **unnamed** *of type bool*
+
 
 ### *function* params
-*Execution gas: **934***
-**constant**
-**view**
+*Execution cost upper limit: **934 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32*
+    1. **unnamed** *of type bytes32*
 
 *Returns:*
-1. **address**
-2. **uint256**
+    1. **token** *of type address*
+    2. **cap** *of type uint256*
+
 
 ### *function* getParametersHash
-*Execution gas: **485***
-**constant**
-**pure**
+*Execution cost upper limit: **Infinite gas***
+**constant | pure**
 
-calculate and returns the hash of the given parameters
 *Inputs:*
-1. **_token** *of type address* - the token to add to the params.
-2. **_cap** *of type uint256* - the cap to check the total supply against.
+    1. **_token** *of type address*
+    2. **_cap** *of type uint256*
 
 *Returns:*
-the calculated parameters hash
+    1. **unnamed** *of type bytes32*
+
 

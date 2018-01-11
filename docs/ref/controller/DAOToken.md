@@ -1,10 +1,10 @@
 # *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
-*Code deposit gas: **683600***
-*Execution gas: **Infinite***
-DAOToken, base on zeppelin contract.
+*Code deposit upper limit: **683600 gas***
+*Executionas upper limit: **Infinite gas***
 
+DAOToken, base on zeppelin contract.
 - [Constructors](#constructors)
-    - [DAOToken(string _name, string _symbol)](#constructor-daotokenstring-_name-string-_symbol)
+    - [DAOToken(string, string)](#constructor-daotokenstring-string)
 - [Events](#events)
     - [Transfer](#event-transfer)
     - [OwnershipTransferred](#event-ownershiptransferred)
@@ -34,200 +34,203 @@ DAOToken, base on zeppelin contract.
     - [allowance](#function-allowance)
     - [DECIMAL](#function-decimal)
 ## Constructors
-### *constructor* DAOToken(string _name, string _symbol)
-*Parameters:*
-1. **_name** *of type string*
-2. **_symbol** *of type string*
+### *constructor* DAOToken(string, string)
+*Execution cost upper limit: **Infinite gas***
+**nonpayable**
+
+*Params:*
+    1. **_name** *of type string*
+    2. **_symbol** *of type string*
+
 
 ## Events
 ### *event* Transfer
-*Parameters:*
-1. **from** *of type address*
-2. **to** *of type address*
-3. **value** *of type uint256*
+*Params:*
+    1. **from** *of type address*
+    2. **to** *of type address*
+    3. **value** *of type uint256*
+
 
 ### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+*Params:*
+    1. **previousOwner** *of type address*
+    2. **newOwner** *of type address*
+
 
 ### *event* MintFinished
-*Parameters:*
+*Params:*
 *Nothing*
 
+
 ### *event* Mint
-*Parameters:*
-1. **to** *of type address*
-2. **amount** *of type uint256*
+*Params:*
+    1. **to** *of type address*
+    2. **amount** *of type uint256*
+
 
 ### *event* Burn
-*Parameters:*
-1. **burner** *of type address*
-2. **value** *of type uint256*
+*Params:*
+    1. **burner** *of type address*
+    2. **value** *of type uint256*
+
 
 ### *event* Approval
-*Parameters:*
-1. **owner** *of type address*
-2. **spender** *of type address*
-3. **value** *of type uint256*
+*Params:*
+    1. **owner** *of type address*
+    2. **spender** *of type address*
+    3. **value** *of type uint256*
+
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* balanceOf
-*Execution gas: **793***
-**constant**
-**view**
-
+*Execution cost upper limit: **793 gas***
+**constant | view**
 Gets the balance of the specified address.
 *Inputs:*
-1. **_owner** *of type address* - The address to query the the balance of.
+    1. **_owner** *of type address- The address to query the the balance of.*
 
-*Returns:*
 An uint256 representing the amount owned by the passed address.
 
 ### *function* mintingFinished
-*Execution gas: **459***
-**constant**
-**view**
+*Execution cost upper limit: **459 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* transferOwnership
-*Execution gas: **23118***
+*Execution cost upper limit: **23118 gas***
 **nonpayable**
-
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
+    1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* totalSupply
-*Execution gas: **439***
-**constant**
-**view**
+*Execution cost upper limit: **439 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 
 ### *function* transferFrom
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Transfer tokens from one address to another
 *Inputs:*
-1. **_from** *of type address* - address The address which you want to send tokens from
-2. **_to** *of type address* - address The address which you want to transfer to
-3. **_value** *of type uint256* - uint256 the amount of tokens to be transferred
+    1. **_from** *of type address*
+    2. **_to** *of type address*
+    3. **_value** *of type uint256*
 
 *Returns:*
-*Nothing*
+    1. **unnamed** *of type bool*
+
 
 ### *function* transfer
-*Execution gas: **43953***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-transfer token for a specified address
 *Inputs:*
-1. **_to** *of type address* - The address to transfer to.
-2. **_value** *of type uint256* - The amount to be transferred.
+    1. **_to** *of type address*
+    2. **_value** *of type uint256*
 
 *Returns:*
-*Nothing*
+    1. **unnamed** *of type bool*
+
 
 ### *function* symbol
-*Execution gas: **Infinite***
-**constant**
-**view**
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **string**
+    1. **unnamed** *of type string*
+
 
 ### *function* owner
-*Execution gas: **793***
-**constant**
-**view**
+*Execution cost upper limit: **793 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* name
-*Execution gas: **Infinite***
-**constant**
-**view**
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **string**
+    1. **unnamed** *of type string*
+
 
 ### *function* mint
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Function to mint tokens
 *Inputs:*
-1. **_to** *of type address* - The address that will receive the minted tokens.
-2. **_amount** *of type uint256* - The amount of tokens to mint.
+    1. **_to** *of type address*
+    2. **_amount** *of type uint256*
 
 *Returns:*
-A boolean that indicates if the operation was successful.
+    1. **unnamed** *of type bool*
+
 
 ### *function* increaseApproval
-*Execution gas: **23173***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Increase the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
 *Inputs:*
-1. **_spender** *of type address* - The address which will spend the funds.
-2. **_addedValue** *of type uint256* - The amount of tokens to increase the allowance by.
+    1. **_spender** *of type address*
+    2. **_addedValue** *of type uint256*
 
 *Returns:*
-*Nothing*
+    1. **unnamed** *of type bool*
+
 
 ### *function* finishMinting
-*Execution gas: **22080***
+*Execution cost upper limit: **22080 gas***
 **nonpayable**
-
 Function to stop minting new tokens.
 *Inputs:*
 *Nothing*
 
-*Returns:*
 True if the operation was successful.
 
 ### *function* destroyAndSend
-*Execution gas: **30980***
+*Execution cost upper limit: **30980 gas***
 **nonpayable**
 
 *Inputs:*
-1. **_recipient** *of type address*
+    1. **_recipient** *of type address*
 
 *Returns:*
 *Nothing*
 
-### *function* destroy
-*Execution gas: **30945***
-**nonpayable**
 
+### *function* destroy
+*Execution cost upper limit: **30945 gas***
+**nonpayable**
 Transfers the current balance to the owner and terminates the contract.
 *Inputs:*
 *Nothing*
@@ -235,62 +238,62 @@ Transfers the current balance to the owner and terminates the contract.
 *Returns:*
 *Nothing*
 
+
 ### *function* decreaseApproval
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Decrease the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
 *Inputs:*
-1. **_spender** *of type address* - The address which will spend the funds.
-2. **_subtractedValue** *of type uint256* - The amount of tokens to decrease the allowance by.
+    1. **_spender** *of type address*
+    2. **_subtractedValue** *of type uint256*
 
 *Returns:*
-*Nothing*
+    1. **unnamed** *of type bool*
+
 
 ### *function* burn
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
-
 Burns a specific amount of tokens.
 *Inputs:*
-1. **_value** *of type uint256* - The amount of token to be burned.
+    1. **_value** *of type uint256- The amount of token to be burned.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* approve
-*Execution gas: **22377***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.   * Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
 *Inputs:*
-1. **_spender** *of type address* - The address which will spend the funds.
-2. **_value** *of type uint256* - The amount of tokens to be spent.
+    1. **_spender** *of type address*
+    2. **_value** *of type uint256*
 
 *Returns:*
-*Nothing*
+    1. **unnamed** *of type bool*
+
 
 ### *function* allowance
-*Execution gas: **1049***
-**constant**
-**view**
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 
-Function to check the amount of tokens that an owner allowed to a spender.
 *Inputs:*
-1. **_owner** *of type address* - address The address which owns the funds.
-2. **_spender** *of type address* - address The address which will spend the funds.
+    1. **_owner** *of type address*
+    2. **_spender** *of type address*
 
 *Returns:*
-A uint256 specifying the amount of tokens still available for the spender.
+    1. **unnamed** *of type uint256*
+
 
 ### *function* DECIMAL
-*Execution gas: **349***
-**constant**
-**view**
+*Execution cost upper limit: **349 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 

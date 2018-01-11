@@ -1,7 +1,6 @@
 # *contract* ActionMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/ActionMock.sol))
-*Code deposit gas: **142000***
-*Execution gas: **185***
-
+*Code deposit upper limit: **142000 gas***
+*Executionas upper limit: **185 gas***
 
 - [Constructors](#constructors)
 
@@ -15,33 +14,34 @@
 
 ## Events
 ### *event* Action
-*Parameters:*
-1. **_sender** *of type address*
-2. **_param** *of type bytes32*
+*Params:*
+    1. **_sender** *of type address*
+    2. **_param** *of type bytes32*
+
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* genericAction
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **avatar** *of type address*
-2. **params** *of type bytes32[]*
+    1. **avatar** *of type address*
+    2. **params** *of type bytes32[]*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* action
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **params** *of type bytes32[]*
+    1. **params** *of type bytes32[]*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 

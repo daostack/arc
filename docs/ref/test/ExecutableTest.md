@@ -1,7 +1,6 @@
 # *contract* ExecutableTest ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/ExecutableTest.sol))
-*Code deposit gas: **74000***
-*Execution gas: **118***
-
+*Code deposit upper limit: **74000 gas***
+*Executionas upper limit: **118 gas***
 
 - [Constructors](#constructors)
 
@@ -20,47 +19,53 @@
 
 ## Events
 ### *event* LogUint
-*Parameters:*
-1. **_msg** *of type uint256*
+*Params:*
+    1. **_msg** *of type uint256*
+
 
 ### *event* LogString
-*Parameters:*
-1. **_msg** *of type string*
+*Params:*
+    1. **_msg** *of type string*
+
 
 ### *event* LogInt
-*Parameters:*
-1. **_msg** *of type int256*
+*Params:*
+    1. **_msg** *of type int256*
+
 
 ### *event* LogBytes32
-*Parameters:*
-1. **_msg** *of type bytes32*
+*Params:*
+    1. **_msg** *of type bytes32*
+
 
 ### *event* LogBytes
-*Parameters:*
-1. **_msg** *of type bytes*
+*Params:*
+    1. **_msg** *of type bytes*
+
 
 ### *event* LogBool
-*Parameters:*
-1. **_msg** *of type bool*
+*Params:*
+    1. **_msg** *of type bool*
+
 
 ### *event* LogAddress
-*Parameters:*
-1. **_msg** *of type address*
+*Params:*
+    1. **_msg** *of type address*
+
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* execute
-*Execution gas: **3379***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
-2. **_avatar** *of type address*
-3. **_param** *of type int256*
+    1. **_proposalId** *of type bytes32*
+    2. **_avatar** *of type address*
+    3. **_param** *of type int256*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 

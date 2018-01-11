@@ -1,8 +1,3 @@
-const solc = require('solc');
-const fs = require('fs');
-const path = require('path');
-const shell = require('shelljs');
-
 /*
  * This is a simple build script which renders all `.sol` files under `contracts/`
  * as markdown files for use in the documentation.
@@ -10,92 +5,119 @@ const shell = require('shelljs');
  *   - `solcjs` to compile the files and get the metadata.
  *   - `shelljs` to do some general file system commands.
  * 
+ * all generated files are in `docs/ref/**.md`
+ * 
  * author: Matan Tsuberi (dev.matan.tsuberi@gmail.com)
  */
-function main(){
-    function signature(f){
-        return `${f.name}(${f.inputs.map(i => i.type).join(',')})`;
-    }
 
-    function hyphenate(s){
-        return s.toLowerCase()
-        .replace(new RegExp('[,\\(\\)]','g'),'')
-        .replace(new RegExp('[^a-z0-9_]+','g'),'-')
-        .replace(/-+$/, "");
-    }
-    
+const solc = require('solc');
+const fs = require('fs');
+const path = require('path');
+const shell = require('shelljs');
+
+function main(){
     // returns an `.md` string based on given data.
     function render(file,contractName,abi,devdoc,gas){
+        /* This is a little trick to make templates more readable. used like `line1${n}line2`*/
+        const N = '\n';
+
         const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
         const functions = abi.filter(x => x.type === 'function').sort((x,y) => x.name <= y.name);
         const constructors = abi.filter(x => x.type === 'constructor').sort((x,y) => x.name <= y.name);
         const fallbacks = abi.filter(x => x.type === 'fallback').sort((x,y) => x.name <= y.name);
         const fallback = fallbacks.length ? fallbacks[0] : null;
         const methods = devdoc.methods || {};
-        const title = devdoc.title || '';
 
-        const constructorSignature = (c) => `${contractName}(${c.inputs.map(i => `${i.type} ${i.name}`).join(', ')})`;
+        // This turns header text into a hyphenated version that we can put in a hash link
+        const hyphenate = (s) => 
+            s.toLowerCase()
+            .replace(new RegExp('[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]+','g'),'')
+            .trim()
+            .replace(new RegExp('[ ]+','g'),'-');
 
-        /* This is very ugly, but in order for the generated markdown to be clean,
-           we cannot use any indentation which doesn't appear in the `.md` file */
-        return (
-`# *contract* ${contractName} ([source](${'https://github.com/daostack/daostack/tree/master/'+file}))
-*Code deposit gas: **${gas.creation[1] || 'Infinite'}***
-*Execution gas: **${gas.creation[0] || 'Infinite'}***
-${title}
+        const gasEstimate = (est) => est || 'Infinite';
+        const signature = (name,ps) => `${name}(${ps.map(p => `${p.type}`).join(', ')})`;
+        const headerLink = (title,link) => `    - [${title}](#${hyphenate(link)})`;
+        const title = (prefix,text) => `### *${prefix}* ${text}`;
+        const functionComment = (obj) => obj.details ? obj.details : '';
+        const paramComment = (obj, name) => obj.params && obj.params[name] ? `- ${obj.params[name]}` : '';
 
-- [Constructors](#constructors)
-${constructors.map(c => `    - [${constructorSignature(c)}](#constructor-${hyphenate(constructorSignature(c))})`).join('\n')}
-- [Events](#events)
-${events.map(e => `    - [${e.name}](#event-${e.name.toLowerCase()})`).join('\n')}
-- [Fallback](#fallback)
-- [Functions](#functions)
-${functions.map(f => `    - [${f.name}](#function-${f.name.toLowerCase()})`).join('\n')}
-## Constructors
-${constructors.map(c => 
-`### *constructor* ${constructorSignature(c)}
-*Parameters:*
-${c.inputs.length ? c.inputs.map((input,i) => 
-`${i+1}. **${input.name || 'unnamed'}** *of type ${input.type}*`
-).join('\n') : '*Nothing*'}
-`)
-.join('\n')}
-## Events
-${events.map(e => 
-`### *event* ${e.name}
-*Parameters:*
-${e.inputs.length ? e.inputs.map((input,i) => 
-`${i+1}. **${input.name || 'unnamed'}** *of type ${input.type}*`
-).join('\n') : '*Nothing*'}
-`)
-.join('\n')}
-## Fallback
-${`*Execution gas: **${gas.external[''] || 'Infinite'}***\n`}
-${fallback ? 
-    `${fallback.constant? '**constant**\n' : ''}${fallback.stateMutability? `**${fallback.stateMutability}**\n` : ''}`: 
-    '*Nothing*'
-}
-## Functions
-${functions.map(f => 
-`### *function* ${f.name || '*default*'}
-${`*Execution gas: **${gas.external[signature(f)] || 'Infinite'}***\n`}${f.constant? '**constant**\n' : ''}${f.stateMutability? `**${f.stateMutability}**\n` : ''}${methods[signature(f)] ? '\n' + methods[signature(f)].details : ''}
-*Inputs:*
-${f.inputs.length ? f.inputs.map((input,i) => 
-`${i+1}. **${input.name || 'unnamed'}** *of type ${input.type}*${methods[signature(f)] && methods[signature(f)].params ? ' - ' + methods[signature(f)].params[input.name] : ''}`
-).join('\n') : '*Nothing*'}
+        const modifiers = (fn) => 
+            `**${
+                [...fn.payable ? ['payable'] : [],
+                ...fn.constant ? ['constant'] : [],
+                ...fn.stateMutability && !fn.payable ? [fn.stateMutability] : []]
+                .join(' | ')}**`;
 
-*Returns:*
-${
-    methods[signature(f)] ? 
-        methods[signature(f)].return || '*Nothing*'
-    : 
-        f.outputs.length ? f.outputs.map((output,i) => 
-            `${i+1}. **${output.type}**`
-        ).join('\n') : '*Nothing*'
-}
-`)
-.join('\n')}
-`);
+        const param = (obj,p,i) => `    ${i+1}. **${p.name || 'unnamed'}** *of type ${p.type}${paramComment(obj,p.name)}*`;
+        const params = (obj,title,ps) =>
+            `*${title}:*${N
+            }${ps.length ? ps.map((p,i) => param(obj,p,i)).join(N) : '*Nothing*'}${N
+            }`;
+
+        const constructor = (fn) =>{
+            const sign = signature(contractName,fn.inputs);
+            const obj = methods[sign] || {};
+            return (
+            `${title('constructor',sign)}${N
+            }*Execution cost upper limit: **${gasEstimate(gas.external[sign])} gas***${N
+            }${modifiers(fn)}${N
+            }${functionComment(obj)}${N
+            }${params(obj,'Params',fn.inputs)}${N
+            }`);
+        };
+
+        const event = (e) =>
+            `${title('event',e.name)}${N
+            }${params({},'Params',e.inputs)}${N
+            }`;
+
+        const func = (fn) =>{
+            const sign = signature(fn.name,fn.inputs);
+            const obj = methods[sign] || {};
+            return (
+            `${title('function',fn.name)}${N
+            }*Execution cost upper limit: **${gasEstimate(gas.external[sign])} gas***${N
+            }${modifiers(fn)}${N
+            }${functionComment(obj)}${N
+            }${params(obj,'Inputs',fn.inputs)}${N
+            }${obj.return ? obj.return : params({},'Returns',fn.outputs)}${N
+            }`);
+        };
+
+        const fb = (fn) =>{
+            const obj = methods[''] || {};
+            return (
+            `*Execution cost upper limit: **${gasEstimate(gas.external[''])} gas***${N
+            }${modifiers(fn)}${N
+            }${functionComment(obj)}${N
+            }`);
+        };
+
+        const description = devdoc.title ? `\n${devdoc.title}` : '';
+
+        const res = (
+            `# *contract* ${contractName} ([source](https://github.com/daostack/daostack/tree/master/${file}))${N
+            }*Code deposit upper limit: **${gasEstimate(gas.creation[1])} gas***${N
+            }*Executionas upper limit: **${gasEstimate(gas.creation[0])} gas***${N
+            }${description}${N
+            }- [Constructors](#constructors)${N
+            }${constructors.map(c => headerLink(signature(contractName,c.inputs),title('constructor',signature(contractName,c.inputs)))).join(N)}${N
+            }- [Events](#events)${N
+            }${events.map(e => headerLink(e.name,title('event',e.name))).join(N)}${N
+            }- [Fallback](#fallback)${N
+            }- [Functions](#functions)${N
+            }${functions.map(f => headerLink(f.name,title('function',f.name))).join(N)}${N
+            }## Constructors${N
+            }${constructors.map(c => constructor(c)).join(N)}${N
+            }## Events${N
+            }${events.map(e => event(e)).join(N)}${N
+            }## Fallback${N
+            }${fallback ? fb(fallback) : '*Nothing*'}${N
+            }## Functions${N
+            }${functions.map(f => func(f)).join(N)}${N
+            }`);
+        return res;
     }
     
     const files = shell.ls('./contracts/*/*.sol'); // TODO: arbitrary nesting
@@ -133,7 +155,7 @@ ${
         const abi = JSON.parse(data.interface);
         const metadata = data.metadata !== '' ? JSON.parse(data.metadata).output : {};
         const devdoc = metadata.devdoc || {};
-    
+
         shell.echo('Rendering '+ file +' to '+ destination + '...');
         shell.mkdir('-p',path.dirname(destination));
         fs.writeFileSync(
@@ -149,6 +171,7 @@ try{
     shell.exit(0);
 }
 catch(e){
-    shell.echo(`An error occurred: ${e.message}`);
+    shell.echo(`An error occurred`);
+    shell.echo(e.stack);
     shell.exit(1);
 }

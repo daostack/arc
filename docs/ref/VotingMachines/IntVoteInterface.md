@@ -1,7 +1,6 @@
 # *contract* IntVoteInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/IntVoteInterface.sol))
-*Code deposit gas: **Infinite***
-*Execution gas: **Infinite***
-
+*Code deposit upper limit: **Infinite gas***
+*Executionas upper limit: **Infinite gas***
 
 - [Constructors](#constructors)
 
@@ -23,108 +22,113 @@
 ## Events
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* voteWithSpecifiedAmounts
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
-2. **_vote** *of type uint256*
-3. **_rep** *of type uint256*
-4. **_token** *of type uint256*
+    1. **_proposalId** *of type bytes32*
+    2. **_vote** *of type uint256*
+    3. **_rep** *of type uint256*
+    4. **_token** *of type uint256*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* vote
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
-2. **_vote** *of type uint256*
+    1. **_proposalId** *of type bytes32*
+    2. **_vote** *of type uint256*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* propose
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_numOfChoices** *of type uint256*
-2. **_proposalParameters** *of type bytes32*
-3. **_avatar** *of type address*
-4. **_executable** *of type address*
+    1. **_numOfChoices** *of type uint256*
+    2. **_proposalParameters** *of type bytes32*
+    3. **_avatar** *of type address*
+    4. **_executable** *of type address*
 
 *Returns:*
-1. **bytes32**
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* ownerVote
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
-2. **_vote** *of type uint256*
-3. **_voter** *of type address*
+    1. **_proposalId** *of type bytes32*
+    2. **_vote** *of type uint256*
+    3. **_voter** *of type address*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* isVotable
-*Execution gas: **Infinite***
-**constant**
-**view**
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
+    1. **_proposalId** *of type bytes32*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* getNumberOfChoices
-*Execution gas: **Infinite***
-**constant**
-**view**
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
+    1. **_proposalId** *of type bytes32*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 
 ### *function* execute
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
+    1. **_proposalId** *of type bytes32*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* cancelVote
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
+    1. **_proposalId** *of type bytes32*
 
 *Returns:*
 *Nothing*
 
+
 ### *function* cancelProposal
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
+    1. **_proposalId** *of type bytes32*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 

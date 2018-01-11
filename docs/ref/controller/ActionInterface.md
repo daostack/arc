@@ -1,7 +1,6 @@
 # *contract* ActionInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
-*Code deposit gas: **Infinite***
-*Execution gas: **Infinite***
-
+*Code deposit upper limit: **Infinite gas***
+*Executionas upper limit: **Infinite gas***
 
 - [Constructors](#constructors)
 
@@ -15,17 +14,16 @@
 ## Events
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* action
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_params** *of type bytes32[]*
+    1. **_params** *of type bytes32[]*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 

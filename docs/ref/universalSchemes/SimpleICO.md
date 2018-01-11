@@ -1,10 +1,10 @@
 # *contract* SimpleICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
-*Code deposit gas: **1018400***
-*Execution gas: **Infinite***
-SimpleICO scheme.
+*Code deposit upper limit: **1018400 gas***
+*Executionas upper limit: **Infinite gas***
 
+SimpleICO scheme.
 - [Constructors](#constructors)
-    - [SimpleICO(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-simpleicoaddress-_nativetoken-uint256-_fee-address-_beneficiary)
+    - [SimpleICO(address, uint256, address)](#constructor-simpleicoaddress-uint256-address)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
     - [OrganizationRegistered](#event-organizationregistered)
@@ -32,266 +32,270 @@ SimpleICO scheme.
     - [donate](#function-donate)
     - [beneficiary](#function-beneficiary)
 ## Constructors
-### *constructor* SimpleICO(address _nativeToken, uint256 _fee, address _beneficiary)
-*Parameters:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
+### *constructor* SimpleICO(address, uint256, address)
+*Execution cost upper limit: **Infinite gas***
+**nonpayable**
+
+*Params:*
+    1. **_nativeToken** *of type address*
+    2. **_fee** *of type uint256*
+    3. **_beneficiary** *of type address*
+
 
 ## Events
 ### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+*Params:*
+    1. **previousOwner** *of type address*
+    2. **newOwner** *of type address*
+
 
 ### *event* OrganizationRegistered
-*Parameters:*
-1. **_avatar** *of type address*
+*Params:*
+    1. **_avatar** *of type address*
+
 
 ### *event* LogNewProposal
-*Parameters:*
-1. **proposalId** *of type bytes32*
+*Params:*
+    1. **proposalId** *of type bytes32*
+
 
 ### *event* DonationReceived
-*Parameters:*
-1. **organization** *of type address*
-2. **_beneficiary** *of type address*
-3. **_incomingEther** *of type uint256*
-4. **_tokensAmount** *of type uint256*
+*Params:*
+    1. **organization** *of type address*
+    2. **_beneficiary** *of type address*
+    3. **_incomingEther** *of type uint256*
+    4. **_tokensAmount** *of type uint256*
+
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* registerOrganization
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address*
+    1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* parameters
-*Execution gas: **1871***
-**constant**
-**view**
+*Execution cost upper limit: **1871 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32*
+    1. **unnamed** *of type bytes32*
 
 *Returns:*
-1. **uint256**
-2. **uint256**
-3. **uint256**
-4. **uint256**
-5. **address**
-6. **address**
+    1. **cap** *of type uint256*
+    2. **price** *of type uint256*
+    3. **startBlock** *of type uint256*
+    4. **endBlock** *of type uint256*
+    5. **beneficiary** *of type address*
+    6. **admin** *of type address*
+
 
 ### *function* transferOwnership
-*Execution gas: **23181***
+*Execution cost upper limit: **23181 gas***
 **nonpayable**
-
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
+    1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* resumeICO
-*Execution gas: **21645***
+*Execution cost upper limit: **21645 gas***
 **nonpayable**
-
 Allowing admin to reopen an ICO.
 *Inputs:*
-1. **_avatar** *of type address* - The Avatar's of the organization
+    1. **_avatar** *of type address- The Avatar's of the organization*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* updateParameters
-*Execution gas: **81255***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
-4. **_hashedParameters** *of type bytes32*
+    1. **_nativeToken** *of type address*
+    2. **_fee** *of type uint256*
+    3. **_beneficiary** *of type address*
+    4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* start
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
-
 start an ICO
 *Inputs:*
-1. **_avatar** *of type address* - The Avatar's of the organization
+    1. **_avatar** *of type address- The Avatar's of the organization*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* setParameters
-*Execution gas: **122123***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Hash the parameters, save them if necessary, and return the hash value
 *Inputs:*
-1. **_cap** *of type uint256* - the ico cap
-2. **_price** *of type uint256* - represents Tokens per 1 Eth
-3. **_startBlock** *of type uint256* - ico start block
-4. **_endBlock** *of type uint256* - ico end
-5. **_beneficiary** *of type address* - the ico ether beneficiary
-6. **_admin** *of type address* - the address of the ico admin which can hald and resume the ICO.
+    1. **_cap** *of type uint256*
+    2. **_price** *of type uint256*
+    3. **_startBlock** *of type uint256*
+    4. **_endBlock** *of type uint256*
+    5. **_beneficiary** *of type address*
+    6. **_admin** *of type address*
 
 *Returns:*
-bytes32 -the params hash
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* organizationsICOInfo
-*Execution gas: **1575***
-**constant**
-**view**
+*Execution cost upper limit: **1575 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type address*
+    1. **unnamed** *of type address*
 
 *Returns:*
-1. **bytes32**
-2. **address**
-3. **uint256**
-4. **bool**
+    1. **paramsHash** *of type bytes32*
+    2. **avatarContractICO** *of type address*
+    3. **totalEthRaised** *of type uint256*
+    4. **isHalted** *of type bool*
+
 
 ### *function* organizations
-*Execution gas: **749***
-**constant**
-**view**
+*Execution cost upper limit: **749 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type address*
+    1. **unnamed** *of type address*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* owner
-*Execution gas: **765***
-**constant**
-**view**
+*Execution cost upper limit: **765 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* nativeToken
-*Execution gas: **919***
-**constant**
-**view**
+*Execution cost upper limit: **919 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* isRegistered
-*Execution gas: **934***
-**constant**
-**view**
+*Execution cost upper limit: **934 gas***
+**constant | view**
 
 *Inputs:*
-1. **_avatar** *of type address*
+    1. **_avatar** *of type address*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* isActive
-*Execution gas: **4143***
-**constant**
-**view**
-
+*Execution cost upper limit: **4143 gas***
+**constant | view**
 Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
 *Inputs:*
-1. **_avatar** *of type address* - The Avatar's of the organization
+    1. **_avatar** *of type address- The Avatar's of the organization*
 
-*Returns:*
 bool which represents a successful of the function
 
 ### *function* hashedParameters
-*Execution gas: **832***
-**constant**
-**view**
+*Execution cost upper limit: **832 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **bytes32**
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* haltICO
-*Execution gas: **21541***
+*Execution cost upper limit: **21541 gas***
 **nonpayable**
-
 Allowing admin to halt an ICO.
 *Inputs:*
-1. **_avatar** *of type address* - The Avatar's of the organization
+    1. **_avatar** *of type address- The Avatar's of the organization*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* getParametersHash
-*Execution gas: **851***
-**constant**
-**pure**
+*Execution cost upper limit: **Infinite gas***
+**constant | pure**
 
-Hash the parameters and return the hash value
 *Inputs:*
-1. **_cap** *of type uint256* - the ico cap
-2. **_price** *of type uint256* - represents Tokens per 1 Eth
-3. **_startBlock** *of type uint256* - ico start block
-4. **_endBlock** *of type uint256* - ico end
-5. **_beneficiary** *of type address* - the ico ether beneficiary
-6. **_admin** *of type address* - the address of the ico admin which can hald and resume the ICO.
+    1. **_cap** *of type uint256*
+    2. **_price** *of type uint256*
+    3. **_startBlock** *of type uint256*
+    4. **_endBlock** *of type uint256*
+    5. **_beneficiary** *of type address*
+    6. **_admin** *of type address*
 
 *Returns:*
-bytes32 -the params hash
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* fee
-*Execution gas: **744***
-**constant**
-**view**
+*Execution cost upper limit: **744 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 
 ### *function* donate
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **payable**
 
-Donating ethers to get tokens. If the donation is higher than the remaining ethers in the "cap", The donator will get the change in ethers.
 *Inputs:*
-1. **_avatar** *of type address* - The Avatar's of the organization.
-2. **_beneficiary** *of type address* - The donator's address - which will receive the ICO's tokens.
+    1. **_avatar** *of type address*
+    2. **_beneficiary** *of type address*
 
 *Returns:*
-bool which represents a successful of the function
+    1. **unnamed** *of type uint256*
+
 
 ### *function* beneficiary
-*Execution gas: **655***
-**constant**
-**view**
+*Execution cost upper limit: **655 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 

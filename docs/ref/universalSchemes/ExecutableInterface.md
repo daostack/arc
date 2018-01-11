@@ -1,7 +1,6 @@
 # *contract* ExecutableInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ExecutableInterface.sol))
-*Code deposit gas: **Infinite***
-*Execution gas: **Infinite***
-
+*Code deposit upper limit: **Infinite gas***
+*Executionas upper limit: **Infinite gas***
 
 - [Constructors](#constructors)
 
@@ -15,19 +14,18 @@
 ## Events
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* execute
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32*
-2. **_avatar** *of type address*
-3. **_param** *of type int256*
+    1. **_proposalId** *of type bytes32*
+    2. **_avatar** *of type address*
+    3. **_param** *of type int256*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 

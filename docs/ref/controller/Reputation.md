@@ -1,8 +1,8 @@
 # *contract* Reputation ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Reputation.sol))
-*Code deposit gas: **222600***
-*Execution gas: **50712***
-Simple static reputation storage
+*Code deposit upper limit: **222600 gas***
+*Executionas upper limit: **50712 gas***
 
+Simple static reputation storage
 - [Constructors](#constructors)
     - [Reputation()](#constructor-reputation)
 - [Events](#events)
@@ -19,102 +19,105 @@ Simple static reputation storage
     - [decimals](#function-decimals)
 ## Constructors
 ### *constructor* Reputation()
-*Parameters:*
+*Execution cost upper limit: **Infinite gas***
+**nonpayable**
+
+*Params:*
 *Nothing*
+
 
 ## Events
 ### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+*Params:*
+    1. **previousOwner** *of type address*
+    2. **newOwner** *of type address*
+
 
 ### *event* Mint
-*Parameters:*
-1. **to** *of type address*
-2. **amount** *of type int256*
+*Params:*
+    1. **to** *of type address*
+    2. **amount** *of type int256*
+
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* transferOwnership
-*Execution gas: **22854***
+*Execution cost upper limit: **22854 gas***
 **nonpayable**
-
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
+    1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* totalSupply
-*Execution gas: **373***
-**constant**
-**view**
+*Execution cost upper limit: **373 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 
 ### *function* setReputation
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-setting reputation amount for a given address, updating the total supply as well
 *Inputs:*
-1. **_to** *of type address* - the address which we set it's reputation amount
-2. **_amount** *of type uint256* - the new reputation amount to be setted
+    1. **_to** *of type address*
+    2. **_amount** *of type uint256*
 
 *Returns:*
-bool which represents a success
+    1. **unnamed** *of type bool*
+
 
 ### *function* reputationOf
-*Execution gas: **683***
-**constant**
-**view**
-
+*Execution cost upper limit: **683 gas***
+**constant | view**
 return the reputation amount of a given owner
 *Inputs:*
-1. **_owner** *of type address* - an address of the owner which we want to get his reputation
+    1. **_owner** *of type address- an address of the owner which we want to get his reputation*
 
 *Returns:*
-*Nothing*
+    1. **balance** *of type uint256*
+
 
 ### *function* owner
-*Execution gas: **573***
-**constant**
-**view**
+*Execution cost upper limit: **573 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* mint
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-adding/reducing reputation of a given address, updating the total supply, and triggering an event of the operation
 *Inputs:*
-1. **_to** *of type address* - the address which we gives/takes reputation amount
-2. **_amount** *of type int256* - the reputation amount to be added/reduced
+    1. **_to** *of type address*
+    2. **_amount** *of type int256*
 
 *Returns:*
-bool which represents a successful of the function
+    1. **unnamed** *of type bool*
+
 
 ### *function* decimals
-*Execution gas: **395***
-**constant**
-**view**
+*Execution cost upper limit: **395 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 

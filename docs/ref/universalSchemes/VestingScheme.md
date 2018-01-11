@@ -1,10 +1,10 @@
 # *contract* VestingScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VestingScheme.sol))
-*Code deposit gas: **1537200***
-*Execution gas: **Infinite***
-A schme for vesting.
+*Code deposit upper limit: **1537200 gas***
+*Executionas upper limit: **Infinite gas***
 
+A schme for vesting.
 - [Constructors](#constructors)
-    - [VestingScheme(address _nativeToken, uint256 _fee, address _beneficiary)](#constructor-vestingschemeaddress-_nativetoken-uint256-_fee-address-_beneficiary)
+    - [VestingScheme(address, uint256, address)](#constructor-vestingschemeaddress-uint256-address)
 - [Events](#events)
     - [RevokeSignToCancelAgreement](#event-revokesigntocancelagreement)
     - [OwnershipTransferred](#event-ownershiptransferred)
@@ -41,342 +41,356 @@ A schme for vesting.
     - [beneficiary](#function-beneficiary)
     - [agreements](#function-agreements)
 ## Constructors
-### *constructor* VestingScheme(address _nativeToken, uint256 _fee, address _beneficiary)
-*Parameters:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
+### *constructor* VestingScheme(address, uint256, address)
+*Execution cost upper limit: **Infinite gas***
+**nonpayable**
+
+*Params:*
+    1. **_nativeToken** *of type address*
+    2. **_fee** *of type uint256*
+    3. **_beneficiary** *of type address*
+
 
 ## Events
 ### *event* RevokeSignToCancelAgreement
-*Parameters:*
-1. **_agreementId** *of type uint256*
-2. **_signer** *of type address*
+*Params:*
+    1. **_agreementId** *of type uint256*
+    2. **_signer** *of type address*
+
 
 ### *event* OwnershipTransferred
-*Parameters:*
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
+*Params:*
+    1. **previousOwner** *of type address*
+    2. **newOwner** *of type address*
+
 
 ### *event* SignToCancelAgreement
-*Parameters:*
-1. **_agreementId** *of type uint256*
-2. **_signer** *of type address*
+*Params:*
+    1. **_agreementId** *of type uint256*
+    2. **_signer** *of type address*
+
 
 ### *event* OrganizationRegistered
-*Parameters:*
-1. **_avatar** *of type address*
+*Params:*
+    1. **_avatar** *of type address*
+
 
 ### *event* NewVestedAgreement
-*Parameters:*
-1. **_agreementId** *of type uint256*
+*Params:*
+    1. **_agreementId** *of type uint256*
+
 
 ### *event* LogRegisterOrg
-*Parameters:*
-1. **_avatar** *of type address*
+*Params:*
+    1. **_avatar** *of type address*
+
 
 ### *event* LogNewProposal
-*Parameters:*
-1. **proposalId** *of type bytes32*
+*Params:*
+    1. **proposalId** *of type bytes32*
+
 
 ### *event* LogExecutaion
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-3. **_result** *of type int256*
+*Params:*
+    1. **_avatar** *of type address*
+    2. **_proposalId** *of type bytes32*
+    3. **_result** *of type int256*
+
 
 ### *event* LogCollect
-*Parameters:*
-1. **_agreementId** *of type uint256*
+*Params:*
+    1. **_agreementId** *of type uint256*
+
 
 ### *event* LogAgreementProposal
-*Parameters:*
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
+*Params:*
+    1. **_avatar** *of type address*
+    2. **_proposalId** *of type bytes32*
+
 
 ### *event* LogAgreementCancel
-*Parameters:*
-1. **_agreementId** *of type uint256*
+*Params:*
+    1. **_agreementId** *of type uint256*
+
 
 ## Fallback
-*Execution gas: **Infinite***
-
 *Nothing*
 ## Functions
 ### *function* signToCancelAgreement
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
-
 Function to sign to cancel an agreement.
 *Inputs:*
-1. **_agreementId** *of type uint256* - the relevant agreement.
+    1. **_agreementId** *of type uint256- the relevant agreement.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* parameters
-*Execution gas: **894***
-**constant**
-**view**
+*Execution cost upper limit: **894 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type bytes32*
+    1. **unnamed** *of type bytes32*
 
 *Returns:*
-1. **bytes32**
-2. **address**
+    1. **voteParams** *of type bytes32*
+    2. **intVote** *of type address*
+
 
 ### *function* transferOwnership
-*Execution gas: **23272***
+*Execution cost upper limit: **23272 gas***
 **nonpayable**
-
 Allows the current owner to transfer control of the contract to a newOwner.
 *Inputs:*
-1. **newOwner** *of type address* - The address to transfer ownership to.
+    1. **newOwner** *of type address- The address to transfer ownership to.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* registerOrganization
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address*
+    1. **_avatar** *of type address*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* revokeSignToCancelAgreement
-*Execution gas: **43442***
+*Execution cost upper limit: **43442 gas***
 **nonpayable**
-
 Function to revoke vote for canceling agreement.
 *Inputs:*
-1. **_agreementId** *of type uint256* - the relevant agreement.
+    1. **_agreementId** *of type uint256- the relevant agreement.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* updateParameters
-*Execution gas: **81346***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
-4. **_hashedParameters** *of type bytes32*
+    1. **_nativeToken** *of type address*
+    2. **_fee** *of type uint256*
+    3. **_beneficiary** *of type address*
+    4. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* setParameters
-*Execution gas: **41204***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Hash the parameters, save them if necessary, and return the hash value
 *Inputs:*
-1. **_voteParams** *of type bytes32* - -  voting parameters
-2. **_intVote** *of type address* - - voting machine contract.
+    1. **_voteParams** *of type bytes32*
+    2. **_intVote** *of type address*
 
 *Returns:*
-bytes32 -the parameters hash
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* proposeVestingAgreement
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Proposing a vesting agreement in an organization.
 *Inputs:*
-1. **_beneficiary** *of type address* - the beneficiary of the agreement.
-2. **_returnOnCancelAddress** *of type address* - where to send the tokens in case of stoping.
-3. **_startingBlock** *of type uint256* - the block from which the agreement starts.
-4. **_amountPerPeriod** *of type uint256* - amount of tokens per period.
-5. **_periodLength** *of type uint256* - period length in blocks.
-6. **_numOfAgreedPeriods** *of type uint256* - how many periods agreed on.
-7. **_cliffInPeriods** *of type uint256* - the length of the cliff in periods.
-8. **_signaturesReqToCancel** *of type uint256* - number of signatures required to cancel agreement.
-9. **_signersArray** *of type address[]* - avatar array of adresses that can sign to cancel agreement.
-10. **_avatar** *of type address* - avatar of the organization.
+    1. **_beneficiary** *of type address*
+    2. **_returnOnCancelAddress** *of type address*
+    3. **_startingBlock** *of type uint256*
+    4. **_amountPerPeriod** *of type uint256*
+    5. **_periodLength** *of type uint256*
+    6. **_numOfAgreedPeriods** *of type uint256*
+    7. **_cliffInPeriods** *of type uint256*
+    8. **_signaturesReqToCancel** *of type uint256*
+    9. **_signersArray** *of type address[]*
+    10. **_avatar** *of type address*
 
 *Returns:*
-bytes32 the proposalId
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* isRegistered
-*Execution gas: **978***
-**constant**
-**view**
+*Execution cost upper limit: **978 gas***
+**constant | view**
 
 *Inputs:*
-1. **_avatar** *of type address*
+    1. **_avatar** *of type address*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* organizations
-*Execution gas: **727***
-**constant**
-**view**
+*Execution cost upper limit: **727 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type address*
+    1. **unnamed** *of type address*
 
 *Returns:*
-1. **bool**
+    1. **unnamed** *of type bool*
+
 
 ### *function* organizationsData
-*Execution gas: **3223***
-**constant**
-**view**
+*Execution cost upper limit: **Infinite gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type address*
-2. **unnamed** *of type bytes32*
+    1. **unnamed** *of type address*
+    2. **unnamed** *of type bytes32*
 
 *Returns:*
-1. **address**
-2. **address**
-3. **address**
-4. **uint256**
-5. **uint256**
-6. **uint256**
-7. **uint256**
-8. **uint256**
-9. **uint256**
-10. **uint256**
-11. **uint256**
+    1. **token** *of type address*
+    2. **beneficiary** *of type address*
+    3. **returnOnCancelAddress** *of type address*
+    4. **startingBlock** *of type uint256*
+    5. **amountPerPeriod** *of type uint256*
+    6. **periodLength** *of type uint256*
+    7. **numOfAgreedPeriods** *of type uint256*
+    8. **cliffInPeriods** *of type uint256*
+    9. **signaturesReqToCancel** *of type uint256*
+    10. **collectedPeriods** *of type uint256*
+    11. **signaturesReceivedCounter** *of type uint256*
+
 
 ### *function* owner
-*Execution gas: **831***
-**constant**
-**view**
+*Execution cost upper limit: **831 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* nativeToken
-*Execution gas: **963***
-**constant**
-**view**
+*Execution cost upper limit: **963 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* hashedParameters
-*Execution gas: **876***
-**constant**
-**view**
+*Execution cost upper limit: **876 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **bytes32**
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* getParametersHash
-*Execution gas: **564***
-**constant**
-**pure**
+*Execution cost upper limit: **Infinite gas***
+**constant | pure**
 
-Hash the parameters,and return the hash value
 *Inputs:*
-1. **_voteParams** *of type bytes32* - -  voting parameters
-2. **_intVote** *of type address* - - voting machine contract.
+    1. **_voteParams** *of type bytes32*
+    2. **_intVote** *of type address*
 
 *Returns:*
-bytes32 -the parameters hash
+    1. **unnamed** *of type bytes32*
+
 
 ### *function* fee
-*Execution gas: **788***
-**constant**
-**view**
+*Execution cost upper limit: **788 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **uint256**
+    1. **unnamed** *of type uint256*
+
 
 ### *function* execute
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-execution of proposals, can only be called by the voting machine in which the vote is held.
 *Inputs:*
-1. **_proposalId** *of type bytes32* - the ID of the voting in the voting machine
-2. **_avatar** *of type address* - address of the controller
-3. **_param** *of type int256* - a parameter of the voting result, 0 is no and 1 is yes.
+    1. **_proposalId** *of type bytes32*
+    2. **_avatar** *of type address*
+    3. **_param** *of type int256*
 
 *Returns:*
-bool which represents a successful of the function
+    1. **unnamed** *of type bool*
+
 
 ### *function* createVestedAgreement
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
 
-Creating a vesting agreement.
 *Inputs:*
-1. **_token** *of type address* - the relevant token in the agreement.
-2. **_beneficiary** *of type address* - the beneficiary of the agreement.
-3. **_returnOnCancelAddress** *of type address* - where to send the tokens in case of stoping.
-4. **_startingBlock** *of type uint256* - the block from which the agreement starts.
-5. **_amountPerPeriod** *of type uint256* - amount of tokens per period.
-6. **_periodLength** *of type uint256* - period length in blocks.
-7. **_numOfAgreedPeriods** *of type uint256* - how many periods agreed on.
-8. **_cliffInPeriods** *of type uint256* - the length of the cliff in periods.
-9. **_signaturesReqToCancel** *of type uint256* - number of signatures required to cancel agreement.
-10. **_signersArray** *of type address[]* - avatar array of adresses that can sign to cancel agreement.
+    1. **_token** *of type address*
+    2. **_beneficiary** *of type address*
+    3. **_returnOnCancelAddress** *of type address*
+    4. **_startingBlock** *of type uint256*
+    5. **_amountPerPeriod** *of type uint256*
+    6. **_periodLength** *of type uint256*
+    7. **_numOfAgreedPeriods** *of type uint256*
+    8. **_cliffInPeriods** *of type uint256*
+    9. **_signaturesReqToCancel** *of type uint256*
+    10. **_signersArray** *of type address[]*
 
 *Returns:*
-uint the agreement index.
+    1. **unnamed** *of type uint256*
+
 
 ### *function* collect
-*Execution gas: **Infinite***
+*Execution cost upper limit: **Infinite gas***
 **nonpayable**
-
 Function for a beneficiary to collect.
 *Inputs:*
-1. **_agreementId** *of type uint256* - the relevant agreement.
+    1. **_agreementId** *of type uint256- the relevant agreement.*
 
 *Returns:*
 *Nothing*
+
 
 ### *function* beneficiary
-*Execution gas: **677***
-**constant**
-**view**
+*Execution cost upper limit: **677 gas***
+**constant | view**
 
 *Inputs:*
 *Nothing*
 
 *Returns:*
-1. **address**
+    1. **unnamed** *of type address*
+
 
 ### *function* agreements
-*Execution gas: **3340***
-**constant**
-**view**
+*Execution cost upper limit: **3340 gas***
+**constant | view**
 
 *Inputs:*
-1. **unnamed** *of type uint256*
+    1. **unnamed** *of type uint256*
 
 *Returns:*
-1. **address**
-2. **address**
-3. **address**
-4. **uint256**
-5. **uint256**
-6. **uint256**
-7. **uint256**
-8. **uint256**
-9. **uint256**
-10. **uint256**
-11. **uint256**
+    1. **token** *of type address*
+    2. **beneficiary** *of type address*
+    3. **returnOnCancelAddress** *of type address*
+    4. **startingBlock** *of type uint256*
+    5. **amountPerPeriod** *of type uint256*
+    6. **periodLength** *of type uint256*
+    7. **numOfAgreedPeriods** *of type uint256*
+    8. **cliffInPeriods** *of type uint256*
+    9. **signaturesReqToCancel** *of type uint256*
+    10. **collectedPeriods** *of type uint256*
+    11. **signaturesReceivedCounter** *of type uint256*
+
 
