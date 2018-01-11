@@ -1,4 +1,5 @@
 # *contract* ActionMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/ActionMock.sol))
+*Total creation gas: **142000***
 
 
 - [Constructors](#constructors)
@@ -18,9 +19,12 @@
 2. **_param** *of type bytes32*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* genericAction
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -31,6 +35,7 @@
 1. **bool**
 
 ### *function* action
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*

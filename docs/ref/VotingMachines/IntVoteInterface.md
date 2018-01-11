@@ -1,4 +1,5 @@
 # *contract* IntVoteInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/IntVoteInterface.sol))
+*Total creation gas: **Infinite***
 
 
 - [Constructors](#constructors)
@@ -21,9 +22,12 @@
 ## Events
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* voteWithSpecifiedAmounts
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -36,6 +40,7 @@
 1. **bool**
 
 ### *function* vote
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -46,6 +51,7 @@
 1. **bool**
 
 ### *function* propose
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -58,6 +64,7 @@
 1. **bytes32**
 
 ### *function* ownerVote
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -69,6 +76,7 @@
 1. **bool**
 
 ### *function* isVotable
+*Execution gas: **Infinite***
 **constant**
 **view**
 
@@ -79,6 +87,7 @@
 1. **bool**
 
 ### *function* getNumberOfChoices
+*Execution gas: **Infinite***
 **constant**
 **view**
 
@@ -89,6 +98,7 @@
 1. **uint256**
 
 ### *function* execute
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -98,6 +108,7 @@
 1. **bool**
 
 ### *function* cancelVote
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -107,6 +118,7 @@
 *Nothing*
 
 ### *function* cancelProposal
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*

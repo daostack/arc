@@ -1,4 +1,5 @@
 # *contract* OrganizationRegister ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/OrganizationRegister.sol))
+*Total creation gas: **507200***
 A universal organization registry.
 
 - [Constructors](#constructors)
@@ -59,9 +60,12 @@ A universal organization registry.
 1. **proposalId** *of type bytes32*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* setParameters
+*Execution gas: **61809***
 **nonpayable**
 
 Hash the parameters,save if needed and return the hash value
@@ -74,6 +78,7 @@ Hash the parameters,save if needed and return the hash value
 bytes32 -the parameters hash
 
 ### *function* parameters
+*Execution gas: **1157***
 **constant**
 **view**
 
@@ -86,6 +91,7 @@ bytes32 -the parameters hash
 3. **address**
 
 ### *function* transferOwnership
+*Execution gas: **23093***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -96,6 +102,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -105,6 +112,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* updateParameters
+*Execution gas: **81255***
 **nonpayable**
 
 *Inputs:*
@@ -117,6 +125,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* owner
+*Execution gas: **721***
 **constant**
 **view**
 
@@ -127,6 +136,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* organizationsRegistery
+*Execution gas: **714***
 **constant**
 **view**
 
@@ -138,6 +148,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **uint256**
 
 ### *function* organizations
+*Execution gas: **705***
 **constant**
 **view**
 
@@ -148,6 +159,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bool**
 
 ### *function* nativeToken
+*Execution gas: **853***
 **constant**
 **view**
 
@@ -158,6 +170,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* isRegistered
+*Execution gas: **890***
 **constant**
 **view**
 
@@ -168,6 +181,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bool**
 
 ### *function* hashedParameters
+*Execution gas: **744***
 **constant**
 **view**
 
@@ -178,6 +192,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bytes32**
 
 ### *function* getParametersHash
+*Execution gas: **788***
 **constant**
 **pure**
 
@@ -191,6 +206,7 @@ Hash the parameters,and return the hash value
 bytes32 -the parameters hash
 
 ### *function* fee
+*Execution gas: **678***
 **constant**
 **view**
 
@@ -201,6 +217,7 @@ bytes32 -the parameters hash
 1. **uint256**
 
 ### *function* beneficiary
+*Execution gas: **655***
 **constant**
 **view**
 
@@ -211,6 +228,7 @@ bytes32 -the parameters hash
 1. **address**
 
 ### *function* addOrPromoteAddress
+*Execution gas: **Infinite***
 **nonpayable**
 
 Adding or promoting an address on the registry.     An address(record) to add or promote can be organization address or any contract address.     Adding a record is done by paying at least the minimum required by the registery params.     Promoting a record is done by paying(adding)amount of token to the registery beneficiary.

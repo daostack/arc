@@ -1,4 +1,5 @@
 # *contract* VoteInOrganizationScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VoteInOrganizationScheme.sol))
+*Total creation gas: **734000***
 VoteInOrganizationScheme.
 
 - [Constructors](#constructors)
@@ -70,9 +71,12 @@ VoteInOrganizationScheme.
 1. **proposalId** *of type bytes32*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* setParameters
+*Execution gas: **41143***
 **nonpayable**
 
 Hash the parameters, save them if necessary, and return the hash value
@@ -84,6 +88,7 @@ Hash the parameters, save them if necessary, and return the hash value
 bytes32 -the parameters hash
 
 ### *function* parameters
+*Execution gas: **906***
 **constant**
 **view**
 
@@ -95,6 +100,7 @@ bytes32 -the parameters hash
 2. **bytes32**
 
 ### *function* transferOwnership
+*Execution gas: **23137***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -105,6 +111,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -114,6 +121,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* proposeVote
+*Execution gas: **Infinite***
 **nonpayable**
 
 propose to vote in other organization     The function trigger NewVoteProposal event
@@ -126,6 +134,7 @@ propose to vote in other organization     The function trigger NewVoteProposal 
 an id which represents the proposal
 
 ### *function* updateParameters
+*Execution gas: **81277***
 **nonpayable**
 
 *Inputs:*
@@ -138,6 +147,7 @@ an id which represents the proposal
 *Nothing*
 
 ### *function* execute
+*Execution gas: **Infinite***
 **nonpayable**
 
 execution of proposals, can only be called by the voting machine in which the vote is held.     This function will trigger ProposalDeleted and ProposalExecuted events
@@ -150,6 +160,7 @@ execution of proposals, can only be called by the voting machine in which the vo
 bool which indicate success.
 
 ### *function* hashedParameters
+*Execution gas: **788***
 **constant**
 **view**
 
@@ -160,6 +171,7 @@ bool which indicate success.
 1. **bytes32**
 
 ### *function* organizationsData
+*Execution gas: **1329***
 **constant**
 **view**
 
@@ -173,6 +185,7 @@ bool which indicate success.
 3. **uint256**
 
 ### *function* nativeToken
+*Execution gas: **897***
 **constant**
 **view**
 
@@ -183,6 +196,7 @@ bool which indicate success.
 1. **address**
 
 ### *function* owner
+*Execution gas: **809***
 **constant**
 **view**
 
@@ -193,6 +207,7 @@ bool which indicate success.
 1. **address**
 
 ### *function* organizations
+*Execution gas: **749***
 **constant**
 **view**
 
@@ -203,6 +218,7 @@ bool which indicate success.
 1. **bool**
 
 ### *function* isRegistered
+*Execution gas: **934***
 **constant**
 **view**
 
@@ -213,6 +229,7 @@ bool which indicate success.
 1. **bool**
 
 ### *function* getParametersHash
+*Execution gas: **564***
 **constant**
 **pure**
 
@@ -225,6 +242,7 @@ Hash the parameters,and return the hash value
 bytes32 -the parameters hash
 
 ### *function* fee
+*Execution gas: **722***
 **constant**
 **view**
 
@@ -235,6 +253,7 @@ bytes32 -the parameters hash
 1. **uint256**
 
 ### *function* beneficiary
+*Execution gas: **677***
 **constant**
 **view**
 
@@ -245,6 +264,7 @@ bytes32 -the parameters hash
 1. **address**
 
 ### *function* action
+*Execution gas: **Infinite***
 **nonpayable**
 
 do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.

@@ -1,4 +1,5 @@
 # *contract* UpgradeScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UpgradeScheme.sol))
+*Total creation gas: **911400***
 A schme to manage the upgrade of an organization.
 
 - [Constructors](#constructors)
@@ -79,9 +80,12 @@ A schme to manage the upgrade of an organization.
 7. **fee** *of type uint256*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* setParameters
+*Execution gas: **41209***
 **nonpayable**
 
 hash the parameters, save them if necessary, and return the hash value
@@ -93,6 +97,7 @@ hash the parameters, save them if necessary, and return the hash value
 *Nothing*
 
 ### *function* parameters
+*Execution gas: **894***
 **constant**
 **view**
 
@@ -104,6 +109,7 @@ hash the parameters, save them if necessary, and return the hash value
 2. **address**
 
 ### *function* transferOwnership
+*Execution gas: **23206***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -114,6 +120,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -123,6 +130,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* proposeUpgrade
+*Execution gas: **Infinite***
 **nonpayable**
 
 propose an upgrade of the organization's controller
@@ -134,6 +142,7 @@ propose an upgrade of the organization's controller
 an id which represents the proposal
 
 ### *function* proposeChangeUpgradingScheme
+*Execution gas: **Infinite***
 **nonpayable**
 
 propose to replace this scheme by another upgrading scheme
@@ -148,6 +157,7 @@ propose to replace this scheme by another upgrading scheme
 an id which represents the proposal
 
 ### *function* updateParameters
+*Execution gas: **81368***
 **nonpayable**
 
 *Inputs:*
@@ -160,6 +170,7 @@ an id which represents the proposal
 *Nothing*
 
 ### *function* owner
+*Execution gas: **809***
 **constant**
 **view**
 
@@ -170,6 +181,7 @@ an id which represents the proposal
 1. **address**
 
 ### *function* organizationsProposals
+*Execution gas: **1807***
 **constant**
 **view**
 
@@ -185,6 +197,7 @@ an id which represents the proposal
 5. **uint256**
 
 ### *function* organizations
+*Execution gas: **749***
 **constant**
 **view**
 
@@ -195,6 +208,7 @@ an id which represents the proposal
 1. **bool**
 
 ### *function* nativeToken
+*Execution gas: **897***
 **constant**
 **view**
 
@@ -205,6 +219,7 @@ an id which represents the proposal
 1. **address**
 
 ### *function* isRegistered
+*Execution gas: **934***
 **constant**
 **view**
 
@@ -215,6 +230,7 @@ an id which represents the proposal
 1. **bool**
 
 ### *function* hashedParameters
+*Execution gas: **788***
 **constant**
 **view**
 
@@ -225,6 +241,7 @@ an id which represents the proposal
 1. **bytes32**
 
 ### *function* getParametersHash
+*Execution gas: **564***
 **constant**
 **pure**
 
@@ -237,6 +254,7 @@ return a hash of the given parameters
 *Nothing*
 
 ### *function* fee
+*Execution gas: **722***
 **constant**
 **view**
 
@@ -247,6 +265,7 @@ return a hash of the given parameters
 1. **uint256**
 
 ### *function* execute
+*Execution gas: **Infinite***
 **nonpayable**
 
 execution of proposals, can only be called by the voting machine in which the vote is held.
@@ -259,6 +278,7 @@ execution of proposals, can only be called by the voting machine in which the vo
 *Nothing*
 
 ### *function* beneficiary
+*Execution gas: **677***
 **constant**
 **view**
 

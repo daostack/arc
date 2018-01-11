@@ -1,4 +1,5 @@
 # *contract* VestingScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VestingScheme.sol))
+*Total creation gas: **1537200***
 A schme for vesting.
 
 - [Constructors](#constructors)
@@ -97,9 +98,12 @@ A schme for vesting.
 1. **_agreementId** *of type uint256*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* signToCancelAgreement
+*Execution gas: **Infinite***
 **nonpayable**
 
 Function to sign to cancel an agreement.
@@ -110,6 +114,7 @@ Function to sign to cancel an agreement.
 *Nothing*
 
 ### *function* parameters
+*Execution gas: **894***
 **constant**
 **view**
 
@@ -121,6 +126,7 @@ Function to sign to cancel an agreement.
 2. **address**
 
 ### *function* transferOwnership
+*Execution gas: **23272***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -131,6 +137,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -140,6 +147,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* revokeSignToCancelAgreement
+*Execution gas: **43442***
 **nonpayable**
 
 Function to revoke vote for canceling agreement.
@@ -150,6 +158,7 @@ Function to revoke vote for canceling agreement.
 *Nothing*
 
 ### *function* updateParameters
+*Execution gas: **81346***
 **nonpayable**
 
 *Inputs:*
@@ -162,6 +171,7 @@ Function to revoke vote for canceling agreement.
 *Nothing*
 
 ### *function* setParameters
+*Execution gas: **41204***
 **nonpayable**
 
 Hash the parameters, save them if necessary, and return the hash value
@@ -173,6 +183,7 @@ Hash the parameters, save them if necessary, and return the hash value
 bytes32 -the parameters hash
 
 ### *function* proposeVestingAgreement
+*Execution gas: **Infinite***
 **nonpayable**
 
 Proposing a vesting agreement in an organization.
@@ -192,6 +203,7 @@ Proposing a vesting agreement in an organization.
 bytes32 the proposalId
 
 ### *function* isRegistered
+*Execution gas: **978***
 **constant**
 **view**
 
@@ -202,6 +214,7 @@ bytes32 the proposalId
 1. **bool**
 
 ### *function* organizations
+*Execution gas: **727***
 **constant**
 **view**
 
@@ -212,6 +225,7 @@ bytes32 the proposalId
 1. **bool**
 
 ### *function* organizationsData
+*Execution gas: **3223***
 **constant**
 **view**
 
@@ -233,6 +247,7 @@ bytes32 the proposalId
 11. **uint256**
 
 ### *function* owner
+*Execution gas: **831***
 **constant**
 **view**
 
@@ -243,6 +258,7 @@ bytes32 the proposalId
 1. **address**
 
 ### *function* nativeToken
+*Execution gas: **963***
 **constant**
 **view**
 
@@ -253,6 +269,7 @@ bytes32 the proposalId
 1. **address**
 
 ### *function* hashedParameters
+*Execution gas: **876***
 **constant**
 **view**
 
@@ -263,6 +280,7 @@ bytes32 the proposalId
 1. **bytes32**
 
 ### *function* getParametersHash
+*Execution gas: **564***
 **constant**
 **pure**
 
@@ -275,6 +293,7 @@ Hash the parameters,and return the hash value
 bytes32 -the parameters hash
 
 ### *function* fee
+*Execution gas: **788***
 **constant**
 **view**
 
@@ -285,6 +304,7 @@ bytes32 -the parameters hash
 1. **uint256**
 
 ### *function* execute
+*Execution gas: **Infinite***
 **nonpayable**
 
 execution of proposals, can only be called by the voting machine in which the vote is held.
@@ -297,6 +317,7 @@ execution of proposals, can only be called by the voting machine in which the vo
 bool which represents a successful of the function
 
 ### *function* createVestedAgreement
+*Execution gas: **Infinite***
 **nonpayable**
 
 Creating a vesting agreement.
@@ -316,6 +337,7 @@ Creating a vesting agreement.
 uint the agreement index.
 
 ### *function* collect
+*Execution gas: **Infinite***
 **nonpayable**
 
 Function for a beneficiary to collect.
@@ -326,6 +348,7 @@ Function for a beneficiary to collect.
 *Nothing*
 
 ### *function* beneficiary
+*Execution gas: **677***
 **constant**
 **view**
 
@@ -336,6 +359,7 @@ Function for a beneficiary to collect.
 1. **address**
 
 ### *function* agreements
+*Execution gas: **3340***
 **constant**
 **view**
 

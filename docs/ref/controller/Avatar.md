@@ -1,4 +1,5 @@
 # *contract* Avatar ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
+*Total creation gas: **475800***
 An Avatar holds tokens, reputation and ether for a controller
 
 - [Constructors](#constructors)
@@ -79,10 +80,13 @@ An Avatar holds tokens, reputation and ether for a controller
 3. **_subtractedValue** *of type uint256*
 
 ## Fallback
+*Execution gas: **1870***
+
 **payable**
 
 ## Functions
 ### *function* externalTokenTransferFrom
+*Execution gas: **Infinite***
 **nonpayable**
 
 external token transfer from a specific account
@@ -96,6 +100,7 @@ external token transfer from a specific account
 bool which represents success
 
 ### *function* transferOwnership
+*Execution gas: **23027***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -106,6 +111,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* sendEther
+*Execution gas: **Infinite***
 **nonpayable**
 
 send ethers from the avatar's wallet
@@ -117,6 +123,7 @@ send ethers from the avatar's wallet
 bool which represents success
 
 ### *function* owner
+*Execution gas: **1545***
 **constant**
 **view**
 
@@ -127,6 +134,7 @@ bool which represents success
 1. **address**
 
 ### *function* orgName
+*Execution gas: **1545***
 **constant**
 **view**
 
@@ -137,6 +145,7 @@ bool which represents success
 1. **bytes32**
 
 ### *function* nativeToken
+*Execution gas: **1545***
 **constant**
 **view**
 
@@ -147,6 +156,7 @@ bool which represents success
 1. **address**
 
 ### *function* nativeReputation
+*Execution gas: **1545***
 **constant**
 **view**
 
@@ -157,6 +167,7 @@ bool which represents success
 1. **address**
 
 ### *function* genericAction
+*Execution gas: **Infinite***
 **nonpayable**
 
 call an action function on an ActionInterface. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
@@ -168,6 +179,7 @@ call an action function on an ActionInterface. This function use deligatecall a
 bool which represents success
 
 ### *function* externalTokenTransfer
+*Execution gas: **Infinite***
 **nonpayable**
 
 external token transfer
@@ -180,6 +192,7 @@ external token transfer
 bool which represents success
 
 ### *function* externalTokenIncreaseApproval
+*Execution gas: **Infinite***
 **nonpayable**
 
 increase approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
@@ -192,6 +205,7 @@ increase approval for the spender address to spend a specified amount of tokens
 bool which represents a success
 
 ### *function* externalTokenDecreaseApproval
+*Execution gas: **Infinite***
 **nonpayable**
 
 decrease approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.

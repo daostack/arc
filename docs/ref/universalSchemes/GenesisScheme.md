@@ -1,4 +1,5 @@
 # *contract* GenesisScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GenesisScheme.sol))
+*Total creation gas: **4733600***
 Genesis Scheme that creates organizations
 
 - [Constructors](#constructors)
@@ -28,9 +29,12 @@ Genesis Scheme that creates organizations
 1. **_avatar** *of type address*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* setSchemes
+*Execution gas: **Infinite***
 **nonpayable**
 
 Set initial schemes for the organization.
@@ -45,6 +49,7 @@ Set initial schemes for the organization.
 *Nothing*
 
 ### *function* forgeOrg
+*Execution gas: **Infinite***
 **nonpayable**
 
 Create a new organization
@@ -60,6 +65,7 @@ Create a new organization
 The address of the avatar of the controller
 
 ### *function* bytes4Array
+*Execution gas: **2476***
 **constant**
 **view**
 
@@ -70,6 +76,7 @@ The address of the avatar of the controller
 1. **bytes4**
 
 ### *function* bytes32Array
+*Execution gas: **824***
 **constant**
 **view**
 
@@ -80,6 +87,7 @@ The address of the avatar of the controller
 1. **bytes32**
 
 ### *function* addressArray
+*Execution gas: **911***
 **constant**
 **view**
 

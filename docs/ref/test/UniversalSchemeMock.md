@@ -1,4 +1,5 @@
 # *contract* UniversalSchemeMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/UniversalSchemeMock.sol))
+*Total creation gas: **244800***
 
 
 - [Constructors](#constructors)
@@ -41,9 +42,12 @@
 1. **proposalId** *of type bytes32*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* updateParameters
+*Execution gas: **81126***
 **nonpayable**
 
 *Inputs:*
@@ -56,6 +60,7 @@
 *Nothing*
 
 ### *function* transferOwnership
+*Execution gas: **22920***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -66,6 +71,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -75,6 +81,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* owner
+*Execution gas: **592***
 **constant**
 **view**
 
@@ -85,6 +92,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* organizations
+*Execution gas: **576***
 **constant**
 **view**
 
@@ -95,6 +103,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bool**
 
 ### *function* nativeToken
+*Execution gas: **680***
 **constant**
 **view**
 
@@ -105,6 +114,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* isRegistered
+*Execution gas: **717***
 **constant**
 **view**
 
@@ -115,6 +125,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bool**
 
 ### *function* hashedParameters
+*Execution gas: **571***
 **constant**
 **view**
 
@@ -125,6 +136,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **bytes32**
 
 ### *function* fee
+*Execution gas: **505***
 **constant**
 **view**
 
@@ -135,6 +147,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **uint256**
 
 ### *function* beneficiary
+*Execution gas: **526***
 **constant**
 **view**
 

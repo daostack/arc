@@ -1,4 +1,5 @@
 # *contract* ContributionReward ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ContributionReward.sol))
+*Total creation gas: **911000***
 A scheme for proposing and rewarding contributions to an organization
 
 - [Constructors](#constructors)
@@ -73,9 +74,12 @@ A scheme for proposing and rewarding contributions to an organization
 10. **_beneficiary** *of type address*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -85,6 +89,7 @@ A scheme for proposing and rewarding contributions to an organization
 *Nothing*
 
 ### *function* parameters
+*Execution gas: **1381***
 **constant**
 **view**
 
@@ -98,6 +103,7 @@ A scheme for proposing and rewarding contributions to an organization
 4. **address**
 
 ### *function* transferOwnership
+*Execution gas: **23184***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -108,6 +114,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* setParameters
+*Execution gas: **81392***
 **nonpayable**
 
 hash the parameters, save them if necessary, and return the hash value
@@ -121,6 +128,7 @@ hash the parameters, save them if necessary, and return the hash value
 *Nothing*
 
 ### *function* updateParameters
+*Execution gas: **81324***
 **nonpayable**
 
 *Inputs:*
@@ -133,6 +141,7 @@ hash the parameters, save them if necessary, and return the hash value
 *Nothing*
 
 ### *function* proposeContributionReward
+*Execution gas: **Infinite***
 **nonpayable**
 
 Submit a proposal for a reward for a contribution:
@@ -147,6 +156,7 @@ Submit a proposal for a reward for a contribution:
 *Nothing*
 
 ### *function* owner
+*Execution gas: **743***
 **constant**
 **view**
 
@@ -157,6 +167,7 @@ Submit a proposal for a reward for a contribution:
 1. **address**
 
 ### *function* organizationsProposals
+*Execution gas: **2282***
 **constant**
 **view**
 
@@ -174,6 +185,7 @@ Submit a proposal for a reward for a contribution:
 7. **address**
 
 ### *function* organizations
+*Execution gas: **705***
 **constant**
 **view**
 
@@ -184,6 +196,7 @@ Submit a proposal for a reward for a contribution:
 1. **bool**
 
 ### *function* nativeToken
+*Execution gas: **875***
 **constant**
 **view**
 
@@ -194,6 +207,7 @@ Submit a proposal for a reward for a contribution:
 1. **address**
 
 ### *function* isRegistered
+*Execution gas: **912***
 **constant**
 **view**
 
@@ -204,6 +218,7 @@ Submit a proposal for a reward for a contribution:
 1. **bool**
 
 ### *function* hashedParameters
+*Execution gas: **766***
 **constant**
 **view**
 
@@ -214,6 +229,7 @@ Submit a proposal for a reward for a contribution:
 1. **bytes32**
 
 ### *function* getParametersHash
+*Execution gas: **815***
 **constant**
 **pure**
 
@@ -228,6 +244,7 @@ return a hash of the given parameters
 a hash of the parameters
 
 ### *function* fee
+*Execution gas: **700***
 **constant**
 **view**
 
@@ -238,6 +255,7 @@ a hash of the parameters
 1. **uint256**
 
 ### *function* execute
+*Execution gas: **Infinite***
 **nonpayable**
 
 execution of proposals, can only be called by the voting machine in which the vote is held.
@@ -250,6 +268,7 @@ execution of proposals, can only be called by the voting machine in which the vo
 *Nothing*
 
 ### *function* beneficiary
+*Execution gas: **655***
 **constant**
 **view**
 

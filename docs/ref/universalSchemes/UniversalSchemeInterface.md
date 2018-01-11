@@ -1,4 +1,5 @@
 # *contract* UniversalSchemeInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UniversalSchemeInterface.sol))
+*Total creation gas: **Infinite***
 
 
 - [Constructors](#constructors)
@@ -14,9 +15,12 @@
 ## Events
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* updateParameters
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -29,6 +33,7 @@
 *Nothing*
 
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*

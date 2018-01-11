@@ -1,4 +1,5 @@
 # *contract* Reputation ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Reputation.sol))
+*Total creation gas: **222600***
 Simple static reputation storage
 
 - [Constructors](#constructors)
@@ -32,9 +33,12 @@ Simple static reputation storage
 2. **amount** *of type int256*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* transferOwnership
+*Execution gas: **22854***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -45,6 +49,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* totalSupply
+*Execution gas: **373***
 **constant**
 **view**
 
@@ -55,6 +60,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **uint256**
 
 ### *function* setReputation
+*Execution gas: **Infinite***
 **nonpayable**
 
 setting reputation amount for a given address, updating the total supply as well
@@ -66,6 +72,7 @@ setting reputation amount for a given address, updating the total supply as well
 bool which represents a success
 
 ### *function* reputationOf
+*Execution gas: **683***
 **constant**
 **view**
 
@@ -77,6 +84,7 @@ return the reputation amount of a given owner
 *Nothing*
 
 ### *function* owner
+*Execution gas: **573***
 **constant**
 **view**
 
@@ -87,6 +95,7 @@ return the reputation amount of a given owner
 1. **address**
 
 ### *function* mint
+*Execution gas: **Infinite***
 **nonpayable**
 
 adding/reducing reputation of a given address, updating the total supply, and triggering an event of the operation
@@ -98,6 +107,7 @@ adding/reducing reputation of a given address, updating the total supply, and t
 bool which represents a successful of the function
 
 ### *function* decimals
+*Execution gas: **395***
 **constant**
 **view**
 

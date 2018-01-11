@@ -1,4 +1,5 @@
 # *contract* ExecutableInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ExecutableInterface.sol))
+*Total creation gas: **Infinite***
 
 
 - [Constructors](#constructors)
@@ -13,9 +14,12 @@
 ## Events
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* execute
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*

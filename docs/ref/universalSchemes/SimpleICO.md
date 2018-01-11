@@ -1,4 +1,5 @@
 # *contract* SimpleICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
+*Total creation gas: **1018400***
 SimpleICO scheme.
 
 - [Constructors](#constructors)
@@ -58,9 +59,12 @@ SimpleICO scheme.
 4. **_tokensAmount** *of type uint256*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -70,6 +74,7 @@ SimpleICO scheme.
 *Nothing*
 
 ### *function* parameters
+*Execution gas: **1871***
 **constant**
 **view**
 
@@ -85,6 +90,7 @@ SimpleICO scheme.
 6. **address**
 
 ### *function* transferOwnership
+*Execution gas: **23181***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -95,6 +101,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* resumeICO
+*Execution gas: **21645***
 **nonpayable**
 
 Allowing admin to reopen an ICO.
@@ -105,6 +112,7 @@ Allowing admin to reopen an ICO.
 *Nothing*
 
 ### *function* updateParameters
+*Execution gas: **81255***
 **nonpayable**
 
 *Inputs:*
@@ -117,6 +125,7 @@ Allowing admin to reopen an ICO.
 *Nothing*
 
 ### *function* start
+*Execution gas: **Infinite***
 **nonpayable**
 
 start an ICO
@@ -127,6 +136,7 @@ start an ICO
 *Nothing*
 
 ### *function* setParameters
+*Execution gas: **122123***
 **nonpayable**
 
 Hash the parameters, save them if necessary, and return the hash value
@@ -142,6 +152,7 @@ Hash the parameters, save them if necessary, and return the hash value
 bytes32 -the params hash
 
 ### *function* organizationsICOInfo
+*Execution gas: **1575***
 **constant**
 **view**
 
@@ -155,6 +166,7 @@ bytes32 -the params hash
 4. **bool**
 
 ### *function* organizations
+*Execution gas: **749***
 **constant**
 **view**
 
@@ -165,6 +177,7 @@ bytes32 -the params hash
 1. **bool**
 
 ### *function* owner
+*Execution gas: **765***
 **constant**
 **view**
 
@@ -175,6 +188,7 @@ bytes32 -the params hash
 1. **address**
 
 ### *function* nativeToken
+*Execution gas: **919***
 **constant**
 **view**
 
@@ -185,6 +199,7 @@ bytes32 -the params hash
 1. **address**
 
 ### *function* isRegistered
+*Execution gas: **934***
 **constant**
 **view**
 
@@ -195,6 +210,7 @@ bytes32 -the params hash
 1. **bool**
 
 ### *function* isActive
+*Execution gas: **4143***
 **constant**
 **view**
 
@@ -206,6 +222,7 @@ Check is an ICO is active (halted is still considered active). Active ICO: 1. T
 bool which represents a successful of the function
 
 ### *function* hashedParameters
+*Execution gas: **832***
 **constant**
 **view**
 
@@ -216,6 +233,7 @@ bool which represents a successful of the function
 1. **bytes32**
 
 ### *function* haltICO
+*Execution gas: **21541***
 **nonpayable**
 
 Allowing admin to halt an ICO.
@@ -226,6 +244,7 @@ Allowing admin to halt an ICO.
 *Nothing*
 
 ### *function* getParametersHash
+*Execution gas: **851***
 **constant**
 **pure**
 
@@ -242,6 +261,7 @@ Hash the parameters and return the hash value
 bytes32 -the params hash
 
 ### *function* fee
+*Execution gas: **744***
 **constant**
 **view**
 
@@ -252,6 +272,7 @@ bytes32 -the params hash
 1. **uint256**
 
 ### *function* donate
+*Execution gas: **Infinite***
 **payable**
 
 Donating ethers to get tokens. If the donation is higher than the remaining ethers in the "cap", The donator will get the change in ethers.
@@ -263,6 +284,7 @@ Donating ethers to get tokens. If the donation is higher than the remaining eth
 bool which represents a successful of the function
 
 ### *function* beneficiary
+*Execution gas: **655***
 **constant**
 **view**
 

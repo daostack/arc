@@ -1,4 +1,5 @@
 # *contract* GlobalConstraintInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/GlobalConstraintInterface.sol))
+*Total creation gas: **Infinite***
 
 
 - [Constructors](#constructors)
@@ -14,9 +15,12 @@
 ## Events
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* pre
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -28,6 +32,7 @@
 1. **bool**
 
 ### *function* post
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*

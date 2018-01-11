@@ -1,4 +1,5 @@
 # *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
+*Total creation gas: **683600***
 DAOToken, base on zeppelin contract.
 
 - [Constructors](#constructors)
@@ -70,9 +71,12 @@ DAOToken, base on zeppelin contract.
 3. **value** *of type uint256*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* balanceOf
+*Execution gas: **793***
 **constant**
 **view**
 
@@ -84,6 +88,7 @@ Gets the balance of the specified address.
 An uint256 representing the amount owned by the passed address.
 
 ### *function* mintingFinished
+*Execution gas: **459***
 **constant**
 **view**
 
@@ -94,6 +99,7 @@ An uint256 representing the amount owned by the passed address.
 1. **bool**
 
 ### *function* transferOwnership
+*Execution gas: **23118***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -104,6 +110,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* totalSupply
+*Execution gas: **439***
 **constant**
 **view**
 
@@ -114,6 +121,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **uint256**
 
 ### *function* transferFrom
+*Execution gas: **Infinite***
 **nonpayable**
 
 Transfer tokens from one address to another
@@ -126,6 +134,7 @@ Transfer tokens from one address to another
 *Nothing*
 
 ### *function* transfer
+*Execution gas: **43953***
 **nonpayable**
 
 transfer token for a specified address
@@ -137,6 +146,7 @@ transfer token for a specified address
 *Nothing*
 
 ### *function* symbol
+*Execution gas: **Infinite***
 **constant**
 **view**
 
@@ -147,6 +157,7 @@ transfer token for a specified address
 1. **string**
 
 ### *function* owner
+*Execution gas: **793***
 **constant**
 **view**
 
@@ -157,6 +168,7 @@ transfer token for a specified address
 1. **address**
 
 ### *function* name
+*Execution gas: **Infinite***
 **constant**
 **view**
 
@@ -167,6 +179,7 @@ transfer token for a specified address
 1. **string**
 
 ### *function* mint
+*Execution gas: **Infinite***
 **nonpayable**
 
 Function to mint tokens
@@ -178,6 +191,7 @@ Function to mint tokens
 A boolean that indicates if the operation was successful.
 
 ### *function* increaseApproval
+*Execution gas: **23173***
 **nonpayable**
 
 Increase the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
@@ -189,6 +203,7 @@ Increase the amount of tokens that an owner allowed to a spender.   * approve sh
 *Nothing*
 
 ### *function* finishMinting
+*Execution gas: **22080***
 **nonpayable**
 
 Function to stop minting new tokens.
@@ -199,6 +214,7 @@ Function to stop minting new tokens.
 True if the operation was successful.
 
 ### *function* destroyAndSend
+*Execution gas: **30980***
 **nonpayable**
 
 *Inputs:*
@@ -208,6 +224,7 @@ True if the operation was successful.
 *Nothing*
 
 ### *function* destroy
+*Execution gas: **30945***
 **nonpayable**
 
 Transfers the current balance to the owner and terminates the contract.
@@ -218,6 +235,7 @@ Transfers the current balance to the owner and terminates the contract.
 *Nothing*
 
 ### *function* decreaseApproval
+*Execution gas: **Infinite***
 **nonpayable**
 
 Decrease the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
@@ -229,6 +247,7 @@ Decrease the amount of tokens that an owner allowed to a spender.   * approve sh
 *Nothing*
 
 ### *function* burn
+*Execution gas: **Infinite***
 **nonpayable**
 
 Burns a specific amount of tokens.
@@ -239,6 +258,7 @@ Burns a specific amount of tokens.
 *Nothing*
 
 ### *function* approve
+*Execution gas: **22377***
 **nonpayable**
 
 Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.   * Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
@@ -250,6 +270,7 @@ Approve the passed address to spend the specified amount of tokens on behalf of 
 *Nothing*
 
 ### *function* allowance
+*Execution gas: **1049***
 **constant**
 **view**
 
@@ -262,6 +283,7 @@ Function to check the amount of tokens that an owner allowed to a spender.
 A uint256 specifying the amount of tokens still available for the spender.
 
 ### *function* DECIMAL
+*Execution gas: **349***
 **constant**
 **view**
 

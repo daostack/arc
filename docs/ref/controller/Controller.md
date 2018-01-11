@@ -1,4 +1,5 @@
 # *contract* Controller ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Controller.sol))
+*Total creation gas: **2327200***
 Controller contract
 
 - [Constructors](#constructors)
@@ -132,10 +133,13 @@ Controller contract
 2. **_params** *of type bytes32*
 
 ## Fallback
+*Execution gas: **720***
+
 **nonpayable**
 
 ## Functions
 ### *function* isSchemeRegistered
+*Execution gas: **1045***
 **constant**
 **view**
 
@@ -146,6 +150,7 @@ Controller contract
 1. **bool**
 
 ### *function* nativeToken
+*Execution gas: **1142***
 **constant**
 **view**
 
@@ -156,6 +161,7 @@ Controller contract
 1. **address**
 
 ### *function* schemes
+*Execution gas: **1499***
 **constant**
 **view**
 
@@ -167,6 +173,7 @@ Controller contract
 2. **bytes4**
 
 ### *function* sendEther
+*Execution gas: **Infinite***
 **nonpayable**
 
 send some ether
@@ -178,6 +185,7 @@ send some ether
 bool which represents a success
 
 ### *function* newController
+*Execution gas: **680***
 **constant**
 **view**
 
@@ -188,6 +196,7 @@ bool which represents a success
 1. **address**
 
 ### *function* upgradeController
+*Execution gas: **Infinite***
 **nonpayable**
 
 upgrade the Controller     The function will trigger an event 'UpgradeController'.
@@ -198,6 +207,7 @@ upgrade the Controller     The function will trigger an event 'UpgradeControlle
 bool which represents a success
 
 ### *function* registerScheme
+*Execution gas: **Infinite***
 **nonpayable**
 
 register a scheme
@@ -210,6 +220,7 @@ register a scheme
 bool which represents a success
 
 ### *function* removeGlobalConstraint
+*Execution gas: **Infinite***
 **nonpayable**
 
 remove Global Constraint
@@ -220,6 +231,7 @@ remove Global Constraint
 bool which represents a success
 
 ### *function* unregisterSelf
+*Execution gas: **27918***
 **nonpayable**
 
 unregister the caller's scheme
@@ -230,6 +242,7 @@ unregister the caller's scheme
 bool which represents a success
 
 ### *function* unregisterScheme
+*Execution gas: **Infinite***
 **nonpayable**
 
 unregister a scheme
@@ -240,6 +253,7 @@ unregister a scheme
 bool which represents a success
 
 ### *function* externalTokenTransferFrom
+*Execution gas: **Infinite***
 **nonpayable**
 
 transfer token "from" address "to" address     One must to approve the amount of tokens which can be spend from the     "from" account.This can be done using externalTokenApprove.
@@ -253,6 +267,7 @@ transfer token "from" address "to" address     One must to approve the amount o
 bool which represents a success
 
 ### *function* isGlobalConstraintRegister
+*Execution gas: **670***
 **constant**
 **view**
 
@@ -263,6 +278,7 @@ bool which represents a success
 1. **bool**
 
 ### *function* mintReputation
+*Execution gas: **Infinite***
 **nonpayable**
 
 mint reputation .
@@ -274,6 +290,7 @@ mint reputation .
 bool which represents a success
 
 ### *function* mintTokens
+*Execution gas: **Infinite***
 **nonpayable**
 
 mint tokens .
@@ -285,6 +302,7 @@ mint tokens .
 bool which represents a success
 
 ### *function* nativeReputation
+*Execution gas: **900***
 **constant**
 **view**
 
@@ -295,6 +313,7 @@ bool which represents a success
 1. **address**
 
 ### *function* genericAction
+*Execution gas: **Infinite***
 **nonpayable**
 
 do a generic deligate call to the contract which called us. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
@@ -305,6 +324,7 @@ do a generic deligate call to the contract which called us. This function use d
 bool which represents success
 
 ### *function* globalConstraintsRegister
+*Execution gas: **1038***
 **constant**
 **view**
 
@@ -316,6 +336,7 @@ bool which represents success
 2. **uint256**
 
 ### *function* globalConstraintsCount
+*Execution gas: **920***
 **constant**
 **view**
 
@@ -326,6 +347,7 @@ bool which represents success
 1. **uint256**
 
 ### *function* globalConstraints
+*Execution gas: **1390***
 **constant**
 **view**
 
@@ -337,6 +359,7 @@ bool which represents success
 2. **bytes32**
 
 ### *function* getSchemePermissions
+*Execution gas: **1174***
 **constant**
 **view**
 
@@ -347,6 +370,7 @@ bool which represents success
 1. **bytes4**
 
 ### *function* getSchemeParameters
+*Execution gas: **793***
 **constant**
 **view**
 
@@ -357,6 +381,7 @@ bool which represents success
 1. **bytes32**
 
 ### *function* externalTokenTransfer
+*Execution gas: **Infinite***
 **nonpayable**
 
 send some amount of arbitrary ERC20 Tokens
@@ -369,6 +394,7 @@ send some amount of arbitrary ERC20 Tokens
 bool which represents a success
 
 ### *function* externalTokenIncreaseApproval
+*Execution gas: **Infinite***
 **nonpayable**
 
 increase approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
@@ -381,6 +407,7 @@ increase approval for the spender address to spend a specified amount of tokens
 bool which represents a success
 
 ### *function* externalTokenDecreaseApproval
+*Execution gas: **Infinite***
 **nonpayable**
 
 decrease approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
@@ -393,6 +420,7 @@ decrease approval for the spender address to spend a specified amount of tokens
 bool which represents a success
 
 ### *function* avatar
+*Execution gas: **768***
 **constant**
 **view**
 
@@ -403,6 +431,7 @@ bool which represents a success
 1. **address**
 
 ### *function* addGlobalConstraint
+*Execution gas: **Infinite***
 **nonpayable**
 
 add or update Global Constraint

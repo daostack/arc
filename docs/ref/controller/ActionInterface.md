@@ -1,4 +1,5 @@
 # *contract* ActionInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
+*Total creation gas: **Infinite***
 
 
 - [Constructors](#constructors)
@@ -13,9 +14,12 @@
 ## Events
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* action
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*

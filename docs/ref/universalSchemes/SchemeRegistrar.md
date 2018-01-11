@@ -1,4 +1,5 @@
 # *contract* SchemeRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SchemeRegistrar.sol))
+*Total creation gas: **1008400***
 A registrar for Schemes for organizations
 
 - [Constructors](#constructors)
@@ -81,9 +82,12 @@ A registrar for Schemes for organizations
 1. **proposalId** *of type bytes32*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* organizations
+*Execution gas: **771***
 **constant**
 **view**
 
@@ -94,6 +98,7 @@ A registrar for Schemes for organizations
 1. **bool**
 
 ### *function* parameters
+*Execution gas: **1148***
 **constant**
 **view**
 
@@ -106,6 +111,7 @@ A registrar for Schemes for organizations
 3. **address**
 
 ### *function* setParameters
+*Execution gas: **61157***
 **nonpayable**
 
 hash the parameters, save them if necessary, and return the hash value
@@ -118,6 +124,7 @@ hash the parameters, save them if necessary, and return the hash value
 *Nothing*
 
 ### *function* proposeScheme
+*Execution gas: **Infinite***
 **nonpayable**
 
 create a proposal to register a schemeNB: not only proposes the vote, but also votes for it
@@ -134,6 +141,7 @@ create a proposal to register a schemeNB: not only proposes the vote, but also 
 a proposal Id
 
 ### *function* transferOwnership
+*Execution gas: **23206***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -144,6 +152,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -153,6 +162,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* updateParameters
+*Execution gas: **81368***
 **nonpayable**
 
 *Inputs:*
@@ -165,6 +175,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* proposeToRemoveScheme
+*Execution gas: **Infinite***
 **nonpayable**
 
 propose to remove a scheme for a controller
@@ -176,6 +187,7 @@ propose to remove a scheme for a controller
 *Nothing*
 
 ### *function* owner
+*Execution gas: **809***
 **constant**
 **view**
 
@@ -186,6 +198,7 @@ propose to remove a scheme for a controller
 1. **address**
 
 ### *function* organizationsProposals
+*Execution gas: **2102***
 **constant**
 **view**
 
@@ -203,6 +216,7 @@ propose to remove a scheme for a controller
 7. **bool**
 
 ### *function* nativeToken
+*Execution gas: **897***
 **constant**
 **view**
 
@@ -213,6 +227,7 @@ propose to remove a scheme for a controller
 1. **address**
 
 ### *function* isRegistered
+*Execution gas: **934***
 **constant**
 **view**
 
@@ -223,6 +238,7 @@ propose to remove a scheme for a controller
 1. **bool**
 
 ### *function* hashedParameters
+*Execution gas: **788***
 **constant**
 **view**
 
@@ -233,6 +249,7 @@ propose to remove a scheme for a controller
 1. **bytes32**
 
 ### *function* getParametersHash
+*Execution gas: **777***
 **constant**
 **pure**
 
@@ -245,6 +262,7 @@ propose to remove a scheme for a controller
 1. **bytes32**
 
 ### *function* fee
+*Execution gas: **722***
 **constant**
 **view**
 
@@ -255,6 +273,7 @@ propose to remove a scheme for a controller
 1. **uint256**
 
 ### *function* execute
+*Execution gas: **Infinite***
 **nonpayable**
 
 execute a  proposal This method can only be called by the voting machine in which the vote is held.
@@ -267,6 +286,7 @@ execute a  proposal This method can only be called by the voting machine in whi
 *Nothing*
 
 ### *function* beneficiary
+*Execution gas: **699***
 **constant**
 **view**
 

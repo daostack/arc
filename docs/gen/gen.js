@@ -25,7 +25,7 @@ function main(){
     }
     
     // returns an `.md` string based on given data.
-    function render(file,contractName,abi,devdoc){
+    function render(file,contractName,abi,devdoc,gas){
         const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
         const functions = abi.filter(x => x.type === 'function').sort((x,y) => x.name <= y.name);
         const constructors = abi.filter(x => x.type === 'constructor').sort((x,y) => x.name <= y.name);
@@ -40,6 +40,7 @@ function main(){
            we cannot use any indentation which doesn't appear in the `.md` file */
         return (
 `# *contract* ${contractName} ([source](${'https://github.com/daostack/daostack/tree/master/'+file}))
+*Total creation gas: **${gas.creation[1] || 'Infinite'}***
 ${title}
 
 - [Constructors](#constructors)
@@ -68,6 +69,7 @@ ${e.inputs.length ? e.inputs.map((input,i) =>
 `)
 .join('\n')}
 ## Fallback
+${`*Execution gas: **${gas.external[''] || 'Infinite'}***\n`}
 ${fallback ? 
     `${fallback.constant? '**constant**\n' : ''}${fallback.stateMutability? `**${fallback.stateMutability}**\n` : ''}`: 
     '*Nothing*'
@@ -75,7 +77,7 @@ ${fallback ?
 ## Functions
 ${functions.map(f => 
 `### *function* ${f.name || '*default*'}
-${f.constant? '**constant**\n' : ''}${f.stateMutability? `**${f.stateMutability}**\n` : ''}${methods[signature(f)] ? '\n' + methods[signature(f)].details : ''}
+${`*Execution gas: **${gas.external[signature(f)] || 'Infinite'}***\n`}${f.constant? '**constant**\n' : ''}${f.stateMutability? `**${f.stateMutability}**\n` : ''}${methods[signature(f)] ? '\n' + methods[signature(f)].details : ''}
 *Inputs:*
 ${f.inputs.length ? f.inputs.map((input,i) => 
 `${i+1}. **${input.name || 'unnamed'}** *of type ${input.type}*${methods[signature(f)] && methods[signature(f)].params ? ' - ' + methods[signature(f)].params[input.name] : ''}`
@@ -135,7 +137,7 @@ ${
         shell.mkdir('-p',path.dirname(destination));
         fs.writeFileSync(
             destination,
-            render(file,contractName,abi,devdoc)
+            render(file,contractName,abi,devdoc,data.gasEstimates)
         );
     }
 }

@@ -1,4 +1,5 @@
 # *contract* TokenCapGC ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/TokenCapGC.sol))
+*Total creation gas: **183400***
 Token Cap Global Constraint
 
 - [Constructors](#constructors)
@@ -17,9 +18,12 @@ Token Cap Global Constraint
 ## Events
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* setParameters
+*Execution gas: **40976***
 **nonpayable**
 
 adding a new set of parametrs
@@ -31,6 +35,7 @@ adding a new set of parametrs
 the calculated parameters hash
 
 ### *function* pre
+*Execution gas: **Infinite***
 **constant**
 **pure**
 
@@ -44,6 +49,7 @@ check the constraint after the action. This global contraint only checks the st
 true
 
 ### *function* post
+*Execution gas: **Infinite***
 **constant**
 **view**
 
@@ -57,6 +63,7 @@ check the total supply cap.
 bool which represents a success
 
 ### *function* params
+*Execution gas: **934***
 **constant**
 **view**
 
@@ -68,6 +75,7 @@ bool which represents a success
 2. **uint256**
 
 ### *function* getParametersHash
+*Execution gas: **485***
 **constant**
 **pure**
 

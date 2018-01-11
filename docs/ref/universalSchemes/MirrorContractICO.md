@@ -1,4 +1,5 @@
 # *contract* MirrorContractICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
+*Total creation gas: **158400***
 An avatar contract for ICO.
 
 - [Constructors](#constructors)
@@ -26,10 +27,13 @@ An avatar contract for ICO.
 2. **newOwner** *of type address*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 **payable**
 
 ## Functions
 ### *function* transferOwnership
+*Execution gas: **Infinite***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -40,6 +44,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* simpleICO
+*Execution gas: **Infinite***
 **constant**
 **view**
 
@@ -50,6 +55,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* owner
+*Execution gas: **Infinite***
 **constant**
 **view**
 
@@ -60,6 +66,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* organization
+*Execution gas: **Infinite***
 **constant**
 **view**
 
@@ -70,6 +77,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 1. **address**
 
 ### *function* destroyAndSend
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -79,6 +87,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* destroy
+*Execution gas: **Infinite***
 **nonpayable**
 
 Transfers the current balance to the owner and terminates the contract.

@@ -1,4 +1,5 @@
 # *contract* ExecutableTest ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/ExecutableTest.sol))
+*Total creation gas: **74000***
 
 
 - [Constructors](#constructors)
@@ -46,9 +47,12 @@
 1. **_msg** *of type address*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* execute
+*Execution gas: **3379***
 **nonpayable**
 
 *Inputs:*

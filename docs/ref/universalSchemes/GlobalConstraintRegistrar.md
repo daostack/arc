@@ -1,4 +1,5 @@
 # *contract* GlobalConstraintRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GlobalConstraintRegistrar.sol))
+*Total creation gas: **851800***
 A scheme to manage global constaintg for organizations
 
 - [Constructors](#constructors)
@@ -78,9 +79,12 @@ A scheme to manage global constaintg for organizations
 1. **proposalId** *of type bytes32*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 ### *function* setParameters
+*Execution gas: **41209***
 **nonpayable**
 
 Hash the parameters, save them if necessary, and return the hash value
@@ -92,6 +96,7 @@ Hash the parameters, save them if necessary, and return the hash value
 bytes32 -the parameters hash
 
 ### *function* parameters
+*Execution gas: **894***
 **constant**
 **view**
 
@@ -103,6 +108,7 @@ bytes32 -the parameters hash
 2. **address**
 
 ### *function* proposeToRemoveGC
+*Execution gas: **Infinite***
 **nonpayable**
 
 propose to remove a global constraint:
@@ -114,6 +120,7 @@ propose to remove a global constraint:
 bytes32 -the proposal id
 
 ### *function* transferOwnership
+*Execution gas: **23184***
 **nonpayable**
 
 Allows the current owner to transfer control of the contract to a newOwner.
@@ -124,6 +131,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* registerOrganization
+*Execution gas: **Infinite***
 **nonpayable**
 
 *Inputs:*
@@ -133,6 +141,7 @@ Allows the current owner to transfer control of the contract to a newOwner.
 *Nothing*
 
 ### *function* proposeGlobalConstraint
+*Execution gas: **Infinite***
 **nonpayable**
 
 propose to add a new global constraint:
@@ -146,6 +155,7 @@ propose to add a new global constraint:
 bytes32 -the proposal id
 
 ### *function* updateParameters
+*Execution gas: **81368***
 **nonpayable**
 
 *Inputs:*
@@ -158,6 +168,7 @@ bytes32 -the proposal id
 *Nothing*
 
 ### *function* owner
+*Execution gas: **787***
 **constant**
 **view**
 
@@ -168,6 +179,7 @@ bytes32 -the proposal id
 1. **address**
 
 ### *function* organizationsData
+*Execution gas: **1013***
 **constant**
 **view**
 
@@ -179,6 +191,7 @@ bytes32 -the proposal id
 2. **address**
 
 ### *function* organizations
+*Execution gas: **749***
 **constant**
 **view**
 
@@ -189,6 +202,7 @@ bytes32 -the proposal id
 1. **bool**
 
 ### *function* nativeToken
+*Execution gas: **875***
 **constant**
 **view**
 
@@ -199,6 +213,7 @@ bytes32 -the proposal id
 1. **address**
 
 ### *function* isRegistered
+*Execution gas: **912***
 **constant**
 **view**
 
@@ -209,6 +224,7 @@ bytes32 -the proposal id
 1. **bool**
 
 ### *function* hashedParameters
+*Execution gas: **788***
 **constant**
 **view**
 
@@ -219,6 +235,7 @@ bytes32 -the proposal id
 1. **bytes32**
 
 ### *function* getParametersHash
+*Execution gas: **586***
 **constant**
 **pure**
 
@@ -231,6 +248,7 @@ Hash the parameters,and return the hash value
 bytes32 -the parameters hash
 
 ### *function* fee
+*Execution gas: **700***
 **constant**
 **view**
 
@@ -241,6 +259,7 @@ bytes32 -the parameters hash
 1. **uint256**
 
 ### *function* execute
+*Execution gas: **Infinite***
 **nonpayable**
 
 execution of proposals, can only be called by the voting machine in which the vote is held.
@@ -253,6 +272,7 @@ execution of proposals, can only be called by the voting machine in which the vo
 bool which represents a successful of the function.
 
 ### *function* beneficiary
+*Execution gas: **699***
 **constant**
 **view**
 

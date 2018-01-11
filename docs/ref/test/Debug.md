@@ -1,4 +1,5 @@
 # *contract* Debug ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/Debug.sol))
+*Total creation gas: **10600***
 
 
 - [Constructors](#constructors)
@@ -46,6 +47,8 @@
 1. **_msg** *of type address*
 
 ## Fallback
+*Execution gas: **Infinite***
+
 *Nothing*
 ## Functions
 
