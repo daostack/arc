@@ -39,7 +39,7 @@ function main(){
         const signature = (name,ps) => `${name}(${ps.map(p => `${p.type}`).join(', ')})`;
         const headerLink = (title,link) => `    - [${title}](#${hyphenate(link)})`;
         const title = (prefix,text) => `### *${prefix}* ${text}`;
-        const functionComment = (obj) => obj.details ? `> ${obj.details}${N}` : '';
+        const functionComment = (obj) => obj.details ? `> ${obj.details.trim()}${N}` : '';
         const paramComment = (obj, name) => obj.params && obj.params[name] ? `- ${obj.params[name]}` : '';
 
         const modifiers = (fn) => 
@@ -94,7 +94,7 @@ function main(){
             }`);
         };
 
-        const description = devdoc.title ? `${devdoc.title}${N}` : '';
+        const description = devdoc.title ? `${devdoc.title.trim()}${N}` : '';
 
         const res = (
             `# *contract* ${contractName} ([source](https://github.com/daostack/daostack/tree/master/${file}))${N
