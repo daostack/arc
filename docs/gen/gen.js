@@ -118,6 +118,6 @@ try{
     shell.exit(0);
 }
 catch(e){
-    shell.echo(`An error occured: ${e.message}`);
+    shell.echo(`An error occurred: ${e.message}`);
     shell.exit(1);
 }
