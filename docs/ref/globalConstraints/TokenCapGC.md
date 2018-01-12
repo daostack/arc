@@ -8,8 +8,7 @@
 > Token Cap Global Constraint
 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
 
 - [Events](#events)

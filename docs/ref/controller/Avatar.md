@@ -8,8 +8,7 @@
 > An Avatar holds tokens, reputation and ether for a controller
 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
     - [Avatar(bytes32, address, address)](#constructor-avatarbytes32-address-address)
 - [Events](#events)

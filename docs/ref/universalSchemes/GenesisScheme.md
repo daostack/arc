@@ -8,8 +8,7 @@
 > Genesis Scheme that creates organizations
 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
     - [GenesisScheme()](#constructor-genesisscheme)
 - [Events](#events)

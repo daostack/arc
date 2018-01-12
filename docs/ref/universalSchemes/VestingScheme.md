@@ -8,8 +8,7 @@
 > A schme for vesting.
 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
     - [VestingScheme(address, uint256, address)](#constructor-vestingschemeaddress-uint256-address)
 - [Events](#events)

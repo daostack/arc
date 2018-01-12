@@ -8,8 +8,7 @@
 > A universal organization registry.
 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
     - [OrganizationRegister(address, uint256, address)](#constructor-organizationregisteraddress-uint256-address)
 - [Events](#events)

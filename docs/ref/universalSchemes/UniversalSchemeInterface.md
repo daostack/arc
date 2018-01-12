@@ -7,8 +7,7 @@
 
 > 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
 
 - [Events](#events)

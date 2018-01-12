@@ -8,8 +8,7 @@
 > A registrar for Schemes for organizations
 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
     - [SchemeRegistrar(address, uint256, address)](#constructor-schemeregistraraddress-uint256-address)
 - [Events](#events)

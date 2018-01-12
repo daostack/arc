@@ -8,8 +8,7 @@
 > A schme to manage the upgrade of an organization.
 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
     - [UpgradeScheme(address, uint256, address)](#constructor-upgradeschemeaddress-uint256-address)
 - [Events](#events)

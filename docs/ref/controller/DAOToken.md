@@ -8,8 +8,7 @@
 > DAOToken, base on zeppelin contract.
 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
     - [DAOToken(string, string)](#constructor-daotokenstring-string)
 - [Events](#events)

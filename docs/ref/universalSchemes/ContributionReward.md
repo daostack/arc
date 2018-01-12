@@ -8,8 +8,7 @@
 > A scheme for proposing and rewarding contributions to an organization
 
 
-
-##Reference
+## Reference
 - [Constructors](#constructors)
     - [ContributionReward(address, uint256, address)](#constructor-contributionrewardaddress-uint256-address)
 - [Events](#events)
