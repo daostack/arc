@@ -232,14 +232,14 @@
 
 
 ### *function* upgradeController
-> upgrade the Controller     The function will trigger an event 'UpgradeController'.
+> upgrade the Controller     The function will trigger an event 'UpgradeController'.
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_newController** *of type address- the address of the new controller.*
+1. **_newController** *of type address- the address of the new controller.*
 
 bool which represents a success
 
@@ -266,7 +266,7 @@ bool which represents a success
 **nonpayable**
 
 *Inputs:*
-1. **_globalConstraint** *of type address- the address of the global constraint to be remove.*
+1. **_globalConstraint** *of type address- the address of the global constraint to be remove.*
 
 bool which represents a success
 
@@ -290,7 +290,7 @@ bool which represents a success
 **nonpayable**
 
 *Inputs:*
-1. **_scheme** *of type address- the address of the scheme*
+1. **_scheme** *of type address- the address of the scheme*
 
 bool which represents a success
 
@@ -365,14 +365,14 @@ bool which represents a success
 
 
 ### *function* genericAction
-> do a generic deligate call to the contract which called us. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
+> do a generic deligate call to the contract which called us. This function use deligatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_params** *of type bytes32[]- the params for the call.*
+1. **_params** *of type bytes32[]- the params for the call.*
 
 bool which represents success
 

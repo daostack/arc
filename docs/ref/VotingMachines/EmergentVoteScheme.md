@@ -251,14 +251,14 @@
 
 
 ### *function* proposalScore
-> Get the score of a specific proposal The score is evaluated by multiplying the number of votes with the funds that are invested
+> Get the score of a specific proposal The score is evaluated by multiplying the number of votes with the funds that are invested
 
 *Execution cost: **No bound available.***
 
 **constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the proposal ID*
+1. **_proposalId** *of type bytes32- the proposal ID*
 
 uint Proposal's score
 
@@ -348,9 +348,9 @@ uint Proposal's score
 **constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
 
-int[10] array that contains the proposal's info: number of yes, no, and abstain, and if the voting for the proposal has ended
+int[10] array that contains the proposal's info: number of yes, no, and abstain, and if the voting for the proposal has ended
 
 ### *function* propose
 
@@ -410,14 +410,14 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 
 
 ### *function* cancelVote
-> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
+> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- id of the proposal*
+1. **_proposalId** *of type bytes32- id of the proposal*
 
 *Returns:*
 *Nothing*
@@ -457,7 +457,7 @@ int[10] array that contains the proposal's info: number of yes, no, and abstain
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the proposal ID*
+1. **_proposalId** *of type bytes32- the proposal ID*
 
 bool True if the proposal is canceled and False if it wasn't
 
@@ -489,7 +489,7 @@ bool True if the proposal is canceled and False if it wasn't
 **constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 bool true or false
 
@@ -501,9 +501,9 @@ bool true or false
 **constant | view**
 
 *Inputs:*
-1. **_idsArray** *of type bytes32[]- the proposal ids that will be checked*
+1. **_idsArray** *of type bytes32[]- the proposal ids that will be checked*
 
-uint index the index of the proposal containing the smallest score in the listuint min the minimum score in the list
+uint index the index of the proposal containing the smallest score in the listuint min the minimum score in the list
 
 ### *function* getProposalParametersHash
 
@@ -528,9 +528,9 @@ uint index the index of the proposal containing the smallest score in the listu
 **constant | view**
 
 *Inputs:*
-1. **_idsArray** *of type bytes32[]- the proposal ids that will be checked*
+1. **_idsArray** *of type bytes32[]- the proposal ids that will be checked*
 
-uint index the index of the proposal containing the highest score in the listuint max the maximum score in the list
+uint index the index of the proposal containing the highest score in the listuint max the maximum score in the list
 
 ### *function* fee
 
@@ -566,7 +566,7 @@ uint index the index of the proposal containing the highest score in the listui
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the id of the proposal*
+1. **_proposalId** *of type bytes32- the id of the proposal*
 
 bool is the proposal has been executed or not?
 
@@ -593,7 +593,7 @@ bool is the proposal has been executed or not?
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address- avatar of the organization*
+1. **_avatar** *of type address- avatar of the organization*
 
 *Returns:*
 *Nothing*

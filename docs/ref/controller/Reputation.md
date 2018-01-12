@@ -97,7 +97,7 @@
 **constant | view**
 
 *Inputs:*
-1. **_owner** *of type address- an address of the owner which we want to get his reputation*
+1. **_owner** *of type address- an address of the owner which we want to get his reputation*
 
 *Returns:*
 1. **balance** *of type uint256*

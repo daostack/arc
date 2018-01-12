@@ -130,7 +130,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_agreementId** *of type uint256- the relevant agreement.*
+1. **_agreementId** *of type uint256- the relevant agreement.*
 
 *Returns:*
 *Nothing*
@@ -185,7 +185,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_agreementId** *of type uint256- the relevant agreement.*
+1. **_agreementId** *of type uint256- the relevant agreement.*
 
 *Returns:*
 *Nothing*
@@ -404,7 +404,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_agreementId** *of type uint256- the relevant agreement.*
+1. **_agreementId** *of type uint256- the relevant agreement.*
 
 *Returns:*
 *Nothing*

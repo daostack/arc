@@ -1,4 +1,4 @@
-/*
+/**
  * This is a simple build script which renders all `.sol` files under `contracts/`
  * as markdown files for use in the documentation.
  * it uses 
@@ -14,122 +14,23 @@ const solc = require('solc');
 const fs = require('fs');
 const path = require('path');
 const shell = require('shelljs');
+const templates = require('./templates.js');
 
-function main(){
-    // returns an `.md` string based on given data.
-    function render(file,contractName,abi,devdoc,gas){
-        /* This is a little trick to make templates more readable. used like `line1${N}line2`*/
-        const N = '\n';
+// A little helper
+const print = (o) => 
+    typeof o === 'string' ? 
+        shell.echo(o) 
+    : 
+        shell.echo(JSON.stringify(o,undefined,2));
 
-        const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
-        const functions = abi.filter(x => x.type === 'function').sort((x,y) => x.name <= y.name);
-        const constructors = abi.filter(x => x.type === 'constructor').sort((x,y) => x.name <= y.name);
-        const fallbacks = abi.filter(x => x.type === 'fallback').sort((x,y) => x.name <= y.name);
-        const fallback = fallbacks.length ? fallbacks[0] : null;
-        const methods = devdoc.methods || {};
-
-        // This turns header text into a hyphenated version that we can put in a hash link
-        const hyphenate = (s) => 
-            s.toLowerCase()
-            .replace(new RegExp('[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]+','g'),'')
-            .trim()
-            .replace(new RegExp('[ ]+','g'),'-');
-
-        const gasEstimate = (est) => est ? `less than ${est} gas.` : 'No bound available.';
-        const signature = (name,ps) => `${name}(${ps.map(p => `${p.type}`).join(', ')})`;
-        const headerLink = (title,link) => `    - [${title}](#${hyphenate(link)})`;
-        const title = (prefix,text) => `### *${prefix}* ${text}`;
-        const functionComment = (obj) => obj.details ? `> ${obj.details.trim()}${N}` : '';
-        const paramComment = (obj, name) => obj.params && obj.params[name] ? `- ${obj.params[name]}` : '';
-
-        const modifiers = (fn) => 
-            `${N}**${
-                [...fn.payable ? ['payable'] : [],
-                ...fn.constant ? ['constant'] : [],
-                ...fn.stateMutability && !fn.payable ? [fn.stateMutability] : []]
-                .join(' | ')}**${N}`;
-
-        const param = (obj,p,i) => `${i+1}. **${p.name || 'unnamed'}** *of type ${p.type}${paramComment(obj,p.name)}*`;
-        const params = (obj,title,ps) =>
-            `*${title}:*${N
-            }${ps.length ? ps.map((p,i) => param(obj,p,i)).join(N) : '*Nothing*'}${N
-            }`;
-
-        const constructor = (fn) =>{
-            const sign = signature(contractName,fn.inputs);
-            const obj = methods[sign] || {};
-            return (
-            `${title('constructor',sign)}${N
-            }${functionComment(obj)}${N
-            }*Execution cost: **${gasEstimate(gas.external[sign])}***${N
-            }${modifiers(fn)}${N
-            }${params(obj,'Params',fn.inputs)}${N
-            }`);
-        };
-
-        const event = (e) =>
-            `${title('event',e.name)}${N
-            }${params({},'Params',e.inputs)}${N
-            }`;
-
-        const func = (fn) =>{
-            const sign = signature(fn.name,fn.inputs);
-            const obj = methods[sign] || {};
-            return (
-            `${title('function',fn.name)}${N
-            }${functionComment(obj)}${N
-            }*Execution cost: **${gasEstimate(gas.external[sign])}***${N
-            }${modifiers(fn)}${N
-            }${params(obj,'Inputs',fn.inputs)}${N
-            }${obj.return ? obj.return : params({},'Returns',fn.outputs)}${N
-            }`);
-        };
-
-        const fb = (fn) =>{
-            const obj = methods[''] || {};
-            return (
-            `*Execution cost: **${gasEstimate(gas.external[''])}***${N
-            }${modifiers(fn)}${N
-            }${functionComment(obj)}${N
-            }`);
-        };
-
-        const description = devdoc.title ? `${devdoc.title.trim()}${N}` : '';
-
-        const res = (
-            `# *contract* ${contractName} ([source](https://github.com/daostack/daostack/tree/master/${file}))${N
-            }> ${description}${N    
-            }*Code deposit cost: **${gasEstimate(gas.creation[1])}***${N}${N
-            }*Execution cost: **${gasEstimate(gas.creation[0])}***${N}${N
-            }*Total deploy cost(deposit + execution): **${gasEstimate(gas.creation[0]+gas.creation[1])}***${N}${N
-            }- [Constructors](#constructors)${N
-            }${constructors.map(c => headerLink(signature(contractName,c.inputs),title('constructor',signature(contractName,c.inputs)))).join(N)}${N
-            }- [Events](#events)${N
-            }${events.map(e => headerLink(e.name,title('event',e.name))).join(N)}${N
-            }- [Fallback](#fallback)${N
-            }- [Functions](#functions)${N
-            }${functions.map(f => headerLink(f.name,title('function',f.name))).join(N)}${N
-            }## Constructors${N
-            }${constructors.map(c => constructor(c)).join(N)}${N
-            }## Events${N
-            }${events.map(e => event(e)).join(N)}${N
-            }## Fallback${N
-            }${fallback ? fb(fallback) : '*Nothing*'}${N
-            }## Functions${N
-            }${functions.map(f => func(f)).join(N)}${N
-            }`);
-        return res;
-    }
-    
-    const files = shell.ls('./contracts/*/*.sol'); // TODO: arbitrary nesting
-
-    // organize all inputs for the compiler.
-    const input = {
-        sources: files.reduce((acc,file)=>({...acc,[file]: fs.readFileSync(file,'utf-8')}),{})
-    };
-    
-    shell.rm('-rf','./docs/ref');
-    shell.echo('Compiling contracts ...');
+/**
+ * @function - compile all files in `inputDir`.
+ * @param args - files to compile
+ * @return - a list of the form [{file, contractName, data: compilerOutput}].
+ */
+const compile = (files) => {
+    // organize compiler input
+    const input = {sources: files.reduce((acc,file)=>({...acc,[file]: fs.readFileSync(file,'utf-8')}),{})};
     const output = solc.compile(input,1,file => {
         /* we need to resolve imports for the compiler. 
          * This is not ideal, but does have some benefits:
@@ -138,37 +39,77 @@ function main(){
          *  - compatible with everything.
          */
         const node_path = path.resolve('node_modules',file);
-        return {contents: fs.readFileSync(fs.existsSync(node_path) ? node_path : file,'utf-8')};
+        return {contents: fs.readFileSync(fs.existsSync(node_path) ? node_path : file, 'utf-8')};
     });
-    
-    for(let contract in output.contracts){
+
+    return Object.keys(output.contracts).map(contract =>{
         // The compiler returns output in the form of {'somefile.sol:somecontract': ...} 
         const split = contract.split(':');
         const file = split[0];
         const contractName = split[1];
-        const destination = path.resolve(path.dirname(file.replace('contracts','docs/ref')),`${contractName}.md`);
-        
-        if(files.indexOf(file) === -1)
-            continue;
-    
-        // Get some info
-        const data = output.contracts[contract];
+        return {file, contractName, data: output.contracts[contract]};
+    }).filter(({file}) => files.indexOf(file) !== -1);
+};
+
+/**
+ * @function - renders files as `.md` files according to templates and given info. outputs rendered files into `dest`.
+ * @param compileOutput - a list of the form [{file,contractName, data: compilerOutput}].
+ * @param destFn - a pure function receiving either 'toc'(for table of contents) or a `file` path and `contractName` that returns a new path for the rendered `.md` file.
+ * @param contractTemplate - a function receiving `dest`,`contractName`,`abi`,`devdoc`,`gasEstimates` and outputs an `.md` string.
+ * @param tableOfContentsTemplate - a function receiving a file hierarchy and outputs an `.md` string.
+ */
+const render = (compileOutput,destFn,contractTemplate,tableOfContentsTemplate) => {
+    const tocDest = destFn('toc');
+    const hierarchy = (files) => {
+        let o = {};
+        files.forEach(({file,contractName}) => {
+            const split = [...path.dirname(file).split('/'),contractName];
+            let sub = o;
+            for(let j = 0; j < split.length; j++){
+                const dir = split[j];
+                if(!sub[dir])
+                    sub[dir] = 
+                        j === split.length - 1 ? 
+                            path.relative(path.dirname(tocDest),destFn(file,contractName))
+                        : 
+                            {};
+                sub = sub[dir];
+            }
+        });
+        return o;
+    };
+    const toc = tableOfContentsTemplate(hierarchy(compileOutput));
+    shell.mkdir('-p',path.dirname(tocDest));
+    fs.writeFileSync(
+        tocDest,
+        toc
+    );
+    compileOutput.forEach(({file,contractName,data}) => {
         const abi = JSON.parse(data.interface);
         const metadata = data.metadata !== '' ? JSON.parse(data.metadata).output : {};
         const devdoc = metadata.devdoc || {};
-
-        shell.echo('Rendering '+ file +' to '+ destination + '...');
+        const destination = destFn(file,contractName);
+        const renderedContract = contractTemplate(file,contractName,abi,devdoc,data.gasEstimates);
         shell.mkdir('-p',path.dirname(destination));
         fs.writeFileSync(
             destination,
-            render(file,contractName,abi,devdoc,data.gasEstimates)
+            renderedContract
         );
-    }
-}
+    });
+};
 
 try{
-    main();
-    shell.echo('Done.');
+    shell.rm('-rf','./docs/ref');
+    const files = shell.ls('./contracts/*/*.sol'); // TODO: arbitrary depth.
+    print(`Compiling ${files.length} files...`);
+    const output = compile(files);
+    print(`Rendering ${output.length} contracts...`);
+    const destFn = (file,name) => 
+        file === 'toc' ? 
+            './docs/ref/toc.md' 
+        : 
+            file.replace('./contracts','./docs/ref').replace(path.basename(file),`${name}.md`);
+    render(output,destFn,templates.contract,templates.tableOfContents);
     shell.exit(0);
 }
 catch(e){

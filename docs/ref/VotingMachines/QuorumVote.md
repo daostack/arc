@@ -79,7 +79,7 @@
 **constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 votes array of votes for each choice
 
@@ -216,7 +216,7 @@ votes array of votes for each choice
 **constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 bool true or false
 
@@ -243,7 +243,7 @@ bool true or false
 **constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 uint that contains number of choices
 
@@ -255,21 +255,21 @@ uint that contains number of choices
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the id of the proposal*
+1. **_proposalId** *of type bytes32- the id of the proposal*
 
 *Returns:*
 1. **unnamed** *of type bool*
 
 
 ### *function* cancelVote
-> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
+> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- id of the proposal*
+1. **_proposalId** *of type bytes32- id of the proposal*
 
 *Returns:*
 *Nothing*
@@ -283,7 +283,7 @@ uint that contains number of choices
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the proposal ID*
+1. **_proposalId** *of type bytes32- the proposal ID*
 
 *Returns:*
 1. **unnamed** *of type bool*

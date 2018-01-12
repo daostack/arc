@@ -313,14 +313,14 @@
 
 
 ### *function* action
-> do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.
+> do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_params** *of type bytes32[]- array represent the voting .       _params[0] - the address of the voting machine.       _params[1] - the proposalId.       _params[2] - the voting machins params.*
+1. **_params** *of type bytes32[]- array represent the voting .       _params[0] - the address of the voting machine.       _params[1] - the proposalId.       _params[2] - the voting machins params.*
 
 bool which indicate success.
 

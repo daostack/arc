@@ -129,7 +129,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address- The Avatar's of the organization*
+1. **_avatar** *of type address- The Avatar's of the organization*
 
 *Returns:*
 *Nothing*
@@ -159,7 +159,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address- The Avatar's of the organization*
+1. **_avatar** *of type address- The Avatar's of the organization*
 
 *Returns:*
 *Nothing*
@@ -252,14 +252,14 @@
 
 
 ### *function* isActive
-> Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
+> Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
 
 *Execution cost: **less than 4143 gas.***
 
 **constant | view**
 
 *Inputs:*
-1. **_avatar** *of type address- The Avatar's of the organization*
+1. **_avatar** *of type address- The Avatar's of the organization*
 
 bool which represents a successful of the function
 
@@ -284,7 +284,7 @@ bool which represents a successful of the function
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address- The Avatar's of the organization*
+1. **_avatar** *of type address- The Avatar's of the organization*
 
 *Returns:*
 *Nothing*
