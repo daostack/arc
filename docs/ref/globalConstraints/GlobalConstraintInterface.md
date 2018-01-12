@@ -84,6 +84,7 @@ SchemeRegisterTimeLock gc = new SchemeRegisterTimeLock();
 bytes32 hash = gc.setParameters(now,now + 2 days)
 contoller.addGlobalConstraint(address(myGlobalConstraint),hash)
 ```
+
 ##Reference
 - [Constructors](#constructors)
 

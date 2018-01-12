@@ -8,6 +8,7 @@
 > VoteInOrganizationScheme.
 
 
+
 ##Reference
 - [Constructors](#constructors)
     - [VoteInOrganizationScheme(address, uint256, address)](#constructor-voteinorganizationschemeaddress-uint256-address)

@@ -7,6 +7,7 @@
 
 > 
 
+
 ##Reference
 - [Constructors](#constructors)
     - [EmergentVoteScheme(address, uint256, address)](#constructor-emergentvoteschemeaddress-uint256-address)

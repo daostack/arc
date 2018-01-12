@@ -8,6 +8,7 @@
 > Simple static reputation storage
 
 
+
 ##Reference
 - [Constructors](#constructors)
     - [Reputation()](#constructor-reputation)

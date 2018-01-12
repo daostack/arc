@@ -8,6 +8,7 @@
 > A scheme to manage global constaintg for organizations
 
 
+
 ##Reference
 - [Constructors](#constructors)
     - [GlobalConstraintRegistrar(address, uint256, address)](#constructor-globalconstraintregistraraddress-uint256-address)

@@ -8,6 +8,7 @@
 > SimpleICO scheme.
 
 
+
 ##Reference
 - [Constructors](#constructors)
     - [SimpleICO(address, uint256, address)](#constructor-simpleicoaddress-uint256-address)

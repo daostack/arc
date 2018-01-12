@@ -8,6 +8,7 @@
 > An avatar contract for ICO.
 
 
+
 ##Reference
 - [Constructors](#constructors)
     - [MirrorContractICO(address, address)](#constructor-mirrorcontracticoaddress-address)
