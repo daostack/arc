@@ -106,7 +106,7 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
         }*Execution cost: **${gasEstimate(gas.creation[0])}***${N}${N
         }*Total deploy cost(deposit + execution): **${gasEstimate(gas.creation[0]+gas.creation[1])}***${N}${N
         }> ${description}${N 
-        }${header}${N
+        }${header}${N}${N
         }##Reference${N
         }- [Constructors](#constructors)${N
         }${constructors.map(c => headerLink(signature(contractName,c.inputs),title('constructor',signature(contractName,c.inputs)))).join(N)}${N
