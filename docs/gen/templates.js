@@ -4,6 +4,8 @@
  * author: Matan Tsuberi (dev.matan.tsuberi@gmail.com)
  */
 
+const path = require('path');
+
 /* This is a little trick to make templates more readable. 
  * used in templates like :
  * `line1${N
@@ -133,7 +135,7 @@ const tableOfContents = (hierarchy) => {
         return (
             Object.keys(hierarchy).map(k => 
                 typeof hierarchy[k] === 'string' ?
-                    `${spaces}- [${k}](${hierarchy[k]})` 
+                    `${spaces}- [${k}](${hierarchy[k].replace(path.sep,'/')})` 
                 :
                     `${spaces}- ${k}/ ${N
                     }${tree(indent+2,hierarchy[k])}`
