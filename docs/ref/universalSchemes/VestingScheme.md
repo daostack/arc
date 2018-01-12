@@ -1,12 +1,14 @@
 # *contract* VestingScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VestingScheme.sol))
-> A schme for vesting.
-
 *Code deposit cost: **less than 1537200 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 1537200 gas.***
 
+> A schme for vesting.
+
+
+##Reference
 - [Constructors](#constructors)
     - [VestingScheme(address, uint256, address)](#constructor-vestingschemeaddress-uint256-address)
 - [Events](#events)
@@ -44,7 +46,7 @@
     - [collect](#function-collect)
     - [beneficiary](#function-beneficiary)
     - [agreements](#function-agreements)
-## Constructors
+### Constructors
 ### *constructor* VestingScheme(address, uint256, address)
 
 *Execution cost: **No bound available.***
@@ -57,7 +59,7 @@
 3. **_beneficiary** *of type address*
 
 
-## Events
+### Events
 ### *event* RevokeSignToCancelAgreement
 *Params:*
 1. **_agreementId** *of type uint256*
@@ -119,9 +121,9 @@
 1. **_agreementId** *of type uint256*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* signToCancelAgreement
 > Function to sign to cancel an agreement.
 

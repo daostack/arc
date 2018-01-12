@@ -1,4 +1,5 @@
 # Table of Contents
+Click on a link to view the generated documentation.
 - VotingMachines/ 
   - [AbsoluteVote](VotingMachines/AbsoluteVote.md)
   - [EmergentVoteScheme](VotingMachines/EmergentVoteScheme.md)

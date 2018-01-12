@@ -1,12 +1,14 @@
 # *contract* GlobalConstraintRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GlobalConstraintRegistrar.sol))
-> A scheme to manage global constaintg for organizations
-
 *Code deposit cost: **less than 851800 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 851800 gas.***
 
+> A scheme to manage global constaintg for organizations
+
+
+##Reference
 - [Constructors](#constructors)
     - [GlobalConstraintRegistrar(address, uint256, address)](#constructor-globalconstraintregistraraddress-uint256-address)
 - [Events](#events)
@@ -36,7 +38,7 @@
     - [fee](#function-fee)
     - [execute](#function-execute)
     - [beneficiary](#function-beneficiary)
-## Constructors
+### Constructors
 ### *constructor* GlobalConstraintRegistrar(address, uint256, address)
 
 *Execution cost: **No bound available.***
@@ -49,7 +51,7 @@
 3. **_beneficiary** *of type address*
 
 
-## Events
+### Events
 ### *event* RemoveGlobalConstraintsProposal
 *Params:*
 1. **_avatar** *of type address*
@@ -96,9 +98,9 @@
 1. **proposalId** *of type bytes32*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* setParameters
 
 *Execution cost: **No bound available.***

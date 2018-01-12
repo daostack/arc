@@ -1,12 +1,14 @@
 # *contract* SchemeRegistrar ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SchemeRegistrar.sol))
-> A registrar for Schemes for organizations
-
 *Code deposit cost: **less than 1008400 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 1008400 gas.***
 
+> A registrar for Schemes for organizations
+
+
+##Reference
 - [Constructors](#constructors)
     - [SchemeRegistrar(address, uint256, address)](#constructor-schemeregistraraddress-uint256-address)
 - [Events](#events)
@@ -36,7 +38,7 @@
     - [fee](#function-fee)
     - [execute](#function-execute)
     - [beneficiary](#function-beneficiary)
-## Constructors
+### Constructors
 ### *constructor* SchemeRegistrar(address, uint256, address)
 
 *Execution cost: **No bound available.***
@@ -49,7 +51,7 @@
 3. **_beneficiary** *of type address*
 
 
-## Events
+### Events
 ### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
@@ -99,9 +101,9 @@
 1. **proposalId** *of type bytes32*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* organizations
 
 *Execution cost: **less than 771 gas.***

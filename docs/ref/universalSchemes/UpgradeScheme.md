@@ -1,12 +1,14 @@
 # *contract* UpgradeScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UpgradeScheme.sol))
-> A schme to manage the upgrade of an organization.
-
 *Code deposit cost: **less than 911400 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 911400 gas.***
 
+> A schme to manage the upgrade of an organization.
+
+
+##Reference
 - [Constructors](#constructors)
     - [UpgradeScheme(address, uint256, address)](#constructor-upgradeschemeaddress-uint256-address)
 - [Events](#events)
@@ -36,7 +38,7 @@
     - [fee](#function-fee)
     - [execute](#function-execute)
     - [beneficiary](#function-beneficiary)
-## Constructors
+### Constructors
 ### *constructor* UpgradeScheme(address, uint256, address)
 
 *Execution cost: **No bound available.***
@@ -49,7 +51,7 @@
 3. **_beneficiary** *of type address*
 
 
-## Events
+### Events
 ### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
@@ -97,9 +99,9 @@
 7. **fee** *of type uint256*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* setParameters
 
 *Execution cost: **No bound available.***

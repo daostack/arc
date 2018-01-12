@@ -1,12 +1,14 @@
 # *contract* GenesisScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GenesisScheme.sol))
-> Genesis Scheme that creates organizations
-
 *Code deposit cost: **less than 4733600 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 4733600 gas.***
 
+> Genesis Scheme that creates organizations
+
+
+##Reference
 - [Constructors](#constructors)
     - [GenesisScheme()](#constructor-genesisscheme)
 - [Events](#events)
@@ -19,7 +21,7 @@
     - [bytes4Array](#function-bytes4array)
     - [bytes32Array](#function-bytes32array)
     - [addressArray](#function-addressarray)
-## Constructors
+### Constructors
 ### *constructor* GenesisScheme()
 
 *Execution cost: **No bound available.***
@@ -30,7 +32,7 @@
 *Nothing*
 
 
-## Events
+### Events
 ### *event* NewOrg
 *Params:*
 1. **_avatar** *of type address*
@@ -41,9 +43,9 @@
 1. **_avatar** *of type address*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* setSchemes
 
 *Execution cost: **No bound available.***

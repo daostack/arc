@@ -1,12 +1,14 @@
 # *contract* ContributionReward ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ContributionReward.sol))
-> A scheme for proposing and rewarding contributions to an organization
-
 *Code deposit cost: **less than 911000 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 911000 gas.***
 
+> A scheme for proposing and rewarding contributions to an organization
+
+
+##Reference
 - [Constructors](#constructors)
     - [ContributionReward(address, uint256, address)](#constructor-contributionrewardaddress-uint256-address)
 - [Events](#events)
@@ -34,7 +36,7 @@
     - [fee](#function-fee)
     - [execute](#function-execute)
     - [beneficiary](#function-beneficiary)
-## Constructors
+### Constructors
 ### *constructor* ContributionReward(address, uint256, address)
 
 *Execution cost: **No bound available.***
@@ -47,7 +49,7 @@
 3. **_beneficiary** *of type address*
 
 
-## Events
+### Events
 ### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
@@ -90,9 +92,9 @@
 10. **_beneficiary** *of type address*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* registerOrganization
 
 *Execution cost: **No bound available.***

@@ -1,12 +1,14 @@
 # *contract* OrganizationRegister ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/OrganizationRegister.sol))
-> A universal organization registry.
-
 *Code deposit cost: **less than 507200 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 507200 gas.***
 
+> A universal organization registry.
+
+
+##Reference
 - [Constructors](#constructors)
     - [OrganizationRegister(address, uint256, address)](#constructor-organizationregisteraddress-uint256-address)
 - [Events](#events)
@@ -32,7 +34,7 @@
     - [fee](#function-fee)
     - [beneficiary](#function-beneficiary)
     - [addOrPromoteAddress](#function-addorpromoteaddress)
-## Constructors
+### Constructors
 ### *constructor* OrganizationRegister(address, uint256, address)
 
 *Execution cost: **No bound available.***
@@ -45,7 +47,7 @@
 3. **_beneficiary** *of type address*
 
 
-## Events
+### Events
 ### *event* Promotion
 *Params:*
 1. **_registry** *of type address*
@@ -75,9 +77,9 @@
 1. **proposalId** *of type bytes32*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* setParameters
 
 *Execution cost: **No bound available.***

@@ -1,11 +1,13 @@
 # *contract* UniversalScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/UniversalScheme.sol))
-> 
 *Code deposit cost: **less than 244800 gas.***
 
 *Execution cost: **less than 20636 gas.***
 
 *Total deploy cost(deposit + execution): **less than 265436 gas.***
 
+> 
+
+##Reference
 - [Constructors](#constructors)
 
 - [Events](#events)
@@ -24,9 +26,9 @@
     - [hashedParameters](#function-hashedparameters)
     - [fee](#function-fee)
     - [beneficiary](#function-beneficiary)
-## Constructors
+### Constructors
 
-## Events
+### Events
 ### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
@@ -43,9 +45,9 @@
 1. **proposalId** *of type bytes32*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* updateParameters
 
 *Execution cost: **No bound available.***

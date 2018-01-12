@@ -1,12 +1,14 @@
 # *contract* Controller ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Controller.sol))
-> Controller contract
-
 *Code deposit cost: **less than 2327200 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 2327200 gas.***
 
+> Controller contract
+
+
+##Reference
 - [Constructors](#constructors)
     - [Controller(address, address[], bytes32[], bytes4[])](#constructor-controlleraddress-address[]-bytes32[]-bytes4[])
 - [Events](#events)
@@ -51,7 +53,7 @@
     - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
     - [avatar](#function-avatar)
     - [addGlobalConstraint](#function-addglobalconstraint)
-## Constructors
+### Constructors
 ### *constructor* Controller(address, address[], bytes32[], bytes4[])
 
 *Execution cost: **No bound available.***
@@ -65,7 +67,7 @@
 4. **_permissions** *of type bytes4[]*
 
 
-## Events
+### Events
 ### *event* ExternalTokenTransfer
 *Params:*
 1. **_sender** *of type address*
@@ -156,14 +158,14 @@
 2. **_params** *of type bytes32*
 
 
-## Fallback
+### Fallback
 *Execution cost: **less than 720 gas.***
 
 **nonpayable**
 
 
 
-## Functions
+### Functions
 ### *function* isSchemeRegistered
 
 *Execution cost: **less than 1045 gas.***

@@ -1,12 +1,14 @@
 # *contract* TokenCapGC ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/TokenCapGC.sol))
-> Token Cap Global Constraint
-
 *Code deposit cost: **less than 183400 gas.***
 
 *Execution cost: **less than 221 gas.***
 
 *Total deploy cost(deposit + execution): **less than 183621 gas.***
 
+> Token Cap Global Constraint
+
+
+##Reference
 - [Constructors](#constructors)
 
 - [Events](#events)
@@ -18,13 +20,13 @@
     - [post](#function-post)
     - [params](#function-params)
     - [getParametersHash](#function-getparametershash)
-## Constructors
+### Constructors
 
-## Events
+### Events
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* setParameters
 
 *Execution cost: **No bound available.***

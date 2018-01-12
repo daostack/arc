@@ -1,12 +1,14 @@
 # *contract* Reputation ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Reputation.sol))
-> Simple static reputation storage
-
 *Code deposit cost: **less than 222600 gas.***
 
 *Execution cost: **less than 50712 gas.***
 
 *Total deploy cost(deposit + execution): **less than 273312 gas.***
 
+> Simple static reputation storage
+
+
+##Reference
 - [Constructors](#constructors)
     - [Reputation()](#constructor-reputation)
 - [Events](#events)
@@ -21,7 +23,7 @@
     - [owner](#function-owner)
     - [mint](#function-mint)
     - [decimals](#function-decimals)
-## Constructors
+### Constructors
 ### *constructor* Reputation()
 
 *Execution cost: **No bound available.***
@@ -32,7 +34,7 @@
 *Nothing*
 
 
-## Events
+### Events
 ### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
@@ -45,9 +47,9 @@
 2. **amount** *of type int256*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 

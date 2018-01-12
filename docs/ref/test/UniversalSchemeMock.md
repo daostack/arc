@@ -1,11 +1,13 @@
 # *contract* UniversalSchemeMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/UniversalSchemeMock.sol))
-> 
 *Code deposit cost: **less than 244800 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 244800 gas.***
 
+> 
+
+##Reference
 - [Constructors](#constructors)
     - [UniversalSchemeMock(address, uint256, address)](#constructor-universalschememockaddress-uint256-address)
 - [Events](#events)
@@ -24,7 +26,7 @@
     - [hashedParameters](#function-hashedparameters)
     - [fee](#function-fee)
     - [beneficiary](#function-beneficiary)
-## Constructors
+### Constructors
 ### *constructor* UniversalSchemeMock(address, uint256, address)
 
 *Execution cost: **No bound available.***
@@ -37,7 +39,7 @@
 3. **_beneficiary** *of type address*
 
 
-## Events
+### Events
 ### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
@@ -54,9 +56,9 @@
 1. **proposalId** *of type bytes32*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* updateParameters
 
 *Execution cost: **No bound available.***

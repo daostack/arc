@@ -1,12 +1,14 @@
 # *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
-> DAOToken, base on zeppelin contract.
-
 *Code deposit cost: **less than 683600 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 683600 gas.***
 
+> DAOToken, base on zeppelin contract.
+
+
+##Reference
 - [Constructors](#constructors)
     - [DAOToken(string, string)](#constructor-daotokenstring-string)
 - [Events](#events)
@@ -37,7 +39,7 @@
     - [approve](#function-approve)
     - [allowance](#function-allowance)
     - [DECIMAL](#function-decimal)
-## Constructors
+### Constructors
 ### *constructor* DAOToken(string, string)
 
 *Execution cost: **No bound available.***
@@ -49,7 +51,7 @@
 2. **_symbol** *of type string*
 
 
-## Events
+### Events
 ### *event* Transfer
 *Params:*
 1. **from** *of type address*
@@ -87,9 +89,9 @@
 3. **value** *of type uint256*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* balanceOf
 > Gets the balance of the specified address.
 

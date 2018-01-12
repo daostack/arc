@@ -1,12 +1,14 @@
 # *contract* SimpleICO ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/SimpleICO.sol))
-> SimpleICO scheme.
-
 *Code deposit cost: **less than 1018400 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 1018400 gas.***
 
+> SimpleICO scheme.
+
+
+##Reference
 - [Constructors](#constructors)
     - [SimpleICO(address, uint256, address)](#constructor-simpleicoaddress-uint256-address)
 - [Events](#events)
@@ -35,7 +37,7 @@
     - [fee](#function-fee)
     - [donate](#function-donate)
     - [beneficiary](#function-beneficiary)
-## Constructors
+### Constructors
 ### *constructor* SimpleICO(address, uint256, address)
 
 *Execution cost: **No bound available.***
@@ -48,7 +50,7 @@
 3. **_beneficiary** *of type address*
 
 
-## Events
+### Events
 ### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
@@ -73,9 +75,9 @@
 4. **_tokensAmount** *of type uint256*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* registerOrganization
 
 *Execution cost: **No bound available.***

@@ -21,8 +21,9 @@ const N = '\n';
  * @param abi - a obtained from the compiler containing the structure of the exposed contract interface.
  * @param devdoc - a possibally empty({}) object containing `natspec` documentation.
  * @param gas - `gasEstimates` from `solc` that provide an upper bound of the gas usage.
+ * @param header - extra static `.md` string to include in the template.
  */
-const contract = (file,contractName,abi,devdoc,gas) => {
+const contract = (file,contractName,abi,devdoc,gas,header) => {
 
     const events = abi.filter(x => x.type === 'event').sort((x,y) => x.name <= y.name);
     const functions = abi.filter(x => x.type === 'function').sort((x,y) => x.name <= y.name);
@@ -101,10 +102,12 @@ const contract = (file,contractName,abi,devdoc,gas) => {
 
     const res = (
         `# *contract* ${contractName} ([source](https://github.com/daostack/daostack/tree/master/${file}))${N
-        }> ${description}${N    
         }*Code deposit cost: **${gasEstimate(gas.creation[1])}***${N}${N
         }*Execution cost: **${gasEstimate(gas.creation[0])}***${N}${N
         }*Total deploy cost(deposit + execution): **${gasEstimate(gas.creation[0]+gas.creation[1])}***${N}${N
+        }> ${description}${N 
+        }${header}${N
+        }##Reference${N
         }- [Constructors](#constructors)${N
         }${constructors.map(c => headerLink(signature(contractName,c.inputs),title('constructor',signature(contractName,c.inputs)))).join(N)}${N
         }- [Events](#events)${N
@@ -112,13 +115,13 @@ const contract = (file,contractName,abi,devdoc,gas) => {
         }- [Fallback](#fallback)${N
         }- [Functions](#functions)${N
         }${functions.map(f => headerLink(f.name,title('function',f.name))).join(N)}${N
-        }## Constructors${N
+        }### Constructors${N
         }${constructors.map(c => constructor(c)).join(N)}${N
-        }## Events${N
+        }### Events${N
         }${events.map(e => event(e)).join(N)}${N
-        }## Fallback${N
+        }### Fallback${N
         }${fallback ? fb(fallback) : '*Nothing*'}${N
-        }## Functions${N
+        }### Functions${N
         }${functions.map(f => func(f)).join(N)}${N
         }`);
     return res;
@@ -127,8 +130,9 @@ const contract = (file,contractName,abi,devdoc,gas) => {
 /**
  * @function tableOfContents - renders a table of contents page from a file hierarchy
  * @param hierarchy - an object of the form {'path':{'to':{'dir':{'contractName': 'path/to/result.md'}}}}
+ * @param header - an `.md` string to be included in the template.
  */
-const tableOfContents = (hierarchy) => {
+const tableOfContents = (hierarchy,header) => {
     hierarchy = hierarchy['.'].contracts; // remove unnessesery dirs
     const tree = (indent,hierarchy) => {
         const spaces = Array(indent).fill(' ').join('');
@@ -145,6 +149,7 @@ const tableOfContents = (hierarchy) => {
 
     return (
         `# Table of Contents${N
+        }${header}${N
         }${tree(0,hierarchy)}${N
         }`);
 };

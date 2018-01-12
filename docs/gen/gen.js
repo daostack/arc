@@ -52,14 +52,18 @@ const compile = (files) => {
 };
 
 /**
- * @function - renders files as `.md` files according to templates and given info. outputs rendered files into `dest`.
+ * @function - renders files as `.md` files according to templates and given info. 
+ *             includes headers in the templates according to `headerFn`.
+ *             outputs rendered files into `dest`.
  * @param compileOutput - a list of the form [{file,contractName, data: compilerOutput}].
  * @param destFn - a pure function receiving either 'toc'(for table of contents) or a `file` path and `contractName` that returns a new path for the rendered `.md` file.
+ * @param headerFn - a pure function receiving either 'toc'(for table of contents) or a `file` path and `contractName` that returns a path for a header file to be included in the template.
  * @param contractTemplate - a function receiving `dest`,`contractName`,`abi`,`devdoc`,`gasEstimates` and outputs an `.md` string.
  * @param tableOfContentsTemplate - a function receiving a file hierarchy and outputs an `.md` string.
  */
-const render = (compileOutput,destFn,contractTemplate,tableOfContentsTemplate) => {
+const render = (compileOutput,destFn,headerFn,contractTemplate,tableOfContentsTemplate) => {
     const tocDest = destFn('toc');
+    const tocHeader = headerFn('toc');
     const hierarchy = (files) => {
         let o = {};
         files.forEach(({file,contractName}) => {
@@ -78,7 +82,7 @@ const render = (compileOutput,destFn,contractTemplate,tableOfContentsTemplate) =
         });
         return o;
     };
-    const toc = tableOfContentsTemplate(hierarchy(compileOutput));
+    const toc = tableOfContentsTemplate(hierarchy(compileOutput),fs.existsSync(tocHeader) ? fs.readFileSync(tocHeader) : '');
     shell.mkdir('-p',path.dirname(tocDest));
     fs.writeFileSync(
         tocDest,
@@ -89,7 +93,8 @@ const render = (compileOutput,destFn,contractTemplate,tableOfContentsTemplate) =
         const metadata = data.metadata !== '' ? JSON.parse(data.metadata).output : {};
         const devdoc = metadata.devdoc || {};
         const destination = destFn(file,contractName);
-        const renderedContract = contractTemplate(file,contractName,abi,devdoc,data.gasEstimates);
+        const header = headerFn(file,contractName);
+        const renderedContract = contractTemplate(file,contractName,abi,devdoc,data.gasEstimates,fs.existsSync(header) ? fs.readFileSync(header) : '');
         shell.mkdir('-p',path.dirname(destination));
         fs.writeFileSync(
             destination,
@@ -104,12 +109,9 @@ try{
     print(`Compiling ${files.length} files...`);
     const output = compile(files);
     print(`Rendering ${output.length} contracts...`);
-    const destFn = (file,name) => 
-        file === 'toc' ? 
-            './docs/ref/toc.md' 
-        : 
-            file.replace('./contracts','./docs/ref').replace(path.basename(file),`${name}.md`);
-    render(output,destFn,templates.contract,templates.tableOfContents);
+    const destFn = (file,name) => file === 'toc' ? './docs/ref/toc.md' : file.replace('./contracts','./docs/ref').replace(path.basename(file),`${name}.md`);
+    const headerFn = (file,name) => file === 'toc' ? './docs/headers/toc.md' : file.replace('./contracts','./docs/headers').replace(path.basename(file),`${name}.md`);
+    render(output,destFn,headerFn,templates.contract,templates.tableOfContents);
     shell.exit(0);
 }
 catch(e){

@@ -1,11 +1,13 @@
 # *contract* IntVoteInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/IntVoteInterface.sol))
-> 
 *Code deposit cost: **No bound available.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **No bound available.***
 
+> 
+
+##Reference
 - [Constructors](#constructors)
 
 - [Events](#events)
@@ -21,13 +23,13 @@
     - [execute](#function-execute)
     - [cancelVote](#function-cancelvote)
     - [cancelProposal](#function-cancelproposal)
-## Constructors
+### Constructors
 
-## Events
+### Events
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* voteWithSpecifiedAmounts
 
 *Execution cost: **No bound available.***

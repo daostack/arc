@@ -1,11 +1,13 @@
 # *contract* QuorumVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/QuorumVote.sol))
-> 
 *Code deposit cost: **less than 923000 gas.***
 
 *Execution cost: **less than 957 gas.***
 
 *Total deploy cost(deposit + execution): **less than 923957 gas.***
 
+> 
+
+##Reference
 - [Constructors](#constructors)
 
 - [Events](#events)
@@ -31,9 +33,9 @@
     - [execute](#function-execute)
     - [cancelVote](#function-cancelvote)
     - [cancelProposal](#function-cancelproposal)
-## Constructors
+### Constructors
 
-## Events
+### Events
 ### *event* LogVoteProposal
 *Params:*
 1. **_proposalId** *of type bytes32*
@@ -68,9 +70,9 @@
 1. **_proposalId** *of type bytes32*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* votesStatus
 > votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
 

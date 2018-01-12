@@ -1,12 +1,14 @@
 # *contract* Avatar ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
-> An Avatar holds tokens, reputation and ether for a controller
-
 *Code deposit cost: **less than 475800 gas.***
 
 *Execution cost: **less than 81478 gas.***
 
 *Total deploy cost(deposit + execution): **less than 557278 gas.***
 
+> An Avatar holds tokens, reputation and ether for a controller
+
+
+##Reference
 - [Constructors](#constructors)
     - [Avatar(bytes32, address, address)](#constructor-avatarbytes32-address-address)
 - [Events](#events)
@@ -31,7 +33,7 @@
     - [externalTokenTransfer](#function-externaltokentransfer)
     - [externalTokenIncreaseApproval](#function-externaltokenincreaseapproval)
     - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
-## Constructors
+### Constructors
 ### *constructor* Avatar(bytes32, address, address)
 
 *Execution cost: **No bound available.***
@@ -44,7 +46,7 @@
 3. **_nativeReputation** *of type address*
 
 
-## Events
+### Events
 ### *event* SendEther
 *Params:*
 1. **_amountInWei** *of type uint256*
@@ -98,14 +100,14 @@
 3. **_subtractedValue** *of type uint256*
 
 
-## Fallback
+### Fallback
 *Execution cost: **less than 1870 gas.***
 
 **payable**
 
 
 
-## Functions
+### Functions
 ### *function* externalTokenTransferFrom
 
 *Execution cost: **No bound available.***

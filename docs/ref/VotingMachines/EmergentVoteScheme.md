@@ -1,11 +1,13 @@
 # *contract* EmergentVoteScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/EmergentVoteScheme.sol))
-> 
 *Code deposit cost: **less than 2035400 gas.***
 
 *Execution cost: **No bound available.***
 
 *Total deploy cost(deposit + execution): **less than 2035400 gas.***
 
+> 
+
+##Reference
 - [Constructors](#constructors)
     - [EmergentVoteScheme(address, uint256, address)](#constructor-emergentvoteschemeaddress-uint256-address)
 - [Events](#events)
@@ -54,7 +56,7 @@
     - [moveTopAwaitingBoostMode](#function-movetopawaitingboostmode)
     - [beneficiary](#function-beneficiary)
     - [MAX_NUM_OF_CHOICES](#function-maxnumofchoices)
-## Constructors
+### Constructors
 ### *constructor* EmergentVoteScheme(address, uint256, address)
 
 *Execution cost: **No bound available.***
@@ -67,7 +69,7 @@
 3. **_beneficiary** *of type address*
 
 
-## Events
+### Events
 ### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
@@ -117,9 +119,9 @@
 1. **_proposalId** *of type bytes32*
 
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* owner
 
 *Execution cost: **less than 963 gas.***

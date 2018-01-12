@@ -1,11 +1,13 @@
 # *contract* GlobalConstraintMock ([source](https://github.com/daostack/daostack/tree/master/./contracts/test/GlobalConstraintMock.sol))
-> 
 *Code deposit cost: **less than 192400 gas.***
 
 *Execution cost: **less than 233 gas.***
 
 *Total deploy cost(deposit + execution): **less than 192633 gas.***
 
+> 
+
+##Reference
 - [Constructors](#constructors)
 
 - [Events](#events)
@@ -15,13 +17,13 @@
     - [setConstraint](#function-setconstraint)
     - [pre](#function-pre)
     - [post](#function-post)
-## Constructors
+### Constructors
 
-## Events
+### Events
 
-## Fallback
+### Fallback
 *Nothing*
-## Functions
+### Functions
 ### *function* setConstraint
 
 *Execution cost: **No bound available.***
