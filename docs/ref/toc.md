@@ -1,5 +1,12 @@
 # Table of Contents
-Click on a link to view the generated documentation.
+**Before delving into the reference it is recommended to first get familier with the [concepts](../concepts.md) involved.*
+
+This is where you'll find:
+- Detailed explanations of each source file in Arc.
+- Useful how-tos that demonstrate the use of each contract.
+- Technical reference documentation of each contract.
+
+Directory Structure:
 - VotingMachines/ 
   - [AbsoluteVote](VotingMachines/AbsoluteVote.md)
   - [EmergentVoteScheme](VotingMachines/EmergentVoteScheme.md)
@@ -9,8 +16,10 @@ Click on a link to view the generated documentation.
   - [ActionInterface](controller/ActionInterface.md)
   - [Avatar](controller/Avatar.md)
   - [Controller](controller/Controller.md)
+  - [ControllerInterface](controller/ControllerInterface.md)
   - [DAOToken](controller/DAOToken.md)
   - [Reputation](controller/Reputation.md)
+  - [UController](controller/UController.md)
 - globalConstraints/ 
   - [GlobalConstraintInterface](globalConstraints/GlobalConstraintInterface.md)
   - [TokenCapGC](globalConstraints/TokenCapGC.md)

@@ -1,13 +1,54 @@
 # *contract* GenesisScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GenesisScheme.sol))
-*Code deposit cost: **less than 4733600 gas.***
+*Code deposit cost: **less than 4503000 gas.***
 
-*Execution cost: **No bound available.***
+*Execution cost: **less than 5238 gas.***
 
-*Total deploy cost(deposit + execution): **less than 4733600 gas.***
+*Total deploy cost(deposit + execution): **less than 4508238 gas.***
 
 > Genesis Scheme that creates organizations
 
+The *Genesis Scheme* is a special scheme that creates a brand new DAO and initializes it with a set of default *Schemes*.
+It is the main way to create new DAOs on the DAOStack.
 
+## Usage
+
+### Step 1: Create the organization
+```
+GenesisScheme gs = new GenesisScheme();
+address avatar = 
+    gs.forgeOrg(
+        "Organization name",
+        "Token name",
+        "TKN", /*Token symbol*/
+        [me,you], /*founders addresses*/
+        [5,7], /*founders initial token allocation*/
+        [10,12], /*founders initial reputation allocation*/
+    );
+```
+
+### Step 2: Configure some schemes
+```
+ContributionReward crScheme = new ContributionReward();
+bytes32 paramsHash = crScheme.setParameters(...);
+
+bytes4 permission = 0; /* set to zero = no special permissions */
+    /* permission is a 4 bit number indicating what kind of operations can the scheme do in this organization:
+        1st bit - irrelevent to us.
+        2nd bit - can register other schemes.
+        3rd bit - can add/remove global constraints.
+        4th bit - can upgrade controller. 
+    */
+```
+### Step 3: Register schemes with the organization
+```
+gs.setSchemes(
+    Avatar(avatar),
+    [address(crSchemes)], /* schemes to regsiter*/
+    [paramsHash], /* params hash */
+    [true], /* is the scheme a universal scheme */
+    [permission] 
+);
+```
 ## Reference
 - [Constructors](#constructors)
     - [GenesisScheme()](#constructor-genesisscheme)
@@ -18,9 +59,6 @@
 - [Functions](#functions)
     - [setSchemes](#function-setschemes)
     - [forgeOrg](#function-forgeorg)
-    - [bytes4Array](#function-bytes4array)
-    - [bytes32Array](#function-bytes32array)
-    - [addressArray](#function-addressarray)
 ### Constructors
 ### *constructor* GenesisScheme()
 
@@ -56,8 +94,7 @@
 1. **_avatar** *of type address*
 2. **_schemes** *of type address[]*
 3. **_params** *of type bytes32[]*
-4. **_isUniversal** *of type bool[]*
-5. **_permissions** *of type bytes4[]*
+4. **_permissions** *of type bytes4[]*
 
 *Returns:*
 *Nothing*
@@ -76,45 +113,7 @@
 4. **_founders** *of type address[]*
 5. **_foundersTokenAmount** *of type uint256[]*
 6. **_foundersReputationAmount** *of type int256[]*
-
-*Returns:*
-1. **unnamed** *of type address*
-
-
-### *function* bytes4Array
-
-*Execution cost: **less than 2476 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **unnamed** *of type uint256*
-
-*Returns:*
-1. **unnamed** *of type bytes4*
-
-
-### *function* bytes32Array
-
-*Execution cost: **less than 824 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **unnamed** *of type uint256*
-
-*Returns:*
-1. **unnamed** *of type bytes32*
-
-
-### *function* addressArray
-
-*Execution cost: **less than 911 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **unnamed** *of type uint256*
+7. **_uController** *of type address*
 
 *Returns:*
 1. **unnamed** *of type address*

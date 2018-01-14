@@ -1,11 +1,3 @@
-# *contract* GlobalConstraintInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/GlobalConstraintInterface.sol))
-*Code deposit cost: **No bound available.***
-
-*Execution cost: **No bound available.***
-
-*Total deploy cost(deposit + execution): **No bound available.***
-
-> 
 related: [TokenCapGC](TokenCapGC.md)
 
 *Global Constraint*s define certain conditions the DAO must hold at all times. More concretly, they define *pre* & *post* conditions that must hold before & after any action the DAO takes.
@@ -84,49 +76,3 @@ SchemeRegisterTimeLock gc = new SchemeRegisterTimeLock();
 bytes32 hash = gc.setParameters(now,now + 2 days)
 contoller.addGlobalConstraint(address(myGlobalConstraint),hash)
 ```
-## Reference
-- [Constructors](#constructors)
-
-- [Events](#events)
-
-- [Fallback](#fallback)
-- [Functions](#functions)
-    - [pre](#function-pre)
-    - [post](#function-post)
-### Constructors
-
-### Events
-
-### Fallback
-*Nothing*
-### Functions
-### *function* pre
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_scheme** *of type address*
-2. **_params** *of type bytes32*
-3. **_method** *of type bytes32*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
-### *function* post
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_scheme** *of type address*
-2. **_params** *of type bytes32*
-3. **_method** *of type bytes32*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
