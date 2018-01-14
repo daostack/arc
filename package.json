@@ -21,7 +21,7 @@
     "truffle": "truffle",
     "build": "rimraf build && truffle compile",
     "docs:gen": "node docs/scripts/gen.js",
-    "publish": "npm run docs:gen"
+    "publish": "truffle build && npm run docs:gen && network --clean && npm publish"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
