@@ -7,7 +7,8 @@
 
 > Simple static reputation storage
 
-
+A *Reputation* is a way of assigning importance to participants and their votes. 
+*Reputation* is similar to regular tokens but with one crucial difference: **It is non-transferable**.
 ## Reference
 - [Constructors](#constructors)
     - [Reputation()](#constructor-reputation)
@@ -99,7 +100,7 @@
 **constant | view**
 
 *Inputs:*
-1. **_owner** *of type address- an address of the owner which we want to get his reputation*
+1. **_owner** *of type address- an address of the owner which we want to get his reputation*
 
 *Returns:*
 1. **balance** *of type uint256*

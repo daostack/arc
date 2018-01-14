@@ -6,6 +6,16 @@
 *Total deploy cost(deposit + execution): **No bound available.***
 
 > 
+A Scheme defines rules the DAO follows.
+A special *Scheme* called the *[Genesis Scheme](GenesisScheme.md)* takes care of creating a brand new DAO.
+
+## Universal Scheme
+
+*Universal Schemes* are schemes that inherit from *UniversalSchemeInterface* and are supposed to be deployed once.
+
+## Non-universal Scheme
+
+*Non-Universal Schemes* are schemes that do not follow any standard and do not inherit from *UniversalSchemeInterface*
 
 ## Reference
 - [Constructors](#constructors)
@@ -15,7 +25,6 @@
 - [Fallback](#fallback)
 - [Functions](#functions)
     - [updateParameters](#function-updateparameters)
-    - [registerOrganization](#function-registerorganization)
 ### Constructors
 
 ### Events
@@ -30,23 +39,7 @@
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
-4. **_hashedParameters** *of type bytes32*
-
-*Returns:*
-*Nothing*
-
-
-### *function* registerOrganization
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_avatar** *of type address*
+1. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*

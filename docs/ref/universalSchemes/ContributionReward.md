@@ -1,52 +1,43 @@
 # *contract* ContributionReward ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/ContributionReward.sol))
-*Code deposit cost: **less than 911000 gas.***
+*Code deposit cost: **less than 755000 gas.***
 
-*Execution cost: **No bound available.***
+*Execution cost: **less than 21154 gas.***
 
-*Total deploy cost(deposit + execution): **less than 911000 gas.***
+*Total deploy cost(deposit + execution): **less than 776154 gas.***
 
 > A scheme for proposing and rewarding contributions to an organization
 
 
 ## Reference
 - [Constructors](#constructors)
-    - [ContributionReward(address, uint256, address)](#constructor-contributionrewardaddress-uint256-address)
+    - [ContributionReward()](#constructor-contributionreward)
 - [Events](#events)
     - [OwnershipTransferred](#event-ownershiptransferred)
-    - [OrganizationRegistered](#event-organizationregistered)
     - [LogProposalExecuted](#event-logproposalexecuted)
     - [LogProposalDeleted](#event-logproposaldeleted)
     - [LogNewProposal](#event-lognewproposal)
     - [LogNewContributionProposal](#event-lognewcontributionproposal)
 - [Fallback](#fallback)
 - [Functions](#functions)
-    - [registerOrganization](#function-registerorganization)
-    - [parameters](#function-parameters)
+    - [updateParameters](#function-updateparameters)
     - [transferOwnership](#function-transferownership)
     - [setParameters](#function-setparameters)
-    - [updateParameters](#function-updateparameters)
     - [proposeContributionReward](#function-proposecontributionreward)
+    - [parameters](#function-parameters)
     - [owner](#function-owner)
     - [organizationsProposals](#function-organizationsproposals)
-    - [organizations](#function-organizations)
-    - [nativeToken](#function-nativetoken)
-    - [isRegistered](#function-isregistered)
     - [hashedParameters](#function-hashedparameters)
     - [getParametersHash](#function-getparametershash)
-    - [fee](#function-fee)
     - [execute](#function-execute)
-    - [beneficiary](#function-beneficiary)
 ### Constructors
-### *constructor* ContributionReward(address, uint256, address)
+### *constructor* ContributionReward()
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Params:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
+*Nothing*
 
 
 ### Events
@@ -54,11 +45,6 @@
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
-
-
-### *event* OrganizationRegistered
-*Params:*
-1. **_avatar** *of type address*
 
 
 ### *event* LogProposalExecuted
@@ -84,50 +70,31 @@
 2. **_proposalId** *of type bytes32*
 3. **_intVoteInterface** *of type address*
 4. **_contributionDesciption** *of type bytes32*
-5. **_nativeTokenReward** *of type uint256*
-6. **_reputationReward** *of type uint256*
-7. **_ethReward** *of type uint256*
-8. **_externalTokenReward** *of type uint256*
-9. **_externalToken** *of type address*
-10. **_beneficiary** *of type address*
+5. **_rewards** *of type uint256[4]*
+6. **_externalToken** *of type address*
+7. **_beneficiary** *of type address*
 
 
 ### Fallback
 *Nothing*
 ### Functions
-### *function* registerOrganization
+### *function* updateParameters
 
-*Execution cost: **No bound available.***
+*Execution cost: **less than 20550 gas.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address*
+1. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
 
 
-### *function* parameters
-
-*Execution cost: **less than 1381 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **unnamed** *of type bytes32*
-
-*Returns:*
-1. **orgNativeTokenFee** *of type uint256*
-2. **voteApproveParams** *of type bytes32*
-3. **schemeNativeTokenFee** *of type uint256*
-4. **intVote** *of type address*
-
-
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
-*Execution cost: **less than 23184 gas.***
+*Execution cost: **less than 22983 gas.***
 
 **nonpayable**
 
@@ -146,28 +113,11 @@
 
 *Inputs:*
 1. **_orgNativeTokenFee** *of type uint256*
-2. **_schemeNativeTokenFee** *of type uint256*
-3. **_voteApproveParams** *of type bytes32*
-4. **_intVote** *of type address*
+2. **_voteApproveParams** *of type bytes32*
+3. **_intVote** *of type address*
 
 *Returns:*
 1. **unnamed** *of type bytes32*
-
-
-### *function* updateParameters
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
-4. **_hashedParameters** *of type bytes32*
-
-*Returns:*
-*Nothing*
 
 
 ### *function* proposeContributionReward
@@ -187,9 +137,24 @@
 1. **unnamed** *of type bytes32*
 
 
+### *function* parameters
+
+*Execution cost: **less than 1148 gas.***
+
+**constant | view**
+
+*Inputs:*
+1. **unnamed** *of type bytes32*
+
+*Returns:*
+1. **orgNativeTokenFee** *of type uint256*
+2. **voteApproveParams** *of type bytes32*
+3. **intVote** *of type address*
+
+
 ### *function* owner
 
-*Execution cost: **less than 743 gas.***
+*Execution cost: **less than 721 gas.***
 
 **constant | view**
 
@@ -220,48 +185,9 @@
 7. **beneficiary** *of type address*
 
 
-### *function* organizations
-
-*Execution cost: **less than 705 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **unnamed** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
-### *function* nativeToken
-
-*Execution cost: **less than 875 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type address*
-
-
-### *function* isRegistered
-
-*Execution cost: **less than 912 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **_avatar** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
 ### *function* hashedParameters
 
-*Execution cost: **less than 766 gas.***
+*Execution cost: **less than 634 gas.***
 
 **constant | view**
 
@@ -280,25 +206,11 @@
 
 *Inputs:*
 1. **_orgNativeTokenFee** *of type uint256*
-2. **_schemeNativeTokenFee** *of type uint256*
-3. **_voteApproveParams** *of type bytes32*
-4. **_intVote** *of type address*
+2. **_voteApproveParams** *of type bytes32*
+3. **_intVote** *of type address*
 
 *Returns:*
 1. **unnamed** *of type bytes32*
-
-
-### *function* fee
-
-*Execution cost: **less than 700 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type uint256*
 
 
 ### *function* execute
@@ -314,18 +226,5 @@
 
 *Returns:*
 1. **unnamed** *of type bool*
-
-
-### *function* beneficiary
-
-*Execution cost: **less than 655 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type address*
 
 

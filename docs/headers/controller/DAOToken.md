@@ -1,0 +1,2 @@
+The *DAO token* is a simple token that is used by DAOs to assign value to, and reward participants actions. 
+It can be **minted** or **burned** by the DAO and also be **destroyed** in the event of an upgrade to a better token or in other circumstances.
