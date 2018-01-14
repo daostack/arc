@@ -25,8 +25,6 @@ contract MyAwesomeScheme is UniversalScheme { ... }
 3. `$ cd daostack`
 4. `/daostack/$ yarn` - install dependencies.
 
-*Note: Windows environments are not currently supported, please use a Unix based dev environment*.
-
 Commands:
 * `truffle test` - run unit tests.
 * `yarn lint` - lint javascript files.
@@ -37,6 +35,13 @@ This is an open source project ([GPL licence](https://github.com/daostack/daosta
 PRs are welcome but please first consult with the [Contribution guide](https://github.com/daostack/daostack/blob/master/CONTRIBUTING.md).
 
 Join us on [Slack](https://daostack.slack.com/)!
+
+#### *Note on windows dev environments*
+Windows environments are not currently officialy supported.
+A common workaround is to use [Docker](https://www.docker.com/).
+1. use `docker run -it -v absolute/path/to/local/repo:/home node /bin/bash` (use `${pwd}` for a relative path, eg. `${pwd}/relative`)
+2. `$ cd /home`
+3. Continue development as usual inside the container. your changes are automatically synchronized with the host(windows) local repo.
 
 ## Contributing to Arc Docs
 Same as above, with the following exeptions:
