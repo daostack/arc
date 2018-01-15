@@ -9,8 +9,10 @@ Click on a link to view the generated documentation.
   - [ActionInterface](controller/ActionInterface.md)
   - [Avatar](controller/Avatar.md)
   - [Controller](controller/Controller.md)
+  - [ControllerInterface](controller/ControllerInterface.md)
   - [DAOToken](controller/DAOToken.md)
   - [Reputation](controller/Reputation.md)
+  - [UController](controller/UController.md)
 - globalConstraints/ 
   - [GlobalConstraintInterface](globalConstraints/GlobalConstraintInterface.md)
   - [TokenCapGC](globalConstraints/TokenCapGC.md)
