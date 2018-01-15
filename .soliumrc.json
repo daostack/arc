@@ -4,6 +4,9 @@
     "security"
   ],
   "rules": {
+    "security/no-block-members": [
+      "off"
+    ],
     "quotes": [
       "error",
       "double"
