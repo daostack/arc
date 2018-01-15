@@ -30,9 +30,6 @@ const initTokenInWei = [web3.toWei(initToken)];
 
 const votePrec = 50;
 
-// Universal schemes fees:
-const UniversalRegisterFee = web3.toWei(5);
-
 //Deploy test organization with the following schemes:
 //schemeRegistrar, upgradeScheme,globalConstraintRegistrar,simpleICO,contributionReward.
 module.exports = async function(deployer) {
@@ -83,9 +80,6 @@ module.exports = async function(deployer) {
       await contributionRewardInst.setParameters(10,voteParametersHash, AbsoluteVoteInst.address);
       var contributionRewardParams = await contributionRewardInst.getParametersHash(10,voteParametersHash, AbsoluteVoteInst.address);
 
-      // Transferring tokens to org to pay fees:
-      await DAOTokenInst.transfer(AvatarInst.address, 5*UniversalRegisterFee);
-
       var schemesArray = [schemeRegistrarInst.address,
                           globalConstraintRegistrarInst.address,
                           upgradeSchemeInst.address,
@@ -106,7 +100,6 @@ module.exports = async function(deployer) {
       var returnedParams = await genesisSchemeInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
           initTokenInWei, initRepInWei,uController.address);
       AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
-      await DAOTokenInst.transfer(AvatarInst.address, 5*UniversalRegisterFee);
       await genesisSchemeInst.setSchemes(
           AvatarInst.address,
           schemesArray,
