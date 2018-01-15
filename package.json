@@ -22,8 +22,7 @@
     "lint --fix": "eslint --fix .",
     "solium": "solium --dir ./contracts/",
     "truffle": "truffle",
-    "build": "rimraf build && truffle compile",
-    "docs:gen": "node docs/scripts/gen.js"
+    "build": "rimraf build && truffle compile"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -48,7 +47,6 @@
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
     "run-with-testrpc": "^0.3.0",
-    "shelljs": "^0.7.8",
     "solc": "^0.4.19",
     "solc-cli": "^0.3.0",
     "solium": "^1.1.0",
