@@ -20,7 +20,7 @@ contract MyAwesomeScheme is UniversalScheme { ... }
 
 ## Contributing to Arc
 
-1. `$ yarn global add truffle ethereumjs-testrpc` - prerequisites: have [truffle](https://github.com/trufflesuite/truffle) and [testrpc](https://github.com/ethereumjs/testrpc) installed.
+1. `$ yarn global add truffle ganache-cli` - prerequisites: have [truffle](https://github.com/trufflesuite/truffle) and [ganache-cli](https://github.com/trufflesuite/ganache-cli) installed.
 2. `$ git clone https://github.com/daostack/daostack.git` - clone the repo.
 3. `$ cd daostack`
 4. `/daostack/$ yarn` - install dependencies.
