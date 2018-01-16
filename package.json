@@ -23,7 +23,7 @@
     "solium": "solium --dir ./contracts/",
     "truffle": "truffle",
     "build": "rimraf build && truffle compile",
-    "docs:gen": "node docs/scripts/gen.js"
+    "docs:generate": "node docs/scripts/gen.js"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
