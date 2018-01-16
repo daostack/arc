@@ -109,8 +109,8 @@ try{
     print(`Compiling ${files.length} files...`);
     const output = compile(files);
     print(`Rendering ${output.length} contracts...`);
-    const destFn = (file,name) => file === 'toc' ? './docs/ref/toc.md' : file.replace('./contracts','./docs/ref').replace(path.basename(file),`${name}.md`);
-    const headerFn = (file,name) => file === 'toc' ? './docs/headers/toc.md' : file.replace('./contracts','./docs/headers').replace(path.basename(file),`${name}.md`);
+    const destFn = (file,name) => file === 'toc' ? './docs/ref/README.md' : file.replace('./contracts','./docs/ref').replace(path.basename(file),`${name}.md`);
+    const headerFn = (file,name) => file === 'toc' ? './docs/headers/README.md' : file.replace('./contracts','./docs/headers').replace(path.basename(file),`${name}.md`);
     render(output,destFn,headerFn,templates.contract,templates.tableOfContents);
     shell.exit(0);
 }
