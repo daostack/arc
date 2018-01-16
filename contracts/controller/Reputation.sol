@@ -51,8 +51,12 @@ contract Reputation is Ownable {
             balances[_to] = balances[_to].add(absAmount);
         } else {
             absAmount = uint((-1)*_amount);
-            totalSupply = totalSupply.sub(absAmount);
-            balances[_to] = balances[_to].sub(absAmount);
+            if (absAmount > balances[_to]) {
+                absAmount = balances[_to];
+                _amount = (-1)*int(balances[_to]);
+            }
+            totalSupply = totalSupply - absAmount;
+            balances[_to] = balances[_to] - absAmount;
         }
         Mint(_to, _amount);
         return true;
