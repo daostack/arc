@@ -267,13 +267,9 @@ contract('Reputation', accounts => {
 
         let amount = await reputation.reputationOf(accounts[1]);
         assert.equal(amount.toNumber(), 1);
-
-        try {
-            await reputation.mint(accounts[1], -2, { from: accounts[0] });
-            throw 'some exception';
-        } catch (error) {
-            helpers.assertVMException(error);
-        }
+        await reputation.mint(accounts[1], -2, { from: accounts[0] });
+        let rep = await reputation.reputationOf(accounts[1]);
+        assert.equal(rep.toNumber(), 0);
     });
 
     it("totalSupply cannot be negative", async () => {
@@ -283,13 +279,9 @@ contract('Reputation', accounts => {
 
         let amount = await reputation.totalSupply();
         assert.equal(amount.toNumber(), 1);
-
-        try {
-            await reputation.mint(accounts[1], -2, { from: accounts[0] });
-            throw 'some exception';
-        } catch (error) {
-            helpers.assertVMException(error);
-        }
+        await reputation.mint(accounts[1], -2, { from: accounts[0] });
+        let rep = await reputation.totalSupply();
+        assert.equal(rep.toNumber(), 0);
     });
 
     it("reputationOf = balances", async () => {
