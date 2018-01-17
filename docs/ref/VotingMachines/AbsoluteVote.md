@@ -1,9 +1,9 @@
 # *contract* AbsoluteVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/AbsoluteVote.sol))
-*Code deposit cost: **less than 861000 gas.***
+*Code deposit cost: **less than 862000 gas.***
 
 *Execution cost: **less than 891 gas.***
 
-*Total deploy cost(deposit + execution): **less than 861891 gas.***
+*Total deploy cost(deposit + execution): **less than 862891 gas.***
 
 > 
 
@@ -81,7 +81,7 @@
 **constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 votes array of votes for each choice
 
@@ -218,7 +218,7 @@ votes array of votes for each choice
 **constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 bool true or false
 
@@ -245,7 +245,7 @@ bool true or false
 **constant | view**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 uint that contains number of choices
 
@@ -257,19 +257,19 @@ uint that contains number of choices
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the id of the proposal*
+1. **_proposalId** *of type bytes32- the id of the proposal*
 
-bool true - the proposal has been executed             false - otherwise.
+bool true - the proposal has been executed             false - otherwise.
 
 ### *function* cancelVote
-> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
+> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- id of the proposal*
+1. **_proposalId** *of type bytes32- id of the proposal*
 
 *Returns:*
 *Nothing*
@@ -283,7 +283,7 @@ bool true - the proposal has been executed             false - otherwise.
 **nonpayable**
 
 *Inputs:*
-1. **_proposalId** *of type bytes32- the proposal ID*
+1. **_proposalId** *of type bytes32- the proposal ID*
 
 *Returns:*
 1. **unnamed** *of type bool*

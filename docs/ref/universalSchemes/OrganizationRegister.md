@@ -1,50 +1,41 @@
 # *contract* OrganizationRegister ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/OrganizationRegister.sol))
-*Code deposit cost: **less than 507200 gas.***
+*Code deposit cost: **less than 358000 gas.***
 
-*Execution cost: **No bound available.***
+*Execution cost: **less than 20761 gas.***
 
-*Total deploy cost(deposit + execution): **less than 507200 gas.***
+*Total deploy cost(deposit + execution): **less than 378761 gas.***
 
 > A universal organization registry.
 
 
 ## Reference
 - [Constructors](#constructors)
-    - [OrganizationRegister(address, uint256, address)](#constructor-organizationregisteraddress-uint256-address)
+    - [OrganizationRegister()](#constructor-organizationregister)
 - [Events](#events)
     - [Promotion](#event-promotion)
     - [OwnershipTransferred](#event-ownershiptransferred)
-    - [OrganizationRegistered](#event-organizationregistered)
     - [OrgAdded](#event-orgadded)
     - [LogNewProposal](#event-lognewproposal)
 - [Fallback](#fallback)
 - [Functions](#functions)
+    - [updateParameters](#function-updateparameters)
+    - [transferOwnership](#function-transferownership)
     - [setParameters](#function-setparameters)
     - [parameters](#function-parameters)
-    - [transferOwnership](#function-transferownership)
-    - [registerOrganization](#function-registerorganization)
-    - [updateParameters](#function-updateparameters)
     - [owner](#function-owner)
     - [organizationsRegistery](#function-organizationsregistery)
-    - [organizations](#function-organizations)
-    - [nativeToken](#function-nativetoken)
-    - [isRegistered](#function-isregistered)
     - [hashedParameters](#function-hashedparameters)
     - [getParametersHash](#function-getparametershash)
-    - [fee](#function-fee)
-    - [beneficiary](#function-beneficiary)
     - [addOrPromoteAddress](#function-addorpromoteaddress)
 ### Constructors
-### *constructor* OrganizationRegister(address, uint256, address)
+### *constructor* OrganizationRegister()
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Params:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
+*Nothing*
 
 
 ### Events
@@ -61,11 +52,6 @@
 2. **newOwner** *of type address*
 
 
-### *event* OrganizationRegistered
-*Params:*
-1. **_avatar** *of type address*
-
-
 ### *event* OrgAdded
 *Params:*
 1. **_registry** *of type address*
@@ -80,6 +66,33 @@
 ### Fallback
 *Nothing*
 ### Functions
+### *function* updateParameters
+
+*Execution cost: **less than 20550 gas.***
+
+**nonpayable**
+
+*Inputs:*
+1. **_hashedParameters** *of type bytes32*
+
+*Returns:*
+*Nothing*
+
+
+### *function* transferOwnership
+> Allows the current owner to transfer control of the contract to a newOwner.
+
+*Execution cost: **less than 22961 gas.***
+
+**nonpayable**
+
+*Inputs:*
+1. **newOwner** *of type address- The address to transfer ownership to.*
+
+*Returns:*
+*Nothing*
+
+
 ### *function* setParameters
 
 *Execution cost: **No bound available.***
@@ -110,52 +123,9 @@
 3. **beneficiary** *of type address*
 
 
-### *function* transferOwnership
-> Allows the current owner to transfer control of the contract to a newOwner.
-
-*Execution cost: **less than 23093 gas.***
-
-**nonpayable**
-
-*Inputs:*
-1. **newOwner** *of type address- The address to transfer ownership to.*
-
-*Returns:*
-*Nothing*
-
-
-### *function* registerOrganization
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_avatar** *of type address*
-
-*Returns:*
-*Nothing*
-
-
-### *function* updateParameters
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
-4. **_hashedParameters** *of type bytes32*
-
-*Returns:*
-*Nothing*
-
-
 ### *function* owner
 
-*Execution cost: **less than 721 gas.***
+*Execution cost: **less than 677 gas.***
 
 **constant | view**
 
@@ -180,48 +150,9 @@
 1. **unnamed** *of type uint256*
 
 
-### *function* organizations
-
-*Execution cost: **less than 705 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **unnamed** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
-### *function* nativeToken
-
-*Execution cost: **less than 853 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type address*
-
-
-### *function* isRegistered
-
-*Execution cost: **less than 890 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **_avatar** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
 ### *function* hashedParameters
 
-*Execution cost: **less than 744 gas.***
+*Execution cost: **less than 612 gas.***
 
 **constant | view**
 
@@ -245,32 +176,6 @@
 
 *Returns:*
 1. **unnamed** *of type bytes32*
-
-
-### *function* fee
-
-*Execution cost: **less than 678 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type uint256*
-
-
-### *function* beneficiary
-
-*Execution cost: **less than 655 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type address*
 
 
 ### *function* addOrPromoteAddress

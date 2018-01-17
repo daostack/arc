@@ -1,21 +1,20 @@
 # *contract* VestingScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VestingScheme.sol))
-*Code deposit cost: **less than 1537200 gas.***
+*Code deposit cost: **less than 1408400 gas.***
 
-*Execution cost: **No bound available.***
+*Execution cost: **less than 21840 gas.***
 
-*Total deploy cost(deposit + execution): **less than 1537200 gas.***
+*Total deploy cost(deposit + execution): **less than 1430240 gas.***
 
 > A schme for vesting.
 
 
 ## Reference
 - [Constructors](#constructors)
-    - [VestingScheme(address, uint256, address)](#constructor-vestingschemeaddress-uint256-address)
+    - [VestingScheme()](#constructor-vestingscheme)
 - [Events](#events)
+    - [SignToCancelAgreement](#event-signtocancelagreement)
     - [RevokeSignToCancelAgreement](#event-revokesigntocancelagreement)
     - [OwnershipTransferred](#event-ownershiptransferred)
-    - [SignToCancelAgreement](#event-signtocancelagreement)
-    - [OrganizationRegistered](#event-organizationregistered)
     - [NewVestedAgreement](#event-newvestedagreement)
     - [LogRegisterOrg](#event-logregisterorg)
     - [LogNewProposal](#event-lognewproposal)
@@ -25,41 +24,39 @@
     - [LogAgreementCancel](#event-logagreementcancel)
 - [Fallback](#fallback)
 - [Functions](#functions)
-    - [signToCancelAgreement](#function-signtocancelagreement)
+    - [revokeSignToCancelAgreement](#function-revokesigntocancelagreement)
     - [parameters](#function-parameters)
     - [transferOwnership](#function-transferownership)
-    - [registerOrganization](#function-registerorganization)
-    - [revokeSignToCancelAgreement](#function-revokesigntocancelagreement)
     - [updateParameters](#function-updateparameters)
-    - [setParameters](#function-setparameters)
+    - [signToCancelAgreement](#function-signtocancelagreement)
     - [proposeVestingAgreement](#function-proposevestingagreement)
-    - [isRegistered](#function-isregistered)
-    - [organizations](#function-organizations)
-    - [organizationsData](#function-organizationsdata)
+    - [setParameters](#function-setparameters)
     - [owner](#function-owner)
-    - [nativeToken](#function-nativetoken)
+    - [organizationsData](#function-organizationsdata)
     - [hashedParameters](#function-hashedparameters)
     - [getParametersHash](#function-getparametershash)
-    - [fee](#function-fee)
     - [execute](#function-execute)
     - [createVestedAgreement](#function-createvestedagreement)
     - [collect](#function-collect)
-    - [beneficiary](#function-beneficiary)
     - [agreements](#function-agreements)
 ### Constructors
-### *constructor* VestingScheme(address, uint256, address)
+### *constructor* VestingScheme()
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Params:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
+*Nothing*
 
 
 ### Events
+### *event* SignToCancelAgreement
+*Params:*
+1. **_agreementId** *of type uint256*
+2. **_signer** *of type address*
+
+
 ### *event* RevokeSignToCancelAgreement
 *Params:*
 1. **_agreementId** *of type uint256*
@@ -70,17 +67,6 @@
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
-
-
-### *event* SignToCancelAgreement
-*Params:*
-1. **_agreementId** *of type uint256*
-2. **_signer** *of type address*
-
-
-### *event* OrganizationRegistered
-*Params:*
-1. **_avatar** *of type address*
 
 
 ### *event* NewVestedAgreement
@@ -124,15 +110,15 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* signToCancelAgreement
-> Function to sign to cancel an agreement.
+### *function* revokeSignToCancelAgreement
+> Function to revoke vote for canceling agreement.
 
-*Execution cost: **No bound available.***
+*Execution cost: **less than 43398 gas.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_agreementId** *of type uint256- the relevant agreement.*
+1. **_agreementId** *of type uint256- the relevant agreement.*
 
 *Returns:*
 *Nothing*
@@ -155,7 +141,7 @@
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
-*Execution cost: **less than 23272 gas.***
+*Execution cost: **less than 23071 gas.***
 
 **nonpayable**
 
@@ -166,61 +152,31 @@
 *Nothing*
 
 
-### *function* registerOrganization
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_avatar** *of type address*
-
-*Returns:*
-*Nothing*
-
-
-### *function* revokeSignToCancelAgreement
-> Function to revoke vote for canceling agreement.
-
-*Execution cost: **less than 43442 gas.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_agreementId** *of type uint256- the relevant agreement.*
-
-*Returns:*
-*Nothing*
-
-
 ### *function* updateParameters
 
-*Execution cost: **No bound available.***
+*Execution cost: **less than 20572 gas.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_nativeToken** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
-4. **_hashedParameters** *of type bytes32*
+1. **_hashedParameters** *of type bytes32*
 
 *Returns:*
 *Nothing*
 
 
-### *function* setParameters
+### *function* signToCancelAgreement
+> Function to sign to cancel an agreement.
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_voteParams** *of type bytes32*
-2. **_intVote** *of type address*
+1. **_agreementId** *of type uint256- the relevant agreement.*
 
 *Returns:*
-1. **unnamed** *of type bytes32*
+*Nothing*
 
 
 ### *function* proposeVestingAgreement
@@ -245,30 +201,31 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* isRegistered
+### *function* setParameters
 
-*Execution cost: **less than 978 gas.***
+*Execution cost: **No bound available.***
 
-**constant | view**
+**nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address*
+1. **_voteParams** *of type bytes32*
+2. **_intVote** *of type address*
 
 *Returns:*
-1. **unnamed** *of type bool*
+1. **unnamed** *of type bytes32*
 
 
-### *function* organizations
+### *function* owner
 
-*Execution cost: **less than 727 gas.***
+*Execution cost: **less than 787 gas.***
 
 **constant | view**
 
 *Inputs:*
+*Nothing*
+
+*Returns:*
 1. **unnamed** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
 
 
 ### *function* organizationsData
@@ -295,35 +252,9 @@
 11. **signaturesReceivedCounter** *of type uint256*
 
 
-### *function* owner
-
-*Execution cost: **less than 831 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type address*
-
-
-### *function* nativeToken
-
-*Execution cost: **less than 963 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type address*
-
-
 ### *function* hashedParameters
 
-*Execution cost: **less than 876 gas.***
+*Execution cost: **less than 744 gas.***
 
 **constant | view**
 
@@ -346,19 +277,6 @@
 
 *Returns:*
 1. **unnamed** *of type bytes32*
-
-
-### *function* fee
-
-*Execution cost: **less than 788 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type uint256*
 
 
 ### *function* execute
@@ -406,28 +324,15 @@
 **nonpayable**
 
 *Inputs:*
-1. **_agreementId** *of type uint256- the relevant agreement.*
+1. **_agreementId** *of type uint256- the relevant agreement.*
 
 *Returns:*
 *Nothing*
-
-
-### *function* beneficiary
-
-*Execution cost: **less than 677 gas.***
-
-**constant | view**
-
-*Inputs:*
-*Nothing*
-
-*Returns:*
-1. **unnamed** *of type address*
 
 
 ### *function* agreements
 
-*Execution cost: **less than 3340 gas.***
+*Execution cost: **less than 3271 gas.***
 
 **constant | view**
 
