@@ -17,6 +17,7 @@ contract Reputation is Ownable {
     uint256 public totalSupply;
     uint public decimals = 18;
 
+    // Event indicating minting of reputation to an address.
     event Mint(address indexed to, int256 amount);
 
     /**
@@ -37,7 +38,7 @@ contract Reputation is Ownable {
 
     /**
     * @dev adding/reducing reputation of a given address, updating the total supply,
-    * and triggering an event of the operation
+    * and triggering an event of the operation.
     * @param _to the address which we gives/takes reputation amount
     * @param _amount the reputation amount to be added/reduced
     * @return bool which represents a successful of the function
@@ -45,6 +46,7 @@ contract Reputation is Ownable {
     function mint(address _to, int256 _amount) public onlyOwner returns (bool) {
         // create new tokens and add them to the given account
         uint absAmount; // allow to reduce reputation also for non owner
+        int amountMinted = _amount;
         if ( _amount >= 0 ) {
             absAmount = uint(_amount);
             totalSupply = totalSupply.add(absAmount);
@@ -53,12 +55,12 @@ contract Reputation is Ownable {
             absAmount = uint((-1)*_amount);
             if (absAmount > balances[_to]) {
                 absAmount = balances[_to];
-                _amount = (-1)*int(balances[_to]);
+                amountMinted = (-1)*int(balances[_to]);
             }
             totalSupply = totalSupply - absAmount;
             balances[_to] = balances[_to] - absAmount;
         }
-        Mint(_to, _amount);
+        Mint(_to, amountMinted);
         return true;
     }
 
@@ -70,8 +72,10 @@ contract Reputation is Ownable {
     */
     function setReputation(address _to, uint256 _amount) public onlyOwner returns (bool) {
         // set the balance of _to to _amount
-        totalSupply = (totalSupply.sub(balances[_to])).add(_amount);
+        int amountMinted = int(_amount) - int(balances[_to]);
+        totalSupply = (totalSupply - balances[_to]).add(_amount);
         balances[_to] = _amount;
+        Mint(_to, amountMinted);
         return true;
     }
 }
