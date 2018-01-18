@@ -1,6 +1,8 @@
+[![Build Status](https://travis-ci.org/daostack/daostack.svg?branch=master)](https://travis-ci.org/daostack/daostack)
+[![NPM Package](https://img.shields.io/npm/v/daostack-arc.svg?style=flat-square)](https://www.npmjs.org/package/daostack-arc)
 # Resources
 
-- [Reference Documentation](ref/toc.md)
+- [Reference Documentation](ref/README.md)
 - [Concepts](concepts.md)
 - [Guides & Recepies](guides.md)
 - [Roadmap](roadmap.md)
@@ -48,7 +50,5 @@ Same as above, with the following exeptions:
 * All docs are `.md` files that live under `docs/` with the following structure:
     * `ref/` - generated automatic documentation.
     * `headers/` - manual static `.md` headers that are included in the generated `ref/` (headers are included based on their path, which must match the path of the corrosponding generated file in `ref/`).
-    * `scripts/` - the scripts responsible for generating docs.
-
-* Use `docs:gen` to generate docs 
+* Use `yarn run docs:generate` to generate docs 
 * In case of missing or incorrect documentation please open an issue with the label `documentation`, indicating the file, line number and any extra details.

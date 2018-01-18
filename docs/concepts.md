@@ -20,7 +20,7 @@ Each DAO consists of the following components:
 * **[Native token](ref/controller/DAOToken.md)** - *A Standard [ERC20 token](https://theethereum.wiki/w/index.php/ERC20_Token_Standard) that defines the value system of the DAO, participants are rewarded for their contributions based on this token*.
 * **[Reputation](ref/controller/Reputation.md) system** - *Similar to native token but is **non-transferable**, the reputation is used system is used to assign an importance to participants and their votes*.
 * **[Avatar](ref/controller/Avatar.md)** - *This is the public facing part of the DAO that handles the interaction of the DAO with the rest of the world(interacing with other DAOs, paying third party participants, etc...)*.
-* **Subscribed [Elements](#elements)** - *The set of [Schemes](ref/universalScheme/UniversalSchemeInterface.md) and [Global Constraints](ref/globalConstraints/GlobalConstraintInterface.md) the DAO consists of*.
+* **Subscribed [Elements](#elements)** - *The set of [Schemes](ref/universalSchemes/UniversalSchemeInterface.md) and [Global Constraints](ref/globalConstraints/GlobalConstraintInterface.md) the DAO consists of*.
 
 Those components are orginized in a single smart contract called a *[Controller](Controller)*.
 
