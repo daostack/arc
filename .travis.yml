@@ -22,5 +22,6 @@ script:
   - yarn test
   - yarn lint
   - yarn solium
+  - yarn run semantic-release
 notifications:
   slack: daostack:fGuaFPsiQiV5mgmzRcSzbYqw

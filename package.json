@@ -1,6 +1,5 @@
 {
   "name": "daostack-arc",
-  "version": "0.0.0-alpha.27",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -24,7 +23,8 @@
     "truffle": "truffle",
     "build": "rimraf build && truffle compile",
     "docs:serve": "docsify serve ./docs",
-    "docs:generate": "node scripts/docs/gen.js"
+    "docs:generate": "node scripts/docs/gen.js",
+    "semantic-release": "semantic-release"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -51,6 +51,7 @@
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
     "shelljs": "^0.8.1",
+    "semantic-release": "^12.2.2",
     "solc": "^0.4.19",
     "solc-cli": "^0.3.0",
     "solium": "^1.1.2",
