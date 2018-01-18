@@ -14,6 +14,7 @@ before_install:
   - sudo apt-get install geth -y -qq
 
 install:
+  - yarn
   - rm -rf build/ # remove any remaining artifacts from a previous build
   - truffle version
 
