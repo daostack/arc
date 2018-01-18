@@ -66,7 +66,7 @@ contract('Reputation', accounts => {
     it("check total reputation overflow", async () => {
         let rep = await Reputation.new();
         let BigNumber = require('bignumber.js');
-        let bigNum = ((new BigNumber(2)).toPower(254));
+        let bigNum = ((new BigNumber(2)).toPower(253));
 
         await rep.mint(accounts[0], bigNum);
         await rep.mint(accounts[0], bigNum);
@@ -110,7 +110,7 @@ contract('Reputation', accounts => {
     it("log the Mint event on mint", async () => {
         const reputation = await Reputation.new();
 
-        const tx = await reputation.mint(accounts[1], 1000, { from: accounts[0] });
+        let tx = await reputation.mint(accounts[1], 1000, { from: accounts[0] });
 
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "Mint");
@@ -122,12 +122,19 @@ contract('Reputation', accounts => {
         const reputation = await Reputation.new();
 
         await reputation.mint(accounts[1], 1000, { from: accounts[0] });
-        const tx = await reputation.mint(accounts[1], -1000, { from: accounts[0] });
+        let tx = await reputation.mint(accounts[1], -200, { from: accounts[0] });
 
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "Mint");
         assert.equal(tx.logs[0].args.to, accounts[1]);
-        assert.equal(tx.logs[0].args.amount.toNumber(), -1000);
+        assert.equal(tx.logs[0].args.amount.toNumber(), -200);
+
+        tx = await reputation.mint(accounts[1], -1000, { from: accounts[0] });
+
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "Mint");
+        assert.equal(tx.logs[0].args.to, accounts[1]);
+        assert.equal(tx.logs[0].args.amount.toNumber(), -800);
     });
 
     it("mint (plus) should be reflected in totalSupply", async () => {
@@ -159,13 +166,15 @@ contract('Reputation', accounts => {
 
         await reputation.mint(accounts[1], 1000, { from: accounts[0] });
         let totalSupply = await reputation.totalSupply();
-
         assert.equal(totalSupply.toNumber(), 1000);
 
         await reputation.mint(accounts[1], -500, { from: accounts[0] });
         totalSupply = await reputation.totalSupply();
-
         assert.equal(totalSupply.toNumber(), 500);
+
+        await reputation.mint(accounts[1], -700, { from: accounts[0] });
+        totalSupply = await reputation.totalSupply();
+        assert.equal(totalSupply.toNumber(), 0);
     });
 
     it("mint (minus) should be reflected in balances", async () => {
@@ -174,9 +183,13 @@ contract('Reputation', accounts => {
         await reputation.mint(accounts[1], 1000, { from: accounts[0] });
         await reputation.mint(accounts[1], -500, { from: accounts[0] });
 
-        const amount = await reputation.reputationOf(accounts[1]);
+        let amount = await reputation.reputationOf(accounts[1]);
 
         assert.equal(amount.toNumber(), 500);
+
+        await reputation.mint(accounts[1], -700, { from: accounts[0] });
+        amount = await reputation.reputationOf(accounts[1]);
+        assert.equal(amount.toNumber(), 0);
     });
 
     it("setReputation should be reflected in totalSupply", async () => {
@@ -267,13 +280,9 @@ contract('Reputation', accounts => {
 
         let amount = await reputation.reputationOf(accounts[1]);
         assert.equal(amount.toNumber(), 1);
-
-        try {
-            await reputation.mint(accounts[1], -2, { from: accounts[0] });
-            throw 'some exception';
-        } catch (error) {
-            helpers.assertVMException(error);
-        }
+        await reputation.mint(accounts[1], -2, { from: accounts[0] });
+        let rep = await reputation.reputationOf(accounts[1]);
+        assert.equal(rep.toNumber(), 0);
     });
 
     it("totalSupply cannot be negative", async () => {
@@ -283,13 +292,9 @@ contract('Reputation', accounts => {
 
         let amount = await reputation.totalSupply();
         assert.equal(amount.toNumber(), 1);
-
-        try {
-            await reputation.mint(accounts[1], -2, { from: accounts[0] });
-            throw 'some exception';
-        } catch (error) {
-            helpers.assertVMException(error);
-        }
+        await reputation.mint(accounts[1], -2, { from: accounts[0] });
+        let rep = await reputation.totalSupply();
+        assert.equal(rep.toNumber(), 0);
     });
 
     it("reputationOf = balances", async () => {
