@@ -23,7 +23,7 @@ contract Reputation is Ownable {
     */
     modifier capTotalSupply() {
         _;
-        require(int(totalSupply) > 0);
+        require(int(totalSupply) >= 0);
     }
 
     /**
@@ -53,12 +53,13 @@ contract Reputation is Ownable {
         // create new tokens and add them to the given account
         int amountMinted = _amount;
 
-        totalSupply = uint(int(totalSupply) + _amount);
         if (int(balances[_to]) + _amount >= 0 ) {
             balances[_to] = uint(int(balances[_to]) + _amount);
+            totalSupply = uint(int(totalSupply) + _amount);
         } else {
-            balances[_to] = 0;
             amountMinted = (-1)*int(balances[_to]);
+            totalSupply -= balances[_to];
+            balances[_to] = 0;
         }
 
         Mint(_to, amountMinted);
