@@ -12,7 +12,7 @@
     "tsconfig.json"
   ],
   "config": {
-    "gasLimit": "6015000"
+    "gasLimit": "6115000"
   },
   "scripts": {
     "test": "cross-conf-env ./node_modules/.bin/run-with-testrpc --testrpc-cmd ganache-cli --gasLimit npm_package_config_gasLimit 'truffle compile && truffle migrate && truffle test'",
@@ -51,7 +51,7 @@
     "shelljs": "^0.7.8",
     "solc": "^0.4.19",
     "solc-cli": "^0.3.0",
-    "solium": "^1.1.0",
+    "solium": "^1.1.2",
     "truffle": "^4.0.4",
     "truffle-contract": "^3.0.1",
     "uint32": "^0.2.1",
