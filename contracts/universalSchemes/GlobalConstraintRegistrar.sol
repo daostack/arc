@@ -136,7 +136,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     function proposeToRemoveGC(Avatar _avatar, address _gc) public returns(bytes32) {
         Organization storage org = organizationsData[_avatar];
         Controller controller = Controller(Avatar(_avatar).owner());
-        require(controller.isGlobalConstraintRegister(_gc,address(_avatar)));
+        require(controller.isGlobalConstraintRegistered(_gc,address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, org.voteToRemoveParams[_gc], _avatar, ExecutableInterface(this));

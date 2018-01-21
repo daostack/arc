@@ -184,7 +184,7 @@ contract('Controller', function (accounts)  {
       it("addGlobalConstraint ", async () => {
         controller = await setup();
         var tx = await controller.addGlobalConstraint(accounts[1],0,helpers.NULL_ADDRESS);
-        assert.equal(await controller.isGlobalConstraintRegister(accounts[1],helpers.NULL_ADDRESS),true);
+        assert.equal(await controller.isGlobalConstraintRegistered(accounts[1],helpers.NULL_ADDRESS),true);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "AddGlobalConstraint");
         var count = await controller.globalConstraintsCount(helpers.NULL_ADDRESS);
@@ -193,7 +193,7 @@ contract('Controller', function (accounts)  {
 
        it("removeGlobalConstraint ", async () => {
          controller = await setup();
-         assert.equal(await controller.isGlobalConstraintRegister(accounts[1],helpers.NULL_ADDRESS),false);
+         assert.equal(await controller.isGlobalConstraintRegistered(accounts[1],helpers.NULL_ADDRESS),false);
          await controller.addGlobalConstraint(accounts[1],0,helpers.NULL_ADDRESS);
          await controller.addGlobalConstraint(accounts[2],0,helpers.NULL_ADDRESS);
          await controller.addGlobalConstraint(accounts[3],0,helpers.NULL_ADDRESS);
@@ -202,14 +202,14 @@ contract('Controller', function (accounts)  {
          var tx = await controller.removeGlobalConstraint(accounts[3],helpers.NULL_ADDRESS);
          assert.equal(tx.logs.length, 1);
          assert.equal(tx.logs[0].event, "RemoveGlobalConstraint");
-         assert.equal(await controller.isGlobalConstraintRegister(accounts[1],helpers.NULL_ADDRESS),true);
-         assert.equal(await controller.isGlobalConstraintRegister(accounts[2],helpers.NULL_ADDRESS),true);
-         assert.equal(await controller.isGlobalConstraintRegister(accounts[3],helpers.NULL_ADDRESS),false);
-         assert.equal(await controller.isGlobalConstraintRegister(accounts[4],helpers.NULL_ADDRESS),true);
-         assert.equal(await controller.isGlobalConstraintRegister(accounts[5],helpers.NULL_ADDRESS),true);
+         assert.equal(await controller.isGlobalConstraintRegistered(accounts[1],helpers.NULL_ADDRESS),true);
+         assert.equal(await controller.isGlobalConstraintRegistered(accounts[2],helpers.NULL_ADDRESS),true);
+         assert.equal(await controller.isGlobalConstraintRegistered(accounts[3],helpers.NULL_ADDRESS),false);
+         assert.equal(await controller.isGlobalConstraintRegistered(accounts[4],helpers.NULL_ADDRESS),true);
+         assert.equal(await controller.isGlobalConstraintRegistered(accounts[5],helpers.NULL_ADDRESS),true);
          assert.equal(await controller.globalConstraintsCount(helpers.NULL_ADDRESS),4,helpers.NULL_ADDRESS);
          await controller.removeGlobalConstraint(accounts[5],helpers.NULL_ADDRESS);
-         assert.equal(await controller.isGlobalConstraintRegister(accounts[5],helpers.NULL_ADDRESS),false);
+         assert.equal(await controller.isGlobalConstraintRegistered(accounts[5],helpers.NULL_ADDRESS),false);
          assert.equal(await controller.globalConstraintsCount(helpers.NULL_ADDRESS),3);
         });
 
