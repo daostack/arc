@@ -85,6 +85,12 @@ contract GenesisScheme {
         Avatar  avatar = new Avatar(_orgName, nativeToken, nativeReputation);
         ControllerInterface  controller;
 
+        // Mint token and reputation for founders:
+        for (uint i = 0 ; i < _founders.length ; i++ ) {
+            nativeToken.mint(_founders[i],_foundersTokenAmount[i]);
+            nativeReputation.mint(_founders[i],_foundersReputationAmount[i]);
+        }
+
         // Create Controller:
         if (UController(0) == _uController) {
             controller = new Controller(avatar);
@@ -97,16 +103,6 @@ contract GenesisScheme {
         // Transfer ownership:
         nativeToken.transferOwnership(controller);
         nativeReputation.transferOwnership(controller);
-
-        // Mint token and reputation for founders:
-        for (uint i = 0 ; i < _founders.length ; i++ ) {
-            if (!controller.mintTokens(_foundersTokenAmount[i], _founders[i],address(avatar))) {
-                revert();
-            }
-            if (!controller.mintReputation(_foundersReputationAmount[i], _founders[i],address(avatar))) {
-                revert();
-            }
-        }
 
         locks[avatar] = msg.sender;
 
