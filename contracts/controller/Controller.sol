@@ -57,7 +57,7 @@ contract Controller is ControllerInterface {
     event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
-    event AddGlobalConstraint(address _globalconstraint, bytes32 _params);
+    event AddGlobalConstraint(address _globalConstraint, bytes32 _params);
     event RemoveGlobalConstraint(address _globalConstraint ,uint256 _index);
     event UpgradeController(address _oldController,address _newController);
 
@@ -226,7 +226,7 @@ contract Controller is ControllerInterface {
         return globalConstraints.length;
     }
 
-    function isGlobalConstraintRegister(address _globalConstraint,address) public constant returns(bool) {
+    function isGlobalConstraintRegistered(address _globalConstraint,address) public constant returns(bool) {
         return globalConstraintsRegister[_globalConstraint].register;
     }
 

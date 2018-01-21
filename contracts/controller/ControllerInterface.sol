@@ -72,7 +72,7 @@ interface ControllerInterface {
   // Global Contraints:
     function globalConstraintsCount(address _avatar) public constant returns(uint);
 
-    function isGlobalConstraintRegister(address _globalConstraint,address _avatar) public constant returns(bool);
+    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) public constant returns(bool);
 
     /**
      * @dev add or update Global Constraint

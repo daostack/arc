@@ -149,7 +149,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                            testSetup.globalConstraintRegistrarParams.votingMachine.params);
             var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
             await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-            assert.equal(await controller.isGlobalConstraintRegister(globalConstraintMock.address,0),true);
+            assert.equal(await controller.isGlobalConstraintRegistered(globalConstraintMock.address,0),true);
             tx = await testSetup.globalConstraintRegistrar.proposeToRemoveGC(testSetup.org.avatar.address,
                                                                            globalConstraintMock.address);
             assert.equal(tx.logs.length, 1);
