@@ -9,7 +9,6 @@ Arc is the lower layer of the DAOStack. It consists of several smart contracts d
 - [Reference Documentation](docs/ref/README.md)
 - [Concepts](docs/concepts.md)
 - [Guides & Recipes](docs/guides.md)
-- [Roadmap](docs/roadmap.md)
 - [Read the Whitepaper](docs/DAOstack%20White%20Paper%20V1.0.pdf)
 
 ## Getting Started
