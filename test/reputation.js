@@ -21,11 +21,11 @@ contract('Reputation', accounts => {
 
     it("check permissions", async () => {
         let rep = await Reputation.new();
-        await rep.setReputation(accounts[1], 1000);
+        await rep.mint(accounts[1], 1000);
 
-        // only the owner can call setReputation
+        // only the owner can call mint
         try {
-            await rep.setReputation(accounts[2], 1000, { from: accounts[2] });
+            await rep.mint(accounts[2], 1000, { from: accounts[2] });
             throw 'an error'; // make sure that an error is thrown
         } catch (error) {
             helpers.assertVMException(error);
@@ -192,66 +192,7 @@ contract('Reputation', accounts => {
         assert.equal(amount.toNumber(), 0);
     });
 
-    it("setReputation should be reflected in totalSupply", async () => {
-        const reputation = await Reputation.new();
-
-        let rep1 = Math.floor(Math.random() * 1e6);
-
-        await reputation.setReputation(accounts[1], rep1, { from: accounts[0] });
-        let totalSupply = await reputation.totalSupply();
-
-        assert.equal(totalSupply.toNumber(), rep1);
-
-        let rep2 = Math.floor(Math.random() * 1e6);
-
-        await reputation.setReputation(accounts[2], rep2, { from: accounts[0] });
-        totalSupply = await reputation.totalSupply();
-
-        assert.equal(totalSupply.toNumber(), rep1 + rep2);
-
-        rep1 = Math.floor(Math.random() * 1e6);
-
-        await reputation.setReputation(accounts[1], rep1, { from: accounts[0] });
-        totalSupply = await reputation.totalSupply();
-
-        assert.equal(totalSupply.toNumber(), rep1 + rep2);
-    });
-
-    it("setReputation should be reflected in balances", async () => {
-        const reputation = await Reputation.new();
-
-        let rep = Math.floor(Math.random() * 1e6);
-
-        await reputation.setReputation(accounts[1], rep, { from: accounts[0] });
-        let amount = await reputation.reputationOf(accounts[1]);
-        assert.equal(amount.toNumber(), rep);
-
-        rep = Math.floor(Math.random() * 1e6);
-
-        await reputation.setReputation(accounts[1], rep, { from: accounts[0] });
-        amount = await reputation.reputationOf(accounts[1]);
-        assert.equal(amount.toNumber(), rep);
-    });
-
     describe('onlyOwner', () => {
-        it('setReputation by owner', async () => {
-            const reputation = await Reputation.new();
-            try {
-                await reputation.setReputation(accounts[1], 10, { from: accounts[0] });
-            } catch (ex) {
-                assert(false, 'owner could not setReputation');
-            }
-        });
-
-        it('setReputation by not owner', async () => {
-            const reputation = await Reputation.new();
-            try {
-                await reputation.setReputation(accounts[1], 10, { from: accounts[1] });
-                throw 'some exception';
-            } catch (error) {
-                helpers.assertVMException(error);
-            }
-        });
 
         it('mint by owner', async () => {
             const reputation = await Reputation.new();

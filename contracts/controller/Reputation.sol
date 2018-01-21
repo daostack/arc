@@ -65,21 +65,4 @@ contract Reputation is Ownable {
         Mint(_to, amountMinted);
         return true;
     }
-
-    /**
-    * @dev setting reputation amount for a given address, updating the total supply as well
-    * @param _to the address which we set it's reputation amount
-    * @param _amount the new reputation amount to be set
-    * @return bool which represents a success
-    */
-    function setReputation(address _to, uint256 _amount) public onlyOwner capTotalSupply returns (bool) {
-        // Require _amount will not overflow on casting:
-        require(int(_amount) > 0);
-        // set the balance of _to to _amount
-        int amountMinted = int(_amount - balances[_to]);
-        totalSupply = uint(int(totalSupply) + amountMinted);
-        balances[_to] = _amount;
-        Mint(_to, amountMinted);
-        return true;
-    }
 }
