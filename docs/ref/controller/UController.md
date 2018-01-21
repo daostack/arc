@@ -27,24 +27,24 @@
     - [AddGlobalConstraint](#event-addglobalconstraint)
 - [Fallback](#fallback)
 - [Functions](#functions)
-    - [unregisterSelf](#function-unregisterself)
+    - [mintReputation](#function-mintreputation)
     - [unregisterScheme](#function-unregisterscheme)
     - [upgradeController](#function-upgradecontroller)
-    - [globalConstraintsCount](#function-globalconstraintscount)
-    - [isGlobalConstraintRegister](#function-isglobalconstraintregister)
-    - [newControllers](#function-newcontrollers)
-    - [registerScheme](#function-registerscheme)
-    - [sendEther](#function-sendether)
-    - [mintTokens](#function-minttokens)
-    - [newOrganization](#function-neworganization)
-    - [isSchemeRegistered](#function-isschemeregistered)
-    - [mintReputation](#function-mintreputation)
-    - [removeGlobalConstraint](#function-removeglobalconstraint)
+    - [unregisterSelf](#function-unregisterself)
     - [getSchemePermissions](#function-getschemepermissions)
+    - [newControllers](#function-newcontrollers)
+    - [sendEther](#function-sendether)
+    - [registerScheme](#function-registerscheme)
+    - [newOrganization](#function-neworganization)
+    - [removeGlobalConstraint](#function-removeglobalconstraint)
+    - [externalTokenTransfer](#function-externaltokentransfer)
     - [getSchemeParameters](#function-getschemeparameters)
+    - [isGlobalConstraintRegistered](#function-isglobalconstraintregistered)
+    - [isSchemeRegistered](#function-isschemeregistered)
+    - [mintTokens](#function-minttokens)
+    - [globalConstraintsCount](#function-globalconstraintscount)
     - [genericAction](#function-genericaction)
     - [externalTokenTransferFrom](#function-externaltokentransferfrom)
-    - [externalTokenTransfer](#function-externaltokentransfer)
     - [externalTokenIncreaseApproval](#function-externaltokenincreaseapproval)
     - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
     - [addGlobalConstraint](#function-addglobalconstraint)
@@ -151,24 +151,27 @@
 
 ### *event* AddGlobalConstraint
 *Params:*
-1. **_globalconstraint** *of type address*
+1. **_globalConstraint** *of type address*
 2. **_params** *of type bytes32*
 
 
 ### Fallback
 *Nothing*
 ### Functions
-### *function* unregisterSelf
-> unregister the caller's scheme
+### *function* mintReputation
 
-*Execution cost: **less than 28531 gas.***
+*Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address- the organization avatar.*
+1. **_amount** *of type int256*
+2. **_beneficiary** *of type address*
+3. **_avatar** *of type address*
 
-bool which represents a success
+*Returns:*
+1. **unnamed** *of type bool*
+
 
 ### *function* unregisterScheme
 
@@ -198,36 +201,35 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* globalConstraintsCount
+### *function* unregisterSelf
+> unregister the caller's scheme
 
-*Execution cost: **less than 931 gas.***
+*Execution cost: **less than 28509 gas.***
 
-**constant | view**
+**nonpayable**
 
 *Inputs:*
-1. **_avatar** *of type address*
+1. **_avatar** *of type address- the organization avatar.*
 
-*Returns:*
-1. **unnamed** *of type uint256*
+bool which represents a success
 
-
-### *function* isGlobalConstraintRegister
+### *function* getSchemePermissions
 
 *Execution cost: **No bound available.***
 
 **constant | view**
 
 *Inputs:*
-1. **_globalConstraint** *of type address*
+1. **_scheme** *of type address*
 2. **_avatar** *of type address*
 
 *Returns:*
-1. **unnamed** *of type bool*
+1. **unnamed** *of type bytes4*
 
 
 ### *function* newControllers
 
-*Execution cost: **less than 846 gas.***
+*Execution cost: **less than 824 gas.***
 
 **constant | view**
 
@@ -236,6 +238,21 @@ bool which represents a success
 
 *Returns:*
 1. **unnamed** *of type address*
+
+
+### *function* sendEther
+
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+1. **_amountInWei** *of type uint256*
+2. **_to** *of type address*
+3. **_avatar** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bool*
 
 
 ### *function* registerScheme
@@ -254,16 +271,87 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* sendEther
+### *function* newOrganization
+> newOrganization set up a new organization with default genesisScheme.
 
 *Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
-1. **_amountInWei** *of type uint256*
+1. **_avatar** *of type address- the organization avatar*
+
+*Returns:*
+*Nothing*
+
+
+### *function* removeGlobalConstraint
+
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+1. **_globalConstraint** *of type address*
+2. **_avatar** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bool*
+
+
+### *function* externalTokenTransfer
+
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+1. **_externalToken** *of type address*
 2. **_to** *of type address*
-3. **_avatar** *of type address*
+3. **_value** *of type uint256*
+4. **_avatar** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bool*
+
+
+### *function* getSchemeParameters
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+1. **_scheme** *of type address*
+2. **_avatar** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bytes32*
+
+
+### *function* isGlobalConstraintRegistered
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+1. **_globalConstraint** *of type address*
+2. **_avatar** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bool*
+
+
+### *function* isSchemeRegistered
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+1. **_scheme** *of type address*
+2. **_avatar** *of type address*
 
 *Returns:*
 1. **unnamed** *of type bool*
@@ -284,89 +372,17 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* newOrganization
-> newOrganization set up a new organization with default genesisScheme.
+### *function* globalConstraintsCount
 
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_avatar** *of type address- the organization avatar*
-
-*Returns:*
-*Nothing*
-
-
-### *function* isSchemeRegistered
-
-*Execution cost: **No bound available.***
+*Execution cost: **less than 909 gas.***
 
 **constant | view**
 
 *Inputs:*
-1. **_scheme** *of type address*
-2. **_avatar** *of type address*
+1. **_avatar** *of type address*
 
 *Returns:*
-1. **unnamed** *of type bool*
-
-
-### *function* mintReputation
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_amount** *of type int256*
-2. **_beneficiary** *of type address*
-3. **_avatar** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
-### *function* removeGlobalConstraint
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_globalConstraint** *of type address*
-2. **_avatar** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
-### *function* getSchemePermissions
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-1. **_scheme** *of type address*
-2. **_avatar** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bytes4*
-
-
-### *function* getSchemeParameters
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-1. **_scheme** *of type address*
-2. **_avatar** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bytes32*
+1. **unnamed** *of type uint256*
 
 
 ### *function* genericAction
@@ -395,22 +411,6 @@ bool which represents a success
 3. **_to** *of type address*
 4. **_value** *of type uint256*
 5. **_avatar** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
-### *function* externalTokenTransfer
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_externalToken** *of type address*
-2. **_to** *of type address*
-3. **_value** *of type uint256*
-4. **_avatar** *of type address*
 
 *Returns:*
 1. **unnamed** *of type bool*

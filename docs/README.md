@@ -4,7 +4,7 @@
 
 - [Reference Documentation](ref/README.md)
 - [Concepts](concepts.md)
-- [Guides & Recepies](guides.md)
+- [Guides & Recipes](guides.md)
 - [Roadmap](roadmap.md)
 - [Read the Whitepaper](DAOstack%20White%20Paper%20V1.0.pdf)
 

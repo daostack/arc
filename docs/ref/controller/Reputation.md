@@ -1,9 +1,9 @@
 # *contract* Reputation ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Reputation.sol))
-*Code deposit cost: **less than 222600 gas.***
+*Code deposit cost: **less than 168000 gas.***
 
-*Execution cost: **less than 50712 gas.***
+*Execution cost: **less than 50663 gas.***
 
-*Total deploy cost(deposit + execution): **less than 273312 gas.***
+*Total deploy cost(deposit + execution): **less than 218663 gas.***
 
 > Simple static reputation storage
 
@@ -19,7 +19,6 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 - [Functions](#functions)
     - [transferOwnership](#function-transferownership)
     - [totalSupply](#function-totalsupply)
-    - [setReputation](#function-setreputation)
     - [reputationOf](#function-reputationof)
     - [owner](#function-owner)
     - [mint](#function-mint)
@@ -54,7 +53,7 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 ### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
-*Execution cost: **less than 22854 gas.***
+*Execution cost: **less than 22832 gas.***
 
 **nonpayable**
 
@@ -78,24 +77,10 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 1. **unnamed** *of type uint256*
 
 
-### *function* setReputation
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_to** *of type address*
-2. **_amount** *of type uint256*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
 ### *function* reputationOf
 > return the reputation amount of a given owner
 
-*Execution cost: **less than 683 gas.***
+*Execution cost: **less than 661 gas.***
 
 **constant | view**
 

@@ -10,7 +10,7 @@ The DAOStack:
 1. [Ethereum](https://www.ethereum.org/) - *Base blockchain.*
 2. ArcHives - *A public curated database of [element](#elements)s, organizations and a shared place for community collaboration*.
 3. **Arc - This project**
-4. [Arc.js](https://github.com/daostack/arc-js) - *Javascript library that talks to Arc, built on top of web3.js.*
+4. [Arc.js](https://github.com/daostack/arc-js) - *JavaScript library that talks to Arc, built on top of web3.js.*
 5. [Alchemy](https://github.com/daostack/Alchemy-Aurelia) (and more...) - *Collaborative DApps, built on top of DAOStack using Arc.js*
 
 ### The Structure of a DAO
@@ -22,11 +22,11 @@ Each DAO consists of the following components:
 * **[Avatar](ref/controller/Avatar.md)** - *This is the public facing part of the DAO that handles the interaction of the DAO with the rest of the world(interacing with other DAOs, paying third party participants, etc...)*.
 * **Subscribed [Elements](#elements)** - *The set of [Schemes](ref/universalSchemes/UniversalSchemeInterface.md) and [Global Constraints](ref/globalConstraints/GlobalConstraintInterface.md) the DAO consists of*.
 
-Those components are orginized in a single smart contract called a *[Controller](Controller)*.
+Those components are organized in a single smart contract called a *[Controller](Controller)*.
 
 ## Elements
 
-The main configurable and extendable building blocks of DAOs are: *Schemes* and *Global Constraints*, which are collectivley called *elements*.
+The main configurable and extendable building blocks of DAOs are: *Schemes* and *Global Constraints*, which are collectively called *elements*.
 * **[Schemes](ref/universalScheme/UniversalSchemeInterface.md)** *define the "do's" of the DAO, defining rules under which actions are taken, based on the participants input.* Examples of Schemes are:
     * Rewarding contributions if other participants recognize them as worthy.
     * Voting on proposals and automatically executing the chosen proposal.

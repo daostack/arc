@@ -7,7 +7,7 @@
 
 > Controller contract
 
-The *Contoller* is the centeral part of a DAO, it glues together all other components in a single smart contract.
+The *Controller* is the central part of a DAO, it glues together all other components in a single smart contract.
 
 ![Controller Illustration](../../images/controller.png)
 ## Reference
@@ -29,30 +29,30 @@ The *Contoller* is the centeral part of a DAO, it glues together all other compo
     - [AddGlobalConstraint](#event-addglobalconstraint)
 - [Fallback](#fallback)
 - [Functions](#functions)
-    - [unregisterSelf](#function-unregisterself)
-    - [unregisterScheme](#function-unregisterscheme)
-    - [upgradeController](#function-upgradecontroller)
     - [mintReputation](#function-mintreputation)
-    - [newController](#function-newcontroller)
+    - [unregisterScheme](#function-unregisterscheme)
+    - [unregisterSelf](#function-unregisterself)
+    - [upgradeController](#function-upgradecontroller)
+    - [nativeReputation](#function-nativereputation)
     - [removeGlobalConstraint](#function-removeglobalconstraint)
-    - [registerScheme](#function-registerscheme)
     - [schemes](#function-schemes)
     - [sendEther](#function-sendether)
-    - [getSchemePermissions](#function-getschemepermissions)
-    - [mintTokens](#function-minttokens)
-    - [nativeToken](#function-nativetoken)
-    - [nativeReputation](#function-nativereputation)
-    - [externalTokenTransfer](#function-externaltokentransfer)
-    - [getSchemeParameters](#function-getschemeparameters)
-    - [globalConstraintsCount](#function-globalconstraintscount)
-    - [globalConstraints](#function-globalconstraints)
-    - [globalConstraintsRegister](#function-globalconstraintsregister)
     - [isSchemeRegistered](#function-isschemeregistered)
-    - [isGlobalConstraintRegister](#function-isglobalconstraintregister)
+    - [mintTokens](#function-minttokens)
+    - [registerScheme](#function-registerscheme)
+    - [nativeToken](#function-nativetoken)
+    - [newController](#function-newcontroller)
+    - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
+    - [getSchemeParameters](#function-getschemeparameters)
+    - [isGlobalConstraintRegistered](#function-isglobalconstraintregistered)
+    - [getSchemePermissions](#function-getschemepermissions)
+    - [globalConstraintsRegister](#function-globalconstraintsregister)
+    - [globalConstraints](#function-globalconstraints)
+    - [globalConstraintsCount](#function-globalconstraintscount)
     - [genericAction](#function-genericaction)
     - [externalTokenTransferFrom](#function-externaltokentransferfrom)
+    - [externalTokenTransfer](#function-externaltokentransfer)
     - [externalTokenIncreaseApproval](#function-externaltokenincreaseapproval)
-    - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
     - [avatar](#function-avatar)
     - [addGlobalConstraint](#function-addglobalconstraint)
 ### Constructors
@@ -153,7 +153,7 @@ The *Contoller* is the centeral part of a DAO, it glues together all other compo
 
 ### *event* AddGlobalConstraint
 *Params:*
-1. **_globalconstraint** *of type address*
+1. **_globalConstraint** *of type address*
 2. **_params** *of type bytes32*
 
 
@@ -165,46 +165,6 @@ The *Contoller* is the centeral part of a DAO, it glues together all other compo
 
 
 ### Functions
-### *function* unregisterSelf
-> unregister the caller's scheme
-
-*Execution cost: **less than 28031 gas.***
-
-**nonpayable**
-
-*Inputs:*
-1. **unnamed** *of type address*
-
-bool which represents a success
-
-### *function* unregisterScheme
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_scheme** *of type address*
-2. **unnamed** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
-### *function* upgradeController
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_newController** *of type address*
-2. **unnamed** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
 ### *function* mintReputation
 
 *Execution cost: **No bound available.***
@@ -220,9 +180,49 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* newController
+### *function* unregisterScheme
 
-*Execution cost: **less than 658 gas.***
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+1. **_scheme** *of type address*
+2. **unnamed** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bool*
+
+
+### *function* unregisterSelf
+> unregister the caller's scheme
+
+*Execution cost: **less than 28009 gas.***
+
+**nonpayable**
+
+*Inputs:*
+1. **unnamed** *of type address*
+
+bool which represents a success
+
+### *function* upgradeController
+
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+1. **_newController** *of type address*
+2. **unnamed** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bool*
+
+
+### *function* nativeReputation
+
+*Execution cost: **less than 922 gas.***
 
 **constant | view**
 
@@ -247,25 +247,9 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* registerScheme
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_scheme** *of type address*
-2. **_paramsHash** *of type bytes32*
-3. **_permissions** *of type bytes4*
-4. **unnamed** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
 ### *function* schemes
 
-*Execution cost: **less than 1433 gas.***
+*Execution cost: **less than 1411 gas.***
 
 **constant | view**
 
@@ -292,7 +276,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* getSchemePermissions
+### *function* isSchemeRegistered
 
 *Execution cost: **No bound available.***
 
@@ -303,7 +287,7 @@ bool which represents a success
 2. **unnamed** *of type address*
 
 *Returns:*
-1. **unnamed** *of type bytes4*
+1. **unnamed** *of type bool*
 
 
 ### *function* mintTokens
@@ -321,9 +305,25 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
+### *function* registerScheme
+
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+1. **_scheme** *of type address*
+2. **_paramsHash** *of type bytes32*
+3. **_permissions** *of type bytes4*
+4. **unnamed** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bool*
+
+
 ### *function* nativeToken
 
-*Execution cost: **less than 1076 gas.***
+*Execution cost: **less than 1054 gas.***
 
 **constant | view**
 
@@ -334,9 +334,9 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 
-### *function* nativeReputation
+### *function* newController
 
-*Execution cost: **less than 944 gas.***
+*Execution cost: **less than 636 gas.***
 
 **constant | view**
 
@@ -347,7 +347,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 
-### *function* externalTokenTransfer
+### *function* externalTokenDecreaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -355,8 +355,8 @@ bool which represents a success
 
 *Inputs:*
 1. **_externalToken** *of type address*
-2. **_to** *of type address*
-3. **_value** *of type uint256*
+2. **_spender** *of type address*
+3. **_subtractedValue** *of type uint256*
 4. **unnamed** *of type address*
 
 *Returns:*
@@ -377,62 +377,7 @@ bool which represents a success
 1. **unnamed** *of type bytes32*
 
 
-### *function* globalConstraintsCount
-
-*Execution cost: **less than 849 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **unnamed** *of type address*
-
-*Returns:*
-1. **unnamed** *of type uint256*
-
-
-### *function* globalConstraints
-
-*Execution cost: **less than 1412 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **unnamed** *of type uint256*
-
-*Returns:*
-1. **gcAddress** *of type address*
-2. **params** *of type bytes32*
-
-
-### *function* globalConstraintsRegister
-
-*Execution cost: **less than 1082 gas.***
-
-**constant | view**
-
-*Inputs:*
-1. **unnamed** *of type address*
-
-*Returns:*
-1. **register** *of type bool*
-2. **index** *of type uint256*
-
-
-### *function* isSchemeRegistered
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-1. **_scheme** *of type address*
-2. **unnamed** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
-### *function* isGlobalConstraintRegister
+### *function* isGlobalConstraintRegistered
 
 *Execution cost: **No bound available.***
 
@@ -444,6 +389,61 @@ bool which represents a success
 
 *Returns:*
 1. **unnamed** *of type bool*
+
+
+### *function* getSchemePermissions
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+1. **_scheme** *of type address*
+2. **unnamed** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bytes4*
+
+
+### *function* globalConstraintsRegister
+
+*Execution cost: **less than 1060 gas.***
+
+**constant | view**
+
+*Inputs:*
+1. **unnamed** *of type address*
+
+*Returns:*
+1. **register** *of type bool*
+2. **index** *of type uint256*
+
+
+### *function* globalConstraints
+
+*Execution cost: **less than 1390 gas.***
+
+**constant | view**
+
+*Inputs:*
+1. **unnamed** *of type uint256*
+
+*Returns:*
+1. **gcAddress** *of type address*
+2. **params** *of type bytes32*
+
+
+### *function* globalConstraintsCount
+
+*Execution cost: **less than 827 gas.***
+
+**constant | view**
+
+*Inputs:*
+1. **unnamed** *of type address*
+
+*Returns:*
+1. **unnamed** *of type uint256*
 
 
 ### *function* genericAction
@@ -477,6 +477,22 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
+### *function* externalTokenTransfer
+
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+1. **_externalToken** *of type address*
+2. **_to** *of type address*
+3. **_value** *of type uint256*
+4. **unnamed** *of type address*
+
+*Returns:*
+1. **unnamed** *of type bool*
+
+
 ### *function* externalTokenIncreaseApproval
 
 *Execution cost: **No bound available.***
@@ -493,25 +509,9 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenDecreaseApproval
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_externalToken** *of type address*
-2. **_spender** *of type address*
-3. **_subtractedValue** *of type uint256*
-4. **unnamed** *of type address*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
 ### *function* avatar
 
-*Execution cost: **less than 724 gas.***
+*Execution cost: **less than 702 gas.***
 
 **constant | view**
 

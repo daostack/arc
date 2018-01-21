@@ -1,13 +1,13 @@
 related: [TokenCapGC](TokenCapGC.md)
 
-*Global Constraint*s define certain conditions the DAO must hold at all times. More concretly, they define *pre* & *post* conditions that must hold before & after any action the DAO takes.
+*Global Constraint*s define certain conditions the DAO must hold at all times. More concretely, they define *pre* & *post* conditions that must hold before & after any action the DAO takes.
 They are meant to be *Universal*(i.e. only one deployed instance), but do not strictly need to be.
 
 When an action is about to happen, the [Controller](../controller/Controller.md) consults the *Global Constraint* and runs it's `pre` & `post` methods to see if the conditions hold.
 It passes the following parameters to `pre` & `post`:
 1. `address scheme` - the scheme that performs the action.
 2. `bytes32 hash` - a hash of the parameters to be used.
-3. `bytes32 method` - what kind of event occured, available `method`s:
+3. `bytes32 method` - what kind of event occurred, available `method`s:
     - `mintReputation`
     - `mintTokens`
     - `registerScheme`
