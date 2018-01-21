@@ -4162,9 +4162,9 @@ run-async@^2.2.0:
   dependencies:
     is-promise "^2.1.0"
 
-run-with-testrpc@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/run-with-testrpc/-/run-with-testrpc-0.3.0.tgz#77205fc63e44e62202e0e5de51596038d82ba519"
+run-with-ganache@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/run-with-ganache/-/run-with-ganache-0.1.1.tgz#55393006db4f18e2dca8084221aa4f8a10bf31fb"
   dependencies:
     colors "^1.1.2"
     ganache-cli "^6.0.3"
