@@ -2,5 +2,5 @@ This pages includes some examples of building DAOs using *Arc*, and creating you
 
 Prerequisites: 
 1. [Install *Arc* in your project](README.md).
-2. Get familier with the [concepts](concepts.md) involved
+2. Get familiar with the [concepts](concepts.md) involved
 

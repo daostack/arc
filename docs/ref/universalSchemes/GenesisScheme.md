@@ -1,9 +1,9 @@
 # *contract* GenesisScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/GenesisScheme.sol))
-*Code deposit cost: **less than 4503000 gas.***
+*Code deposit cost: **less than 4440000 gas.***
 
-*Execution cost: **less than 5238 gas.***
+*Execution cost: **less than 5150 gas.***
 
-*Total deploy cost(deposit + execution): **less than 4508238 gas.***
+*Total deploy cost(deposit + execution): **less than 4445150 gas.***
 
 > Genesis Scheme that creates organizations
 

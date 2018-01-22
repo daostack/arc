@@ -34,13 +34,13 @@ See also [this issue](https://github.com/daostack/daostack/issues/14)
 
 # UI
 
-The User Interface is a Dapp written in Javascript, that reputation holders can use to interact with the DAO. It will provide at least the following functionalities:
+The User Interface is a DApp written in JavaScript, that reputation holders can use to interact with the DAO. It will provide at least the following functionalities:
 
-1. Make proposals for distribution of tokens and repution 
+1. Make proposals for distribution of tokens and reputation 
 1. Make proposals to change the value system (i.e. the main contract)
 1. Propose contribution to be considered for Token and reputation awards
 1. Vote for the above-mentioned proposals. Such votes can be either binary (yes/no), or with a ranged number (if vote is based on Reputation-Weighed Median, i.e. the amount to be distributed is determined as the median of all votes, weighed by reputation)
-1. Access information about agents (tokens and reputation balances), objects (proopsals, contributions, public votes) and value systems (and their properties).
+1. Access information about agents (tokens and reputation balances), objects (proposals, contributions, public votes) and value systems (and their properties).
 1. Transfer tokens
 1. Delegate reputation
 
