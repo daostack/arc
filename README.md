@@ -1,61 +1,66 @@
 [![Build Status](https://travis-ci.org/daostack/daostack.svg?branch=master)](https://travis-ci.org/daostack/daostack)
 [![NPM Package](https://img.shields.io/npm/v/daostack-arc.svg?style=flat-square)](https://www.npmjs.org/package/daostack-arc)
+# DAOstack Arc
 
+Arc is the lower layer of the DAO stack. It consists of several smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
 
-# DAOStack ARC
+## Resources
 
-DAOStack ARC is the lower layer on the DAOStack stack.
-It provides a set of smart contracts which can be used as a building blocks for DAOs.
-Using this set of smart contracts one can define and setup organization with high level of flexibility by choosing the organization's components and schemes.
+- [Reference Documentation](docs/ref/README.md)
+- [Concepts](docs/concepts.md)
+- [Guides & Recipes](docs/guides.md)
+- [Read the Whitepaper](docs/DAOstack%20White%20Paper%20V1.0.pdf)
 
 ## Getting Started
+### As a Solidity library
 
-DAOStack integrates with [Truffle](https://github.com/ConsenSys/truffle), an Ethereum development environment.
-Please install truffle.
+1. Install npm package: `yarn add daostack-arc`/ `npm install daostack-arc`
+2. Import in your project. `import 'daostack-arc/contracts/...';`
 
-```sh
-npm install -g truffle
+Example:
+```
+import 'daostack-arc/contracts/universalShchems/UniversalScheme.sol';
+contract MyAwesomeScheme is UniversalScheme { ... }
 ```
 
-### test
-```sh
-npm test
-```
-This will run ganache-cli, compile, migrate and run all tests.
+- `.sol` Source code is found under `node_modules/daostack-arc/contracts`
+- `.json` Compiled contracts are found under `node_modules/daostack-arc/build/contracts`
 
-### using daostack-arc as library
+**Note: Arc works best in truffle based projects.*
 
-Please install Truffle and initialize your project with `truffle init`.
+#### Security
+DAOstack Arc is still on its alpha version.
+Arc is meant to provide secure, tested and community-audited code, but please use common sense when doing anything that deals with real money! We take no responsibility for your implementation decisions and any security problem you might experience.
 
-```sh
-npm install -g truffle
-mkdir myproject && cd myproject
-truffle init
-```
-To install the daostack-arc library, run:
-```sh
-npm init
-npm install daostack-arc
-```
-You should be able to find all daostack-arc contracts under `node_modules/doastack-arc/contracts` folder.
-Using the contracts in the library can be done like so:
+### Contributing to Arc
 
-```js
-import 'daostack-arc/contracts/universalSchemes/UniversalScheme.sol';
+1. `$ yarn global add truffle ganache-cli` - prerequisites: have [truffle](https://github.com/trufflesuite/truffle) and [ganache-cli](https://github.com/trufflesuite/ganache-cli) installed.
+2. `$ git clone https://github.com/daostack/daostack.git` - clone the repo.
+3. `$ cd daostack`
+4. `daostack/$ yarn` - install dependencies.
 
-contract MyContract is UniversalScheme {
-  ...
-}
-```
+Commands:
+* `truffle test` - run unit tests.
+* `yarn lint` - lint JavaScript files.
+* `yarn solium` - lint Solidity files.
 
-You should be able to find all daostack-arc already built contracts (<contract>.json) ready for deployment under `node_modules/doastack-arc/build/contracts/` folder.
+This is an open source project ([GPL license](https://github.com/daostack/daostack/blob/master/LICENSE)).
 
-## Security
-daostack-arc is still on its alpha version.
-daostack-arc is meant to provide secure, tested and community-audited code, but please use common sense when doing anything that deals with real money! We take no responsibility for your implementation decisions and any security problem you might experience.
+PRs are welcome but please first consult with the [Contribution guide](https://github.com/daostack/daostack/blob/master/CONTRIBUTING.md).
 
-# Contributing
+Join us on [Slack](https://daostack.slack.com/)!
 
-Contributions and pull requests are very welcome. Check out [The DAOStack roadmap](docs/roadmap.md), and join us on [Slack](https://daostack.slack.com).
+#### *Note on windows dev environments*
+Windows environments are not currently officially supported.
+A common workaround is to use [Docker](https://www.docker.com/).
+1. use `docker run -it -v absolute/path/to/local/repo:/home node /bin/bash` (use `${pwd}` for a relative path, eg. `${pwd}/relative`)
+2. `$ cd /home`
+3. Continue development as usual inside the container. your changes are automatically synchronized with the host(windows) local repo.
 
-If you want to contribute to the code, check out  [CONTRIBUTING.md](CONTRIBUTING.md).
+### Contributing to Arc Docs
+Same as above, with the following exceptions:
+* All docs are `.md` files that live under `docs/` with the following structure:
+    * `ref/` - generated automatic documentation.
+    * `headers/` - manual static `.md` headers that are included in the generated `ref/` (headers are included based on their path, which must match the path of the corrosponding generated file in `ref/`).
+* Use `yarn run docs:generate` to generate docs 
+* In case of missing or incorrect documentation please open an issue with the label `documentation`, indicating the file, line number and any extra details.
