@@ -743,7 +743,6 @@ contract('Governance', function (accounts) {
     assert.equal(await testSetup.governance.isBoost(proposalId),false);
     await testSetup.governance.stake(proposalId,1,100);
     assert.equal(await testSetup.governance.isBoost(proposalId),true);
-    await helpers.increaseTime(59); //increase time but not enough to get to a decision.
     await testSetup.governance.execute(proposalId);
     try {
       await  testSetup.governance.redeem(proposalId);
