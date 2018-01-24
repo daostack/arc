@@ -16,17 +16,33 @@
     window.$docsify = {
         name: 'DAOstack Arc Docs',
         repo: 'https://github.com/daostack/daostack',
+        homepage: 'https://raw.githubusercontent.com/daostack/daostack/master/README.md',
         markdown: {
           renderer: {
             link: function (href, title, text) {
               // extract dir from window.location
-              var path = window.location.href.split('#')[1].split('/');
-              path.pop();
-              var dir = path.join('/');
+              var base = window.location.href.split('#')[0] + '#'
+              var hash = window.location.href.split('#')[1];
+              var parts = hash.split('/');
+              parts.pop();
+              var dir = parts.join('/');
 
-              // if the link is relative, prepend the current dir
-              var r = new RegExp('^(?:[a-z]+:)?//', 'i');
-              var link = r.test(href) ? href : `/#${dir}/${href}`;
+              var link = 
+                href.startsWith('#') ? // a hash link
+                  hash + '?id=' + href.split('#')[1]
+                :
+                  dir === '' ? // the root page is a special case since it's not in `docs`
+                    href.replace('docs/','')
+                  :
+                    `${dir}/${href}`
+              ;
+            
+              link = 
+                new RegExp('^(?:[a-z]+:)?//', 'i').test(href) ? // absolute paths are left as is
+                  href 
+                : 
+                  base + link.replace('.md','')
+              ;
 
               return `<a href="${link}">${text}</a>`
             }
