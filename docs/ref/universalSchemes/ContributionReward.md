@@ -30,7 +30,7 @@
     - [getParametersHash](#function-getparametershash)
     - [execute](#function-execute)
 ### Constructors
-### *constructor* ContributionReward()
+#### *constructor* ContributionReward()
 
 *Execution cost: **No bound available.***
 
@@ -41,30 +41,30 @@
 
 
 ### Events
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* LogProposalExecuted
+#### *event* LogProposalExecuted
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 
-### *event* LogProposalDeleted
+#### *event* LogProposalDeleted
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **proposalId** *of type bytes32*
 
 
-### *event* LogNewContributionProposal
+#### *event* LogNewContributionProposal
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
@@ -78,7 +78,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* updateParameters
+#### *function* updateParameters
 
 *Execution cost: **less than 20550 gas.***
 
@@ -91,7 +91,7 @@
 *Nothing*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 22983 gas.***
@@ -105,7 +105,7 @@
 *Nothing*
 
 
-### *function* setParameters
+#### *function* setParameters
 
 *Execution cost: **No bound available.***
 
@@ -120,7 +120,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* proposeContributionReward
+#### *function* proposeContributionReward
 
 *Execution cost: **No bound available.***
 
@@ -137,7 +137,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* parameters
+#### *function* parameters
 
 *Execution cost: **less than 1148 gas.***
 
@@ -152,7 +152,7 @@
 3. **intVote** *of type address*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 721 gas.***
 
@@ -165,7 +165,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* organizationsProposals
+#### *function* organizationsProposals
 
 *Execution cost: **No bound available.***
 
@@ -185,7 +185,7 @@
 7. **beneficiary** *of type address*
 
 
-### *function* hashedParameters
+#### *function* hashedParameters
 
 *Execution cost: **less than 634 gas.***
 
@@ -198,7 +198,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* getParametersHash
+#### *function* getParametersHash
 
 *Execution cost: **No bound available.***
 
@@ -213,7 +213,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* execute
+#### *function* execute
 
 *Execution cost: **No bound available.***
 

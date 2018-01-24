@@ -34,7 +34,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
     - [externalTokenIncreaseApproval](#function-externaltokenincreaseapproval)
     - [externalTokenDecreaseApproval](#function-externaltokendecreaseapproval)
 ### Constructors
-### *constructor* Avatar(bytes32, address, address)
+#### *constructor* Avatar(bytes32, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -47,31 +47,31 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 
 
 ### Events
-### *event* SendEther
+#### *event* SendEther
 *Params:*
 1. **_amountInWei** *of type uint256*
 2. **_to** *of type address*
 
 
-### *event* ReceiveEther
+#### *event* ReceiveEther
 *Params:*
 1. **_sender** *of type address*
 2. **_value** *of type uint256*
 
 
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* GenericAction
+#### *event* GenericAction
 *Params:*
 1. **_action** *of type address*
 2. **_params** *of type bytes32[]*
 
 
-### *event* ExternalTokenTransferFrom
+#### *event* ExternalTokenTransferFrom
 *Params:*
 1. **_externalToken** *of type address*
 2. **_from** *of type address*
@@ -79,21 +79,21 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 4. **_value** *of type uint256*
 
 
-### *event* ExternalTokenTransfer
+#### *event* ExternalTokenTransfer
 *Params:*
 1. **_externalToken** *of type address*
 2. **_to** *of type address*
 3. **_value** *of type uint256*
 
 
-### *event* ExternalTokenIncreaseApproval
+#### *event* ExternalTokenIncreaseApproval
 *Params:*
 1. **_externalToken** *of type address*
 2. **_spender** *of type address*
 3. **_addedValue** *of type uint256*
 
 
-### *event* ExternalTokenDecreaseApproval
+#### *event* ExternalTokenDecreaseApproval
 *Params:*
 1. **_externalToken** *of type address*
 2. **_spender** *of type address*
@@ -108,7 +108,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 
 
 ### Functions
-### *function* externalTokenTransferFrom
+#### *function* externalTokenTransferFrom
 
 *Execution cost: **No bound available.***
 
@@ -124,7 +124,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 1. **unnamed** *of type bool*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23027 gas.***
@@ -138,7 +138,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 *Nothing*
 
 
-### *function* sendEther
+#### *function* sendEther
 
 *Execution cost: **No bound available.***
 
@@ -152,7 +152,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 1. **unnamed** *of type bool*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 1545 gas.***
 
@@ -165,7 +165,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 1. **unnamed** *of type address*
 
 
-### *function* orgName
+#### *function* orgName
 
 *Execution cost: **less than 1545 gas.***
 
@@ -178,7 +178,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 1. **unnamed** *of type bytes32*
 
 
-### *function* nativeToken
+#### *function* nativeToken
 
 *Execution cost: **less than 1545 gas.***
 
@@ -191,7 +191,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 1. **unnamed** *of type address*
 
 
-### *function* nativeReputation
+#### *function* nativeReputation
 
 *Execution cost: **less than 1545 gas.***
 
@@ -204,7 +204,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 1. **unnamed** *of type address*
 
 
-### *function* genericAction
+#### *function* genericAction
 
 *Execution cost: **No bound available.***
 
@@ -218,7 +218,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenTransfer
+#### *function* externalTokenTransfer
 
 *Execution cost: **No bound available.***
 
@@ -233,7 +233,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenIncreaseApproval
+#### *function* externalTokenIncreaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -248,7 +248,7 @@ The *Avatar* is the public facing entity a DAO exposes to interact with the outs
 1. **unnamed** *of type bool*
 
 
-### *function* externalTokenDecreaseApproval
+#### *function* externalTokenDecreaseApproval
 
 *Execution cost: **No bound available.***
 

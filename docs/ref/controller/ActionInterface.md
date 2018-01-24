@@ -22,7 +22,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* action
+#### *function* action
 
 *Execution cost: **No bound available.***
 

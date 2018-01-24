@@ -32,7 +32,7 @@
     - [hashedParameters](#function-hashedparameters)
     - [getParametersHash](#function-getparametershash)
 ### Constructors
-### *constructor* UpgradeScheme()
+#### *constructor* UpgradeScheme()
 
 *Execution cost: **No bound available.***
 
@@ -43,25 +43,25 @@
 
 
 ### Events
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* LogProposalExecuted
+#### *event* LogProposalExecuted
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 
-### *event* LogProposalDeleted
+#### *event* LogProposalDeleted
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 
-### *event* LogNewUpgradeProposal
+#### *event* LogNewUpgradeProposal
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
@@ -69,12 +69,12 @@
 4. **_newController** *of type address*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **proposalId** *of type bytes32*
 
 
-### *event* LogChangeUpgradeSchemeProposal
+#### *event* LogChangeUpgradeSchemeProposal
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
@@ -86,7 +86,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* execute
+#### *function* execute
 
 *Execution cost: **No bound available.***
 
@@ -101,7 +101,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* parameters
+#### *function* parameters
 
 *Execution cost: **less than 894 gas.***
 
@@ -115,7 +115,7 @@
 2. **intVote** *of type address*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23005 gas.***
@@ -129,7 +129,7 @@
 *Nothing*
 
 
-### *function* proposeUpgrade
+#### *function* proposeUpgrade
 
 *Execution cost: **No bound available.***
 
@@ -143,7 +143,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* updateParameters
+#### *function* updateParameters
 
 *Execution cost: **less than 20594 gas.***
 
@@ -156,7 +156,7 @@
 *Nothing*
 
 
-### *function* proposeChangeUpgradingScheme
+#### *function* proposeChangeUpgradingScheme
 
 *Execution cost: **No bound available.***
 
@@ -171,7 +171,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* setParameters
+#### *function* setParameters
 
 *Execution cost: **No bound available.***
 
@@ -185,7 +185,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 765 gas.***
 
@@ -198,7 +198,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* organizationsProposals
+#### *function* organizationsProposals
 
 *Execution cost: **No bound available.***
 
@@ -214,7 +214,7 @@
 3. **proposalType** *of type uint256*
 
 
-### *function* hashedParameters
+#### *function* hashedParameters
 
 *Execution cost: **less than 656 gas.***
 
@@ -227,7 +227,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* getParametersHash
+#### *function* getParametersHash
 
 *Execution cost: **No bound available.***
 

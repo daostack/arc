@@ -20,7 +20,7 @@
     - [owner](#function-owner)
     - [hashedParameters](#function-hashedparameters)
 ### Constructors
-### *constructor* UniversalSchemeMock()
+#### *constructor* UniversalSchemeMock()
 
 *Execution cost: **No bound available.***
 
@@ -31,13 +31,13 @@
 
 
 ### Events
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **proposalId** *of type bytes32*
 
@@ -45,7 +45,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* updateParameters
+#### *function* updateParameters
 
 *Execution cost: **less than 20443 gas.***
 
@@ -58,7 +58,7 @@
 *Nothing*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 22788 gas.***
@@ -72,7 +72,7 @@
 *Nothing*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 548 gas.***
 
@@ -85,7 +85,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* hashedParameters
+#### *function* hashedParameters
 
 *Execution cost: **less than 439 gas.***
 

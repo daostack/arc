@@ -41,7 +41,7 @@ It can be **minted** or **burned** by the DAO and also be **destroyed** in the e
     - [allowance](#function-allowance)
     - [DECIMAL](#function-decimal)
 ### Constructors
-### *constructor* DAOToken(string, string)
+#### *constructor* DAOToken(string, string)
 
 *Execution cost: **No bound available.***
 
@@ -53,37 +53,37 @@ It can be **minted** or **burned** by the DAO and also be **destroyed** in the e
 
 
 ### Events
-### *event* Transfer
+#### *event* Transfer
 *Params:*
 1. **from** *of type address*
 2. **to** *of type address*
 3. **value** *of type uint256*
 
 
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* MintFinished
+#### *event* MintFinished
 *Params:*
 *Nothing*
 
 
-### *event* Mint
+#### *event* Mint
 *Params:*
 1. **to** *of type address*
 2. **amount** *of type uint256*
 
 
-### *event* Burn
+#### *event* Burn
 *Params:*
 1. **burner** *of type address*
 2. **value** *of type uint256*
 
 
-### *event* Approval
+#### *event* Approval
 *Params:*
 1. **owner** *of type address*
 2. **spender** *of type address*
@@ -93,7 +93,7 @@ It can be **minted** or **burned** by the DAO and also be **destroyed** in the e
 ### Fallback
 *Nothing*
 ### Functions
-### *function* balanceOf
+#### *function* balanceOf
 > Gets the balance of the specified address.
 
 *Execution cost: **less than 793 gas.***
@@ -105,7 +105,7 @@ It can be **minted** or **burned** by the DAO and also be **destroyed** in the e
 
 An uint256 representing the amount owned by the passed address.
 
-### *function* mintingFinished
+#### *function* mintingFinished
 
 *Execution cost: **less than 459 gas.***
 
@@ -118,7 +118,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23118 gas.***
@@ -132,7 +132,7 @@ An uint256 representing the amount owned by the passed address.
 *Nothing*
 
 
-### *function* totalSupply
+#### *function* totalSupply
 
 *Execution cost: **less than 439 gas.***
 
@@ -145,7 +145,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type uint256*
 
 
-### *function* transferFrom
+#### *function* transferFrom
 
 *Execution cost: **No bound available.***
 
@@ -160,7 +160,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 
-### *function* transfer
+#### *function* transfer
 
 *Execution cost: **No bound available.***
 
@@ -174,7 +174,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 
-### *function* symbol
+#### *function* symbol
 
 *Execution cost: **No bound available.***
 
@@ -187,7 +187,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type string*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 793 gas.***
 
@@ -200,7 +200,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type address*
 
 
-### *function* name
+#### *function* name
 
 *Execution cost: **No bound available.***
 
@@ -213,7 +213,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type string*
 
 
-### *function* mint
+#### *function* mint
 
 *Execution cost: **No bound available.***
 
@@ -227,7 +227,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 
-### *function* increaseApproval
+#### *function* increaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -241,7 +241,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 
-### *function* finishMinting
+#### *function* finishMinting
 > Function to stop minting new tokens.
 
 *Execution cost: **less than 22080 gas.***
@@ -253,7 +253,7 @@ An uint256 representing the amount owned by the passed address.
 
 True if the operation was successful.
 
-### *function* destroyAndSend
+#### *function* destroyAndSend
 
 *Execution cost: **less than 30980 gas.***
 
@@ -266,7 +266,7 @@ True if the operation was successful.
 *Nothing*
 
 
-### *function* destroy
+#### *function* destroy
 > Transfers the current balance to the owner and terminates the contract.
 
 *Execution cost: **less than 30945 gas.***
@@ -280,7 +280,7 @@ True if the operation was successful.
 *Nothing*
 
 
-### *function* decreaseApproval
+#### *function* decreaseApproval
 
 *Execution cost: **No bound available.***
 
@@ -294,7 +294,7 @@ True if the operation was successful.
 1. **unnamed** *of type bool*
 
 
-### *function* burn
+#### *function* burn
 > Burns a specific amount of tokens.
 
 *Execution cost: **No bound available.***
@@ -308,7 +308,7 @@ True if the operation was successful.
 *Nothing*
 
 
-### *function* approve
+#### *function* approve
 
 *Execution cost: **No bound available.***
 
@@ -322,7 +322,7 @@ True if the operation was successful.
 1. **unnamed** *of type bool*
 
 
-### *function* allowance
+#### *function* allowance
 
 *Execution cost: **No bound available.***
 
@@ -336,7 +336,7 @@ True if the operation was successful.
 1. **unnamed** *of type uint256*
 
 
-### *function* DECIMAL
+#### *function* DECIMAL
 
 *Execution cost: **less than 349 gas.***
 

@@ -32,7 +32,7 @@
     - [getParametersHash](#function-getparametershash)
     - [execute](#function-execute)
 ### Constructors
-### *constructor* SchemeRegistrar()
+#### *constructor* SchemeRegistrar()
 
 *Execution cost: **No bound available.***
 
@@ -43,13 +43,13 @@
 
 
 ### Events
-### *event* OwnershipTransferred
+#### *event* OwnershipTransferred
 *Params:*
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### *event* LogRemoveSchemeProposal
+#### *event* LogRemoveSchemeProposal
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
@@ -57,19 +57,19 @@
 4. **_scheme** *of type address*
 
 
-### *event* LogProposalExecuted
+#### *event* LogProposalExecuted
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 
-### *event* LogProposalDeleted
+#### *event* LogProposalDeleted
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 
-### *event* LogNewSchemeProposal
+#### *event* LogNewSchemeProposal
 *Params:*
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
@@ -79,7 +79,7 @@
 6. **_isRegistering** *of type bool*
 
 
-### *event* LogNewProposal
+#### *event* LogNewProposal
 *Params:*
 1. **proposalId** *of type bytes32*
 
@@ -87,7 +87,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* proposeToRemoveScheme
+#### *function* proposeToRemoveScheme
 
 *Execution cost: **No bound available.***
 
@@ -101,7 +101,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* parameters
+#### *function* parameters
 
 *Execution cost: **less than 1148 gas.***
 
@@ -116,7 +116,7 @@
 3. **intVote** *of type address*
 
 
-### *function* setParameters
+#### *function* setParameters
 
 *Execution cost: **No bound available.***
 
@@ -131,7 +131,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* updateParameters
+#### *function* updateParameters
 
 *Execution cost: **less than 20572 gas.***
 
@@ -144,7 +144,7 @@
 *Nothing*
 
 
-### *function* transferOwnership
+#### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23005 gas.***
@@ -158,7 +158,7 @@
 *Nothing*
 
 
-### *function* proposeScheme
+#### *function* proposeScheme
 
 *Execution cost: **No bound available.***
 
@@ -174,7 +174,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* owner
+#### *function* owner
 
 *Execution cost: **less than 765 gas.***
 
@@ -187,7 +187,7 @@
 1. **unnamed** *of type address*
 
 
-### *function* organizationsProposals
+#### *function* organizationsProposals
 
 *Execution cost: **No bound available.***
 
@@ -204,7 +204,7 @@
 4. **isRegistering** *of type bool*
 
 
-### *function* hashedParameters
+#### *function* hashedParameters
 
 *Execution cost: **less than 656 gas.***
 
@@ -217,7 +217,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* getParametersHash
+#### *function* getParametersHash
 
 *Execution cost: **No bound available.***
 
@@ -232,7 +232,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* execute
+#### *function* execute
 
 *Execution cost: **No bound available.***
 

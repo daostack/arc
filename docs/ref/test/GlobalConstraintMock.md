@@ -24,7 +24,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* setConstraint
+#### *function* setConstraint
 
 *Execution cost: **No bound available.***
 
@@ -39,7 +39,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* pre
+#### *function* pre
 
 *Execution cost: **No bound available.***
 
@@ -54,7 +54,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* post
+#### *function* post
 
 *Execution cost: **No bound available.***
 

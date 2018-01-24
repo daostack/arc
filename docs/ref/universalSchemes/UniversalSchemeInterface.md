@@ -32,7 +32,7 @@ A special *Scheme* called the *[Genesis Scheme](GenesisScheme.md)* takes care of
 ### Fallback
 *Nothing*
 ### Functions
-### *function* updateParameters
+#### *function* updateParameters
 
 *Execution cost: **No bound available.***
 

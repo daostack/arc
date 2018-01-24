@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DAOstack Arc Docs</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="A platform for building DAOs">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+        name: 'DAOstack Arc Docs',
+        repo: 'https://github.com/daostack/daostack',
+        markdown: {
+          renderer: {
+            link: function (href, title, text) {
+              // extract dir from window.location
+              var path = window.location.href.split('#')[1].split('/');
+              path.pop();
+              var dir = path.join('/');
+
+              // if the link is relative, prepend the current dir
+              var r = new RegExp('^(?:[a-z]+:)?//', 'i');
+              var link = r.test(href) ? href : `/#${dir}/${href}`;
+
+              return `<a href="${link}">${text}</a>`
+            }
+          }
+      }
+    }
+  </script>
+  <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+</body>
+</html>

@@ -30,7 +30,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-### *function* voteWithSpecifiedAmounts
+#### *function* voteWithSpecifiedAmounts
 
 *Execution cost: **No bound available.***
 
@@ -46,7 +46,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* vote
+#### *function* vote
 
 *Execution cost: **No bound available.***
 
@@ -60,7 +60,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* propose
+#### *function* propose
 
 *Execution cost: **No bound available.***
 
@@ -76,7 +76,7 @@
 1. **unnamed** *of type bytes32*
 
 
-### *function* ownerVote
+#### *function* ownerVote
 
 *Execution cost: **No bound available.***
 
@@ -91,7 +91,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* isVotable
+#### *function* isVotable
 
 *Execution cost: **No bound available.***
 
@@ -104,7 +104,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* getNumberOfChoices
+#### *function* getNumberOfChoices
 
 *Execution cost: **No bound available.***
 
@@ -117,7 +117,7 @@
 1. **unnamed** *of type uint256*
 
 
-### *function* execute
+#### *function* execute
 
 *Execution cost: **No bound available.***
 
@@ -130,7 +130,7 @@
 1. **unnamed** *of type bool*
 
 
-### *function* cancelVote
+#### *function* cancelVote
 
 *Execution cost: **No bound available.***
 
@@ -143,7 +143,7 @@
 *Nothing*
 
 
-### *function* cancelProposal
+#### *function* cancelProposal
 
 *Execution cost: **No bound available.***
 
