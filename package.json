@@ -1,5 +1,5 @@
 {
-  "name": "daostack-arc",
+  "name": "daostack-arc-fork",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -65,7 +65,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/daostack/daostack.git"
+    "url": "https://github.com/dev-matan-tsuberi/daostack.git"
   },
   "keywords": [
     "solidity",
@@ -83,6 +83,9 @@
     "Adam Levi <adam@daostack.io>",
     "Jelle Gerbrandy <jelle@gerbrandy.com>"
   ],
+  "publishConfig": {
+    "tag": "alpha"
+  },
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/daostack/daostack/issues"
