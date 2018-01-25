@@ -163,6 +163,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         proposal.avatar = _avatar;
         proposal.executable = _executable;
         proposal.state = 2;
+        // solium-disable-next-line security/no-block-members
         proposal.submittedTime = now;
         proposals[proposalId] = proposal;
         NewProposal(proposalId, _numOfChoices, msg.sender, _paramsHash);
@@ -262,7 +263,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         Proposal storage proposal = proposals[_proposalId];
         Proposal memory tmpProposal;
         if (proposals[_proposalId].state == 2) {
-
+            // solium-disable-next-line security/no-block-members
             if ((now - proposal.submittedTime) >= params.noneBoostedVotePeriodLimit) {
                 tmpProposal = proposal;
                 ExecuteProposal(_proposalId, 0);
@@ -283,12 +284,14 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
             if ( isBoost(_proposalId)) {
                 //change proposal mode to boosted mode.
                 proposals[_proposalId].state = 3;
+                // solium-disable-next-line security/no-block-members
                 proposals[_proposalId].boostedPhaseTime = now;
                 orgBoostedProposalsCnt[proposals[_proposalId].avatar]++;
               }
            }
         if (proposals[_proposalId].state == 3) {
          // this is the actual voting rule:
+            // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= params.boostedVotePeriodLimit) {
                 tmpProposal = proposal;
                 ExecuteProposal(_proposalId, proposal.winningVote);
@@ -426,12 +429,40 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         return  (proposals[_proposalId].state >= 2);
     }
 
-    function deleteProposal(bytes32 _proposalId) private {
-        Proposal storage proposal = proposals[_proposalId];
-        for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
-            delete proposal.votes[cnt];
-        }
-        delete proposals[_proposalId];
+    function proposalStatus(bytes32 _proposalId) public constant returns(uint, uint) {
+        return (proposals[_proposalId].totalVotes,proposals[_proposalId].totalStakes);
+    }
+
+    function totalReputationSupply(bytes32 _proposalId) public constant returns(uint) {
+        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
+        Parameters memory params = parameters[paramsHash];
+        return params.reputationSystem.totalSupply();
+    }
+
+    function proposalAvatar(bytes32 _proposalId) public constant returns(address) {
+        return (proposals[_proposalId].avatar);
+    }
+
+    function scoreThreshold(address _avatar) public constant returns(uint) {
+        bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
+        Parameters memory params = parameters[paramsHash];
+        return (params.scoreThreshold);
+    }
+
+    function staker(bytes32 _proposalId,address _staker) public constant returns(uint,uint) {
+        return (proposals[_proposalId].stakers[_staker].vote,proposals[_proposalId].stakers[_staker].amount);
+    }
+
+    function voteStake(bytes32 _proposalId,uint _vote) public constant returns(uint) {
+        return proposals[_proposalId].stakes[_vote];
+    }
+
+    function winningVote(bytes32 _proposalId) public constant returns(uint) {
+        return proposals[_proposalId].winningVote;
+    }
+
+    function state(bytes32 _proposalId) public constant returns(uint) {
+        return proposals[_proposalId].state;
     }
 
     /**
@@ -479,41 +510,5 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         VoteProposal(_proposalId, _voter, _vote, reputation);
         // execute the proposal if this vote was decisive:
         return execute(_proposalId);
-    }
-
-    function proposalStatus(bytes32 _proposalId) public constant returns(uint, uint) {
-        return (proposals[_proposalId].totalVotes,proposals[_proposalId].totalStakes);
-    }
-
-    function totalReputationSupply(bytes32 _proposalId) public constant returns(uint) {
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
-        Parameters memory params = parameters[paramsHash];
-        return params.reputationSystem.totalSupply();
-    }
-
-    function proposalAvatar(bytes32 _proposalId) public constant returns(address) {
-        return (proposals[_proposalId].avatar);
-    }
-
-    function scoreThreshold(address _avatar) public constant returns(uint) {
-        bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
-        Parameters memory params = parameters[paramsHash];
-        return (params.scoreThreshold);
-    }
-
-    function staker(bytes32 _proposalId,address _staker) public constant returns(uint,uint) {
-        return (proposals[_proposalId].stakers[_staker].vote,proposals[_proposalId].stakers[_staker].amount);
-    }
-
-    function voteStake(bytes32 _proposalId,uint _vote) public constant returns(uint) {
-        return proposals[_proposalId].stakes[_vote];
-    }
-
-    function winningVote(bytes32 _proposalId) public constant returns(uint) {
-        return proposals[_proposalId].winningVote;
-    }
-
-    function state(bytes32 _proposalId) public constant returns(uint) {
-        return proposals[_proposalId].state;
     }
 }
