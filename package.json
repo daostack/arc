@@ -1,7 +1,7 @@
 {
-  "name": "daostack-arc",
-  "version": "0.0.0-alpha.27",
+  "name": "daostack-arc-fork-test",
   "description": "A platform for building DAOs",
+  "version": "1.1.0-alpha",
   "files": [
     "contracts/",
     "docs/",
@@ -24,7 +24,8 @@
     "truffle": "truffle",
     "build": "rimraf build && truffle compile",
     "docs:serve": "docsify serve ./docs",
-    "docs:generate": "node scripts/docs/gen.js"
+    "docs:generate": "node scripts/docs/gen.js",
+    "semantic-release": "semantic-release"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -51,6 +52,7 @@
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
     "shelljs": "^0.8.1",
+    "semantic-release": "^12.2.2",
     "solc": "^0.4.19",
     "solc-cli": "^0.3.0",
     "solium": "^1.1.2",
@@ -64,7 +66,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/daostack/daostack.git"
+    "url": "https://github.com/dev-matan-tsuberi/daostack.git"
   },
   "keywords": [
     "solidity",
@@ -82,6 +84,9 @@
     "Adam Levi <adam@daostack.io>",
     "Jelle Gerbrandy <jelle@gerbrandy.com>"
   ],
+  "publishConfig": {
+    "tag": "alpha"
+  },
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/daostack/daostack/issues"
