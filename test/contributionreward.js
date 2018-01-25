@@ -59,7 +59,7 @@ contract('ContributionReward', function(accounts) {
                                                                      testSetup.standardTokenMock.address,
                                                                      accounts[0]);
       assert.equal(tx.logs.length, 1);
-      assert.equal(tx.logs[0].event, "LogNewContributionProposal");
+      assert.equal(tx.logs[0].event, "NewContributionProposal");
      });
 
      it("proposeContributionReward fees", async function() {
@@ -77,7 +77,7 @@ contract('ContributionReward', function(accounts) {
                                                                       {from:accounts[0]}
                                                                     );
        assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "LogNewContributionProposal");
+       assert.equal(tx.logs[0].event, "NewContributionProposal");
        var balance  = await testSetup.org.token.balanceOf(testSetup.org.avatar.address);
        assert.equal(balance.toNumber(),testSetup.contributionRewardParams.orgNativeTokenFee);
        balance  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);

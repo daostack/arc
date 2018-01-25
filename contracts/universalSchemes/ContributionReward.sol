@@ -11,17 +11,17 @@ import "./UniversalScheme.sol";
  */
 
 contract ContributionReward is UniversalScheme {
-    event LogNewContributionProposal(
+    event NewContributionProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        bytes32 _contributionDesciption,
+        bytes32 _contributionDescription,
         uint[4]  _rewards,
         StandardToken _externalToken,
         address _beneficiary
     );
-    event LogProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
-    event LogProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // A struct holding the data for a contribution proposal
     struct ContributionProposal {
@@ -92,7 +92,7 @@ contract ContributionReward is UniversalScheme {
     /**
     * @dev Submit a proposal for a reward for a contribution:
     * @param _avatar Avatar of the organization that the contribution was made for
-    * @param _contributionDesciptionHash A hash of the contribution's description
+    * @param _contributionDescriptionHash A hash of the contribution's description
     * @param _rewards rewards array:
     *         rewards[0] - Amount of tokens requested
     *         rewards[1] - Amount of reputation requested
@@ -103,7 +103,7 @@ contract ContributionReward is UniversalScheme {
     */
     function proposeContributionReward(
         Avatar _avatar,
-        bytes32 _contributionDesciptionHash,
+        bytes32 _contributionDescriptionHash,
         uint[4] _rewards,
         StandardToken _externalToken,
         address _beneficiary
@@ -126,7 +126,7 @@ contract ContributionReward is UniversalScheme {
 
         // Set the struct:
         ContributionProposal memory proposal = ContributionProposal({
-            contributionDescriptionHash: _contributionDesciptionHash,
+            contributionDescriptionHash: _contributionDescriptionHash,
             nativeTokenReward: _rewards[0],
             reputationReward: _rewards[1],
             ethReward: _rewards[2],
@@ -136,11 +136,11 @@ contract ContributionReward is UniversalScheme {
         });
         organizationsProposals[_avatar][contributionId] = proposal;
 
-        LogNewContributionProposal(
+        NewContributionProposal(
             _avatar,
             contributionId,
             controllerParams.intVote,
-            _contributionDesciptionHash,
+            _contributionDescriptionHash,
             _rewards,
             _externalToken,
             beneficiary
@@ -183,7 +183,7 @@ contract ContributionReward is UniversalScheme {
                 }
           }
         delete organizationsProposals[_avatar][_proposalId];
-        LogProposalExecuted(_avatar, _proposalId);
+        ProposalExecuted(_avatar, _proposalId);
         return true;
     }
 }
