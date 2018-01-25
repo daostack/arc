@@ -76,8 +76,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
    * @dev Check that the proposal is votable (open and not executed yet)
    */
     modifier votable(bytes32 _proposalId) {
-        require((proposals[_proposalId].state == ProposalState.NoneBoosted) ||
-                (proposals[_proposalId].state == ProposalState.Boosted));
+        require((proposals[_proposalId].state == ProposalState.NoneBoosted) || (proposals[_proposalId].state == ProposalState.Boosted));
         _;
     }
 
@@ -422,8 +421,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
       * @return bool true or false
     */
     function isVotable(bytes32 _proposalId) public constant returns(bool) {
-        return ((proposals[_proposalId].state == ProposalState.NoneBoosted) ||
-                (proposals[_proposalId].state == ProposalState.Boosted));
+        return ((proposals[_proposalId].state == ProposalState.NoneBoosted) || (proposals[_proposalId].state == ProposalState.Boosted));
     }
 
     function proposalStatus(bytes32 _proposalId) public constant returns(uint, uint) {
