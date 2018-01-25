@@ -62,11 +62,12 @@ contract SchemeRegistrar is UniversalScheme {
           // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
+        SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        delete organizationsProposals[_avatar][_proposalId];
         if (_param == 1) {
 
           // Define controller and get the params:
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
           // Add a scheme:
             if (proposal.proposalType == 1) {
@@ -87,10 +88,9 @@ contract SchemeRegistrar is UniversalScheme {
                   }
                 }
           }
-        delete organizationsProposals[_avatar][_proposalId];
         LogProposalExecuted(_avatar, _proposalId);
         return true;
-    }    
+    }
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value

@@ -160,13 +160,14 @@ contract ContributionReward is UniversalScheme {
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        ContributionProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        delete organizationsProposals[_avatar][_proposalId];
         // Check if vote was successful:
         if (_param == 1) {
-        // Define controller and get the params:
-            ContributionProposal memory proposal = organizationsProposals[_avatar][_proposalId];
 
-        // pay the funds:
+            // Define controller
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+            // pay the funds:
             if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary,_avatar)) {
                 revert();
               }
@@ -182,7 +183,7 @@ contract ContributionReward is UniversalScheme {
                   }
                 }
           }
-        delete organizationsProposals[_avatar][_proposalId];
+
         ProposalExecuted(_avatar, _proposalId);
         return true;
     }

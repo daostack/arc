@@ -72,11 +72,14 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         bool retVal = true;
         // Check if vote was successful:
+        GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
+        delete organizationsData[_avatar].proposals[_proposalId];
+        
         if (_param == 1 ) {
 
         // Define controller and get the params:
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
+
         // Adding a GC
             if (proposal.proposalType == 1) {
                 retVal = controller.addGlobalConstraint(proposal.gc, proposal.params,_avatar);
@@ -87,7 +90,6 @@ contract GlobalConstraintRegistrar is UniversalScheme {
                 retVal = controller.removeGlobalConstraint(proposal.gc,_avatar);
               }
         }
-        delete organizationsData[_avatar].proposals[_proposalId];
         ProposalExecuted(_avatar, _proposalId);
         return retVal;
     }
