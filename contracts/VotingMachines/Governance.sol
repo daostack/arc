@@ -10,6 +10,8 @@ import "./GovernanceFormulasInterface.sol";
 contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterface {
     using SafeMath for uint;
 
+    enum ProposalState { Closed, Executed, NoneBoosted, Boosted }
+
     struct Parameters {
         Reputation reputationSystem; // the reputation system that is being used
         uint noneBoostedVoteRequierePercentage; // the absolute vote percentages bar.
@@ -37,7 +39,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         uint totalStakes;
         uint submittedTime;
         uint boostedPhaseTime; //the time the proposal shift to relative mode.
-        uint state; // The proposal state 0 - closed , 1-executed ,2-absoluteVote ,3-relativeVote
+        ProposalState state;
         uint winningVote; //the winning vote.
         mapping(uint=>uint) votes;
         mapping(address=>Voter) voters;
@@ -71,17 +73,11 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     }
 
   /**
-   * @dev Check that there is owner for the proposal and he sent the transaction
-   */
-    modifier onlyProposalOwner(bytes32 _proposalId) {
-        _;
-    }
-
-  /**
    * @dev Check that the proposal is votable (open and not executed yet)
    */
     modifier votable(bytes32 _proposalId) {
-        require(proposals[_proposalId].state >= 2);
+        require((proposals[_proposalId].state == ProposalState.NoneBoosted) ||
+                (proposals[_proposalId].state == ProposalState.Boosted));
         _;
     }
 
@@ -162,7 +158,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         proposal.numOfChoices = _numOfChoices;
         proposal.avatar = _avatar;
         proposal.executable = _executable;
-        proposal.state = 2;
+        proposal.state = ProposalState.NoneBoosted;
         // solium-disable-next-line security/no-block-members
         proposal.submittedTime = now;
         proposals[proposalId] = proposal;
@@ -191,7 +187,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         if (execute(_proposalId)) {
             return true;
         }
-        if (proposals[_proposalId].state != 2) {
+        if (proposals[_proposalId].state != ProposalState.NoneBoosted) {
             return false;
         }
         Proposal storage proposal = proposals[_proposalId];
@@ -262,13 +258,13 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         Parameters memory params = parameters[paramsHash];
         Proposal storage proposal = proposals[_proposalId];
         Proposal memory tmpProposal;
-        if (proposals[_proposalId].state == 2) {
+        if (proposals[_proposalId].state == ProposalState.NoneBoosted) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.submittedTime) >= params.noneBoostedVotePeriodLimit) {
                 tmpProposal = proposal;
                 ExecuteProposal(_proposalId, 0);
                 (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(0));
-                proposals[_proposalId].state = 1;
+                proposals[_proposalId].state = ProposalState.Executed;
                 return true;
              }
             uint executionBar = params.reputationSystem.totalSupply()*params.noneBoostedVoteRequierePercentage/100;
@@ -277,26 +273,26 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
                 tmpProposal = proposal;
                 ExecuteProposal(_proposalId, proposal.winningVote);
                 (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
-                proposals[_proposalId].state = 1;
+                proposals[_proposalId].state = ProposalState.Executed;
                 return true;
                }
            //check if the proposal crossed its absolutePhaseScoreLimit or noneBoostedVotePeriodLimit
             if ( isBoost(_proposalId)) {
                 //change proposal mode to boosted mode.
-                proposals[_proposalId].state = 3;
+                proposals[_proposalId].state = ProposalState.Boosted;
                 // solium-disable-next-line security/no-block-members
                 proposals[_proposalId].boostedPhaseTime = now;
                 orgBoostedProposalsCnt[proposals[_proposalId].avatar]++;
               }
            }
-        if (proposals[_proposalId].state == 3) {
+        if (proposals[_proposalId].state == ProposalState.Boosted) {
          // this is the actual voting rule:
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= params.boostedVotePeriodLimit) {
                 tmpProposal = proposal;
                 ExecuteProposal(_proposalId, proposal.winningVote);
                 (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
-                proposals[_proposalId].state = 1;
+                proposals[_proposalId].state = ProposalState.Executed;
                 orgBoostedProposalsCnt[tmpProposal.avatar]--;
                 return true;
          }
@@ -311,7 +307,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
      */
     function redeem(bytes32 _proposalId) public returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
-        require(proposal.state == 1);
+        require(proposal.state == ProposalState.Executed);
         require(proposal.stakers[msg.sender].amount>0);
         if (proposal.stakers[msg.sender].vote == proposals[_proposalId].winningVote) {
             uint _redeemAmount = redeemAmount(_proposalId,msg.sender);
@@ -426,7 +422,8 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
       * @return bool true or false
     */
     function isVotable(bytes32 _proposalId) public constant returns(bool) {
-        return  (proposals[_proposalId].state >= 2);
+        return ((proposals[_proposalId].state == ProposalState.NoneBoosted) ||
+                (proposals[_proposalId].state == ProposalState.Boosted));
     }
 
     function proposalStatus(bytes32 _proposalId) public constant returns(uint, uint) {
@@ -461,7 +458,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         return proposals[_proposalId].winningVote;
     }
 
-    function state(bytes32 _proposalId) public constant returns(uint) {
+    function state(bytes32 _proposalId) public constant returns(ProposalState) {
         return proposals[_proposalId].state;
     }
 
