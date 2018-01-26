@@ -6,20 +6,22 @@ import "../universalSchemes/UniversalScheme.sol";
 import "./GovernanceFormulasInterface.sol";
 
 
-
+/**
+ * @title A governance contract -an organization's voting machine scheme.
+ */
 contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterface {
     using SafeMath for uint;
 
-    enum ProposalState { Closed, Executed, NoneBoosted, Boosted }
+    enum ProposalState { Closed, Executed, NotBoosted, Boosted }
 
     struct Parameters {
         Reputation reputationSystem; // the reputation system that is being used
-        uint noneBoostedVoteRequierePercentage; // the absolute vote percentages bar.
-        uint noneBoostedVotePeriodLimit; //the time limit for a proposal to be in an absolute voting mode.
+        uint nonBoostedVoteRequiredPercentage; // the absolute vote percentages bar.
+        uint nonBoostedVotePeriodLimit; //the time limit for a proposal to be in an absolute voting mode.
         uint boostedVotePeriodLimit; //the time limit for a proposal to be in an relative voting mode.
         uint scoreThreshold;
         GovernanceFormulasInterface governanceFormulasInterface;
-        uint minimumStaketingFee;
+        uint minimumStakingFee;
     }
     struct Voter {
         uint vote; // 0 - 'abstain'
@@ -48,10 +50,8 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     }
 
     event NewProposal(bytes32 indexed _proposalId, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event CancelProposal(bytes32 indexed _proposalId);
     event ExecuteProposal(bytes32 indexed _proposalId, uint _decision);
     event VoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation);
-    event CancelVoting(bytes32 indexed _proposalId, address indexed _voter);
     event Stake(bytes32 indexed _proposalId, address indexed _voter,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
 
@@ -76,7 +76,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
    * @dev Check that the proposal is votable (open and not executed yet)
    */
     modifier votable(bytes32 _proposalId) {
-        require((proposals[_proposalId].state == ProposalState.NoneBoosted) || (proposals[_proposalId].state == ProposalState.Boosted));
+        require((proposals[_proposalId].state == ProposalState.NotBoosted) || (proposals[_proposalId].state == ProposalState.Boosted));
         _;
     }
 
@@ -85,32 +85,32 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     */
     function setParameters(
         Reputation _reputationSystem, // the reputation system that is being used
-        uint _noneBoostedVoteRequierePercentage, // the absolute vote percentages bar.
-        uint _noneBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
+        uint _nonBoostedVoteRequiredPercentage, // the absolute vote percentages bar.
+        uint _nonBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
         uint _boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.
         uint _scoreThreshold,
         GovernanceFormulasInterface _governanceFormulasInterface,
-        uint _minimumStaketingFee)
+        uint _minimumStakingFee)
     public
     returns(bytes32)
     {
-        require(_noneBoostedVoteRequierePercentage <= 100 && _noneBoostedVoteRequierePercentage > 0);
+        require(_nonBoostedVoteRequiredPercentage <= 100 && _nonBoostedVoteRequiredPercentage > 0);
         bytes32 hashedParameters = getParametersHash(
             _reputationSystem,
-            _noneBoostedVoteRequierePercentage,
-            _noneBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
+            _nonBoostedVoteRequiredPercentage,
+            _nonBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
             _boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.
             _scoreThreshold,
             _governanceFormulasInterface,
-            _minimumStaketingFee);
+            _minimumStakingFee);
         parameters[hashedParameters] = Parameters({
             reputationSystem: _reputationSystem,
-            noneBoostedVoteRequierePercentage: _noneBoostedVoteRequierePercentage,
-            noneBoostedVotePeriodLimit: _noneBoostedVotePeriodLimit,
+            nonBoostedVoteRequiredPercentage: _nonBoostedVoteRequiredPercentage,
+            nonBoostedVotePeriodLimit: _nonBoostedVotePeriodLimit,
             boostedVotePeriodLimit: _boostedVotePeriodLimit,
             scoreThreshold:_scoreThreshold,
             governanceFormulasInterface:_governanceFormulasInterface,
-            minimumStaketingFee: _minimumStaketingFee
+            minimumStakingFee: _minimumStakingFee
         });
         return hashedParameters;
     }
@@ -120,21 +120,21 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
    */
     function getParametersHash(
         Reputation _reputationSystem, // the reputation system that is being used
-        uint _noneBoostedVoteRequierePercentage, // the absolute vote percentages bar.
-        uint _noneBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
+        uint _nonBoostedVoteRequiredPercentage, // the absolute vote percentages bar.
+        uint _nonBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
         uint _boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.
         uint _scoreThreshold,
         GovernanceFormulasInterface _governanceFormulasInterface,
-        uint _minimumStaketingFee) public pure returns(bytes32)
+        uint _minimumStakingFee) public pure returns(bytes32)
         {
         return keccak256(
             _reputationSystem,
-            _noneBoostedVoteRequierePercentage,
-            _noneBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
+            _nonBoostedVoteRequiredPercentage,
+            _nonBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
             _boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.
             _scoreThreshold,
             _governanceFormulasInterface,
-            _minimumStaketingFee);
+            _minimumStakingFee);
     }
 
   /**
@@ -157,7 +157,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         proposal.numOfChoices = _numOfChoices;
         proposal.avatar = _avatar;
         proposal.executable = _executable;
-        proposal.state = ProposalState.NoneBoosted;
+        proposal.state = ProposalState.NotBoosted;
         // solium-disable-next-line security/no-block-members
         proposal.submittedTime = now;
         proposals[proposalId] = proposal;
@@ -186,7 +186,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         if (execute(_proposalId)) {
             return true;
         }
-        if (proposals[_proposalId].state != ProposalState.NoneBoosted) {
+        if (proposals[_proposalId].state != ProposalState.NotBoosted) {
             return false;
         }
         Proposal storage proposal = proposals[_proposalId];
@@ -195,7 +195,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         require(_vote <= proposal.numOfChoices);
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory orgParams = parameters[paramsHash];
-        assert(amount > orgParams.minimumStaketingFee);
+        assert(amount > orgParams.minimumStakingFee);
         stakingToken.transferFrom(msg.sender, address(this), amount);
 
         proposal.stakes[_vote] = amount.add(proposal.stakes[_vote]);
@@ -257,16 +257,16 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         Parameters memory params = parameters[paramsHash];
         Proposal storage proposal = proposals[_proposalId];
         Proposal memory tmpProposal;
-        if (proposals[_proposalId].state == ProposalState.NoneBoosted) {
+        if (proposals[_proposalId].state == ProposalState.NotBoosted) {
             // solium-disable-next-line security/no-block-members
-            if ((now - proposal.submittedTime) >= params.noneBoostedVotePeriodLimit) {
+            if ((now - proposal.submittedTime) >= params.nonBoostedVotePeriodLimit) {
                 tmpProposal = proposal;
                 ExecuteProposal(_proposalId, 0);
                 (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(0));
                 proposals[_proposalId].state = ProposalState.Executed;
                 return true;
              }
-            uint executionBar = params.reputationSystem.totalSupply()*params.noneBoostedVoteRequierePercentage/100;
+            uint executionBar = params.reputationSystem.totalSupply()*params.nonBoostedVoteRequiredPercentage/100;
         // Check if someone crossed the absolute vote execution bar.
             if (proposal.votes[proposal.winningVote] > executionBar) {
                 tmpProposal = proposal;
@@ -275,7 +275,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
                 proposals[_proposalId].state = ProposalState.Executed;
                 return true;
                }
-           //check if the proposal crossed its absolutePhaseScoreLimit or noneBoostedVotePeriodLimit
+           //check if the proposal crossed its absolutePhaseScoreLimit or nonBoostedVotePeriodLimit
             if ( isBoost(_proposalId)) {
                 //change proposal mode to boosted mode.
                 proposals[_proposalId].state = ProposalState.Boosted;
@@ -352,7 +352,9 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     }
 
     /**
-     * @dev threshold return the organization none boosted threshold
+     * @dev threshold return the organization's score threshold which required by
+     * a proposal to shift to boosted state.
+     * This threshold is dynamically set and it depend on the number of boosted proposal.
      * @param _avatar the organization avatar
      * @return uint scoreThreshold.
      */
@@ -421,41 +423,86 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
       * @return bool true or false
     */
     function isVotable(bytes32 _proposalId) public constant returns(bool) {
-        return ((proposals[_proposalId].state == ProposalState.NoneBoosted) || (proposals[_proposalId].state == ProposalState.Boosted));
+        return ((proposals[_proposalId].state == ProposalState.NotBoosted) || (proposals[_proposalId].state == ProposalState.Boosted));
     }
 
+    /**
+      * @dev proposalStatus return the total votes and stakes for a given proposal
+      * @param _proposalId the ID of the proposal
+      * @return uint totalVotes
+      * @return uint totalStakes
+    */
     function proposalStatus(bytes32 _proposalId) public constant returns(uint, uint) {
         return (proposals[_proposalId].totalVotes,proposals[_proposalId].totalStakes);
     }
 
+    /**
+      * @dev totalReputationSupply return the total reputation supply for a given proposal
+      * @param _proposalId the ID of the proposal
+      * @return uint total reputation supply
+    */
     function totalReputationSupply(bytes32 _proposalId) public constant returns(uint) {
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory params = parameters[paramsHash];
         return params.reputationSystem.totalSupply();
     }
 
+    /**
+      * @dev proposalAvatar return the avatar for a given proposal
+      * @param _proposalId the ID of the proposal
+      * @return uint total reputation supply
+    */
     function proposalAvatar(bytes32 _proposalId) public constant returns(address) {
         return (proposals[_proposalId].avatar);
     }
 
+    /**
+      * @dev scoreThreshold return the initial scoreThreshold param which is set
+      * for a given organization.
+      * @param _avatar the organization's avatar
+      * @return uint total reputation supply
+    */
     function scoreThreshold(address _avatar) public constant returns(uint) {
         bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
         Parameters memory params = parameters[paramsHash];
         return (params.scoreThreshold);
     }
 
+    /**
+      * @dev staker return the vote and stake amount for a given proposal and staker
+      * @param _proposalId the ID of the proposal
+      * @param _staker staker address
+      * @return uint vote
+      * @return uint amount
+    */
     function staker(bytes32 _proposalId,address _staker) public constant returns(uint,uint) {
         return (proposals[_proposalId].stakers[_staker].vote,proposals[_proposalId].stakers[_staker].amount);
     }
 
+    /**
+      * @dev voteStake return the amount stakes for a given proposal and vote
+      * @param _proposalId the ID of the proposal
+      * @param _vote vote number
+      * @return uint stake amount
+    */
     function voteStake(bytes32 _proposalId,uint _vote) public constant returns(uint) {
         return proposals[_proposalId].stakes[_vote];
     }
 
+    /**
+      * @dev voteStake return the winningVote for a given proposal
+      * @param _proposalId the ID of the proposal
+      * @return uint winningVote
+    */
     function winningVote(bytes32 _proposalId) public constant returns(uint) {
         return proposals[_proposalId].winningVote;
     }
 
+    /**
+      * @dev voteStake return the state for a given proposal
+      * @param _proposalId the ID of the proposal
+      * @return ProposalState proposal state
+    */
     function state(bytes32 _proposalId) public constant returns(ProposalState) {
         return proposals[_proposalId].state;
     }
