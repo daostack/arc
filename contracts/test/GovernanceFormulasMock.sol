@@ -12,7 +12,7 @@ contract GovernanceFormulasMock is GovernanceFormulasInterface {
     * @param _proposalId the ID of the proposal
     * @return bool true or false.
     */
-    function isBoost(bytes32 _proposalId) public view returns(bool) {
+    function shouldBoost(bytes32 _proposalId) public view returns(bool) {
         uint totalStakes;
         uint totalVotes;
         address avatar;

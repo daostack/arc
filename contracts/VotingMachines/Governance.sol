@@ -276,7 +276,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
                 return true;
                }
            //check if the proposal crossed its absolutePhaseScoreLimit or nonBoostedVotePeriodLimit
-            if ( isBoost(_proposalId)) {
+            if ( shouldBoost(_proposalId)) {
                 //change proposal mode to boosted mode.
                 proposals[_proposalId].state = ProposalState.Boosted;
                 // solium-disable-next-line security/no-block-members
@@ -319,11 +319,11 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     }
 
     /**
-     * @dev isBoost check if the proposal need to be shifted to boosted phase.
+     * @dev shouldBoost check if a proposal should be shifted to boosted phase.
      * @param _proposalId the ID of the proposal
      * @return bool true or false.
      */
-    function isBoost(bytes32 _proposalId) public view returns(bool) {
+    function shouldBoost(bytes32 _proposalId) public view returns(bool) {
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory params = parameters[paramsHash];
         if (params.governanceFormulasInterface == GovernanceFormulasInterface(0)) {
@@ -331,7 +331,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
             uint score = (proposal.totalStakes * (proposal.totalVotes**2))/(params.reputationSystem.totalSupply()**2);
             return (score >= threshold(proposals[_proposalId].avatar));
         } else {
-            return (params.governanceFormulasInterface).isBoost(_proposalId);
+            return (params.governanceFormulasInterface).shouldBoost(_proposalId);
         }
     }
 

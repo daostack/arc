@@ -611,14 +611,14 @@ contract('Governance', function (accounts) {
     assert.equal(proposalInfo[7],2);
     await testSetup.governance.vote(proposalId,1);
 
-    assert.equal(await testSetup.governance.isBoost(proposalId),false);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),false);
     await testSetup.governance.stake(proposalId,1,100);
     proposalInfo = await testSetup.governance.proposals(proposalId);
 
     assert.equal(proposalInfo[4],100); //totalStakes
     assert.equal(proposalInfo[7],3);   //state
 
-    assert.equal(await testSetup.governance.isBoost(proposalId),true);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),true);
     //S* POW(R/totalR)
     var score = (100 * (testSetup.reputationArray[0]**2))/((testSetup.reputationArray[0]+testSetup.reputationArray[1]+testSetup.reputationArray[2])**2);
     assert.equal(await testSetup.governance.score(proposalId),score);
@@ -631,7 +631,7 @@ contract('Governance', function (accounts) {
 
   });
 
-  it("isBoost ", async () => {
+  it("shouldBoost ", async () => {
 
     var testSetup = await setup(accounts);
     let tx = await testSetup.governance.propose(10, testSetup.governanceParams.paramsHash, testSetup.org.avatar.address, testSetup.executable.address);
@@ -643,7 +643,7 @@ contract('Governance', function (accounts) {
 
     await testSetup.governance.vote(proposalId,1);
 
-    assert.equal(await testSetup.governance.isBoost(proposalId),false);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),false);
     assert.equal(await testSetup.governance.score(proposalId),0);
     await testSetup.governance.stake(proposalId,1,100);
     proposalInfo = await testSetup.governance.proposals(proposalId);
@@ -651,7 +651,7 @@ contract('Governance', function (accounts) {
     assert.equal(proposalInfo[4],100); //totalStakes
     assert.equal(proposalInfo[7],3);   //state
 
-    assert.equal(await testSetup.governance.isBoost(proposalId),true);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),true);
     //S* POW(R/totalR)
     var score = (100 * (testSetup.reputationArray[0]**2))/((testSetup.reputationArray[0]+testSetup.reputationArray[1]+testSetup.reputationArray[2])**2);
     assert.equal(await testSetup.governance.score(proposalId),score);
@@ -670,14 +670,14 @@ contract('Governance', function (accounts) {
 
     await testSetup.governance.vote(proposalId,1);
 
-    assert.equal(await testSetup.governance.isBoost(proposalId),false);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),false);
     await testSetup.governance.stake(proposalId,1,100);
     proposalInfo = await testSetup.governance.proposals(proposalId);
 
     assert.equal(proposalInfo[4],100); //totalStakes
     assert.equal(proposalInfo[7],3);   //state
 
-    assert.equal(await testSetup.governance.isBoost(proposalId),true);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),true);
 
   });
 
@@ -715,9 +715,9 @@ contract('Governance', function (accounts) {
     assert.isOk(proposalId);
     await testSetup.standardTokenMock.approve(testSetup.governance.address,100);
     await testSetup.governance.vote(proposalId,1);
-    assert.equal(await testSetup.governance.isBoost(proposalId),false);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),false);
     await testSetup.governance.stake(proposalId,1,100);
-    assert.equal(await testSetup.governance.isBoost(proposalId),true);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),true);
     await helpers.increaseTime(61);
     await testSetup.governance.execute(proposalId);
     var redeemAmount = await testSetup.governance.redeemAmount(proposalId,accounts[0]);
@@ -740,9 +740,9 @@ contract('Governance', function (accounts) {
     assert.isOk(proposalId);
     await testSetup.standardTokenMock.approve(testSetup.governance.address,100);
     await testSetup.governance.vote(proposalId,1);
-    assert.equal(await testSetup.governance.isBoost(proposalId),false);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),false);
     await testSetup.governance.stake(proposalId,1,100);
-    assert.equal(await testSetup.governance.isBoost(proposalId),true);
+    assert.equal(await testSetup.governance.shouldBoost(proposalId),true);
     await testSetup.governance.execute(proposalId);
     try {
       await  testSetup.governance.redeem(proposalId);
@@ -762,13 +762,13 @@ contract('Governance', function (accounts) {
       await testSetup.standardTokenMock.approve(testSetup.governance.address,100);
       var proposalInfo = await testSetup.governance.proposals(proposalId);
       await testSetup.governance.vote(proposalId,1);
-      assert.equal(await testSetup.governance.isBoost(proposalId),false);
+      assert.equal(await testSetup.governance.shouldBoost(proposalId),false);
       assert.equal(await testSetup.governance.score(proposalId),0);
       await testSetup.governance.stake(proposalId,1,100);
       proposalInfo = await testSetup.governance.proposals(proposalId);
       assert.equal(proposalInfo[4],100); //totalStakes
       assert.equal(proposalInfo[7],3);   //state
-      assert.equal(await testSetup.governance.isBoost(proposalId),true);
+      assert.equal(await testSetup.governance.shouldBoost(proposalId),true);
       //S* POW(R/totalR)
       var score = (100 * (testSetup.reputationArray[0]**2))/((testSetup.reputationArray[0]+testSetup.reputationArray[1]+testSetup.reputationArray[2])**2);
       assert.equal(await testSetup.governance.score(proposalId),score);
@@ -787,7 +787,7 @@ contract('Governance', function (accounts) {
       assert.equal(await testSetup.governance.orgBoostedProposalsCnt(testSetup.org.avatar.address),0);
       await testSetup.governance.vote(proposalId,1);
       await testSetup.governance.stake(proposalId,1,100);
-      assert.equal(await testSetup.governance.isBoost(proposalId),true);
+      assert.equal(await testSetup.governance.shouldBoost(proposalId),true);
       assert.equal(await testSetup.governance.state(proposalId),3);
       assert.equal(await testSetup.governance.orgBoostedProposalsCnt(testSetup.org.avatar.address),1);
       assert.equal(await testSetup.governance.threshold(testSetup.org.avatar.address),2);

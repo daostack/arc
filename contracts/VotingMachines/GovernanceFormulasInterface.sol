@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 
 interface GovernanceFormulasInterface {
 
-    function isBoost(bytes32 _proposalId) public view returns (bool);
+    function shouldBoost(bytes32 _proposalId) public view returns (bool);
 
     function score(bytes32 _proposalId) public view returns (uint);
 
