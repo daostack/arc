@@ -68,6 +68,6 @@ PRs are welcome but please first consult with the [Contribution guide](https://g
 
 Join us on [Slack](https://daostack.slack.com/)!
 
-# Documantaion
+# Documentation
 
 Read the [docs](https://github.com/daostack/Arc/tree/master/docs)!
