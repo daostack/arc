@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/daostack/Arc.svg?branch=master)](https://travis-ci.org/daostack/Arc)
 [![NPM Package](https://img.shields.io/npm/v/daostack-arc.svg?style=flat-square)](https://www.npmjs.org/package/daostack-arc)
-# DAOstack Arc
+# Arc
 
 Arc is the lower layer of the DAO stack. It consists a set of smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
 
@@ -9,8 +9,14 @@ Arc is the lower layer of the DAO stack. It consists a set of smart contracts de
 DAOStack integrates with [Truffle](https://github.com/ConsenSys/truffle), an Ethereum development environment.
 Please install truffle.
 
+
 ```sh
 npm install -g truffle
+```
+### Getting the source code
+
+```sh
+git clone https://github.com/daostack/Arc
 ```
 
 ### test
@@ -19,7 +25,7 @@ npm test
 ```
 This will run ganache-cli, compile, migrate and run all tests.
 
-### using daostack-arc as library
+### using Arc as a library
 
 Please install Truffle and initialize your project with `truffle init`.
 
@@ -67,6 +73,8 @@ This is an open source project ([GPL license](https://github.com/daostack/daosta
 PRs are welcome but please first consult with the [Contribution guide](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.md).
 
 Join us on [Slack](https://daostack.slack.com/)!
+
+Join us on [Telegram](https://t.me/daostackcommunity)!
 
 # Documentation
 
