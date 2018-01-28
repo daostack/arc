@@ -1,7 +1,7 @@
-- [Reference Documentation](docs/ref/README.md)
-- [Concepts](docs/concepts.md)
-- [Guides & Recipes](docs/guides.md)
-- [Read the Whitepaper](docs/DAOstack%20White%20Paper%20V1.0.pdf)
+- [Reference Documentation](ref/README.md)
+- [Concepts](concepts.md)
+- [Guides & Recipes](guides.md)
+- [Read the Whitepaper](DAOstack%20White%20Paper%20V1.0.pdf)
 
 ### Contributing to Arc Docs
 Same as above, with the following exceptions:
