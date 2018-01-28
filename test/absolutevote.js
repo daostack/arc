@@ -181,7 +181,7 @@ contract('AbsoluteVote', function (accounts) {
       await checkIsVotable(proposalId, false);
   });
 
-  it("log the LogNewProposal event on proposing new proposal", async function() {
+  it("log the NewProposal event on proposing new proposal", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
@@ -191,13 +191,13 @@ contract('AbsoluteVote', function (accounts) {
     assert.isOk(proposalId);
 
     assert.equal(tx.logs.length, 1);
-    assert.equal(tx.logs[0].event, "LogNewProposal");
+    assert.equal(tx.logs[0].event, "NewProposal");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
     assert.equal(tx.logs[0].args._proposer, accounts[0]);
     assert.equal(tx.logs[0].args._paramsHash, paramsHash);
   });
 
-  it("should log the LogCancelProposal event on canceling a proposal", async function() {
+  it("should log the CancelProposal event on canceling a proposal", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
@@ -209,11 +209,11 @@ contract('AbsoluteVote', function (accounts) {
     let newtx = await absoluteVote.cancelProposal(proposalId);
 
     assert.equal(newtx.logs.length, 1);
-    assert.equal(newtx.logs[0].event, "LogCancelProposal");
+    assert.equal(newtx.logs[0].event, "CancelProposal");
     assert.equal(newtx.logs[0].args._proposalId, proposalId);
   });
 
-  it("should log the LogVoteProposal and LogCancelVoting events on voting and canceling the vote", async function() {
+  it("should log the VoteProposal and CancelVoting events on voting and canceling the vote", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
@@ -225,7 +225,7 @@ contract('AbsoluteVote', function (accounts) {
     let voteTX = await absoluteVote.vote(proposalId, 1);
 
     assert.equal(voteTX.logs.length, 1);
-    assert.equal(voteTX.logs[0].event, "LogVoteProposal");
+    assert.equal(voteTX.logs[0].event, "VoteProposal");
     assert.equal(voteTX.logs[0].args._proposalId, proposalId);
     assert.equal(voteTX.logs[0].args._voter, accounts[0]);
     assert.equal(voteTX.logs[0].args._vote, 1);
@@ -234,12 +234,12 @@ contract('AbsoluteVote', function (accounts) {
 
     let cancelVoteTX = await absoluteVote.cancelVote(proposalId);
     assert.equal(cancelVoteTX.logs.length, 1);
-    assert.equal(cancelVoteTX.logs[0].event, "LogCancelVoting");
+    assert.equal(cancelVoteTX.logs[0].event, "CancelVoting");
     assert.equal(cancelVoteTX.logs[0].args._proposalId, proposalId);
     assert.equal(cancelVoteTX.logs[0].args._voter, accounts[0]);
   });
 
-  it("should log the LogExecuteProposal event", async function() {
+  it("should log the ExecuteProposal event", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
@@ -258,7 +258,7 @@ contract('AbsoluteVote', function (accounts) {
     tx = await absoluteVote.ownerVote(proposalId, 4, accounts[2]);
 
     assert.equal(tx.logs.length, 2);
-    assert.equal(tx.logs[1].event, "LogExecuteProposal");
+    assert.equal(tx.logs[1].event, "ExecuteProposal");
     assert.equal(tx.logs[1].args._proposalId, proposalId);
     assert.equal(tx.logs[1].args._decision, 4);
   });

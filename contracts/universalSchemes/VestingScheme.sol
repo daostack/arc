@@ -74,37 +74,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     function VestingScheme() public {}
 
     /**
-    * @dev Hash the parameters, save them if necessary, and return the hash value
-    * @param _voteParams -  voting parameters
-    * @param _intVote  - voting machine contract.
-    * @return bytes32 -the parameters hash
-    */
-    function setParameters(
-        bytes32 _voteParams,
-        IntVoteInterface _intVote
-    ) public returns(bytes32)
-    {
-        bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
-        parameters[paramsHash].voteParams = _voteParams;
-        parameters[paramsHash].intVote = _intVote;
-        return paramsHash;
-    }
-
-    /**
-    * @dev Hash the parameters, and return the hash value
-    * @param _voteParams -  voting parameters
-    * @param _intVote  - voting machine contract.
-    * @return bytes32 -the parameters hash
-    */
-    function getParametersHash(
-        bytes32 _voteParams,
-        IntVoteInterface _intVote
-    ) public pure returns(bytes32)
-    {
-        return  (keccak256(_voteParams, _intVote));
-    }
-
-    /**
     * @dev Proposing a vesting agreement in an organization.
     * @param _beneficiary the beneficiary of the agreement.
     * @param _returnOnCancelAddress where to send the tokens in case of stoping.
@@ -158,37 +127,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Log:
         LogAgreementProposal(_avatar, proposalId);
         return proposalId;
-    }
-
-    /**
-    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _avatar address of the controller
-    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
-    * @return bool which represents a successful of the function
-    */
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
-        // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-
-        // Log execition:
-        LogExecutaion(_avatar, _proposalId, _param);
-
-        Agreement memory proposedAgreement = organizationsData[_avatar][_proposalId];
-        delete organizationsData[_avatar][_proposalId];
-
-        // Check if vote was successful:
-        if (_param == 1) {
-        // Define controller and mint tokens, check minting actually took place:
-            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
-            controller.mintTokens(tokensToMint, this,_avatar);
-            agreements[agreementsCounter] = proposedAgreement;
-            agreementsCounter++;
-        // Log the new agreement:
-            NewVestedAgreement(agreementsCounter-1);
-       }
-        return true;
     }
 
     /**
@@ -248,6 +186,68 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Log new agreement and return id:
         NewVestedAgreement(agreementsCounter-1);
         return(agreementsCounter-1);
+    }
+
+    /**
+    * @dev Hash the parameters, save them if necessary, and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
+    */
+    function setParameters(
+        bytes32 _voteParams,
+        IntVoteInterface _intVote
+    ) public returns(bytes32)
+    {
+        bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
+        parameters[paramsHash].voteParams = _voteParams;
+        parameters[paramsHash].intVote = _intVote;
+        return paramsHash;
+    }
+
+    /**
+    * @dev Hash the parameters, and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
+    */
+    function getParametersHash(
+        bytes32 _voteParams,
+        IntVoteInterface _intVote
+    ) public pure returns(bytes32)
+    {
+        return  (keccak256(_voteParams, _intVote));
+    }
+
+    /**
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _avatar address of the controller
+    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
+    * @return bool which represents a successful of the function
+    */
+    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
+        // Check the caller is indeed the voting machine:
+        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+
+        // Log execition:
+        LogExecutaion(_avatar, _proposalId, _param);
+
+        Agreement memory proposedAgreement = organizationsData[_avatar][_proposalId];
+        delete organizationsData[_avatar][_proposalId];
+
+        // Check if vote was successful:
+        if (_param == 1) {
+        // Define controller and mint tokens, check minting actually took place:
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+            uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
+            controller.mintTokens(tokensToMint, this,_avatar);
+            agreements[agreementsCounter] = proposedAgreement;
+            agreementsCounter++;
+        // Log the new agreement:
+            NewVestedAgreement(agreementsCounter-1);
+       }
+        return true;
     }
 
     /**

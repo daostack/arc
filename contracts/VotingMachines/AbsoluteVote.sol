@@ -31,11 +31,11 @@ contract AbsoluteVote is IntVoteInterface {
         bool open; // voting open flag
     }
 
-    event LogNewProposal(bytes32 indexed _proposalId, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event LogCancelProposal(bytes32 indexed _proposalId);
-    event LogExecuteProposal(bytes32 indexed _proposalId, uint _decision);
-    event LogVoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
-    event LogCancelVoting(bytes32 indexed _proposalId, address indexed _voter);
+    event NewProposal(bytes32 indexed _proposalId, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
+    event CancelProposal(bytes32 indexed _proposalId);
+    event ExecuteProposal(bytes32 indexed _proposalId, uint _decision);
+    event VoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
+    event CancelVoting(bytes32 indexed _proposalId, address indexed _voter);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
@@ -104,7 +104,7 @@ contract AbsoluteVote is IntVoteInterface {
         proposal.owner = msg.sender;
         proposal.open = true;
         proposals[proposalId] = proposal;
-        LogNewProposal(proposalId, _numOfChoices, msg.sender, _paramsHash);
+        NewProposal(proposalId, _numOfChoices, msg.sender, _paramsHash);
         return proposalId;
     }
 
@@ -117,7 +117,7 @@ contract AbsoluteVote is IntVoteInterface {
             return false;
         }
         deleteProposal(_proposalId);
-        LogCancelProposal(_proposalId);
+        CancelProposal(_proposalId);
         return true;
     }
 
@@ -175,7 +175,7 @@ contract AbsoluteVote is IntVoteInterface {
             if (proposal.votes[cnt] > totalReputation*precReq/100) {
                 Proposal memory tmpProposal = proposal;
                 deleteProposal(_proposalId);
-                LogExecuteProposal(_proposalId, cnt);
+                ExecuteProposal(_proposalId, cnt);
                 (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(cnt));
                 return true;
             }
@@ -231,7 +231,7 @@ contract AbsoluteVote is IntVoteInterface {
         proposal.votes[voter.vote] = (proposal.votes[voter.vote]).sub(voter.reputation);
         proposal.totalVotes = (proposal.totalVotes).sub(voter.reputation);
         delete proposal.voters[_voter];
-        LogCancelVoting(_proposalId, _voter);
+        CancelVoting(_proposalId, _voter);
     }
 
     function deleteProposal(bytes32 _proposalId) private {
@@ -275,7 +275,7 @@ contract AbsoluteVote is IntVoteInterface {
             vote: _vote
         });
         // Event:
-        LogVoteProposal(_proposalId, _voter, _vote, reputation, (_voter != msg.sender));
+        VoteProposal(_proposalId, _voter, _vote, reputation, (_voter != msg.sender));
         // execute the proposal if this vote was decisive:
         return execute(_proposalId);
     }

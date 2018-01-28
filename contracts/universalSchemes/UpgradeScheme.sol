@@ -142,13 +142,13 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        delete organizationsProposals[_avatar][_proposalId];
         // Check if vote was successful:
         if (_param == 1) {
 
         // Define controller and get the params:
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
-
         // Upgrading controller:
             if (proposal.proposalType == 1) {
                 if (!controller.upgradeController(proposal.upgradeContract,_avatar)) {
@@ -170,7 +170,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
                     }
                   }
                 }
-        delete organizationsProposals[_avatar][_proposalId];
+
         return true;
     }
 }

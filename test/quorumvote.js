@@ -468,7 +468,7 @@ contract('QuorumVote', function (accounts) {
     await quorumVote.cancelProposal(proposalId);
   });
 
-  it("log the LogNewProposal event on proposing new proposal", async function() {
+  it("log the NewProposal event on proposing new proposal", async function() {
     let quorumVote = await setupQuorumVote(true, 50);
 
     // propose a vote
@@ -478,13 +478,13 @@ contract('QuorumVote', function (accounts) {
     assert.isOk(proposalId);
 
     assert.equal(tx.logs.length, 1);
-    assert.equal(tx.logs[0].event, "LogNewProposal");
+    assert.equal(tx.logs[0].event, "NewProposal");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
     assert.equal(tx.logs[0].args._proposer, accounts[0]);
     assert.equal(tx.logs[0].args._paramsHash, paramsHash);
   });
 
-  it("Should log the LogCancelProposal event on canceling a proposal", async () => {
+  it("Should log the CancelProposal event on canceling a proposal", async () => {
     quorumVote = await setupQuorumVote();
 
     // propose a vote
@@ -496,11 +496,11 @@ contract('QuorumVote', function (accounts) {
     let newtx = await quorumVote.cancelProposal(proposalId);
 
     assert.equal(newtx.logs.length, 1);
-    assert.equal(newtx.logs[0].event, "LogCancelProposal");
+    assert.equal(newtx.logs[0].event, "CancelProposal");
     assert.equal(newtx.logs[0].args._proposalId, proposalId);
   });
 
-  it("Should log the LogVoteProposal and LogCancelVoting events on voting and canceling the vote", async () => {
+  it("Should log the VoteProposal and CancelVoting events on voting and canceling the vote", async () => {
     quorumVote = await setupQuorumVote();
 
     // propose a vote
@@ -512,7 +512,7 @@ contract('QuorumVote', function (accounts) {
     let voteTX = await quorumVote.vote(proposalId, 1);
 
     assert.equal(voteTX.logs.length, 1);
-    assert.equal(voteTX.logs[0].event, "LogVoteProposal");
+    assert.equal(voteTX.logs[0].event, "VoteProposal");
     assert.equal(voteTX.logs[0].args._proposalId, proposalId);
     assert.equal(voteTX.logs[0].args._voter, accounts[0]);
     assert.equal(voteTX.logs[0].args._vote, 1);
@@ -521,12 +521,12 @@ contract('QuorumVote', function (accounts) {
 
     let cancelVoteTX = await quorumVote.cancelVote(proposalId);
     assert.equal(cancelVoteTX.logs.length, 1);
-    assert.equal(cancelVoteTX.logs[0].event, "LogCancelVoting");
+    assert.equal(cancelVoteTX.logs[0].event, "CancelVoting");
     assert.equal(cancelVoteTX.logs[0].args._proposalId, proposalId);
     assert.equal(cancelVoteTX.logs[0].args._voter, accounts[0]);
   });
 
-  it("Should log the LogExecuteProposal event on executing quorum proposal with 'no' decision", async () => {
+  it("Should log the ExecuteProposal event on executing quorum proposal with 'no' decision", async () => {
 
     // propose a proposal with precRequired=19%
     quorumVote = await setupQuorumVote(true, 19);
@@ -539,7 +539,7 @@ contract('QuorumVote', function (accounts) {
     let voteTX = await quorumVote.vote(proposalId, 0);
 
     assert.equal(voteTX.logs.length, 2);
-    assert.equal(voteTX.logs[1].event, "LogExecuteProposal");
+    assert.equal(voteTX.logs[1].event, "ExecuteProposal");
     assert.equal(voteTX.logs[1].args._proposalId, proposalId);
     assert.equal(voteTX.logs[1].args._decision, 0);
   });

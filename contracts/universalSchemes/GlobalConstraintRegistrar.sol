@@ -1,7 +1,8 @@
 pragma solidity ^0.4.18;
 
-import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
+import "../VotingMachines/IntVoteInterface.sol";
+
 
 
 /**
@@ -42,7 +43,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         mapping(address=>bytes32) voteToRemoveParams; // A mapping that saves the parameters for removing each GC.
     }
 
-    // A mapping from thr organization (Avatar) address to the saved data of the organization:
+    // A mapping from the organization (Avatar) address to the saved data of the organization:
     mapping(address=>Organization) public organizationsData;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
@@ -57,6 +58,41 @@ contract GlobalConstraintRegistrar is UniversalScheme {
      * @dev Constructor
      */
     function GlobalConstraintRegistrar() public {}
+
+    /**
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _avatar address of the controller
+    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
+    * @return bool which represents a successful of the function.
+    */
+    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
+        // Check the caller is indeed the voting machine:
+
+        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        bool retVal = true;
+        // Check if vote was successful:
+        GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
+        delete organizationsData[_avatar].proposals[_proposalId];
+        
+        if (_param == 1 ) {
+
+        // Define controller and get the params:
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+
+        // Adding a GC
+            if (proposal.proposalType == 1) {
+                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params,_avatar);
+                organizationsData[_avatar].voteToRemoveParams[proposal.gc] = proposal.voteToRemoveParams;
+              }
+        // Removing a GC
+            if (proposal.proposalType == 2) {
+                retVal = controller.removeGlobalConstraint(proposal.gc,_avatar);
+              }
+        }
+        ProposalExecuted(_avatar, _proposalId);
+        return retVal;
+    }
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -152,38 +188,5 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         RemoveGlobalConstraintsProposal(_avatar, proposalId, intVote, _gc);
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
-    }
-
-    /**
-    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _avatar address of the controller
-    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
-    * @return bool which represents a successful of the function.
-    */
-    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
-        // Check the caller is indeed the voting machine:
-
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-        bool retVal = true;
-        // Check if vote was successful:
-        if (_param == 1 ) {
-
-        // Define controller and get the params:
-            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
-        // Adding a GC
-            if (proposal.proposalType == 1) {
-                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params,_avatar);
-                organizationsData[_avatar].voteToRemoveParams[proposal.gc] = proposal.voteToRemoveParams;
-              }
-        // Removing a GC
-            if (proposal.proposalType == 2) {
-                retVal = controller.removeGlobalConstraint(proposal.gc,_avatar);
-              }
-        }
-        delete organizationsData[_avatar].proposals[_proposalId];
-        ProposalExecuted(_avatar, _proposalId);
-        return retVal;
     }
 }

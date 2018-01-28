@@ -51,6 +51,48 @@ contract SchemeRegistrar is UniversalScheme {
     function SchemeRegistrar() public {}
 
     /**
+    * @dev execute a  proposal
+    * This method can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the proposal in the voting machine
+    * @param _avatar address of the controller
+    * @param _param identifies the action to be taken
+    */
+    // TODO: this call can be simplified if we save the _avatar together with the proposal
+    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
+          // Check the caller is indeed the voting machine:
+        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+
+        SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        delete organizationsProposals[_avatar][_proposalId];
+        if (_param == 1) {
+
+          // Define controller and get the params:
+            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+
+          // Add a scheme:
+            if (proposal.proposalType == 1) {
+                if (proposal.isRegistering == false) {
+                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1),_avatar)) {
+                        revert();
+                      }
+                    } else {
+                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3),_avatar)) {
+                        revert();
+                    }
+                }
+                }
+          // Remove a scheme:
+            if ( proposal.proposalType == 2 ) {
+                if (!controller.unregisterScheme(proposal.scheme,_avatar)) {
+                    revert();
+                  }
+                }
+          }
+        LogProposalExecuted(_avatar, _proposalId);
+        return true;
+    }
+
+    /**
     * @dev hash the parameters, save them if necessary, and return the hash value
     */
     function setParameters(
@@ -142,47 +184,5 @@ contract SchemeRegistrar is UniversalScheme {
         // vote for this proposal
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
-    }
-
-    /**
-    * @dev execute a  proposal
-    * This method can only be called by the voting machine in which the vote is held.
-    * @param _proposalId the ID of the proposal in the voting machine
-    * @param _avatar address of the controller
-    * @param _param identifies the action to be taken
-    */
-    // TODO: this call can be simplified if we save the _avatar together with the proposal
-    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
-        // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-
-        if (_param == 1) {
-
-        // Define controller and get the params:
-            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
-
-        // Add a scheme:
-            if (proposal.proposalType == 1) {
-                if (proposal.isRegistering == false) {
-                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1),_avatar)) {
-                        revert();
-                      }
-                      } else {
-                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3),_avatar)) {
-                        revert();
-                    }
-                }
-                }
-        // Remove a scheme:
-            if ( proposal.proposalType == 2 ) {
-                if (!controller.unregisterScheme(proposal.scheme,_avatar)) {
-                    revert();
-                  }
-                }
-          }
-        delete organizationsProposals[_avatar][_proposalId];
-        LogProposalExecuted(_avatar, _proposalId);
-        return true;
     }
 }

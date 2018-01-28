@@ -55,6 +55,40 @@ contract GenesisScheme {
             _uController);
     }
 
+     /**
+      * @dev Set initial schemes for the organization.
+      * @param _avatar organization avatar (returns from forgeOrg)
+      * @param _schemes the schemes to register for the organization
+      * @param _params the schemes's params
+      * @param _permissions the schemes permissions.
+      */
+    function setSchemes (
+        Avatar _avatar,
+        address[] _schemes,
+        bytes32[] _params,
+        bytes4[] _permissions
+    )
+        external
+    {
+        // this action can only be executed by the account that holds the lock
+        // for this controller
+        require(locks[address(_avatar)] == msg.sender);
+
+        // register initial schemes:
+        ControllerInterface controller = ControllerInterface(_avatar.owner());
+        for ( uint i = 0 ; i < _schemes.length ; i++ ) {
+            controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
+        }
+
+        // Unregister self:
+        controller.unregisterScheme(this,address(_avatar));
+
+        // Remove lock:
+        delete locks[_avatar];
+
+        InitialSchemesSet(address(_avatar));
+    }
+
     /**
      * @dev Create a new organization
      * @param _orgName The name of the new organization
@@ -108,39 +142,5 @@ contract GenesisScheme {
 
         NewOrg (address(avatar));
         return (address(avatar));
-    }
-
-     /**
-      * @dev Set initial schemes for the organization.
-      * @param _avatar organization avatar (returns from forgeOrg)
-      * @param _schemes the schemes to register for the organization
-      * @param _params the schemes's params
-      * @param _permissions the schemes permissions.
-      */
-    function setSchemes (
-        Avatar _avatar,
-        address[] _schemes,
-        bytes32[] _params,
-        bytes4[] _permissions
-    )
-        external
-    {
-        // this action can only be executed by the account that holds the lock
-        // for this controller
-        require(locks[address(_avatar)] == msg.sender);
-
-        // register initial schemes:
-        ControllerInterface controller = ControllerInterface(_avatar.owner());
-        for ( uint i = 0 ; i < _schemes.length ; i++ ) {
-            controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
-        }
-
-        // Unregister self:
-        controller.unregisterScheme(this,address(_avatar));
-
-        // Remove lock:
-        delete locks[_avatar];
-
-        InitialSchemesSet(address(_avatar));
     }
 }
