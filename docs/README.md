@@ -1,7 +1,10 @@
-- [Reference Documentation](ref/README.md)
-- [Concepts](concepts.md)
-- [Guides & Recipes](guides.md)
-- [Read the Whitepaper](DAOstack%20White%20Paper%20V1.0.pdf)
+Detail contracts decumetation can be found [here](ref/README.md)
+
+A document which describes the concepts involved can be found [here](concepts.md)
+
+Guides & Recipes can be found [here](guides.md)
+
+[DAOstack Whitepaper](DAOstack%20White%20Paper%20V1.0.pdf)
 
 ### Contributing to Arc Docs
 Same as above, with the following exceptions:
