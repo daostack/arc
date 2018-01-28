@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 
-interface GovernanceFormulasInterface {
+interface GenesisProtocolFormulasInterface {
 
     function shouldBoost(bytes32 _proposalId) public view returns (bool);
 

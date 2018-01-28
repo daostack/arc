@@ -3,13 +3,13 @@ pragma solidity ^0.4.18;
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
 import "../universalSchemes/UniversalScheme.sol";
-import "./GovernanceFormulasInterface.sol";
+import "./GenesisProtocolFormulasInterface.sol";
 
 
 /**
  * @title A governance contract -an organization's voting machine scheme.
  */
-contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterface {
+contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolFormulasInterface {
     using SafeMath for uint;
 
     enum ProposalState { Closed, Executed, NotBoosted, Boosted }
@@ -20,7 +20,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         uint nonBoostedVotePeriodLimit; //the time limit for a proposal to be in an absolute voting mode.
         uint boostedVotePeriodLimit; //the time limit for a proposal to be in an relative voting mode.
         uint scoreThreshold;
-        GovernanceFormulasInterface governanceFormulasInterface;
+        GenesisProtocolFormulasInterface governanceFormulasInterface;
         uint minimumStakingFee;
     }
     struct Voter {
@@ -66,7 +66,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     /**
      * @dev Constructor
      */
-    function Governance(StandardToken _stakingToken)
+    function GenesisProtocol(StandardToken _stakingToken)
     public
     {
         stakingToken = _stakingToken;
@@ -89,7 +89,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         uint _nonBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
         uint _boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.
         uint _scoreThreshold,
-        GovernanceFormulasInterface _governanceFormulasInterface,
+        GenesisProtocolFormulasInterface _governanceFormulasInterface,
         uint _minimumStakingFee)
     public
     returns(bytes32)
@@ -124,7 +124,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
         uint _nonBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
         uint _boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.
         uint _scoreThreshold,
-        GovernanceFormulasInterface _governanceFormulasInterface,
+        GenesisProtocolFormulasInterface _governanceFormulasInterface,
         uint _minimumStakingFee) public pure returns(bytes32)
         {
         return keccak256(
@@ -326,7 +326,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     function shouldBoost(bytes32 _proposalId) public view returns(bool) {
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory params = parameters[paramsHash];
-        if (params.governanceFormulasInterface == GovernanceFormulasInterface(0)) {
+        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             Proposal storage proposal = proposals[_proposalId];
             uint score = (proposal.totalStakes * (proposal.totalVotes**2))/(params.reputationSystem.totalSupply()**2);
             return (score >= threshold(proposals[_proposalId].avatar));
@@ -343,7 +343,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     function score(bytes32 _proposalId) public view returns(uint) {
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory params = parameters[paramsHash];
-        if (params.governanceFormulasInterface == GovernanceFormulasInterface(0)) {
+        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             Proposal storage proposal = proposals[_proposalId];
             return (proposal.totalStakes * (proposal.totalVotes**2))/(params.reputationSystem.totalSupply()**2);
         } else {
@@ -361,7 +361,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     function threshold(address _avatar) public view returns(uint) {
         bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
         Parameters memory params = parameters[paramsHash];
-        if (params.governanceFormulasInterface == GovernanceFormulasInterface(0)) {
+        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             return params.scoreThreshold * (1 + orgBoostedProposalsCnt[_avatar]**2);
         } else {
             return (params.governanceFormulasInterface).threshold(_avatar);
@@ -376,7 +376,7 @@ contract Governance is IntVoteInterface,UniversalScheme,GovernanceFormulasInterf
     function redeemAmount(bytes32 _proposalId,address _player) public view returns(uint) {
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory params = parameters[paramsHash];
-        if (params.governanceFormulasInterface == GovernanceFormulasInterface(0)) {
+        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             Proposal storage proposal = proposals[_proposalId];
             return (proposal.stakers[_player].amount * proposal.totalStakes) / proposal.stakes[proposals[_proposalId].winningVote];
         } else {
