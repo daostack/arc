@@ -1,4 +1,4 @@
-Detail contracts decumetation can be found [here](ref/README.md)
+Detailed contracts documentation can be found [here](ref/README.md)
 
 A document which describes the concepts involved can be found [here](concepts.md)
 
