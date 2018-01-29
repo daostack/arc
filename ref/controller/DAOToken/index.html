@@ -1,0 +1,1818 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.5.4">
+    
+    
+      
+        <title>*contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol)) - DAOstack Arc Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.aa3de92b.css">
+      
+    
+    
+      <script src="../../../assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
+      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <a href="#contract-daotoken-source" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../.." title="DAOstack Arc Docs" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                DAOstack Arc Docs
+              </span>
+              <span class="md-header-nav__topic">
+                *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
+              </span>
+            
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+            <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+            
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+          
+        
+      </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <span class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </span>
+    DAOstack Arc Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../.." title="Welcome to MkDocs" class="md-nav__link">
+      Welcome to MkDocs
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../DAO-protocol/" title="DAO protocol" class="md-nav__link">
+      DAO protocol
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../concepts/" title="Concepts" class="md-nav__link">
+      Concepts
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../guides/" title="Guides" class="md-nav__link">
+      Guides
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../roadmap/" title="Roadmap for the DOAStack" class="md-nav__link">
+      Roadmap for the DOAStack
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Headers
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Headers
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../headers/README/" title="README" class="md-nav__link">
+      README
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-2" type="checkbox" id="nav-6-2">
+    
+    <label class="md-nav__link" for="nav-6-2">
+      Controller
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-2">
+        Controller
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../headers/controller/Avatar/" title="Avatar" class="md-nav__link">
+      Avatar
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../headers/controller/Controller/" title="Controller" class="md-nav__link">
+      Controller
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../headers/controller/DAOToken/" title="DAOToken" class="md-nav__link">
+      DAOToken
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../headers/controller/Reputation/" title="Reputation" class="md-nav__link">
+      Reputation
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-3" type="checkbox" id="nav-6-3">
+    
+    <label class="md-nav__link" for="nav-6-3">
+      globalConstraints
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-3">
+        globalConstraints
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../headers/globalConstraints/GlobalConstraintInterface/" title="GlobalConstraintInterface" class="md-nav__link">
+      GlobalConstraintInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../headers/globalConstraints/TokenCapGC/" title="TokenCapGC" class="md-nav__link">
+      TokenCapGC
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-4" type="checkbox" id="nav-6-4">
+    
+    <label class="md-nav__link" for="nav-6-4">
+      universalSchemes
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-4">
+        universalSchemes
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../headers/universalSchemes/GenesisScheme/" title="GenesisScheme" class="md-nav__link">
+      GenesisScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../headers/universalSchemes/UniversalSchemeInterface/" title="UniversalSchemeInterface" class="md-nav__link">
+      UniversalSchemeInterface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7" checked>
+    
+    <label class="md-nav__link" for="nav-7">
+      Ref
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        Ref
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../README/" title="Table of Contents" class="md-nav__link">
+      Table of Contents
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-2" type="checkbox" id="nav-7-2">
+    
+    <label class="md-nav__link" for="nav-7-2">
+      VotingMachines
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-7-2">
+        VotingMachines
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/AbsoluteVote/" title="*contract* AbsoluteVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/AbsoluteVote.sol))" class="md-nav__link">
+      *contract* AbsoluteVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/AbsoluteVote.sol))
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/EmergentVoteScheme/" title="*contract* EmergentVoteScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/EmergentVoteScheme.sol))" class="md-nav__link">
+      *contract* EmergentVoteScheme ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/EmergentVoteScheme.sol))
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/IntVoteInterface/" title="*contract* IntVoteInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/IntVoteInterface.sol))" class="md-nav__link">
+      *contract* IntVoteInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/IntVoteInterface.sol))
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/QuorumVote/" title="*contract* QuorumVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/QuorumVote.sol))" class="md-nav__link">
+      *contract* QuorumVote ([source](https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/QuorumVote.sol))
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-3" type="checkbox" id="nav-7-3" checked>
+    
+    <label class="md-nav__link" for="nav-7-3">
+      Controller
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-7-3">
+        Controller
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ActionInterface/" title="*contract* ActionInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))" class="md-nav__link">
+      *contract* ActionInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Avatar/" title="*contract* Avatar ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))" class="md-nav__link">
+      *contract* Avatar ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol))
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Controller/" title="*contract* Controller ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Controller.sol))" class="md-nav__link">
+      *contract* Controller ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/Controller.sol))
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ControllerInterface/" title="*contract* ControllerInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/ControllerInterface.sol))" class="md-nav__link">
+      *contract* ControllerInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/ControllerInterface.sol))
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
+      </label>
+    
+    <a href="./" title="*contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))" class="md-nav__link md-nav__link--active">
+      *contract* DAOToken ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol))
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reference" title="Reference" class="md-nav__link">
+    Reference
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructors" title="Constructors" class="md-nav__link">
+    Constructors
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructor-daotokenstring-string" title="constructor DAOToken(string, string)" class="md-nav__link">
+    constructor DAOToken(string, string)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#events" title="Events" class="md-nav__link">
+    Events
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#event-transfer" title="event Transfer" class="md-nav__link">
+    event Transfer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-ownershiptransferred" title="event OwnershipTransferred" class="md-nav__link">
+    event OwnershipTransferred
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-mintfinished" title="event MintFinished" class="md-nav__link">
+    event MintFinished
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-mint" title="event Mint" class="md-nav__link">
+    event Mint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-burn" title="event Burn" class="md-nav__link">
+    event Burn
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-approval" title="event Approval" class="md-nav__link">
+    event Approval
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fallback" title="Fallback" class="md-nav__link">
+    Fallback
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions" title="Functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-balanceof" title="function balanceOf" class="md-nav__link">
+    function balanceOf
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-mintingfinished" title="function mintingFinished" class="md-nav__link">
+    function mintingFinished
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-transferownership" title="function transferOwnership" class="md-nav__link">
+    function transferOwnership
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-totalsupply" title="function totalSupply" class="md-nav__link">
+    function totalSupply
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-transferfrom" title="function transferFrom" class="md-nav__link">
+    function transferFrom
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-transfer" title="function transfer" class="md-nav__link">
+    function transfer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-symbol" title="function symbol" class="md-nav__link">
+    function symbol
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-owner" title="function owner" class="md-nav__link">
+    function owner
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-name" title="function name" class="md-nav__link">
+    function name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-mint" title="function mint" class="md-nav__link">
+    function mint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-increaseapproval" title="function increaseApproval" class="md-nav__link">
+    function increaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-finishminting" title="function finishMinting" class="md-nav__link">
+    function finishMinting
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-destroyandsend" title="function destroyAndSend" class="md-nav__link">
+    function destroyAndSend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-destroy" title="function destroy" class="md-nav__link">
+    function destroy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-decreaseapproval" title="function decreaseApproval" class="md-nav__link">
+    function decreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-burn" title="function burn" class="md-nav__link">
+    function burn
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-approve" title="function approve" class="md-nav__link">
+    function approve
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-allowance" title="function allowance" class="md-nav__link">
+    function allowance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-decimal" title="function DECIMAL" class="md-nav__link">
+    function DECIMAL
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Reputation/" title="Reputation" class="md-nav__link">
+      Reputation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../UController/" title="UController" class="md-nav__link">
+      UController
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-4" type="checkbox" id="nav-7-4">
+    
+    <label class="md-nav__link" for="nav-7-4">
+      globalConstraints
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-7-4">
+        globalConstraints
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../globalConstraints/GlobalConstraintInterface/" title="GlobalConstraintInterface" class="md-nav__link">
+      GlobalConstraintInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../globalConstraints/TokenCapGC/" title="TokenCapGC" class="md-nav__link">
+      TokenCapGC
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-5" type="checkbox" id="nav-7-5">
+    
+    <label class="md-nav__link" for="nav-7-5">
+      Test
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-7-5">
+        Test
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/ActionMock/" title="ActionMock" class="md-nav__link">
+      ActionMock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/Debug/" title="Debug" class="md-nav__link">
+      Debug
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/ExecutableTest/" title="ExecutableTest" class="md-nav__link">
+      ExecutableTest
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/GlobalConstraintMock/" title="GlobalConstraintMock" class="md-nav__link">
+      GlobalConstraintMock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/UniversalSchemeMock/" title="UniversalSchemeMock" class="md-nav__link">
+      UniversalSchemeMock
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-6" type="checkbox" id="nav-7-6">
+    
+    <label class="md-nav__link" for="nav-7-6">
+      universalSchemes
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-7-6">
+        universalSchemes
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/ContributionReward/" title="ContributionReward" class="md-nav__link">
+      ContributionReward
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/ExecutableInterface/" title="ExecutableInterface" class="md-nav__link">
+      ExecutableInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/GenesisScheme/" title="GenesisScheme" class="md-nav__link">
+      GenesisScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/GlobalConstraintRegistrar/" title="GlobalConstraintRegistrar" class="md-nav__link">
+      GlobalConstraintRegistrar
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/MirrorContractICO/" title="MirrorContractICO" class="md-nav__link">
+      MirrorContractICO
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/OrganizationRegister/" title="OrganizationRegister" class="md-nav__link">
+      OrganizationRegister
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/SchemeRegistrar/" title="SchemeRegistrar" class="md-nav__link">
+      SchemeRegistrar
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/SimpleICO/" title="SimpleICO" class="md-nav__link">
+      SimpleICO
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/UniversalScheme/" title="UniversalScheme" class="md-nav__link">
+      UniversalScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/UniversalSchemeInterface/" title="UniversalSchemeInterface" class="md-nav__link">
+      UniversalSchemeInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/UpgradeScheme/" title="UpgradeScheme" class="md-nav__link">
+      UpgradeScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/VestingScheme/" title="VestingScheme" class="md-nav__link">
+      VestingScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/VoteInOrganizationScheme/" title="VoteInOrganizationScheme" class="md-nav__link">
+      VoteInOrganizationScheme
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reference" title="Reference" class="md-nav__link">
+    Reference
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructors" title="Constructors" class="md-nav__link">
+    Constructors
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructor-daotokenstring-string" title="constructor DAOToken(string, string)" class="md-nav__link">
+    constructor DAOToken(string, string)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#events" title="Events" class="md-nav__link">
+    Events
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#event-transfer" title="event Transfer" class="md-nav__link">
+    event Transfer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-ownershiptransferred" title="event OwnershipTransferred" class="md-nav__link">
+    event OwnershipTransferred
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-mintfinished" title="event MintFinished" class="md-nav__link">
+    event MintFinished
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-mint" title="event Mint" class="md-nav__link">
+    event Mint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-burn" title="event Burn" class="md-nav__link">
+    event Burn
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-approval" title="event Approval" class="md-nav__link">
+    event Approval
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fallback" title="Fallback" class="md-nav__link">
+    Fallback
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions" title="Functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-balanceof" title="function balanceOf" class="md-nav__link">
+    function balanceOf
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-mintingfinished" title="function mintingFinished" class="md-nav__link">
+    function mintingFinished
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-transferownership" title="function transferOwnership" class="md-nav__link">
+    function transferOwnership
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-totalsupply" title="function totalSupply" class="md-nav__link">
+    function totalSupply
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-transferfrom" title="function transferFrom" class="md-nav__link">
+    function transferFrom
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-transfer" title="function transfer" class="md-nav__link">
+    function transfer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-symbol" title="function symbol" class="md-nav__link">
+    function symbol
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-owner" title="function owner" class="md-nav__link">
+    function owner
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-name" title="function name" class="md-nav__link">
+    function name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-mint" title="function mint" class="md-nav__link">
+    function mint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-increaseapproval" title="function increaseApproval" class="md-nav__link">
+    function increaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-finishminting" title="function finishMinting" class="md-nav__link">
+    function finishMinting
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-destroyandsend" title="function destroyAndSend" class="md-nav__link">
+    function destroyAndSend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-destroy" title="function destroy" class="md-nav__link">
+    function destroy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-decreaseapproval" title="function decreaseApproval" class="md-nav__link">
+    function decreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-burn" title="function burn" class="md-nav__link">
+    function burn
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-approve" title="function approve" class="md-nav__link">
+    function approve
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-allowance" title="function allowance" class="md-nav__link">
+    function allowance
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-decimal" title="function DECIMAL" class="md-nav__link">
+    function DECIMAL
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="contract-daotoken-source"><em>contract</em> DAOToken (<a href="https://github.com/daostack/daostack/tree/master/./contracts/controller/DAOToken.sol">source</a>)</h1>
+<p><em>Code deposit cost: <strong>less than 683600 gas.</strong></em></p>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><em>Total deploy cost(deposit + execution): <strong>less than 683600 gas.</strong></em></p>
+<blockquote>
+<p>DAOToken, base on zeppelin contract.</p>
+</blockquote>
+<p>The <em>DAO token</em> is a simple token that is used by DAOs to assign value to, and reward participants actions. 
+It can be <strong>minted</strong> or <strong>burned</strong> by the DAO and also be <strong>destroyed</strong> in the event of an upgrade to a better token or in other circumstances.</p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a href="#constructors">Constructors</a><ul>
+<li><a href="#constructor-daotokenstring-string">DAOToken(string, string)</a></li>
+</ul>
+</li>
+<li><a href="#events">Events</a><ul>
+<li><a href="#event-transfer">Transfer</a></li>
+<li><a href="#event-ownershiptransferred">OwnershipTransferred</a></li>
+<li><a href="#event-mintfinished">MintFinished</a></li>
+<li><a href="#event-mint">Mint</a></li>
+<li><a href="#event-burn">Burn</a></li>
+<li><a href="#event-approval">Approval</a></li>
+</ul>
+</li>
+<li><a href="#fallback">Fallback</a></li>
+<li><a href="#functions">Functions</a><ul>
+<li><a href="#function-balanceof">balanceOf</a></li>
+<li><a href="#function-mintingfinished">mintingFinished</a></li>
+<li><a href="#function-transferownership">transferOwnership</a></li>
+<li><a href="#function-totalsupply">totalSupply</a></li>
+<li><a href="#function-transferfrom">transferFrom</a></li>
+<li><a href="#function-transfer">transfer</a></li>
+<li><a href="#function-symbol">symbol</a></li>
+<li><a href="#function-owner">owner</a></li>
+<li><a href="#function-name">name</a></li>
+<li><a href="#function-mint">mint</a></li>
+<li><a href="#function-increaseapproval">increaseApproval</a></li>
+<li><a href="#function-finishminting">finishMinting</a></li>
+<li><a href="#function-destroyandsend">destroyAndSend</a></li>
+<li><a href="#function-destroy">destroy</a></li>
+<li><a href="#function-decreaseapproval">decreaseApproval</a></li>
+<li><a href="#function-burn">burn</a></li>
+<li><a href="#function-approve">approve</a></li>
+<li><a href="#function-allowance">allowance</a></li>
+<li><a href="#function-decimal">DECIMAL</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="constructors">Constructors</h3>
+<h4 id="constructor-daotokenstring-string"><em>constructor</em> DAOToken(string, string)</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Params:</em>
+1. <strong>_name</strong> <em>of type string</em>
+2. <strong>_symbol</strong> <em>of type string</em></p>
+<h3 id="events">Events</h3>
+<h4 id="event-transfer"><em>event</em> Transfer</h4>
+<p><em>Params:</em>
+1. <strong>from</strong> <em>of type address</em>
+2. <strong>to</strong> <em>of type address</em>
+3. <strong>value</strong> <em>of type uint256</em></p>
+<h4 id="event-ownershiptransferred"><em>event</em> OwnershipTransferred</h4>
+<p><em>Params:</em>
+1. <strong>previousOwner</strong> <em>of type address</em>
+2. <strong>newOwner</strong> <em>of type address</em></p>
+<h4 id="event-mintfinished"><em>event</em> MintFinished</h4>
+<p><em>Params:</em>
+<em>Nothing</em></p>
+<h4 id="event-mint"><em>event</em> Mint</h4>
+<p><em>Params:</em>
+1. <strong>to</strong> <em>of type address</em>
+2. <strong>amount</strong> <em>of type uint256</em></p>
+<h4 id="event-burn"><em>event</em> Burn</h4>
+<p><em>Params:</em>
+1. <strong>burner</strong> <em>of type address</em>
+2. <strong>value</strong> <em>of type uint256</em></p>
+<h4 id="event-approval"><em>event</em> Approval</h4>
+<p><em>Params:</em>
+1. <strong>owner</strong> <em>of type address</em>
+2. <strong>spender</strong> <em>of type address</em>
+3. <strong>value</strong> <em>of type uint256</em></p>
+<h3 id="fallback">Fallback</h3>
+<p><em>Nothing</em></p>
+<h3 id="functions">Functions</h3>
+<h4 id="function-balanceof"><em>function</em> balanceOf</h4>
+<blockquote>
+<p>Gets the balance of the specified address.</p>
+</blockquote>
+<p><em>Execution cost: <strong>less than 793 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_owner</strong> <em>of type address- The address to query the the balance of.</em></p>
+<p>An uint256 representing the amount owned by the passed address.</p>
+<h4 id="function-mintingfinished"><em>function</em> mintingFinished</h4>
+<p><em>Execution cost: <strong>less than 459 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em>
+<em>Nothing</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type bool</em></p>
+<h4 id="function-transferownership"><em>function</em> transferOwnership</h4>
+<blockquote>
+<p>Allows the current owner to transfer control of the contract to a newOwner.</p>
+</blockquote>
+<p><em>Execution cost: <strong>less than 23118 gas.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+1. <strong>newOwner</strong> <em>of type address- The address to transfer ownership to.</em></p>
+<p><em>Returns:</em>
+<em>Nothing</em></p>
+<h4 id="function-totalsupply"><em>function</em> totalSupply</h4>
+<p><em>Execution cost: <strong>less than 439 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em>
+<em>Nothing</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type uint256</em></p>
+<h4 id="function-transferfrom"><em>function</em> transferFrom</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_from</strong> <em>of type address</em>
+2. <strong>_to</strong> <em>of type address</em>
+3. <strong>_value</strong> <em>of type uint256</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type bool</em></p>
+<h4 id="function-transfer"><em>function</em> transfer</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_to</strong> <em>of type address</em>
+2. <strong>_value</strong> <em>of type uint256</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type bool</em></p>
+<h4 id="function-symbol"><em>function</em> symbol</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em>
+<em>Nothing</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type string</em></p>
+<h4 id="function-owner"><em>function</em> owner</h4>
+<p><em>Execution cost: <strong>less than 793 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em>
+<em>Nothing</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type address</em></p>
+<h4 id="function-name"><em>function</em> name</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em>
+<em>Nothing</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type string</em></p>
+<h4 id="function-mint"><em>function</em> mint</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_to</strong> <em>of type address</em>
+2. <strong>_amount</strong> <em>of type uint256</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type bool</em></p>
+<h4 id="function-increaseapproval"><em>function</em> increaseApproval</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_spender</strong> <em>of type address</em>
+2. <strong>_addedValue</strong> <em>of type uint256</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type bool</em></p>
+<h4 id="function-finishminting"><em>function</em> finishMinting</h4>
+<blockquote>
+<p>Function to stop minting new tokens.</p>
+</blockquote>
+<p><em>Execution cost: <strong>less than 22080 gas.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+<em>Nothing</em></p>
+<p>True if the operation was successful.</p>
+<h4 id="function-destroyandsend"><em>function</em> destroyAndSend</h4>
+<p><em>Execution cost: <strong>less than 30980 gas.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_recipient</strong> <em>of type address</em></p>
+<p><em>Returns:</em>
+<em>Nothing</em></p>
+<h4 id="function-destroy"><em>function</em> destroy</h4>
+<blockquote>
+<p>Transfers the current balance to the owner and terminates the contract.</p>
+</blockquote>
+<p><em>Execution cost: <strong>less than 30945 gas.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+<em>Nothing</em></p>
+<p><em>Returns:</em>
+<em>Nothing</em></p>
+<h4 id="function-decreaseapproval"><em>function</em> decreaseApproval</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_spender</strong> <em>of type address</em>
+2. <strong>_subtractedValue</strong> <em>of type uint256</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type bool</em></p>
+<h4 id="function-burn"><em>function</em> burn</h4>
+<blockquote>
+<p>Burns a specific amount of tokens.</p>
+</blockquote>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_value</strong> <em>of type uint256- The amount of token to be burned.</em></p>
+<p><em>Returns:</em>
+<em>Nothing</em></p>
+<h4 id="function-approve"><em>function</em> approve</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_spender</strong> <em>of type address</em>
+2. <strong>_value</strong> <em>of type uint256</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type bool</em></p>
+<h4 id="function-allowance"><em>function</em> allowance</h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em>
+1. <strong>_owner</strong> <em>of type address</em>
+2. <strong>_spender</strong> <em>of type address</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type uint256</em></p>
+<h4 id="function-decimal"><em>function</em> DECIMAL</h4>
+<p><em>Execution cost: <strong>less than 349 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em>
+<em>Nothing</em></p>
+<p><em>Returns:</em>
+1. <strong>unnamed</strong> <em>of type uint256</em></p>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../ControllerInterface/" title="*contract* ControllerInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/ControllerInterface.sol))" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                *contract* ControllerInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/controller/ControllerInterface.sol))
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../Reputation/" title="Reputation" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Reputation
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="http://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/application.f041762f.js"></script>
+      
+      <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>
