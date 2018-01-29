@@ -32,16 +32,8 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
     const fallback = fallbacks.length ? fallbacks[0] : null;
     const methods = devdoc.methods || {};
 
-    // This turns header text into a hyphenated version that we can put in a hash link
-    const hyphenate = (s) => 
-        s.toLowerCase()
-        .replace(new RegExp('[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]+','g'),'')
-        .trim()
-        .replace(new RegExp('[ ]+','g'),'-');
-
     const gasEstimate = (est) => est ? `less than ${est} gas.` : 'No bound available.';
     const signature = (name,ps) => `${name}(${ps.map(p => `${p.type}`).join(', ')})`;
-    const headerLink = (title,link) => `    - [${title}](#${hyphenate(link)})`;
     const title = (prefix,text) => `#### *${prefix}* ${text}`;
     const functionComment = (obj) => obj.details ? `> ${obj.details.trim()}${N}` : '';
     const paramComment = (obj, name) => obj.params && obj.params[name] ? `- ${obj.params[name]}` : '';
@@ -55,7 +47,7 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
 
     const param = (obj,p,i) => `${i+1}. **${p.name || 'unnamed'}** *of type ${p.type}${paramComment(obj,p.name)}*`;
     const params = (obj,title,ps) =>
-        `*${title}:*${N
+        `*${title}:*${N}${N
         }${ps.length ? ps.map((p,i) => param(obj,p,i)).join(N) : '*Nothing*'}${N
         }`;
 
@@ -101,28 +93,22 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
     const description = devdoc.title ? `${devdoc.title.trim()}${N}` : '';
 
     const res = (
-        `# *contract* ${contractName} ([source](https://github.com/daostack/daostack/tree/master/${file}))${N
+        `# ${contractName}${N
+        }[see the source](https://github.com/daostack/daostack/tree/master/${file})${N}${N
         }*Code deposit cost: **${gasEstimate(gas.creation[1])}***${N}${N
         }*Execution cost: **${gasEstimate(gas.creation[0])}***${N}${N
         }*Total deploy cost(deposit + execution): **${gasEstimate(gas.creation[0]+gas.creation[1])}***${N}${N
         }> ${description}${N 
         }${header}${N
         }## Reference${N
-        }- [Constructors](#constructors)${N
-        }${constructors.map(c => headerLink(signature(contractName,c.inputs),title('constructor',signature(contractName,c.inputs)))).join(N)}${N
-        }- [Events](#events)${N
-        }${events.map(e => headerLink(e.name,title('event',e.name))).join(N)}${N
-        }- [Fallback](#fallback)${N
-        }- [Functions](#functions)${N
-        }${functions.map(f => headerLink(f.name,title('function',f.name))).join(N)}${N
         }### Constructors${N
-        }${constructors.map(c => constructor(c)).join(N)}${N
+        }${constructors.length ? constructors.map(c => constructor(c)).join(N) : '*Nothing*'}${N
         }### Events${N
-        }${events.map(e => event(e)).join(N)}${N
+        }${events.length ? events.map(e => event(e)).join(N) : '*Nothing*'}${N
         }### Fallback${N
         }${fallback ? fb(fallback) : '*Nothing*'}${N
         }### Functions${N
-        }${functions.map(f => func(f)).join(N)}${N
+        }${functions.length ? functions.map(f => func(f)).join(N) : '*Nothing*'}${N
         }`);
     return res;
 };

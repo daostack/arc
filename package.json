@@ -23,8 +23,10 @@
     "solium": "solium --dir ./contracts/",
     "truffle": "truffle",
     "build": "rimraf build && truffle compile",
-    "docs:serve": "docsify serve ./docs",
-    "docs:generate": "node scripts/docs/gen.js"
+    "docs:build": "node scripts/docs/gen.js && mkdocs build",
+    "docs:clean": "rimraf site docs/reference",
+    "docs:serve": "yarn docs:build && mkdocs serve",
+    "docs:deploy": "yarn docs:build && mkdocs gh-deploy --force && yarn docs:clean"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -36,7 +38,6 @@
     "bignumber.js": "^5.0.0",
     "default-options": "^1.0.0",
     "eslint": "^4.16.0",
-    "docsify-cli": "^4.2.0",
     "eslint-config-defaults": "^9.0.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.8.0",

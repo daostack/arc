@@ -1,0 +1,27 @@
+site_name: DAOstack Arc Docs
+site_url: https://daostack.github.io/Arc
+repo_url: https://github.com/daostack/Arc/
+repo_name: daostack/Arc
+site_description: A platform for building DAOs
+markdown_extensions:
+- admonition
+- codehilite:
+    linenums: true
+- toc:
+    permalink: true
+theme:
+  name: 'material'
+  favicon: 'img/favicon.ico'
+  palette:
+    primary: 'teal'
+    accent: 'amber'
+  feature:
+    tabs: true
+extra:
+  social:
+  - type: 'github'
+    link: 'https://github.com/daostack/Arc'
+  - type: 'slack'
+    link: 'https://daostack.slack.com'
+  - type: 'telegram'
+    link: 'https://t.me/daostackcommunity'

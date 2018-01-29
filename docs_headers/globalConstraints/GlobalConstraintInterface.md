@@ -1,11 +1,3 @@
-# *contract* GlobalConstraintInterface ([source](https://github.com/daostack/daostack/tree/master/./contracts/globalConstraints/GlobalConstraintInterface.sol))
-*Code deposit cost: **No bound available.***
-
-*Execution cost: **No bound available.***
-
-*Total deploy cost(deposit + execution): **No bound available.***
-
-> 
 related: [TokenCapGC](TokenCapGC.md)
 
 *Global Constraint*s define certain conditions the DAO must hold at all times. More concretely, they define *pre* & *post* conditions that must hold before & after any action the DAO takes.
@@ -13,6 +5,7 @@ They are meant to be *Universal*(i.e. only one deployed instance), but do not st
 
 When an action is about to happen, the [Controller](../controller/Controller.md) consults the *Global Constraint* and runs it's `pre` & `post` methods to see if the conditions hold.
 It passes the following parameters to `pre` & `post`:
+
 1. `address scheme` - the scheme that performs the action.
 2. `bytes32 hash` - a hash of the parameters to be used.
 3. `bytes32 method` - what kind of event occurred, available `method`s:
@@ -84,49 +77,3 @@ SchemeRegisterTimeLock gc = new SchemeRegisterTimeLock();
 bytes32 hash = gc.setParameters(now,now + 2 days)
 contoller.addGlobalConstraint(address(myGlobalConstraint),hash)
 ```
-## Reference
-- [Constructors](#constructors)
-
-- [Events](#events)
-
-- [Fallback](#fallback)
-- [Functions](#functions)
-    - [pre](#function-pre)
-    - [post](#function-post)
-### Constructors
-
-### Events
-
-### Fallback
-*Nothing*
-### Functions
-#### *function* pre
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_scheme** *of type address*
-2. **_params** *of type bytes32*
-3. **_method** *of type bytes32*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
-#### *function* post
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-1. **_scheme** *of type address*
-2. **_params** *of type bytes32*
-3. **_method** *of type bytes32*
-
-*Returns:*
-1. **unnamed** *of type bool*
-
-
