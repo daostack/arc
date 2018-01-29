@@ -10,6 +10,10 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
+        <meta name="description" content="A platform for building DAOs">
+      
+      
+        <link rel="canonical" href="https://daostack.github.io/daostack/">
       
       
       
@@ -27,7 +31,7 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="./assets/images/favicon.png">
+      <link rel="shortcut icon" href="./img/favicon.ico">
       <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.5.4">
     
     
@@ -37,6 +41,8 @@
     
     
       <link rel="stylesheet" href="./assets/stylesheets/application.aa3de92b.css">
+      
+        <link rel="stylesheet" href="./assets/stylesheets/application-palette.792431c1.css">
       
     
     
@@ -54,11 +60,15 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+    <body dir="ltr" data-md-color-primary="teal" data-md-color-accent="amber">
   
     <svg class="md-svg">
       <defs>
         
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
         
       </defs>
     </svg>
@@ -66,7 +76,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
     <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
     
-      <a href="#welcome-to-mkdocs" tabindex="1" class="md-skip">
+      <a href="#contributing-to-arc-docs" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -75,7 +85,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="." title="DAOstack Arc Docs" class="md-header-nav__button md-logo">
+        <a href="https://daostack.github.io/daostack" title="DAOstack Arc Docs" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -92,7 +102,7 @@
                 DAOstack Arc Docs
               </span>
               <span class="md-header-nav__topic">
-                Welcome to MkDocs
+                Home
               </span>
             
           
@@ -129,6 +139,30 @@
         
       </div>
       
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/daostack/Arc/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      daostack/Arc
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
     </div>
   </nav>
 </header>
@@ -137,6 +171,58 @@
       
         
       
+      
+        
+
+<nav class="md-tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href="." title="Home" class="md-tabs__link md-tabs__link--active">
+        Home
+      </a>
+    
+  </li>
+
+      
+        
+      
+        
+      
+        
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="guides/building_a_simple_charity/" title="Guides" class="md-tabs__link">
+          Guides
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="reference/" title="Reference" class="md-tabs__link">
+          Reference
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
       
       <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
@@ -155,6 +241,28 @@
     DAOstack Arc Docs
   </label>
   
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/daostack/Arc/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      daostack/Arc
+    </div>
+  </a>
+
+    </div>
+  
   <ul class="md-nav__list" data-md-scrollfix>
     
       
@@ -168,37 +276,26 @@
     
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
     
-      
-    
     
       <label class="md-nav__link md-nav__link--active" for="toc">
-        Welcome to MkDocs
+        Home
       </label>
     
-    <a href="." title="Welcome to MkDocs" class="md-nav__link md-nav__link--active">
-      Welcome to MkDocs
+    <a href="." title="Home" class="md-nav__link md-nav__link--active">
+      Home
     </a>
     
       
 <nav class="md-nav md-nav--secondary">
   
   
-    
-  
   
     <label class="md-nav__title" for="toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#commands" title="Commands" class="md-nav__link">
-    Commands
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-layout" title="Project layout" class="md-nav__link">
-    Project layout
+  <a href="#contributing-to-arc-docs" title="Contributing to Arc Docs" class="md-nav__link">
+    Contributing to Arc Docs
   </a>
   
 </li>
@@ -242,18 +339,6 @@
 
 
   <li class="md-nav__item">
-    <a href="guides/" title="Guides" class="md-nav__link">
-      Guides
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
     <a href="roadmap/" title="Roadmap" class="md-nav__link">
       Roadmap
     </a>
@@ -267,14 +352,14 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
     
-    <label class="md-nav__link" for="nav-6">
-      Headers
+    <label class="md-nav__link" for="nav-5">
+      Guides
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-6">
-        Headers
+      <label class="md-nav__title" for="nav-5">
+        Guides
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
@@ -285,8 +370,68 @@
 
 
   <li class="md-nav__item">
-    <a href="headers/README/" title="README" class="md-nav__link">
-      README
+    <a href="guides/building_a_simple_charity/" title="Building a simple charity" class="md-nav__link">
+      Building a simple charity
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="guides/creating_a_register_scheme_time_lock_constraint/" title="Creating a register scheme time lock constraint" class="md-nav__link">
+      Creating a register scheme time lock constraint
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="guides/" title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Reference
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Reference
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/" title="Home" class="md-nav__link">
+      Home
     </a>
   </li>
 
@@ -301,11 +446,11 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-2" type="checkbox" id="nav-6-2">
     
     <label class="md-nav__link" for="nav-6-2">
-      Controller
+      VotingMachines
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
       <label class="md-nav__title" for="nav-6-2">
-        Controller
+        VotingMachines
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
@@ -316,8 +461,8 @@
 
 
   <li class="md-nav__item">
-    <a href="headers/controller/Avatar/" title="Avatar" class="md-nav__link">
-      Avatar
+    <a href="reference/VotingMachines/AbsoluteVote/" title="AbsoluteVote" class="md-nav__link">
+      AbsoluteVote
     </a>
   </li>
 
@@ -328,8 +473,8 @@
 
 
   <li class="md-nav__item">
-    <a href="headers/controller/Controller/" title="Controller" class="md-nav__link">
-      Controller
+    <a href="reference/VotingMachines/GenesisProtocol/" title="GenesisProtocol" class="md-nav__link">
+      GenesisProtocol
     </a>
   </li>
 
@@ -340,8 +485,8 @@
 
 
   <li class="md-nav__item">
-    <a href="headers/controller/DAOToken/" title="DAOToken" class="md-nav__link">
-      DAOToken
+    <a href="reference/VotingMachines/GenesisProtocolFormulasInterface/" title="GenesisProtocolFormulasInterface" class="md-nav__link">
+      GenesisProtocolFormulasInterface
     </a>
   </li>
 
@@ -352,8 +497,20 @@
 
 
   <li class="md-nav__item">
-    <a href="headers/controller/Reputation/" title="Reputation" class="md-nav__link">
-      Reputation
+    <a href="reference/VotingMachines/IntVoteInterface/" title="IntVoteInterface" class="md-nav__link">
+      IntVoteInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/VotingMachines/QuorumVote/" title="QuorumVote" class="md-nav__link">
+      QuorumVote
     </a>
   </li>
 
@@ -373,11 +530,11 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-3" type="checkbox" id="nav-6-3">
     
     <label class="md-nav__link" for="nav-6-3">
-      globalConstraints
+      Controller
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
       <label class="md-nav__title" for="nav-6-3">
-        globalConstraints
+        Controller
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
@@ -388,8 +545,8 @@
 
 
   <li class="md-nav__item">
-    <a href="headers/globalConstraints/GlobalConstraintInterface/" title="GlobalConstraintInterface" class="md-nav__link">
-      GlobalConstraintInterface
+    <a href="reference/controller/ActionInterface/" title="ActionInterface" class="md-nav__link">
+      ActionInterface
     </a>
   </li>
 
@@ -400,8 +557,68 @@
 
 
   <li class="md-nav__item">
-    <a href="headers/globalConstraints/TokenCapGC/" title="TokenCapGC" class="md-nav__link">
-      TokenCapGC
+    <a href="reference/controller/Avatar/" title="Avatar" class="md-nav__link">
+      Avatar
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/controller/Controller/" title="Controller" class="md-nav__link">
+      Controller
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/controller/ControllerInterface/" title="ControllerInterface" class="md-nav__link">
+      ControllerInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/controller/DAOToken/" title="DAOToken" class="md-nav__link">
+      DAOToken
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/controller/Reputation/" title="Reputation" class="md-nav__link">
+      Reputation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/controller/UController/" title="UController" class="md-nav__link">
+      UController
     </a>
   </li>
 
@@ -421,274 +638,10 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-4" type="checkbox" id="nav-6-4">
     
     <label class="md-nav__link" for="nav-6-4">
-      universalSchemes
-    </label>
-    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-6-4">
-        universalSchemes
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="headers/universalSchemes/GenesisScheme/" title="GenesisScheme" class="md-nav__link">
-      GenesisScheme
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="headers/universalSchemes/UniversalSchemeInterface/" title="UniversalSchemeInterface" class="md-nav__link">
-      UniversalSchemeInterface
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
-    
-    <label class="md-nav__link" for="nav-7">
-      Ref
-    </label>
-    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-7">
-        Ref
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/README/" title="README" class="md-nav__link">
-      README
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-2" type="checkbox" id="nav-7-2">
-    
-    <label class="md-nav__link" for="nav-7-2">
-      VotingMachines
-    </label>
-    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-7-2">
-        VotingMachines
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/VotingMachines/AbsoluteVote/" title="AbsoluteVote" class="md-nav__link">
-      AbsoluteVote
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/VotingMachines/EmergentVoteScheme/" title="EmergentVoteScheme" class="md-nav__link">
-      EmergentVoteScheme
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/VotingMachines/IntVoteInterface/" title="IntVoteInterface" class="md-nav__link">
-      IntVoteInterface
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/VotingMachines/QuorumVote/" title="QuorumVote" class="md-nav__link">
-      QuorumVote
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-3" type="checkbox" id="nav-7-3">
-    
-    <label class="md-nav__link" for="nav-7-3">
-      Controller
-    </label>
-    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-7-3">
-        Controller
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/controller/ActionInterface/" title="ActionInterface" class="md-nav__link">
-      ActionInterface
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/controller/Avatar/" title="Avatar" class="md-nav__link">
-      Avatar
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/controller/Controller/" title="Controller" class="md-nav__link">
-      Controller
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/controller/ControllerInterface/" title="ControllerInterface" class="md-nav__link">
-      ControllerInterface
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/controller/DAOToken/" title="DAOToken" class="md-nav__link">
-      DAOToken
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/controller/Reputation/" title="Reputation" class="md-nav__link">
-      Reputation
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ref/controller/UController/" title="UController" class="md-nav__link">
-      UController
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-4" type="checkbox" id="nav-7-4">
-    
-    <label class="md-nav__link" for="nav-7-4">
       globalConstraints
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-7-4">
+      <label class="md-nav__title" for="nav-6-4">
         globalConstraints
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -700,7 +653,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/globalConstraints/GlobalConstraintInterface/" title="GlobalConstraintInterface" class="md-nav__link">
+    <a href="reference/globalConstraints/GlobalConstraintInterface/" title="GlobalConstraintInterface" class="md-nav__link">
       GlobalConstraintInterface
     </a>
   </li>
@@ -712,7 +665,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/globalConstraints/TokenCapGC/" title="TokenCapGC" class="md-nav__link">
+    <a href="reference/globalConstraints/TokenCapGC/" title="TokenCapGC" class="md-nav__link">
       TokenCapGC
     </a>
   </li>
@@ -730,13 +683,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-5" type="checkbox" id="nav-7-5">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-5" type="checkbox" id="nav-6-5">
     
-    <label class="md-nav__link" for="nav-7-5">
+    <label class="md-nav__link" for="nav-6-5">
       Test
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-7-5">
+      <label class="md-nav__title" for="nav-6-5">
         Test
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -748,7 +701,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/test/ActionMock/" title="ActionMock" class="md-nav__link">
+    <a href="reference/test/ActionMock/" title="ActionMock" class="md-nav__link">
       ActionMock
     </a>
   </li>
@@ -760,7 +713,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/test/Debug/" title="Debug" class="md-nav__link">
+    <a href="reference/test/Debug/" title="Debug" class="md-nav__link">
       Debug
     </a>
   </li>
@@ -772,7 +725,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/test/ExecutableTest/" title="ExecutableTest" class="md-nav__link">
+    <a href="reference/test/ExecutableTest/" title="ExecutableTest" class="md-nav__link">
       ExecutableTest
     </a>
   </li>
@@ -784,7 +737,19 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/test/GlobalConstraintMock/" title="GlobalConstraintMock" class="md-nav__link">
+    <a href="reference/test/GenesisProtocolFormulasMock/" title="GenesisProtocolFormulasMock" class="md-nav__link">
+      GenesisProtocolFormulasMock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="reference/test/GlobalConstraintMock/" title="GlobalConstraintMock" class="md-nav__link">
       GlobalConstraintMock
     </a>
   </li>
@@ -796,7 +761,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/test/UniversalSchemeMock/" title="UniversalSchemeMock" class="md-nav__link">
+    <a href="reference/test/UniversalSchemeMock/" title="UniversalSchemeMock" class="md-nav__link">
       UniversalSchemeMock
     </a>
   </li>
@@ -814,13 +779,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7-6" type="checkbox" id="nav-7-6">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6-6" type="checkbox" id="nav-6-6">
     
-    <label class="md-nav__link" for="nav-7-6">
+    <label class="md-nav__link" for="nav-6-6">
       universalSchemes
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-7-6">
+      <label class="md-nav__title" for="nav-6-6">
         universalSchemes
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -832,7 +797,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/ContributionReward/" title="ContributionReward" class="md-nav__link">
+    <a href="reference/universalSchemes/ContributionReward/" title="ContributionReward" class="md-nav__link">
       ContributionReward
     </a>
   </li>
@@ -844,7 +809,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/ExecutableInterface/" title="ExecutableInterface" class="md-nav__link">
+    <a href="reference/universalSchemes/ExecutableInterface/" title="ExecutableInterface" class="md-nav__link">
       ExecutableInterface
     </a>
   </li>
@@ -856,7 +821,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/GenesisScheme/" title="GenesisScheme" class="md-nav__link">
+    <a href="reference/universalSchemes/GenesisScheme/" title="GenesisScheme" class="md-nav__link">
       GenesisScheme
     </a>
   </li>
@@ -868,7 +833,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/GlobalConstraintRegistrar/" title="GlobalConstraintRegistrar" class="md-nav__link">
+    <a href="reference/universalSchemes/GlobalConstraintRegistrar/" title="GlobalConstraintRegistrar" class="md-nav__link">
       GlobalConstraintRegistrar
     </a>
   </li>
@@ -880,7 +845,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/MirrorContractICO/" title="MirrorContractICO" class="md-nav__link">
+    <a href="reference/universalSchemes/MirrorContractICO/" title="MirrorContractICO" class="md-nav__link">
       MirrorContractICO
     </a>
   </li>
@@ -892,7 +857,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/OrganizationRegister/" title="OrganizationRegister" class="md-nav__link">
+    <a href="reference/universalSchemes/OrganizationRegister/" title="OrganizationRegister" class="md-nav__link">
       OrganizationRegister
     </a>
   </li>
@@ -904,7 +869,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/SchemeRegistrar/" title="SchemeRegistrar" class="md-nav__link">
+    <a href="reference/universalSchemes/SchemeRegistrar/" title="SchemeRegistrar" class="md-nav__link">
       SchemeRegistrar
     </a>
   </li>
@@ -916,7 +881,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/SimpleICO/" title="SimpleICO" class="md-nav__link">
+    <a href="reference/universalSchemes/SimpleICO/" title="SimpleICO" class="md-nav__link">
       SimpleICO
     </a>
   </li>
@@ -928,7 +893,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/UniversalScheme/" title="UniversalScheme" class="md-nav__link">
+    <a href="reference/universalSchemes/UniversalScheme/" title="UniversalScheme" class="md-nav__link">
       UniversalScheme
     </a>
   </li>
@@ -940,7 +905,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/UniversalSchemeInterface/" title="UniversalSchemeInterface" class="md-nav__link">
+    <a href="reference/universalSchemes/UniversalSchemeInterface/" title="UniversalSchemeInterface" class="md-nav__link">
       UniversalSchemeInterface
     </a>
   </li>
@@ -952,7 +917,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/UpgradeScheme/" title="UpgradeScheme" class="md-nav__link">
+    <a href="reference/universalSchemes/UpgradeScheme/" title="UpgradeScheme" class="md-nav__link">
       UpgradeScheme
     </a>
   </li>
@@ -964,7 +929,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/VestingScheme/" title="VestingScheme" class="md-nav__link">
+    <a href="reference/universalSchemes/VestingScheme/" title="VestingScheme" class="md-nav__link">
       VestingScheme
     </a>
   </li>
@@ -976,7 +941,7 @@
 
 
   <li class="md-nav__item">
-    <a href="ref/universalSchemes/VoteInOrganizationScheme/" title="VoteInOrganizationScheme" class="md-nav__link">
+    <a href="reference/universalSchemes/VoteInOrganizationScheme/" title="VoteInOrganizationScheme" class="md-nav__link">
       VoteInOrganizationScheme
     </a>
   </li>
@@ -1006,22 +971,13 @@
 <nav class="md-nav md-nav--secondary">
   
   
-    
-  
   
     <label class="md-nav__title" for="toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#commands" title="Commands" class="md-nav__link">
-    Commands
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-layout" title="Project layout" class="md-nav__link">
-    Project layout
+  <a href="#contributing-to-arc-docs" title="Contributing to Arc Docs" class="md-nav__link">
+    Contributing to Arc Docs
   </a>
   
 </li>
@@ -1040,22 +996,26 @@
             <article class="md-content__inner md-typeset">
               
                 
+                  <a href="https://github.com/daostack/Arc/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
-                <h1 id="welcome-to-mkdocs">Welcome to MkDocs</h1>
-<p>For full documentation visit <a href="http://mkdocs.org">mkdocs.org</a>.</p>
-<h2 id="commands">Commands</h2>
+                
+                  <h1>Home</h1>
+                
+                <p>Detailed contracts documentation can be found <a href="./reference">here</a></p>
+<p>A document which describes the concepts involved can be found <a href="concepts/">here</a></p>
+<p>Guides &amp; Recipes can be found <a href="./guides">here</a></p>
+<p><a href="./DAOstack%20White%20Paper%20V1.0.pdf">DAOstack Whitepaper</a></p>
+<h3 id="contributing-to-arc-docs">Contributing to Arc Docs</h3>
+<p>Same as above, with the following exceptions:</p>
 <ul>
-<li><code>mkdocs new [dir-name]</code> - Create a new project.</li>
-<li><code>mkdocs serve</code> - Start the live-reloading docs server.</li>
-<li><code>mkdocs build</code> - Build the documentation site.</li>
-<li><code>mkdocs help</code> - Print this help message.</li>
+<li>All docs are <code>.md</code> files that live under <code>docs/</code> with the following structure:<ul>
+<li><code>ref/</code> - generated automatic documentation.</li>
+<li><code>headers/</code> - manual static <code>.md</code> headers that are included in the generated <code>ref/</code> (headers are included based on their path, which must match the path of the corresponding generated file in <code>ref/</code>).</li>
 </ul>
-<h2 id="project-layout">Project layout</h2>
-<pre><code>mkdocs.yml    # The configuration file.
-docs/
-    index.md  # The documentation homepage.
-    ...       # Other markdown pages, images and other files.
-</code></pre>
+</li>
+<li>Use <code>yarn run docs:generate</code> to generate docs</li>
+<li>In case of missing or incorrect documentation please open an issue with the label <code>documentation</code>, indicating the file, line number and any extra details.</li>
+</ul>
                 
                   
                 
@@ -1104,6 +1064,18 @@ docs/
       </div>
       
         
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/daostack/Arc" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://daostack.slack.com" class="md-footer-social__link fa fa-slack"></a>
+    
+      <a href="https://t.me/daostackcommunity" class="md-footer-social__link fa fa-telegram"></a>
+    
+  </div>
+
       
     </div>
   </div>

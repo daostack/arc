@@ -3,7 +3,7 @@
 
     
     <url>
-     <loc>/</loc>
+     <loc>https://daostack.github.io/daostack/</loc>
      <lastmod>2018-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
@@ -11,7 +11,7 @@
 
     
     <url>
-     <loc>/DAO-protocol/</loc>
+     <loc>https://daostack.github.io/daostack/DAO-protocol/</loc>
      <lastmod>2018-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
@@ -19,7 +19,7 @@
 
     
     <url>
-     <loc>/concepts/</loc>
+     <loc>https://daostack.github.io/daostack/concepts/</loc>
      <lastmod>2018-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
@@ -27,15 +27,7 @@
 
     
     <url>
-     <loc>/guides/</loc>
-     <lastmod>2018-01-29</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-    
-
-    
-    <url>
-     <loc>/roadmap/</loc>
+     <loc>https://daostack.github.io/daostack/roadmap/</loc>
      <lastmod>2018-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
@@ -44,26 +36,20 @@
     
         
     <url>
-     <loc>/headers/README/</loc>
+     <loc>https://daostack.github.io/daostack/guides/building_a_simple_charity/</loc>
      <lastmod>2018-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc></loc>
-     <lastmod></lastmod>
+     <loc>https://daostack.github.io/daostack/guides/creating_a_register_scheme_time_lock_constraint/</loc>
+     <lastmod>2018-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc></loc>
-     <lastmod></lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
-     <loc></loc>
-     <lastmod></lastmod>
+     <loc>https://daostack.github.io/daostack/guides/</loc>
+     <lastmod>2018-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -72,37 +58,37 @@
     
         
     <url>
-     <loc>/ref/README/</loc>
+     <loc>https://daostack.github.io/daostack/reference/</loc>
      <lastmod>2018-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc></loc>
+     <loc>https://daostack.github.io/daostack</loc>
      <lastmod></lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc></loc>
+     <loc>https://daostack.github.io/daostack</loc>
      <lastmod></lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc></loc>
+     <loc>https://daostack.github.io/daostack</loc>
      <lastmod></lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc></loc>
+     <loc>https://daostack.github.io/daostack</loc>
      <lastmod></lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc></loc>
+     <loc>https://daostack.github.io/daostack</loc>
      <lastmod></lastmod>
      <changefreq>daily</changefreq>
     </url>
