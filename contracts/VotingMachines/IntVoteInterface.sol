@@ -11,7 +11,8 @@ contract IntVoteInterface {
         uint _numOfChoices,
         bytes32 _proposalParameters,
         address _avatar,
-        ExecutableInterface _executable
+        ExecutableInterface _executable,
+        address _proposer
         ) public returns(bytes32);
 
     // Only owned proposals and only the owner:

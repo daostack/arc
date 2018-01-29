@@ -93,7 +93,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         uint numOfChoices = _originalIntVote.getNumberOfChoices(_originalProposalId);
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(numOfChoices+1, params.voteParams, _avatar, ExecutableInterface(this));
+        bytes32 proposalId = intVote.propose(numOfChoices+1, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
 
         organizationsData[_avatar][proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,

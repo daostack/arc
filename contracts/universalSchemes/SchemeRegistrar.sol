@@ -139,7 +139,7 @@ contract SchemeRegistrar is UniversalScheme {
         // propose
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
-        bytes32 proposalId = controllerParams.intVote.propose(2, controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this));
+        bytes32 proposalId = controllerParams.intVote.propose(2, controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this),msg.sender);
 
         SchemeProposal memory proposal = SchemeProposal({
             scheme: _scheme,
@@ -176,7 +176,7 @@ contract SchemeRegistrar is UniversalScheme {
         Parameters memory params = parameters[paramsHash];
 
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, _avatar, ExecutableInterface(this));
+        bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, _avatar, ExecutableInterface(this),msg.sender);
 
         organizationsProposals[_avatar][proposalId].proposalType = 2;
         organizationsProposals[_avatar][proposalId].scheme = _scheme;

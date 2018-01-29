@@ -141,7 +141,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         Parameters memory votingParams = parameters[getParametersFromController(_avatar)];
 
         IntVoteInterface intVote = votingParams.intVote;
-        bytes32 proposalId = intVote.propose(2, votingParams.voteRegisterParams, _avatar, ExecutableInterface(this));
+        bytes32 proposalId = intVote.propose(2, votingParams.voteRegisterParams, _avatar, ExecutableInterface(this),msg.sender);
 
         GCProposal memory proposal = GCProposal({
             gc: _gc,
@@ -175,7 +175,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         require(controller.isGlobalConstraintRegistered(_gc,address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(2, org.voteToRemoveParams[_gc], _avatar, ExecutableInterface(this));
+        bytes32 proposalId = intVote.propose(2, org.voteToRemoveParams[_gc], _avatar, ExecutableInterface(this),msg.sender);
 
         GCProposal memory proposal = GCProposal({
             gc: _gc,
