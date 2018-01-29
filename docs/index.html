@@ -29,7 +29,7 @@
 
               var link = 
                 href.startsWith('#') ? // a hash link
-                  hash + '?id=' + href.split('#')[1]
+                  hash.replace(new RegExp('\\?id=.*'),'') + '?id=' + href.split('#')[1]
                 :
                   dir === '' ? // the root page is a special case since it's not in `docs`
                     href.replace('docs/','')
