@@ -1445,7 +1445,7 @@
                   <a href="https://github.com/daostack/Arc/edit/master/docs/reference/universalSchemes/VestingScheme.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="vestingscheme">VestingScheme</h1>
+                <h1 id="vestingscheme">VestingScheme<a class="headerlink" href="#vestingscheme" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/daostack/tree/master/./contracts/universalSchemes/VestingScheme.sol">see the source</a></p>
 <p><em>Code deposit cost: <strong>less than 1408400 gas.</strong></em></p>
 <p><em>Execution cost: <strong>less than 21840 gas.</strong></em></p>
@@ -1453,74 +1453,74 @@
 <blockquote>
 <p>A schme for vesting.</p>
 </blockquote>
-<h2 id="reference">Reference</h2>
-<h3 id="constructors">Constructors</h3>
-<h4 id="constructor-vestingscheme"><em>constructor</em> VestingScheme()</h4>
+<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
+<h3 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h3>
+<h4 id="constructor-vestingscheme"><em>constructor</em> VestingScheme()<a class="headerlink" href="#constructor-vestingscheme" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Params:</em></p>
 <p><em>Nothing</em></p>
-<h3 id="events">Events</h3>
-<h4 id="event-signtocancelagreement"><em>event</em> SignToCancelAgreement</h4>
+<h3 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h3>
+<h4 id="event-signtocancelagreement"><em>event</em> SignToCancelAgreement<a class="headerlink" href="#event-signtocancelagreement" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_agreementId</strong> <em>of type uint256</em></li>
 <li><strong>_signer</strong> <em>of type address</em></li>
 </ol>
-<h4 id="event-revokesigntocancelagreement"><em>event</em> RevokeSignToCancelAgreement</h4>
+<h4 id="event-revokesigntocancelagreement"><em>event</em> RevokeSignToCancelAgreement<a class="headerlink" href="#event-revokesigntocancelagreement" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_agreementId</strong> <em>of type uint256</em></li>
 <li><strong>_signer</strong> <em>of type address</em></li>
 </ol>
-<h4 id="event-ownershiptransferred"><em>event</em> OwnershipTransferred</h4>
+<h4 id="event-ownershiptransferred"><em>event</em> OwnershipTransferred<a class="headerlink" href="#event-ownershiptransferred" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>previousOwner</strong> <em>of type address</em></li>
 <li><strong>newOwner</strong> <em>of type address</em></li>
 </ol>
-<h4 id="event-newvestedagreement"><em>event</em> NewVestedAgreement</h4>
+<h4 id="event-newvestedagreement"><em>event</em> NewVestedAgreement<a class="headerlink" href="#event-newvestedagreement" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_agreementId</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="event-logregisterorg"><em>event</em> LogRegisterOrg</h4>
+<h4 id="event-logregisterorg"><em>event</em> LogRegisterOrg<a class="headerlink" href="#event-logregisterorg" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_avatar</strong> <em>of type address</em></li>
 </ol>
-<h4 id="event-lognewproposal"><em>event</em> LogNewProposal</h4>
+<h4 id="event-lognewproposal"><em>event</em> LogNewProposal<a class="headerlink" href="#event-lognewproposal" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>proposalId</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="event-logexecutaion"><em>event</em> LogExecutaion</h4>
+<h4 id="event-logexecutaion"><em>event</em> LogExecutaion<a class="headerlink" href="#event-logexecutaion" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_avatar</strong> <em>of type address</em></li>
 <li><strong>_proposalId</strong> <em>of type bytes32</em></li>
 <li><strong>_result</strong> <em>of type int256</em></li>
 </ol>
-<h4 id="event-logcollect"><em>event</em> LogCollect</h4>
+<h4 id="event-logcollect"><em>event</em> LogCollect<a class="headerlink" href="#event-logcollect" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_agreementId</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="event-logagreementproposal"><em>event</em> LogAgreementProposal</h4>
+<h4 id="event-logagreementproposal"><em>event</em> LogAgreementProposal<a class="headerlink" href="#event-logagreementproposal" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_avatar</strong> <em>of type address</em></li>
 <li><strong>_proposalId</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="event-logagreementcancel"><em>event</em> LogAgreementCancel</h4>
+<h4 id="event-logagreementcancel"><em>event</em> LogAgreementCancel<a class="headerlink" href="#event-logagreementcancel" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_agreementId</strong> <em>of type uint256</em></li>
 </ol>
-<h3 id="fallback">Fallback</h3>
+<h3 id="fallback">Fallback<a class="headerlink" href="#fallback" title="Permanent link">&para;</a></h3>
 <p><em>Nothing</em></p>
-<h3 id="functions">Functions</h3>
-<h4 id="function-revokesigntocancelagreement"><em>function</em> revokeSignToCancelAgreement</h4>
+<h3 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h3>
+<h4 id="function-revokesigntocancelagreement"><em>function</em> revokeSignToCancelAgreement<a class="headerlink" href="#function-revokesigntocancelagreement" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>Function to revoke vote for canceling agreement.</p>
 </blockquote>
@@ -1532,7 +1532,7 @@
 </ol>
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
-<h4 id="function-parameters"><em>function</em> parameters</h4>
+<h4 id="function-parameters"><em>function</em> parameters<a class="headerlink" href="#function-parameters" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 894 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1544,7 +1544,7 @@
 <li><strong>voteParams</strong> <em>of type bytes32</em></li>
 <li><strong>intVote</strong> <em>of type address</em></li>
 </ol>
-<h4 id="function-transferownership"><em>function</em> transferOwnership</h4>
+<h4 id="function-transferownership"><em>function</em> transferOwnership<a class="headerlink" href="#function-transferownership" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>Allows the current owner to transfer control of the contract to a newOwner.</p>
 </blockquote>
@@ -1556,7 +1556,7 @@
 </ol>
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
-<h4 id="function-updateparameters"><em>function</em> updateParameters</h4>
+<h4 id="function-updateparameters"><em>function</em> updateParameters<a class="headerlink" href="#function-updateparameters" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 20572 gas.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1565,7 +1565,7 @@
 </ol>
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
-<h4 id="function-signtocancelagreement"><em>function</em> signToCancelAgreement</h4>
+<h4 id="function-signtocancelagreement"><em>function</em> signToCancelAgreement<a class="headerlink" href="#function-signtocancelagreement" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>Function to sign to cancel an agreement.</p>
 </blockquote>
@@ -1577,7 +1577,7 @@
 </ol>
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
-<h4 id="function-proposevestingagreement"><em>function</em> proposeVestingAgreement</h4>
+<h4 id="function-proposevestingagreement"><em>function</em> proposeVestingAgreement<a class="headerlink" href="#function-proposevestingagreement" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1597,7 +1597,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-setparameters"><em>function</em> setParameters</h4>
+<h4 id="function-setparameters"><em>function</em> setParameters<a class="headerlink" href="#function-setparameters" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1609,7 +1609,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-owner"><em>function</em> owner</h4>
+<h4 id="function-owner"><em>function</em> owner<a class="headerlink" href="#function-owner" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 787 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1618,7 +1618,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type address</em></li>
 </ol>
-<h4 id="function-organizationsdata"><em>function</em> organizationsData</h4>
+<h4 id="function-organizationsdata"><em>function</em> organizationsData<a class="headerlink" href="#function-organizationsdata" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1640,7 +1640,7 @@
 <li><strong>collectedPeriods</strong> <em>of type uint256</em></li>
 <li><strong>signaturesReceivedCounter</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="function-hashedparameters"><em>function</em> hashedParameters</h4>
+<h4 id="function-hashedparameters"><em>function</em> hashedParameters<a class="headerlink" href="#function-hashedparameters" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 744 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1649,7 +1649,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-getparametershash"><em>function</em> getParametersHash</h4>
+<h4 id="function-getparametershash"><em>function</em> getParametersHash<a class="headerlink" href="#function-getparametershash" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>constant | pure</strong></p>
 <p><em>Inputs:</em></p>
@@ -1661,7 +1661,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-execute"><em>function</em> execute</h4>
+<h4 id="function-execute"><em>function</em> execute<a class="headerlink" href="#function-execute" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1674,7 +1674,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-createvestedagreement"><em>function</em> createVestedAgreement</h4>
+<h4 id="function-createvestedagreement"><em>function</em> createVestedAgreement<a class="headerlink" href="#function-createvestedagreement" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1694,7 +1694,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="function-collect"><em>function</em> collect</h4>
+<h4 id="function-collect"><em>function</em> collect<a class="headerlink" href="#function-collect" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>Function for a beneficiary to collect.</p>
 </blockquote>
@@ -1706,7 +1706,7 @@
 </ol>
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
-<h4 id="function-agreements"><em>function</em> agreements</h4>
+<h4 id="function-agreements"><em>function</em> agreements<a class="headerlink" href="#function-agreements" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 3271 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>

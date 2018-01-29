@@ -1683,7 +1683,7 @@
                   <a href="https://github.com/daostack/Arc/edit/master/docs/reference/VotingMachines/GenesisProtocol.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="genesisprotocol">GenesisProtocol</h1>
+                <h1 id="genesisprotocol">GenesisProtocol<a class="headerlink" href="#genesisprotocol" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/daostack/tree/master/./contracts/VotingMachines/GenesisProtocol.sol">see the source</a></p>
 <p><em>Code deposit cost: <strong>less than 2022200 gas.</strong></em></p>
 <p><em>Execution cost: <strong>less than 42795 gas.</strong></em></p>
@@ -1691,17 +1691,17 @@
 <blockquote>
 <p>A governance contract -an organization's voting machine scheme.</p>
 </blockquote>
-<h2 id="reference">Reference</h2>
-<h3 id="constructors">Constructors</h3>
-<h4 id="constructor-genesisprotocoladdress"><em>constructor</em> GenesisProtocol(address)</h4>
+<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
+<h3 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h3>
+<h4 id="constructor-genesisprotocoladdress"><em>constructor</em> GenesisProtocol(address)<a class="headerlink" href="#constructor-genesisprotocoladdress" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_stakingToken</strong> <em>of type address</em></li>
 </ol>
-<h3 id="events">Events</h3>
-<h4 id="event-voteproposal"><em>event</em> VoteProposal</h4>
+<h3 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h3>
+<h4 id="event-voteproposal"><em>event</em> VoteProposal<a class="headerlink" href="#event-voteproposal" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_proposalId</strong> <em>of type bytes32</em></li>
@@ -1709,7 +1709,7 @@
 <li><strong>_vote</strong> <em>of type uint256</em></li>
 <li><strong>_reputation</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="event-stake"><em>event</em> Stake</h4>
+<h4 id="event-stake"><em>event</em> Stake<a class="headerlink" href="#event-stake" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_proposalId</strong> <em>of type bytes32</em></li>
@@ -1717,20 +1717,20 @@
 <li><strong>_vote</strong> <em>of type uint256</em></li>
 <li><strong>_amount</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="event-redeem"><em>event</em> Redeem</h4>
+<h4 id="event-redeem"><em>event</em> Redeem<a class="headerlink" href="#event-redeem" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_proposalId</strong> <em>of type bytes32</em></li>
 <li><strong>_beneficiary</strong> <em>of type address</em></li>
 <li><strong>_amount</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="event-ownershiptransferred"><em>event</em> OwnershipTransferred</h4>
+<h4 id="event-ownershiptransferred"><em>event</em> OwnershipTransferred<a class="headerlink" href="#event-ownershiptransferred" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>previousOwner</strong> <em>of type address</em></li>
 <li><strong>newOwner</strong> <em>of type address</em></li>
 </ol>
-<h4 id="event-newproposal"><em>event</em> NewProposal</h4>
+<h4 id="event-newproposal"><em>event</em> NewProposal<a class="headerlink" href="#event-newproposal" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_proposalId</strong> <em>of type bytes32</em></li>
@@ -1738,21 +1738,21 @@
 <li><strong>_proposer</strong> <em>of type address</em></li>
 <li><strong>_paramsHash</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="event-lognewproposal"><em>event</em> LogNewProposal</h4>
+<h4 id="event-lognewproposal"><em>event</em> LogNewProposal<a class="headerlink" href="#event-lognewproposal" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>proposalId</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="event-executeproposal"><em>event</em> ExecuteProposal</h4>
+<h4 id="event-executeproposal"><em>event</em> ExecuteProposal<a class="headerlink" href="#event-executeproposal" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_proposalId</strong> <em>of type bytes32</em></li>
 <li><strong>_decision</strong> <em>of type uint256</em></li>
 </ol>
-<h3 id="fallback">Fallback</h3>
+<h3 id="fallback">Fallback<a class="headerlink" href="#fallback" title="Permanent link">&para;</a></h3>
 <p><em>Nothing</em></p>
-<h3 id="functions">Functions</h3>
-<h4 id="function-staker"><em>function</em> staker</h4>
+<h3 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h3>
+<h4 id="function-staker"><em>function</em> staker<a class="headerlink" href="#function-staker" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1765,7 +1765,7 @@
 <li><strong>unnamed</strong> <em>of type uint256</em></li>
 <li><strong>unnamed</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="function-parameters"><em>function</em> parameters</h4>
+<h4 id="function-parameters"><em>function</em> parameters<a class="headerlink" href="#function-parameters" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 2119 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1782,7 +1782,7 @@
 <li><strong>governanceFormulasInterface</strong> <em>of type address</em></li>
 <li><strong>minimumStakingFee</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="function-redeemamount"><em>function</em> redeemAmount</h4>
+<h4 id="function-redeemamount"><em>function</em> redeemAmount<a class="headerlink" href="#function-redeemamount" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1794,7 +1794,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="function-updateparameters"><em>function</em> updateParameters</h4>
+<h4 id="function-updateparameters"><em>function</em> updateParameters<a class="headerlink" href="#function-updateparameters" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 20572 gas.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1803,7 +1803,7 @@
 </ol>
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
-<h4 id="function-stake"><em>function</em> stake</h4>
+<h4 id="function-stake"><em>function</em> stake<a class="headerlink" href="#function-stake" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1816,7 +1816,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-proposals"><em>function</em> proposals</h4>
+<h4 id="function-proposals"><em>function</em> proposals<a class="headerlink" href="#function-proposals" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 2945 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1835,7 +1835,7 @@
 <li><strong>state</strong> <em>of type uint8</em></li>
 <li><strong>winningVote</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="function-proposalavatar"><em>function</em> proposalAvatar</h4>
+<h4 id="function-proposalavatar"><em>function</em> proposalAvatar<a class="headerlink" href="#function-proposalavatar" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>proposalAvatar return the avatar for a given proposal</p>
 </blockquote>
@@ -1846,7 +1846,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>uint total reputation supply</p>
-<h4 id="function-transferownership"><em>function</em> transferOwnership</h4>
+<h4 id="function-transferownership"><em>function</em> transferOwnership<a class="headerlink" href="#function-transferownership" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>Allows the current owner to transfer control of the contract to a newOwner.</p>
 </blockquote>
@@ -1858,7 +1858,7 @@
 </ol>
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
-<h4 id="function-winningvote"><em>function</em> winningVote</h4>
+<h4 id="function-winningvote"><em>function</em> winningVote<a class="headerlink" href="#function-winningvote" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>voteStake return the winningVote for a given proposal</p>
 </blockquote>
@@ -1869,7 +1869,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>uint winningVote</p>
-<h4 id="function-setparameters"><em>function</em> setParameters</h4>
+<h4 id="function-setparameters"><em>function</em> setParameters<a class="headerlink" href="#function-setparameters" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1886,7 +1886,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-scorethreshold"><em>function</em> scoreThreshold</h4>
+<h4 id="function-scorethreshold"><em>function</em> scoreThreshold<a class="headerlink" href="#function-scorethreshold" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>scoreThreshold return the initial scoreThreshold param which is set for a given organization.</p>
 </blockquote>
@@ -1897,7 +1897,7 @@
 <li><strong>_avatar</strong> <em>of type address- the organization's avatar</em></li>
 </ol>
 <p>uint total reputation supply</p>
-<h4 id="function-state"><em>function</em> state</h4>
+<h4 id="function-state"><em>function</em> state<a class="headerlink" href="#function-state" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>voteStake return the state for a given proposal</p>
 </blockquote>
@@ -1908,7 +1908,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>ProposalState proposal state</p>
-<h4 id="function-votestake"><em>function</em> voteStake</h4>
+<h4 id="function-votestake"><em>function</em> voteStake<a class="headerlink" href="#function-votestake" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1920,7 +1920,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="function-stakingtoken"><em>function</em> stakingToken</h4>
+<h4 id="function-stakingtoken"><em>function</em> stakingToken<a class="headerlink" href="#function-stakingtoken" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 875 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1929,7 +1929,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type address</em></li>
 </ol>
-<h4 id="function-proposalstatus"><em>function</em> proposalStatus</h4>
+<h4 id="function-proposalstatus"><em>function</em> proposalStatus<a class="headerlink" href="#function-proposalstatus" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>proposalStatus return the total votes and stakes for a given proposal</p>
 </blockquote>
@@ -1940,7 +1940,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>uint totalVotesuint totalStakes</p>
-<h4 id="function-shouldboost"><em>function</em> shouldBoost</h4>
+<h4 id="function-shouldboost"><em>function</em> shouldBoost<a class="headerlink" href="#function-shouldboost" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>shouldBoost check if a proposal should be shifted to boosted phase.</p>
 </blockquote>
@@ -1951,7 +1951,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>bool true or false.</p>
-<h4 id="function-propose"><em>function</em> propose</h4>
+<h4 id="function-propose"><em>function</em> propose<a class="headerlink" href="#function-propose" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1965,7 +1965,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-voteinfo"><em>function</em> voteInfo</h4>
+<h4 id="function-voteinfo"><em>function</em> voteInfo<a class="headerlink" href="#function-voteinfo" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1978,7 +1978,7 @@
 <li><strong>unnamed</strong> <em>of type uint256</em></li>
 <li><strong>unnamed</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="function-redeem"><em>function</em> redeem</h4>
+<h4 id="function-redeem"><em>function</em> redeem<a class="headerlink" href="#function-redeem" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>redeem redeem a reward for a successful stake.</p>
 </blockquote>
@@ -1989,7 +1989,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>bool true or false.</p>
-<h4 id="function-votesstatus"><em>function</em> votesStatus</h4>
+<h4 id="function-votesstatus"><em>function</em> votesStatus<a class="headerlink" href="#function-votesstatus" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id</p>
 </blockquote>
@@ -2000,7 +2000,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>votes array of votes for each choice</p>
-<h4 id="function-score"><em>function</em> score</h4>
+<h4 id="function-score"><em>function</em> score<a class="headerlink" href="#function-score" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>score return the proposal score</p>
 </blockquote>
@@ -2011,7 +2011,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>uint proposal score.</p>
-<h4 id="function-vote"><em>function</em> vote</h4>
+<h4 id="function-vote"><em>function</em> vote<a class="headerlink" href="#function-vote" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -2023,7 +2023,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-totalreputationsupply"><em>function</em> totalReputationSupply</h4>
+<h4 id="function-totalreputationsupply"><em>function</em> totalReputationSupply<a class="headerlink" href="#function-totalreputationsupply" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>totalReputationSupply return the total reputation supply for a given proposal</p>
 </blockquote>
@@ -2034,7 +2034,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>uint total reputation supply</p>
-<h4 id="function-votewithspecifiedamounts"><em>function</em> voteWithSpecifiedAmounts</h4>
+<h4 id="function-votewithspecifiedamounts"><em>function</em> voteWithSpecifiedAmounts<a class="headerlink" href="#function-votewithspecifiedamounts" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -2048,7 +2048,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-threshold"><em>function</em> threshold</h4>
+<h4 id="function-threshold"><em>function</em> threshold<a class="headerlink" href="#function-threshold" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>threshold return the organization's score threshold which required by a proposal to shift to boosted state. This threshold is dynamically set and it depend on the number of boosted proposal.</p>
 </blockquote>
@@ -2059,7 +2059,7 @@
 <li><strong>_avatar</strong> <em>of type address- the organization avatar</em></li>
 </ol>
 <p>uint scoreThreshold.</p>
-<h4 id="function-ownervote"><em>function</em> ownerVote</h4>
+<h4 id="function-ownervote"><em>function</em> ownerVote<a class="headerlink" href="#function-ownervote" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -2072,7 +2072,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-owner"><em>function</em> owner</h4>
+<h4 id="function-owner"><em>function</em> owner<a class="headerlink" href="#function-owner" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 985 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -2081,7 +2081,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type address</em></li>
 </ol>
-<h4 id="function-orgboostedproposalscnt"><em>function</em> orgBoostedProposalsCnt</h4>
+<h4 id="function-orgboostedproposalscnt"><em>function</em> orgBoostedProposalsCnt<a class="headerlink" href="#function-orgboostedproposalscnt" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 1221 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -2092,7 +2092,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="function-isvotable"><em>function</em> isVotable</h4>
+<h4 id="function-isvotable"><em>function</em> isVotable<a class="headerlink" href="#function-isvotable" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>isVotable check if the proposal is votable</p>
 </blockquote>
@@ -2103,7 +2103,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
 </ol>
 <p>bool true or false</p>
-<h4 id="function-hashedparameters"><em>function</em> hashedParameters</h4>
+<h4 id="function-hashedparameters"><em>function</em> hashedParameters<a class="headerlink" href="#function-hashedparameters" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 1184 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -2112,7 +2112,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-getparametershash"><em>function</em> getParametersHash</h4>
+<h4 id="function-getparametershash"><em>function</em> getParametersHash<a class="headerlink" href="#function-getparametershash" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>constant | pure</strong></p>
 <p><em>Inputs:</em></p>
@@ -2129,7 +2129,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-getnumberofchoices"><em>function</em> getNumberOfChoices</h4>
+<h4 id="function-getnumberofchoices"><em>function</em> getNumberOfChoices<a class="headerlink" href="#function-getnumberofchoices" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>getNumberOfChoices returns the number of choices possible in this proposal</p>
 </blockquote>
@@ -2140,7 +2140,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposals</em></li>
 </ol>
 <p>uint that contains number of choices</p>
-<h4 id="function-execute"><em>function</em> execute</h4>
+<h4 id="function-execute"><em>function</em> execute<a class="headerlink" href="#function-execute" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>execute check if the proposal has been decided, and if so, execute the proposal</p>
 </blockquote>
@@ -2151,7 +2151,7 @@
 <li><strong>_proposalId</strong> <em>of type bytes32- the id of the proposal</em></li>
 </ol>
 <p>bool true - the proposal has been executed             false - otherwise.</p>
-<h4 id="function-cancelvote"><em>function</em> cancelVote</h4>
+<h4 id="function-cancelvote"><em>function</em> cancelVote<a class="headerlink" href="#function-cancelvote" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct</p>
 </blockquote>
@@ -2163,7 +2163,7 @@
 </ol>
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
-<h4 id="function-cancelproposal"><em>function</em> cancelProposal</h4>
+<h4 id="function-cancelproposal"><em>function</em> cancelProposal<a class="headerlink" href="#function-cancelproposal" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.</p>
 </blockquote>

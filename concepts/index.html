@@ -1059,7 +1059,7 @@
                 
                   <h1>Concepts</h1>
                 
-                <h2 id="an-overview-of-arc">An Overview of Arc</h2>
+                <h2 id="an-overview-of-arc">An Overview of Arc<a class="headerlink" href="#an-overview-of-arc" title="Permanent link">&para;</a></h2>
 <p>For more: <a href="https://github.com/daostack/daostack/blob/master/docs/DAOstack%20White%20Paper%20V1.0.pdf">Read the whitepaper</a></p>
 <p>Arc is the lower layer of the DAOStack. It consists of several smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.</p>
 <p><img alt="The DAOStack" src="../img/the-dao-stack.png" /></p>
@@ -1069,7 +1069,7 @@
 3. <strong>Arc - This project</strong>
 4. <a href="https://github.com/daostack/arc-js">Arc.js</a> - <em>JavaScript library that talks to Arc, built on top of web3.js.</em>
 5. <a href="https://github.com/daostack/Alchemy-Aurelia">Alchemy</a> (and more...) - <em>Collaborative DApps, built on top of DAOStack using Arc.js</em></p>
-<h3 id="the-structure-of-a-dao">The Structure of a DAO</h3>
+<h3 id="the-structure-of-a-dao">The Structure of a DAO<a class="headerlink" href="#the-structure-of-a-dao" title="Permanent link">&para;</a></h3>
 <p>Each DAO consists of the following components:</p>
 <ul>
 <li><strong><a href="../reference/controller/DAOToken/">Native token</a></strong> - <em>A Standard <a href="https://theethereum.wiki/w/index.php/ERC20_Token_Standard">ERC20 token</a> that defines the value system of the DAO, participants are rewarded for their contributions based on this token</em>.</li>
@@ -1078,16 +1078,16 @@
 <li><strong>Subscribed <a href="#elements">Elements</a></strong> - <em>The set of <a href="../reference/universalSchemes/UniversalSchemeInterface/">Schemes</a> and <a href="../reference/globalConstraints/GlobalConstraintInterface/">Global Constraints</a> the DAO consists of</em>.</li>
 </ul>
 <p>Those components are organized in a single smart contract called a <em><a href="../Controller">Controller</a></em>.</p>
-<h2 id="elements">Elements</h2>
+<h2 id="elements">Elements<a class="headerlink" href="#elements" title="Permanent link">&para;</a></h2>
 <p>The main configurable and extendable building blocks of DAOs are: <em>Schemes</em> and <em>Global Constraints</em>, which are collectively called <em>elements</em>.
-<em> <strong><a href="reference/universalScheme/UniversalSchemeInterface.md">Schemes</a></strong> </em>define the "do's" of the DAO, defining rules under which actions are taken, based on the participants input.<em> Examples of Schemes are:
+<em> <strong><a href="../reference/universalSchemes/UniversalSchemeInterface/">Schemes</a></strong> </em>define the "do's" of the DAO, defining rules under which actions are taken, based on the participants input.<em> Examples of Schemes are:
     * Rewarding contributions if other participants recognize them as worthy.
     * Voting on proposals and automatically executing the chosen proposal.
 </em> <strong><a href="../reference/globalConstraints/GlobalConstraintInterface/">Global constraints</a></strong> <em>define the "don't" of the DAO, they define conditions that must always hold and can prevent an action from being taken if it violates these conditions.</em> Examples of Global Constraints are:
     * Limiting the amount of tokens or reputation that can be minted per day.
     * Blacklisting certain participants from performing certain actions.</p>
-<h3 id="archives-and-the-developer-ecosystem">ArcHives and the Developer Ecosystem</h3>
-<h4 id="compendium">Compendium</h4>
+<h3 id="archives-and-the-developer-ecosystem">ArcHives and the Developer Ecosystem<a class="headerlink" href="#archives-and-the-developer-ecosystem" title="Permanent link">&para;</a></h3>
+<h4 id="compendium">Compendium<a class="headerlink" href="#compendium" title="Permanent link">&para;</a></h4>
 <p>Developers can create and extend <em>elements</em> to define more rules that DAOs can subscribe to. 
 Those <em>elements</em> can then be registered(for a fee) to a public database called <em>Compendium</em>.</p>
                 

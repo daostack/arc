@@ -1361,7 +1361,7 @@
                   <a href="https://github.com/daostack/Arc/edit/master/docs/reference/controller/Avatar.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="avatar">Avatar</h1>
+                <h1 id="avatar">Avatar<a class="headerlink" href="#avatar" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/daostack/tree/master/./contracts/controller/Avatar.sol">see the source</a></p>
 <p><em>Code deposit cost: <strong>less than 475800 gas.</strong></em></p>
 <p><em>Execution cost: <strong>less than 81478 gas.</strong></em></p>
@@ -1370,9 +1370,9 @@
 <p>An Avatar holds tokens, reputation and ether for a controller</p>
 </blockquote>
 <p>The <em>Avatar</em> is the public facing entity a DAO exposes to interact with the outside world(vote on other DAOs, pay external actors, etc...)</p>
-<h2 id="reference">Reference</h2>
-<h3 id="constructors">Constructors</h3>
-<h4 id="constructor-avatarbytes32-address-address"><em>constructor</em> Avatar(bytes32, address, address)</h4>
+<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
+<h3 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h3>
+<h4 id="constructor-avatarbytes32-address-address"><em>constructor</em> Avatar(bytes32, address, address)<a class="headerlink" href="#constructor-avatarbytes32-address-address" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Params:</em></p>
@@ -1381,32 +1381,32 @@
 <li><strong>_nativeToken</strong> <em>of type address</em></li>
 <li><strong>_nativeReputation</strong> <em>of type address</em></li>
 </ol>
-<h3 id="events">Events</h3>
-<h4 id="event-sendether"><em>event</em> SendEther</h4>
+<h3 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h3>
+<h4 id="event-sendether"><em>event</em> SendEther<a class="headerlink" href="#event-sendether" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_amountInWei</strong> <em>of type uint256</em></li>
 <li><strong>_to</strong> <em>of type address</em></li>
 </ol>
-<h4 id="event-receiveether"><em>event</em> ReceiveEther</h4>
+<h4 id="event-receiveether"><em>event</em> ReceiveEther<a class="headerlink" href="#event-receiveether" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_sender</strong> <em>of type address</em></li>
 <li><strong>_value</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="event-ownershiptransferred"><em>event</em> OwnershipTransferred</h4>
+<h4 id="event-ownershiptransferred"><em>event</em> OwnershipTransferred<a class="headerlink" href="#event-ownershiptransferred" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>previousOwner</strong> <em>of type address</em></li>
 <li><strong>newOwner</strong> <em>of type address</em></li>
 </ol>
-<h4 id="event-genericaction"><em>event</em> GenericAction</h4>
+<h4 id="event-genericaction"><em>event</em> GenericAction<a class="headerlink" href="#event-genericaction" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_action</strong> <em>of type address</em></li>
 <li><strong>_params</strong> <em>of type bytes32[]</em></li>
 </ol>
-<h4 id="event-externaltokentransferfrom"><em>event</em> ExternalTokenTransferFrom</h4>
+<h4 id="event-externaltokentransferfrom"><em>event</em> ExternalTokenTransferFrom<a class="headerlink" href="#event-externaltokentransferfrom" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_externalToken</strong> <em>of type address</em></li>
@@ -1414,32 +1414,32 @@
 <li><strong>_to</strong> <em>of type address</em></li>
 <li><strong>_value</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="event-externaltokentransfer"><em>event</em> ExternalTokenTransfer</h4>
+<h4 id="event-externaltokentransfer"><em>event</em> ExternalTokenTransfer<a class="headerlink" href="#event-externaltokentransfer" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_externalToken</strong> <em>of type address</em></li>
 <li><strong>_to</strong> <em>of type address</em></li>
 <li><strong>_value</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="event-externaltokenincreaseapproval"><em>event</em> ExternalTokenIncreaseApproval</h4>
+<h4 id="event-externaltokenincreaseapproval"><em>event</em> ExternalTokenIncreaseApproval<a class="headerlink" href="#event-externaltokenincreaseapproval" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_externalToken</strong> <em>of type address</em></li>
 <li><strong>_spender</strong> <em>of type address</em></li>
 <li><strong>_addedValue</strong> <em>of type uint256</em></li>
 </ol>
-<h4 id="event-externaltokendecreaseapproval"><em>event</em> ExternalTokenDecreaseApproval</h4>
+<h4 id="event-externaltokendecreaseapproval"><em>event</em> ExternalTokenDecreaseApproval<a class="headerlink" href="#event-externaltokendecreaseapproval" title="Permanent link">&para;</a></h4>
 <p><em>Params:</em></p>
 <ol>
 <li><strong>_externalToken</strong> <em>of type address</em></li>
 <li><strong>_spender</strong> <em>of type address</em></li>
 <li><strong>_subtractedValue</strong> <em>of type uint256</em></li>
 </ol>
-<h3 id="fallback">Fallback</h3>
+<h3 id="fallback">Fallback<a class="headerlink" href="#fallback" title="Permanent link">&para;</a></h3>
 <p><em>Execution cost: <strong>less than 1870 gas.</strong></em></p>
 <p><strong>payable</strong></p>
-<h3 id="functions">Functions</h3>
-<h4 id="function-externaltokentransferfrom"><em>function</em> externalTokenTransferFrom</h4>
+<h3 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h3>
+<h4 id="function-externaltokentransferfrom"><em>function</em> externalTokenTransferFrom<a class="headerlink" href="#function-externaltokentransferfrom" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1453,7 +1453,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-transferownership"><em>function</em> transferOwnership</h4>
+<h4 id="function-transferownership"><em>function</em> transferOwnership<a class="headerlink" href="#function-transferownership" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>Allows the current owner to transfer control of the contract to a newOwner.</p>
 </blockquote>
@@ -1465,7 +1465,7 @@
 </ol>
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
-<h4 id="function-sendether"><em>function</em> sendEther</h4>
+<h4 id="function-sendether"><em>function</em> sendEther<a class="headerlink" href="#function-sendether" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1477,7 +1477,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-owner"><em>function</em> owner</h4>
+<h4 id="function-owner"><em>function</em> owner<a class="headerlink" href="#function-owner" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 1545 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1486,7 +1486,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type address</em></li>
 </ol>
-<h4 id="function-orgname"><em>function</em> orgName</h4>
+<h4 id="function-orgname"><em>function</em> orgName<a class="headerlink" href="#function-orgname" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 1545 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1495,7 +1495,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-nativetoken"><em>function</em> nativeToken</h4>
+<h4 id="function-nativetoken"><em>function</em> nativeToken<a class="headerlink" href="#function-nativetoken" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 1545 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1504,7 +1504,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type address</em></li>
 </ol>
-<h4 id="function-nativereputation"><em>function</em> nativeReputation</h4>
+<h4 id="function-nativereputation"><em>function</em> nativeReputation<a class="headerlink" href="#function-nativereputation" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>less than 1545 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
@@ -1513,7 +1513,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type address</em></li>
 </ol>
-<h4 id="function-genericaction"><em>function</em> genericAction</h4>
+<h4 id="function-genericaction"><em>function</em> genericAction<a class="headerlink" href="#function-genericaction" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1525,7 +1525,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-externaltokentransfer"><em>function</em> externalTokenTransfer</h4>
+<h4 id="function-externaltokentransfer"><em>function</em> externalTokenTransfer<a class="headerlink" href="#function-externaltokentransfer" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1538,7 +1538,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-externaltokenincreaseapproval"><em>function</em> externalTokenIncreaseApproval</h4>
+<h4 id="function-externaltokenincreaseapproval"><em>function</em> externalTokenIncreaseApproval<a class="headerlink" href="#function-externaltokenincreaseapproval" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
@@ -1551,7 +1551,7 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<h4 id="function-externaltokendecreaseapproval"><em>function</em> externalTokenDecreaseApproval</h4>
+<h4 id="function-externaltokendecreaseapproval"><em>function</em> externalTokenDecreaseApproval<a class="headerlink" href="#function-externaltokendecreaseapproval" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
