@@ -4,7 +4,7 @@ For more: [Read the whitepaper](https://github.com/daostack/daostack/blob/master
 
 Arc is the lower layer of the DAOStack. It consists of several smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
 
-![The DAOStack](images/the-dao-stack.png)
+![The DAOStack](img/the-dao-stack.png)
 
 The DAOStack:
 1. [Ethereum](https://www.ethereum.org/) - *Base blockchain.*
@@ -17,20 +17,20 @@ The DAOStack:
 
 Each DAO consists of the following components:
 
-* **[Native token](ref/controller/DAOToken.md)** - *A Standard [ERC20 token](https://theethereum.wiki/w/index.php/ERC20_Token_Standard) that defines the value system of the DAO, participants are rewarded for their contributions based on this token*.
-* **[Reputation](ref/controller/Reputation.md) system** - *Similar to native token but is **non-transferable**, the reputation is used system is used to assign an importance to participants and their votes*.
-* **[Avatar](ref/controller/Avatar.md)** - *This is the public facing part of the DAO that handles the interaction of the DAO with the rest of the world(interacing with other DAOs, paying third party participants, etc...)*.
-* **Subscribed [Elements](#elements)** - *The set of [Schemes](ref/universalSchemes/UniversalSchemeInterface.md) and [Global Constraints](ref/globalConstraints/GlobalConstraintInterface.md) the DAO consists of*.
+* **[Native token](reference/controller/DAOToken.md)** - *A Standard [ERC20 token](https://theethereum.wiki/w/index.php/ERC20_Token_Standard) that defines the value system of the DAO, participants are rewarded for their contributions based on this token*.
+* **[Reputation](reference/controller/Reputation.md) system** - *Similar to native token but is **non-transferable**, the reputation is used system is used to assign an importance to participants and their votes*.
+* **[Avatar](reference/controller/Avatar.md)** - *This is the public facing part of the DAO that handles the interaction of the DAO with the rest of the world(interacing with other DAOs, paying third party participants, etc...)*.
+* **Subscribed [Elements](#elements)** - *The set of [Schemes](reference/universalSchemes/UniversalSchemeInterface.md) and [Global Constraints](reference/globalConstraints/GlobalConstraintInterface.md) the DAO consists of*.
 
 Those components are organized in a single smart contract called a *[Controller](Controller)*.
 
 ## Elements
 
 The main configurable and extendable building blocks of DAOs are: *Schemes* and *Global Constraints*, which are collectively called *elements*.
-* **[Schemes](ref/universalScheme/UniversalSchemeInterface.md)** *define the "do's" of the DAO, defining rules under which actions are taken, based on the participants input.* Examples of Schemes are:
+* **[Schemes](reference/universalSchemes/UniversalSchemeInterface.md)** *define the "do's" of the DAO, defining rules under which actions are taken, based on the participants input.* Examples of Schemes are:
     * Rewarding contributions if other participants recognize them as worthy.
     * Voting on proposals and automatically executing the chosen proposal.
-* **[Global constraints](ref/globalConstraints/GlobalConstraintInterface.md)** *define the "don't" of the DAO, they define conditions that must always hold and can prevent an action from being taken if it violates these conditions.* Examples of Global Constraints are:
+* **[Global constraints](reference/globalConstraints/GlobalConstraintInterface.md)** *define the "don't" of the DAO, they define conditions that must always hold and can prevent an action from being taken if it violates these conditions.* Examples of Global Constraints are:
     * Limiting the amount of tokens or reputation that can be minted per day.
     * Blacklisting certain participants from performing certain actions.
 

@@ -82,12 +82,15 @@ const render = (compileOutput,destFn,headerFn,contractTemplate,tableOfContentsTe
         });
         return o;
     };
-    const toc = tableOfContentsTemplate(hierarchy(compileOutput),fs.existsSync(tocHeader) ? fs.readFileSync(tocHeader) : '');
-    shell.mkdir('-p',path.dirname(tocDest));
-    fs.writeFileSync(
-        tocDest,
-        toc
-    );
+    // Only if specified
+    if(tableOfContentsTemplate){
+        const toc = tableOfContentsTemplate(hierarchy(compileOutput),fs.existsSync(tocHeader) ? fs.readFileSync(tocHeader) : '');
+        shell.mkdir('-p',path.dirname(tocDest));
+        fs.writeFileSync(
+            tocDest,
+            toc
+        );
+    }
     compileOutput.forEach(({file,contractName,data}) => {
         const abi = JSON.parse(data.interface);
         const metadata = data.metadata !== '' ? JSON.parse(data.metadata).output : {};
@@ -104,14 +107,14 @@ const render = (compileOutput,destFn,headerFn,contractTemplate,tableOfContentsTe
 };
 
 try{
-    shell.rm('-rf','./docs/ref');
+    shell.rm('-rf','./docs/reference');
     const files = shell.ls('./contracts/*/*.sol'); // TODO: arbitrary depth.
     print(`Compiling ${files.length} files...`);
     const output = compile(files);
     print(`Rendering ${output.length} contracts...`);
-    const destFn = (file,name) => file === 'toc' ? './docs/ref/README.md' : file.replace('./contracts','./docs/ref').replace(path.basename(file),`${name}.md`);
-    const headerFn = (file,name) => file === 'toc' ? './docs/headers/README.md' : file.replace('./contracts','./docs/headers').replace(path.basename(file),`${name}.md`);
-    render(output,destFn,headerFn,templates.contract,templates.tableOfContents);
+    const destFn = (file,name) => file === 'toc' ? './docs/reference/README.md' : file.replace('./contracts','./docs/reference').replace(path.basename(file),`${name}.md`);
+    const headerFn = (file,name) => file === 'toc' ? './docs_headers/README.md' : file.replace('./contracts','./docs_headers').replace(path.basename(file),`${name}.md`);
+    render(output,destFn,headerFn,templates.contract,null);
     shell.exit(0);
 }
 catch(e){
