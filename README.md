@@ -78,4 +78,4 @@ Join us on [Telegram](https://t.me/daostackcommunity)!
 
 # Documentation
 
-Read the [docs](https://github.com/daostack/Arc/tree/master/docs)!
+Read the [docs](https://daostack.github.io/Arc)!
