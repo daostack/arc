@@ -66,7 +66,7 @@ contract('VestingScheme', function(accounts) {
                                                                      [accounts[0],accounts[1],accounts[2]],
                                                                      testSetup.org.avatar.address);
        assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "LogAgreementProposal");
+       assert.equal(tx.logs[0].event, "AgreementProposal");
        var avatarAddress = await helpers.getValueFromLogs(tx, '_avatar',1);
        assert.equal(avatarAddress,testSetup.org.avatar.address);
       });
@@ -474,7 +474,7 @@ contract('VestingScheme', function(accounts) {
                        assert.equal(agreement[10],1);
                        tx = await testSetup.vestingScheme.signToCancelAgreement(agreementId,{from:accounts[1]});
                        assert.equal(tx.logs.length, 2);
-                       assert.equal(tx.logs[1].event, "LogAgreementCancel");
+                       assert.equal(tx.logs[1].event, "AgreementCancel");
                        //check agreement deleted
                        agreement = await testSetup.vestingScheme.agreements(agreementId);
                        assert.equal(agreement[0],0x0000000000000000000000000000000000000000);
@@ -650,7 +650,7 @@ contract('VestingScheme', function(accounts) {
                              var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
                              tx = await testSetup.vestingScheme.collect(agreementId,{from:beneficiary});
                              assert.equal(tx.logs.length, 1);
-                             assert.equal(tx.logs[0].event, "LogCollect");
+                             assert.equal(tx.logs[0].event, "Collect");
                              var balance = await testSetup.standardTokenMock.balanceOf(beneficiary);
                              var periodsFromStartingBlock = Math.floor((web3.eth.blockNumber-startingBlock)/(periodLength));
                              assert.equal(balance.toNumber(),periodsFromStartingBlock*amountPerPeriod);
@@ -684,7 +684,7 @@ contract('VestingScheme', function(accounts) {
                               var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
                               tx = await testSetup.vestingScheme.collect(agreementId,{from:beneficiary});
                               assert.equal(tx.logs.length, 1);
-                              assert.equal(tx.logs[0].event, "LogCollect");
+                              assert.equal(tx.logs[0].event, "Collect");
                               var balance = await testSetup.standardTokenMock.balanceOf(beneficiary);
                               //if (periodsFromStartingBlock >= numberOfAgreedPeriods){
                                   assert.equal(balance.toNumber(),numberOfAgreedPeriods*amountPerPeriod);

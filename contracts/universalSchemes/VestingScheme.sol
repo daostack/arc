@@ -12,14 +12,14 @@ import "./UniversalScheme.sol";
 contract VestingScheme is UniversalScheme, ExecutableInterface {
     using SafeMath for uint;
 
-    event LogRegisterOrg(address indexed _avatar);
-    event LogAgreementProposal(address indexed _avatar, bytes32 _proposalId);
-    event LogExecutaion(address indexed _avatar, bytes32 _proposalId, int _result);
+    event ProposalExecuted(address indexed _avatar);
+    event AgreementProposal(address indexed _avatar, bytes32 _proposalId);
+    event Executaion(address indexed _avatar, bytes32 _proposalId, int _result);
     event NewVestedAgreement(uint indexed _agreementId);
     event SignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
     event RevokeSignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
-    event LogAgreementCancel(uint indexed _agreementId);
-    event LogCollect(uint indexed _agreementId);
+    event AgreementCancel(uint indexed _agreementId);
+    event Collect(uint indexed _agreementId);
 
 
     // The data for each vested agreement:
@@ -125,7 +125,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
 
         // Log:
-        LogAgreementProposal(_avatar, proposalId);
+        AgreementProposal(_avatar, proposalId);
         return proposalId;
     }
 
@@ -231,7 +231,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
         // Log execition:
-        LogExecutaion(_avatar, _proposalId, _param);
+        Executaion(_avatar, _proposalId, _param);
 
         Agreement memory proposedAgreement = organizationsData[_avatar][_proposalId];
         delete organizationsData[_avatar][_proposalId];
@@ -313,7 +313,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         agreement.token.transfer(agreement.beneficiary, tokensToTransfer);
 
         // Log collecing:
-        LogCollect(_agreementId);
+        Collect(_agreementId);
     }
 
     /**
@@ -327,6 +327,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         uint tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
         agreement.token.transfer(agreement.returnOnCancelAddress, tokensLeft);
         // Log canceling agreement:
-        LogAgreementCancel(_agreementId);
+        AgreementCancel(_agreementId);
     }
 }

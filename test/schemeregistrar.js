@@ -52,7 +52,7 @@ contract('SchemeRegistrar', function(accounts) {
 
       var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address,0,false);
       assert.equal(tx.logs.length, 1);
-      assert.equal(tx.logs[0].event, "LogNewSchemeProposal");
+      assert.equal(tx.logs[0].event, "NewSchemeProposal");
      });
 
       it("proposeScheme check owner vote", async function() {
@@ -68,7 +68,7 @@ contract('SchemeRegistrar', function(accounts) {
 
          var tx = await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address);
          assert.equal(tx.logs.length, 1);
-         assert.equal(tx.logs[0].event, "LogRemoveSchemeProposal");
+         assert.equal(tx.logs[0].event, "RemoveSchemeProposal");
         });
 
    it("proposeToRemoveScheme check owner vote", async function() {

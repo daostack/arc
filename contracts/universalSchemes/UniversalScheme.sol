@@ -10,7 +10,7 @@ import "zeppelin-solidity/contracts/token/StandardToken.sol";
 contract UniversalScheme is Ownable, UniversalSchemeInterface { //
     bytes32 public hashedParameters; // For other parameters.
 
-    event LogNewProposal(bytes32 proposalId);
+    event NewProposal(bytes32 proposalId);
 
     function updateParameters(
         bytes32 _hashedParameters

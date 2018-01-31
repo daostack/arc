@@ -85,7 +85,7 @@ contract('UpgradeScheme', function(accounts) {
        var newController = await setupNewController();
        var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
        assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "LogNewUpgradeProposal");
+       assert.equal(tx.logs[0].event, "NewUpgradeProposal");
        var votingMachine = await helpers.getValueFromLogs(tx, '_intVoteInterface',1);
        assert.equal(votingMachine,testSetup.upgradeSchemeParams.votingMachine.absoluteVote.address);
       });
@@ -104,7 +104,7 @@ contract('UpgradeScheme', function(accounts) {
 
           var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0");
           assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "LogChangeUpgradeSchemeProposal");
+          assert.equal(tx.logs[0].event, "ChangeUpgradeSchemeProposal");
           var votingMachine = await helpers.getValueFromLogs(tx, '_intVoteInterface',1);
           assert.equal(votingMachine,testSetup.upgradeSchemeParams.votingMachine.absoluteVote.address);
          });
