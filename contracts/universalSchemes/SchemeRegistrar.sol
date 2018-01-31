@@ -10,7 +10,7 @@ import "./UniversalScheme.sol";
  */
 
 contract SchemeRegistrar is UniversalScheme {
-    event LogNewSchemeProposal(
+    event NewSchemeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
@@ -18,13 +18,13 @@ contract SchemeRegistrar is UniversalScheme {
         bytes32 _parametersHash,
         bool _isRegistering
     );
-    event LogRemoveSchemeProposal(address indexed _avatar,
+    event RemoveSchemeProposal(address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _scheme
     );
-    event LogProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
-    event LogProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // a SchemeProposal is a  proposal to add or remove a scheme to/from the an organization
     struct SchemeProposal {
@@ -88,7 +88,7 @@ contract SchemeRegistrar is UniversalScheme {
                   }
                 }
           }
-        LogProposalExecuted(_avatar, _proposalId);
+        ProposalExecuted(_avatar, _proposalId);
         return true;
     }
 
@@ -147,7 +147,7 @@ contract SchemeRegistrar is UniversalScheme {
             proposalType: 1,
             isRegistering: _isRegistering
         });
-        LogNewSchemeProposal(
+        NewSchemeProposal(
             _avatar,
             proposalId,
             controllerParams.intVote,
@@ -180,7 +180,7 @@ contract SchemeRegistrar is UniversalScheme {
 
         organizationsProposals[_avatar][proposalId].proposalType = 2;
         organizationsProposals[_avatar][proposalId].scheme = _scheme;
-        LogRemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);
+        RemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);
         // vote for this proposal
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;

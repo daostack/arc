@@ -10,21 +10,21 @@ import "./UniversalScheme.sol";
  */
 
 contract UpgradeScheme is UniversalScheme, ExecutableInterface {
-    event LogNewUpgradeProposal(
+    event NewUpgradeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _newController
     );
-    event LogChangeUpgradeSchemeProposal(
+    event ChangeUpgradeSchemeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address newUpgradeScheme,
         bytes32 _params
     );
-    event LogProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
-    event LogProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // Details of an upgrade proposal:
     struct UpgradeProposal {
@@ -88,7 +88,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this));
         organizationsProposals[_avatar][proposalId].proposalType = 1;
         organizationsProposals[_avatar][proposalId].upgradeContract = _newController;
-        LogNewUpgradeProposal(_avatar, proposalId, params.intVote, _newController);
+        NewUpgradeProposal(_avatar, proposalId, params.intVote, _newController);
         params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the proposal submitter.*/
         return proposalId;
     }
@@ -122,7 +122,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         });
         organizationsProposals[_avatar][proposalId] = proposal;
 
-        LogChangeUpgradeSchemeProposal(
+        ChangeUpgradeSchemeProposal(
             _avatar,
             proposalId,
             params.intVote,
