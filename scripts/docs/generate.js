@@ -1,12 +1,9 @@
 /**
- * This is a simple build script which renders all `.sol` files under `contracts/`
+ * This module exports functions for rendering `.md` files from `.sol` files.
  * as markdown files for use in the documentation.
- * it uses 
+ * it uses
  *   - `solcjs` to compile the files and get the metadata.
- *   - `shelljs` to do some general file system commands.
- * 
- * all generated files are in `docs/ref/**.md`
- * 
+ *
  * author: Matan Tsuberi (dev.matan.tsuberi@gmail.com)
  */
 
@@ -14,14 +11,6 @@ const solc = require('solc');
 const fs = require('fs');
 const path = require('path');
 const shell = require('shelljs');
-const templates = require('./templates.js');
-
-// A little helper
-const print = (o) => 
-    typeof o === 'string' ? 
-        shell.echo(o) 
-    : 
-        shell.echo(JSON.stringify(o,undefined,2));
 
 /**
  * @function - compile all files in `inputDir`.
@@ -32,7 +21,7 @@ const compile = (files) => {
     // organize compiler input
     const input = {sources: files.reduce((acc,file)=>({...acc,[file]: fs.readFileSync(file,'utf-8')}),{})};
     const output = solc.compile(input,1,file => {
-        /* we need to resolve imports for the compiler. 
+        /* we need to resolve imports for the compiler.
          * This is not ideal, but does have some benefits:
          *  - gives all information about the files (including natspec).
          *  - always up to date and according to spec.
@@ -43,7 +32,7 @@ const compile = (files) => {
     });
 
     return Object.keys(output.contracts).map(contract =>{
-        // The compiler returns output in the form of {'somefile.sol:somecontract': ...} 
+        // The compiler returns output in the form of {'somefile.sol:somecontract': ...}
         const split = contract.split(':');
         const file = split[0];
         const contractName = split[1];
@@ -52,7 +41,7 @@ const compile = (files) => {
 };
 
 /**
- * @function - renders files as `.md` files according to templates and given info. 
+ * @function - renders files as `.md` files according to templates and given info.
  *             includes headers in the templates according to `headerFn`.
  *             outputs rendered files into `dest`.
  * @param compileOutput - a list of the form [{file,contractName, data: compilerOutput}].
@@ -72,10 +61,10 @@ const render = (compileOutput,destFn,headerFn,contractTemplate,tableOfContentsTe
             for(let j = 0; j < split.length; j++){
                 const dir = split[j];
                 if(!sub[dir])
-                    sub[dir] = 
-                        j === split.length - 1 ? 
+                    sub[dir] =
+                        j === split.length - 1 ?
                             path.relative(path.dirname(tocDest),destFn(file,contractName))
-                        : 
+                        :
                             {};
                 sub = sub[dir];
             }
@@ -106,19 +95,4 @@ const render = (compileOutput,destFn,headerFn,contractTemplate,tableOfContentsTe
     });
 };
 
-try{
-    shell.rm('-rf','./docs/reference');
-    const files = shell.ls('./contracts/*/*.sol'); // TODO: arbitrary depth.
-    print(`Compiling ${files.length} files...`);
-    const output = compile(files);
-    print(`Rendering ${output.length} contracts...`);
-    const destFn = (file,name) => file === 'toc' ? './docs/reference/README.md' : file.replace('./contracts','./docs/reference').replace(path.basename(file),`${name}.md`);
-    const headerFn = (file,name) => file === 'toc' ? './docs_headers/README.md' : file.replace('./contracts','./docs_headers').replace(path.basename(file),`${name}.md`);
-    render(output,destFn,headerFn,templates.contract,null);
-    shell.exit(0);
-}
-catch(e){
-    shell.echo(`An error occurred`);
-    shell.echo(e.stack);
-    shell.exit(1);
-}
+module.exports = {compile,render};

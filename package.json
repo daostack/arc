@@ -23,10 +23,7 @@
     "solium": "solium --dir ./contracts/",
     "truffle": "truffle",
     "build": "rimraf build && truffle compile",
-    "docs:build": "node scripts/docs/gen.js && mkdocs build",
-    "docs:clean": "rimraf site docs/reference",
-    "docs:serve": "yarn docs:build && mkdocs serve",
-    "docs:deploy": "yarn docs:build && mkdocs gh-deploy --force && yarn docs:clean"
+    "docs": "node scripts/docs/cli.js"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -61,6 +58,7 @@
     "web3-typescript-typings": "^0.9.4",
     "web3-utils": "^1.0.0-beta.28",
     "when": "^3.7.8",
+    "yargs": "^11.0.0",
     "zeppelin-solidity": "^1.5.0"
   },
   "repository": {

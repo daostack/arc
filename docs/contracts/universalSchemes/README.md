@@ -1,5 +1,4 @@
 A Scheme defines rules the DAO follows.
-A special *Scheme* called the *[Genesis Scheme](GenesisScheme.md)* takes care of creating a brand new DAO.
 
 ## Universal Scheme
 
