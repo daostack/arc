@@ -1,0 +1,2105 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="A platform for building DAOs">
+      
+      
+        <link rel="canonical" href="https://daostack.github.io/arc/generated_docs/controller/Controller/">
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../img/favicon.ico">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.5.4">
+    
+    
+      
+        <title>Controller - DAOstack Arc Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.aa3de92b.css">
+      
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.792431c1.css">
+      
+    
+    
+      <script src="../../../assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
+      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <a href="#controller" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://daostack.github.io/arc" title="DAOstack Arc Docs" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                DAOstack Arc Docs
+              </span>
+              <span class="md-header-nav__topic">
+                Controller
+              </span>
+            
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+            <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+            
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+          
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/daostack/arc/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      daostack/arc
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <span class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </span>
+    DAOstack Arc Docs
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/daostack/arc/" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      daostack/arc
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Generated docs
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Generated docs
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../Migrations/" title="Migrations" class="md-nav__link">
+      Migrations
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../" title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-3" type="checkbox" id="nav-2-3">
+    
+    <label class="md-nav__link" for="nav-2-3">
+      VotingMachines
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-3">
+        VotingMachines
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/AbsoluteVote/" title="AbsoluteVote" class="md-nav__link">
+      AbsoluteVote
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/GenesisProtocol/" title="GenesisProtocol" class="md-nav__link">
+      GenesisProtocol
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/GenesisProtocolFormulasInterface/" title="GenesisProtocolFormulasInterface" class="md-nav__link">
+      GenesisProtocolFormulasInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/IntVoteInterface/" title="IntVoteInterface" class="md-nav__link">
+      IntVoteInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/QuorumVote/" title="QuorumVote" class="md-nav__link">
+      QuorumVote
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-4" type="checkbox" id="nav-2-4" checked>
+    
+    <label class="md-nav__link" for="nav-2-4">
+      Controller
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-4">
+        Controller
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ActionInterface/" title="ActionInterface" class="md-nav__link">
+      ActionInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Avatar/" title="Avatar" class="md-nav__link">
+      Avatar
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Controller
+      </label>
+    
+    <a href="./" title="Controller" class="md-nav__link md-nav__link--active">
+      Controller
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reference" title="Reference" class="md-nav__link">
+    Reference
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructors" title="Constructors" class="md-nav__link">
+    Constructors
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructor-controlleraddress" title="constructor Controller(address)" class="md-nav__link">
+    constructor Controller(address)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#events" title="Events" class="md-nav__link">
+    Events
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#event-externaltokentransfer" title="event ExternalTokenTransfer" class="md-nav__link">
+    event ExternalTokenTransfer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-upgradecontroller" title="event UpgradeController" class="md-nav__link">
+    event UpgradeController
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-externaltokentransferfrom" title="event ExternalTokenTransferFrom" class="md-nav__link">
+    event ExternalTokenTransferFrom
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-registerscheme" title="event RegisterScheme" class="md-nav__link">
+    event RegisterScheme
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-removeglobalconstraint" title="event RemoveGlobalConstraint" class="md-nav__link">
+    event RemoveGlobalConstraint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-sendether" title="event SendEther" class="md-nav__link">
+    event SendEther
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-unregisterscheme" title="event UnregisterScheme" class="md-nav__link">
+    event UnregisterScheme
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-minttokens" title="event MintTokens" class="md-nav__link">
+    event MintTokens
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-mintreputation" title="event MintReputation" class="md-nav__link">
+    event MintReputation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-genericaction" title="event GenericAction" class="md-nav__link">
+    event GenericAction
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-externaltokenincreaseapproval" title="event ExternalTokenIncreaseApproval" class="md-nav__link">
+    event ExternalTokenIncreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-externaltokendecreaseapproval" title="event ExternalTokenDecreaseApproval" class="md-nav__link">
+    event ExternalTokenDecreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-addglobalconstraint" title="event AddGlobalConstraint" class="md-nav__link">
+    event AddGlobalConstraint
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fallback" title="Fallback" class="md-nav__link">
+    Fallback
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions" title="Functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-mintreputation" title="function mintReputation" class="md-nav__link">
+    function mintReputation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-unregisterscheme" title="function unregisterScheme" class="md-nav__link">
+    function unregisterScheme
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-unregisterself" title="function unregisterSelf" class="md-nav__link">
+    function unregisterSelf
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-upgradecontroller" title="function upgradeController" class="md-nav__link">
+    function upgradeController
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-nativereputation" title="function nativeReputation" class="md-nav__link">
+    function nativeReputation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-removeglobalconstraint" title="function removeGlobalConstraint" class="md-nav__link">
+    function removeGlobalConstraint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-schemes" title="function schemes" class="md-nav__link">
+    function schemes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-sendether" title="function sendEther" class="md-nav__link">
+    function sendEther
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-isschemeregistered" title="function isSchemeRegistered" class="md-nav__link">
+    function isSchemeRegistered
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-minttokens" title="function mintTokens" class="md-nav__link">
+    function mintTokens
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-registerscheme" title="function registerScheme" class="md-nav__link">
+    function registerScheme
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-nativetoken" title="function nativeToken" class="md-nav__link">
+    function nativeToken
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-newcontroller" title="function newController" class="md-nav__link">
+    function newController
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-externaltokendecreaseapproval" title="function externalTokenDecreaseApproval" class="md-nav__link">
+    function externalTokenDecreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-getschemeparameters" title="function getSchemeParameters" class="md-nav__link">
+    function getSchemeParameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-isglobalconstraintregistered" title="function isGlobalConstraintRegistered" class="md-nav__link">
+    function isGlobalConstraintRegistered
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-getschemepermissions" title="function getSchemePermissions" class="md-nav__link">
+    function getSchemePermissions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-globalconstraintsregister" title="function globalConstraintsRegister" class="md-nav__link">
+    function globalConstraintsRegister
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-globalconstraints" title="function globalConstraints" class="md-nav__link">
+    function globalConstraints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-globalconstraintscount" title="function globalConstraintsCount" class="md-nav__link">
+    function globalConstraintsCount
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-genericaction" title="function genericAction" class="md-nav__link">
+    function genericAction
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-externaltokentransferfrom" title="function externalTokenTransferFrom" class="md-nav__link">
+    function externalTokenTransferFrom
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-externaltokentransfer" title="function externalTokenTransfer" class="md-nav__link">
+    function externalTokenTransfer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-externaltokenincreaseapproval" title="function externalTokenIncreaseApproval" class="md-nav__link">
+    function externalTokenIncreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-avatar" title="function avatar" class="md-nav__link">
+    function avatar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-addglobalconstraint" title="function addGlobalConstraint" class="md-nav__link">
+    function addGlobalConstraint
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ControllerInterface/" title="ControllerInterface" class="md-nav__link">
+      ControllerInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../DAOToken/" title="DAOToken" class="md-nav__link">
+      DAOToken
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Reputation/" title="Reputation" class="md-nav__link">
+      Reputation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../UController/" title="UController" class="md-nav__link">
+      UController
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-5" type="checkbox" id="nav-2-5">
+    
+    <label class="md-nav__link" for="nav-2-5">
+      globalConstraints
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-5">
+        globalConstraints
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../globalConstraints/GlobalConstraintInterface/" title="GlobalConstraintInterface" class="md-nav__link">
+      GlobalConstraintInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../globalConstraints/TokenCapGC/" title="TokenCapGC" class="md-nav__link">
+      TokenCapGC
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../globalConstraints/" title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-6" type="checkbox" id="nav-2-6">
+    
+    <label class="md-nav__link" for="nav-2-6">
+      Test
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-6">
+        Test
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/ActionMock/" title="ActionMock" class="md-nav__link">
+      ActionMock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/Debug/" title="Debug" class="md-nav__link">
+      Debug
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/ExecutableTest/" title="ExecutableTest" class="md-nav__link">
+      ExecutableTest
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/GenesisProtocolFormulasMock/" title="GenesisProtocolFormulasMock" class="md-nav__link">
+      GenesisProtocolFormulasMock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/GlobalConstraintMock/" title="GlobalConstraintMock" class="md-nav__link">
+      GlobalConstraintMock
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../test/UniversalSchemeMock/" title="UniversalSchemeMock" class="md-nav__link">
+      UniversalSchemeMock
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-7" type="checkbox" id="nav-2-7">
+    
+    <label class="md-nav__link" for="nav-2-7">
+      universalSchemes
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-7">
+        universalSchemes
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/ContributionReward/" title="ContributionReward" class="md-nav__link">
+      ContributionReward
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/DaoCreator/" title="DaoCreator" class="md-nav__link">
+      DaoCreator
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/ExecutableInterface/" title="ExecutableInterface" class="md-nav__link">
+      ExecutableInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/GenesisScheme/" title="GenesisScheme" class="md-nav__link">
+      GenesisScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/GlobalConstraintRegistrar/" title="GlobalConstraintRegistrar" class="md-nav__link">
+      GlobalConstraintRegistrar
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/MirrorContractICO/" title="MirrorContractICO" class="md-nav__link">
+      MirrorContractICO
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/OrganizationRegister/" title="OrganizationRegister" class="md-nav__link">
+      OrganizationRegister
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/SchemeRegistrar/" title="SchemeRegistrar" class="md-nav__link">
+      SchemeRegistrar
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/SimpleICO/" title="SimpleICO" class="md-nav__link">
+      SimpleICO
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/UniversalScheme/" title="UniversalScheme" class="md-nav__link">
+      UniversalScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/UniversalSchemeInterface/" title="UniversalSchemeInterface" class="md-nav__link">
+      UniversalSchemeInterface
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/UpgradeScheme/" title="UpgradeScheme" class="md-nav__link">
+      UpgradeScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/VestingScheme/" title="VestingScheme" class="md-nav__link">
+      VestingScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/VoteInOrganizationScheme/" title="VoteInOrganizationScheme" class="md-nav__link">
+      VoteInOrganizationScheme
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../universalSchemes/" title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reference" title="Reference" class="md-nav__link">
+    Reference
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructors" title="Constructors" class="md-nav__link">
+    Constructors
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructor-controlleraddress" title="constructor Controller(address)" class="md-nav__link">
+    constructor Controller(address)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#events" title="Events" class="md-nav__link">
+    Events
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#event-externaltokentransfer" title="event ExternalTokenTransfer" class="md-nav__link">
+    event ExternalTokenTransfer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-upgradecontroller" title="event UpgradeController" class="md-nav__link">
+    event UpgradeController
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-externaltokentransferfrom" title="event ExternalTokenTransferFrom" class="md-nav__link">
+    event ExternalTokenTransferFrom
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-registerscheme" title="event RegisterScheme" class="md-nav__link">
+    event RegisterScheme
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-removeglobalconstraint" title="event RemoveGlobalConstraint" class="md-nav__link">
+    event RemoveGlobalConstraint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-sendether" title="event SendEther" class="md-nav__link">
+    event SendEther
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-unregisterscheme" title="event UnregisterScheme" class="md-nav__link">
+    event UnregisterScheme
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-minttokens" title="event MintTokens" class="md-nav__link">
+    event MintTokens
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-mintreputation" title="event MintReputation" class="md-nav__link">
+    event MintReputation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-genericaction" title="event GenericAction" class="md-nav__link">
+    event GenericAction
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-externaltokenincreaseapproval" title="event ExternalTokenIncreaseApproval" class="md-nav__link">
+    event ExternalTokenIncreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-externaltokendecreaseapproval" title="event ExternalTokenDecreaseApproval" class="md-nav__link">
+    event ExternalTokenDecreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-addglobalconstraint" title="event AddGlobalConstraint" class="md-nav__link">
+    event AddGlobalConstraint
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fallback" title="Fallback" class="md-nav__link">
+    Fallback
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions" title="Functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-mintreputation" title="function mintReputation" class="md-nav__link">
+    function mintReputation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-unregisterscheme" title="function unregisterScheme" class="md-nav__link">
+    function unregisterScheme
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-unregisterself" title="function unregisterSelf" class="md-nav__link">
+    function unregisterSelf
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-upgradecontroller" title="function upgradeController" class="md-nav__link">
+    function upgradeController
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-nativereputation" title="function nativeReputation" class="md-nav__link">
+    function nativeReputation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-removeglobalconstraint" title="function removeGlobalConstraint" class="md-nav__link">
+    function removeGlobalConstraint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-schemes" title="function schemes" class="md-nav__link">
+    function schemes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-sendether" title="function sendEther" class="md-nav__link">
+    function sendEther
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-isschemeregistered" title="function isSchemeRegistered" class="md-nav__link">
+    function isSchemeRegistered
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-minttokens" title="function mintTokens" class="md-nav__link">
+    function mintTokens
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-registerscheme" title="function registerScheme" class="md-nav__link">
+    function registerScheme
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-nativetoken" title="function nativeToken" class="md-nav__link">
+    function nativeToken
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-newcontroller" title="function newController" class="md-nav__link">
+    function newController
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-externaltokendecreaseapproval" title="function externalTokenDecreaseApproval" class="md-nav__link">
+    function externalTokenDecreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-getschemeparameters" title="function getSchemeParameters" class="md-nav__link">
+    function getSchemeParameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-isglobalconstraintregistered" title="function isGlobalConstraintRegistered" class="md-nav__link">
+    function isGlobalConstraintRegistered
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-getschemepermissions" title="function getSchemePermissions" class="md-nav__link">
+    function getSchemePermissions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-globalconstraintsregister" title="function globalConstraintsRegister" class="md-nav__link">
+    function globalConstraintsRegister
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-globalconstraints" title="function globalConstraints" class="md-nav__link">
+    function globalConstraints
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-globalconstraintscount" title="function globalConstraintsCount" class="md-nav__link">
+    function globalConstraintsCount
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-genericaction" title="function genericAction" class="md-nav__link">
+    function genericAction
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-externaltokentransferfrom" title="function externalTokenTransferFrom" class="md-nav__link">
+    function externalTokenTransferFrom
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-externaltokentransfer" title="function externalTokenTransfer" class="md-nav__link">
+    function externalTokenTransfer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-externaltokenincreaseapproval" title="function externalTokenIncreaseApproval" class="md-nav__link">
+    function externalTokenIncreaseApproval
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-avatar" title="function avatar" class="md-nav__link">
+    function avatar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-addglobalconstraint" title="function addGlobalConstraint" class="md-nav__link">
+    function addGlobalConstraint
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/daostack/arc/edit/master/docs/generated_docs/controller/Controller.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="controller">Controller<a class="headerlink" href="#controller" title="Permanent link">&para;</a></h1>
+<p><a href="https://github.com/daostack/daostack/tree/master/contracts/controller/Controller.sol">see the source</a></p>
+<p><em>Code deposit cost: <strong>less than 2358800 gas.</strong></em></p>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><em>Total deploy cost(deposit + execution): <strong>less than 2358800 gas.</strong></em></p>
+<blockquote>
+<p>Controller contract</p>
+</blockquote>
+<p>The <em>Controller</em> is the central part of a DAO, it glues together all other components in a single smart contract.</p>
+<p><img alt="Controller Illustration" src="../../../img/controller.png" /></p>
+<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
+<h3 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h3>
+<h4 id="constructor-controlleraddress"><em>constructor</em> Controller(address)<a class="headerlink" href="#constructor-controlleraddress" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_avatar</strong> <em>of type address</em></li>
+</ol>
+<h3 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h3>
+<h4 id="event-externaltokentransfer"><em>event</em> ExternalTokenTransfer<a class="headerlink" href="#event-externaltokentransfer" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_externalToken</strong> <em>of type address</em></li>
+<li><strong>_to</strong> <em>of type address</em></li>
+<li><strong>_value</strong> <em>of type uint256</em></li>
+</ol>
+<h4 id="event-upgradecontroller"><em>event</em> UpgradeController<a class="headerlink" href="#event-upgradecontroller" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_oldController</strong> <em>of type address</em></li>
+<li><strong>_newController</strong> <em>of type address</em></li>
+</ol>
+<h4 id="event-externaltokentransferfrom"><em>event</em> ExternalTokenTransferFrom<a class="headerlink" href="#event-externaltokentransferfrom" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_externalToken</strong> <em>of type address</em></li>
+<li><strong>_from</strong> <em>of type address</em></li>
+<li><strong>_to</strong> <em>of type address</em></li>
+<li><strong>_value</strong> <em>of type uint256</em></li>
+</ol>
+<h4 id="event-registerscheme"><em>event</em> RegisterScheme<a class="headerlink" href="#event-registerscheme" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_scheme</strong> <em>of type address</em></li>
+</ol>
+<h4 id="event-removeglobalconstraint"><em>event</em> RemoveGlobalConstraint<a class="headerlink" href="#event-removeglobalconstraint" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_globalConstraint</strong> <em>of type address</em></li>
+<li><strong>_index</strong> <em>of type uint256</em></li>
+</ol>
+<h4 id="event-sendether"><em>event</em> SendEther<a class="headerlink" href="#event-sendether" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_amountInWei</strong> <em>of type uint256</em></li>
+<li><strong>_to</strong> <em>of type address</em></li>
+</ol>
+<h4 id="event-unregisterscheme"><em>event</em> UnregisterScheme<a class="headerlink" href="#event-unregisterscheme" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_scheme</strong> <em>of type address</em></li>
+</ol>
+<h4 id="event-minttokens"><em>event</em> MintTokens<a class="headerlink" href="#event-minttokens" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_beneficiary</strong> <em>of type address</em></li>
+<li><strong>_amount</strong> <em>of type uint256</em></li>
+</ol>
+<h4 id="event-mintreputation"><em>event</em> MintReputation<a class="headerlink" href="#event-mintreputation" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_beneficiary</strong> <em>of type address</em></li>
+<li><strong>_amount</strong> <em>of type int256</em></li>
+</ol>
+<h4 id="event-genericaction"><em>event</em> GenericAction<a class="headerlink" href="#event-genericaction" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_params</strong> <em>of type bytes32[]</em></li>
+</ol>
+<h4 id="event-externaltokenincreaseapproval"><em>event</em> ExternalTokenIncreaseApproval<a class="headerlink" href="#event-externaltokenincreaseapproval" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_externalToken</strong> <em>of type address</em></li>
+<li><strong>_spender</strong> <em>of type address</em></li>
+<li><strong>_value</strong> <em>of type uint256</em></li>
+</ol>
+<h4 id="event-externaltokendecreaseapproval"><em>event</em> ExternalTokenDecreaseApproval<a class="headerlink" href="#event-externaltokendecreaseapproval" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_sender</strong> <em>of type address</em></li>
+<li><strong>_externalToken</strong> <em>of type address</em></li>
+<li><strong>_spender</strong> <em>of type address</em></li>
+<li><strong>_value</strong> <em>of type uint256</em></li>
+</ol>
+<h4 id="event-addglobalconstraint"><em>event</em> AddGlobalConstraint<a class="headerlink" href="#event-addglobalconstraint" title="Permanent link">&para;</a></h4>
+<p><em>Params:</em></p>
+<ol>
+<li><strong>_globalConstraint</strong> <em>of type address</em></li>
+<li><strong>_params</strong> <em>of type bytes32</em></li>
+</ol>
+<h3 id="fallback">Fallback<a class="headerlink" href="#fallback" title="Permanent link">&para;</a></h3>
+<p><em>Execution cost: <strong>less than 720 gas.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<h3 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h3>
+<h4 id="function-mintreputation"><em>function</em> mintReputation<a class="headerlink" href="#function-mintreputation" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_amount</strong> <em>of type int256</em></li>
+<li><strong>_beneficiary</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-unregisterscheme"><em>function</em> unregisterScheme<a class="headerlink" href="#function-unregisterscheme" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_scheme</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-unregisterself"><em>function</em> unregisterSelf<a class="headerlink" href="#function-unregisterself" title="Permanent link">&para;</a></h4>
+<blockquote>
+<p>unregister the caller's scheme</p>
+</blockquote>
+<p><em>Execution cost: <strong>less than 28009 gas.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p>bool which represents a success</p>
+<h4 id="function-upgradecontroller"><em>function</em> upgradeController<a class="headerlink" href="#function-upgradecontroller" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_newController</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-nativereputation"><em>function</em> nativeReputation<a class="headerlink" href="#function-nativereputation" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>less than 922 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<p><em>Nothing</em></p>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<h4 id="function-removeglobalconstraint"><em>function</em> removeGlobalConstraint<a class="headerlink" href="#function-removeglobalconstraint" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_globalConstraint</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-schemes"><em>function</em> schemes<a class="headerlink" href="#function-schemes" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>less than 1411 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>paramsHash</strong> <em>of type bytes32</em></li>
+<li><strong>permissions</strong> <em>of type bytes4</em></li>
+</ol>
+<h4 id="function-sendether"><em>function</em> sendEther<a class="headerlink" href="#function-sendether" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_amountInWei</strong> <em>of type uint256</em></li>
+<li><strong>_to</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-isschemeregistered"><em>function</em> isSchemeRegistered<a class="headerlink" href="#function-isschemeregistered" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_scheme</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-minttokens"><em>function</em> mintTokens<a class="headerlink" href="#function-minttokens" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_amount</strong> <em>of type uint256</em></li>
+<li><strong>_beneficiary</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-registerscheme"><em>function</em> registerScheme<a class="headerlink" href="#function-registerscheme" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_scheme</strong> <em>of type address</em></li>
+<li><strong>_paramsHash</strong> <em>of type bytes32</em></li>
+<li><strong>_permissions</strong> <em>of type bytes4</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-nativetoken"><em>function</em> nativeToken<a class="headerlink" href="#function-nativetoken" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>less than 1054 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<p><em>Nothing</em></p>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<h4 id="function-newcontroller"><em>function</em> newController<a class="headerlink" href="#function-newcontroller" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>less than 636 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<p><em>Nothing</em></p>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<h4 id="function-externaltokendecreaseapproval"><em>function</em> externalTokenDecreaseApproval<a class="headerlink" href="#function-externaltokendecreaseapproval" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_externalToken</strong> <em>of type address</em></li>
+<li><strong>_spender</strong> <em>of type address</em></li>
+<li><strong>_subtractedValue</strong> <em>of type uint256</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-getschemeparameters"><em>function</em> getSchemeParameters<a class="headerlink" href="#function-getschemeparameters" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_scheme</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bytes32</em></li>
+</ol>
+<h4 id="function-isglobalconstraintregistered"><em>function</em> isGlobalConstraintRegistered<a class="headerlink" href="#function-isglobalconstraintregistered" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_globalConstraint</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-getschemepermissions"><em>function</em> getSchemePermissions<a class="headerlink" href="#function-getschemepermissions" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_scheme</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bytes4</em></li>
+</ol>
+<h4 id="function-globalconstraintsregister"><em>function</em> globalConstraintsRegister<a class="headerlink" href="#function-globalconstraintsregister" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>less than 1060 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>register</strong> <em>of type bool</em></li>
+<li><strong>index</strong> <em>of type uint256</em></li>
+</ol>
+<h4 id="function-globalconstraints"><em>function</em> globalConstraints<a class="headerlink" href="#function-globalconstraints" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>less than 1390 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type uint256</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>gcAddress</strong> <em>of type address</em></li>
+<li><strong>params</strong> <em>of type bytes32</em></li>
+</ol>
+<h4 id="function-globalconstraintscount"><em>function</em> globalConstraintsCount<a class="headerlink" href="#function-globalconstraintscount" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>less than 827 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type uint256</em></li>
+</ol>
+<h4 id="function-genericaction"><em>function</em> genericAction<a class="headerlink" href="#function-genericaction" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_params</strong> <em>of type bytes32[]</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-externaltokentransferfrom"><em>function</em> externalTokenTransferFrom<a class="headerlink" href="#function-externaltokentransferfrom" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_externalToken</strong> <em>of type address</em></li>
+<li><strong>_from</strong> <em>of type address</em></li>
+<li><strong>_to</strong> <em>of type address</em></li>
+<li><strong>_value</strong> <em>of type uint256</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-externaltokentransfer"><em>function</em> externalTokenTransfer<a class="headerlink" href="#function-externaltokentransfer" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_externalToken</strong> <em>of type address</em></li>
+<li><strong>_to</strong> <em>of type address</em></li>
+<li><strong>_value</strong> <em>of type uint256</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-externaltokenincreaseapproval"><em>function</em> externalTokenIncreaseApproval<a class="headerlink" href="#function-externaltokenincreaseapproval" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_externalToken</strong> <em>of type address</em></li>
+<li><strong>_spender</strong> <em>of type address</em></li>
+<li><strong>_addedValue</strong> <em>of type uint256</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-avatar"><em>function</em> avatar<a class="headerlink" href="#function-avatar" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>less than 702 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<p><em>Nothing</em></p>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<h4 id="function-addglobalconstraint"><em>function</em> addGlobalConstraint<a class="headerlink" href="#function-addglobalconstraint" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>nonpayable</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_globalConstraint</strong> <em>of type address</em></li>
+<li><strong>_params</strong> <em>of type bytes32</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../Avatar/" title="Avatar" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Avatar
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../ControllerInterface/" title="ControllerInterface" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                ControllerInterface
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="http://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/daostack/arc" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://daostack.slack.com" class="md-footer-social__link fa fa-slack"></a>
+    
+      <a href="https://t.me/daostackcommunity" class="md-footer-social__link fa fa-telegram"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/application.f041762f.js"></script>
+      
+      <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>
