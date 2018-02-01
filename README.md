@@ -51,7 +51,7 @@ contract MyContract is UniversalScheme {
 }
 ```
 
-You should be able to find all daostack-arc already built contracts (<contract>.json) ready for deployment under `node_modules/doastack-arc/build/contracts/` folder.
+You should be able to find all daostack-arc already built contracts (<contract>.json) ready for deployment under `node_modules/daostack-arc/build/contracts/` folder.
 
 #### *Note on windows dev environments*
 Windows environments are not currently officially supported.
