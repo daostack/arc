@@ -54,9 +54,8 @@ const setup = async function (accounts) {
    testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(testSetup.upgradeScheme);
-   //give some tokens to organization avatar so it could register the universal scheme.
-   await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   var permissions = "0x0000000F";
+
+   var permissions = "0x0000000a";
 
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.upgradeScheme.address],[testSetup.upgradeSchemeParams.paramsHash],[permissions]);
 
