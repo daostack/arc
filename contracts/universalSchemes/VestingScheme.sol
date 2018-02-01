@@ -5,7 +5,7 @@ import "./UniversalScheme.sol";
 
 
 /**
- * @title A schme for vesting.
+ * @title A scheme for vesting.
  * @dev Can be used without organization just as a vesting component.
  */
 
@@ -14,7 +14,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
 
     event ProposalExecuted(address indexed _avatar);
     event AgreementProposal(address indexed _avatar, bytes32 _proposalId);
-    event Executaion(address indexed _avatar, bytes32 _proposalId, int _result);
+    event Execution(address indexed _avatar, bytes32 _proposalId, int _result);
     event NewVestedAgreement(uint indexed _agreementId);
     event SignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
     event RevokeSignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
@@ -230,8 +230,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
-        // Log execition:
-        Executaion(_avatar, _proposalId, _param);
+        Execution(_avatar, _proposalId, _param);
 
         Agreement memory proposedAgreement = organizationsData[_avatar][_proposalId];
         delete organizationsData[_avatar][_proposalId];
@@ -312,7 +311,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         uint tokensToTransfer = periodsToPay.mul(agreement.amountPerPeriod);
         agreement.token.transfer(agreement.beneficiary, tokensToTransfer);
 
-        // Log collecing:
+        // Log collecting:
         Collect(_agreementId);
     }
 

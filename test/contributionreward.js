@@ -35,9 +35,7 @@ const setup = async function (accounts,orgNativeTokenFee=0) {
    testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.contributionRewardParams= await setupContributionRewardParams(testSetup.contributionReward,orgNativeTokenFee);
-   //give some tokens to organization avatar so it could register the universal scheme.
-   await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   var permissions = "0x0000000F";
+   var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.contributionReward.address],[testSetup.contributionRewardParams.paramsHash],[permissions]);
    return testSetup;
 };
@@ -179,6 +177,8 @@ contract('ContributionReward', function(accounts) {
 
          it("execute proposeContributionReward  send externalToken ", async function() {
            var testSetup = await setup(accounts);
+           //give some tokens to organization avatar
+           await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
            var reputationReward = 12;
            var nativeTokenReward = 12;
            var ethReward = 12;

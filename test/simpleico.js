@@ -46,9 +46,7 @@ const setup = async function (accounts,cap =10000,price=1) {
   testSetup.simpleICO = await SimpleICO.new();
   testSetup.org = await setupOrganization(accounts[0],1000,1000);
   testSetup.paramHash= await setupSimpleICOParams(accounts,testSetup.simpleICO,testSetup.org,cap,price);
-  //give some tokens to organization avatar so it could register the universal scheme.
-  await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-  await daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.simpleICO.address],[testSetup.paramHash],["0x8000000F"]);
+  await daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.simpleICO.address],[testSetup.paramHash],["0x00000000"]);
   return testSetup;
 };
 
