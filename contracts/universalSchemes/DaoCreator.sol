@@ -11,13 +11,13 @@ import "../controller/Controller.sol";
  * @title Genesis Scheme that creates organizations
  */
 
-contract GenesisScheme {
+contract DaoCreator {
 
     mapping(address=>address) locks;
 
     event NewOrg (address _avatar);
     event InitialSchemesSet (address _avatar);
-    function GenesisScheme() public {}
+    function DaoCreator() public {}
   /**
     * @dev Create a new organization
     * @param _orgName The name of the new organization

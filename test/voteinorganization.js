@@ -3,7 +3,7 @@ const constants = require('./constants');
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const VoteInOrganizationScheme = artifacts.require('./VoteInOrganizationScheme.sol');
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
-const GenesisScheme = artifacts.require("./GenesisScheme.sol");
+const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ExecutableTest = artifacts.require("./ExecutableTest.sol");
 
 export class VoteInOrganizationParams {
@@ -27,13 +27,11 @@ const setup = async function (accounts,reputationAccount=0) {
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.voteInOrganization = await VoteInOrganizationScheme.new();
-   testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
-   testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
+   testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.voteInOrganizationParams= await setupVoteInOrganizationParams(testSetup.voteInOrganization,reputationAccount);
-   //give some tokens to organization avatar so it could register the universal scheme.
-   await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   var permissions = "0x0000000F";
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.voteInOrganization.address],[testSetup.voteInOrganizationParams.paramsHash],[permissions]);
+   var permissions = "0x00000000";
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.voteInOrganization.address],[testSetup.voteInOrganizationParams.paramsHash],[permissions]);
 
    return testSetup;
 };
