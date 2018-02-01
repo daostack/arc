@@ -141,9 +141,9 @@ export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50,re
   return votingMachine;
 };
 
-export const setupOrganization = async function (genesisScheme,genesisSchemeOwner,founderToken,founderReputation,controller=0) {
+export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=0) {
   var org = new Organization();
-  var tx = await genesisScheme.forgeOrg("testOrg","TEST","TST",[genesisSchemeOwner],[founderToken],[founderReputation],controller);
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],controller);
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;

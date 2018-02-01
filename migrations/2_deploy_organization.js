@@ -3,7 +3,7 @@ var constants = require('../test/constants');
 var Avatar = artifacts.require('./Avatar.sol');
 var Controller = artifacts.require('./Controller.sol');
 var UController = artifacts.require('./UController.sol');
-var GenesisScheme = artifacts.require('./GenesisScheme.sol');
+var DaoCreator = artifacts.require('./DaoCreator.sol');
 var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.sol');
 var DAOToken = artifacts.require('./DAOToken.sol');
 var Reputation = artifacts.require('./Reputation.sol');
@@ -33,10 +33,10 @@ const votePrec = 50;
 //Deploy test organization with the following schemes:
 //schemeRegistrar, upgradeScheme,globalConstraintRegistrar,simpleICO,contributionReward.
 module.exports = async function(deployer) {
-    deployer.deploy(GenesisScheme, {gas: constants.GENESIS_SCHEME_GAS_LIMIT}).then(async function(){
-      var genesisSchemeInst = await GenesisScheme.deployed();
+    deployer.deploy(DaoCreator, {gas: constants.GENESIS_SCHEME_GAS_LIMIT}).then(async function(){
+      var daoCreatorInst = await DaoCreator.deployed();
       // Create DAOstack:
-      var returnedParams = await genesisSchemeInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
+      var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
           initTokenInWei, initRepInWei,0);
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       var ControllerInst = await Controller.at(await AvatarInst.owner());
@@ -89,7 +89,7 @@ module.exports = async function(deployer) {
       const permissionArray = ['0x80000003', '0x80000005', '0x80000009','0x80000001','0x80000001'];
 
       // set DAOstack initial schmes:
-      await genesisSchemeInst.setSchemes(
+      await daoCreatorInst.setSchemes(
         AvatarInst.address,
         schemesArray,
         paramsArray,
@@ -97,10 +97,10 @@ module.exports = async function(deployer) {
       //now deploy with universal controller
       await deployer.deploy(UController);
       var uController = await UController.deployed();
-      var returnedParams = await genesisSchemeInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
+      var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
           initTokenInWei, initRepInWei,uController.address);
       AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
-      await genesisSchemeInst.setSchemes(
+      await daoCreatorInst.setSchemes(
           AvatarInst.address,
           schemesArray,
           paramsArray,

@@ -70,7 +70,7 @@ contract UController is ControllerInterface {
     function UController()public {}
 
    /**
-    * @dev newOrganization set up a new organization with default genesisScheme.
+    * @dev newOrganization set up a new organization with default daoCreator.
     * @param _avatar the organization avatar
     */
     function newOrganization(

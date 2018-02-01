@@ -6,7 +6,7 @@ const Avatar = artifacts.require("./Avatar.sol");
 const ExecutableTest = artifacts.require("./ExecutableTest.sol");
 const constants = require("./constants");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
-const GenesisScheme = artifacts.require("./GenesisScheme.sol");
+const DaoCreator = artifacts.require("./DaoCreator.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const GenesisProtocolFormulasMock = artifacts.require("./test/GenesisProtocolFormulasMock.sol");
 
@@ -31,9 +31,9 @@ const setupGenesisProtocolParams = async function(
 };
 
 
-const setupOrganization = async function (genesisScheme,genesisSchemeOwner,founderToken,founderReputation,controller=0) {
+const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=0) {
   var org = new helpers.Organization();
-  var tx = await genesisScheme.forgeOrg("testOrg","TEST","TST",genesisSchemeOwner,founderToken,founderReputation,controller);
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,controller);
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -51,14 +51,14 @@ const setup = async function (accounts,precReq=50,noneBoostedVotePeriodLimit=60,
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.standardTokenMock.address);
-   testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+   testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.reputationArray = [20, 10, 70 ];
-   testSetup.org = await setupOrganization(testSetup.genesisScheme,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
+   testSetup.org = await setupOrganization(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
    testSetup.genesisProtocolParams= await setupGenesisProtocolParams(testSetup,precReq ,noneBoostedVotePeriodLimit,boostedVotePeriodLimit,scoreThreshold,voteFormulasInterface,minimumStaketingFee);
    var permissions = "0x0000000F";
    testSetup.executable = await ExecutableTest.new();
 
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.genesisProtocol.address],[testSetup.genesisProtocolParams.paramsHash],[permissions]);
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.genesisProtocol.address],[testSetup.genesisProtocolParams.paramsHash],[permissions]);
 
    return testSetup;
 };
@@ -431,15 +431,15 @@ contract('GenesisProtocol', function (accounts) {
      var testSetup = new helpers.TestSetup();
      testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
      testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.standardTokenMock.address);
-     testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+     testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
      testSetup.reputationArray = [20, 10, 70 ];
-     testSetup.org = await setupOrganization(testSetup.genesisScheme,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
+     testSetup.org = await setupOrganization(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
        // Send empty rep system to the genesisProtocol contract
      testSetup.org.reputation = Reputation.at(helpers.NULL_ADDRESS);
      testSetup.genesisProtocolParams= await setupGenesisProtocolParams(testSetup);
      var permissions = "0x0000000F";
      testSetup.executable = await ExecutableTest.new();
-     await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.genesisProtocol.address],[testSetup.genesisProtocolParams.paramsHash],[permissions]);
+     await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.genesisProtocol.address],[testSetup.genesisProtocolParams.paramsHash],[permissions]);
 
       // Try to propose - an exception should be raised
       try {

@@ -2,7 +2,7 @@ import * as helpers from './helpers';
 const constants = require('./constants');
 const OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
-const GenesisScheme = artifacts.require("./GenesisScheme.sol");
+const DaoCreator = artifacts.require("./DaoCreator.sol");
 
 export class OrganizationRegisterParams {
   constructor() {
@@ -27,13 +27,13 @@ const setup = async function (accounts) {
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.organizationRegister = await OrganizationRegister.new();
-   testSetup.genesisScheme = await GenesisScheme.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
-   testSetup.org = await helpers.setupOrganization(testSetup.genesisScheme,accounts[0],1000,1000);
+   testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.organizationRegisterParams= await setupOrganizationRegisterParams(testSetup.organizationRegister,testSetup.standardTokenMock.address,accounts[2]);
    //give some tokens to organization avatar so it could register the univeral scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
    var permissions = "0x0000000F";
-   await testSetup.genesisScheme.setSchemes(testSetup.org.avatar.address,[testSetup.organizationRegister.address],[testSetup.organizationRegisterParams.paramsHash],[permissions]);
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.organizationRegister.address],[testSetup.organizationRegisterParams.paramsHash],[permissions]);
 
    return testSetup;
 };
