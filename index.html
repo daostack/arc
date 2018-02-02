@@ -1081,10 +1081,10 @@ Those <em>elements</em> can then be registered(for a fee) to a public database c
 </ul>
 </li>
 <li>
-<p>Use the <code>yarn docs ..</code> cli to <code>update</code>, <code>build</code>, <code>serve</code>, <code>deploy</code> &amp; <code>clean</code> documentation, see <code>yarn docs --help</code> for details.</p>
+<p>Use the <code>yarn docs ..</code> cli to <code>update</code>, <code>build</code>, <code>preview</code>, <code>deploy</code> &amp; <code>clean</code> documentation, see <code>yarn docs --help</code> for details.</p>
 <div class="admonition note">
-<p class="admonition-title"><code>yarn docs serve</code> does not serve the final website!</p>
-<p><code>yarn docs serve</code> will serve from the <code>docs</code> folder. This means that what you see is not the final website.
+<p class="admonition-title"><code>yarn docs preview</code> does not serve the final website!</p>
+<p><code>yarn docs preview</code> will serve from the <code>docs</code> folder. This means that what you see is not the final website.
 In the final website:</p>
 <ul>
 <li>All <code>README.md</code> files will be renamed to <code>index.md</code>, will automatically appear as "Home" on the menu and will be available in the URL at <code>...somedir/</code>.</li>
@@ -1095,7 +1095,7 @@ In the final website:</p>
 <li>
 <p>Please provide an <code>README.md</code> file in the root of every directory, giving an overview of that directory.</p>
 </li>
-<li>Check that there are no broken links by running <code>yarn docs serve</code> and checking for warnings of the form:<blockquote>
+<li>Check that there are no broken links by running <code>yarn docs preview</code> and checking for warnings of the form:<blockquote>
 <p>WARNING -  The page "contracts\universalSchemes\README.md" contained a hyperlink to "contracts\universalSchemes\GenesisScheme.md" which is not listed in the "pages" configuration.</p>
 </blockquote>
 </li>
