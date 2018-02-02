@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/daostack/Arc.svg?branch=master)](https://travis-ci.org/daostack/Arc)
+[![Build Status](https://travis-ci.org/daostack/arc.svg?branch=master)](https://travis-ci.org/daostack/arc)
 [![NPM Package](https://img.shields.io/npm/v/daostack-arc.svg?style=flat-square)](https://www.npmjs.org/package/daostack-arc)
 # Arc
 
@@ -16,7 +16,7 @@ npm install -g truffle
 ### Getting the source code
 
 ```sh
-git clone https://github.com/daostack/Arc
+git clone https://github.com/daostack/arc
 ```
 
 ### test
@@ -71,7 +71,7 @@ This is an open source project ([GPL license](https://github.com/daostack/daosta
 
 ## Contribution
 
-PRs are welcome but please first consult with the [Contribution guide](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.md).
+PRs are welcome but please first consult with the [Contribution guide](https://github.com/daostack/arc/blob/master/CONTRIBUTING.md).
 
 Join us on [Slack](https://daostack.slack.com/)!
 
@@ -79,4 +79,4 @@ Join us on [Telegram](https://t.me/daostackcommunity)!
 
 # Documentation
 
-Read the [docs](https://daostack.github.io/Arc)!
+Read the [docs](https://daostack.github.io/arc)!
