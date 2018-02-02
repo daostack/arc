@@ -56,9 +56,10 @@ You should be able to find all daostack-arc already built contracts (<contract>.
 #### *Note on windows dev environments*
 Windows environments are not currently officially supported.
 A common workaround is to use [Docker](https://www.docker.com/).
-1. use `docker run -it -v absolute/path/to/local/repo:/home node /bin/bash` (use `${pwd}` for a relative path, eg. `${pwd}/relative`)
-2. `$ cd /home`
-3. Continue development as usual inside the container. your changes are automatically synchronized with the host(windows) local repo.
+1. In windows `cd path/to/local/repo`
+2. Run `docker run -it -v ${pwd}:/home/daostack node /bin/bash`
+3. Now you are inside the container, run `$ cd /home/daostack`
+4. Continue development as usual inside the container. Your changes are automatically synchronized with the host (windows) local repo.
 
 ## Security
 DAOstack Arc is still on its alpha version.
