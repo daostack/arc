@@ -5,7 +5,7 @@
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 2358800 gas.***
+*Total deploy cost(deposit + execution): **No bound available.***
 
 > Controller contract
 

@@ -5,7 +5,7 @@
 
 *Execution cost: **No bound available.***
 
-*Total deploy cost(deposit + execution): **less than 683600 gas.***
+*Total deploy cost(deposit + execution): **No bound available.***
 
 > DAOToken, base on zeppelin contract.
 
