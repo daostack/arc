@@ -85,7 +85,8 @@ const clean = (argv,code = 0) => {
  */
 const update = (argv) => {
     try{
-        shell.mkdir('-p',argv.output);
+        shell.rm('-rf',argv.output);
+        shell.mkdir(argv.output);
         shell.cp('-rf',argv.headers+'/*',argv.output);
         const files = shell.find(argv.input).filter(x => path.extname(x) === '.sol');
         print(`Compiling ${files.length} files from ${argv.input} ...`);
@@ -133,6 +134,7 @@ const deploy = (argv) => {
     setDocsDir(`${build_dir}/${docs_dir}`); // set `docs_dir` in config to `build_dir/docs_dir`
     exec(argv,'mkdocs gh-deploy --force');
     setDocsDir(docs_dir); // set `docs_dir` in config back to `docs_dir`
+    clean(argv);
 };
 
 /**
