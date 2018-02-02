@@ -18,7 +18,7 @@ const yargs = require('yargs');
 const build_dir = '.docs_build';
 const docs_dir = 'docs';
 
-// ---- helpers
+// ---- start helpers
 
 const print = (o) =>
     typeof o === 'string' ?
@@ -151,30 +151,28 @@ const serve = (argv) => {
  * parse args and execute relevant command.
  */
 yargs
-    .command('clean', 'render `.md` files from `.sol` files', (cmd) => cmd, clean)
-    .command('deploy', 'update & deploy to remote gh-pages branch', (cmd) => cmd, deploy)
-    .command('serve', 'preview docs website locally', (cmd) => cmd, serve)
-    .command('update', 're-render `.md` files from `.sol` files', (cmd) => cmd, update)
-    .command('build', 'update docs & build website', (cmd) => cmd, build)
+    .command('clean', 'Remove any build artifacts that should not be commited to the repo.', (cmd) => cmd, clean)
+    .command('deploy', 'Update & push docs website to `gh-pages` branch in the remote repo.', (cmd) => cmd, deploy)
+    .command('preview', 'Start a dev-server locally to preview the website while editing. Note: this is not the final website.', (cmd) => cmd, serve)
+    .command('update', 'Render `.md` files to `output` from `.sol` files in `input`, include files from `headers` in the template.', (cmd) => cmd, update)
+    .command('build', 'Update docs & build the docs website to `sitedir`', (cmd) => cmd, build)
     .option('input', {
         alias: 'i',
-        describe: 'path to `.sol` files dir',
+        describe: 'Directory to take `.sol` files from while generating docs.',
         default: 'contracts'
     })
     .option('output', {
         alias: 'o',
-        describe: 'path to generated docs dir',
+        describe: 'Directory to output generated docs.',
         default: 'docs/generated_docs'
     })
     .option('headers', {
         alias: 'h',
-        describe: 'path to headers dir to be included in the docs',
+        describe: 'Directory of `.md` files to be included in generate docs.',
         default: 'docs/contracts'
     })
     .option('sitedir', {
         alias: 's',
-        describe: 'directory for the documentation website',
+        describe: 'Directory to output the documentation website.',
         default: 'site'
     }).argv;
-
-// TODO: remove constant string dependencies.
