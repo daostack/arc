@@ -1751,11 +1751,6 @@
             "title": "function addGlobalConstraint"
         }, 
         {
-            "location": "/generated_docs/controller/", 
-            "text": "hello", 
-            "title": "Home"
-        }, 
-        {
             "location": "/generated_docs/globalConstraints/GlobalConstraintInterface/", 
             "text": "GlobalConstraintInterface\n\n\nsee the source\n\n\nCode deposit cost: \nNo bound available.\n\n\nExecution cost: \nNo bound available.\n\n\nTotal deploy cost(deposit + execution): \nNo bound available.\n\n\n\n\nReference\n\n\nConstructors\n\n\nNothing\n\n\nEvents\n\n\nNothing\n\n\nFallback\n\n\nNothing\n\n\nFunctions\n\n\nfunction\n pre\n\n\nExecution cost: \nNo bound available.\n\n\nnonpayable\n\n\nInputs:\n\n\n\n\n_scheme\n \nof type address\n\n\n_params\n \nof type bytes32\n\n\n_method\n \nof type bytes32\n\n\n\n\nReturns:\n\n\n\n\nunnamed\n \nof type bool\n\n\n\n\nfunction\n post\n\n\nExecution cost: \nNo bound available.\n\n\nnonpayable\n\n\nInputs:\n\n\n\n\n_scheme\n \nof type address\n\n\n_params\n \nof type bytes32\n\n\n_method\n \nof type bytes32\n\n\n\n\nReturns:\n\n\n\n\nunnamed\n \nof type bool", 
             "title": "GlobalConstraintInterface"
@@ -2474,31 +2469,6 @@
             "location": "/generated_docs/universalSchemes/ExecutableInterface/#function-execute", 
             "text": "Execution cost:  No bound available.  nonpayable  Inputs:   _proposalId   of type bytes32  _avatar   of type address  _param   of type int256   Returns:   unnamed   of type bool", 
             "title": "function execute"
-        }, 
-        {
-            "location": "/generated_docs/universalSchemes/GenesisScheme/", 
-            "text": "The \nGenesis Scheme\n is a special scheme that creates a brand new DAO and initializes it with a set of default \nSchemes\n.\nIt is the main way to create new DAOs on the DAOStack.\n\n\nUsage\n\n\nStep 1: Create the organization\n\n\n 1\n 2\n 3\n 4\n 5\n 6\n 7\n 8\n 9\n10\nGenesisScheme gs = new GenesisScheme();\naddress avatar = \n    gs.forgeOrg(\n        \nOrganization name\n,\n        \nToken name\n,\n        \nTKN\n, /*Token symbol*/\n        [me,you], /*founders addresses*/\n        [5,7], /*founders initial token allocation*/\n        [10,12], /*founders initial reputation allocation*/\n    );\n\n\n\n\n\n\nStep 2: Configure some schemes\n\n\n 1\n 2\n 3\n 4\n 5\n 6\n 7\n 8\n 9\n10\nContributionReward crScheme = new ContributionReward();\nbytes32 paramsHash = crScheme.setParameters(...);\n\nbytes4 permission = 0; /* set to zero = no special permissions */\n    /* permission is a 4 bit number indicating what kind of operations can the scheme do in this organization:\n        1st bit - irrelevent to us.\n        2nd bit - can register other schemes.\n        3rd bit - can add/remove global constraints.\n        4th bit - can upgrade controller. \n    */\n\n\n\n\n\n\nStep 3: Register schemes with the organization\n\n\n1\n2\n3\n4\n5\n6\n7\ngs.setSchemes(\n    Avatar(avatar),\n    [address(crSchemes)], /* schemes to regsiter*/\n    [paramsHash], /* params hash */\n    [true], /* is the scheme a universal scheme */\n    [permission] \n);", 
-            "title": "GenesisScheme"
-        }, 
-        {
-            "location": "/generated_docs/universalSchemes/GenesisScheme/#usage", 
-            "text": "", 
-            "title": "Usage"
-        }, 
-        {
-            "location": "/generated_docs/universalSchemes/GenesisScheme/#step-1-create-the-organization", 
-            "text": "1\n 2\n 3\n 4\n 5\n 6\n 7\n 8\n 9\n10 GenesisScheme gs = new GenesisScheme();\naddress avatar = \n    gs.forgeOrg(\n         Organization name ,\n         Token name ,\n         TKN , /*Token symbol*/\n        [me,you], /*founders addresses*/\n        [5,7], /*founders initial token allocation*/\n        [10,12], /*founders initial reputation allocation*/\n    );", 
-            "title": "Step 1: Create the organization"
-        }, 
-        {
-            "location": "/generated_docs/universalSchemes/GenesisScheme/#step-2-configure-some-schemes", 
-            "text": "1\n 2\n 3\n 4\n 5\n 6\n 7\n 8\n 9\n10 ContributionReward crScheme = new ContributionReward();\nbytes32 paramsHash = crScheme.setParameters(...);\n\nbytes4 permission = 0; /* set to zero = no special permissions */\n    /* permission is a 4 bit number indicating what kind of operations can the scheme do in this organization:\n        1st bit - irrelevent to us.\n        2nd bit - can register other schemes.\n        3rd bit - can add/remove global constraints.\n        4th bit - can upgrade controller. \n    */", 
-            "title": "Step 2: Configure some schemes"
-        }, 
-        {
-            "location": "/generated_docs/universalSchemes/GenesisScheme/#step-3-register-schemes-with-the-organization", 
-            "text": "1\n2\n3\n4\n5\n6\n7 gs.setSchemes(\n    Avatar(avatar),\n    [address(crSchemes)], /* schemes to regsiter*/\n    [paramsHash], /* params hash */\n    [true], /* is the scheme a universal scheme */\n    [permission] \n);", 
-            "title": "Step 3: Register schemes with the organization"
         }, 
         {
             "location": "/generated_docs/universalSchemes/GlobalConstraintRegistrar/", 
