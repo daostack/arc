@@ -48,7 +48,7 @@ The main configurable and extendable building blocks of DAOs are:
 Developers can create and extend *elements* to define more rules that DAOs can subscribe to.
 Those *elements* can then be registered(for a fee) to a public database called *Compendium*.
 
-### Contributing to Arc Docs
+## Contributing to Arc Docs
 Same as [CONTIBUTING](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.md), with the following additions:
 
 1. Directory structure:
