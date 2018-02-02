@@ -59,7 +59,7 @@ A common workaround is to use [Docker](https://www.docker.com/).
 1. In windows `cd path/to/local/repo`
 2. Run `docker run -it -v ${pwd}:/home/daostack node /bin/bash`
 3. Now you are inside the container, run `$ cd /home/daostack`
-4. Continue development as usual inside the container. your changes are automatically synchronized with the host(windows) local repo.
+4. Continue development as usual inside the container. Your changes are automatically synchronized with the host (windows) local repo.
 
 ## Security
 DAOstack Arc is still on its alpha version.
