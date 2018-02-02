@@ -1,12 +1,12 @@
 /**
  * This file contains various templates used to render `.md` files.
- * 
+ *
  * author: Matan Tsuberi (dev.matan.tsuberi@gmail.com)
  */
 
 const path = require('path');
 
-/* This is a little trick to make templates more readable. 
+/* This is a little trick to make templates more readable.
  * used in templates like :
  * `line1${N
  * }line2`
@@ -38,7 +38,7 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
     const functionComment = (obj) => obj.details ? `> ${obj.details.trim()}${N}` : '';
     const paramComment = (obj, name) => obj.params && obj.params[name] ? `- ${obj.params[name]}` : '';
 
-    const modifiers = (fn) => 
+    const modifiers = (fn) =>
         `${N}**${
             [...fn.payable ? ['payable'] : [],
             ...fn.constant ? ['constant'] : [],
@@ -97,8 +97,8 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
         }[see the source](https://github.com/daostack/daostack/tree/master/${file})${N}${N
         }*Code deposit cost: **${gasEstimate(gas.creation[1])}***${N}${N
         }*Execution cost: **${gasEstimate(gas.creation[0])}***${N}${N
-        }*Total deploy cost(deposit + execution): **${gasEstimate(gas.creation[0]+gas.creation[1])}***${N}${N
-        }> ${description}${N 
+        }*Total deploy cost(deposit + execution): **${gasEstimate(gas.creation[0] && gas.creation[1] ? gas.creation[0] + gas.creation[1] : null)}***${N}${N
+        }> ${description}${N
         }${header}${N
         }## Reference${N
         }### Constructors${N
@@ -123,9 +123,9 @@ const tableOfContents = (hierarchy,header) => {
     const tree = (indent,hierarchy) => {
         const spaces = Array(indent).fill(' ').join('');
         return (
-            Object.keys(hierarchy).map(k => 
+            Object.keys(hierarchy).map(k =>
                 typeof hierarchy[k] === 'string' ?
-                    `${spaces}- [${k}](${hierarchy[k].replace(path.sep,'/')})` 
+                    `${spaces}- [${k}](${hierarchy[k].replace(path.sep,'/')})`
                 :
                     `${spaces}- ${k}/ ${N
                     }${tree(indent+2,hierarchy[k])}`
