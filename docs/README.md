@@ -8,8 +8,6 @@ For more: [Read the official DAOstack Whitepaper](https://github.com/daostack/do
 
 Arc is the lower layer of the DAOStack. It consists of several smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
 
-![The DAOStack](img/the-dao-stack.png)
-
 The DAOStack:
 
 1. [Ethereum](https://www.ethereum.org/) - *Base blockchain.*
@@ -40,13 +38,6 @@ The main configurable and extendable building blocks of DAOs are:
 * **[Global constraints](generated_docs/globalConstraints/GlobalConstraintInterface.md)** *define the "don't" of the DAO, they define conditions that must always hold and can prevent an action from being taken if it violates these conditions.* Examples of Global Constraints are:
     * Limiting the amount of tokens or reputation that can be minted per day.
     * Blacklisting certain participants from performing certain actions.
-
-### ArcHives and the Developer Ecosystem
-
-#### Compendium
-
-Developers can create and extend *elements* to define more rules that DAOs can subscribe to.
-Those *elements* can then be registered(for a fee) to a public database called *Compendium*.
 
 ## Contributing to Arc Docs
 Same as [CONTIBUTING](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.md), with the following additions:
