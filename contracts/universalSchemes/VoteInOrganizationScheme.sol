@@ -90,15 +90,20 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     public
     returns(bytes32)
     {
-        uint numOfChoices = _originalIntVote.getNumberOfChoices(_originalProposalId);
+        uint originalNumOfChoices = _originalIntVote.getNumberOfChoices(_originalProposalId);
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(numOfChoices+1, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
+
+        //The voting choices can be in the range of 0 - originalNumOfChoices+1 .
+        //vote 0 - for not to vote in the other organization.
+        //vote originalNumOfChoices+1 to vote 0 in the other organization.
+        bytes32 proposalId = intVote.propose(originalNumOfChoices+1, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
+
 
         organizationsData[_avatar][proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
             originalProposalId: _originalProposalId,
-            originalNumOfChoices: numOfChoices
+            originalNumOfChoices: originalNumOfChoices
         });
         NewVoteProposal(
             _avatar,
@@ -106,7 +111,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
             params.intVote,
             _originalIntVote,
             _originalProposalId,
-            numOfChoices
+            originalNumOfChoices
         );
         return proposalId;
     }
@@ -131,11 +136,16 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         // If no decision do nothing:
         if (_param != 0) {
         // Define controller and get the params:
+            int param = _param;
+            if (param > int(proposal.originalNumOfChoices)) {
+                param = 0;
+            }
+
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             bytes32[] memory tmp = new bytes32[](3);
             tmp[0] = bytes32(address(proposal.originalIntVote));
             tmp[1] = proposal.originalProposalId;
-            tmp[2] = bytes32(_param);
+            tmp[2] = bytes32(param);
             retVal = controller.genericAction(tmp,_avatar);
           }
         ProposalExecuted(_avatar, _proposalId);
@@ -144,7 +154,6 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
 
     /**
     * @dev do the actual voting in the other organization in behalf of the organization's avatar.
-    *      This function is deleted called by the organization.
     * @param _params array represent the voting .
     *        _params[0] - the address of the voting machine.
     *        _params[1] - the proposalId.

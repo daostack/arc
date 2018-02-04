@@ -127,4 +127,22 @@ contract('VoteInOrganizationScheme', function(accounts) {
                await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
                await helpers.checkVoteInfo(anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote,originalProposalId, testSetup.org.avatar.address, [1, anotherTestSetup.voteInOrganizationParams.votingMachine.reputationArray[2]]);
              });
+
+             it("execute proposeVote -positive decision vote orignalNumberOfChoices + 1 - check action", async function() {
+               var testSetup = await setup(accounts);
+
+               var anotherTestSetup =  await setup(accounts,testSetup.org.avatar.address);
+               var executable = await ExecutableTest.new();
+               var tx = await anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.propose(2,
+                                                                                  anotherTestSetup.voteInOrganizationParams.votingMachine.params,
+                                                                                  anotherTestSetup.org.avatar.address,
+                                                                                  executable.address,accounts[0]);
+               var  originalProposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+               tx = await testSetup.voteInOrganization.proposeVote(testSetup.org.avatar.address,
+                                                                   anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address,
+                                                                   originalProposalId);
+               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+               await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(proposalId,3,{from:accounts[2]});
+               await helpers.checkVoteInfo(anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote,originalProposalId, testSetup.org.avatar.address, [0, anotherTestSetup.voteInOrganizationParams.votingMachine.reputationArray[2]]);
+             });
 });
