@@ -136,7 +136,7 @@ contract('VoteInOrganizationScheme', function(accounts) {
                var tx = await anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.propose(2,
                                                                                   anotherTestSetup.voteInOrganizationParams.votingMachine.params,
                                                                                   anotherTestSetup.org.avatar.address,
-                                                                                  executable.address);
+                                                                                  executable.address,accounts[0]);
                var  originalProposalId = await helpers.getValueFromLogs(tx, '_proposalId');
                tx = await testSetup.voteInOrganization.proposeVote(testSetup.org.avatar.address,
                                                                    anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address,
