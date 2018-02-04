@@ -97,7 +97,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         //The voting choices can be in the range of 0 - originalNumOfChoices+1 .
         //vote 0 - for not to vote in the other organization.
         //vote originalNumOfChoices+1 to vote 0 in the other organization.
-        bytes32 proposalId = intVote.propose(originalNumOfChoices+1, params.voteParams, _avatar, ExecutableInterface(this));
+        bytes32 proposalId = intVote.propose(originalNumOfChoices+1, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
 
 
         organizationsData[_avatar][proposalId] = VoteProposal({
