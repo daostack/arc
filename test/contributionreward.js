@@ -160,7 +160,7 @@ contract('ContributionReward', function(accounts) {
           var nativeTokenReward = 12;
           var ethReward = 12;
           //send some ether to the org avatar
-          var otherAvatar = await Avatar.new();
+          var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
           web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
           var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                          "description",
@@ -184,7 +184,7 @@ contract('ContributionReward', function(accounts) {
            var ethReward = 12;
            var externalTokenReward = 12;
            //send some ether to the org avatar
-           var otherAvatar = await Avatar.new();
+           var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
            web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
            var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                           "description",
@@ -206,7 +206,7 @@ contract('ContributionReward', function(accounts) {
             var ethReward = 12;
             var externalTokenReward = 12;
             //send some ether to the org avatar
-            var otherAvatar = await Avatar.new();
+            var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
             web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
             var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                            "description",

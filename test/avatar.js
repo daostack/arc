@@ -71,7 +71,7 @@ contract('Avatar', function (accounts)  {
       assert.equal(balance1, 50);
     });
 
-    it("externalTokenTransferFrom & ExternalTokenIncreaseApproval", async () => {
+    it("externalTokenTransferFrom & externalTokenIncreaseApproval", async () => {
       var tx;
       var to   = accounts[1];
       avatar = await setup();

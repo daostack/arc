@@ -41,8 +41,7 @@ contract('VoteInOrganizationScheme', function(accounts) {
     helpers.etherForEveryone();
   });
    it("setParameters", async function() {
-     var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-     var voteInOrganization = await VoteInOrganizationScheme.new(standardTokenMock.address,10,accounts[1]);
+     var voteInOrganization = await VoteInOrganizationScheme.new();
      var absoluteVote = await AbsoluteVote.new();
      await voteInOrganization.setParameters("0x1234",absoluteVote.address);
      var paramHash = await voteInOrganization.getParametersHash("0x1234",absoluteVote.address);

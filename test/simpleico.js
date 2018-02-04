@@ -57,8 +57,7 @@ contract('SimpleICO', function(accounts) {
   });
 
   it("simpleICO send ether to contract - should revert", async function() {
-    var standardTokenMock = await new StandardTokenMock(accounts[0],100);
-    var simpleICO = await SimpleICO.new(standardTokenMock.address,10,accounts[1]);
+    var simpleICO = await SimpleICO.new();
     var account1BalanceBefore = web3.eth.getBalance(accounts[1])/web3.toWei('1', "ether");
     try{
     await web3.eth.sendTransaction({from:accounts[1],to:simpleICO.address, value: web3.toWei('1', "ether")});
@@ -72,8 +71,7 @@ contract('SimpleICO', function(accounts) {
   });
 
   it("simpleICO setParameters", async function() {
-    var standardTokenMock = await new StandardTokenMock(accounts[0],100);
-    var simpleICO = await SimpleICO.new(standardTokenMock.address,10,accounts[1]);
+    var simpleICO = await SimpleICO.new();
     await simpleICO.setParameters(1000,2,0,0,accounts[1],accounts[1]);
     var paramHash = await simpleICO.getParametersHash(1000,2,0,0,accounts[1],accounts[1]);
     var parameters = await simpleICO.parameters(paramHash);
@@ -99,10 +97,8 @@ contract('SimpleICO', function(accounts) {
       });
 
       it("simpleICO isActive test start block  ", async function() {
-        var beneficiary = accounts[0];
-        var fee =10;
         var standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-        var simpleICO = await SimpleICO.new(standardTokenMock.address,fee,beneficiary);
+        var simpleICO = await SimpleICO.new();
         var org = await setupOrganization(accounts[0],1000,1000);
         var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,1000,1,web3.eth.blockNumber+100,web3.eth.blockNumber+100+500);
         //give some tokens to organization avatar so it could register the universal scheme.
@@ -113,10 +109,8 @@ contract('SimpleICO', function(accounts) {
         });
 
       it("simpleICO isActive test end block  ", async function() {
-        var beneficiary = accounts[0];
-        var fee =10;
         var standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-        var simpleICO = await SimpleICO.new(standardTokenMock.address,fee,beneficiary);
+        var simpleICO = await SimpleICO.new();
         var org = await setupOrganization(accounts[0],1000,1000);
         var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,1000,1,web3.eth.blockNumber,web3.eth.blockNumber);
         //give some tokens to organization avatar so it could register the universal scheme.
@@ -128,12 +122,10 @@ contract('SimpleICO', function(accounts) {
         });
 
       it("simpleICO isActive test cap  ", async function() {
-        var beneficiary = accounts[0];
-        var fee =10;
         var cap = 2;
         var price = 1;
         var standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-        var simpleICO = await SimpleICO.new(standardTokenMock.address,fee,beneficiary);
+        var simpleICO = await SimpleICO.new();
         var org = await setupOrganization(accounts[0],1000,1000);
         var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,cap,price);
         //give some tokens to organization avatar so it could register the universal scheme.
@@ -147,11 +139,9 @@ contract('SimpleICO', function(accounts) {
         });
 
       it("simpleICO haltICO ", async function() {
-        var beneficiary = accounts[0];
-        var fee =10;
         var organization;
         var standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-        var simpleICO = await SimpleICO.new(standardTokenMock.address,fee,beneficiary);
+        var simpleICO = await SimpleICO.new();
         try {
          await simpleICO.haltICO(accounts[0]);
          assert(false,"haltICO should  fail - accounts[0] is not avatar and not registered yet");

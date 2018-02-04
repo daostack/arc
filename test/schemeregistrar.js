@@ -38,8 +38,7 @@ const setup = async function (accounts) {
 contract('SchemeRegistrar', function(accounts) {
 
    it("setParameters", async function() {
-     var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-     var schemeRegistrar = await SchemeRegistrar.new(standardTokenMock.address,10,accounts[1]);
+     var schemeRegistrar = await SchemeRegistrar.new();
      var params = await setupSchemeRegistrarParams(schemeRegistrar);
      var parameters = await schemeRegistrar.parameters(params.paramsHash);
      assert.equal(parameters[2],params.votingMachine.absoluteVote.address);

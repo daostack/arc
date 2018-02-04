@@ -1,7 +1,6 @@
 import * as helpers from './helpers';
 const constants = require('./constants');
 const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar.sol");
-const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const Controller = artifacts.require("./Controller.sol");
@@ -28,8 +27,7 @@ const setupGlobalConstraintRegistrarParams = async function(
 const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
-   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
-   testSetup.globalConstraintRegistrar = await GlobalConstraintRegistrar.new(testSetup.standardTokenMock.address,testSetup.fee,accounts[0]);
+   testSetup.globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
    testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.globalConstraintRegistrarParams= await setupGlobalConstraintRegistrarParams(testSetup.globalConstraintRegistrar);
@@ -41,8 +39,7 @@ const setup = async function (accounts) {
 contract('GlobalConstraintRegistrar', function(accounts) {
 
    it("setParameters", async function() {
-     var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-     var globalConstraintRegistrar = await GlobalConstraintRegistrar.new(standardTokenMock.address,10,accounts[1]);
+     var globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
      var params = await setupGlobalConstraintRegistrarParams(globalConstraintRegistrar);
      var parameters = await globalConstraintRegistrar.parameters(params.paramsHash);
      assert.equal(parameters[1],params.votingMachine.absoluteVote.address);
