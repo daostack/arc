@@ -85,9 +85,13 @@ const clean = (argv,code = 0) => {
  */
 const update = (argv) => {
     try{
+        // keep `${argv.output}/README.md`, as we don't want to override it with `${argv.headers}/README.md`
+        const readme = fs.readFileSync(`${argv.output}/README.md`,'utf-8');
         shell.rm('-rf',argv.output);
         shell.mkdir(argv.output);
         shell.cp('-rf',argv.headers+'/*',argv.output);
+        // restore `${argv.output}/README.md`
+        fs.writeFileSync(`${argv.output}/README.md`,readme,'utf-8');
         const files = shell.find(argv.input).filter(x => path.extname(x) === '.sol');
         print(`Compiling ${files.length} files from ${argv.input} ...`);
         const output = compile(files);
