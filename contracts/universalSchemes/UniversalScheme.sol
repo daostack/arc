@@ -4,7 +4,7 @@ import "./UniversalSchemeInterface.sol";
 import "../controller/ControllerInterface.sol";
 import "../controller/Avatar.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "zeppelin-solidity/contracts/token/StandardToken.sol";
+import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 
 
 contract UniversalScheme is Ownable, UniversalSchemeInterface { //
