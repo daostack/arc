@@ -116,7 +116,7 @@ contract ContributionReward is UniversalScheme {
             _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
         }
 
-        bytes32 contributionId = controllerParams.intVote.propose(2, controllerParams.voteApproveParams, _avatar, ExecutableInterface(this));
+        bytes32 contributionId = controllerParams.intVote.propose(2, controllerParams.voteApproveParams, _avatar, ExecutableInterface(this),msg.sender);
 
         // Check beneficiary is not null:
         address beneficiary = _beneficiary;

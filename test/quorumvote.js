@@ -93,7 +93,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a vote
     const paramsHash = await QuorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await QuorumVote.propose(5, paramsHash, avatar.address, executable.address);
+    let tx = await QuorumVote.propose(5, paramsHash, avatar.address, executable.address, accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -128,7 +128,7 @@ contract('QuorumVote', function (accounts) {
     // 25% precReq proposal
     quorumVote = await setupQuorumVote(true, 25);
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 25, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -170,7 +170,7 @@ contract('QuorumVote', function (accounts) {
     try {
       let quorumVote = await setupQuorumVote(true, 22);
       const paramsHash = await quorumVote.getParametersHash(reputation.address, 22, true);
-      await quorumVote.propose(99, paramsHash, avatar.address, executable.address);
+      await quorumVote.propose(99, paramsHash, avatar.address, executable.address,accounts[0]);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
       helpers.assertVMException(error);
@@ -180,7 +180,7 @@ contract('QuorumVote', function (accounts) {
     try {
       let quorumVote = await setupQuorumVote(true, 22);
       const paramsHash = await quorumVote.getParametersHash(reputation.address, 22, true);
-      await quorumVote.propose(-1, paramsHash, avatar.address, executable.address);
+      await quorumVote.propose(-1, paramsHash, avatar.address, executable.address,accounts[0]);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
       helpers.assertVMException(error);
@@ -189,7 +189,7 @@ contract('QuorumVote', function (accounts) {
     // propose a proposal
     quorumVote = await setupQuorumVote(true, 3);
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 3, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -215,7 +215,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a vote
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(10, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(10, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -275,7 +275,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a vote
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -298,7 +298,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a vote
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -321,7 +321,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a vote
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -342,7 +342,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a vote
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, false);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -361,7 +361,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -386,11 +386,11 @@ contract('QuorumVote', function (accounts) {
     //
     //   // propose a proposal
     //   paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    //   await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    //   await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     //
     //   paramsHash = await quorumVote.getParametersHash(helpers.NULL_ADDRESS, 50, true);
     //   try {
-    //     await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    //     await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     //     assert(false, "propose was supposed to throw but didn't.");
     //   } catch(error) {
     //     helpers.assertVMException(error);
@@ -398,7 +398,7 @@ contract('QuorumVote', function (accounts) {
     //
     //   paramsHash = await quorumVote.getParametersHash(helpers.SOME_ADDRESS, 50, true);
     //   try {
-    //     await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    //     await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     //     assert(false, "propose was supposed to throw but didn't.");
     //   } catch(error) {
     //     helpers.assertVMException(error);
@@ -412,7 +412,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 19, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -452,7 +452,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 19, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -473,7 +473,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a vote
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -489,7 +489,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a vote
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -505,7 +505,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a vote
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -532,7 +532,7 @@ contract('QuorumVote', function (accounts) {
     quorumVote = await setupQuorumVote(true, 19);
 
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 19, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -549,7 +549,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a new proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -574,7 +574,7 @@ contract('QuorumVote', function (accounts) {
   //
   //   // Try to propose - an exception should be raised
   //   try {
-  //     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+  //     let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
   //     assert(false, 'Should throw an exception but didn\'t');
   //   } catch (ex) {
   //     helpers.assertVMException(ex);
@@ -595,7 +595,7 @@ contract('QuorumVote', function (accounts) {
     // Send empty rep system to the absoluteVote contract
     await quorumVote.setParameters(reputation.address, 50, true);
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, helpers.NULL_ADDRESS);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
 
     // Minority vote - no execution - no exception
@@ -609,7 +609,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a new proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -649,7 +649,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a new proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -678,7 +678,7 @@ contract('QuorumVote', function (accounts) {
 
     // propose a new proposal
     const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
-    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
