@@ -1,4 +1,4 @@
-## Reputation
+# Reputation
 
 A DAO has Reputation System which allows peers to rate other peers in order to build trust . A reputation is use to assign influence measure to a DAO'S peers.
 For example : A DAO might choose to use a reputation based voting mechanism in order to take decisions. In this case a peer with relatively higher reputation value will have more influence in the organization.
