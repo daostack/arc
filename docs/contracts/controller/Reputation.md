@@ -1,7 +1,7 @@
 ## Reputation
 
-
-A *Reputation* is a way of assigning importance to participants and their votes.
+A DAO has Reputation System which allows peers to rate other peers in order to build trust . A reputation is use to assign influence measure to a DAO'S peers.
+For example : A DAO might choose to use a reputation based voting mechanism in order to take decisions. In this case a peer with relatively higher reputation value will have more influence in the organization.
 *Reputation* is similar to regular tokens but with one crucial difference: **It is non-transferable**.
 
 The Reputation contract maintain a map of address to reputation value.
