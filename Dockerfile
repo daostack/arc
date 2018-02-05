@@ -18,7 +18,7 @@ RUN apt-get -y -qq install python-pip build-essential libssl-dev libffi-dev pyth
 RUN pip install mkdocs mkdocs-material
 
 # truffle
-RUN npm i -g truffle
+RUN npm i -g truffle ganache-cli
 
 # clone the project if not cloned, else fetch latest. in any case install all `package.json` deps.
 CMD (git -C . fetch || git clone https://github.com/daostack/arc.git .) && yarn && /bin/bash
