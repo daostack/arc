@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/daostack/arc.svg?branch=master)](https://travis-ci.org/daostack/arc)
-[![NPM Package](https://img.shields.io/npm/v/daostack-arc.svg?style=flat-square)](https://www.npmjs.org/package/daostack-arc)
+[![NPM Package](https://img.shields.io/npm/v/@daostack/arc.svg?style=flat-square)](https://www.npmjs.org/package/@daostack/arc)
 # Arc
 
 Arc is the lower layer of the DAO stack. It consists a set of smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
