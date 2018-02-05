@@ -32,7 +32,7 @@ A scheme can have any combination of the following permissions  :
 
 ### Parameters
 
-The controller hold the hash of a parameters set for each scheme.
+The controller holds the hash of a parameters set for each scheme.
 
 This way a scheme can define a set of parameters which are specific for an organization(defined by the controller).
 
