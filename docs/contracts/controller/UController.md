@@ -1,4 +1,6 @@
-# UNIVERSAL CONTROLLER
+# UController
+
+# Universal Conroller
 
 The universal controller behave like a [controller](Controller.md) for multiple DAOs.
 
