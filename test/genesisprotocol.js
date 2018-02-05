@@ -62,7 +62,7 @@ const setupGenesisProtocolParams = async function(
 
 const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=0) {
   var org = new helpers.Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,controller);
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,controller,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -110,7 +110,6 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
                                          _governanceFormulasInterface);
    var permissions = "0x00000000";
    testSetup.executable = await ExecutableTest.new();
-
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.genesisProtocol.address],[testSetup.genesisProtocolParams.paramsHash],[permissions]);
 
    return testSetup;

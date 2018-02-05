@@ -73,6 +73,9 @@ contract('GlobalConstraintRegistrar', function(accounts) {
          var testSetup = await setup(accounts);
          var controller = await Controller.at(await testSetup.org.avatar.owner());
          var globalConstraintMock = await GlobalConstraintMock.new();
+         await globalConstraintMock.setConstraint("method",false,false);
+
+
 
          var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                         globalConstraintMock.address,
@@ -81,14 +84,18 @@ contract('GlobalConstraintRegistrar', function(accounts) {
          assert.equal(tx.logs.length, 1);
          assert.equal(tx.logs[0].event, "NewGlobalConstraintsProposal");
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-         assert.equal(await controller.globalConstraintsCount(0),0);
+         let gcCount =  await controller.globalConstraintsCount(0);
+         assert.equal(gcCount[0],0);
+         assert.equal(gcCount[1],0);
          tx = await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-         assert.equal(await controller.globalConstraintsCount(0),1);
+         gcCount =  await controller.globalConstraintsCount(0);
+         assert.equal(gcCount[0],1);
         });
 
        it("proposeToRemoveGC log", async function() {
          var testSetup = await setup(accounts);
          var globalConstraintMock =await GlobalConstraintMock.new();
+         await globalConstraintMock.setConstraint("method",false,false);
 
          var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                         globalConstraintMock.address,
@@ -119,6 +126,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
          it("proposeToRemoveGC check owner vote", async function() {
            var testSetup = await setup(accounts);
            var globalConstraintMock =await GlobalConstraintMock.new();
+           await globalConstraintMock.setConstraint("method",false,false);
 
            var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                           globalConstraintMock.address,
@@ -137,6 +145,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
             var testSetup = await setup(accounts);
             var controller = await Controller.at(await testSetup.org.avatar.owner());
             var globalConstraintMock =await GlobalConstraintMock.new();
+            await globalConstraintMock.setConstraint("method",false,false);
 
             var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                            globalConstraintMock.address,
@@ -150,15 +159,18 @@ contract('GlobalConstraintRegistrar', function(accounts) {
             assert.equal(tx.logs.length, 1);
             assert.equal(tx.logs[0].event, "RemoveGlobalConstraintsProposal");
             proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-            assert.equal(await controller.globalConstraintsCount(0),1);
+            let count = await controller.globalConstraintsCount(0);
+            assert.equal(count[0],1);
             await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-            assert.equal(await controller.globalConstraintsCount(0),0);
+            count = await controller.globalConstraintsCount(0);
+            assert.equal(count[0],0);
            });
 
            it("execute proposeToRemoveGC (same as proposeGlobalConstraint) vote=NO ", async function() {
              var testSetup = await setup(accounts);
              var controller = await Controller.at(await testSetup.org.avatar.owner());
              var globalConstraintMock =await GlobalConstraintMock.new();
+             await globalConstraintMock.setConstraint("method",false,false);
 
              var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                             globalConstraintMock.address,
@@ -166,6 +178,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                             testSetup.globalConstraintRegistrarParams.votingMachine.params);
              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
              await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
-             assert.equal(await controller.globalConstraintsCount(0),0);
+             let count = await controller.globalConstraintsCount(0);
+             assert.equal(count[0],0);
         });
 });

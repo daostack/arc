@@ -1,6 +1,7 @@
 pragma solidity ^0.4.19;
 
 import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "./GlobalConstraintInterface.sol";
 
 
 /**
@@ -62,5 +63,13 @@ contract TokenCapGC {
             return false;
           }
         return true;
+    }
+
+    /**
+     * @dev when return if this globalConstraints is pre, post or both.
+     * @return CallPhase enum indication 0 -Nothig ,1 - pre ,2- post ,3 - both.
+     */
+    function when() public pure returns(GlobalConstraintInterface.CallPhase) {
+        return GlobalConstraintInterface.CallPhase.Post;
     }
 }

@@ -40,10 +40,14 @@ contract UController is ControllerInterface {
         DAOToken                  nativeToken;
         Reputation                nativeReputation;
         mapping(address=>Scheme)  schemes;
-      // globalConstraints that determine pre- and post-conditions for all actions on the controller
-        GlobalConstraint[] globalConstraints;
-      // globalConstraintsRegister indicate is a globalConstraints is register or not
-        mapping(address=>GlobalConstraintRegister) globalConstraintsRegister;
+      // globalConstraintsPre that determine pre- conditions for all actions on the controller
+        GlobalConstraint[] globalConstraintsPre;
+        // globalConstraintsPost that determine post-conditions for all actions on the controller
+        GlobalConstraint[] globalConstraintsPost;
+      // globalConstraintsRegisterPre indicate if a globalConstraints is registered as a Pre global constraint.
+        mapping(address=>GlobalConstraintRegister) globalConstraintsRegisterPre;
+      // globalConstraintsRegisterPost indicate if a globalConstraints is registered as a Post global constraint.
+        mapping(address=>GlobalConstraintRegister) globalConstraintsRegisterPost;
         bool exist;
     }
 
@@ -63,9 +67,9 @@ contract UController is ControllerInterface {
     event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
-    event AddGlobalConstraint(address _globalConstraint, bytes32 _params);
-    event RemoveGlobalConstraint(address _globalConstraint ,uint256 _index);
     event UpgradeController(address _oldController,address _newController,address _avatar);
+    event AddGlobalConstraint(address _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when,address indexed _avatar);
+    event RemoveGlobalConstraint(address _globalConstraint ,uint256 _index,bool _isPre,address indexed _avatar);
 
     function UController()public {}
 
@@ -109,13 +113,14 @@ contract UController is ControllerInterface {
 
     modifier onlySubjectToConstraint(bytes32 func,address _avatar) {
         uint index;
-        GlobalConstraint[] memory globalConstraints = organizations[_avatar].globalConstraints;
-        for (index = 0;index<globalConstraints.length;index++) {
-            require((GlobalConstraintInterface(globalConstraints[index].gcAddress)).pre(msg.sender, globalConstraints[index].params, func));
+        GlobalConstraint[] memory globalConstraintsPre = organizations[_avatar].globalConstraintsPre;
+        GlobalConstraint[] memory globalConstraintsPost = organizations[_avatar].globalConstraintsPost;
+        for (index = 0;index<globalConstraintsPre.length;index++) {
+            require((GlobalConstraintInterface(globalConstraintsPre[index].gcAddress)).pre(msg.sender, globalConstraintsPre[index].params, func));
         }
         _;
-        for (index = 0;index<globalConstraints.length;index++) {
-            require((GlobalConstraintInterface(globalConstraints[index].gcAddress)).post(msg.sender, globalConstraints[index].params, func));
+        for (index = 0;index<globalConstraintsPost.length;index++) {
+            require((GlobalConstraintInterface(globalConstraintsPost[index].gcAddress)).post(msg.sender, globalConstraintsPost[index].params, func));
         }
     }
 
@@ -126,7 +131,7 @@ contract UController is ControllerInterface {
      * @param _avatar the organization avatar.
      * @return bool which represents a success
      */
-    function mintReputation(int256 _amount, address _beneficiary,address _avatar)
+    function mintReputation(int256 _amount, address _beneficiary, address _avatar)
     public
     onlyRegisteredScheme(_avatar)
     onlySubjectToConstraint("mintReputation",_avatar)
@@ -236,33 +241,50 @@ contract UController is ControllerInterface {
         return organizations[_avatar].schemes[_scheme].permissions;
     }
 
-  // Global Constraints:
-    function globalConstraintsCount(address _avatar) public constant returns(uint) {
-        return organizations[_avatar].globalConstraints.length;
+   /**
+   * @dev globalConstraintsCount return the global constraint pre and post count
+   * @return uint globalConstraintsPre count.
+   * @return uint globalConstraintsPost count.
+   */
+    function globalConstraintsCount(address _avatar) public constant returns(uint,uint) {
+        return (organizations[_avatar].globalConstraintsPre.length,organizations[_avatar].globalConstraintsPost.length);
     }
 
     function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) public constant returns(bool) {
-        return organizations[_avatar].globalConstraintsRegister[_globalConstraint].register;
+        return (organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint].register ||
+        organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint].register) ;
     }
 
     /**
      * @dev add or update Global Constraint
      * @param _globalConstraint the address of the global constraint to be added.
      * @param _params the constraint parameters hash.
-     * @param _avatar the organization avatar.
+     * @param _avatar the avatar of the organization
      * @return bool which represents a success
      */
-    function addGlobalConstraint(address _globalConstraint, bytes32 _params,address _avatar)
+    function addGlobalConstraint(address _globalConstraint, bytes32 _params, address _avatar)
     public onlyGlobalConstraintsScheme(_avatar) returns(bool)
     {
         Organization storage organization = organizations[_avatar];
-        if (!organization.globalConstraintsRegister[_globalConstraint].register) {
-            organization.globalConstraints.push(GlobalConstraint(_globalConstraint,_params));
-            organization.globalConstraintsRegister[_globalConstraint] = GlobalConstraintRegister(true,organization.globalConstraints.length-1);
-        }else {
-            organization.globalConstraints[organization.globalConstraintsRegister[_globalConstraint].index].params = _params;
+        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
+        if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            if (!organization.globalConstraintsRegisterPre[_globalConstraint].register) {
+                organization.globalConstraintsPre.push(GlobalConstraint(_globalConstraint,_params));
+                organization.globalConstraintsRegisterPre[_globalConstraint] = GlobalConstraintRegister(true,organization.globalConstraintsPre.length-1);
+            }else {
+                organization.globalConstraintsPre[organization.globalConstraintsRegisterPre[_globalConstraint].index].params = _params;
+            }
         }
-        AddGlobalConstraint(_globalConstraint, _params);
+
+        if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            if (!organization.globalConstraintsRegisterPost[_globalConstraint].register) {
+                organization.globalConstraintsPost.push(GlobalConstraint(_globalConstraint,_params));
+                organization.globalConstraintsRegisterPost[_globalConstraint] = GlobalConstraintRegister(true,organization.globalConstraintsPost.length-1);
+           }else {
+                organization.globalConstraintsPost[organization.globalConstraintsRegisterPost[_globalConstraint].index].params = _params;
+           }
+        }
+        AddGlobalConstraint(_globalConstraint, _params,when,_avatar);
         return true;
     }
 
@@ -275,20 +297,12 @@ contract UController is ControllerInterface {
     function removeGlobalConstraint (address _globalConstraint,address _avatar)
     public onlyGlobalConstraintsScheme(_avatar) returns(bool)
     {
-        GlobalConstraintRegister memory globalConstraintRegister = organizations[_avatar].globalConstraintsRegister[_globalConstraint];
-        GlobalConstraint[] storage globalConstraints = organizations[_avatar].globalConstraints;
-
-
-        if (globalConstraintRegister.register) {
-            if (globalConstraintRegister.index < globalConstraints.length-1) {
-                GlobalConstraint memory globalConstraint = organizations[_avatar].globalConstraints[globalConstraints.length-1];
-                globalConstraints[globalConstraintRegister.index] = globalConstraint;
-                organizations[_avatar].globalConstraintsRegister[globalConstraint.gcAddress].index = globalConstraintRegister.index;
-            }
-            globalConstraints.length--;
-            delete organizations[_avatar].globalConstraintsRegister[_globalConstraint];
-            RemoveGlobalConstraint(_globalConstraint,globalConstraintRegister.index);
-            return true;
+        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
+        if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            removeGlobalConstraintPre(_globalConstraint,_avatar);
+        }
+        if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            removeGlobalConstraintPost(_globalConstraint,_avatar);
         }
         return false;
     }
@@ -427,5 +441,57 @@ contract UController is ControllerInterface {
     {
         ExternalTokenDecreaseApproval(msg.sender,_externalToken,_spender,_subtractedValue);
         return (Avatar(_avatar)).externalTokenDecreaseApproval(_externalToken, _spender, _subtractedValue);
+    }
+
+    /**
+     * @dev removeGlobalConstraintPre
+     * @param _globalConstraint the address of the global constraint to be remove.
+     * @param _avatar the organization avatar.
+     * @return bool which represents a success
+     */
+    function removeGlobalConstraintPre(address _globalConstraint,address _avatar)
+    private returns(bool)
+    {
+        GlobalConstraintRegister memory globalConstraintRegister = organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint];
+        GlobalConstraint[] storage globalConstraints = organizations[_avatar].globalConstraintsPre;
+
+        if (globalConstraintRegister.register) {
+            if (globalConstraintRegister.index < globalConstraints.length-1) {
+                GlobalConstraint memory globalConstraint = globalConstraints[globalConstraints.length-1];
+                globalConstraints[globalConstraintRegister.index] = globalConstraint;
+                organizations[_avatar].globalConstraintsRegisterPre[globalConstraint.gcAddress].index = globalConstraintRegister.index;
+              }
+            globalConstraints.length--;
+            delete organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint];
+            RemoveGlobalConstraint(_globalConstraint,globalConstraintRegister.index,true,_avatar);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @dev removeGlobalConstraintPost
+     * @param _globalConstraint the address of the global constraint to be remove.
+     * @param _avatar the organization avatar.
+     * @return bool which represents a success
+     */
+    function removeGlobalConstraintPost(address _globalConstraint,address _avatar)
+    private returns(bool)
+    {
+        GlobalConstraintRegister memory globalConstraintRegister = organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint];
+        GlobalConstraint[] storage globalConstraints = organizations[_avatar].globalConstraintsPost;
+
+        if (globalConstraintRegister.register) {
+            if (globalConstraintRegister.index < globalConstraints.length-1) {
+                GlobalConstraint memory globalConstraint = globalConstraints[globalConstraints.length-1];
+                globalConstraints[globalConstraintRegister.index] = globalConstraint;
+                organizations[_avatar].globalConstraintsRegisterPost[globalConstraint.gcAddress].index = globalConstraintRegister.index;
+              }
+            globalConstraints.length--;
+            delete organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint];
+            RemoveGlobalConstraint(_globalConstraint,globalConstraintRegister.index,false,_avatar);
+            return true;
+        }
+        return false;
     }
 }

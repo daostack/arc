@@ -95,7 +95,7 @@ module.exports = async function(deployer) {
         paramsArray,
         permissionArray);
       //now deploy with universal controller
-      await deployer.deploy(UController);
+      await deployer.deploy(UController, {gas: constants.GENESIS_SCHEME_GAS_LIMIT});
       var uController = await UController.deployed();
       var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
           initTokenInWei, initRepInWei,uController.address);
