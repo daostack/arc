@@ -16,7 +16,6 @@ contract GlobalConstraintMock {
     function setConstraint(bytes method,bool pre,bool post) public returns(bool) {
         testParams[method].pre = pre;
         testParams[method].post = post;
-        currentCallPhase = GlobalConstraintInterface.CallPhase.Never;
 
         if (!pre && !post) {
             currentCallPhase = GlobalConstraintInterface.CallPhase.PreAndPost;

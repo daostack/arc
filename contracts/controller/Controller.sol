@@ -265,9 +265,7 @@ contract Controller is ControllerInterface {
                 globalConstraintsPost[globalConstraintsRegisterPost[_globalConstraint].index].params = _params;
             }
         }
-        if (when != GlobalConstraintInterface.CallPhase.Never) {
-            AddGlobalConstraint(_globalConstraint, _params,when);
-        }
+        AddGlobalConstraint(_globalConstraint, _params,when);
         return true;
     }
 

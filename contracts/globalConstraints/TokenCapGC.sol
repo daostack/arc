@@ -67,7 +67,7 @@ contract TokenCapGC {
 
     /**
      * @dev when return if this globalConstraints is pre, post or both.
-     * @return CallPhase enum indication 0 -Nothig ,1 - pre ,2- post ,3 - both.
+     * @return CallPhase enum indication  Pre, Post or PreAndPost.
      */
     function when() public pure returns(GlobalConstraintInterface.CallPhase) {
         return GlobalConstraintInterface.CallPhase.Post;
