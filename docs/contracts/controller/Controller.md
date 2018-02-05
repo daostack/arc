@@ -38,7 +38,7 @@ This way a scheme can define a set of parameters which are specific for an organ
 
 ## Global constraints
 
-A controller maintains and enforces a global constraints for the organization.
+A controller maintains and enforces global constraints for the organization.
 
 A constraint define what a "cannot be done" in the DAO. e.g limit the number of minted tokens for the DAO.
 
