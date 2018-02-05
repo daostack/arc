@@ -1,4 +1,4 @@
-# CONTROLLER
+# Controller
 
 The controller is the central entity of a DAO.
 
