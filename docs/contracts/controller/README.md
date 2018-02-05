@@ -9,7 +9,6 @@ It is subject to a set of schemes and constraints that determine its behavior, w
 
 It store scheme's parameters for the specific DAO.
 
-The controller contract is aligned with the ControllerInterface. 
 
 
 ## Schemes
@@ -32,7 +31,7 @@ A scheme can have any combination of the following permissions  :
 
 ### Parameters
 
-The controller holds the hash of a parameters set for each scheme.
+The controller hold the hash of a parameters set for each scheme.
 
 This way a scheme can define a set of parameters which are specific for an organization(defined by the controller).
 
@@ -45,3 +44,9 @@ A constraint define what a "cannot be done" in the DAO. e.g limit the number of 
 The global constraints is check before each and after controller operations.
 
 Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or remove global constraint.
+
+### Interface 
+
+As there are currently two types of Controllers provided by DAOstack a Single and Universal controllers there is a need for a unified Controller Interface they both aligned to.
+
+Read about the [Universal Controller](UController.md) for more info. 
