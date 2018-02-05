@@ -42,8 +42,7 @@ contract('OrganizationRegister', function(accounts) {
   });
 
    it("setParameters", async function() {
-     var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-     var organizationRegister = await OrganizationRegister.new(standardTokenMock.address,10,accounts[1]);
+     var organizationRegister = await OrganizationRegister.new();
      await organizationRegister.setParameters(accounts[3],13,accounts[2]);
      var paramHash = await organizationRegister.getParametersHash(accounts[3],13,accounts[2]);
      var parameters = await organizationRegister.parameters(paramHash);

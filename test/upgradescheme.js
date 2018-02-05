@@ -68,8 +68,7 @@ contract('UpgradeScheme', function(accounts) {
   });
 
    it("setParameters", async function() {
-     var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-     var upgradeScheme = await UpgradeScheme.new(standardTokenMock.address,10,accounts[1]);
+     var upgradeScheme = await UpgradeScheme.new();
      var absoluteVote = await AbsoluteVote.new();
      await upgradeScheme.setParameters("0x1234",absoluteVote.address);
      var paramHash = await upgradeScheme.getParametersHash("0x1234",absoluteVote.address);

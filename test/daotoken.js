@@ -3,14 +3,16 @@ const helpers = require('./helpers');
 const DAOToken = artifacts.require("./DAOToken.sol");
 
 contract('DAOToken', accounts => {
+    const testTokenName = "DAOstack";
+    const testTokenSymbol = "STACK";
     it("should put 0 Coins in the first account", async () => {
-        let token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
         let balance = await token.balanceOf.call(accounts[0]);
         assert.equal(balance.valueOf(), 0);
     });
 
     it("should be owned by its creator", async () => {
-        let token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
         let owner = await token.owner();
         assert.equal(owner, accounts[0]);
     });
@@ -18,7 +20,7 @@ contract('DAOToken', accounts => {
     it("should be destructible", async () => {
         // we only test that the function actually exists
         // "real" tests are in zeppelin-solidity/Destructible.js
-        let token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
         let txnhash = await token.destroy();
         assert.isOk(txnhash);
     });
@@ -27,7 +29,7 @@ contract('DAOToken', accounts => {
         helpers.etherForEveryone();
 
         let owner, totalSupply, userSupply;
-        let token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
         totalSupply = await token.totalSupply();
         owner = await token.owner();
         userSupply = await token.balanceOf(owner);
@@ -50,7 +52,7 @@ contract('DAOToken', accounts => {
 
     it("should allow minting tokens only by owner", async () => {
         helpers.etherForEveryone();
-        let token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
         let owner = await token.owner();
         let totalSupply = await token.totalSupply();
 
@@ -68,7 +70,7 @@ contract('DAOToken', accounts => {
     });
 
     it("log the Mint event on mint", async () => {
-        const token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
 
         const tx = await token.mint(accounts[1], 1000, { from: accounts[0] });
 
@@ -79,7 +81,7 @@ contract('DAOToken', accounts => {
     });
 
     it("mint should be reflected in totalSupply", async () => {
-        const token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
 
         await token.mint(accounts[1], 1000, { from: accounts[0] });
         let amount = await token.totalSupply();
@@ -93,7 +95,7 @@ contract('DAOToken', accounts => {
     });
 
     it("mint should be reflected in balances", async () => {
-        const token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
 
         await token.mint(accounts[1], 1000, { from: accounts[0] });
 
@@ -103,7 +105,7 @@ contract('DAOToken', accounts => {
     });
 
     it("totalSupply is 0 on init", async () => {
-        const token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
 
         const totalSupply = await token.totalSupply();
 
@@ -111,7 +113,7 @@ contract('DAOToken', accounts => {
     });
 
     it("burn", async () => {
-        const token = await DAOToken.new();
+        const token = await DAOToken.new(testTokenName,testTokenSymbol);
 
         await token.mint(accounts[1], 1000, { from: accounts[0] });
 
@@ -132,7 +134,7 @@ contract('DAOToken', accounts => {
 
     describe('onlyOwner', () => {
         it('mint by owner', async () => {
-            const token = await DAOToken.new();
+            const token = await DAOToken.new(testTokenName, testTokenSymbol);
             try {
                 await token.mint(accounts[1], 10, { from: accounts[0] });
             } catch (ex) {
@@ -141,7 +143,8 @@ contract('DAOToken', accounts => {
         });
 
         it('mint by not owner', async () => {
-            const token = await DAOToken.new();
+            const token = await DAOToken.new(testTokenName, testTokenSymbol);
+
             try {
                 await token.mint(accounts[1], 10, { from: accounts[1] });
             } catch (ex) {

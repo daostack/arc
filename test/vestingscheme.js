@@ -43,8 +43,7 @@ contract('VestingScheme', function(accounts) {
   });
 
    it("setParameters", async function() {
-     var standardTokenMock = await StandardTokenMock.new(accounts[0],100);
-     var vestingScheme = await VestingScheme.new(standardTokenMock.address,10,accounts[1]);
+     var vestingScheme = await VestingScheme.new();
      var absoluteVote = await AbsoluteVote.new();
      await vestingScheme.setParameters("0x1234",absoluteVote.address);
      var paramHash = await vestingScheme.getParametersHash("0x1234",absoluteVote.address);
