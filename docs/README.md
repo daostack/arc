@@ -6,15 +6,13 @@ Check out the [Generated docs](generated_docs) for detailed documentation on eve
 
 For more: [Read the official DAOstack Whitepaper](https://github.com/daostack/docs/blob/master/DAOstack%20White%20Paper%20V1.0.pdf).
 
-Arc is the lower layer of the DAOStack. It consists of several smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
+Arc is the lower layer of the DAO stack. It consists of several smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
 
-The DAOStack:
+The DAO stack:
 
 1. [Ethereum](https://www.ethereum.org/) - *Base blockchain.*
-2. ArcHives - *A public curated database of [element](#elements)s, organizations and a shared place for community collaboration*.
-3. **Arc - This project**
 4. [Arc.js](https://github.com/daostack/arc.js) - *JavaScript library that talks to Arc, built on top of web3.js.*
-5. [Vanille](https://github.com/daostack/vanille) (and more...) - *Collaborative DApps, built on top of DAOstack using Arc.js*
+5. [Vanille](https://github.com/daostack/vanille) & [Alchemy](https://github.com/daostack/alchemy) - *Collaborative DApps, built on top of DAOstack using Arc.js*
 
 ### The Structure of a DAO
 
