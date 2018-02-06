@@ -83,7 +83,7 @@
   ],
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/daostack/daostack/issues"
+    "url": "https://github.com/daostack/arc/issues"
   },
   "homepage": "https://daostack.io",
   "dependencies": {
