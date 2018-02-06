@@ -69,8 +69,12 @@ interface ControllerInterface {
 
     function getSchemePermissions(address _scheme,address _avatar) public constant returns(bytes4);
 
-  // Global Contraints:
-    function globalConstraintsCount(address _avatar) public constant returns(uint);
+    /**
+     * @dev globalConstraintsCount return the global constraint pre and post count
+     * @return uint globalConstraintsPre count.
+     * @return uint globalConstraintsPost count.
+     */
+    function globalConstraintsCount(address _avatar) public constant returns(uint,uint);
 
     function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) public constant returns(bool);
 
@@ -78,7 +82,7 @@ interface ControllerInterface {
      * @dev add or update Global Constraint
      * @param _globalConstraint the address of the global constraint to be added.
      * @param _params the constraint parameters hash.
-     * @param _avatar address
+     * @param _avatar the avatar of the organization
      * @return bool which represents a success
      */
     function addGlobalConstraint(address _globalConstraint, bytes32 _params,address _avatar)
@@ -87,7 +91,7 @@ interface ControllerInterface {
     /**
      * @dev remove Global Constraint
      * @param _globalConstraint the address of the global constraint to be remove.
-     * @param _avatar address
+     * @param _avatar the organization avatar.
      * @return bool which represents a success
      */
     function removeGlobalConstraint (address _globalConstraint,address _avatar)

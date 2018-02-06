@@ -42,10 +42,15 @@ contract Controller is ControllerInterface {
     Reputation public nativeReputation;
   // newController will point to the new controller after the present controller is upgraded
     address public newController;
-  // globalConstraints that determine pre- and post-conditions for all actions on the controller
-    GlobalConstraint[] public globalConstraints;
-  // globalConstraintsRegister indicate is a globalConstraints is register or not
-    mapping(address=>GlobalConstraintRegister) public globalConstraintsRegister;
+  // globalConstraintsPre that determine pre conditions for all actions on the controller
+
+    GlobalConstraint[] public globalConstraintsPre;
+  // globalConstraintsPost that determine post conditions for all actions on the controller
+    GlobalConstraint[] public globalConstraintsPost;
+  // globalConstraintsRegisterPre indicate if a globalConstraints is registered as a pre global constraint
+    mapping(address=>GlobalConstraintRegister) public globalConstraintsRegisterPre;
+  // globalConstraintsRegisterPost indicate if a globalConstraints is registered as a post global constraint
+    mapping(address=>GlobalConstraintRegister) public globalConstraintsRegisterPost;
 
     event MintReputation (address indexed _sender, address indexed _beneficiary, int256 _amount);
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
@@ -57,9 +62,9 @@ contract Controller is ControllerInterface {
     event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
-    event AddGlobalConstraint(address _globalConstraint, bytes32 _params);
-    event RemoveGlobalConstraint(address _globalConstraint ,uint256 _index);
     event UpgradeController(address _oldController,address _newController);
+    event AddGlobalConstraint(address _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when);
+    event RemoveGlobalConstraint(address _globalConstraint ,uint256 _index,bool _isPre);
 
     function Controller(
         Avatar _avatar
@@ -99,12 +104,12 @@ contract Controller is ControllerInterface {
 
     modifier onlySubjectToConstraint(bytes32 func) {
         uint index;
-        for (index = 0;index<globalConstraints.length;index++) {
-            require((GlobalConstraintInterface(globalConstraints[index].gcAddress)).pre(msg.sender, globalConstraints[index].params, func));
+        for (index = 0;index<globalConstraintsPre.length;index++) {
+            require((GlobalConstraintInterface(globalConstraintsPre[index].gcAddress)).pre(msg.sender, globalConstraintsPre[index].params, func));
         }
         _;
-        for (index = 0;index<globalConstraints.length;index++) {
-            require((GlobalConstraintInterface(globalConstraints[index].gcAddress)).post(msg.sender, globalConstraints[index].params, func));
+        for (index = 0;index<globalConstraintsPost.length;index++) {
+            require((GlobalConstraintInterface(globalConstraintsPost[index].gcAddress)).post(msg.sender, globalConstraintsPost[index].params, func));
         }
     }
 
@@ -221,13 +226,17 @@ contract Controller is ControllerInterface {
         return schemes[_scheme].permissions;
     }
 
-  // Global constraints:
-    function globalConstraintsCount(address) public constant returns(uint) {
-        return globalConstraints.length;
+   /**
+    * @dev globalConstraintsCount return the global constraint pre and post count
+    * @return uint globalConstraintsPre count.
+    * @return uint globalConstraintsPost count.
+    */
+    function globalConstraintsCount(address) public constant returns(uint,uint) {
+        return (globalConstraintsPre.length,globalConstraintsPost.length);
     }
 
     function isGlobalConstraintRegistered(address _globalConstraint,address) public constant returns(bool) {
-        return globalConstraintsRegister[_globalConstraint].register;
+        return (globalConstraintsRegisterPre[_globalConstraint].register || globalConstraintsRegisterPost[_globalConstraint].register);
     }
 
     /**
@@ -239,13 +248,24 @@ contract Controller is ControllerInterface {
     function addGlobalConstraint(address _globalConstraint, bytes32 _params,address)
     public onlyGlobalConstraintsScheme returns(bool)
     {
-        if (!globalConstraintsRegister[_globalConstraint].register) {
-            globalConstraints.push(GlobalConstraint(_globalConstraint,_params));
-            globalConstraintsRegister[_globalConstraint] = GlobalConstraintRegister(true,globalConstraints.length-1);
-        }else {
-            globalConstraints[globalConstraintsRegister[_globalConstraint].index].params = _params;
+        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
+        if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            if (!globalConstraintsRegisterPre[_globalConstraint].register) {
+                globalConstraintsPre.push(GlobalConstraint(_globalConstraint,_params));
+                globalConstraintsRegisterPre[_globalConstraint] = GlobalConstraintRegister(true,globalConstraintsPre.length-1);
+            }else {
+                globalConstraintsPre[globalConstraintsRegisterPre[_globalConstraint].index].params = _params;
+            }
         }
-        AddGlobalConstraint(_globalConstraint, _params);
+        if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            if (!globalConstraintsRegisterPost[_globalConstraint].register) {
+                globalConstraintsPost.push(GlobalConstraint(_globalConstraint,_params));
+                globalConstraintsRegisterPost[_globalConstraint] = GlobalConstraintRegister(true,globalConstraintsPost.length-1);
+            }else {
+                globalConstraintsPost[globalConstraintsRegisterPost[_globalConstraint].index].params = _params;
+            }
+        }
+        AddGlobalConstraint(_globalConstraint, _params,when);
         return true;
     }
 
@@ -257,20 +277,41 @@ contract Controller is ControllerInterface {
     function removeGlobalConstraint (address _globalConstraint,address)
     public onlyGlobalConstraintsScheme returns(bool)
     {
-        GlobalConstraintRegister memory globalConstraintRegister = globalConstraintsRegister[_globalConstraint];
+        GlobalConstraintRegister memory globalConstraintRegister;
+        GlobalConstraint memory globalConstraint;
+        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
+        bool retVal = false;
 
-        if (globalConstraintRegister.register) {
-            if (globalConstraintRegister.index < globalConstraints.length-1) {
-                GlobalConstraint memory globalConstraint = globalConstraints[globalConstraints.length-1];
-                globalConstraints[globalConstraintRegister.index] = globalConstraint;
-                globalConstraintsRegister[globalConstraint.gcAddress].index = globalConstraintRegister.index;
+        if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            globalConstraintRegister = globalConstraintsRegisterPre[_globalConstraint];
+            if (globalConstraintRegister.register) {
+                if (globalConstraintRegister.index < globalConstraintsPre.length-1) {
+                    globalConstraint = globalConstraintsPre[globalConstraintsPre.length-1];
+                    globalConstraintsPre[globalConstraintRegister.index] = globalConstraint;
+                    globalConstraintsRegisterPre[globalConstraint.gcAddress].index = globalConstraintRegister.index;
+                }
+                globalConstraintsPre.length--;
+                delete globalConstraintsRegisterPre[_globalConstraint];
+                retVal = true;
             }
-            globalConstraints.length--;
-            delete globalConstraintsRegister[_globalConstraint];
-            RemoveGlobalConstraint(_globalConstraint,globalConstraintRegister.index);
-            return true;
         }
-        return false;
+        if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            globalConstraintRegister = globalConstraintsRegisterPost[_globalConstraint];
+            if (globalConstraintRegister.register) {
+                if (globalConstraintRegister.index < globalConstraintsPost.length-1) {
+                    globalConstraint = globalConstraintsPost[globalConstraintsPost.length-1];
+                    globalConstraintsPost[globalConstraintRegister.index] = globalConstraint;
+                    globalConstraintsRegisterPost[globalConstraint.gcAddress].index = globalConstraintRegister.index;
+                }
+                globalConstraintsPost.length--;
+                delete globalConstraintsRegisterPost[_globalConstraint];
+                retVal = true;
+            }
+        }
+        if (retVal) {
+            RemoveGlobalConstraint(_globalConstraint,globalConstraintRegister.index,when == GlobalConstraintInterface.CallPhase.Pre);
+        }
+        return retVal;
     }
 
   /**
