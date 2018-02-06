@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/daostack/arc.svg?branch=master)](https://travis-ci.org/daostack/arc)
+[![Build Status](https://travis-ci.org/@daostack/arc.svg?branch=master)](https://travis-ci.org/daostack/arc)
 [![NPM Package](https://img.shields.io/npm/v/@daostack/arc.svg?style=flat-square)](https://www.npmjs.org/package/@daostack/arc)
 # Arc
 
