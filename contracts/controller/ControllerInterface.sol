@@ -63,20 +63,20 @@ interface ControllerInterface {
      */
     function unregisterSelf(address _avatar) public returns(bool);
 
-    function isSchemeRegistered( address _scheme,address _avatar) public constant returns(bool);
+    function isSchemeRegistered( address _scheme,address _avatar) public view returns(bool);
 
-    function getSchemeParameters(address _scheme,address _avatar) public constant returns(bytes32);
+    function getSchemeParameters(address _scheme,address _avatar) public view returns(bytes32);
 
-    function getSchemePermissions(address _scheme,address _avatar) public constant returns(bytes4);
+    function getSchemePermissions(address _scheme,address _avatar) public view returns(bytes4);
 
     /**
      * @dev globalConstraintsCount return the global constraint pre and post count
      * @return uint globalConstraintsPre count.
      * @return uint globalConstraintsPost count.
      */
-    function globalConstraintsCount(address _avatar) public constant returns(uint,uint);
+    function globalConstraintsCount(address _avatar) public view returns(uint,uint);
 
-    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) public constant returns(bool);
+    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) public view returns(bool);
 
     /**
      * @dev add or update Global Constraint

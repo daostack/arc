@@ -47,7 +47,7 @@ contract IntVoteInterface {
     //             false - otherwise.
     function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool);
 
-    function getNumberOfChoices(bytes32 _proposalId) public constant returns(uint);
+    function getNumberOfChoices(bytes32 _proposalId) public view returns(uint);
 
-    function isVotable(bytes32 _proposalId) public constant returns(bool);
+    function isVotable(bytes32 _proposalId) public view returns(bool);
 }

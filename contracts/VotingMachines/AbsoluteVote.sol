@@ -189,7 +189,7 @@ contract AbsoluteVote is IntVoteInterface {
    * @param _proposalId the ID of the proposal
    * @return uint that contains number of choices
    */
-    function getNumberOfChoices(bytes32 _proposalId) public constant returns(uint) {
+    function getNumberOfChoices(bytes32 _proposalId) public view returns(uint) {
         return proposals[_proposalId].numOfChoices;
     }
 
@@ -200,7 +200,7 @@ contract AbsoluteVote is IntVoteInterface {
    * @return uint vote - the voters vote
    *        uint reputation - amount of reputation committed by _voter to _proposalId
    */
-    function voteInfo(bytes32 _proposalId, address _voter) public constant returns(uint, uint) {
+    function voteInfo(bytes32 _proposalId, address _voter) public view returns(uint, uint) {
         Voter memory voter = proposals[_proposalId].voters[_voter];
         return (voter.vote, voter.reputation);
     }
@@ -210,7 +210,7 @@ contract AbsoluteVote is IntVoteInterface {
      * @param _proposalId the ID of the proposal
      * @return votes array of votes for each choice
      */
-    function votesStatus(bytes32 _proposalId) public constant returns(uint[11] votes) {
+    function votesStatus(bytes32 _proposalId) public view returns(uint[11] votes) {
         Proposal storage proposal = proposals[_proposalId];
         for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
             votes[cnt] = proposal.votes[cnt];
@@ -222,7 +222,7 @@ contract AbsoluteVote is IntVoteInterface {
       * @param _proposalId the ID of the proposal
       * @return bool true or false
     */
-    function isVotable(bytes32 _proposalId) public constant returns(bool) {
+    function isVotable(bytes32 _proposalId) public view returns(bool) {
         return  proposals[_proposalId].open;
     }
 

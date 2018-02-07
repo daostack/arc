@@ -189,7 +189,7 @@ contract SimpleICO is UniversalScheme {
      * @param _avatar The Avatar's of the organization
      * @return bool which represents a successful of the function
      */
-    function isActive(address _avatar) public constant returns(bool) {
+    function isActive(address _avatar) public view returns(bool) {
         Organization memory org = organizationsICOInfo[_avatar];
         Parameters memory params = parameters[org.paramsHash];
 
