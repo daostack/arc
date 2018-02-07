@@ -670,6 +670,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-redeemvoteramount" title="function redeemVoterAmount" class="md-nav__link">
+    function redeemVoterAmount
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-redeemproposerreputation" title="function redeemProposerReputation" class="md-nav__link">
+    function redeemProposerReputation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-redeemamount" title="function redeemAmount" class="md-nav__link">
     function redeemAmount
   </a>
@@ -1000,6 +1014,20 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#function-redeemvoteramount" title="function redeemVoterAmount" class="md-nav__link">
+    function redeemVoterAmount
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function-redeemproposerreputation" title="function redeemProposerReputation" class="md-nav__link">
+    function redeemProposerReputation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#function-redeemamount" title="function redeemAmount" class="md-nav__link">
     function redeemAmount
   </a>
@@ -1035,9 +1063,9 @@
                 
                 <h1 id="genesisprotocolformulasmock">GenesisProtocolFormulasMock<a class="headerlink" href="#genesisprotocolformulasmock" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/daostack/tree/master/contracts/test/GenesisProtocolFormulasMock.sol">see the source</a></p>
-<p><em>Code deposit cost: <strong>less than 332600 gas.</strong></em></p>
-<p><em>Execution cost: <strong>less than 363 gas.</strong></em></p>
-<p><em>Total deploy cost(deposit + execution): <strong>less than 332963 gas.</strong></em></p>
+<p><em>Code deposit cost: <strong>less than 425600 gas.</strong></em></p>
+<p><em>Execution cost: <strong>less than 456 gas.</strong></em></p>
+<p><em>Total deploy cost(deposit + execution): <strong>less than 426056 gas.</strong></em></p>
 <blockquote></blockquote>
 <h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
 <h3 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h3>
@@ -1048,16 +1076,16 @@
 <p><em>Nothing</em></p>
 <h3 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h3>
 <h4 id="function-threshold"><em>function</em> threshold<a class="headerlink" href="#function-threshold" title="Permanent link">&para;</a></h4>
+<blockquote>
+<p>threshold return the organization's score threshold which required by a proposal to shift to boosted state. This threshold is dynamically set and it depend on the number of boosted proposal.</p>
+</blockquote>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
 <ol>
-<li><strong>_avatar</strong> <em>of type address</em></li>
+<li><strong>_avatar</strong> <em>of type address- the organization avatar</em></li>
 </ol>
-<p><em>Returns:</em></p>
-<ol>
-<li><strong>unnamed</strong> <em>of type uint256</em></li>
-</ol>
+<p>int thresholdConstA.</p>
 <h4 id="function-shouldboost"><em>function</em> shouldBoost<a class="headerlink" href="#function-shouldboost" title="Permanent link">&para;</a></h4>
 <blockquote>
 <p>isBoost check if the proposal will shift to the relative voting phase.</p>
@@ -1070,15 +1098,38 @@
 </ol>
 <p>bool true or false.</p>
 <h4 id="function-score"><em>function</em> score<a class="headerlink" href="#function-score" title="Permanent link">&para;</a></h4>
+<blockquote>
+<p>score return the proposal score</p>
+</blockquote>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
 <ol>
-<li><strong>_proposalId</strong> <em>of type bytes32</em></li>
+<li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
+</ol>
+<p>uint proposal score.</p>
+<h4 id="function-redeemvoteramount"><em>function</em> redeemVoterAmount<a class="headerlink" href="#function-redeemvoteramount" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bytes32</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
 </ol>
 <p><em>Returns:</em></p>
 <ol>
 <li><strong>unnamed</strong> <em>of type uint256</em></li>
+</ol>
+<h4 id="function-redeemproposerreputation"><em>function</em> redeemProposerReputation<a class="headerlink" href="#function-redeemproposerreputation" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>less than 266 gas.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type bytes32</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type int256</em></li>
 </ol>
 <h4 id="function-redeemamount"><em>function</em> redeemAmount<a class="headerlink" href="#function-redeemamount" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>

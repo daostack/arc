@@ -464,15 +464,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-voteinfo" title="function voteInfo" class="md-nav__link">
-    function voteInfo
+  <a href="#function-votewithspecifiedamounts" title="function voteWithSpecifiedAmounts" class="md-nav__link">
+    function voteWithSpecifiedAmounts
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-votewithspecifiedamounts" title="function voteWithSpecifiedAmounts" class="md-nav__link">
-    function voteWithSpecifiedAmounts
+  <a href="#function-voteinfo" title="function voteInfo" class="md-nav__link">
+    function voteInfo
   </a>
   
 </li>
@@ -1152,15 +1152,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-voteinfo" title="function voteInfo" class="md-nav__link">
-    function voteInfo
+  <a href="#function-votewithspecifiedamounts" title="function voteWithSpecifiedAmounts" class="md-nav__link">
+    function voteWithSpecifiedAmounts
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#function-votewithspecifiedamounts" title="function voteWithSpecifiedAmounts" class="md-nav__link">
-    function voteWithSpecifiedAmounts
+  <a href="#function-voteinfo" title="function voteInfo" class="md-nav__link">
+    function voteInfo
   </a>
   
 </li>
@@ -1271,9 +1271,9 @@
                 
                 <h1 id="quorumvote">QuorumVote<a class="headerlink" href="#quorumvote" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/daostack/tree/master/contracts/VotingMachines/QuorumVote.sol">see the source</a></p>
-<p><em>Code deposit cost: <strong>less than 924000 gas.</strong></em></p>
+<p><em>Code deposit cost: <strong>less than 925400 gas.</strong></em></p>
 <p><em>Execution cost: <strong>less than 957 gas.</strong></em></p>
-<p><em>Total deploy cost(deposit + execution): <strong>less than 924957 gas.</strong></em></p>
+<p><em>Total deploy cost(deposit + execution): <strong>less than 926357 gas.</strong></em></p>
 <blockquote></blockquote>
 <h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
 <h3 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h3>
@@ -1340,19 +1340,6 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
-<h4 id="function-voteinfo"><em>function</em> voteInfo<a class="headerlink" href="#function-voteinfo" title="Permanent link">&para;</a></h4>
-<p><em>Execution cost: <strong>No bound available.</strong></em></p>
-<p><strong>constant | view</strong></p>
-<p><em>Inputs:</em></p>
-<ol>
-<li><strong>_proposalId</strong> <em>of type bytes32</em></li>
-<li><strong>_voter</strong> <em>of type address</em></li>
-</ol>
-<p><em>Returns:</em></p>
-<ol>
-<li><strong>unnamed</strong> <em>of type uint256</em></li>
-<li><strong>unnamed</strong> <em>of type uint256</em></li>
-</ol>
 <h4 id="function-votewithspecifiedamounts"><em>function</em> voteWithSpecifiedAmounts<a class="headerlink" href="#function-votewithspecifiedamounts" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
@@ -1366,6 +1353,19 @@
 <p><em>Returns:</em></p>
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
+</ol>
+<h4 id="function-voteinfo"><em>function</em> voteInfo<a class="headerlink" href="#function-voteinfo" title="Permanent link">&para;</a></h4>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_proposalId</strong> <em>of type bytes32</em></li>
+<li><strong>_voter</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type uint256</em></li>
+<li><strong>unnamed</strong> <em>of type uint256</em></li>
 </ol>
 <h4 id="function-vote"><em>function</em> vote<a class="headerlink" href="#function-vote" title="Permanent link">&para;</a></h4>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
@@ -1388,13 +1388,14 @@
 <li><strong>_paramsHash</strong> <em>of type bytes32</em></li>
 <li><strong>_avatar</strong> <em>of type address</em></li>
 <li><strong>_executable</strong> <em>of type address</em></li>
+<li><strong>unnamed</strong> <em>of type address</em></li>
 </ol>
 <p><em>Returns:</em></p>
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
 </ol>
 <h4 id="function-proposals"><em>function</em> proposals<a class="headerlink" href="#function-proposals" title="Permanent link">&para;</a></h4>
-<p><em>Execution cost: <strong>less than 2188 gas.</strong></em></p>
+<p><em>Execution cost: <strong>less than 2210 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
 <ol>
