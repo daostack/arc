@@ -5,7 +5,7 @@ process on a certain proposal.
 
 The VotingMachine maintains the voting process ,the proposals to vote on ,collect votes and determines the winning vote according to pre define DAO's configuration.
 
-In some cases ,such as GenesisProtocol, it also collect stakes ,promote proposals and maintains a reputation flow for participants according to pre define DAO's configuration.  
+In some cases, such as GenesisProtocol, it also collect stakes ,promote proposals and maintains a reputation flow for participants according to pre define DAO's configuration.  
 
 Each VotingMachine use its own [decision method](#basic-decisions-methods-used-by-votingmachines) and has its own voting choices range.
 
