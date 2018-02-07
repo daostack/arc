@@ -233,7 +233,7 @@ contract AbsoluteVote is IntVoteInterface {
         CancelVoting(_proposalId, _voter);
     }
 
-    function deleteProposal(bytes32 _proposalId) private {
+    function deleteProposal(bytes32 _proposalId) internal {
         Proposal storage proposal = proposals[_proposalId];
         for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
             delete proposal.votes[cnt];

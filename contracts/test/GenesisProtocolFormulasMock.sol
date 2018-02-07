@@ -15,7 +15,7 @@ contract GenesisProtocolFormulasMock is GenesisProtocolFormulasInterface {
     function shouldBoost(bytes32 _proposalId) public view returns(bool) {
         address avatar;
         avatar = GenesisProtocol(msg.sender).proposalAvatar(_proposalId);
-        int score = int(GenesisProtocol(msg.sender).voteStake(_proposalId,2)) - int(GenesisProtocol(msg.sender).voteStake(_proposalId,1));
+        int score = int(GenesisProtocol(msg.sender).voteStake(_proposalId,GenesisProtocol(msg.sender).YES())) - int(GenesisProtocol(msg.sender).voteStake(_proposalId,GenesisProtocol(msg.sender).NO()));
         return (score >= threshold(avatar));
     }
 
@@ -25,7 +25,7 @@ contract GenesisProtocolFormulasMock is GenesisProtocolFormulasInterface {
      * @return uint proposal score.
      */
     function score(bytes32 _proposalId) public view returns (int) {
-        return int(GenesisProtocol(msg.sender).voteStake(_proposalId,2)) - int(GenesisProtocol(msg.sender).voteStake(_proposalId,1));
+        return int(GenesisProtocol(msg.sender).voteStake(_proposalId,GenesisProtocol(msg.sender).YES())) - int(GenesisProtocol(msg.sender).voteStake(_proposalId,GenesisProtocol(msg.sender).NO()));
     }
 
     /**

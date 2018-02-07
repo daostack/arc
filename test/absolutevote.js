@@ -49,28 +49,7 @@ const checkProposalInfo = async function(proposalId, _proposalInfo) {
 };
 
 const checkVotesStatus = async function(proposalId, _votesStatus){
-  let votesStatus;
-  votesStatus = await absoluteVote.votesStatus(proposalId);
-  // uint Option 1
-  assert.equal(votesStatus[0], _votesStatus[0]);
-  // uint Option 2
-  assert.equal(votesStatus[1], _votesStatus[1]);
-  // uint Option 3
-  assert.equal(votesStatus[2], _votesStatus[2]);
-  // uint Option 4
-  assert.equal(votesStatus[3], _votesStatus[3]);
-  // uint Option 5
-  assert.equal(votesStatus[4], _votesStatus[4]);
-  // uint Option 6
-  assert.equal(votesStatus[5], _votesStatus[5]);
-  // uint Option 7
-  assert.equal(votesStatus[6], _votesStatus[6]);
-  // uint Option 8
-  assert.equal(votesStatus[7], _votesStatus[7]);
-  // uint Option 9
-  assert.equal(votesStatus[8], _votesStatus[8]);
-  // uint Option 10
-  assert.equal(votesStatus[9], _votesStatus[9]);
+  return helpers.checkVotesStatus(proposalId, _votesStatus,absoluteVote);
 };
 
 const checkIsVotable = async function(proposalId, _votable){
@@ -98,28 +77,7 @@ const checkIsVotableWithAbsoluteVote = async function(proposalId, _votable,absol
 };
 
 const checkVotesStatusWithAbsoluteVote = async function(proposalId, _votesStatus, absoluteVote){
-  let votesStatus;
-  votesStatus = await absoluteVote.votesStatus(proposalId);
-  // uint Option 1
-  assert.equal(votesStatus[0], _votesStatus[0]);
-  // uint Option 2
-  assert.equal(votesStatus[1], _votesStatus[1]);
-  // uint Option 3
-  assert.equal(votesStatus[2], _votesStatus[2]);
-  // uint Option 4
-  assert.equal(votesStatus[3], _votesStatus[3]);
-  // uint Option 5
-  assert.equal(votesStatus[4], _votesStatus[4]);
-  // uint Option 6
-  assert.equal(votesStatus[5], _votesStatus[5]);
-  // uint Option 7
-  assert.equal(votesStatus[6], _votesStatus[6]);
-  // uint Option 8
-  assert.equal(votesStatus[7], _votesStatus[7]);
-  // uint Option 9
-  assert.equal(votesStatus[8], _votesStatus[8]);
-  // uint Option 10
-  assert.equal(votesStatus[9], _votesStatus[9]);
+  return helpers.checkVotesStatus(proposalId, _votesStatus,absoluteVote);
 };
 
 const checkProposalInfoWithAbsoluteVote = async function(proposalId, _proposalInfo, absoluteVote) {
