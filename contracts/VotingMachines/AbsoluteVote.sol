@@ -206,15 +206,13 @@ contract AbsoluteVote is IntVoteInterface {
     }
 
     /**
-     * @dev votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
+     * @dev voteStatus returns the reputation voted for a proposal for a specific voting choice.
      * @param _proposalId the ID of the proposal
-     * @return votes array of votes for each choice
+     * @param _choice the index in the
+     * @return voted reputation for the given choice
      */
-    function votesStatus(bytes32 _proposalId) public view returns(uint[11] votes) {
-        Proposal storage proposal = proposals[_proposalId];
-        for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
-            votes[cnt] = proposal.votes[cnt];
-        }
+    function voteStatus(bytes32 _proposalId,uint _choice) public view returns(uint) {
+        return proposals[_proposalId].votes[_choice];
     }
 
     /**

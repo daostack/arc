@@ -50,4 +50,12 @@ contract IntVoteInterface {
     function getNumberOfChoices(bytes32 _proposalId) public view returns(uint);
 
     function isVotable(bytes32 _proposalId) public view returns(bool);
+
+    /**
+     * @dev voteStatus returns the reputation voted for a proposal for a specific voting choice.
+     * @param _proposalId the ID of the proposal
+     * @param _choice the index in the
+     * @return voted reputation for the given choice
+     */
+    function voteStatus(bytes32 _proposalId,uint _choice) public view returns(uint);
 }
