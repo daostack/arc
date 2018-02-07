@@ -214,15 +214,15 @@ contract Controller is ControllerInterface {
         return true;
     }
 
-    function isSchemeRegistered(address _scheme,address) public constant returns(bool) {
+    function isSchemeRegistered(address _scheme,address) public view returns(bool) {
         return (schemes[_scheme].permissions&bytes4(1) != bytes4(0));
     }
 
-    function getSchemeParameters(address _scheme,address) public constant returns(bytes32) {
+    function getSchemeParameters(address _scheme,address) public view returns(bytes32) {
         return schemes[_scheme].paramsHash;
     }
 
-    function getSchemePermissions(address _scheme,address) public constant returns(bytes4) {
+    function getSchemePermissions(address _scheme,address) public view returns(bytes4) {
         return schemes[_scheme].permissions;
     }
 
@@ -231,11 +231,11 @@ contract Controller is ControllerInterface {
     * @return uint globalConstraintsPre count.
     * @return uint globalConstraintsPost count.
     */
-    function globalConstraintsCount(address) public constant returns(uint,uint) {
+    function globalConstraintsCount(address) public view returns(uint,uint) {
         return (globalConstraintsPre.length,globalConstraintsPost.length);
     }
 
-    function isGlobalConstraintRegistered(address _globalConstraint,address) public constant returns(bool) {
+    function isGlobalConstraintRegistered(address _globalConstraint,address) public view returns(bool) {
         return (globalConstraintsRegisterPre[_globalConstraint].register || globalConstraintsRegisterPost[_globalConstraint].register);
     }
 

@@ -24,7 +24,7 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface { //
     /**
     *  @dev get the parameters for the current scheme from the controller
     */
-    function getParametersFromController(Avatar _avatar) internal constant returns(bytes32) {
+    function getParametersFromController(Avatar _avatar) internal view returns(bytes32) {
         return ControllerInterface(_avatar.owner()).getSchemeParameters(this,address(_avatar));
     }
 

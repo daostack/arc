@@ -229,15 +229,15 @@ contract UController is ControllerInterface {
         return true;
     }
 
-    function isSchemeRegistered( address _scheme,address _avatar) public constant returns(bool) {
+    function isSchemeRegistered( address _scheme,address _avatar) public view returns(bool) {
         return (organizations[_avatar].schemes[_scheme].permissions&bytes4(1) != bytes4(0));
     }
 
-    function getSchemeParameters(address _scheme,address _avatar) public constant returns(bytes32) {
+    function getSchemeParameters(address _scheme,address _avatar) public view returns(bytes32) {
         return organizations[_avatar].schemes[_scheme].paramsHash;
     }
 
-    function getSchemePermissions(address _scheme,address _avatar) public constant returns(bytes4) {
+    function getSchemePermissions(address _scheme,address _avatar) public view returns(bytes4) {
         return organizations[_avatar].schemes[_scheme].permissions;
     }
 
@@ -246,11 +246,11 @@ contract UController is ControllerInterface {
    * @return uint globalConstraintsPre count.
    * @return uint globalConstraintsPost count.
    */
-    function globalConstraintsCount(address _avatar) public constant returns(uint,uint) {
+    function globalConstraintsCount(address _avatar) public view returns(uint,uint) {
         return (organizations[_avatar].globalConstraintsPre.length,organizations[_avatar].globalConstraintsPost.length);
     }
 
-    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) public constant returns(bool) {
+    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) public view returns(bool) {
         return (organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint].register ||
         organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint].register) ;
     }

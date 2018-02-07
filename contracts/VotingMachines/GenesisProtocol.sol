@@ -555,7 +555,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
    * @param _proposalId the ID of the proposals
    * @return uint that contains number of choices
    */
-    function getNumberOfChoices(bytes32 _proposalId) public constant returns(uint) {
+    function getNumberOfChoices(bytes32 _proposalId) public view returns(uint) {
         return proposals[_proposalId].numOfChoices;
     }
 
@@ -566,7 +566,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
    * @return uint vote - the voters vote
    *        uint reputation - amount of reputation committed by _voter to _proposalId
    */
-    function voteInfo(bytes32 _proposalId, address _voter) public constant returns(uint, uint) {
+    function voteInfo(bytes32 _proposalId, address _voter) public view returns(uint, uint) {
         Voter memory voter = proposals[_proposalId].voters[_voter];
         return (voter.vote, voter.reputation);
     }
@@ -576,7 +576,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * @param _proposalId the ID of the proposal
      * @return votes array of votes for each choice
      */
-    function votesStatus(bytes32 _proposalId) public constant returns(uint[11] votes) {
+    function votesStatus(bytes32 _proposalId) public view returns(uint[11] votes) {
         Proposal storage proposal = proposals[_proposalId];
         for (uint cnt = 0; cnt < proposal.numOfChoices; cnt++) {
             votes[cnt] = proposal.votes[cnt];
@@ -588,7 +588,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @param _proposalId the ID of the proposal
       * @return bool true or false
     */
-    function isVotable(bytes32 _proposalId) public constant returns(bool) {
+    function isVotable(bytes32 _proposalId) public view returns(bool) {
         return ((proposals[_proposalId].state == ProposalState.PreBoosted)||(proposals[_proposalId].state == ProposalState.Boosted)||(proposals[_proposalId].state == ProposalState.QuietEndingPeriod));
     }
 
@@ -599,7 +599,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @return uint totalStakes
       * @return uint voterStakes
     */
-    function proposalStatus(bytes32 _proposalId) public constant returns(uint, uint, uint) {
+    function proposalStatus(bytes32 _proposalId) public view returns(uint, uint, uint) {
         return (proposals[_proposalId].totalVotes, proposals[_proposalId].totalStakes, proposals[_proposalId].votersStakes);
     }
 
@@ -608,7 +608,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @param _proposalId the ID of the proposal
       * @return uint total reputation supply
     */
-    function totalReputationSupply(bytes32 _proposalId) public constant returns(uint) {
+    function totalReputationSupply(bytes32 _proposalId) public view returns(uint) {
         return Avatar(proposals[_proposalId].avatar).nativeReputation().totalSupply();
     }
 
@@ -617,7 +617,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @param _proposalId the ID of the proposal
       * @return uint total reputation supply
     */
-    function proposalAvatar(bytes32 _proposalId) public constant returns(address) {
+    function proposalAvatar(bytes32 _proposalId) public view returns(address) {
         return (proposals[_proposalId].avatar);
     }
 
@@ -628,7 +628,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @return uint thresholdConstA
       * @return uint thresholdConstB
     */
-    function scoreThresholdParams(address _avatar) public constant returns(uint,uint) {
+    function scoreThresholdParams(address _avatar) public view returns(uint,uint) {
         bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
         Parameters memory params = parameters[paramsHash];
         return (params.thresholdConstA,params.thresholdConstB);
@@ -641,7 +641,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @return uint vote
       * @return uint amount
     */
-    function staker(bytes32 _proposalId,address _staker) public constant returns(uint,uint) {
+    function staker(bytes32 _proposalId,address _staker) public view returns(uint,uint) {
         return (proposals[_proposalId].stakers[_staker].vote,proposals[_proposalId].stakers[_staker].amount);
     }
 
@@ -651,7 +651,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @param _vote vote number
       * @return uint stake amount
     */
-    function voteStake(bytes32 _proposalId,uint _vote) public constant returns(uint) {
+    function voteStake(bytes32 _proposalId,uint _vote) public view returns(uint) {
         return proposals[_proposalId].stakes[_vote];
     }
 
@@ -660,7 +660,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @param _proposalId the ID of the proposal
       * @return uint winningVote
     */
-    function winningVote(bytes32 _proposalId) public constant returns(uint) {
+    function winningVote(bytes32 _proposalId) public view returns(uint) {
         return proposals[_proposalId].winningVote;
     }
 
@@ -669,7 +669,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @param _proposalId the ID of the proposal
       * @return ProposalState proposal state
     */
-    function state(bytes32 _proposalId) public constant returns(ProposalState) {
+    function state(bytes32 _proposalId) public view returns(ProposalState) {
         return proposals[_proposalId].state;
     }
 

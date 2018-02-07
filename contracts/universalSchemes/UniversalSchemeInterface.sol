@@ -10,5 +10,5 @@ contract UniversalSchemeInterface {
 
     function updateParameters(bytes32 _hashedParameters) public;
 
-    function getParametersFromController(Avatar _avatar) internal constant returns(bytes32);
+    function getParametersFromController(Avatar _avatar) internal view returns(bytes32);
 }

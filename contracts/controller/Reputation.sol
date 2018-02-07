@@ -38,7 +38,7 @@ contract Reputation is Ownable {
     * @dev return the reputation amount of a given owner
     * @param _owner an address of the owner which we want to get his reputation
     */
-    function reputationOf(address _owner) public constant returns (uint256 balance) {
+    function reputationOf(address _owner) public view returns (uint256 balance) {
         return balances[_owner];
     }
 
