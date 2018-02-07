@@ -1,5 +1,23 @@
 # Reputation
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/controller/Reputation.sol)
+
+A DAO has Reputation System which allows peers to rate other peers in order to build trust . A reputation is use to assign influence measure to a DAO'S peers.
+For example : A DAO might choose to use a reputation based voting mechanism in order to take decisions. In this case a peer with relatively higher reputation value will have more influence in the organization.
+*Reputation* is similar to regular tokens but with one crucial difference: **It is non-transferable**.
+
+The Reputation contract maintain a map of address to reputation value.
+It provides a function to mint ,negative or positive, reputation for a specific address.
+
+### Range
+
+Max reputation allowed is capped by INT256_MAX = 2**255 - Any value minted over this MAX will be cause a revert.
+
+Min reputation allowed is 0. - Any value minted below this MIN will be trim to 0.
+
+
+ 
+
+## Reference
+[see the source](https://github.com/daostack/arc/tree/master/contracts/controller/Reputation.sol)
 
 *Code deposit cost: **less than 168000 gas.***
 
@@ -9,11 +27,8 @@
 
 > Simple static reputation storage
 
-A *Reputation* is a way of assigning importance to participants and their votes. 
-*Reputation* is similar to regular tokens but with one crucial difference: **It is non-transferable**.
-## Reference
 ### Constructors
-#### *constructor* Reputation()
+#### Reputation()
 
 *Execution cost: **No bound available.***
 
@@ -25,14 +40,14 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 
 
 ### Events
-#### *event* OwnershipTransferred
+#### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
-
-#### *event* Mint
+---
+#### Mint(address, int256)
 *Params:*
 
 1. **to** *of type address*
@@ -42,7 +57,7 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 ### Fallback
 *Nothing*
 ### Functions
-#### *function* transferOwnership
+#### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 22832 gas.***
@@ -57,8 +72,8 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 
 *Nothing*
 
-
-#### *function* totalSupply
+---
+#### totalSupply()
 
 *Execution cost: **less than 373 gas.***
 
@@ -72,8 +87,8 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 
 1. **unnamed** *of type uint256*
 
-
-#### *function* reputationOf
+---
+#### reputationOf(address)
 > return the reputation amount of a given owner
 
 *Execution cost: **less than 661 gas.***
@@ -88,8 +103,8 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 
 1. **balance** *of type uint256*
 
-
-#### *function* owner
+---
+#### owner()
 
 *Execution cost: **less than 573 gas.***
 
@@ -103,8 +118,8 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 
 1. **unnamed** *of type address*
 
-
-#### *function* mint
+---
+#### mint(address, int256)
 
 *Execution cost: **No bound available.***
 
@@ -119,8 +134,8 @@ A *Reputation* is a way of assigning importance to participants and their votes.
 
 1. **unnamed** *of type bool*
 
-
-#### *function* decimals
+---
+#### decimals()
 
 *Execution cost: **less than 395 gas.***
 

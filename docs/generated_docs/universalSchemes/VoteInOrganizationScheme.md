@@ -1,18 +1,17 @@
-# VoteInOrganizationScheme
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/VoteInOrganizationScheme.sol)
 
-*Code deposit cost: **less than 600800 gas.***
+## Reference
+[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/VoteInOrganizationScheme.sol)
 
-*Execution cost: **less than 21000 gas.***
+*Code deposit cost: **less than 624200 gas.***
 
-*Total deploy cost(deposit + execution): **less than 621800 gas.***
+*Execution cost: **less than 21025 gas.***
+
+*Total deploy cost(deposit + execution): **less than 645225 gas.***
 
 > VoteInOrganizationScheme.
 
-
-## Reference
 ### Constructors
-#### *constructor* VoteInOrganizationScheme()
+#### VoteInOrganizationScheme()
 
 *Execution cost: **No bound available.***
 
@@ -24,28 +23,28 @@
 
 
 ### Events
-#### *event* ProposalExecuted
+#### ProposalExecuted(address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
-
-#### *event* ProposalDeleted
+---
+#### ProposalDeleted(address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
-
-#### *event* OwnershipTransferred
+---
+#### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
-
-#### *event* NewVoteProposal
+---
+#### NewVoteProposal(address, bytes32, address, address, bytes32, uint256)
 *Params:*
 
 1. **_avatar** *of type address*
@@ -55,8 +54,8 @@
 5. **_originalProposalId** *of type bytes32*
 6. **_originalNumOfChoices** *of type uint256*
 
-
-#### *event* NewProposal
+---
+#### NewProposal(bytes32)
 *Params:*
 
 1. **proposalId** *of type bytes32*
@@ -65,7 +64,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-#### *function* proposeVote
+#### proposeVote(address, address, bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -81,8 +80,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* parameters
+---
+#### parameters(bytes32)
 
 *Execution cost: **less than 906 gas.***
 
@@ -97,8 +96,8 @@
 1. **intVote** *of type address*
 2. **voteParams** *of type bytes32*
 
-
-#### *function* transferOwnership
+---
+#### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23005 gas.***
@@ -113,8 +112,8 @@
 
 *Nothing*
 
-
-#### *function* updateParameters
+---
+#### updateParameters(bytes32)
 
 *Execution cost: **less than 20572 gas.***
 
@@ -128,8 +127,8 @@
 
 *Nothing*
 
-
-#### *function* setParameters
+---
+#### setParameters(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -144,8 +143,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* owner
+---
+#### owner()
 
 *Execution cost: **less than 765 gas.***
 
@@ -159,8 +158,8 @@
 
 1. **unnamed** *of type address*
 
-
-#### *function* organizationsData
+---
+#### organizationsData(address, bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -177,8 +176,8 @@
 2. **originalProposalId** *of type bytes32*
 3. **originalNumOfChoices** *of type uint256*
 
-
-#### *function* hashedParameters
+---
+#### hashedParameters()
 
 *Execution cost: **less than 656 gas.***
 
@@ -192,8 +191,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* getParametersHash
+---
+#### getParametersHash(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -208,8 +207,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* execute
+---
+#### execute(bytes32, address, int256)
 
 *Execution cost: **No bound available.***
 
@@ -225,9 +224,9 @@
 
 1. **unnamed** *of type bool*
 
-
-#### *function* action
-> do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.
+---
+#### action(bytes32[])
+> do the actual voting in the other organization in behalf of the organization's avatar.
 
 *Execution cost: **No bound available.***
 

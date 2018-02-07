@@ -6,7 +6,7 @@ Welcome to *DAOstack Arc* Docs!
 
 3. **Scalable Decentralized Governance** - *Arc* implements game theoretic & economic techniques (such as: monetization of attention, staking on proposal results, and more...) that ensure high resilience and bandwidth of the organization even as the number of the participants gets very large.
 3. **Security** - *Arc* embodies the best security guidelines and is very well tested.
-2. **Interoperability & Compositionality** - *Arc* can integrate with any other ethereum based framework with ease. Organizations can interact with each other and form hier*Arc*hies and other complex structures.
+2. **Interoperability & Compositionality** - *Arc* can integrate with any other ethereum based framework with ease. Organizations can interact with each other and form hierarchies and other complex structures.
 1. **Modularity** - *Arc* is built in a modular way allowing anyone to extend and expand the ecosystem to support new use-cases.
 2. **General purpose** - *Arc* provides a single unified simple model for building any DAO imaginable.
 
@@ -23,7 +23,7 @@ Check out the [Generated docs](generated_docs) for detailed documentation on eve
 1. [Ethereum](https://www.ethereum.org/) - *Base blockchain.*
 2. **Arc** - This project.
 2. [*Arc.js*](https://github.com/daostack/*Arc*.js) - A *JavaScript library that interfaces with *Arc*, built on top of web3.js.*
-3. Collaborative DApps, built on top of DAOstack using **Arc*.js*. eg. [Vanille](https://github.com/daostack/vanille) & [Alchemy](https://github.com/daostack/alchemy)
+3. Collaborative DApps, built on top of DAOstack using *Arc.js*. eg. [Vanille](https://github.com/daostack/vanille) & [Alchemy](https://github.com/daostack/alchemy)
 
 For more information regarding the entire DAOstack project, check out the [docs repository](https://github.com/daostack/docs).
 
@@ -53,7 +53,7 @@ The main configurable and extendable building blocks of DAOs are:
     * Blacklisting certain participants from performing certain actions.
 
 ## Contributing to *Arc* Docs
-Same as [CONTIBUTING](https://github.com/daostack/*Arc*/blob/master/CONTRIBUTING.md), with the following additions:
+Same as [CONTIBUTING](https://github.com/daostack/arc/blob/master/CONTRIBUTING.md), with the following additions:
 
 1. Directory structure:
     - `docs/`

@@ -1,5 +1,6 @@
-# GlobalConstraintRegistrar
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/GlobalConstraintRegistrar.sol)
+
+## Reference
+[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/GlobalConstraintRegistrar.sol)
 
 *Code deposit cost: **less than 721000 gas.***
 
@@ -9,10 +10,8 @@
 
 > A scheme to manage global constraint for organizations
 
-
-## Reference
 ### Constructors
-#### *constructor* GlobalConstraintRegistrar()
+#### GlobalConstraintRegistrar()
 
 *Execution cost: **No bound available.***
 
@@ -24,7 +23,7 @@
 
 
 ### Events
-#### *event* RemoveGlobalConstraintsProposal
+#### RemoveGlobalConstraintsProposal(address, bytes32, address, address)
 *Params:*
 
 1. **_avatar** *of type address*
@@ -32,35 +31,35 @@
 3. **_intVoteInterface** *of type address*
 4. **_gc** *of type address*
 
-
-#### *event* ProposalExecuted
+---
+#### ProposalExecuted(address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
-
-#### *event* ProposalDeleted
+---
+#### ProposalDeleted(address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
-
-#### *event* OwnershipTransferred
+---
+#### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
-
-#### *event* NewProposal
+---
+#### NewProposal(bytes32)
 *Params:*
 
 1. **proposalId** *of type bytes32*
 
-
-#### *event* NewGlobalConstraintsProposal
+---
+#### NewGlobalConstraintsProposal(address, bytes32, address, address, bytes32, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
@@ -74,7 +73,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-#### *function* execute
+#### execute(bytes32, address, int256)
 
 *Execution cost: **No bound available.***
 
@@ -90,8 +89,8 @@
 
 1. **unnamed** *of type bool*
 
-
-#### *function* parameters
+---
+#### parameters(bytes32)
 
 *Execution cost: **less than 894 gas.***
 
@@ -106,8 +105,8 @@
 1. **voteRegisterParams** *of type bytes32*
 2. **intVote** *of type address*
 
-
-#### *function* proposeToRemoveGC
+---
+#### proposeToRemoveGC(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -122,8 +121,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* transferOwnership
+---
+#### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 22983 gas.***
@@ -138,8 +137,8 @@
 
 *Nothing*
 
-
-#### *function* updateParameters
+---
+#### updateParameters(bytes32)
 
 *Execution cost: **less than 20594 gas.***
 
@@ -153,8 +152,8 @@
 
 *Nothing*
 
-
-#### *function* proposeGlobalConstraint
+---
+#### proposeGlobalConstraint(address, address, bytes32, bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -171,8 +170,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* setParameters
+---
+#### setParameters(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -187,8 +186,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* owner
+---
+#### owner()
 
 *Execution cost: **less than 743 gas.***
 
@@ -202,8 +201,8 @@
 
 1. **unnamed** *of type address*
 
-
-#### *function* organizationsData
+---
+#### organizationsData(address)
 
 *Execution cost: **less than 1013 gas.***
 
@@ -218,8 +217,8 @@
 1. **voteRegisterParams** *of type bytes32*
 2. **intVote** *of type address*
 
-
-#### *function* hashedParameters
+---
+#### hashedParameters()
 
 *Execution cost: **less than 656 gas.***
 
@@ -233,8 +232,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* getParametersHash
+---
+#### getParametersHash(bytes32, address)
 
 *Execution cost: **No bound available.***
 

@@ -34,7 +34,7 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
 
     const gasEstimate = (est) => est ? `less than ${est} gas.` : 'No bound available.';
     const signature = (name,ps) => `${name}(${ps.map(p => `${p.type}`).join(', ')})`;
-    const title = (prefix,text) => `#### *${prefix}* ${text}`;
+    const title = (text) => `#### ${text}`;
     const functionComment = (obj) => obj.details ? `> ${obj.details.trim()}${N}` : '';
     const paramComment = (obj, name) => obj.params && obj.params[name] ? `- ${obj.params[name]}` : '';
 
@@ -55,7 +55,7 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
         const sign = signature(contractName,fn.inputs);
         const obj = methods[sign] || {};
         return (
-        `${title('constructor',sign)}${N
+        `${title(sign)}${N
         }${functionComment(obj)}${N
         }*Execution cost: **${gasEstimate(gas.external[sign])}***${N
         }${modifiers(fn)}${N
@@ -64,7 +64,7 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
     };
 
     const event = (e) =>
-        `${title('event',e.name)}${N
+        `${title(signature(e.name,e.inputs))}${N
         }${params({},'Params',e.inputs)}${N
         }`;
 
@@ -72,7 +72,7 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
         const sign = signature(fn.name,fn.inputs);
         const obj = methods[sign] || {};
         return (
-        `${title('function',fn.name)}${N
+        `${title(sign)}${N
         }${functionComment(obj)}${N
         }*Execution cost: **${gasEstimate(gas.external[sign])}***${N
         }${modifiers(fn)}${N
@@ -93,22 +93,21 @@ const contract = (file,contractName,abi,devdoc,gas,header) => {
     const description = devdoc.title ? `${devdoc.title.trim()}${N}` : '';
 
     const res = (
-        `# ${contractName}${N
-        }[see the source](https://github.com/daostack/daostack/tree/master/${file})${N}${N
+        `${header}${N
+        }## Reference${N
+        }[see the source](https://github.com/daostack/arc/tree/master/${file})${N}${N
         }*Code deposit cost: **${gasEstimate(gas.creation[1])}***${N}${N
         }*Execution cost: **${gasEstimate(gas.creation[0])}***${N}${N
         }*Total deploy cost(deposit + execution): **${gasEstimate(gas.creation[0] && gas.creation[1] ? gas.creation[0] + gas.creation[1] : null)}***${N}${N
         }> ${description}${N
-        }${header}${N
-        }## Reference${N
         }### Constructors${N
-        }${constructors.length ? constructors.map(c => constructor(c)).join(N) : '*Nothing*'}${N
+        }${constructors.length ? constructors.map(c => constructor(c)).join(`---${N}`) : '*Nothing*'}${N
         }### Events${N
-        }${events.length ? events.map(e => event(e)).join(N) : '*Nothing*'}${N
+        }${events.length ? events.map(e => event(e)).join(`---${N}`) : '*Nothing*'}${N
         }### Fallback${N
         }${fallback ? fb(fallback) : '*Nothing*'}${N
         }### Functions${N
-        }${functions.length ? functions.map(f => func(f)).join(N) : '*Nothing*'}${N
+        }${functions.length ? functions.map(f => func(f)).join(`---${N}`) : '*Nothing*'}${N
         }`);
     return res;
 };

@@ -1,5 +1,6 @@
-# OrganizationRegister
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/OrganizationRegister.sol)
+
+## Reference
+[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/OrganizationRegister.sol)
 
 *Code deposit cost: **less than 358000 gas.***
 
@@ -9,10 +10,8 @@
 
 > A universal organization registry.
 
-
-## Reference
 ### Constructors
-#### *constructor* OrganizationRegister()
+#### OrganizationRegister()
 
 *Execution cost: **No bound available.***
 
@@ -24,29 +23,29 @@
 
 
 ### Events
-#### *event* Promotion
+#### Promotion(address, address, uint256)
 *Params:*
 
 1. **_registry** *of type address*
 2. **_org** *of type address*
 3. **_amount** *of type uint256*
 
-
-#### *event* OwnershipTransferred
+---
+#### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
-
-#### *event* OrgAdded
+---
+#### OrgAdded(address, address)
 *Params:*
 
 1. **_registry** *of type address*
 2. **_org** *of type address*
 
-
-#### *event* NewProposal
+---
+#### NewProposal(bytes32)
 *Params:*
 
 1. **proposalId** *of type bytes32*
@@ -55,7 +54,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-#### *function* updateParameters
+#### updateParameters(bytes32)
 
 *Execution cost: **less than 20550 gas.***
 
@@ -69,8 +68,8 @@
 
 *Nothing*
 
-
-#### *function* transferOwnership
+---
+#### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 22961 gas.***
@@ -85,8 +84,8 @@
 
 *Nothing*
 
-
-#### *function* setParameters
+---
+#### setParameters(address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -102,8 +101,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* parameters
+---
+#### parameters(bytes32)
 
 *Execution cost: **less than 1157 gas.***
 
@@ -119,8 +118,8 @@
 2. **token** *of type address*
 3. **beneficiary** *of type address*
 
-
-#### *function* owner
+---
+#### owner()
 
 *Execution cost: **less than 677 gas.***
 
@@ -134,8 +133,8 @@
 
 1. **unnamed** *of type address*
 
-
-#### *function* organizationsRegistery
+---
+#### organizationsRegistery(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -150,8 +149,8 @@
 
 1. **unnamed** *of type uint256*
 
-
-#### *function* hashedParameters
+---
+#### hashedParameters()
 
 *Execution cost: **less than 612 gas.***
 
@@ -165,8 +164,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* getParametersHash
+---
+#### getParametersHash(address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -182,8 +181,8 @@
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* addOrPromoteAddress
+---
+#### addOrPromoteAddress(address, address, uint256)
 
 *Execution cost: **No bound available.***
 

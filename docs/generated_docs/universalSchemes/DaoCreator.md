@@ -1,18 +1,17 @@
-# DaoCreator
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/DaoCreator.sol)
 
-*Code deposit cost: **less than 4440000 gas.***
+## Reference
+[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/DaoCreator.sol)
 
-*Execution cost: **less than 5150 gas.***
+*Code deposit cost: **less than 4682200 gas.***
 
-*Total deploy cost(deposit + execution): **less than 4445150 gas.***
+*Execution cost: **less than 5484 gas.***
+
+*Total deploy cost(deposit + execution): **less than 4687684 gas.***
 
 > Genesis Scheme that creates organizations
 
-
-## Reference
 ### Constructors
-#### *constructor* DaoCreator()
+#### DaoCreator()
 
 *Execution cost: **No bound available.***
 
@@ -24,13 +23,13 @@
 
 
 ### Events
-#### *event* NewOrg
+#### NewOrg(address)
 *Params:*
 
 1. **_avatar** *of type address*
 
-
-#### *event* InitialSchemesSet
+---
+#### InitialSchemesSet(address)
 *Params:*
 
 1. **_avatar** *of type address*
@@ -39,7 +38,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-#### *function* setSchemes
+#### setSchemes(address, address[], bytes32[], bytes4[])
 
 *Execution cost: **No bound available.***
 
@@ -56,8 +55,8 @@
 
 *Nothing*
 
-
-#### *function* forgeOrg
+---
+#### forgeOrg(bytes32, string, string, address[], uint256[], int256[], address)
 
 *Execution cost: **No bound available.***
 

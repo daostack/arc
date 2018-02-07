@@ -1,5 +1,6 @@
-# ExecutableInterface
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/ExecutableInterface.sol)
+
+## Reference
+[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/ExecutableInterface.sol)
 
 *Code deposit cost: **No bound available.***
 
@@ -8,8 +9,6 @@
 *Total deploy cost(deposit + execution): **No bound available.***
 
 > 
-
-## Reference
 ### Constructors
 *Nothing*
 ### Events
@@ -17,7 +16,7 @@
 ### Fallback
 *Nothing*
 ### Functions
-#### *function* execute
+#### execute(bytes32, address, int256)
 
 *Execution cost: **No bound available.***
 
