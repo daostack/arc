@@ -9,21 +9,21 @@ interface GenesisProtocolFormulasInterface {
 
     function threshold(address _avatar) public view returns (int);
 
-    function redeemAmount(bytes32 _proposalId,address _staker) public view returns (uint);
+    function getRedeemableTokensStaker(bytes32 _proposalId,address _staker) public view returns (uint);
 
     /**
-     * @dev redeemProposerRepAmount return the redeem amount which a proposer is entitle to.
+     * @dev getRedeemableReputationProposer return the redeemable reputation which a proposer is entitle to.
      * @param _proposalId the ID of the proposal
      * @return int proposer redeem reputation amount.
      */
-    function redeemProposerReputation(bytes32 _proposalId) public view returns(int);
+    function getRedeemableReputationProposer(bytes32 _proposalId) public view returns(int);
 
     /**
-     * @dev redeemVoterAmount return the redeem amount which a voter is entitle to.
+     * @dev getRedeemableTokensVoter return the redeemable amount which a voter is entitle to.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary the beneficiary .
      * @return uint redeem amount for a voter.
      */
-    function redeemVoterAmount(bytes32 _proposalId, address _beneficiary) public view returns(uint);
+    function getRedeemableTokensVoter(bytes32 _proposalId, address _beneficiary) public view returns(uint);
 
 }

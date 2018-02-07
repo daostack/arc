@@ -105,8 +105,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Open voting:
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
-        assert(_signaturesReqToCancel >= _signersArray.length);
-        assert(_periodLength > 0);
+        require(_signaturesReqToCancel >= _signersArray.length);
+        require(_periodLength > 0);
         // Write the signers mapping:
         for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
             organizationsData[_avatar][proposalId].signers[_signersArray[cnt]] = true;
@@ -158,8 +158,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         external
         returns(uint)
     {
-        assert(_signaturesReqToCancel >= _signersArray.length);
-        assert(_periodLength > 0);
+        require(_signaturesReqToCancel >= _signersArray.length);
+        require(_periodLength > 0);
         // Collect funds:
         uint totalAmount = _amountPerPeriod.mul(_numOfAgreedPeriods);
         _token.transferFrom(msg.sender, this, totalAmount);
@@ -295,7 +295,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     function collect(uint _agreementId) public onlyBeneficiary(_agreementId) {
         Agreement memory agreement = agreements[_agreementId];
         uint periodsFromStartingBlock = (block.number.sub(agreement.startingBlock)).div(agreement.periodLength);
-        assert(periodsFromStartingBlock >= agreement.cliffInPeriods);
+        require(periodsFromStartingBlock >= agreement.cliffInPeriods);
 
         // Compute periods to pay:
         uint periodsToPay;
