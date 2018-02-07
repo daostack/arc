@@ -63,6 +63,7 @@
 2. **_proposalParameters** *of type bytes32*
 3. **_avatar** *of type address*
 4. **_executable** *of type address*
+5. **_proposer** *of type address*
 
 *Returns:*
 

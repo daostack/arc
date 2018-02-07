@@ -1,11 +1,11 @@
 # ContributionReward
 [see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/ContributionReward.sol)
 
-*Code deposit cost: **less than 781200 gas.***
+*Code deposit cost: **less than 782800 gas.***
 
 *Execution cost: **less than 21186 gas.***
 
-*Total deploy cost(deposit + execution): **less than 802386 gas.***
+*Total deploy cost(deposit + execution): **less than 803986 gas.***
 
 > A scheme for proposing and rewarding contributions to an organization
 

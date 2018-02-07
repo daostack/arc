@@ -1,11 +1,11 @@
 # VoteInOrganizationScheme
 [see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/VoteInOrganizationScheme.sol)
 
-*Code deposit cost: **less than 599200 gas.***
+*Code deposit cost: **less than 600800 gas.***
 
 *Execution cost: **less than 21000 gas.***
 
-*Total deploy cost(deposit + execution): **less than 620200 gas.***
+*Total deploy cost(deposit + execution): **less than 621800 gas.***
 
 > VoteInOrganizationScheme.
 
@@ -227,7 +227,7 @@
 
 
 #### *function* action
-> do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.
+> do the actual voting in the other organization in behalf of the organization's avatar.     This function is deleted called by the organization.
 
 *Execution cost: **No bound available.***
 
@@ -235,7 +235,7 @@
 
 *Inputs:*
 
-1. **_params** *of type bytes32[]- array represent the voting .       _params[0] - the address of the voting machine.       _params[1] - the proposalId.       _params[2] - the voting machine params.*
+1. **_params** *of type bytes32[]- array represent the voting .       _params[0] - the address of the voting machine.       _params[1] - the proposalId.       _params[2] - the voting machine params.*
 
 bool which indicate success.
 

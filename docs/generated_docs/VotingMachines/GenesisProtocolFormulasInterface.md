@@ -29,7 +29,7 @@
 
 *Returns:*
 
-1. **unnamed** *of type uint256*
+1. **unnamed** *of type int256*
 
 
 #### *function* shouldBoost
@@ -59,7 +59,38 @@
 
 *Returns:*
 
+1. **unnamed** *of type int256*
+
+
+#### *function* redeemVoterAmount
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_beneficiary** *of type address*
+
+*Returns:*
+
 1. **unnamed** *of type uint256*
+
+
+#### *function* redeemProposerReputation
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+
+*Returns:*
+
+1. **unnamed** *of type int256*
 
 
 #### *function* redeemAmount

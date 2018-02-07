@@ -1,11 +1,11 @@
 # GlobalConstraintRegistrar
 [see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/GlobalConstraintRegistrar.sol)
 
-*Code deposit cost: **less than 717800 gas.***
+*Code deposit cost: **less than 721000 gas.***
 
 *Execution cost: **less than 21121 gas.***
 
-*Total deploy cost(deposit + execution): **less than 738921 gas.***
+*Total deploy cost(deposit + execution): **less than 742121 gas.***
 
 > A scheme to manage global constraint for organizations
 

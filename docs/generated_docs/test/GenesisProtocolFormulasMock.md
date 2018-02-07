@@ -1,11 +1,11 @@
 # GenesisProtocolFormulasMock
 [see the source](https://github.com/daostack/daostack/tree/master/contracts/test/GenesisProtocolFormulasMock.sol)
 
-*Code deposit cost: **less than 332600 gas.***
+*Code deposit cost: **less than 425600 gas.***
 
-*Execution cost: **less than 363 gas.***
+*Execution cost: **less than 456 gas.***
 
-*Total deploy cost(deposit + execution): **less than 332963 gas.***
+*Total deploy cost(deposit + execution): **less than 426056 gas.***
 
 > 
 
@@ -18,6 +18,7 @@
 *Nothing*
 ### Functions
 #### *function* threshold
+> threshold return the organization's score threshold which required by a proposal to shift to boosted state. This threshold is dynamically set and it depend on the number of boosted proposal.
 
 *Execution cost: **No bound available.***
 
@@ -25,12 +26,9 @@
 
 *Inputs:*
 
-1. **_avatar** *of type address*
+1. **_avatar** *of type address- the organization avatar*
 
-*Returns:*
-
-1. **unnamed** *of type uint256*
-
+int thresholdConstA.
 
 #### *function* shouldBoost
 > isBoost check if the proposal will shift to the relative voting phase.
@@ -46,6 +44,7 @@
 bool true or false.
 
 #### *function* score
+> score return the proposal score
 
 *Execution cost: **No bound available.***
 
@@ -53,11 +52,39 @@ bool true or false.
 
 *Inputs:*
 
-1. **_proposalId** *of type bytes32*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
+
+uint proposal score.
+
+#### *function* redeemVoterAmount
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **unnamed** *of type bytes32*
+2. **unnamed** *of type address*
 
 *Returns:*
 
 1. **unnamed** *of type uint256*
+
+
+#### *function* redeemProposerReputation
+
+*Execution cost: **less than 266 gas.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **unnamed** *of type bytes32*
+
+*Returns:*
+
+1. **unnamed** *of type int256*
 
 
 #### *function* redeemAmount

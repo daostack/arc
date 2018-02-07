@@ -1,11 +1,11 @@
 # SchemeRegistrar
 [see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/SchemeRegistrar.sol)
 
-*Code deposit cost: **less than 738200 gas.***
+*Code deposit cost: **less than 741400 gas.***
 
 *Execution cost: **less than 21141 gas.***
 
-*Total deploy cost(deposit + execution): **less than 759341 gas.***
+*Total deploy cost(deposit + execution): **less than 762541 gas.***
 
 > A registrar for Schemes for organizations
 

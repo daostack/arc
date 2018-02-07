@@ -1,11 +1,11 @@
 # GenesisProtocol
 [see the source](https://github.com/daostack/daostack/tree/master/contracts/VotingMachines/GenesisProtocol.sol)
 
-*Code deposit cost: **less than 2022200 gas.***
+*Code deposit cost: **less than 2967800 gas.***
 
-*Execution cost: **less than 42795 gas.***
+*Execution cost: **less than 43908 gas.***
 
-*Total deploy cost(deposit + execution): **less than 2064995 gas.***
+*Total deploy cost(deposit + execution): **less than 3011708 gas.***
 
 > A governance contract -an organization's voting machine scheme.
 
@@ -40,6 +40,14 @@
 2. **_voter** *of type address*
 3. **_vote** *of type uint256*
 4. **_amount** *of type uint256*
+
+
+#### *event* RedeemReputation
+*Params:*
+
+1. **_proposalId** *of type bytes32*
+2. **_beneficiary** *of type address*
+3. **_amount** *of type int256*
 
 
 #### *event* Redeem
@@ -82,7 +90,8 @@
 ### Fallback
 *Nothing*
 ### Functions
-#### *function* staker
+#### *function* shouldBoost
+> shouldBoost check if a proposal should be shifted to boosted phase.
 
 *Execution cost: **No bound available.***
 
@@ -90,18 +99,13 @@
 
 *Inputs:*
 
-1. **_proposalId** *of type bytes32*
-2. **_staker** *of type address*
+1. **_proposalId** *of type bytes32- the ID of the proposal*
 
-*Returns:*
-
-1. **unnamed** *of type uint256*
-2. **unnamed** *of type uint256*
-
+bool true or false.
 
 #### *function* parameters
 
-*Execution cost: **less than 2119 gas.***
+*Execution cost: **less than 3496 gas.***
 
 **constant | view**
 
@@ -111,13 +115,36 @@
 
 *Returns:*
 
-1. **reputationSystem** *of type address*
-2. **nonBoostedVoteRequiredPercentage** *of type uint256*
-3. **nonBoostedVotePeriodLimit** *of type uint256*
-4. **boostedVotePeriodLimit** *of type uint256*
-5. **scoreThreshold** *of type uint256*
+1. **preBoostedVoteRequiredPercentage** *of type uint256*
+2. **preBoostedVotePeriodLimit** *of type uint256*
+3. **boostedVotePeriodLimit** *of type uint256*
+4. **thresholdConstA** *of type uint256*
+5. **thresholdConstB** *of type uint256*
 6. **governanceFormulasInterface** *of type address*
 7. **minimumStakingFee** *of type uint256*
+8. **quietEndingPeriod** *of type uint256*
+9. **proposingRepRewardConstA** *of type uint256*
+10. **proposingRepRewardConstB** *of type uint256*
+11. **stakerFeeRatioForVoters** *of type uint256*
+12. **votersReputationLossRatio** *of type uint256*
+13. **votersGainRepRatioFromLostRep** *of type uint256*
+
+
+#### *function* voteInfo
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_voter** *of type address*
+
+*Returns:*
+
+1. **unnamed** *of type uint256*
+2. **unnamed** *of type uint256*
 
 
 #### *function* redeemAmount
@@ -129,7 +156,7 @@
 *Inputs:*
 
 1. **_proposalId** *of type bytes32*
-2. **_player** *of type address*
+2. **_beneficiary** *of type address*
 
 *Returns:*
 
@@ -138,7 +165,7 @@
 
 #### *function* updateParameters
 
-*Execution cost: **less than 20572 gas.***
+*Execution cost: **less than 20594 gas.***
 
 **nonpayable**
 
@@ -168,9 +195,25 @@
 1. **unnamed** *of type bool*
 
 
+#### *function* redeemVoterReputation
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_beneficiary** *of type address*
+
+*Returns:*
+
+1. **unnamed** *of type int256*
+
+
 #### *function* proposals
 
-*Execution cost: **less than 2945 gas.***
+*Execution cost: **less than 4088 gas.***
 
 **constant | view**
 
@@ -185,16 +228,20 @@
 3. **executable** *of type address*
 4. **totalVotes** *of type uint256*
 5. **totalStakes** *of type uint256*
-6. **submittedTime** *of type uint256*
-7. **boostedPhaseTime** *of type uint256*
-8. **state** *of type uint8*
-9. **winningVote** *of type uint256*
+6. **votersStakes** *of type uint256*
+7. **lostReputation** *of type uint256*
+8. **submittedTime** *of type uint256*
+9. **boostedPhaseTime** *of type uint256*
+10. **state** *of type uint8*
+11. **winningVote** *of type uint256*
+12. **proposer** *of type address*
+13. **boostedVotePeriodLimit** *of type uint256*
 
 
 #### *function* proposalAvatar
 > proposalAvatar return the avatar for a given proposal
 
-*Execution cost: **less than 1387 gas.***
+*Execution cost: **less than 1475 gas.***
 
 **constant | view**
 
@@ -207,7 +254,7 @@ uint total reputation supply
 #### *function* transferOwnership
 > Allows the current owner to transfer control of the contract to a newOwner.
 
-*Execution cost: **less than 23511 gas.***
+*Execution cost: **less than 23668 gas.***
 
 **nonpayable**
 
@@ -220,10 +267,26 @@ uint total reputation supply
 *Nothing*
 
 
+#### *function* redeemStakerRepAmount
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_beneficiary** *of type address*
+
+*Returns:*
+
+1. **unnamed** *of type int256*
+
+
 #### *function* winningVote
 > voteStake return the winningVote for a given proposal
 
-*Execution cost: **less than 690 gas.***
+*Execution cost: **less than 756 gas.***
 
 **constant | view**
 
@@ -233,29 +296,8 @@ uint total reputation supply
 
 uint winningVote
 
-#### *function* setParameters
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_reputationSystem** *of type address*
-2. **_nonBoostedVoteRequiredPercentage** *of type uint256*
-3. **_nonBoostedVotePeriodLimit** *of type uint256*
-4. **_boostedVotePeriodLimit** *of type uint256*
-5. **_scoreThreshold** *of type uint256*
-6. **_governanceFormulasInterface** *of type address*
-7. **_minimumStakingFee** *of type uint256*
-
-*Returns:*
-
-1. **unnamed** *of type bytes32*
-
-
-#### *function* scoreThreshold
-> scoreThreshold return the initial scoreThreshold param which is set for a given organization.
+#### *function* scoreThresholdParams
+> scoreThresholdParams return the score threshold params for a given organization.
 
 *Execution cost: **No bound available.***
 
@@ -265,12 +307,25 @@ uint winningVote
 
 1. **_avatar** *of type address- the organization's avatar*
 
-uint total reputation supply
+uint thresholdConstAuint thresholdConstB
+
+#### *function* redeemProposerReputation
+> redeemProposerReputation return the redeem amount which a proposer is entitle to.
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32- the ID of the proposal*
+
+int proposer redeem reputation.
 
 #### *function* state
 > voteStake return the state for a given proposal
 
-*Execution cost: **less than 804 gas.***
+*Execution cost: **less than 870 gas.***
 
 **constant | view**
 
@@ -279,6 +334,22 @@ uint total reputation supply
 1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 ProposalState proposal state
+
+#### *function* setParameters
+
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+
+1. **_params** *of type uint256[12]*
+2. **_governanceFormulasInterface** *of type address*
+
+*Returns:*
+
+1. **unnamed** *of type bytes32*
+
 
 #### *function* voteStake
 
@@ -298,7 +369,7 @@ ProposalState proposal state
 
 #### *function* stakingToken
 
-*Execution cost: **less than 875 gas.***
+*Execution cost: **less than 963 gas.***
 
 **constant | view**
 
@@ -314,7 +385,7 @@ ProposalState proposal state
 #### *function* proposalStatus
 > proposalStatus return the total votes and stakes for a given proposal
 
-*Execution cost: **less than 1070 gas.***
+*Execution cost: **less than 1396 gas.***
 
 **constant | view**
 
@@ -322,20 +393,7 @@ ProposalState proposal state
 
 1. **_proposalId** *of type bytes32- the ID of the proposal*
 
-uint totalVotesuint totalStakes
-
-#### *function* shouldBoost
-> shouldBoost check if a proposal should be shifted to boosted phase.
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-
-1. **_proposalId** *of type bytes32- the ID of the proposal*
-
-bool true or false.
+uint totalVotesuint totalStakesuint voterStakes
 
 #### *function* propose
 
@@ -349,13 +407,14 @@ bool true or false.
 2. **_paramsHash** *of type bytes32*
 3. **_avatar** *of type address*
 4. **_executable** *of type address*
+5. **_proposer** *of type address*
 
 *Returns:*
 
 1. **unnamed** *of type bytes32*
 
 
-#### *function* voteInfo
+#### *function* staker
 
 *Execution cost: **No bound available.***
 
@@ -364,7 +423,7 @@ bool true or false.
 *Inputs:*
 
 1. **_proposalId** *of type bytes32*
-2. **_voter** *of type address*
+2. **_staker** *of type address*
 
 *Returns:*
 
@@ -372,18 +431,18 @@ bool true or false.
 2. **unnamed** *of type uint256*
 
 
-#### *function* redeem
-> redeem redeem a reward for a successful stake.
+#### *function* score
+> score return the proposal score
 
 *Execution cost: **No bound available.***
 
-**nonpayable**
+**constant | view**
 
 *Inputs:*
 
 1. **_proposalId** *of type bytes32- the ID of the proposal*
 
-bool true or false.
+uint proposal score.
 
 #### *function* votesStatus
 > votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
@@ -398,8 +457,8 @@ bool true or false.
 
 votes array of votes for each choice
 
-#### *function* score
-> score return the proposal score
+#### *function* totalReputationSupply
+> totalReputationSupply return the total reputation supply for a given proposal
 
 *Execution cost: **No bound available.***
 
@@ -409,7 +468,7 @@ votes array of votes for each choice
 
 1. **_proposalId** *of type bytes32- the ID of the proposal*
 
-uint proposal score.
+uint total reputation supply
 
 #### *function* vote
 
@@ -427,8 +486,23 @@ uint proposal score.
 1. **unnamed** *of type bool*
 
 
-#### *function* totalReputationSupply
-> totalReputationSupply return the total reputation supply for a given proposal
+#### *function* redeem
+
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_beneficiary** *of type address*
+
+*Returns:*
+
+1. **unnamed** *of type bool*
+
+
+#### *function* redeemVoterAmount
 
 *Execution cost: **No bound available.***
 
@@ -436,9 +510,13 @@ uint proposal score.
 
 *Inputs:*
 
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32*
+2. **_beneficiary** *of type address*
 
-uint total reputation supply
+*Returns:*
+
+1. **unnamed** *of type uint256*
+
 
 #### *function* voteWithSpecifiedAmounts
 
@@ -469,7 +547,7 @@ uint total reputation supply
 
 1. **_avatar** *of type address- the organization avatar*
 
-uint scoreThreshold.
+int thresholdConstA.
 
 #### *function* ownerVote
 
@@ -490,7 +568,7 @@ uint scoreThreshold.
 
 #### *function* owner
 
-*Execution cost: **less than 985 gas.***
+*Execution cost: **less than 1051 gas.***
 
 **constant | view**
 
@@ -505,7 +583,7 @@ uint scoreThreshold.
 
 #### *function* orgBoostedProposalsCnt
 
-*Execution cost: **less than 1221 gas.***
+*Execution cost: **less than 1353 gas.***
 
 **constant | view**
 
@@ -521,7 +599,7 @@ uint scoreThreshold.
 #### *function* isVotable
 > isVotable check if the proposal is votable
 
-*Execution cost: **less than 1443 gas.***
+*Execution cost: **less than 1848 gas.***
 
 **constant | view**
 
@@ -533,7 +611,7 @@ bool true or false
 
 #### *function* hashedParameters
 
-*Execution cost: **less than 1184 gas.***
+*Execution cost: **less than 1272 gas.***
 
 **constant | view**
 
@@ -554,13 +632,8 @@ bool true or false
 
 *Inputs:*
 
-1. **_reputationSystem** *of type address*
-2. **_nonBoostedVoteRequiredPercentage** *of type uint256*
-3. **_nonBoostedVotePeriodLimit** *of type uint256*
-4. **_boostedVotePeriodLimit** *of type uint256*
-5. **_scoreThreshold** *of type uint256*
-6. **_governanceFormulasInterface** *of type address*
-7. **_minimumStakingFee** *of type uint256*
+1. **_params** *of type uint256[12]*
+2. **_governanceFormulasInterface** *of type address*
 
 *Returns:*
 
@@ -570,7 +643,7 @@ bool true or false
 #### *function* getNumberOfChoices
 > getNumberOfChoices returns the number of choices possible in this proposal
 
-*Execution cost: **less than 998 gas.***
+*Execution cost: **less than 1064 gas.***
 
 **constant | view**
 
@@ -596,7 +669,7 @@ bool true - the proposal has been executed             false - otherwise.
 #### *function* cancelVote
 > Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
-*Execution cost: **less than 1321 gas.***
+*Execution cost: **less than 1744 gas.***
 
 **nonpayable**
 
@@ -612,7 +685,7 @@ bool true - the proposal has been executed             false - otherwise.
 #### *function* cancelProposal
 > Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
 
-*Execution cost: **less than 1106 gas.***
+*Execution cost: **less than 1507 gas.***
 
 **nonpayable**
 

@@ -1,11 +1,11 @@
 # QuorumVote
 [see the source](https://github.com/daostack/daostack/tree/master/contracts/VotingMachines/QuorumVote.sol)
 
-*Code deposit cost: **less than 924000 gas.***
+*Code deposit cost: **less than 925400 gas.***
 
 *Execution cost: **less than 957 gas.***
 
-*Total deploy cost(deposit + execution): **less than 924957 gas.***
+*Total deploy cost(deposit + execution): **less than 926357 gas.***
 
 > 
 
@@ -85,23 +85,6 @@ votes array of votes for each choice
 1. **unnamed** *of type bytes32*
 
 
-#### *function* voteInfo
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-
-1. **_proposalId** *of type bytes32*
-2. **_voter** *of type address*
-
-*Returns:*
-
-1. **unnamed** *of type uint256*
-2. **unnamed** *of type uint256*
-
-
 #### *function* voteWithSpecifiedAmounts
 
 *Execution cost: **No bound available.***
@@ -118,6 +101,23 @@ votes array of votes for each choice
 *Returns:*
 
 1. **unnamed** *of type bool*
+
+
+#### *function* voteInfo
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_voter** *of type address*
+
+*Returns:*
+
+1. **unnamed** *of type uint256*
+2. **unnamed** *of type uint256*
 
 
 #### *function* vote
@@ -148,6 +148,7 @@ votes array of votes for each choice
 2. **_paramsHash** *of type bytes32*
 3. **_avatar** *of type address*
 4. **_executable** *of type address*
+5. **unnamed** *of type address*
 
 *Returns:*
 
@@ -156,7 +157,7 @@ votes array of votes for each choice
 
 #### *function* proposals
 
-*Execution cost: **less than 2188 gas.***
+*Execution cost: **less than 2210 gas.***
 
 **constant | view**
 

@@ -1,11 +1,11 @@
 # VestingScheme
 [see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/VestingScheme.sol)
 
-*Code deposit cost: **less than 1408400 gas.***
+*Code deposit cost: **less than 1410000 gas.***
 
 *Execution cost: **less than 21840 gas.***
 
-*Total deploy cost(deposit + execution): **less than 1430240 gas.***
+*Total deploy cost(deposit + execution): **less than 1431840 gas.***
 
 > A scheme for vesting.
 

@@ -1,11 +1,11 @@
 # UpgradeScheme
 [see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/UpgradeScheme.sol)
 
-*Code deposit cost: **less than 711200 gas.***
+*Code deposit cost: **less than 714400 gas.***
 
 *Execution cost: **less than 21115 gas.***
 
-*Total deploy cost(deposit + execution): **less than 732315 gas.***
+*Total deploy cost(deposit + execution): **less than 735515 gas.***
 
 > A scheme to manage the upgrade of an organization.
 
