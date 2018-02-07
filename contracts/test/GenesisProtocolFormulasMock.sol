@@ -54,7 +54,7 @@ contract GenesisProtocolFormulasMock is GenesisProtocolFormulasInterface {
         return int(thresholdConstA * (e ** (orgBoostedProposalsCnt/thresholdConstB)));
     }
 
-    function redeemAmount(bytes32 _proposalId,address _staker) public view returns (uint) {
+    function getRedeemableTokensStaker(bytes32 _proposalId,address _staker) public view returns (uint) {
         uint dummy;
         uint amount;
         uint totalStakes;
@@ -65,11 +65,11 @@ contract GenesisProtocolFormulasMock is GenesisProtocolFormulasInterface {
         return (amount * totalStakes) / winningStake;
     }
 
-    function redeemProposerReputation(bytes32 ) public view returns(int) {
+    function getRedeemableReputationProposer(bytes32 ) public view returns(int) {
         return 0;
     }
 
-    function redeemVoterAmount(bytes32 , address ) public view returns(uint) {
+    function getRedeemableTokensVoter(bytes32 , address ) public view returns(uint) {
         return 0;
     }
 }
