@@ -1,7 +1,7 @@
 # This is a Dockerfile that standardizes the project's development environment
 # and makes it cross-os/platform.
 #
-# Already built image live at: https://hub.docker.com/r/devmatantsu/arc/
+# Built image live at: https://hub.docker.com/r/daostack/arc/
 #
 # author: Matan Tsuberi <dev.matan.tsuberi@gmail.com>
 
