@@ -932,7 +932,7 @@
                   <h1>Home</h1>
                 
                 <p>Welcome to <em>DAOstack Arc</em> Docs!</p>
-<p><em>Arc</em> is the lower layer of the DAO stack. It consists of several smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.</p>
+<p><em>Arc</em> is the base layer of the DAO stack. It consists of a collection of smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.</p>
 <p><em>Arc</em> is built from the ground up with these principles in mind:</p>
 <ol>
 <li><strong>Scalable Decentralized Governance</strong> - <em>Arc</em> implements game theoretic &amp; economic techniques (such as: monetization of attention, staking on proposal results, and more...) that ensure high resilience and bandwidth of the organization even as the number of the participants gets very large.</li>
@@ -949,7 +949,7 @@
 <ol>
 <li><a href="https://www.ethereum.org/">Ethereum</a> - <em>Base blockchain.</em></li>
 <li><strong>Arc</strong> - This project.</li>
-<li><a href="https://github.com/daostack/*Arc*.js"><em>Arc.js</em></a> - A <em>JavaScript library that talks to </em>Arc<em>, built on top of web3.js.</em></li>
+<li><a href="https://github.com/daostack/*Arc*.js"><em>Arc.js</em></a> - A <em>JavaScript library that interfaces with </em>Arc<em>, built on top of web3.js.</em></li>
 <li>Collaborative DApps, built on top of DAOstack using <em><em>Arc</em>.js</em>. eg. <a href="https://github.com/daostack/vanille">Vanille</a> &amp; <a href="https://github.com/daostack/alchemy">Alchemy</a></li>
 </ol>
 <p>For more information regarding the entire DAOstack project, check out the <a href="https://github.com/daostack/docs">docs repository</a>.</p>
@@ -957,22 +957,22 @@
 <p>Each DAO is a living entity on the blockchain that can own and manage resources. As such, it consists of the following "organs":</p>
 <p><img alt="The DAO stack" src="./img/controller.png" /></p>
 <ul>
-<li><strong><a href="generated_docs/controller/DAOToken/">Native token</a></strong> - <em>A Standard <a href="https://theethereum.wiki/w/index.php/ERC20_Token_Standard">ERC20 token</a> that defines the value system of the DAO, participants are rewarded for their contributions based on this token</em>.</li>
-<li><strong><a href="generated_docs/controller/Reputation/">Reputation</a> system</strong> - <em>Similar to native token but is <strong>non-transferable</strong>, the reputation is used system is used to assign an importance to participants and their votes</em>.</li>
-<li><strong><a href="generated_docs/controller/Avatar/">Avatar</a></strong> - <em>This is the public facing part of the DAO that handles the interaction of the DAO with the rest of the world(interacing with other DAOs, paying third party participants, etc...)</em>.</li>
-<li><strong>Subscribed <a href="#elements">Elements</a></strong> - <em>The set of <a href="./generated_docs/universalSchemes">Schemes</a> and <a href="./generated_docs/globalConstraints">Global Constraints</a> the DAO consists of</em>.</li>
+<li><strong><a href="generated_docs/controller/DAOToken/">Native token</a></strong> - <em>A Standard <a href="https://theethereum.wiki/w/index.php/ERC20_Token_Standard">ERC20 token</a> that defines the value system of the DAO. Participants are rewarded for their contributions based on this token</em>.</li>
+<li><strong><a href="generated_docs/controller/Reputation/">Reputation</a> system</strong> - <em>Similar to native token but is <strong>non-transferable</strong>. The reputation system is used to assign weight the votes of participants</em>.</li>
+<li><strong><a href="generated_docs/controller/Avatar/">Avatar</a></strong> - <em>This is the public-facing part of the DAO that handles the interaction of the DAO with the rest of the world(eg. interacing with other DAOs, paying third party participants, etc...)</em>.</li>
+<li><strong>Subscribed <a href="#elements">Elements</a></strong> - <em>The set of <a href="./generated_docs/universalSchemes">Schemes</a> and <a href="./generated_docs/globalConstraints">Global Constraints</a> that comprise the DAO</em>.</li>
 </ul>
-<p>Those components are organized in a single smart contract called a <em><a href="./generated_docs/controller/Controller">Controller</a></em>, which acts as the owner of the other components.</p>
+<p>For each DAO, the above components are organized in a single smart contract called a <em><a href="./generated_docs/controller/Controller">Controller</a></em>, which acts as the owner of the other components.</p>
 <h2 id="elements">Elements<a class="headerlink" href="#elements" title="Permanent link">&para;</a></h2>
 <p>The main configurable and extendable building blocks of DAOs are:
 <em>Schemes</em> and <em>Global Constraints</em>, which are collectively called <em>elements</em>.</p>
 <ul>
-<li><strong><a href="generated_docs/universalSchemes/UniversalSchemeInterface/">Schemes</a></strong> <em>define the "do's" of the DAO, defining rules under which actions are taken, based on the participants input.</em> Examples of Schemes are:<ul>
-<li>Rewarding contributions if other participants recognize them as worthy.</li>
+<li><strong><a href="generated_docs/universalSchemes/UniversalSchemeInterface/">Schemes</a></strong> <em>define the "dos" of the DAO, the rules under which actions are taken, based on the participants' input.</em> Examples of Schemes are:<ul>
+<li>Rewarding contributions when other participants recognize them as worthy.</li>
 <li>Voting on proposals and automatically executing the chosen proposal.</li>
 </ul>
 </li>
-<li><strong><a href="generated_docs/globalConstraints/GlobalConstraintInterface/">Global constraints</a></strong> <em>define the "don't" of the DAO, they define conditions that must always hold and can prevent an action from being taken if it violates these conditions.</em> Examples of Global Constraints are:<ul>
+<li><strong><a href="generated_docs/globalConstraints/GlobalConstraintInterface/">Global constraints</a></strong> <em>define the "don'ts" of the DAO, the conditions that must always hold and can prevent an action from being taken if it violates these conditions.</em> Examples of Global Constraints are:<ul>
 <li>Limiting the amount of tokens or reputation that can be minted per day.</li>
 <li>Blacklisting certain participants from performing certain actions.</li>
 </ul>
@@ -1010,7 +1010,7 @@ In the final website:</p>
 </div>
 </li>
 <li>
-<p>Please provide an <code>README.md</code> file in the root of every directory, giving an overview of that directory.</p>
+<p>Please provide a <code>README.md</code> file in the root of every directory, giving an overview of that directory.</p>
 </li>
 <li>Check that there are no broken links by running <code>yarn docs preview</code> and checking for warnings of the form:<blockquote>
 <p>WARNING -  The page [some page] contained a hyperlink to [some other page] which is not listed in the "pages" configuration.</p>
