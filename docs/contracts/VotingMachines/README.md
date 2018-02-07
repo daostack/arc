@@ -61,6 +61,7 @@ A decision is taken if at least a certain percentage P from the total DAO's repu
 
 The "winning" choice is the one with the maximum votes(reputation).
 
+###
 
 | VotingMachine | absolute | relative | quorum
 | --- | --- | --- | --- |
