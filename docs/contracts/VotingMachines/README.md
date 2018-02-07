@@ -31,9 +31,9 @@ Vote 0 for abstain.
 
 Use absolute and relative decision method.
 
-Allow only YES/NO voting choices (2 choices).
+Currently it allow only YES/NO voting choices (2 choices).
 
-No abstained allowed.
+Abstaine is not allowed.
 
 This voting machine is also a UniversalScheme. 
 
