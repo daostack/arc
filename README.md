@@ -25,6 +25,13 @@ npm test
 ```
 This will run ganache-cli, compile, migrate and run all tests.
 
+### Docker
+Arc has a prebuilt Docker image that makes development environments consistent and cross-platform.
+1. Install [Docker](https://www.docker.com/community-edition#/download) in your favorite OS/platform.
+2. Run `sudo docker run -it -v <path to repo>:/home/arc daostack/arc`.
+2. The container will automatically `git clone` or `git fetch` depending on if `<path to repo>` is empty, and will install any dependencies.
+3. Continue development inside the container.
+
 ### using Arc as a library
 
 Please install Truffle and initialize your project with `truffle init`.
@@ -52,14 +59,6 @@ contract MyContract is UniversalScheme {
 ```
 
 You should be able to find all daostack-arc already built contracts (<contract>.json) ready for deployment under `node_modules/daostack-arc/build/contracts/` folder.
-
-#### *Note on windows dev environments*
-Windows environments are not currently officially supported.
-A common workaround is to use [Docker](https://www.docker.com/).
-1. In windows `cd path/to/local/repo`
-2. Run `docker run -it -v ${pwd}:/home/daostack node /bin/bash`
-3. Now you are inside the container, run `$ cd /home/daostack`
-4. Continue development as usual inside the container. Your changes are automatically synchronized with the host (windows) local repo.
 
 ## Security
 DAOstack Arc is still on its alpha version.
