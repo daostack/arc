@@ -32,7 +32,7 @@ Arc has a prebuilt Docker image that makes development environments consistent a
 2. The container will automatically `git clone` or `git fetch` depending on if `<path to repo>` is empty, and will install any dependencies.
 3. Continue development inside the container.
 
-### using Arc as a library
+### using Arc as an npm package
 
 Please install Truffle and initialize your project with `truffle init`.
 
@@ -41,7 +41,7 @@ npm install -g truffle
 mkdir myproject && cd myproject
 truffle init
 ```
-To install the @daostack/arc library, run:
+To install the @daostack/arc package, run:
 ```sh
 npm init
 npm install @daostack/arc
