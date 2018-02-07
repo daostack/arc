@@ -35,13 +35,13 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
 
     }
     struct Voter {
-        uint vote; // 0 - 'abstain'
+        uint vote; // YES(1) ,NO(2)
         uint reputation; // amount of voter's reputation
         bool preBoosted;
     }
 
     struct Staker {
-        uint vote; // 0 - 'abstain'
+        uint vote; // YES(1) ,NO(2)
         uint amount; // amount of voter's reputation
     }
 
@@ -76,9 +76,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
 
     uint constant NUM_OF_CHOICES = 2;
-    uint constant NO = 1;
-    uint constant YES = 2;
-    uint proposalsCnt; // Total amount of proposals
+    uint constant public NO = 2;
+    uint constant public YES = 1;
+    uint proposalsCnt; // Total number of proposals
     mapping(address=>uint) public orgBoostedProposalsCnt;
     StandardToken public stakingToken;
     /**
@@ -203,6 +203,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         proposal.submittedTime = now;
         proposal.boostedVotePeriodLimit = parameters[_paramsHash].boostedVotePeriodLimit;
         proposal.proposer = _proposer;
+        proposal.winningVote = NO;
         proposals[proposalId] = proposal;
         NewProposal(proposalId, _numOfChoices, msg.sender, _paramsHash);
         return proposalId;
@@ -220,7 +221,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     /**
      * @dev staking function
      * @param _proposalId id of the proposal
-     * @param _vote a value between 0 to and the proposal number of choices.
+     * @param _vote  NO(2) or YES(1).
      * @param _amount the betting amount
      * @return bool true - the proposal has been executed
      *              false - otherwise.
@@ -259,7 +260,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
   /**
    * @dev voting function
    * @param _proposalId id of the proposal
-   * @param _vote a value between 0 to and the proposal number of choices.
+   * @param _vote NO(2) or YES(1).
    * @return bool true - the proposal has been executed
    *              false - otherwise.
    */
@@ -309,7 +310,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.submittedTime) >= params.preBoostedVotePeriodLimit) {
                 tmpProposal = proposal;
-                ExecuteProposal(_proposalId, 0);
+                ExecuteProposal(_proposalId, NO);
                 (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(0));
                 proposals[_proposalId].state = ProposalState.Closed;
                 proposal.winningVote = NO;
@@ -745,13 +746,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
 
     /**
      * @dev _score return the proposal score
-     * For dual choice proposal S = (W+) - (W-)
-     * For multiple choice proposal S = W * (R*R)/(totalRep*totalRep)
+     * For dual choice proposal S = (S+) - (S-)
      * @param _proposalId the ID of the proposal
      * @return int proposal score.
      */
     function _score(bytes32 _proposalId) private view returns(int) {
         Proposal storage proposal = proposals[_proposalId];
-        return int(proposal.stakes[1]) - int(proposal.stakes[0]);
+        return int(proposal.stakes[YES]) - int(proposal.stakes[NO]);
     }
 }

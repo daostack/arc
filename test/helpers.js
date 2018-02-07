@@ -166,6 +166,16 @@ export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddres
 };
 
 
+export const checkVotesStatus = async function(proposalId, _votesStatus,votingMachine){
+
+  let voteStatus;
+  for (var i = 0; i < _votesStatus.length; i++) {
+      voteStatus = await votingMachine.voteStatus(proposalId,i);
+      assert.equal(voteStatus, _votesStatus[i]);
+  }
+};
+
+
 // Increases testrpc time by the passed duration in seconds
 export const increaseTime = async function(duration) {
   const id = Date.now();
