@@ -7,7 +7,28 @@ The VotingMachine maintains the voting process ,the proposals to vote on ,collec
 
 In some cases ,such as GenesisProtocol, it also collect stakes ,promote proposals and maintains a reputation flow for participants according to pre define DAO's configuration.  
 
-Each VotingMachine use its own decision taking method.
+Each VotingMachine use its own decision taking method and has its own voting choices range.
+
+## voting machines
+
+### AbsoluteVote
+
+Use absolute decision method.
+Allow voting choices range 0-10.
+Vote 0 for abstain.
+
+### QuorumVote
+
+Use quorum decision method.
+Allow voting choices range 0-10.
+Vote 0 for abstain.
+
+### GenesisProtocol
+
+Use absolute and relative decision method.
+Allow only YES/NO voting choices (2 choices).
+No abstained allowed.
+This voting machine is also a UniversalScheme. 
 
 ## basic decisions methods used by VotingMachines
 
@@ -37,3 +58,9 @@ A decision is taken if at least a certain percentage P from the total DAO's repu
 The "winning" choice is the one with the maximum votes(reputation).
 
 QuorumVote use this method.
+
+| VotingMachine | absolute | relative | quorum
+| --- | --- | --- | --- |
+| AbsoluteVote | yes | no | no |
+| QuorumVote | no | no | yes |
+| GenesisProtocol | yes | yes | no |
