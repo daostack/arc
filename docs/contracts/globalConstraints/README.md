@@ -29,7 +29,7 @@ It passes the following parameters to `pre` & `post`:
 We are going to define a simple global constraint that disallows registering new *Scheme*s during a certain time period.
 
 ```
-import 'daostack-arc/contracts/globalConstraints/GlobalConstraintInterface.sol';
+import '@daostack/arc/contracts/globalConstraints/GlobalConstraintInterface.sol';
 
 contract SchemeRegisterTimeLock is GlobalConstraintInterface{
 
@@ -52,11 +52,11 @@ contract SchemeRegisterTimeLock is GlobalConstraintInterface{
         /* This runs *before* an action is taken */
 
         /* make sure no registerations occur between `start` and `end`*/
-        if(method == "registerScheme" 
-            && params[hash].start <= now 
+        if(method == "registerScheme"
+            && params[hash].start <= now
             && now <= params[hash].end)
                 return false;
-        
+
         return true;
     }
 
@@ -69,7 +69,7 @@ contract SchemeRegisterTimeLock is GlobalConstraintInterface{
 
 #### Registering it with the controller
 
-Registering a global constraint is done inside a method of a *Scheme* which is permitted to add/remove global constraints. 
+Registering a global constraint is done inside a method of a *Scheme* which is permitted to add/remove global constraints.
 ```
 SchemeRegisterTimeLock gc = new SchemeRegisterTimeLock();
 
