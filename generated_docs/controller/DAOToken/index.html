@@ -349,6 +349,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../VotingMachines/" title="VotingMachine" class="md-nav__link">
+      VotingMachine
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -454,6 +466,13 @@
   
     <label class="md-nav__title" for="toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#daotoken_1" title="DAOToken" class="md-nav__link">
+    DAOToken
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#reference" title="Reference" class="md-nav__link">
@@ -725,6 +744,18 @@
   <li class="md-nav__item">
     <a href="../UController/" title="UController" class="md-nav__link">
       UController
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="Home" class="md-nav__link">
+      Home
     </a>
   </li>
 
@@ -1108,6 +1139,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#daotoken_1" title="DAOToken" class="md-nav__link">
+    DAOToken
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#reference" title="Reference" class="md-nav__link">
     Reference
   </a>
@@ -1367,14 +1405,16 @@
                 
                 <h1 id="daotoken">DAOToken<a class="headerlink" href="#daotoken" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/daostack/tree/master/contracts/controller/DAOToken.sol">see the source</a></p>
-<p><em>Code deposit cost: <strong>less than 683600 gas.</strong></em></p>
+<p><em>Code deposit cost: <strong>less than 687800 gas.</strong></em></p>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><em>Total deploy cost(deposit + execution): <strong>No bound available.</strong></em></p>
 <blockquote>
 <p>DAOToken, base on zeppelin contract.</p>
 </blockquote>
-<p>The <em>DAO token</em> is a simple token that is used by DAOs to assign value to, and reward participants actions. 
-It can be <strong>minted</strong> or <strong>burned</strong> by the DAO and also be <strong>destroyed</strong> in the event of an upgrade to a better token or in other circumstances.</p>
+<h2 id="daotoken_1">DAOToken<a class="headerlink" href="#daotoken_1" title="Permanent link">&para;</a></h2>
+<p>The <em>DAOToken</em> is an ERC20 compatible token that can be used to assign value and reward DAOs members.
+Each DAOToken is controlled by the DAO it is belong to via the controller.</p>
+<p>The DAOToken can be <strong>minted</strong> or <strong>burned</strong> by the DAO and also be <strong>destroyed</strong> in the event of an upgrade to a better token or in other circumstances.</p>
 <h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
 <h3 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h3>
 <h4 id="constructor-daotokenstring-string"><em>constructor</em> DAOToken(string, string)<a class="headerlink" href="#constructor-daotokenstring-string" title="Permanent link">&para;</a></h4>
@@ -1428,7 +1468,7 @@ It can be <strong>minted</strong> or <strong>burned</strong> by the DAO and also
 <blockquote>
 <p>Gets the balance of the specified address.</p>
 </blockquote>
-<p><em>Execution cost: <strong>less than 793 gas.</strong></em></p>
+<p><em>Execution cost: <strong>less than 796 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
 <ol>
@@ -1457,6 +1497,9 @@ It can be <strong>minted</strong> or <strong>burned</strong> by the DAO and also
 <p><em>Returns:</em></p>
 <p><em>Nothing</em></p>
 <h4 id="function-totalsupply"><em>function</em> totalSupply<a class="headerlink" href="#function-totalsupply" title="Permanent link">&para;</a></h4>
+<blockquote>
+<p>total number of tokens in existence</p>
+</blockquote>
 <p><em>Execution cost: <strong>less than 439 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
