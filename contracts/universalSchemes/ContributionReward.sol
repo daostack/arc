@@ -11,27 +11,37 @@ import "./UniversalScheme.sol";
  */
 
 contract ContributionReward is UniversalScheme {
+    using SafeMath for uint;
     event NewContributionProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         bytes32 _contributionDescription,
-        uint[4]  _rewards,
+        int _reputationChange,
+        uint[5]  _rewards,
         StandardToken _externalToken,
         address _beneficiary
     );
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+    event RedeemReputation(address indexed _avatar, bytes32 indexed _proposalId,int _amount);
+    event RedeemEther(address indexed _avatar, bytes32 indexed _proposalId,uint _amount);
+    event RedeemNativeToken(address indexed _avatar, bytes32 indexed _proposalId,uint _amount);
+    event RedeemExternalToken(address indexed _avatar, bytes32 indexed _proposalId,uint _amount);
 
     // A struct holding the data for a contribution proposal
     struct ContributionProposal {
         bytes32 contributionDescriptionHash; // Hash of contribution document.
         uint nativeTokenReward; // Reward asked in the native token of the organization.
-        uint reputationReward; // Organization reputation reward requested.
+        int reputationChange; // Organization reputation reward requested.
         uint ethReward;
         StandardToken externalToken;
         uint externalTokenReward;
         address beneficiary;
+        uint periodLength;
+        uint numberOfPeriods;
+        uint executionTime;
+        uint redeemedPeriods;
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
@@ -93,23 +103,27 @@ contract ContributionReward is UniversalScheme {
     * @dev Submit a proposal for a reward for a contribution:
     * @param _avatar Avatar of the organization that the contribution was made for
     * @param _contributionDescriptionHash A hash of the contribution's description
+    * @param _reputationChange - Amount of reputation change requested .Can be negative.
     * @param _rewards rewards array:
-    *         rewards[0] - Amount of tokens requested
-    *         rewards[1] - Amount of reputation requested
-    *         rewards[2] - Amount of ETH requested
-    *         rewards[3] - Amount of external tokens requested
+    *         rewards[0] - Amount of tokens requested per period
+    *         rewards[1] - Amount of ETH requested per period
+    *         rewards[2] - Amount of external tokens requested per period
+    *         rewards[3] - Period length
+    *         rewards[4] - Number of periods
     * @param _externalToken Address of external token, if reward is requested there
     * @param _beneficiary Who gets the rewards
     */
     function proposeContributionReward(
         Avatar _avatar,
         bytes32 _contributionDescriptionHash,
-        uint[4] _rewards,
+        int _reputationChange,
+        uint[5] _rewards,
         StandardToken _externalToken,
         address _beneficiary
     ) public
       returns(bytes32)
     {
+        require(_rewards[3] > 0); //proposal.periodLength > 0
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
         // Pay fees for submitting the contribution:
         if (controllerParams.orgNativeTokenFee > 0) {
@@ -128,11 +142,15 @@ contract ContributionReward is UniversalScheme {
         ContributionProposal memory proposal = ContributionProposal({
             contributionDescriptionHash: _contributionDescriptionHash,
             nativeTokenReward: _rewards[0],
-            reputationReward: _rewards[1],
-            ethReward: _rewards[2],
+            reputationChange: _reputationChange,
+            ethReward: _rewards[1],
             externalToken: _externalToken,
-            externalTokenReward: _rewards[3],
-            beneficiary: beneficiary
+            externalTokenReward: _rewards[2],
+            beneficiary: beneficiary,
+            periodLength: _rewards[3],
+            numberOfPeriods: _rewards[4],
+            executionTime: 0,
+            redeemedPeriods:0
         });
         organizationsProposals[_avatar][contributionId] = proposal;
 
@@ -141,6 +159,7 @@ contract ContributionReward is UniversalScheme {
             contributionId,
             controllerParams.intVote,
             _contributionDescriptionHash,
+            _reputationChange,
             _rewards,
             _externalToken,
             beneficiary
@@ -155,36 +174,92 @@ contract ContributionReward is UniversalScheme {
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
-    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
+    * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-        ContributionProposal memory proposal = organizationsProposals[_avatar][_proposalId];
-        delete organizationsProposals[_avatar][_proposalId];
+        require(organizationsProposals[_avatar][_proposalId].executionTime == 0);
         // Check if vote was successful:
         if (_param == 1) {
-
-            // Define controller
-            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            // pay the funds:
-            if (!controller.mintReputation(int(proposal.reputationReward), proposal.beneficiary,_avatar)) {
-                revert();
-              }
-            if (!controller.mintTokens(proposal.nativeTokenReward, proposal.beneficiary,_avatar)) {
-                revert();
-              }
-            if (!controller.sendEther(proposal.ethReward, proposal.beneficiary,_avatar)) {
-                revert();
-              }
-            if (proposal.externalToken != address(0) && proposal.externalTokenReward > 0) {
-                if (!controller.externalTokenTransfer(proposal.externalToken, proposal.beneficiary, proposal.externalTokenReward,_avatar)) {
-                    revert();
-                  }
-                }
-          }
-
+          // solium-disable-next-line security/no-block-members
+            organizationsProposals[_avatar][_proposalId].executionTime = now;
+        }
         ProposalExecuted(_avatar, _proposalId);
         return true;
+    }
+
+    /**
+    * @dev redeem reward for proposal
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _avatar address of the controller
+    * @param _whatToRedeem whatToRedeem array:
+    *         whatToRedeem[0] - reputation
+    *         whatToRedeem[1] - nativeTokenReward
+    *         whatToRedeem[2] - Ether
+    *         whatToRedeem[3] - ExternalToken
+    * @return  result boolean array for each redeem type.
+    */
+    function redeem(bytes32 _proposalId, address _avatar,bool[4] _whatToRedeem) public returns(bool[4] result) {
+
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
+        require(proposal.executionTime != 0);
+        ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+        uint  amount;
+        // solium-disable-next-line security/no-block-members
+        uint periodsFromExecution = (now.sub(_proposal.executionTime)).div(_proposal.periodLength);
+        uint periodsToPay;
+
+        if (periodsFromExecution >= _proposal.numberOfPeriods) {
+            periodsToPay = proposal.numberOfPeriods.sub(_proposal.redeemedPeriods);
+        } else {
+            periodsToPay = periodsFromExecution.sub(_proposal.redeemedPeriods);
+        }
+        proposal.redeemedPeriods = proposal.redeemedPeriods.add(periodsToPay);
+
+        if (_whatToRedeem[0]) {
+            proposal.reputationChange = 0;
+            int reputation = int(periodsToPay) * _proposal.reputationChange;
+            if (reputation!=0 && controller.mintReputation(reputation, _proposal.beneficiary,_avatar)) {
+                result[0] = true;
+                RedeemReputation(_avatar,_proposalId,reputation);
+            }
+            proposal.reputationChange = _proposal.reputationChange;
+        }
+
+        if (_whatToRedeem[1]) {
+            proposal.nativeTokenReward = 0;
+            amount = periodsToPay.mul(_proposal.nativeTokenReward);
+            if (amount > 0 && controller.mintTokens(amount, _proposal.beneficiary,_avatar)) {
+                result[1] = true;
+                RedeemNativeToken(_avatar,_proposalId,amount);
+            }
+            proposal.nativeTokenReward = _proposal.nativeTokenReward;
+        }
+
+        if (_whatToRedeem[2]) {
+            proposal.ethReward = 0;
+            amount = periodsToPay.mul(_proposal.ethReward);
+            if (amount > 0 && controller.sendEther(amount, _proposal.beneficiary,_avatar)) {
+                result[2] = true;
+                RedeemEther(_avatar,_proposalId,amount);
+            }
+            proposal.ethReward = _proposal.ethReward;
+
+        }
+
+        if (_whatToRedeem[3]) {
+            if (proposal.externalToken != address(0) && _proposal.externalTokenReward > 0) {
+                proposal.externalTokenReward = 0;
+                amount = periodsToPay.mul(_proposal.externalTokenReward);
+                if (amount > 0 && controller.externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar)) {
+                    result[3] = true;
+                    RedeemExternalToken(_avatar,_proposalId,amount);
+                }
+                proposal.externalTokenReward = _proposal.externalTokenReward;
+            }
+        }
+        return result;
     }
 }
