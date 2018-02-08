@@ -18,7 +18,7 @@ Check out the [Generated docs](generated_docs) for detailed documentation on eve
 
 *Arc* is only a part of a larger tech stack built for decentralized governance at scale, which is collectively called the DAOstack. It is important to note the other projects in this stack and how *Arc* fits into this larger whole:
 
-![The DAO stack](/img/the_dao_stack.png)
+![The DAO stack](img/the_dao_stack.png)
 
 1. [Ethereum](https://www.ethereum.org/) - *Base blockchain.*
 2. **Arc** - This project.
@@ -31,7 +31,7 @@ For more information regarding the entire DAOstack project, check out the [docs 
 
 Each DAO is a living entity on the blockchain that can own and manage resources. As such, it consists of the following "organs":
 
-![The DAO stack](/img/controller.png)
+![The DAO stack](img/controller.png)
 
 * **[Native token](generated_docs/controller/DAOToken.md)** - *A Standard [ERC20 token](https://theethereum.wiki/w/index.php/ERC20_Token_Standard) that defines the value system of the DAO. Participants are rewarded for their contributions based on this token*.
 * **[Reputation](generated_docs/controller/Reputation.md) system** - *Similar to native token but is **non-transferable**. The reputation system is used to assign weight the votes of participants*.
