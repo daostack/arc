@@ -263,13 +263,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#voting-machines" title="Voting Machines" class="md-nav__link">
-    Voting Machines
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#contributing-to-arc-docs" title="Contributing to Arc Docs" class="md-nav__link">
     Contributing to Arc Docs
   </a>
@@ -659,18 +652,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="generated_docs/VotingMachines/" title="Home" class="md-nav__link">
-      Home
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -779,18 +760,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="generated_docs/controller/" title="Home" class="md-nav__link">
-      Home
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -835,18 +804,6 @@
   <li class="md-nav__item">
     <a href="generated_docs/globalConstraints/TokenCapGC/" title="TokenCapGC" class="md-nav__link">
       TokenCapGC
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="generated_docs/globalConstraints/" title="Home" class="md-nav__link">
-      Home
     </a>
   </li>
 
@@ -1127,18 +1084,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="generated_docs/universalSchemes/" title="Home" class="md-nav__link">
-      Home
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1189,13 +1134,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#voting-machines" title="Voting Machines" class="md-nav__link">
-    Voting Machines
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#contributing-to-arc-docs" title="Contributing to Arc Docs" class="md-nav__link">
     Contributing to Arc Docs
   </a>
@@ -1232,7 +1170,11 @@
 <li><strong>General purpose</strong> - <em>Arc</em> provides a single unified simple model for building any DAO imaginable.</li>
 </ol>
 <p>For more information <a href="https://github.com/daostack/docs/blob/master/DAOstack%20White%20Paper%20V1.0.pdf">read the official DAOstack Whitepaper</a>.</p>
-<p>Check out the <a href="./generated_docs">Generated docs</a> for detailed documentation on every contract and an explanation of the source tree.</p>
+<p>Check out:</p>
+<ul>
+<li>The <a href="./contracts">Contract docs</a> for explanation about each contract and the source tree.</li>
+<li>The <a href="./generated_docs">Generated docs</a> for detailed technical reference on every contract.</li>
+</ul>
 <h2 id="an-overview-of-the-dao-stack">An overview of the DAO stack<a class="headerlink" href="#an-overview-of-the-dao-stack" title="Permanent link">&para;</a></h2>
 <p><em>Arc</em> is only a part of a larger tech stack built for decentralized governance at scale, which is collectively called the DAOstack. It is important to note the other projects in this stack and how <em>Arc</em> fits into this larger whole:</p>
 <p><img alt="The DAO stack" src="./img/the_dao_stack.png" /></p>
@@ -1247,28 +1189,27 @@
 <p>Each DAO is a living entity on the blockchain that can own and manage resources. As such, it consists of the following “organs”:</p>
 <p><img alt="The DAO stack" src="./img/controller.png" /></p>
 <ul>
-<li><strong><a href="generated_docs/controller/DAOToken/">Native token</a></strong> - <em>A Standard <a href="https://theethereum.wiki/w/index.php/ERC20_Token_Standard">ERC20 token</a> that defines the value system of the DAO. Participants are rewarded for their contributions based on this token</em>.</li>
-<li><strong><a href="generated_docs/controller/Reputation/">Reputation</a> system</strong> - <em>Similar to native token but is <strong>non-transferable</strong>. The reputation system is used to assign weight the votes of participants</em>.</li>
-<li><strong><a href="generated_docs/controller/Avatar/">Avatar</a></strong> - <em>This is the public-facing part of the DAO that handles the interaction of the DAO with the rest of the world(eg. interacing with other DAOs, paying third party participants, etc...)</em>.</li>
-<li><strong>Subscribed <a href="#elements">Elements</a></strong> - <em>The set of <a href="./generated_docs/universalSchemes">Schemes</a> and <a href="./generated_docs/globalConstraints">Global Constraints</a> that comprise the DAO</em>.</li>
+<li><strong><a href="contracts/controller/DAOToken/">Native token</a></strong> - <em>A Standard <a href="https://theethereum.wiki/w/index.php/ERC20_Token_Standard">ERC20 token</a> that defines the value system of the DAO. Participants are rewarded for their contributions based on this token</em>.</li>
+<li><strong><a href="contracts/controller/Reputation/">Reputation</a> system</strong> - <em>Similar to native token but is <strong>non-transferable</strong>. The reputation system is used to assign weight the votes of participants</em>.</li>
+<li><strong><a href="contracts/controller/Avatar/">Avatar</a></strong> - <em>This is the public-facing part of the DAO that handles the interaction of the DAO with the rest of the world(eg. interacing with other DAOs, paying third party participants, etc...)</em>.</li>
+<li><strong>Subscribed <a href="#elements">Elements</a></strong> - <em>The set of <a href="./contracts/universalSchemes">Schemes</a> and <a href="./contracts/globalConstraints">Global Constraints</a> that comprise the DAO</em>.</li>
 </ul>
-<p>For each DAO, the above components are organized in a single smart contract called a <em><a href="./generated_docs/controller/Controller">Controller</a></em>, which acts as the owner of the other components.</p>
+<p>For each DAO, the above components are organized in a single smart contract called a <em><a href="./contracts/controller/Controller">Controller</a></em>, which acts as the owner of the other components.</p>
 <h2 id="elements">Elements<a class="headerlink" href="#elements" title="Permanent link">&para;</a></h2>
 <p>The main configurable and extendable building blocks of DAOs are:
 <em>Schemes</em> and <em>Global Constraints</em>, which are collectively called <em>elements</em>.</p>
 <ul>
-<li><strong><a href="generated_docs/universalSchemes/UniversalSchemeInterface/">Schemes</a></strong> <em>define the "dos" of the DAO, the rules under which actions are taken, based on the participants' input.</em> Examples of Schemes are:<ul>
+<li><strong><a href="./contracts/universalSchemes/">Schemes</a></strong> <em>define the "dos" of the DAO, the rules under which actions are taken, based on the participants' input.</em> Examples of Schemes are:<ul>
 <li>Rewarding contributions when other participants recognize them as worthy.</li>
 <li>Voting on proposals and automatically executing the chosen proposal.</li>
 </ul>
 </li>
-<li><strong><a href="generated_docs/globalConstraints/GlobalConstraintInterface/">Global constraints</a></strong> <em>define the "don'ts" of the DAO, the conditions that must always hold and can prevent an action from being taken if it violates these conditions.</em> Examples of Global Constraints are:<ul>
+<li><strong><a href="./contracts/globalConstraints/">Global constraints</a></strong> <em>define the "don'ts" of the DAO, the conditions that must always hold and can prevent an action from being taken if it violates these conditions.</em> Examples of Global Constraints are:<ul>
 <li>Limiting the amount of tokens or reputation that can be minted per day.</li>
 <li>Blacklisting certain participants from performing certain actions.</li>
 </ul>
 </li>
 </ul>
-<h2 id="voting-machines"><a href="./generated_docs/VotingMachines">Voting Machines</a><a class="headerlink" href="#voting-machines" title="Permanent link">&para;</a></h2>
 <h2 id="contributing-to-arc-docs">Contributing to <em>Arc</em> Docs<a class="headerlink" href="#contributing-to-arc-docs" title="Permanent link">&para;</a></h2>
 <p>Same as <a href="https://github.com/daostack/arc/blob/master/CONTRIBUTING.md">CONTIBUTING</a>, with the following additions:</p>
 <ol>
@@ -1293,11 +1234,8 @@
 <div class="admonition note">
 <p class="admonition-title"><code>yarn docs preview</code> does not serve the final website!</p>
 <p><code>yarn docs preview</code> will serve from the <code>docs</code> folder. This means that what you see is not the final website.
-In the final website:</p>
-<ul>
-<li>All <code>README.md</code> files will be renamed to <code>index.md</code>, will automatically appear as "Home" on the menu and will be available in the URL at <code>...somedir/</code>.</li>
-<li><code>docs/contracts</code> will no show.</li>
-</ul>
+In the final website:
+All <code>README.md</code> files will be renamed to <code>index.md</code>, will automatically appear as "Home" on the menu and will be available in the URL at <code>...somedir/</code>.</p>
 </div>
 </li>
 <li>

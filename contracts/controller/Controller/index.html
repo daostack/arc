@@ -666,18 +666,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../../generated_docs/VotingMachines/" title="Home" class="md-nav__link">
-      Home
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -786,18 +774,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../../generated_docs/controller/" title="Home" class="md-nav__link">
-      Home
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -842,18 +818,6 @@
   <li class="md-nav__item">
     <a href="../../../generated_docs/globalConstraints/TokenCapGC/" title="TokenCapGC" class="md-nav__link">
       TokenCapGC
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../../generated_docs/globalConstraints/" title="Home" class="md-nav__link">
-      Home
     </a>
   </li>
 
@@ -1134,18 +1098,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../../generated_docs/universalSchemes/" title="Home" class="md-nav__link">
-      Home
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1228,18 +1180,19 @@
                 
                 
                 <h1 id="controller">Controller<a class="headerlink" href="#controller" title="Permanent link">&para;</a></h1>
+<p><a href="../../../generated_docs/controller/Controller/">see the generated documentation</a></p>
 <p>The controller is the central entity of a DAO.</p>
 <p>As the owner of the DAO's <a href="../Avatar/">Avatar</a>,<a href="../Reputation/">Reputation</a> and <a href="../DAOToken/">DAOToken</a> (organs) it controls these organs and can perform "sensitive"
 operations trough these entities (e.g token and reputation operations).</p>
 <p>It is subject to a set of schemes and constraints that determine its behavior, where each scheme has it own operations permissions.</p>
 <p>It store scheme's parameters for the specific DAO.</p>
-<p>The controller contract is aligned with the ControllerInterface. </p>
+<p>The controller contract is aligned with the ControllerInterface.</p>
 <h2 id="schemes">Schemes<a class="headerlink" href="#schemes" title="Permanent link">&para;</a></h2>
 <p>A single DAO controller might be a subject to multiple schemes, each implements its own logic.
 A scheme can be registered to a controller by a scheme which has registration permission.</p>
 <h3 id="permissions">Permissions<a class="headerlink" href="#permissions" title="Permanent link">&para;</a></h3>
 <p>The controller holds and enforces the permissions for each scheme.
-e.g registerScheme is allowed to be called only by authorized (CAN_REGISTERED) scheme.  </p>
+e.g registerScheme is allowed to be called only by authorized (CAN_REGISTERED) scheme.</p>
 <p>A scheme can have any combination of the following permissions  :
  - REGISTERED -  All registered schemes has this permission.
                  Only registered schemes can perform controller operations.
