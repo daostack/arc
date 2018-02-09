@@ -1,5 +1,4 @@
-
-## Reference
+# UniversalSchemeInterface
 [see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/UniversalSchemeInterface.sol)
 
 *Code deposit cost: **No bound available.***
@@ -9,14 +8,14 @@
 *Total deploy cost(deposit + execution): **No bound available.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### updateParameters(bytes32)
+## Functions
+### updateParameters(bytes32)
 
 *Execution cost: **No bound available.***
 

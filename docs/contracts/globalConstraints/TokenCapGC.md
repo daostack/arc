@@ -1,3 +1,6 @@
+# TokenCapGC
+[see the generated documentation](../../generated_docs/globalConstraints/TokenCapGC.md)
+
 *TokenCapGC* is a simple global constraint that limits the number of tokens that can be issued.
 
 ## Usage

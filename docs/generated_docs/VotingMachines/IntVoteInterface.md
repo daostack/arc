@@ -1,5 +1,4 @@
-
-## Reference
+# IntVoteInterface
 [see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/IntVoteInterface.sol)
 
 *Code deposit cost: **No bound available.***
@@ -9,14 +8,14 @@
 *Total deploy cost(deposit + execution): **No bound available.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
+## Functions
+### voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -34,7 +33,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### vote(bytes32, uint256)
+### vote(bytes32, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -50,7 +49,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### propose(uint256, bytes32, address, address, address)
+### propose(uint256, bytes32, address, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -69,7 +68,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### ownerVote(bytes32, uint256, address)
+### ownerVote(bytes32, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -86,7 +85,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### isVotable(bytes32)
+### isVotable(bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -101,7 +100,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### getNumberOfChoices(bytes32)
+### getNumberOfChoices(bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -116,7 +115,7 @@
 1. **unnamed** *of type uint256*
 
 ---
-#### execute(bytes32)
+### execute(bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -131,7 +130,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### cancelVote(bytes32)
+### cancelVote(bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -146,7 +145,7 @@
 *Nothing*
 
 ---
-#### cancelProposal(bytes32)
+### cancelProposal(bytes32)
 
 *Execution cost: **No bound available.***
 

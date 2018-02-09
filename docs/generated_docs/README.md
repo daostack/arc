@@ -5,4 +5,3 @@ They include the following info:
 
 - Gas estimates on constructors & functions.
 - Technical information about the exposed public interface of each contract.
-- A manual documentation snippet at the top, if available.

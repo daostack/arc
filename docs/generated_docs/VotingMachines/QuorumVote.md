@@ -1,5 +1,4 @@
-
-## Reference
+# QuorumVote
 [see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/QuorumVote.sol)
 
 *Code deposit cost: **less than 925400 gas.***
@@ -9,10 +8,10 @@
 *Total deploy cost(deposit + execution): **less than 926357 gas.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
-#### VoteProposal(bytes32, address, uint256, uint256, bool)
+## Events
+### VoteProposal(bytes32, address, uint256, uint256, bool)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
@@ -22,7 +21,7 @@
 5. **_isOwnerVote** *of type bool*
 
 ---
-#### NewProposal(bytes32, uint256, address, bytes32)
+### NewProposal(bytes32, uint256, address, bytes32)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
@@ -31,30 +30,30 @@
 4. **_paramsHash** *of type bytes32*
 
 ---
-#### ExecuteProposal(bytes32, uint256)
+### ExecuteProposal(bytes32, uint256)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
 2. **_decision** *of type uint256*
 
 ---
-#### CancelVoting(bytes32, address)
+### CancelVoting(bytes32, address)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
 2. **_voter** *of type address*
 
 ---
-#### CancelProposal(bytes32)
+### CancelProposal(bytes32)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### votesStatus(bytes32)
+## Functions
+### votesStatus(bytes32)
 > votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
 
 *Execution cost: **No bound available.***
@@ -67,7 +66,7 @@
 
 votes array of votes for each choice
 ---
-#### setParameters(address, uint256, bool)
+### setParameters(address, uint256, bool)
 
 *Execution cost: **No bound available.***
 
@@ -84,7 +83,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bytes32*
 
 ---
-#### voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
+### voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -102,7 +101,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bool*
 
 ---
-#### voteInfo(bytes32, address)
+### voteInfo(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -119,7 +118,7 @@ votes array of votes for each choice
 2. **unnamed** *of type uint256*
 
 ---
-#### vote(bytes32, uint256)
+### vote(bytes32, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -135,7 +134,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bool*
 
 ---
-#### propose(uint256, bytes32, address, address, address)
+### propose(uint256, bytes32, address, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -154,7 +153,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bytes32*
 
 ---
-#### proposals(bytes32)
+### proposals(bytes32)
 
 *Execution cost: **less than 2210 gas.***
 
@@ -175,7 +174,7 @@ votes array of votes for each choice
 7. **open** *of type bool*
 
 ---
-#### parameters(bytes32)
+### parameters(bytes32)
 
 *Execution cost: **less than 1169 gas.***
 
@@ -192,7 +191,7 @@ votes array of votes for each choice
 3. **allowOwner** *of type bool*
 
 ---
-#### ownerVote(bytes32, uint256, address)
+### ownerVote(bytes32, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -209,7 +208,7 @@ votes array of votes for each choice
 1. **unnamed** *of type bool*
 
 ---
-#### isVotable(bytes32)
+### isVotable(bytes32)
 > isVotable check if the proposal is votable
 
 *Execution cost: **less than 790 gas.***
@@ -222,7 +221,7 @@ votes array of votes for each choice
 
 bool true or false
 ---
-#### getParametersHash(address, uint256, bool)
+### getParametersHash(address, uint256, bool)
 
 *Execution cost: **No bound available.***
 
@@ -239,7 +238,7 @@ bool true or false
 1. **unnamed** *of type bytes32*
 
 ---
-#### getNumberOfChoices(bytes32)
+### getNumberOfChoices(bytes32)
 > getNumberOfChoices returns the number of choices possible in this proposal
 
 *Execution cost: **less than 734 gas.***
@@ -252,7 +251,7 @@ bool true or false
 
 uint that contains number of choices
 ---
-#### execute(bytes32)
+### execute(bytes32)
 > check if the proposal has been decided, and if so, execute the proposal
 
 *Execution cost: **No bound available.***
@@ -268,7 +267,7 @@ uint that contains number of choices
 1. **unnamed** *of type bool*
 
 ---
-#### cancelVote(bytes32)
+### cancelVote(bytes32)
 > Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
 *Execution cost: **No bound available.***
@@ -284,7 +283,7 @@ uint that contains number of choices
 *Nothing*
 
 ---
-#### cancelProposal(bytes32)
+### cancelProposal(bytes32)
 > Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
 
 *Execution cost: **No bound available.***

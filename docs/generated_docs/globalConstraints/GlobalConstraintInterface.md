@@ -1,5 +1,4 @@
-
-## Reference
+# GlobalConstraintInterface
 [see the source](https://github.com/daostack/arc/tree/master/contracts/globalConstraints/GlobalConstraintInterface.sol)
 
 *Code deposit cost: **No bound available.***
@@ -9,14 +8,14 @@
 *Total deploy cost(deposit + execution): **No bound available.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### when()
+## Functions
+### when()
 
 *Execution cost: **No bound available.***
 
@@ -31,7 +30,7 @@
 1. **unnamed** *of type uint8*
 
 ---
-#### pre(address, bytes32, bytes32)
+### pre(address, bytes32, bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -48,7 +47,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### post(address, bytes32, bytes32)
+### post(address, bytes32, bytes32)
 
 *Execution cost: **No bound available.***
 

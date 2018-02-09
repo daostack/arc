@@ -1,5 +1,4 @@
-
-## Reference
+# UniversalScheme
 [see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/UniversalScheme.sol)
 
 *Code deposit cost: **less than 98600 gas.***
@@ -9,26 +8,26 @@
 *Total deploy cost(deposit + execution): **less than 119096 gas.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
-#### OwnershipTransferred(address, address)
+## Events
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 ---
-#### NewProposal(bytes32)
+### NewProposal(bytes32)
 *Params:*
 
 1. **proposalId** *of type bytes32*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### updateParameters(bytes32)
+## Functions
+### updateParameters(bytes32)
 
 *Execution cost: **less than 20443 gas.***
 
@@ -43,7 +42,7 @@
 *Nothing*
 
 ---
-#### transferOwnership(address)
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 22788 gas.***
@@ -59,7 +58,7 @@
 *Nothing*
 
 ---
-#### owner()
+### owner()
 
 *Execution cost: **less than 548 gas.***
 
@@ -74,7 +73,7 @@
 1. **unnamed** *of type address*
 
 ---
-#### hashedParameters()
+### hashedParameters()
 
 *Execution cost: **less than 439 gas.***
 

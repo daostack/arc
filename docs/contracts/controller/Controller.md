@@ -1,4 +1,5 @@
 # Controller
+[see the generated documentation](../../generated_docs/controller/Controller.md)
 
 The controller is the central entity of a DAO.
 
@@ -9,7 +10,7 @@ It is subject to a set of schemes and constraints that determine its behavior, w
 
 It store scheme's parameters for the specific DAO.
 
-The controller contract is aligned with the ControllerInterface. 
+The controller contract is aligned with the ControllerInterface.
 
 
 ## Schemes
@@ -21,7 +22,7 @@ A scheme can be registered to a controller by a scheme which has registration pe
 ### Permissions
 
 The controller holds and enforces the permissions for each scheme.
-e.g registerScheme is allowed to be called only by authorized (CAN_REGISTERED) scheme.  
+e.g registerScheme is allowed to be called only by authorized (CAN_REGISTERED) scheme.
 
 A scheme can have any combination of the following permissions  :
  - REGISTERED -  All registered schemes has this permission.

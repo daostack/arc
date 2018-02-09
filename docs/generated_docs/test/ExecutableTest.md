@@ -1,5 +1,4 @@
-
-## Reference
+# ExecutableTest
 [see the source](https://github.com/daostack/arc/tree/master/contracts/test/ExecutableTest.sol)
 
 *Code deposit cost: **less than 74000 gas.***
@@ -9,55 +8,55 @@
 *Total deploy cost(deposit + execution): **less than 74118 gas.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
-#### LogUint(uint256)
+## Events
+### LogUint(uint256)
 *Params:*
 
 1. **_msg** *of type uint256*
 
 ---
-#### LogString(string)
+### LogString(string)
 *Params:*
 
 1. **_msg** *of type string*
 
 ---
-#### LogInt(int256)
+### LogInt(int256)
 *Params:*
 
 1. **_msg** *of type int256*
 
 ---
-#### LogBytes32(bytes32)
+### LogBytes32(bytes32)
 *Params:*
 
 1. **_msg** *of type bytes32*
 
 ---
-#### LogBytes(bytes)
+### LogBytes(bytes)
 *Params:*
 
 1. **_msg** *of type bytes*
 
 ---
-#### LogBool(bool)
+### LogBool(bool)
 *Params:*
 
 1. **_msg** *of type bool*
 
 ---
-#### LogAddress(address)
+### LogAddress(address)
 *Params:*
 
 1. **_msg** *of type address*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### execute(bytes32, address, int256)
+## Functions
+### execute(bytes32, address, int256)
 
 *Execution cost: **No bound available.***
 

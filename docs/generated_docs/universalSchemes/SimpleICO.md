@@ -1,5 +1,4 @@
-
-## Reference
+# SimpleICO
 [see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/SimpleICO.sol)
 
 *Code deposit cost: **less than 876400 gas.***
@@ -10,8 +9,8 @@
 
 > SimpleICO scheme.
 
-### Constructors
-#### SimpleICO()
+## Constructors
+### SimpleICO()
 
 *Execution cost: **No bound available.***
 
@@ -22,21 +21,21 @@
 *Nothing*
 
 
-### Events
-#### OwnershipTransferred(address, address)
+## Events
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 ---
-#### NewProposal(bytes32)
+### NewProposal(bytes32)
 *Params:*
 
 1. **proposalId** *of type bytes32*
 
 ---
-#### DonationReceived(address, address, uint256, uint256)
+### DonationReceived(address, address, uint256, uint256)
 *Params:*
 
 1. **organization** *of type address*
@@ -45,10 +44,10 @@
 4. **_tokensAmount** *of type uint256*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### owner()
+## Functions
+### owner()
 
 *Execution cost: **less than 721 gas.***
 
@@ -63,7 +62,7 @@
 1. **unnamed** *of type address*
 
 ---
-#### parameters(bytes32)
+### parameters(bytes32)
 
 *Execution cost: **less than 1880 gas.***
 
@@ -83,7 +82,7 @@
 6. **admin** *of type address*
 
 ---
-#### transferOwnership(address)
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23049 gas.***
@@ -99,7 +98,7 @@
 *Nothing*
 
 ---
-#### updateParameters(bytes32)
+### updateParameters(bytes32)
 
 *Execution cost: **less than 20572 gas.***
 
@@ -114,7 +113,7 @@
 *Nothing*
 
 ---
-#### resumeICO(address)
+### resumeICO(address)
 > Allowing admin to reopen an ICO.
 
 *Execution cost: **less than 21513 gas.***
@@ -130,7 +129,7 @@
 *Nothing*
 
 ---
-#### start(address)
+### start(address)
 > start an ICO
 
 *Execution cost: **No bound available.***
@@ -146,7 +145,7 @@
 *Nothing*
 
 ---
-#### setParameters(uint256, uint256, uint256, uint256, address, address)
+### setParameters(uint256, uint256, uint256, uint256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -166,7 +165,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### organizationsICOInfo(address)
+### organizationsICOInfo(address)
 
 *Execution cost: **less than 1559 gas.***
 
@@ -184,7 +183,7 @@
 4. **isHalted** *of type bool*
 
 ---
-#### isActive(address)
+### isActive(address)
 > Check is an ICO is active (halted is still considered active). Active ICO: 1. The organization is registered. 2. The ICO didn't reach it's cap yet. 3. The current block isn't bigger than the "endBlock" & Smaller then the "startBlock"
 
 *Execution cost: **less than 3761 gas.***
@@ -197,7 +196,7 @@
 
 bool which represents a successful of the function
 ---
-#### hashedParameters()
+### hashedParameters()
 
 *Execution cost: **less than 700 gas.***
 
@@ -212,7 +211,7 @@ bool which represents a successful of the function
 1. **unnamed** *of type bytes32*
 
 ---
-#### haltICO(address)
+### haltICO(address)
 > Allowing admin to halt an ICO.
 
 *Execution cost: **less than 21475 gas.***
@@ -228,7 +227,7 @@ bool which represents a successful of the function
 *Nothing*
 
 ---
-#### getParametersHash(uint256, uint256, uint256, uint256, address, address)
+### getParametersHash(uint256, uint256, uint256, uint256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -248,7 +247,7 @@ bool which represents a successful of the function
 1. **unnamed** *of type bytes32*
 
 ---
-#### donate(address, address)
+### donate(address, address)
 
 *Execution cost: **No bound available.***
 

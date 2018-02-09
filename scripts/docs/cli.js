@@ -89,7 +89,6 @@ const update = (argv) => {
         const readme = fs.readFileSync(`${argv.output}/README.md`,'utf-8');
         shell.rm('-rf',argv.output);
         shell.mkdir(argv.output);
-        shell.cp('-rf',argv.headers+'/*',argv.output);
         // restore `${argv.output}/README.md`
         fs.writeFileSync(`${argv.output}/README.md`,readme,'utf-8');
         const files = shell.find(argv.input).filter(x => path.extname(x) === '.sol');
@@ -97,14 +96,12 @@ const update = (argv) => {
         const output = compile(files);
         print(`Rendering ${output.length} contracts to ${argv.output} using headers from ${argv.headers}...`);
         const destFn = (file,name) => file.replace(argv.input,argv.output).replace(path.basename(file),`${name}.md`);
-        const headerFn = (file,name) => file.replace(argv.input,argv.headers).replace(path.basename(file),`${name}.md`);
 
-        render(output,destFn,headerFn,templates.contract,null);
+        render(output,destFn,templates.contract);
 
         // prepare .docs_build/docs for mkdocs.
         shell.mkdir('-p',build_dir);
         shell.cp('-rf',docs_dir,build_dir);
-        shell.rm('-rf',`${build_dir}/${argv.headers}`); //remove headers folder
         shell.find(build_dir) // rename README.md to index.md for mkdocs.
             .filter(x => path.basename(x).toLowerCase() === 'readme.md')
             .forEach(f => fs.rename(f,f.replace(path.basename(f),'index.md')));

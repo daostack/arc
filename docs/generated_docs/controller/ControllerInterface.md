@@ -1,5 +1,4 @@
-
-## Reference
+# ControllerInterface
 [see the source](https://github.com/daostack/arc/tree/master/contracts/controller/ControllerInterface.sol)
 
 *Code deposit cost: **No bound available.***
@@ -9,14 +8,14 @@
 *Total deploy cost(deposit + execution): **No bound available.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### mintReputation(int256, address, address)
+## Functions
+### mintReputation(int256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -33,7 +32,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### unregisterScheme(address, address)
+### unregisterScheme(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -49,7 +48,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### upgradeController(address, address)
+### upgradeController(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -65,7 +64,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### unregisterSelf(address)
+### unregisterSelf(address)
 
 *Execution cost: **No bound available.***
 
@@ -80,7 +79,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### getSchemePermissions(address, address)
+### getSchemePermissions(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -96,7 +95,7 @@
 1. **unnamed** *of type bytes4*
 
 ---
-#### genericAction(bytes32[], address)
+### genericAction(bytes32[], address)
 
 *Execution cost: **No bound available.***
 
@@ -112,7 +111,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### mintTokens(uint256, address, address)
+### mintTokens(uint256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -129,7 +128,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### isGlobalConstraintRegistered(address, address)
+### isGlobalConstraintRegistered(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -145,7 +144,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### removeGlobalConstraint(address, address)
+### removeGlobalConstraint(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -161,7 +160,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### getSchemeParameters(address, address)
+### getSchemeParameters(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -177,7 +176,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### globalConstraintsCount(address)
+### globalConstraintsCount(address)
 
 *Execution cost: **No bound available.***
 
@@ -193,7 +192,7 @@
 2. **unnamed** *of type uint256*
 
 ---
-#### sendEther(uint256, address, address)
+### sendEther(uint256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -210,7 +209,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### isSchemeRegistered(address, address)
+### isSchemeRegistered(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -226,7 +225,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### registerScheme(address, bytes32, bytes4, address)
+### registerScheme(address, bytes32, bytes4, address)
 
 *Execution cost: **No bound available.***
 
@@ -244,7 +243,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenTransferFrom(address, address, address, uint256, address)
+### externalTokenTransferFrom(address, address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -263,7 +262,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenTransfer(address, address, uint256, address)
+### externalTokenTransfer(address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -281,7 +280,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenIncreaseApproval(address, address, uint256, address)
+### externalTokenIncreaseApproval(address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -299,7 +298,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenDecreaseApproval(address, address, uint256, address)
+### externalTokenDecreaseApproval(address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -317,7 +316,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### addGlobalConstraint(address, bytes32, address)
+### addGlobalConstraint(address, bytes32, address)
 
 *Execution cost: **No bound available.***
 

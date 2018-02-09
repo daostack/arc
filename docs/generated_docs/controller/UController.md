@@ -1,25 +1,4 @@
 # UController
-
-The universal controller behave like a [controller](Controller.md) for multiple DAOs.
-
-Any DAO can initiate and register it self via the universal controller.
-
-As a controller it holds the DAOs organs ( [Avatar](./Avatar.md),[Reputation](Reputation.md) and [DAOToken](DAOToken.md)), maintain schemes permissions and global constraints for each DAOs.
-
-The universal controller is aligned with the ControllerInterface.
-
-## newOrganization function
-
-Using newOrganization function , one can create a new organization with a default scheme with full permissions.
-
-## UNIVERSAL vs SINGLE CONTROLLER
-
-- UNIVERSAL CONTROLLER will probably will be deployed by DAOstack so by using it
-   one save the gas cost of deploying a controller when creating a DAO.
-   
-- UNIVERSAL CONTROLLER might be a bit expensive in terms of GAS for each operation. 
-
-## Reference
 [see the source](https://github.com/daostack/arc/tree/master/contracts/controller/UController.sol)
 
 *Code deposit cost: **less than 3446000 gas.***
@@ -30,8 +9,8 @@ Using newOrganization function , one can create a new organization with a defaul
 
 > Universal Controller contract
 
-### Constructors
-#### UController()
+## Constructors
+### UController()
 
 *Execution cost: **No bound available.***
 
@@ -42,8 +21,8 @@ Using newOrganization function , one can create a new organization with a defaul
 *Nothing*
 
 
-### Events
-#### ExternalTokenTransfer(address, address, address, uint256)
+## Events
+### ExternalTokenTransfer(address, address, address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -52,7 +31,7 @@ Using newOrganization function , one can create a new organization with a defaul
 4. **_value** *of type uint256*
 
 ---
-#### RemoveGlobalConstraint(address, uint256, bool, address)
+### RemoveGlobalConstraint(address, uint256, bool, address)
 *Params:*
 
 1. **_globalConstraint** *of type address*
@@ -61,7 +40,7 @@ Using newOrganization function , one can create a new organization with a defaul
 4. **_avatar** *of type address*
 
 ---
-#### UpgradeController(address, address, address)
+### UpgradeController(address, address, address)
 *Params:*
 
 1. **_oldController** *of type address*
@@ -69,7 +48,7 @@ Using newOrganization function , one can create a new organization with a defaul
 3. **_avatar** *of type address*
 
 ---
-#### UnregisterScheme(address, address, address)
+### UnregisterScheme(address, address, address)
 *Params:*
 
 1. **_sender** *of type address*
@@ -77,7 +56,7 @@ Using newOrganization function , one can create a new organization with a defaul
 3. **_avatar** *of type address*
 
 ---
-#### SendEther(address, uint256, address)
+### SendEther(address, uint256, address)
 *Params:*
 
 1. **_sender** *of type address*
@@ -85,7 +64,7 @@ Using newOrganization function , one can create a new organization with a defaul
 3. **_to** *of type address*
 
 ---
-#### RegisterScheme(address, address, address)
+### RegisterScheme(address, address, address)
 *Params:*
 
 1. **_sender** *of type address*
@@ -93,7 +72,7 @@ Using newOrganization function , one can create a new organization with a defaul
 3. **_avatar** *of type address*
 
 ---
-#### MintTokens(address, address, uint256, address)
+### MintTokens(address, address, uint256, address)
 *Params:*
 
 1. **_sender** *of type address*
@@ -102,7 +81,7 @@ Using newOrganization function , one can create a new organization with a defaul
 4. **_avatar** *of type address*
 
 ---
-#### MintReputation(address, address, int256, address)
+### MintReputation(address, address, int256, address)
 *Params:*
 
 1. **_sender** *of type address*
@@ -111,14 +90,14 @@ Using newOrganization function , one can create a new organization with a defaul
 4. **_avatar** *of type address*
 
 ---
-#### GenericAction(address, bytes32[])
+### GenericAction(address, bytes32[])
 *Params:*
 
 1. **_sender** *of type address*
 2. **_params** *of type bytes32[]*
 
 ---
-#### ExternalTokenTransferFrom(address, address, address, address, uint256)
+### ExternalTokenTransferFrom(address, address, address, address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -128,7 +107,7 @@ Using newOrganization function , one can create a new organization with a defaul
 5. **_value** *of type uint256*
 
 ---
-#### ExternalTokenIncreaseApproval(address, address, address, uint256)
+### ExternalTokenIncreaseApproval(address, address, address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -137,7 +116,7 @@ Using newOrganization function , one can create a new organization with a defaul
 4. **_value** *of type uint256*
 
 ---
-#### ExternalTokenDecreaseApproval(address, address, address, uint256)
+### ExternalTokenDecreaseApproval(address, address, address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -146,7 +125,7 @@ Using newOrganization function , one can create a new organization with a defaul
 4. **_value** *of type uint256*
 
 ---
-#### AddGlobalConstraint(address, bytes32, uint8, address)
+### AddGlobalConstraint(address, bytes32, uint8, address)
 *Params:*
 
 1. **_globalConstraint** *of type address*
@@ -155,10 +134,10 @@ Using newOrganization function , one can create a new organization with a defaul
 4. **_avatar** *of type address*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### mintReputation(int256, address, address)
+## Functions
+### mintReputation(int256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -175,7 +154,7 @@ Using newOrganization function , one can create a new organization with a defaul
 1. **unnamed** *of type bool*
 
 ---
-#### unregisterScheme(address, address)
+### unregisterScheme(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -191,7 +170,7 @@ Using newOrganization function , one can create a new organization with a defaul
 1. **unnamed** *of type bool*
 
 ---
-#### upgradeController(address, address)
+### upgradeController(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -207,7 +186,7 @@ Using newOrganization function , one can create a new organization with a defaul
 1. **unnamed** *of type bool*
 
 ---
-#### unregisterSelf(address)
+### unregisterSelf(address)
 > unregister the caller's scheme
 
 *Execution cost: **less than 28509 gas.***
@@ -220,7 +199,7 @@ Using newOrganization function , one can create a new organization with a defaul
 
 bool which represents a success
 ---
-#### getSchemePermissions(address, address)
+### getSchemePermissions(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -236,7 +215,7 @@ bool which represents a success
 1. **unnamed** *of type bytes4*
 
 ---
-#### newControllers(address)
+### newControllers(address)
 
 *Execution cost: **less than 824 gas.***
 
@@ -251,7 +230,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 ---
-#### sendEther(uint256, address, address)
+### sendEther(uint256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -268,7 +247,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### registerScheme(address, bytes32, bytes4, address)
+### registerScheme(address, bytes32, bytes4, address)
 
 *Execution cost: **No bound available.***
 
@@ -286,7 +265,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### newOrganization(address)
+### newOrganization(address)
 > newOrganization set up a new organization with default daoCreator.
 
 *Execution cost: **No bound available.***
@@ -302,7 +281,7 @@ bool which represents a success
 *Nothing*
 
 ---
-#### removeGlobalConstraint(address, address)
+### removeGlobalConstraint(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -318,7 +297,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenTransfer(address, address, uint256, address)
+### externalTokenTransfer(address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -336,7 +315,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### getSchemeParameters(address, address)
+### getSchemeParameters(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -352,7 +331,7 @@ bool which represents a success
 1. **unnamed** *of type bytes32*
 
 ---
-#### isGlobalConstraintRegistered(address, address)
+### isGlobalConstraintRegistered(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -368,7 +347,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### isSchemeRegistered(address, address)
+### isSchemeRegistered(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -384,7 +363,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### mintTokens(uint256, address, address)
+### mintTokens(uint256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -401,7 +380,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### globalConstraintsCount(address)
+### globalConstraintsCount(address)
 > globalConstraintsCount return the global constraint pre and post count
 
 *Execution cost: **less than 1148 gas.***
@@ -414,7 +393,7 @@ bool which represents a success
 
 uint globalConstraintsPre count.uint globalConstraintsPost count.
 ---
-#### genericAction(bytes32[], address)
+### genericAction(bytes32[], address)
 
 *Execution cost: **No bound available.***
 
@@ -430,7 +409,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenTransferFrom(address, address, address, uint256, address)
+### externalTokenTransferFrom(address, address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -449,7 +428,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenIncreaseApproval(address, address, uint256, address)
+### externalTokenIncreaseApproval(address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -467,7 +446,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenDecreaseApproval(address, address, uint256, address)
+### externalTokenDecreaseApproval(address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -485,7 +464,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bool*
 
 ---
-#### addGlobalConstraint(address, bytes32, address)
+### addGlobalConstraint(address, bytes32, address)
 
 *Execution cost: **No bound available.***
 

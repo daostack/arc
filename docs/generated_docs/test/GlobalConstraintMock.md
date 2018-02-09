@@ -1,5 +1,4 @@
-
-## Reference
+# GlobalConstraintMock
 [see the source](https://github.com/daostack/arc/tree/master/contracts/test/GlobalConstraintMock.sol)
 
 *Code deposit cost: **less than 225200 gas.***
@@ -9,14 +8,14 @@
 *Total deploy cost(deposit + execution): **less than 225464 gas.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### when()
+## Functions
+### when()
 
 *Execution cost: **less than 487 gas.***
 
@@ -31,7 +30,7 @@
 1. **unnamed** *of type uint8*
 
 ---
-#### setConstraint(bytes, bool, bool)
+### setConstraint(bytes, bool, bool)
 
 *Execution cost: **No bound available.***
 
@@ -48,7 +47,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### pre(address, bytes32, bytes)
+### pre(address, bytes32, bytes)
 
 *Execution cost: **No bound available.***
 
@@ -65,7 +64,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### post(address, bytes32, bytes)
+### post(address, bytes32, bytes)
 
 *Execution cost: **No bound available.***
 

@@ -1,5 +1,4 @@
-
-## Reference
+# GenesisProtocolFormulasInterface
 [see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/GenesisProtocolFormulasInterface.sol)
 
 *Code deposit cost: **No bound available.***
@@ -9,14 +8,14 @@
 *Total deploy cost(deposit + execution): **No bound available.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### threshold(address)
+## Functions
+### threshold(address)
 
 *Execution cost: **No bound available.***
 
@@ -31,7 +30,7 @@
 1. **unnamed** *of type int256*
 
 ---
-#### shouldBoost(bytes32)
+### shouldBoost(bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -46,7 +45,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### score(bytes32)
+### score(bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -61,7 +60,7 @@
 1. **unnamed** *of type int256*
 
 ---
-#### getRedeemableTokensVoter(bytes32, address)
+### getRedeemableTokensVoter(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -77,7 +76,7 @@
 1. **unnamed** *of type uint256*
 
 ---
-#### getRedeemableTokensStaker(bytes32, address)
+### getRedeemableTokensStaker(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -93,7 +92,7 @@
 1. **unnamed** *of type uint256*
 
 ---
-#### getRedeemableReputationProposer(bytes32)
+### getRedeemableReputationProposer(bytes32)
 
 *Execution cost: **No bound available.***
 

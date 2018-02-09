@@ -1,52 +1,4 @@
 # Controller
-
-The controller is the central entity of a DAO.
-
-As the owner of the DAO's [Avatar](./Avatar.md),[Reputation](Reputation.md) and [DAOToken](DAOToken.md) (organs) it controls these organs and can perform "sensitive"
-operations trough these entities (e.g token and reputation operations).
-
-It is subject to a set of schemes and constraints that determine its behavior, where each scheme has it own operations permissions.
-
-It store scheme's parameters for the specific DAO.
-
-The controller contract is aligned with the ControllerInterface. 
-
-
-## Schemes
-
-A single DAO controller might be a subject to multiple schemes, each implements its own logic.
-A scheme can be registered to a controller by a scheme which has registration permission.
-
-
-### Permissions
-
-The controller holds and enforces the permissions for each scheme.
-e.g registerScheme is allowed to be called only by authorized (CAN_REGISTERED) scheme.  
-
-A scheme can have any combination of the following permissions  :
- - REGISTERED -  All registered schemes has this permission.
-                 Only registered schemes can perform controller operations.
- - CAN_REGISTER - grant the scheme the permission to register other schemes.
- - ADD_OR_REMOVE_GLOBAL_CONSTRAINT - grant the scheme the permission to add or remove a global constraint.
- - CAN_UPGRADE - grant the scheme the permission to upgrade the controller.
-
-### Parameters
-
-The controller holds the hash of a parameters set for each scheme.
-
-This way a scheme can define a set of parameters which are specific for an organization(defined by the controller).
-
-## Global constraints
-
-A controller maintains and enforces global constraints for the organization.
-
-A constraint define what a "cannot be done" in the DAO. e.g limit the number of minted tokens for the DAO.
-
-The global constraints is check before each and after controller operations.
-
-Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or remove global constraint.
-
-## Reference
 [see the source](https://github.com/daostack/arc/tree/master/contracts/controller/Controller.sol)
 
 *Code deposit cost: **less than 2596800 gas.***
@@ -57,8 +9,8 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 
 > Controller contract
 
-### Constructors
-#### Controller(address)
+## Constructors
+### Controller(address)
 
 *Execution cost: **No bound available.***
 
@@ -69,8 +21,8 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 1. **_avatar** *of type address*
 
 
-### Events
-#### ExternalTokenTransfer(address, address, address, uint256)
+## Events
+### ExternalTokenTransfer(address, address, address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -79,7 +31,7 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 4. **_value** *of type uint256*
 
 ---
-#### RemoveGlobalConstraint(address, uint256, bool)
+### RemoveGlobalConstraint(address, uint256, bool)
 *Params:*
 
 1. **_globalConstraint** *of type address*
@@ -87,21 +39,21 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 3. **_isPre** *of type bool*
 
 ---
-#### UpgradeController(address, address)
+### UpgradeController(address, address)
 *Params:*
 
 1. **_oldController** *of type address*
 2. **_newController** *of type address*
 
 ---
-#### UnregisterScheme(address, address)
+### UnregisterScheme(address, address)
 *Params:*
 
 1. **_sender** *of type address*
 2. **_scheme** *of type address*
 
 ---
-#### SendEther(address, uint256, address)
+### SendEther(address, uint256, address)
 *Params:*
 
 1. **_sender** *of type address*
@@ -109,14 +61,14 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 3. **_to** *of type address*
 
 ---
-#### RegisterScheme(address, address)
+### RegisterScheme(address, address)
 *Params:*
 
 1. **_sender** *of type address*
 2. **_scheme** *of type address*
 
 ---
-#### MintTokens(address, address, uint256)
+### MintTokens(address, address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -124,7 +76,7 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 3. **_amount** *of type uint256*
 
 ---
-#### MintReputation(address, address, int256)
+### MintReputation(address, address, int256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -132,14 +84,14 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 3. **_amount** *of type int256*
 
 ---
-#### GenericAction(address, bytes32[])
+### GenericAction(address, bytes32[])
 *Params:*
 
 1. **_sender** *of type address*
 2. **_params** *of type bytes32[]*
 
 ---
-#### ExternalTokenTransferFrom(address, address, address, address, uint256)
+### ExternalTokenTransferFrom(address, address, address, address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -149,7 +101,7 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 5. **_value** *of type uint256*
 
 ---
-#### ExternalTokenIncreaseApproval(address, address, address, uint256)
+### ExternalTokenIncreaseApproval(address, address, address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -158,7 +110,7 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 4. **_value** *of type uint256*
 
 ---
-#### ExternalTokenDecreaseApproval(address, address, address, uint256)
+### ExternalTokenDecreaseApproval(address, address, address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
@@ -167,7 +119,7 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 4. **_value** *of type uint256*
 
 ---
-#### AddGlobalConstraint(address, bytes32, uint8)
+### AddGlobalConstraint(address, bytes32, uint8)
 *Params:*
 
 1. **_globalConstraint** *of type address*
@@ -175,15 +127,15 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 3. **_when** *of type uint8*
 
 
-### Fallback
+## Fallback
 *Execution cost: **less than 764 gas.***
 
 **nonpayable**
 
 
 
-### Functions
-#### globalConstraintsRegisterPost(address)
+## Functions
+### globalConstraintsRegisterPost(address)
 
 *Execution cost: **less than 1148 gas.***
 
@@ -199,7 +151,7 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 2. **index** *of type uint256*
 
 ---
-#### unregisterScheme(address, address)
+### unregisterScheme(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -215,7 +167,7 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 1. **unnamed** *of type bool*
 
 ---
-#### unregisterSelf(address)
+### unregisterSelf(address)
 > unregister the caller's scheme
 
 *Execution cost: **less than 28009 gas.***
@@ -228,7 +180,7 @@ Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or 
 
 bool which represents a success
 ---
-#### upgradeController(address, address)
+### upgradeController(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -244,7 +196,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### nativeReputation()
+### nativeReputation()
 
 *Execution cost: **less than 944 gas.***
 
@@ -259,7 +211,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 ---
-#### newController()
+### newController()
 
 *Execution cost: **less than 658 gas.***
 
@@ -274,7 +226,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 ---
-#### removeGlobalConstraint(address, address)
+### removeGlobalConstraint(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -290,7 +242,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### registerScheme(address, bytes32, bytes4, address)
+### registerScheme(address, bytes32, bytes4, address)
 
 *Execution cost: **No bound available.***
 
@@ -308,7 +260,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### schemes(address)
+### schemes(address)
 
 *Execution cost: **less than 1433 gas.***
 
@@ -324,7 +276,7 @@ bool which represents a success
 2. **permissions** *of type bytes4*
 
 ---
-#### sendEther(uint256, address, address)
+### sendEther(uint256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -341,7 +293,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenTransfer(address, address, uint256, address)
+### externalTokenTransfer(address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -359,7 +311,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### mintTokens(uint256, address, address)
+### mintTokens(uint256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -376,7 +328,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### nativeToken()
+### nativeToken()
 
 *Execution cost: **less than 1076 gas.***
 
@@ -391,7 +343,7 @@ bool which represents a success
 1. **unnamed** *of type address*
 
 ---
-#### externalTokenDecreaseApproval(address, address, uint256, address)
+### externalTokenDecreaseApproval(address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -409,7 +361,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### mintReputation(int256, address, address)
+### mintReputation(int256, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -426,7 +378,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### genericAction(bytes32[], address)
+### genericAction(bytes32[], address)
 
 *Execution cost: **No bound available.***
 
@@ -442,7 +394,7 @@ bool which represents a success
 1. **unnamed** *of type bool*
 
 ---
-#### globalConstraintsCount(address)
+### globalConstraintsCount(address)
 > globalConstraintsCount return the global constraint pre and post count
 
 *Execution cost: **less than 1076 gas.***
@@ -455,7 +407,7 @@ bool which represents a success
 
 uint globalConstraintsPre count.uint globalConstraintsPost count.
 ---
-#### isGlobalConstraintRegistered(address, address)
+### isGlobalConstraintRegistered(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -471,7 +423,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bool*
 
 ---
-#### isSchemeRegistered(address, address)
+### isSchemeRegistered(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -487,7 +439,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bool*
 
 ---
-#### globalConstraintsPost(uint256)
+### globalConstraintsPost(uint256)
 
 *Execution cost: **less than 1698 gas.***
 
@@ -503,7 +455,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 2. **params** *of type bytes32*
 
 ---
-#### globalConstraintsRegisterPre(address)
+### globalConstraintsRegisterPre(address)
 
 *Execution cost: **less than 862 gas.***
 
@@ -519,7 +471,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 2. **index** *of type uint256*
 
 ---
-#### globalConstraintsPre(uint256)
+### globalConstraintsPre(uint256)
 
 *Execution cost: **less than 1258 gas.***
 
@@ -535,7 +487,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 2. **params** *of type bytes32*
 
 ---
-#### getSchemePermissions(address, address)
+### getSchemePermissions(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -551,7 +503,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bytes4*
 
 ---
-#### getSchemeParameters(address, address)
+### getSchemeParameters(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -567,7 +519,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bytes32*
 
 ---
-#### externalTokenTransferFrom(address, address, address, uint256, address)
+### externalTokenTransferFrom(address, address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -586,7 +538,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenIncreaseApproval(address, address, uint256, address)
+### externalTokenIncreaseApproval(address, address, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -604,7 +556,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type bool*
 
 ---
-#### avatar()
+### avatar()
 
 *Execution cost: **less than 746 gas.***
 
@@ -619,7 +571,7 @@ uint globalConstraintsPre count.uint globalConstraintsPost count.
 1. **unnamed** *of type address*
 
 ---
-#### addGlobalConstraint(address, bytes32, address)
+### addGlobalConstraint(address, bytes32, address)
 
 *Execution cost: **No bound available.***
 

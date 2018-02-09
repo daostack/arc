@@ -1,5 +1,4 @@
-
-## Reference
+# UpgradeScheme
 [see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/UpgradeScheme.sol)
 
 *Code deposit cost: **less than 714400 gas.***
@@ -10,8 +9,8 @@
 
 > A scheme to manage the upgrade of an organization.
 
-### Constructors
-#### UpgradeScheme()
+## Constructors
+### UpgradeScheme()
 
 *Execution cost: **No bound available.***
 
@@ -22,29 +21,29 @@
 *Nothing*
 
 
-### Events
-#### ProposalExecuted(address, bytes32)
+## Events
+### ProposalExecuted(address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 ---
-#### ProposalDeleted(address, bytes32)
+### ProposalDeleted(address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 ---
-#### OwnershipTransferred(address, address)
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 ---
-#### NewUpgradeProposal(address, bytes32, address, address)
+### NewUpgradeProposal(address, bytes32, address, address)
 *Params:*
 
 1. **_avatar** *of type address*
@@ -53,13 +52,13 @@
 4. **_newController** *of type address*
 
 ---
-#### NewProposal(bytes32)
+### NewProposal(bytes32)
 *Params:*
 
 1. **proposalId** *of type bytes32*
 
 ---
-#### ChangeUpgradeSchemeProposal(address, bytes32, address, address, bytes32)
+### ChangeUpgradeSchemeProposal(address, bytes32, address, address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
@@ -69,10 +68,10 @@
 5. **_params** *of type bytes32*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### execute(bytes32, address, int256)
+## Functions
+### execute(bytes32, address, int256)
 
 *Execution cost: **No bound available.***
 
@@ -89,7 +88,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### parameters(bytes32)
+### parameters(bytes32)
 
 *Execution cost: **less than 894 gas.***
 
@@ -105,7 +104,7 @@
 2. **intVote** *of type address*
 
 ---
-#### transferOwnership(address)
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23005 gas.***
@@ -121,7 +120,7 @@
 *Nothing*
 
 ---
-#### proposeUpgrade(address, address)
+### proposeUpgrade(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -137,7 +136,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### updateParameters(bytes32)
+### updateParameters(bytes32)
 
 *Execution cost: **less than 20594 gas.***
 
@@ -152,7 +151,7 @@
 *Nothing*
 
 ---
-#### proposeChangeUpgradingScheme(address, address, bytes32)
+### proposeChangeUpgradingScheme(address, address, bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -169,7 +168,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### setParameters(bytes32, address)
+### setParameters(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -185,7 +184,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### owner()
+### owner()
 
 *Execution cost: **less than 765 gas.***
 
@@ -200,7 +199,7 @@
 1. **unnamed** *of type address*
 
 ---
-#### organizationsProposals(address, bytes32)
+### organizationsProposals(address, bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -218,7 +217,7 @@
 3. **proposalType** *of type uint256*
 
 ---
-#### hashedParameters()
+### hashedParameters()
 
 *Execution cost: **less than 656 gas.***
 
@@ -233,7 +232,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### getParametersHash(bytes32, address)
+### getParametersHash(bytes32, address)
 
 *Execution cost: **No bound available.***
 

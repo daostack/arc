@@ -12,7 +12,10 @@ Welcome to *DAOstack Arc* Docs!
 
 For more information [read the official DAOstack Whitepaper](https://github.com/daostack/docs/blob/master/DAOstack%20White%20Paper%20V1.0.pdf).
 
-Check out the [Generated docs](generated_docs) for detailed documentation on every contract and an explanation of the source tree.
+Check out:
+
+- The [Contract docs](contracts) for explanation about each contract and the source tree.
+- The [Generated docs](generated_docs) for detailed technical reference on every contract.
 
 ## An overview of the DAO stack
 
@@ -29,26 +32,26 @@ For more information regarding the entire DAOstack project, check out the [docs 
 
 ## The Structure of a DAO
 
-Each DAO is a living entity on the blockchain that can own and manage resources. As such, it consists of the following "organs":
+Each DAO is a living entity on the blockchain that can own and manage resources. As such, it consists of the following “organs”:
 
 ![The DAO stack](img/controller.png)
 
-* **[Native token](generated_docs/controller/DAOToken.md)** - *A Standard [ERC20 token](https://theethereum.wiki/w/index.php/ERC20_Token_Standard) that defines the value system of the DAO. Participants are rewarded for their contributions based on this token*.
-* **[Reputation](generated_docs/controller/Reputation.md) system** - *Similar to native token but is **non-transferable**. The reputation system is used to assign weight the votes of participants*.
-* **[Avatar](generated_docs/controller/Avatar.md)** - *This is the public-facing part of the DAO that handles the interaction of the DAO with the rest of the world(eg. interacing with other DAOs, paying third party participants, etc...)*.
-* **Subscribed [Elements](#elements)** - *The set of [Schemes](generated_docs/universalSchemes) and [Global Constraints](generated_docs/globalConstraints) that comprise the DAO*.
+* **[Native token](contracts/controller/DAOToken.md)** - *A Standard [ERC20 token](https://theethereum.wiki/w/index.php/ERC20_Token_Standard) that defines the value system of the DAO. Participants are rewarded for their contributions based on this token*.
+* **[Reputation](contracts/controller/Reputation.md) system** - *Similar to native token but is **non-transferable**. The reputation system is used to assign weight the votes of participants*.
+* **[Avatar](contracts/controller/Avatar.md)** - *This is the public-facing part of the DAO that handles the interaction of the DAO with the rest of the world(eg. interacing with other DAOs, paying third party participants, etc...)*.
+* **Subscribed [Elements](#elements)** - *The set of [Schemes](contracts/universalSchemes) and [Global Constraints](contracts/globalConstraints) that comprise the DAO*.
 
-For each DAO, the above components are organized in a single smart contract called a *[Controller](generated_docs/controller/Controller)*, which acts as the owner of the other components.
+For each DAO, the above components are organized in a single smart contract called a *[Controller](contracts/controller/Controller)*, which acts as the owner of the other components.
 
 ## Elements
 
 The main configurable and extendable building blocks of DAOs are:
 *Schemes* and *Global Constraints*, which are collectively called *elements*.
 
-* **[Schemes](generated_docs/universalSchemes/UniversalSchemeInterface.md)** *define the "dos" of the DAO, the rules under which actions are taken, based on the participants' input.* Examples of Schemes are:
+* **[Schemes](contracts/universalSchemes/)** *define the "dos" of the DAO, the rules under which actions are taken, based on the participants' input.* Examples of Schemes are:
     * Rewarding contributions when other participants recognize them as worthy.
     * Voting on proposals and automatically executing the chosen proposal.
-* **[Global constraints](generated_docs/globalConstraints/GlobalConstraintInterface.md)** *define the "don'ts" of the DAO, the conditions that must always hold and can prevent an action from being taken if it violates these conditions.* Examples of Global Constraints are:
+* **[Global constraints](contracts/globalConstraints/)** *define the "don'ts" of the DAO, the conditions that must always hold and can prevent an action from being taken if it violates these conditions.* Examples of Global Constraints are:
     * Limiting the amount of tokens or reputation that can be minted per day.
     * Blacklisting certain participants from performing certain actions.
 
@@ -68,9 +71,7 @@ Same as [CONTIBUTING](https://github.com/daostack/arc/blob/master/CONTRIBUTING.m
     !!! note "`npm run docs preview` does not serve the final website!"
         `npm run docs preview` will serve from the `docs` folder. This means that what you see is not the final website.
         In the final website:
-
-        - All `README.md` files will be renamed to `index.md`, will automatically appear as "Home" on the menu and will be available in the URL at `...somedir/`.
-        - `docs/contracts` will no show.
+        All `README.md` files will be renamed to `index.md`, will automatically appear as "Home" on the menu and will be available in the URL at `...somedir/`.
 
 2. Please provide a `README.md` file in the root of every directory, giving an overview of that directory.
 3. Check that there are no broken links by running `yarn docs preview` and checking for warnings of the form:

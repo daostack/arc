@@ -1,4 +1,5 @@
-## DAOToken
+# DAOToken
+[see the generated documentation](../../generated_docs/controller/DAOToken.md)
 
 The *DAOToken* is an ERC20 compatible token that can be used to assign value and reward DAOs members.
 Each DAOToken is controlled by the DAO it is belong to via the controller.

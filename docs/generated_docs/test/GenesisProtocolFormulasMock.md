@@ -1,5 +1,4 @@
-
-## Reference
+# GenesisProtocolFormulasMock
 [see the source](https://github.com/daostack/arc/tree/master/contracts/test/GenesisProtocolFormulasMock.sol)
 
 *Code deposit cost: **less than 425600 gas.***
@@ -9,14 +8,14 @@
 *Total deploy cost(deposit + execution): **less than 426056 gas.***
 
 > 
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### threshold(address)
+## Functions
+### threshold(address)
 > threshold return the organization's score threshold which required by a proposal to shift to boosted state. This threshold is dynamically set and it depend on the number of boosted proposal.
 
 *Execution cost: **No bound available.***
@@ -29,7 +28,7 @@
 
 int thresholdConstA.
 ---
-#### shouldBoost(bytes32)
+### shouldBoost(bytes32)
 > isBoost check if the proposal will shift to the relative voting phase.
 
 *Execution cost: **No bound available.***
@@ -42,7 +41,7 @@ int thresholdConstA.
 
 bool true or false.
 ---
-#### score(bytes32)
+### score(bytes32)
 > score return the proposal score
 
 *Execution cost: **No bound available.***
@@ -55,7 +54,7 @@ bool true or false.
 
 uint proposal score.
 ---
-#### getRedeemableTokensVoter(bytes32, address)
+### getRedeemableTokensVoter(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -71,7 +70,7 @@ uint proposal score.
 1. **unnamed** *of type uint256*
 
 ---
-#### getRedeemableTokensStaker(bytes32, address)
+### getRedeemableTokensStaker(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -87,7 +86,7 @@ uint proposal score.
 1. **unnamed** *of type uint256*
 
 ---
-#### getRedeemableReputationProposer(bytes32)
+### getRedeemableReputationProposer(bytes32)
 
 *Execution cost: **less than 354 gas.***
 

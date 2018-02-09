@@ -1,15 +1,4 @@
-*TokenCapGC* is a simple global constraint that limits the number of tokens that can be issued.
-
-## Usage
-
-```
-TokenCapGC gc = new TokenCapGC();
-
-/* some where inside a scheme with relevent permissions */
-bytes32 hash = gc.setParameters(contoller.nativeToken,100) /*limit DAO token issuance to 100*/
-controller.addGlobalConstraint(gc,hash)
-```
-## Reference
+# TokenCapGC
 [see the source](https://github.com/daostack/arc/tree/master/contracts/globalConstraints/TokenCapGC.sol)
 
 *Code deposit cost: **less than 197600 gas.***
@@ -20,14 +9,14 @@ controller.addGlobalConstraint(gc,hash)
 
 > Token Cap Global Constraint
 
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### when()
+## Functions
+### when()
 > when return if this globalConstraints is pre, post or both.
 
 *Execution cost: **less than 325 gas.***
@@ -40,7 +29,7 @@ controller.addGlobalConstraint(gc,hash)
 
 CallPhase enum indication  Pre, Post or PreAndPost.
 ---
-#### setParameters(address, uint256)
+### setParameters(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -56,7 +45,7 @@ CallPhase enum indication  Pre, Post or PreAndPost.
 1. **unnamed** *of type bytes32*
 
 ---
-#### pre(address, bytes32, bytes)
+### pre(address, bytes32, bytes)
 
 *Execution cost: **No bound available.***
 
@@ -73,7 +62,7 @@ CallPhase enum indication  Pre, Post or PreAndPost.
 1. **unnamed** *of type bool*
 
 ---
-#### post(address, bytes32, bytes)
+### post(address, bytes32, bytes)
 
 *Execution cost: **No bound available.***
 
@@ -90,7 +79,7 @@ CallPhase enum indication  Pre, Post or PreAndPost.
 1. **unnamed** *of type bool*
 
 ---
-#### params(bytes32)
+### params(bytes32)
 
 *Execution cost: **less than 934 gas.***
 
@@ -106,7 +95,7 @@ CallPhase enum indication  Pre, Post or PreAndPost.
 2. **cap** *of type uint256*
 
 ---
-#### getParametersHash(address, uint256)
+### getParametersHash(address, uint256)
 
 *Execution cost: **No bound available.***
 

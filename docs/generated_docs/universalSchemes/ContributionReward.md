@@ -1,5 +1,4 @@
-
-## Reference
+# ContributionReward
 [see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/ContributionReward.sol)
 
 *Code deposit cost: **less than 782800 gas.***
@@ -10,8 +9,8 @@
 
 > A scheme for proposing and rewarding contributions to an organization
 
-### Constructors
-#### ContributionReward()
+## Constructors
+### ContributionReward()
 
 *Execution cost: **No bound available.***
 
@@ -22,35 +21,35 @@
 *Nothing*
 
 
-### Events
-#### ProposalExecuted(address, bytes32)
+## Events
+### ProposalExecuted(address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 ---
-#### ProposalDeleted(address, bytes32)
+### ProposalDeleted(address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 ---
-#### OwnershipTransferred(address, address)
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 ---
-#### NewProposal(bytes32)
+### NewProposal(bytes32)
 *Params:*
 
 1. **proposalId** *of type bytes32*
 
 ---
-#### NewContributionProposal(address, bytes32, address, bytes32, uint256[4], address, address)
+### NewContributionProposal(address, bytes32, address, bytes32, uint256[4], address, address)
 *Params:*
 
 1. **_avatar** *of type address*
@@ -62,10 +61,10 @@
 7. **_beneficiary** *of type address*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### updateParameters(bytes32)
+## Functions
+### updateParameters(bytes32)
 
 *Execution cost: **less than 20550 gas.***
 
@@ -80,7 +79,7 @@
 *Nothing*
 
 ---
-#### transferOwnership(address)
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 22983 gas.***
@@ -96,7 +95,7 @@
 *Nothing*
 
 ---
-#### setParameters(uint256, bytes32, address)
+### setParameters(uint256, bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -113,7 +112,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### proposeContributionReward(address, bytes32, uint256[4], address, address)
+### proposeContributionReward(address, bytes32, uint256[4], address, address)
 
 *Execution cost: **No bound available.***
 
@@ -132,7 +131,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### parameters(bytes32)
+### parameters(bytes32)
 
 *Execution cost: **less than 1148 gas.***
 
@@ -149,7 +148,7 @@
 3. **intVote** *of type address*
 
 ---
-#### owner()
+### owner()
 
 *Execution cost: **less than 721 gas.***
 
@@ -164,7 +163,7 @@
 1. **unnamed** *of type address*
 
 ---
-#### organizationsProposals(address, bytes32)
+### organizationsProposals(address, bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -186,7 +185,7 @@
 7. **beneficiary** *of type address*
 
 ---
-#### hashedParameters()
+### hashedParameters()
 
 *Execution cost: **less than 634 gas.***
 
@@ -201,7 +200,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### getParametersHash(uint256, bytes32, address)
+### getParametersHash(uint256, bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -218,7 +217,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### execute(bytes32, address, int256)
+### execute(bytes32, address, int256)
 
 *Execution cost: **No bound available.***
 

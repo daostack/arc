@@ -1,13 +1,4 @@
 # Avatar
-
-
-The *Avatar* is the public facing entity a DAO exposes to interact with the outside world(vote on other DAOs, pay external actors, etc...)
-
-The Avatar holds the organization's name ,organization's token and the organization's reputation system.
-
-The Avatar can send and receive Ether and any ERC20 external tokens.
-
-## Reference
 [see the source](https://github.com/daostack/arc/tree/master/contracts/controller/Avatar.sol)
 
 *Code deposit cost: **less than 475800 gas.***
@@ -18,8 +9,8 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 
 > An Avatar holds tokens, reputation and ether for a controller
 
-### Constructors
-#### Avatar(bytes32, address, address)
+## Constructors
+### Avatar(bytes32, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -32,36 +23,36 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 3. **_nativeReputation** *of type address*
 
 
-### Events
-#### SendEther(uint256, address)
+## Events
+### SendEther(uint256, address)
 *Params:*
 
 1. **_amountInWei** *of type uint256*
 2. **_to** *of type address*
 
 ---
-#### ReceiveEther(address, uint256)
+### ReceiveEther(address, uint256)
 *Params:*
 
 1. **_sender** *of type address*
 2. **_value** *of type uint256*
 
 ---
-#### OwnershipTransferred(address, address)
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 ---
-#### GenericAction(address, bytes32[])
+### GenericAction(address, bytes32[])
 *Params:*
 
 1. **_action** *of type address*
 2. **_params** *of type bytes32[]*
 
 ---
-#### ExternalTokenTransferFrom(address, address, address, uint256)
+### ExternalTokenTransferFrom(address, address, address, uint256)
 *Params:*
 
 1. **_externalToken** *of type address*
@@ -70,7 +61,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 4. **_value** *of type uint256*
 
 ---
-#### ExternalTokenTransfer(address, address, uint256)
+### ExternalTokenTransfer(address, address, uint256)
 *Params:*
 
 1. **_externalToken** *of type address*
@@ -78,7 +69,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 3. **_value** *of type uint256*
 
 ---
-#### ExternalTokenIncreaseApproval(address, address, uint256)
+### ExternalTokenIncreaseApproval(address, address, uint256)
 *Params:*
 
 1. **_externalToken** *of type address*
@@ -86,7 +77,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 3. **_addedValue** *of type uint256*
 
 ---
-#### ExternalTokenDecreaseApproval(address, address, uint256)
+### ExternalTokenDecreaseApproval(address, address, uint256)
 *Params:*
 
 1. **_externalToken** *of type address*
@@ -94,15 +85,15 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 3. **_subtractedValue** *of type uint256*
 
 
-### Fallback
+## Fallback
 *Execution cost: **less than 1870 gas.***
 
 **payable**
 
 
 
-### Functions
-#### externalTokenTransferFrom(address, address, address, uint256)
+## Functions
+### externalTokenTransferFrom(address, address, address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -120,7 +111,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 1. **unnamed** *of type bool*
 
 ---
-#### transferOwnership(address)
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23027 gas.***
@@ -136,7 +127,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 *Nothing*
 
 ---
-#### sendEther(uint256, address)
+### sendEther(uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -152,7 +143,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 1. **unnamed** *of type bool*
 
 ---
-#### owner()
+### owner()
 
 *Execution cost: **less than 1545 gas.***
 
@@ -167,7 +158,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 1. **unnamed** *of type address*
 
 ---
-#### orgName()
+### orgName()
 
 *Execution cost: **less than 1545 gas.***
 
@@ -182,7 +173,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 1. **unnamed** *of type bytes32*
 
 ---
-#### nativeToken()
+### nativeToken()
 
 *Execution cost: **less than 1545 gas.***
 
@@ -197,7 +188,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 1. **unnamed** *of type address*
 
 ---
-#### nativeReputation()
+### nativeReputation()
 
 *Execution cost: **less than 1545 gas.***
 
@@ -212,7 +203,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 1. **unnamed** *of type address*
 
 ---
-#### genericAction(address, bytes32[])
+### genericAction(address, bytes32[])
 
 *Execution cost: **No bound available.***
 
@@ -228,7 +219,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenTransfer(address, address, uint256)
+### externalTokenTransfer(address, address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -245,7 +236,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenIncreaseApproval(address, address, uint256)
+### externalTokenIncreaseApproval(address, address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -262,7 +253,7 @@ The Avatar can send and receive Ether and any ERC20 external tokens.
 1. **unnamed** *of type bool*
 
 ---
-#### externalTokenDecreaseApproval(address, address, uint256)
+### externalTokenDecreaseApproval(address, address, uint256)
 
 *Execution cost: **No bound available.***
 

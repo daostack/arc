@@ -1,5 +1,4 @@
-
-## Reference
+# VestingScheme
 [see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/VestingScheme.sol)
 
 *Code deposit cost: **less than 1413000 gas.***
@@ -10,8 +9,8 @@
 
 > A scheme for vesting.
 
-### Constructors
-#### VestingScheme()
+## Constructors
+### VestingScheme()
 
 *Execution cost: **No bound available.***
 
@@ -22,47 +21,47 @@
 *Nothing*
 
 
-### Events
-#### SignToCancelAgreement(uint256, address)
+## Events
+### SignToCancelAgreement(uint256, address)
 *Params:*
 
 1. **_agreementId** *of type uint256*
 2. **_signer** *of type address*
 
 ---
-#### RevokeSignToCancelAgreement(uint256, address)
+### RevokeSignToCancelAgreement(uint256, address)
 *Params:*
 
 1. **_agreementId** *of type uint256*
 2. **_signer** *of type address*
 
 ---
-#### ProposalExecuted(address)
+### ProposalExecuted(address)
 *Params:*
 
 1. **_avatar** *of type address*
 
 ---
-#### OwnershipTransferred(address, address)
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 ---
-#### NewVestedAgreement(uint256)
+### NewVestedAgreement(uint256)
 *Params:*
 
 1. **_agreementId** *of type uint256*
 
 ---
-#### NewProposal(bytes32)
+### NewProposal(bytes32)
 *Params:*
 
 1. **proposalId** *of type bytes32*
 
 ---
-#### Execution(address, bytes32, int256)
+### Execution(address, bytes32, int256)
 *Params:*
 
 1. **_avatar** *of type address*
@@ -70,29 +69,29 @@
 3. **_result** *of type int256*
 
 ---
-#### Collect(uint256)
+### Collect(uint256)
 *Params:*
 
 1. **_agreementId** *of type uint256*
 
 ---
-#### AgreementProposal(address, bytes32)
+### AgreementProposal(address, bytes32)
 *Params:*
 
 1. **_avatar** *of type address*
 2. **_proposalId** *of type bytes32*
 
 ---
-#### AgreementCancel(uint256)
+### AgreementCancel(uint256)
 *Params:*
 
 1. **_agreementId** *of type uint256*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### revokeSignToCancelAgreement(uint256)
+## Functions
+### revokeSignToCancelAgreement(uint256)
 > Function to revoke vote for canceling agreement.
 
 *Execution cost: **less than 43398 gas.***
@@ -108,7 +107,7 @@
 *Nothing*
 
 ---
-#### parameters(bytes32)
+### parameters(bytes32)
 
 *Execution cost: **less than 894 gas.***
 
@@ -124,7 +123,7 @@
 2. **intVote** *of type address*
 
 ---
-#### transferOwnership(address)
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23071 gas.***
@@ -140,7 +139,7 @@
 *Nothing*
 
 ---
-#### updateParameters(bytes32)
+### updateParameters(bytes32)
 
 *Execution cost: **less than 20572 gas.***
 
@@ -155,7 +154,7 @@
 *Nothing*
 
 ---
-#### signToCancelAgreement(uint256)
+### signToCancelAgreement(uint256)
 > Function to sign to cancel an agreement.
 
 *Execution cost: **No bound available.***
@@ -171,7 +170,7 @@
 *Nothing*
 
 ---
-#### proposeVestingAgreement(address, address, uint256, uint256, uint256, uint256, uint256, uint256, address[], address)
+### proposeVestingAgreement(address, address, uint256, uint256, uint256, uint256, uint256, uint256, address[], address)
 
 *Execution cost: **No bound available.***
 
@@ -195,7 +194,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### setParameters(bytes32, address)
+### setParameters(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -211,7 +210,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### owner()
+### owner()
 
 *Execution cost: **less than 787 gas.***
 
@@ -226,7 +225,7 @@
 1. **unnamed** *of type address*
 
 ---
-#### organizationsData(address, bytes32)
+### organizationsData(address, bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -252,7 +251,7 @@
 11. **signaturesReceivedCounter** *of type uint256*
 
 ---
-#### hashedParameters()
+### hashedParameters()
 
 *Execution cost: **less than 744 gas.***
 
@@ -267,7 +266,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### getParametersHash(bytes32, address)
+### getParametersHash(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -283,7 +282,7 @@
 1. **unnamed** *of type bytes32*
 
 ---
-#### execute(bytes32, address, int256)
+### execute(bytes32, address, int256)
 
 *Execution cost: **No bound available.***
 
@@ -300,7 +299,7 @@
 1. **unnamed** *of type bool*
 
 ---
-#### createVestedAgreement(address, address, address, uint256, uint256, uint256, uint256, uint256, uint256, address[])
+### createVestedAgreement(address, address, address, uint256, uint256, uint256, uint256, uint256, uint256, address[])
 
 *Execution cost: **No bound available.***
 
@@ -324,7 +323,7 @@
 1. **unnamed** *of type uint256*
 
 ---
-#### collect(uint256)
+### collect(uint256)
 > Function for a beneficiary to collect.
 
 *Execution cost: **No bound available.***
@@ -340,7 +339,7 @@
 *Nothing*
 
 ---
-#### agreements(uint256)
+### agreements(uint256)
 
 *Execution cost: **less than 3271 gas.***
 

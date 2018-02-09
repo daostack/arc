@@ -1,11 +1,4 @@
-## DAOToken
-
-The *DAOToken* is an ERC20 compatible token that can be used to assign value and reward DAOs members.
-Each DAOToken is controlled by the DAO it is belong to via the controller.
-
-The DAOToken can be **minted** or **burned** by the DAO and also be **destroyed** in the event of an upgrade to a better token or in other circumstances.
-
-## Reference
+# DAOToken
 [see the source](https://github.com/daostack/arc/tree/master/contracts/controller/DAOToken.sol)
 
 *Code deposit cost: **less than 687800 gas.***
@@ -16,8 +9,8 @@ The DAOToken can be **minted** or **burned** by the DAO and also be **destroyed*
 
 > DAOToken, base on zeppelin contract.
 
-### Constructors
-#### DAOToken(string, string)
+## Constructors
+### DAOToken(string, string)
 
 *Execution cost: **No bound available.***
 
@@ -29,8 +22,8 @@ The DAOToken can be **minted** or **burned** by the DAO and also be **destroyed*
 2. **_symbol** *of type string*
 
 
-### Events
-#### Transfer(address, address, uint256)
+## Events
+### Transfer(address, address, uint256)
 *Params:*
 
 1. **from** *of type address*
@@ -38,34 +31,34 @@ The DAOToken can be **minted** or **burned** by the DAO and also be **destroyed*
 3. **value** *of type uint256*
 
 ---
-#### OwnershipTransferred(address, address)
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 ---
-#### MintFinished()
+### MintFinished()
 *Params:*
 
 *Nothing*
 
 ---
-#### Mint(address, uint256)
+### Mint(address, uint256)
 *Params:*
 
 1. **to** *of type address*
 2. **amount** *of type uint256*
 
 ---
-#### Burn(address, uint256)
+### Burn(address, uint256)
 *Params:*
 
 1. **burner** *of type address*
 2. **value** *of type uint256*
 
 ---
-#### Approval(address, address, uint256)
+### Approval(address, address, uint256)
 *Params:*
 
 1. **owner** *of type address*
@@ -73,10 +66,10 @@ The DAOToken can be **minted** or **burned** by the DAO and also be **destroyed*
 3. **value** *of type uint256*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### balanceOf(address)
+## Functions
+### balanceOf(address)
 > Gets the balance of the specified address.
 
 *Execution cost: **less than 796 gas.***
@@ -89,7 +82,7 @@ The DAOToken can be **minted** or **burned** by the DAO and also be **destroyed*
 
 An uint256 representing the amount owned by the passed address.
 ---
-#### mintingFinished()
+### mintingFinished()
 
 *Execution cost: **less than 459 gas.***
 
@@ -104,7 +97,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 ---
-#### transferOwnership(address)
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23118 gas.***
@@ -120,7 +113,7 @@ An uint256 representing the amount owned by the passed address.
 *Nothing*
 
 ---
-#### totalSupply()
+### totalSupply()
 > total number of tokens in existence
 
 *Execution cost: **less than 439 gas.***
@@ -136,7 +129,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type uint256*
 
 ---
-#### transferFrom(address, address, uint256)
+### transferFrom(address, address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -153,7 +146,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 ---
-#### transfer(address, uint256)
+### transfer(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -169,7 +162,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 ---
-#### symbol()
+### symbol()
 
 *Execution cost: **No bound available.***
 
@@ -184,7 +177,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type string*
 
 ---
-#### owner()
+### owner()
 
 *Execution cost: **less than 793 gas.***
 
@@ -199,7 +192,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type address*
 
 ---
-#### name()
+### name()
 
 *Execution cost: **No bound available.***
 
@@ -214,7 +207,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type string*
 
 ---
-#### mint(address, uint256)
+### mint(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -230,7 +223,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 ---
-#### increaseApproval(address, uint256)
+### increaseApproval(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -246,7 +239,7 @@ An uint256 representing the amount owned by the passed address.
 1. **unnamed** *of type bool*
 
 ---
-#### finishMinting()
+### finishMinting()
 > Function to stop minting new tokens.
 
 *Execution cost: **less than 22080 gas.***
@@ -259,7 +252,7 @@ An uint256 representing the amount owned by the passed address.
 
 True if the operation was successful.
 ---
-#### destroyAndSend(address)
+### destroyAndSend(address)
 
 *Execution cost: **less than 30980 gas.***
 
@@ -274,7 +267,7 @@ True if the operation was successful.
 *Nothing*
 
 ---
-#### destroy()
+### destroy()
 > Transfers the current balance to the owner and terminates the contract.
 
 *Execution cost: **less than 30945 gas.***
@@ -290,7 +283,7 @@ True if the operation was successful.
 *Nothing*
 
 ---
-#### decreaseApproval(address, uint256)
+### decreaseApproval(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -306,7 +299,7 @@ True if the operation was successful.
 1. **unnamed** *of type bool*
 
 ---
-#### burn(uint256)
+### burn(uint256)
 > Burns a specific amount of tokens.
 
 *Execution cost: **No bound available.***
@@ -322,7 +315,7 @@ True if the operation was successful.
 *Nothing*
 
 ---
-#### approve(address, uint256)
+### approve(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -338,7 +331,7 @@ True if the operation was successful.
 1. **unnamed** *of type bool*
 
 ---
-#### allowance(address, address)
+### allowance(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -354,7 +347,7 @@ True if the operation was successful.
 1. **unnamed** *of type uint256*
 
 ---
-#### DECIMAL()
+### DECIMAL()
 
 *Execution cost: **less than 349 gas.***
 
