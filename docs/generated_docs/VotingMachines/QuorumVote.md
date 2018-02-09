@@ -1,11 +1,11 @@
 # QuorumVote
 [see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/QuorumVote.sol)
 
-*Code deposit cost: **less than 925400 gas.***
+*Code deposit cost: **less than 844600 gas.***
 
-*Execution cost: **less than 957 gas.***
+*Execution cost: **less than 872 gas.***
 
-*Total deploy cost(deposit + execution): **less than 926357 gas.***
+*Total deploy cost(deposit + execution): **less than 845472 gas.***
 
 > 
 ## Constructors
@@ -53,18 +53,21 @@
 ## Fallback
 *Nothing*
 ## Functions
-### votesStatus(bytes32)
-> votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
+### cancelVote(bytes32)
+> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
 *Execution cost: **No bound available.***
 
-**constant | view**
+**nonpayable**
 
 *Inputs:*
 
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- id of the proposal*
 
-votes array of votes for each choice
+*Returns:*
+
+*Nothing*
+
 ---
 ### setParameters(address, uint256, bool)
 
@@ -83,22 +86,20 @@ votes array of votes for each choice
 1. **unnamed** *of type bytes32*
 
 ---
-### voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
+### voteStatus(bytes32, uint256)
 
 *Execution cost: **No bound available.***
 
-**nonpayable**
+**constant | view**
 
 *Inputs:*
 
 1. **_proposalId** *of type bytes32*
-2. **_vote** *of type uint256*
-3. **_rep** *of type uint256*
-4. **unnamed** *of type uint256*
+2. **_choice** *of type uint256*
 
 *Returns:*
 
-1. **unnamed** *of type bool*
+1. **unnamed** *of type uint256*
 
 ---
 ### voteInfo(bytes32, address)
@@ -116,6 +117,24 @@ votes array of votes for each choice
 
 1. **unnamed** *of type uint256*
 2. **unnamed** *of type uint256*
+
+---
+### voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
+
+*Execution cost: **No bound available.***
+
+**nonpayable**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_vote** *of type uint256*
+3. **_rep** *of type uint256*
+4. **unnamed** *of type uint256*
+
+*Returns:*
+
+1. **unnamed** *of type bool*
 
 ---
 ### vote(bytes32, uint256)
@@ -241,7 +260,7 @@ bool true or false
 ### getNumberOfChoices(bytes32)
 > getNumberOfChoices returns the number of choices possible in this proposal
 
-*Execution cost: **less than 734 gas.***
+*Execution cost: **less than 712 gas.***
 
 **constant | view**
 
@@ -265,22 +284,6 @@ uint that contains number of choices
 *Returns:*
 
 1. **unnamed** *of type bool*
-
----
-### cancelVote(bytes32)
-> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_proposalId** *of type bytes32- id of the proposal*
-
-*Returns:*
-
-*Nothing*
 
 ---
 ### cancelProposal(bytes32)

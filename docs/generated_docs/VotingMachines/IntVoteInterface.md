@@ -33,6 +33,22 @@
 1. **unnamed** *of type bool*
 
 ---
+### voteStatus(bytes32, uint256)
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_choice** *of type uint256*
+
+*Returns:*
+
+1. **unnamed** *of type uint256*
+
+---
 ### vote(bytes32, uint256)
 
 *Execution cost: **No bound available.***

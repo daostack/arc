@@ -1,11 +1,11 @@
 # GenesisProtocolFormulasMock
 [see the source](https://github.com/daostack/arc/tree/master/contracts/test/GenesisProtocolFormulasMock.sol)
 
-*Code deposit cost: **less than 425600 gas.***
+*Code deposit cost: **less than 416400 gas.***
 
-*Execution cost: **less than 456 gas.***
+*Execution cost: **less than 450 gas.***
 
-*Total deploy cost(deposit + execution): **less than 426056 gas.***
+*Total deploy cost(deposit + execution): **less than 416850 gas.***
 
 > 
 ## Constructors

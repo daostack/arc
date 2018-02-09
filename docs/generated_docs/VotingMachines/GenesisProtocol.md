@@ -1,11 +1,11 @@
 # GenesisProtocol
 [see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/GenesisProtocol.sol)
 
-*Code deposit cost: **less than 2971200 gas.***
+*Code deposit cost: **less than 2888400 gas.***
 
-*Execution cost: **less than 43916 gas.***
+*Execution cost: **less than 43815 gas.***
 
-*Total deploy cost(deposit + execution): **less than 3015116 gas.***
+*Total deploy cost(deposit + execution): **less than 2932215 gas.***
 
 > A governance contract -an organization's voting machine scheme.
 
@@ -88,20 +88,20 @@
 ## Fallback
 *Nothing*
 ## Functions
-### cancelVote(bytes32)
-> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
+### getRedeemableReputationStaker(bytes32, address)
 
-*Execution cost: **less than 1656 gas.***
+*Execution cost: **No bound available.***
 
-**nonpayable**
+**constant | view**
 
 *Inputs:*
 
-1. **_proposalId** *of type bytes32- id of the proposal*
+1. **_proposalId** *of type bytes32*
+2. **_beneficiary** *of type address*
 
 *Returns:*
 
-*Nothing*
+1. **unnamed** *of type int256*
 
 ---
 ### parameters(bytes32)
@@ -131,6 +131,19 @@
 13. **votersGainRepRatioFromLostRep** *of type uint256*
 
 ---
+### proposalAvatar(bytes32)
+> proposalAvatar return the avatar for a given proposal
+
+*Execution cost: **less than 1519 gas.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32- the ID of the proposal*
+
+uint total reputation supply
+---
 ### voteInfo(bytes32, address)
 
 *Execution cost: **No bound available.***
@@ -150,7 +163,7 @@
 ---
 ### updateParameters(bytes32)
 
-*Execution cost: **less than 20572 gas.***
+*Execution cost: **less than 20594 gas.***
 
 **nonpayable**
 
@@ -182,7 +195,7 @@
 ---
 ### proposals(bytes32)
 
-*Execution cost: **less than 4044 gas.***
+*Execution cost: **less than 4066 gas.***
 
 **constant | view**
 
@@ -207,23 +220,10 @@
 13. **boostedVotePeriodLimit** *of type uint256*
 
 ---
-### proposalAvatar(bytes32)
-> proposalAvatar return the avatar for a given proposal
-
-*Execution cost: **less than 1475 gas.***
-
-**constant | view**
-
-*Inputs:*
-
-1. **_proposalId** *of type bytes32- the ID of the proposal*
-
-uint total reputation supply
----
 ### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
-*Execution cost: **less than 23668 gas.***
+*Execution cost: **less than 23712 gas.***
 
 **nonpayable**
 
@@ -236,10 +236,23 @@ uint total reputation supply
 *Nothing*
 
 ---
+### score(bytes32)
+> score return the proposal score
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32- the ID of the proposal*
+
+uint proposal score.
+---
 ### winningVote(bytes32)
 > voteStake return the winningVote for a given proposal
 
-*Execution cost: **less than 690 gas.***
+*Execution cost: **less than 712 gas.***
 
 **constant | view**
 
@@ -265,7 +278,7 @@ uint thresholdConstAuint thresholdConstB
 ### state(bytes32)
 > voteStake return the state for a given proposal
 
-*Execution cost: **less than 782 gas.***
+*Execution cost: **less than 804 gas.***
 
 **constant | view**
 
@@ -309,7 +322,7 @@ ProposalState proposal state
 ---
 ### stakingToken()
 
-*Execution cost: **less than 875 gas.***
+*Execution cost: **less than 897 gas.***
 
 **constant | view**
 
@@ -325,7 +338,7 @@ ProposalState proposal state
 ### proposalStatus(bytes32)
 > proposalStatus return the total votes and stakes for a given proposal
 
-*Execution cost: **less than 1308 gas.***
+*Execution cost: **less than 1330 gas.***
 
 **constant | view**
 
@@ -365,8 +378,8 @@ bool true or false.
 2. **unnamed** *of type uint256*
 
 ---
-### score(bytes32)
-> score return the proposal score
+### totalReputationSupply(bytes32)
+> totalReputationSupply return the total reputation supply for a given proposal
 
 *Execution cost: **No bound available.***
 
@@ -376,20 +389,23 @@ bool true or false.
 
 1. **_proposalId** *of type bytes32- the ID of the proposal*
 
-uint proposal score.
+uint total reputation supply
 ---
-### votesStatus(bytes32)
-> votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
+### redeem(bytes32, address)
 
 *Execution cost: **No bound available.***
 
-**constant | view**
+**nonpayable**
 
 *Inputs:*
 
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32*
+2. **_beneficiary** *of type address*
 
-votes array of votes for each choice
+*Returns:*
+
+1. **unnamed** *of type bool*
+
 ---
 ### propose(uint256, bytes32, address, address, address)
 
@@ -410,19 +426,6 @@ votes array of votes for each choice
 1. **unnamed** *of type bytes32*
 
 ---
-### totalReputationSupply(bytes32)
-> totalReputationSupply return the total reputation supply for a given proposal
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-
-1. **_proposalId** *of type bytes32- the ID of the proposal*
-
-uint total reputation supply
----
 ### vote(bytes32, uint256)
 
 *Execution cost: **No bound available.***
@@ -433,40 +436,6 @@ uint total reputation supply
 
 1. **_proposalId** *of type bytes32*
 2. **_vote** *of type uint256*
-
-*Returns:*
-
-1. **unnamed** *of type bool*
-
----
-### redeem(bytes32, address)
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_proposalId** *of type bytes32*
-2. **_beneficiary** *of type address*
-
-*Returns:*
-
-1. **unnamed** *of type bool*
-
----
-### voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_proposalId** *of type bytes32*
-2. **_vote** *of type uint256*
-3. **_rep** *of type uint256*
-4. **unnamed** *of type uint256*
 
 *Returns:*
 
@@ -486,8 +455,7 @@ uint total reputation supply
 
 int thresholdConstA.
 ---
-### execute(bytes32)
-> execute check if the proposal has been decided, and if so, execute the proposal
+### voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -495,14 +463,67 @@ int thresholdConstA.
 
 *Inputs:*
 
-1. **_proposalId** *of type bytes32- the id of the proposal*
+1. **_proposalId** *of type bytes32*
+2. **_vote** *of type uint256*
+3. **_rep** *of type uint256*
+4. **unnamed** *of type uint256*
 
-bool true - the proposal has been executed             false - otherwise.
+*Returns:*
+
+1. **unnamed** *of type bool*
+
+---
+### voteStatus(bytes32, uint256)
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_choice** *of type uint256*
+
+*Returns:*
+
+1. **unnamed** *of type uint256*
+
+---
+### cancelProposal(bytes32)
+> Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
+
+*Execution cost: **less than 1485 gas.***
+
+**nonpayable**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32- the proposal ID*
+
+*Returns:*
+
+1. **unnamed** *of type bool*
+
+---
+### hashedParameters()
+
+*Execution cost: **less than 1316 gas.***
+
+**constant | view**
+
+*Inputs:*
+
+*Nothing*
+
+*Returns:*
+
+1. **unnamed** *of type bytes32*
+
 ---
 ### isVotable(bytes32)
 > isVotable check if the proposal is votable
 
-*Execution cost: **less than 1782 gas.***
+*Execution cost: **less than 1826 gas.***
 
 **constant | view**
 
@@ -531,7 +552,7 @@ bool true or false
 ---
 ### orgBoostedProposalsCnt(address)
 
-*Execution cost: **less than 1353 gas.***
+*Execution cost: **less than 1397 gas.***
 
 **constant | view**
 
@@ -546,7 +567,7 @@ bool true or false
 ---
 ### owner()
 
-*Execution cost: **less than 963 gas.***
+*Execution cost: **less than 985 gas.***
 
 **constant | view**
 
@@ -557,21 +578,6 @@ bool true or false
 *Returns:*
 
 1. **unnamed** *of type address*
-
----
-### hashedParameters()
-
-*Execution cost: **less than 1272 gas.***
-
-**constant | view**
-
-*Inputs:*
-
-*Nothing*
-
-*Returns:*
-
-1. **unnamed** *of type bytes32*
 
 ---
 ### getRedeemableTokensVoter(bytes32, address)
@@ -607,22 +613,6 @@ bool true or false
 
 ---
 ### getRedeemableReputationVoter(bytes32, address)
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-
-1. **_proposalId** *of type bytes32*
-2. **_beneficiary** *of type address*
-
-*Returns:*
-
-1. **unnamed** *of type int256*
-
----
-### getRedeemableReputationStaker(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -680,19 +670,62 @@ int proposer redeem reputation.
 
 uint that contains number of choices
 ---
-### cancelProposal(bytes32)
-> Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
+### execute(bytes32)
+> execute check if the proposal has been decided, and if so, execute the proposal
 
-*Execution cost: **less than 1463 gas.***
+*Execution cost: **No bound available.***
 
 **nonpayable**
 
 *Inputs:*
 
-1. **_proposalId** *of type bytes32- the proposal ID*
+1. **_proposalId** *of type bytes32- the id of the proposal*
+
+bool true - the proposal has been executed             false - otherwise.
+---
+### cancelVote(bytes32)
+> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
+
+*Execution cost: **less than 1656 gas.***
+
+**nonpayable**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32- id of the proposal*
 
 *Returns:*
 
-1. **unnamed** *of type bool*
+*Nothing*
+
+---
+### YES()
+
+*Execution cost: **less than 786 gas.***
+
+**constant | view**
+
+*Inputs:*
+
+*Nothing*
+
+*Returns:*
+
+1. **unnamed** *of type uint256*
+
+---
+### NO()
+
+*Execution cost: **less than 280 gas.***
+
+**constant | view**
+
+*Inputs:*
+
+*Nothing*
+
+*Returns:*
+
+1. **unnamed** *of type uint256*
 
 
