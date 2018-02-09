@@ -59,17 +59,17 @@ Same as [CONTIBUTING](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.m
         - `generated_docs/`
             - Contains automatically generated docs from `.sol` files in `/contracts/`.
             - If generated file has a corresponding file in `docs/contracts`, this file will be included.
-2. Use the `yarn docs ..` cli to `update`, `build`, `preview`, `deploy` & `clean` documentation, see `yarn docs --help` for details.
+2. Use the `npm run docs ..` cli to `update`, `build`, `preview`, `deploy` & `clean` documentation, see `npm run docs -- --help` for details.
 
-    !!! note "`yarn docs preview` does not serve the final website!"
-        `yarn docs preview` will serve from the `docs` folder. This means that what you see is not the final website.
+    !!! note "`npm run docs preview` does not serve the final website!"
+        `npm run docs preview` will serve from the `docs` folder. This means that what you see is not the final website.
         In the final website:
 
         - All `README.md` files will be renamed to `index.md`, will automatically appear as "Home" on the menu and will be available in the URL at `...somedir/`.
         - `docs/contracts` will no show.
 
 2. Please provide an `README.md` file in the root of every directory, giving an overview of that directory.
-3. Check that there are no broken links by running `yarn docs preview` and checking for warnings of the form:
+3. Check that there are no broken links by running `npm run docs preview` and checking for warnings of the form:
  > WARNING -  The page "contracts\universalSchemes\README.md" contained a hyperlink to "contracts\universalSchemes\GenesisScheme.md" which is not listed in the "pages" configuration.
 3. Please use a spell checker in your IDE to avoid spelling errors.
 4. In case of missing or incorrect documentation please open an issue with the label `documentation`, indicating the file, line number and any extra details.

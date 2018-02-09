@@ -77,7 +77,7 @@
   "engines": {
     "node": ">=9.3.0"
   },
-  "author":"DAOstack (https://www.daostack.io)",
+  "author": "DAOstack (https://www.daostack.io)",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/daostack/arc/issues"

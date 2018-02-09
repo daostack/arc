@@ -28,7 +28,7 @@ This will run ganache-cli, compile, migrate and run all tests.
 ### Docker
 Arc has a prebuilt Docker image that makes development environments consistent and cross-platform.
 1. Install [Docker](https://www.docker.com/community-edition#/download) in your favorite OS/platform.
-2. Run `sudo docker run -it -v <path to repo>:/home/arc daostack/arc`.
+2. Run `sudo docker run --rm -it -v <path to repo>:/home/arc daostack/arc`.
 2. The container will automatically `git clone` or `git fetch` depending on if `<path to repo>` is empty, and will install any dependencies.
 3. Continue development inside the container.
 
