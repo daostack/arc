@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.0-alpha.30",
+  "version": "0.0.0-alpha.31",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -77,10 +77,7 @@
   "engines": {
     "node": ">=9.3.0"
   },
-  "authors": [
-    "Adam Levi <adam@daostack.io>",
-    "Jelle Gerbrandy <jelle@gerbrandy.com>"
-  ],
+  "author":"DAOstack (https://www.daostack.io)",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/daostack/arc/issues"
