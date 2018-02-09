@@ -1,19 +1,17 @@
 # AbsoluteVote
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/VotingMachines/AbsoluteVote.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/AbsoluteVote.sol)
 
-*Code deposit cost: **less than 862000 gas.***
+*Code deposit cost: **less than 835800 gas.***
 
-*Execution cost: **less than 891 gas.***
+*Execution cost: **less than 865 gas.***
 
-*Total deploy cost(deposit + execution): **less than 862891 gas.***
+*Total deploy cost(deposit + execution): **less than 836665 gas.***
 
 > 
-
-## Reference
-### Constructors
+## Constructors
 *Nothing*
-### Events
-#### *event* VoteProposal
+## Events
+### VoteProposal(bytes32, address, uint256, uint256, bool)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
@@ -22,8 +20,8 @@
 4. **_reputation** *of type uint256*
 5. **_isOwnerVote** *of type bool*
 
-
-#### *event* NewProposal
+---
+### NewProposal(bytes32, uint256, address, bytes32)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
@@ -31,44 +29,47 @@
 3. **_proposer** *of type address*
 4. **_paramsHash** *of type bytes32*
 
-
-#### *event* ExecuteProposal
+---
+### ExecuteProposal(bytes32, uint256)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
 2. **_decision** *of type uint256*
 
-
-#### *event* CancelVoting
+---
+### CancelVoting(bytes32, address)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
 2. **_voter** *of type address*
 
-
-#### *event* CancelProposal
+---
+### CancelProposal(bytes32)
 *Params:*
 
 1. **_proposalId** *of type bytes32*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### *function* votesStatus
-> votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id
+## Functions
+### cancelVote(bytes32)
+> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
 *Execution cost: **No bound available.***
 
-**constant | view**
+**nonpayable**
 
 *Inputs:*
 
-1. **_proposalId** *of type bytes32- the ID of the proposal*
+1. **_proposalId** *of type bytes32- id of the proposal*
 
-votes array of votes for each choice
+*Returns:*
 
-#### *function* setParameters
+*Nothing*
+
+---
+### setParameters(address, uint256, bool)
 
 *Execution cost: **No bound available.***
 
@@ -84,8 +85,24 @@ votes array of votes for each choice
 
 1. **unnamed** *of type bytes32*
 
+---
+### voteStatus(bytes32, uint256)
 
-#### *function* voteInfo
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_choice** *of type uint256*
+
+*Returns:*
+
+1. **unnamed** *of type uint256*
+
+---
+### voteInfo(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -101,8 +118,8 @@ votes array of votes for each choice
 1. **unnamed** *of type uint256*
 2. **unnamed** *of type uint256*
 
-
-#### *function* voteWithSpecifiedAmounts
+---
+### voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -119,8 +136,8 @@ votes array of votes for each choice
 
 1. **unnamed** *of type bool*
 
-
-#### *function* vote
+---
+### vote(bytes32, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -135,8 +152,8 @@ votes array of votes for each choice
 
 1. **unnamed** *of type bool*
 
-
-#### *function* propose
+---
+### propose(uint256, bytes32, address, address, address)
 
 *Execution cost: **No bound available.***
 
@@ -148,15 +165,16 @@ votes array of votes for each choice
 2. **_paramsHash** *of type bytes32*
 3. **_avatar** *of type address*
 4. **_executable** *of type address*
+5. **unnamed** *of type address*
 
 *Returns:*
 
 1. **unnamed** *of type bytes32*
 
+---
+### proposals(bytes32)
 
-#### *function* proposals
-
-*Execution cost: **less than 2188 gas.***
+*Execution cost: **less than 2210 gas.***
 
 **constant | view**
 
@@ -174,8 +192,8 @@ votes array of votes for each choice
 6. **totalVotes** *of type uint256*
 7. **open** *of type bool*
 
-
-#### *function* parameters
+---
+### parameters(bytes32)
 
 *Execution cost: **less than 1169 gas.***
 
@@ -191,8 +209,8 @@ votes array of votes for each choice
 2. **precReq** *of type uint256*
 3. **allowOwner** *of type bool*
 
-
-#### *function* ownerVote
+---
+### ownerVote(bytes32, uint256, address)
 
 *Execution cost: **No bound available.***
 
@@ -208,8 +226,8 @@ votes array of votes for each choice
 
 1. **unnamed** *of type bool*
 
-
-#### *function* isVotable
+---
+### isVotable(bytes32)
 > isVotable check if the proposal is votable
 
 *Execution cost: **less than 790 gas.***
@@ -221,8 +239,8 @@ votes array of votes for each choice
 1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 bool true or false
-
-#### *function* getParametersHash
+---
+### getParametersHash(address, uint256, bool)
 
 *Execution cost: **No bound available.***
 
@@ -238,11 +256,11 @@ bool true or false
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* getNumberOfChoices
+---
+### getNumberOfChoices(bytes32)
 > getNumberOfChoices returns the number of choices possible in this proposal
 
-*Execution cost: **less than 734 gas.***
+*Execution cost: **less than 712 gas.***
 
 **constant | view**
 
@@ -251,8 +269,8 @@ bool true or false
 1. **_proposalId** *of type bytes32- the ID of the proposal*
 
 uint that contains number of choices
-
-#### *function* execute
+---
+### execute(bytes32)
 > execute check if the proposal has been decided, and if so, execute the proposal
 
 *Execution cost: **No bound available.***
@@ -264,24 +282,8 @@ uint that contains number of choices
 1. **_proposalId** *of type bytes32- the id of the proposal*
 
 bool true - the proposal has been executed             false - otherwise.
-
-#### *function* cancelVote
-> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_proposalId** *of type bytes32- id of the proposal*
-
-*Returns:*
-
-*Nothing*
-
-
-#### *function* cancelProposal
+---
+### cancelProposal(bytes32)
 > Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
 
 *Execution cost: **No bound available.***

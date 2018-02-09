@@ -1,5 +1,5 @@
 # UniversalSchemeMock
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/test/UniversalSchemeMock.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/test/UniversalSchemeMock.sol)
 
 *Code deposit cost: **less than 98600 gas.***
 
@@ -8,10 +8,8 @@
 *Total deploy cost(deposit + execution): **less than 119115 gas.***
 
 > 
-
-## Reference
-### Constructors
-#### *constructor* UniversalSchemeMock()
+## Constructors
+### UniversalSchemeMock()
 
 *Execution cost: **No bound available.***
 
@@ -22,24 +20,24 @@
 *Nothing*
 
 
-### Events
-#### *event* OwnershipTransferred
+## Events
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
-
-#### *event* NewProposal
+---
+### NewProposal(bytes32)
 *Params:*
 
 1. **proposalId** *of type bytes32*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### *function* updateParameters
+## Functions
+### updateParameters(bytes32)
 
 *Execution cost: **less than 20443 gas.***
 
@@ -53,8 +51,8 @@
 
 *Nothing*
 
-
-#### *function* transferOwnership
+---
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 22788 gas.***
@@ -69,8 +67,8 @@
 
 *Nothing*
 
-
-#### *function* owner
+---
+### owner()
 
 *Execution cost: **less than 548 gas.***
 
@@ -84,8 +82,8 @@
 
 1. **unnamed** *of type address*
 
-
-#### *function* hashedParameters
+---
+### hashedParameters()
 
 *Execution cost: **less than 439 gas.***
 

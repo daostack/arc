@@ -1,5 +1,5 @@
 # MirrorContractICO
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/universalSchemes/SimpleICO.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/SimpleICO.sol)
 
 *Code deposit cost: **less than 158400 gas.***
 
@@ -9,10 +9,8 @@
 
 > An avatar contract for ICO.
 
-
-## Reference
-### Constructors
-#### *constructor* MirrorContractICO(address, address)
+## Constructors
+### MirrorContractICO(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -24,23 +22,23 @@
 2. **_simpleICO** *of type address*
 
 
-### Events
-#### *event* OwnershipTransferred
+## Events
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
 
-### Fallback
+## Fallback
 *Execution cost: **No bound available.***
 
 **payable**
 
 
 
-### Functions
-#### *function* transferOwnership
+## Functions
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **No bound available.***
@@ -55,23 +53,8 @@
 
 *Nothing*
 
-
-#### *function* simpleICO
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-
-*Nothing*
-
-*Returns:*
-
-1. **unnamed** *of type address*
-
-
-#### *function* owner
+---
+### simpleICO()
 
 *Execution cost: **No bound available.***
 
@@ -85,8 +68,8 @@
 
 1. **unnamed** *of type address*
 
-
-#### *function* organization
+---
+### owner()
 
 *Execution cost: **No bound available.***
 
@@ -100,8 +83,23 @@
 
 1. **unnamed** *of type address*
 
+---
+### organization()
 
-#### *function* destroyAndSend
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+*Nothing*
+
+*Returns:*
+
+1. **unnamed** *of type address*
+
+---
+### destroyAndSend(address)
 
 *Execution cost: **No bound available.***
 
@@ -115,8 +113,8 @@
 
 *Nothing*
 
-
-#### *function* destroy
+---
+### destroy()
 > Transfers the current balance to the owner and terminates the contract.
 
 *Execution cost: **No bound available.***

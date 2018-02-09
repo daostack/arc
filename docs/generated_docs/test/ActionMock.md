@@ -1,5 +1,5 @@
 # ActionMock
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/test/ActionMock.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/test/ActionMock.sol)
 
 *Code deposit cost: **less than 142000 gas.***
 
@@ -8,22 +8,20 @@
 *Total deploy cost(deposit + execution): **less than 142185 gas.***
 
 > 
-
-## Reference
-### Constructors
+## Constructors
 *Nothing*
-### Events
-#### *event* Action
+## Events
+### Action(address, bytes32)
 *Params:*
 
 1. **_sender** *of type address*
 2. **_param** *of type bytes32*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### *function* genericAction
+## Functions
+### genericAction(address, bytes32[])
 
 *Execution cost: **No bound available.***
 
@@ -38,8 +36,8 @@
 
 1. **unnamed** *of type bool*
 
-
-#### *function* action
+---
+### action(bytes32[])
 
 *Execution cost: **No bound available.***
 

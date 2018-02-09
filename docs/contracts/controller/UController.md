@@ -1,4 +1,5 @@
 # UController
+[see the generated documentation](../../generated_docs/controller/UController.md)
 
 The universal controller behave like a [controller](Controller.md) for multiple DAOs.
 
@@ -16,5 +17,5 @@ Using newOrganization function , one can create a new organization with a defaul
 
 - UNIVERSAL CONTROLLER will probably will be deployed by DAOstack so by using it
    one save the gas cost of deploying a controller when creating a DAO.
-   
-- UNIVERSAL CONTROLLER might be a bit expensive in terms of GAS for each operation. 
+
+- UNIVERSAL CONTROLLER might be a bit expensive in terms of GAS for each operation.

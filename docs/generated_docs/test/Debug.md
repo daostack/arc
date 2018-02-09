@@ -1,5 +1,5 @@
 # Debug
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/test/Debug.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/test/Debug.sol)
 
 *Code deposit cost: **less than 10600 gas.***
 
@@ -8,54 +8,52 @@
 *Total deploy cost(deposit + execution): **less than 10661 gas.***
 
 > 
-
-## Reference
-### Constructors
+## Constructors
 *Nothing*
-### Events
-#### *event* LogUint
+## Events
+### LogUint(uint256)
 *Params:*
 
 1. **_msg** *of type uint256*
 
-
-#### *event* LogString
+---
+### LogString(string)
 *Params:*
 
 1. **_msg** *of type string*
 
-
-#### *event* LogInt
+---
+### LogInt(int256)
 *Params:*
 
 1. **_msg** *of type int256*
 
-
-#### *event* LogBytes32
+---
+### LogBytes32(bytes32)
 *Params:*
 
 1. **_msg** *of type bytes32*
 
-
-#### *event* LogBytes
+---
+### LogBytes(bytes)
 *Params:*
 
 1. **_msg** *of type bytes*
 
-
-#### *event* LogBool
+---
+### LogBool(bool)
 *Params:*
 
 1. **_msg** *of type bool*
 
-
-#### *event* LogAddress
+---
+### LogAddress(address)
 *Params:*
 
 1. **_msg** *of type address*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
+## Functions
 *Nothing*

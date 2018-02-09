@@ -1,7 +1,7 @@
 # DAOToken
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/controller/DAOToken.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/controller/DAOToken.sol)
 
-*Code deposit cost: **less than 683600 gas.***
+*Code deposit cost: **less than 687800 gas.***
 
 *Execution cost: **No bound available.***
 
@@ -9,11 +9,8 @@
 
 > DAOToken, base on zeppelin contract.
 
-The *DAO token* is a simple token that is used by DAOs to assign value to, and reward participants actions. 
-It can be **minted** or **burned** by the DAO and also be **destroyed** in the event of an upgrade to a better token or in other circumstances.
-## Reference
-### Constructors
-#### *constructor* DAOToken(string, string)
+## Constructors
+### DAOToken(string, string)
 
 *Execution cost: **No bound available.***
 
@@ -25,43 +22,43 @@ It can be **minted** or **burned** by the DAO and also be **destroyed** in the e
 2. **_symbol** *of type string*
 
 
-### Events
-#### *event* Transfer
+## Events
+### Transfer(address, address, uint256)
 *Params:*
 
 1. **from** *of type address*
 2. **to** *of type address*
 3. **value** *of type uint256*
 
-
-#### *event* OwnershipTransferred
+---
+### OwnershipTransferred(address, address)
 *Params:*
 
 1. **previousOwner** *of type address*
 2. **newOwner** *of type address*
 
-
-#### *event* MintFinished
+---
+### MintFinished()
 *Params:*
 
 *Nothing*
 
-
-#### *event* Mint
+---
+### Mint(address, uint256)
 *Params:*
 
 1. **to** *of type address*
 2. **amount** *of type uint256*
 
-
-#### *event* Burn
+---
+### Burn(address, uint256)
 *Params:*
 
 1. **burner** *of type address*
 2. **value** *of type uint256*
 
-
-#### *event* Approval
+---
+### Approval(address, address, uint256)
 *Params:*
 
 1. **owner** *of type address*
@@ -69,13 +66,13 @@ It can be **minted** or **burned** by the DAO and also be **destroyed** in the e
 3. **value** *of type uint256*
 
 
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### *function* balanceOf
+## Functions
+### balanceOf(address)
 > Gets the balance of the specified address.
 
-*Execution cost: **less than 793 gas.***
+*Execution cost: **less than 796 gas.***
 
 **constant | view**
 
@@ -84,8 +81,8 @@ It can be **minted** or **burned** by the DAO and also be **destroyed** in the e
 1. **_owner** *of type address- The address to query the the balance of.*
 
 An uint256 representing the amount owned by the passed address.
-
-#### *function* mintingFinished
+---
+### mintingFinished()
 
 *Execution cost: **less than 459 gas.***
 
@@ -99,8 +96,8 @@ An uint256 representing the amount owned by the passed address.
 
 1. **unnamed** *of type bool*
 
-
-#### *function* transferOwnership
+---
+### transferOwnership(address)
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 *Execution cost: **less than 23118 gas.***
@@ -115,8 +112,9 @@ An uint256 representing the amount owned by the passed address.
 
 *Nothing*
 
-
-#### *function* totalSupply
+---
+### totalSupply()
+> total number of tokens in existence
 
 *Execution cost: **less than 439 gas.***
 
@@ -130,8 +128,8 @@ An uint256 representing the amount owned by the passed address.
 
 1. **unnamed** *of type uint256*
 
-
-#### *function* transferFrom
+---
+### transferFrom(address, address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -147,8 +145,8 @@ An uint256 representing the amount owned by the passed address.
 
 1. **unnamed** *of type bool*
 
-
-#### *function* transfer
+---
+### transfer(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -163,8 +161,8 @@ An uint256 representing the amount owned by the passed address.
 
 1. **unnamed** *of type bool*
 
-
-#### *function* symbol
+---
+### symbol()
 
 *Execution cost: **No bound available.***
 
@@ -178,8 +176,8 @@ An uint256 representing the amount owned by the passed address.
 
 1. **unnamed** *of type string*
 
-
-#### *function* owner
+---
+### owner()
 
 *Execution cost: **less than 793 gas.***
 
@@ -193,8 +191,8 @@ An uint256 representing the amount owned by the passed address.
 
 1. **unnamed** *of type address*
 
-
-#### *function* name
+---
+### name()
 
 *Execution cost: **No bound available.***
 
@@ -208,8 +206,8 @@ An uint256 representing the amount owned by the passed address.
 
 1. **unnamed** *of type string*
 
-
-#### *function* mint
+---
+### mint(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -224,8 +222,8 @@ An uint256 representing the amount owned by the passed address.
 
 1. **unnamed** *of type bool*
 
-
-#### *function* increaseApproval
+---
+### increaseApproval(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -240,8 +238,8 @@ An uint256 representing the amount owned by the passed address.
 
 1. **unnamed** *of type bool*
 
-
-#### *function* finishMinting
+---
+### finishMinting()
 > Function to stop minting new tokens.
 
 *Execution cost: **less than 22080 gas.***
@@ -253,8 +251,8 @@ An uint256 representing the amount owned by the passed address.
 *Nothing*
 
 True if the operation was successful.
-
-#### *function* destroyAndSend
+---
+### destroyAndSend(address)
 
 *Execution cost: **less than 30980 gas.***
 
@@ -268,8 +266,8 @@ True if the operation was successful.
 
 *Nothing*
 
-
-#### *function* destroy
+---
+### destroy()
 > Transfers the current balance to the owner and terminates the contract.
 
 *Execution cost: **less than 30945 gas.***
@@ -284,8 +282,8 @@ True if the operation was successful.
 
 *Nothing*
 
-
-#### *function* decreaseApproval
+---
+### decreaseApproval(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -300,8 +298,8 @@ True if the operation was successful.
 
 1. **unnamed** *of type bool*
 
-
-#### *function* burn
+---
+### burn(uint256)
 > Burns a specific amount of tokens.
 
 *Execution cost: **No bound available.***
@@ -316,8 +314,8 @@ True if the operation was successful.
 
 *Nothing*
 
-
-#### *function* approve
+---
+### approve(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -332,8 +330,8 @@ True if the operation was successful.
 
 1. **unnamed** *of type bool*
 
-
-#### *function* allowance
+---
+### allowance(address, address)
 
 *Execution cost: **No bound available.***
 
@@ -348,8 +346,8 @@ True if the operation was successful.
 
 1. **unnamed** *of type uint256*
 
-
-#### *function* DECIMAL
+---
+### DECIMAL()
 
 *Execution cost: **less than 349 gas.***
 

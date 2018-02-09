@@ -1,34 +1,35 @@
 # TokenCapGC
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/globalConstraints/TokenCapGC.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/globalConstraints/TokenCapGC.sol)
 
-*Code deposit cost: **less than 183400 gas.***
+*Code deposit cost: **less than 197600 gas.***
 
-*Execution cost: **less than 221 gas.***
+*Execution cost: **less than 233 gas.***
 
-*Total deploy cost(deposit + execution): **less than 183621 gas.***
+*Total deploy cost(deposit + execution): **less than 197833 gas.***
 
 > Token Cap Global Constraint
 
-*TokenCapGC* is a simple global constraint that limits the number of tokens that can be issued.
-
-## Usage
-
-```
-TokenCapGC gc = new TokenCapGC();
-
-/* some where inside a scheme with relevent permissions */
-bytes32 hash = gc.setParameters(contoller.nativeToken,100) /*limit DAO token issuance to 100*/
-controller.addGlobalConstraint(gc,hash)
-```
-## Reference
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### *function* setParameters
+## Functions
+### when()
+> when return if this globalConstraints is pre, post or both.
+
+*Execution cost: **less than 325 gas.***
+
+**constant | pure**
+
+*Inputs:*
+
+*Nothing*
+
+CallPhase enum indication  Pre, Post or PreAndPost.
+---
+### setParameters(address, uint256)
 
 *Execution cost: **No bound available.***
 
@@ -43,8 +44,8 @@ controller.addGlobalConstraint(gc,hash)
 
 1. **unnamed** *of type bytes32*
 
-
-#### *function* pre
+---
+### pre(address, bytes32, bytes)
 
 *Execution cost: **No bound available.***
 
@@ -60,8 +61,8 @@ controller.addGlobalConstraint(gc,hash)
 
 1. **unnamed** *of type bool*
 
-
-#### *function* post
+---
+### post(address, bytes32, bytes)
 
 *Execution cost: **No bound available.***
 
@@ -77,8 +78,8 @@ controller.addGlobalConstraint(gc,hash)
 
 1. **unnamed** *of type bool*
 
-
-#### *function* params
+---
+### params(bytes32)
 
 *Execution cost: **less than 934 gas.***
 
@@ -93,8 +94,8 @@ controller.addGlobalConstraint(gc,hash)
 1. **token** *of type address*
 2. **cap** *of type uint256*
 
-
-#### *function* getParametersHash
+---
+### getParametersHash(address, uint256)
 
 *Execution cost: **No bound available.***
 

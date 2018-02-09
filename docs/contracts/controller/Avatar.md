@@ -1,4 +1,5 @@
 # Avatar
+[see the generated documentation](../../generated_docs/controller/Avatar.md)
 
 
 The *Avatar* is the public facing entity a DAO exposes to interact with the outside world(vote on other DAOs, pay external actors, etc...)

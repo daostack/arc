@@ -1,5 +1,5 @@
 # GenesisProtocolFormulasInterface
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/VotingMachines/GenesisProtocolFormulasInterface.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/GenesisProtocolFormulasInterface.sol)
 
 *Code deposit cost: **No bound available.***
 
@@ -8,16 +8,14 @@
 *Total deploy cost(deposit + execution): **No bound available.***
 
 > 
-
-## Reference
-### Constructors
+## Constructors
 *Nothing*
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### *function* threshold
+## Functions
+### threshold(address)
 
 *Execution cost: **No bound available.***
 
@@ -29,10 +27,10 @@
 
 *Returns:*
 
-1. **unnamed** *of type uint256*
+1. **unnamed** *of type int256*
 
-
-#### *function* shouldBoost
+---
+### shouldBoost(bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -46,8 +44,8 @@
 
 1. **unnamed** *of type bool*
 
-
-#### *function* score
+---
+### score(bytes32)
 
 *Execution cost: **No bound available.***
 
@@ -59,10 +57,26 @@
 
 *Returns:*
 
+1. **unnamed** *of type int256*
+
+---
+### getRedeemableTokensVoter(bytes32, address)
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+2. **_beneficiary** *of type address*
+
+*Returns:*
+
 1. **unnamed** *of type uint256*
 
-
-#### *function* redeemAmount
+---
+### getRedeemableTokensStaker(bytes32, address)
 
 *Execution cost: **No bound available.***
 
@@ -76,5 +90,20 @@
 *Returns:*
 
 1. **unnamed** *of type uint256*
+
+---
+### getRedeemableReputationProposer(bytes32)
+
+*Execution cost: **No bound available.***
+
+**constant | view**
+
+*Inputs:*
+
+1. **_proposalId** *of type bytes32*
+
+*Returns:*
+
+1. **unnamed** *of type int256*
 
 

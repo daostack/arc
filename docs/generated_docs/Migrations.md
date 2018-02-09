@@ -1,5 +1,5 @@
 # Migrations
-[see the source](https://github.com/daostack/daostack/tree/master/contracts/Migrations.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/Migrations.sol)
 
 *Code deposit cost: **less than 97400 gas.***
 
@@ -8,10 +8,8 @@
 *Total deploy cost(deposit + execution): **less than 117915 gas.***
 
 > 
-
-## Reference
-### Constructors
-#### *constructor* Migrations()
+## Constructors
+### Migrations()
 
 *Execution cost: **No bound available.***
 
@@ -22,12 +20,12 @@
 *Nothing*
 
 
-### Events
+## Events
 *Nothing*
-### Fallback
+## Fallback
 *Nothing*
-### Functions
-#### *function* upgrade
+## Functions
+### upgrade(address)
 
 *Execution cost: **No bound available.***
 
@@ -41,8 +39,8 @@
 
 *Nothing*
 
-
-#### *function* setCompleted
+---
+### setCompleted(uint256)
 
 *Execution cost: **less than 20520 gas.***
 
@@ -56,8 +54,8 @@
 
 *Nothing*
 
-
-#### *function* owner
+---
+### owner()
 
 *Execution cost: **less than 570 gas.***
 
@@ -71,8 +69,8 @@
 
 1. **unnamed** *of type address*
 
-
-#### *function* last_completed_migration
+---
+### last_completed_migration()
 
 *Execution cost: **less than 395 gas.***
 
