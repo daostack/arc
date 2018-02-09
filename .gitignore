@@ -7,3 +7,4 @@ node_modules/
 *.tgz
 .vscode/
 .docs_build
+yarn.lock
