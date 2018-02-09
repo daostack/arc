@@ -694,24 +694,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#votesstatusbytes32" title="votesStatus(bytes32)" class="md-nav__link">
-    votesStatus(bytes32)
+  <a href="#cancelvotebytes32" title="cancelVote(bytes32)" class="md-nav__link">
+    cancelVote(bytes32)
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#votes-array-of-votes-for-each-choice" title="votes array of votes for each choice" class="md-nav__link">
-    votes array of votes for each choice
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#setparametersaddress-uint256-bool" title="setParameters(address, uint256, bool)" class="md-nav__link">
@@ -721,8 +708,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#votewithspecifiedamountsbytes32-uint256-uint256-uint256" title="voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)" class="md-nav__link">
-    voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
+  <a href="#votestatusbytes32-uint256" title="voteStatus(bytes32, uint256)" class="md-nav__link">
+    voteStatus(bytes32, uint256)
   </a>
   
 </li>
@@ -730,6 +717,13 @@
           <li class="md-nav__item">
   <a href="#voteinfobytes32-address" title="voteInfo(bytes32, address)" class="md-nav__link">
     voteInfo(bytes32, address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#votewithspecifiedamountsbytes32-uint256-uint256-uint256" title="voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)" class="md-nav__link">
+    voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
   </a>
   
 </li>
@@ -819,13 +813,6 @@
           <li class="md-nav__item">
   <a href="#executebytes32" title="execute(bytes32)" class="md-nav__link">
     execute(bytes32)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cancelvotebytes32" title="cancelVote(bytes32)" class="md-nav__link">
-    cancelVote(bytes32)
   </a>
   
 </li>
@@ -1384,24 +1371,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#votesstatusbytes32" title="votesStatus(bytes32)" class="md-nav__link">
-    votesStatus(bytes32)
+  <a href="#cancelvotebytes32" title="cancelVote(bytes32)" class="md-nav__link">
+    cancelVote(bytes32)
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#votes-array-of-votes-for-each-choice" title="votes array of votes for each choice" class="md-nav__link">
-    votes array of votes for each choice
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#setparametersaddress-uint256-bool" title="setParameters(address, uint256, bool)" class="md-nav__link">
@@ -1411,8 +1385,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#votewithspecifiedamountsbytes32-uint256-uint256-uint256" title="voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)" class="md-nav__link">
-    voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
+  <a href="#votestatusbytes32-uint256" title="voteStatus(bytes32, uint256)" class="md-nav__link">
+    voteStatus(bytes32, uint256)
   </a>
   
 </li>
@@ -1420,6 +1394,13 @@
           <li class="md-nav__item">
   <a href="#voteinfobytes32-address" title="voteInfo(bytes32, address)" class="md-nav__link">
     voteInfo(bytes32, address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#votewithspecifiedamountsbytes32-uint256-uint256-uint256" title="voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)" class="md-nav__link">
+    voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)
   </a>
   
 </li>
@@ -1514,13 +1495,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cancelvotebytes32" title="cancelVote(bytes32)" class="md-nav__link">
-    cancelVote(bytes32)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#cancelproposalbytes32_1" title="cancelProposal(bytes32)" class="md-nav__link">
     cancelProposal(bytes32)
   </a>
@@ -1551,9 +1525,9 @@
                 
                 <h1 id="quorumvote">QuorumVote<a class="headerlink" href="#quorumvote" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/arc/tree/master/contracts/VotingMachines/QuorumVote.sol">see the source</a></p>
-<p><em>Code deposit cost: <strong>less than 925400 gas.</strong></em></p>
-<p><em>Execution cost: <strong>less than 957 gas.</strong></em></p>
-<p><em>Total deploy cost(deposit + execution): <strong>less than 926357 gas.</strong></em></p>
+<p><em>Code deposit cost: <strong>less than 844600 gas.</strong></em></p>
+<p><em>Execution cost: <strong>less than 872 gas.</strong></em></p>
+<p><em>Total deploy cost(deposit + execution): <strong>less than 845472 gas.</strong></em></p>
 <blockquote></blockquote>
 <h2 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h2>
 <p><em>Nothing</em></p>
@@ -1599,17 +1573,19 @@
 <h2 id="fallback">Fallback<a class="headerlink" href="#fallback" title="Permanent link">&para;</a></h2>
 <p><em>Nothing</em></p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
-<h3 id="votesstatusbytes32">votesStatus(bytes32)<a class="headerlink" href="#votesstatusbytes32" title="Permanent link">&para;</a></h3>
+<h3 id="cancelvotebytes32">cancelVote(bytes32)<a class="headerlink" href="#cancelvotebytes32" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>votesStatus returns the number of yes, no, and abstain and if the proposal is ended of a given proposal id</p>
+<p>Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct</p>
 </blockquote>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
-<p><strong>constant | view</strong></p>
+<p><strong>nonpayable</strong></p>
 <p><em>Inputs:</em></p>
 <ol>
-<li><strong>_proposalId</strong> <em>of type bytes32- the ID of the proposal</em></li>
+<li><strong>_proposalId</strong> <em>of type bytes32- id of the proposal</em></li>
 </ol>
-<h2 id="votes-array-of-votes-for-each-choice">votes array of votes for each choice<a class="headerlink" href="#votes-array-of-votes-for-each-choice" title="Permanent link">&para;</a></h2>
+<p><em>Returns:</em></p>
+<p><em>Nothing</em></p>
+<hr />
 <h3 id="setparametersaddress-uint256-bool">setParameters(address, uint256, bool)<a class="headerlink" href="#setparametersaddress-uint256-bool" title="Permanent link">&para;</a></h3>
 <p><em>Execution cost: <strong>No bound available.</strong></em></p>
 <p><strong>nonpayable</strong></p>
@@ -1622,6 +1598,33 @@
 <p><em>Returns:</em></p>
 <ol>
 <li><strong>unnamed</strong> <em>of type bytes32</em></li>
+</ol>
+<hr />
+<h3 id="votestatusbytes32-uint256">voteStatus(bytes32, uint256)<a class="headerlink" href="#votestatusbytes32-uint256" title="Permanent link">&para;</a></h3>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_proposalId</strong> <em>of type bytes32</em></li>
+<li><strong>_choice</strong> <em>of type uint256</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type uint256</em></li>
+</ol>
+<hr />
+<h3 id="voteinfobytes32-address">voteInfo(bytes32, address)<a class="headerlink" href="#voteinfobytes32-address" title="Permanent link">&para;</a></h3>
+<p><em>Execution cost: <strong>No bound available.</strong></em></p>
+<p><strong>constant | view</strong></p>
+<p><em>Inputs:</em></p>
+<ol>
+<li><strong>_proposalId</strong> <em>of type bytes32</em></li>
+<li><strong>_voter</strong> <em>of type address</em></li>
+</ol>
+<p><em>Returns:</em></p>
+<ol>
+<li><strong>unnamed</strong> <em>of type uint256</em></li>
+<li><strong>unnamed</strong> <em>of type uint256</em></li>
 </ol>
 <hr />
 <h3 id="votewithspecifiedamountsbytes32-uint256-uint256-uint256">voteWithSpecifiedAmounts(bytes32, uint256, uint256, uint256)<a class="headerlink" href="#votewithspecifiedamountsbytes32-uint256-uint256-uint256" title="Permanent link">&para;</a></h3>
@@ -1637,20 +1640,6 @@
 <p><em>Returns:</em></p>
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
-</ol>
-<hr />
-<h3 id="voteinfobytes32-address">voteInfo(bytes32, address)<a class="headerlink" href="#voteinfobytes32-address" title="Permanent link">&para;</a></h3>
-<p><em>Execution cost: <strong>No bound available.</strong></em></p>
-<p><strong>constant | view</strong></p>
-<p><em>Inputs:</em></p>
-<ol>
-<li><strong>_proposalId</strong> <em>of type bytes32</em></li>
-<li><strong>_voter</strong> <em>of type address</em></li>
-</ol>
-<p><em>Returns:</em></p>
-<ol>
-<li><strong>unnamed</strong> <em>of type uint256</em></li>
-<li><strong>unnamed</strong> <em>of type uint256</em></li>
 </ol>
 <hr />
 <h3 id="votebytes32-uint256">vote(bytes32, uint256)<a class="headerlink" href="#votebytes32-uint256" title="Permanent link">&para;</a></h3>
@@ -1757,7 +1746,7 @@
 <blockquote>
 <p>getNumberOfChoices returns the number of choices possible in this proposal</p>
 </blockquote>
-<p><em>Execution cost: <strong>less than 734 gas.</strong></em></p>
+<p><em>Execution cost: <strong>less than 712 gas.</strong></em></p>
 <p><strong>constant | view</strong></p>
 <p><em>Inputs:</em></p>
 <ol>
@@ -1778,19 +1767,6 @@
 <ol>
 <li><strong>unnamed</strong> <em>of type bool</em></li>
 </ol>
-<hr />
-<h3 id="cancelvotebytes32">cancelVote(bytes32)<a class="headerlink" href="#cancelvotebytes32" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct</p>
-</blockquote>
-<p><em>Execution cost: <strong>No bound available.</strong></em></p>
-<p><strong>nonpayable</strong></p>
-<p><em>Inputs:</em></p>
-<ol>
-<li><strong>_proposalId</strong> <em>of type bytes32- id of the proposal</em></li>
-</ol>
-<p><em>Returns:</em></p>
-<p><em>Nothing</em></p>
 <hr />
 <h3 id="cancelproposalbytes32_1">cancelProposal(bytes32)<a class="headerlink" href="#cancelproposalbytes32_1" title="Permanent link">&para;</a></h3>
 <blockquote>
