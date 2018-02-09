@@ -65,8 +65,8 @@ Same as [CONTIBUTING](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.m
             - Follows the directory structure of `/contracts/`.
         - `generated_docs/`
             - Contains automatically generated docs from `.sol` files in `/contracts/`.
-2. Use the `yarn docs ..` cli to `update`, `build`, `preview`, `deploy` & `clean` documentation, see `yarn docs --help` for details. (Note: `yarn docs preview` does not serve the final website: all `README.md` will be renamed to `index.md`)
+2. Use the `npm run docs ..` cli to `update`, `build`, `preview`, `deploy` & `clean` documentation, see `npm run docs -- --help` for details. (Note: `npm run docs preview` does not serve the final website: all `README.md` will be renamed to `index.md`)
 3. Please provide an `README.md` file in the root of every directory, giving an overview of that directory.
-4. Check that there are no broken links by running `yarn docs preview` and checking for warnings.
+4. Check that there are no broken links by running `npm run docs preview` and checking for warnings.
 5. Please use a spell checker in your IDE to avoid spelling errors.
 6. In case of missing or incorrect documentation please open an issue with the label `documentation`, indicating the file, line number and any extra details.
