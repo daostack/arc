@@ -4,8 +4,6 @@
  * author: Matan Tsuberi (dev.matan.tsuberi@gmail.com)
  */
 
-const path = require('path');
-
 /* This is a little trick to make templates more readable.
  * used in templates like :
  * `line1${N
