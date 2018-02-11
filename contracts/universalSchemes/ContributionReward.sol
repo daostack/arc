@@ -12,6 +12,7 @@ import "./UniversalScheme.sol";
 
 contract ContributionReward is UniversalScheme {
     using SafeMath for uint;
+
     event NewContributionProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -41,7 +42,7 @@ contract ContributionReward is UniversalScheme {
         uint periodLength;
         uint numberOfPeriods;
         uint executionTime;
-        uint redeemedPeriods;
+        uint[4] redeemedPeriods;
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
@@ -150,7 +151,7 @@ contract ContributionReward is UniversalScheme {
             periodLength: _rewards[3],
             numberOfPeriods: _rewards[4],
             executionTime: 0,
-            redeemedPeriods:0
+            redeemedPeriods:[uint(0),uint(0),uint(0),uint(0)]
         });
         organizationsProposals[_avatar][contributionId] = proposal;
 
@@ -190,7 +191,120 @@ contract ContributionReward is UniversalScheme {
     }
 
     /**
-    * @dev redeem reward for proposal
+    * @dev RedeemReputation reward for proposal
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _avatar address of the controller
+    * @return  result boolean for success indication.
+    */
+    function redeemReputation(bytes32 _proposalId, address _avatar) public returns(bool) {
+
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
+        require(proposal.executionTime != 0);
+        uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,0);
+        bool result;
+
+        proposal.redeemedPeriods[0] = proposal.redeemedPeriods[0].add(periodsToPay);
+        //set proposal reward to zero to prevent reentrancy attack.
+        proposal.reputationChange = 0;
+        int reputation = int(periodsToPay) * _proposal.reputationChange;
+        if (reputation!=0 && ControllerInterface(Avatar(_avatar).owner()).mintReputation(reputation, _proposal.beneficiary,_avatar)) {
+            result = true;
+            RedeemReputation(_avatar,_proposalId,reputation);
+        }
+        //restore proposal reward.
+        proposal.reputationChange = _proposal.reputationChange;
+        return result;
+    }
+
+    /**
+    * @dev RedeemNativeToken reward for proposal
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _avatar address of the controller
+    * @return  result boolean for success indication.
+    */
+    function redeemNativeToken(bytes32 _proposalId, address _avatar) public returns(bool) {
+
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
+        require(proposal.executionTime != 0);
+        uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,1);
+        bool result;
+
+        proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
+        //set proposal rewards to zero to prevent reentrancy attack.
+        proposal.nativeTokenReward = 0;
+
+        uint amount = periodsToPay.mul(_proposal.nativeTokenReward);
+        if (amount > 0 && ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, _proposal.beneficiary,_avatar)) {
+            result = true;
+            RedeemNativeToken(_avatar,_proposalId,amount);
+        }
+
+        //restore proposal reward.
+        proposal.nativeTokenReward = _proposal.nativeTokenReward;
+        return result;
+    }
+
+    /**
+    * @dev RedeemEther reward for proposal
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _avatar address of the controller
+    * @return  result boolean for success indication.
+    */
+    function redeemEther(bytes32 _proposalId, address _avatar) public returns(bool) {
+
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
+        require(proposal.executionTime != 0);
+        uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,2);
+        bool result;
+
+        proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
+        //set proposal rewards to zero to prevent reentrancy attack.
+        proposal.ethReward = 0;
+        uint amount = periodsToPay.mul(_proposal.ethReward);
+
+        if (amount > 0 && ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, _proposal.beneficiary,_avatar)) {
+            result = true;
+            RedeemEther(_avatar,_proposalId,amount);
+        }
+        //restore proposal reward.
+        proposal.ethReward = _proposal.ethReward;
+        return result;
+    }
+
+    /**
+    * @dev RedeemNativeToken reward for proposal
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _avatar address of the controller
+    * @return  result boolean for success indication.
+    */
+    function redeemExternalToken(bytes32 _proposalId, address _avatar) public returns(bool) {
+
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
+        require(proposal.executionTime != 0);
+        uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,3);
+        bool result;
+        proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);
+        //set proposal rewards to zero to prevent reentrancy attack.
+        proposal.externalTokenReward = 0;
+
+        if (proposal.externalToken != address(0) && _proposal.externalTokenReward > 0) {
+            uint amount = periodsToPay.mul(_proposal.externalTokenReward);
+            if (amount > 0 && ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar)) {
+                result = true;
+                RedeemExternalToken(_avatar,_proposalId,amount);
+            }
+        }
+        //restore proposal reward.
+        proposal.externalTokenReward = _proposal.externalTokenReward;
+        return result;
+    }
+
+    /**
+    * @dev redeem rewards for proposal
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
     * @param _whatToRedeem whatToRedeem array:
@@ -202,64 +316,50 @@ contract ContributionReward is UniversalScheme {
     */
     function redeem(bytes32 _proposalId, address _avatar,bool[4] _whatToRedeem) public returns(bool[4] result) {
 
-        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
-        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
-        require(proposal.executionTime != 0);
-        ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-        uint  amount;
-        // solium-disable-next-line security/no-block-members
-        uint periodsFromExecution = (now.sub(_proposal.executionTime)).div(_proposal.periodLength);
-        uint periodsToPay;
-
-        if (periodsFromExecution >= _proposal.numberOfPeriods) {
-            periodsToPay = proposal.numberOfPeriods.sub(_proposal.redeemedPeriods);
-        } else {
-            periodsToPay = periodsFromExecution.sub(_proposal.redeemedPeriods);
-        }
-        proposal.redeemedPeriods = proposal.redeemedPeriods.add(periodsToPay);
-
         if (_whatToRedeem[0]) {
-            proposal.reputationChange = 0;
-            int reputation = int(periodsToPay) * _proposal.reputationChange;
-            if (reputation!=0 && controller.mintReputation(reputation, _proposal.beneficiary,_avatar)) {
-                result[0] = true;
-                RedeemReputation(_avatar,_proposalId,reputation);
-            }
-            proposal.reputationChange = _proposal.reputationChange;
+            result[0] = redeemReputation(_proposalId,_avatar);
         }
 
         if (_whatToRedeem[1]) {
-            proposal.nativeTokenReward = 0;
-            amount = periodsToPay.mul(_proposal.nativeTokenReward);
-            if (amount > 0 && controller.mintTokens(amount, _proposal.beneficiary,_avatar)) {
-                result[1] = true;
-                RedeemNativeToken(_avatar,_proposalId,amount);
-            }
-            proposal.nativeTokenReward = _proposal.nativeTokenReward;
+            result[1] = redeemNativeToken(_proposalId,_avatar);
         }
 
         if (_whatToRedeem[2]) {
-            proposal.ethReward = 0;
-            amount = periodsToPay.mul(_proposal.ethReward);
-            if (amount > 0 && controller.sendEther(amount, _proposal.beneficiary,_avatar)) {
-                result[2] = true;
-                RedeemEther(_avatar,_proposalId,amount);
-            }
-            proposal.ethReward = _proposal.ethReward;
-
+            result[2] = redeemEther(_proposalId,_avatar);
         }
 
         if (_whatToRedeem[3]) {
-            if (proposal.externalToken != address(0) && _proposal.externalTokenReward > 0) {
-                proposal.externalTokenReward = 0;
-                amount = periodsToPay.mul(_proposal.externalTokenReward);
-                if (amount > 0 && controller.externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar)) {
-                    result[3] = true;
-                    RedeemExternalToken(_avatar,_proposalId,amount);
-                }
-                proposal.externalTokenReward = _proposal.externalTokenReward;
-            }
+            result[3] = redeemExternalToken(_proposalId,_avatar);
         }
+
         return result;
     }
+
+    /**
+    * @dev getPeriodsToPay return the periods left to be paid for reputation,nativeToken,ether or externalToken.
+    * The function ignore the reward amount to be paid (which can be zero).
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _avatar address of the controller
+    * @param _redeemType - the type of the reward  :
+    *         0 - reputation
+    *         1 - nativeTokenReward
+    *         2 - Ether
+    *         3 - ExternalToken
+    * @return  periods left to be paid.
+    */
+    function getPeriodsToPay(bytes32 _proposalId, address _avatar,uint _redeemType) public view returns (uint) {
+
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        // solium-disable-next-line security/no-block-members
+        uint periodsFromExecution = (now.sub(_proposal.executionTime)).div(_proposal.periodLength);
+        uint periodsToPay;
+        if (periodsFromExecution >= _proposal.numberOfPeriods) {
+            periodsToPay = _proposal.numberOfPeriods.sub(_proposal.redeemedPeriods[_redeemType]);
+        } else {
+            periodsToPay = periodsFromExecution.sub(_proposal.redeemedPeriods[_redeemType]);
+        }
+        return periodsToPay;
+    }
+
+
 }
