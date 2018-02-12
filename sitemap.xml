@@ -3,8 +3,8 @@
 
     
     <url>
-     <loc>https://daostack.github.io/arc/</loc>
-     <lastmod>2018-02-09</lastmod>
+     <loc>https://daostack.github.io/arc/README/</loc>
+     <lastmod>2018-02-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,12 +12,6 @@
     
         
     <url>
-     <loc>https://daostack.github.io/arc/contracts/</loc>
-     <lastmod>2018-02-09</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
      <loc>https://daostack.github.io/arc</loc>
      <lastmod></lastmod>
      <changefreq>daily</changefreq>
@@ -26,6 +20,12 @@
     <url>
      <loc>https://daostack.github.io/arc</loc>
      <lastmod></lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>https://daostack.github.io/arc/contracts/README/</loc>
+     <lastmod>2018-02-13</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -44,24 +44,6 @@
     
 
     
-        
-    <url>
-     <loc>https://daostack.github.io/arc/generated_docs/Migrations/</loc>
-     <lastmod>2018-02-09</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
-     <loc>https://daostack.github.io/arc/generated_docs/</loc>
-     <lastmod>2018-02-09</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
-     <loc>https://daostack.github.io/arc</loc>
-     <lastmod></lastmod>
-     <changefreq>daily</changefreq>
-    </url>
         
     <url>
      <loc>https://daostack.github.io/arc</loc>
