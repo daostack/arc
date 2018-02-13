@@ -9,6 +9,8 @@ contract ActionMock is ActionInterface {
 
     function action(bytes32[] params) public returns(bool) {
         Action(msg.sender,params[0]);
+        if (params[0] == 0x1234000000000000000000000000000000000000000000000000000000000000)
+            revert();
         return true;
     }
 
