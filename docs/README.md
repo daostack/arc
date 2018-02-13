@@ -14,8 +14,8 @@ For more information [read the official DAOstack Whitepaper](https://github.com/
 
 Check out:
 
-- The [Contract docs](contracts) for explanation about each contract and the source tree.
-- The [Generated docs](generated_docs) for detailed technical reference on every contract.
+- The [Contract docs](contracts/README.md) for explanation about each contract and the source tree.
+- The [Generated docs](generated_docs/README.md) for detailed technical reference on every contract.
 
 ## An overview of the DAO stack
 
@@ -58,15 +58,16 @@ The main configurable and extendable building blocks of DAOs are:
 ## Contributing to Arc Docs
 Same as [CONTIBUTING](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.md), with the following additions:
 
-1. Directory structure:
-    - `docs/`
-        - `contracts/`
-            - Manual docs for contracts.
-            - Follows the directory structure of `/contracts/`.
-        - `generated_docs/`
-            - Contains automatically generated docs from `.sol` files in `/contracts/`.
-2. Use the `npm run docs ..` cli to `update`, `build`, `preview`, `deploy` & `clean` documentation, see `npm run docs -- --help` for details. (Note: `npm run docs preview` does not serve the final website: all `README.md` will be renamed to `index.md`)
-3. Please provide an `README.md` file in the root of every directory, giving an overview of that directory.
-4. Check that there are no broken links by running `npm run docs preview` and checking for warnings.
-5. Please use a spell checker in your IDE to avoid spelling errors.
-6. In case of missing or incorrect documentation please open an issue with the label `documentation`, indicating the file, line number and any extra details.
+1. Make sure your pages are registered in the `mkdocs.yml` file under `pages`.
+2. Commands:
+
+    1. `npm run docs:update` - generate documentation to `docs/generated_docs`.
+    2. `npm run docs:build` - update & build website to `site/`. (*)
+    3. `npm run docs:preview` - preview website locally. (*)
+    4. `npm run docs:deploy` - deploy website to `gh-pages` branch so it becomes live. (*)
+
+3. Check for broken links by using `npm run docs:preview` and checking for warnings.
+4. Please use a spell checker in your IDE to avoid spelling errors.
+5. In case of missing or incorrect documentation please open an issue with the label `documentation`, indicating the file, line number and any extra details.
+
+(*) - Command requires [mkdocs](http://www.mkdocs.org/) & [mkdocs-material](https://squidfunk.github.io/mkdocs-material/), run `pip install --user mkdocs mkdocs-material`.

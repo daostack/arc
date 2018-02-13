@@ -6,5 +6,5 @@ node_modules/
 .node-xmlhttprequest-sync*
 *.tgz
 .vscode/
-.docs_build
+site/
 yarn.lock

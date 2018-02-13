@@ -1,239 +1,316 @@
 # VoteInOrganizationScheme
 [see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/VoteInOrganizationScheme.sol)
-
-*Code deposit cost: **less than 624200 gas.***
-
-*Execution cost: **less than 21025 gas.***
-
-*Total deploy cost(deposit + execution): **less than 645225 gas.***
-
 > VoteInOrganizationScheme.
 
-## Constructors
-### VoteInOrganizationScheme()
 
-*Execution cost: **No bound available.***
+**Execution cost**: less than 21025 gas
 
-**nonpayable**
+**Deployment cost**: less than 624200 gas
 
-*Params:*
+**Combined cost**: less than 645225 gas
 
-*Nothing*
+## Constructor
+
+
 
 
 ## Events
-### ProposalExecuted(address, bytes32)
-*Params:*
-
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-
----
-### ProposalDeleted(address, bytes32)
-*Params:*
-
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-
----
-### OwnershipTransferred(address, address)
-*Params:*
-
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
-
----
-### NewVoteProposal(address, bytes32, address, address, bytes32, uint256)
-*Params:*
-
-1. **_avatar** *of type address*
-2. **_proposalId** *of type bytes32*
-3. **_intVoteInterface** *of type address*
-4. **_originalIntVote** *of type address*
-5. **_originalProposalId** *of type bytes32*
-6. **_originalNumOfChoices** *of type uint256*
-
----
 ### NewProposal(bytes32)
-*Params:*
-
-1. **proposalId** *of type bytes32*
 
 
-## Fallback
-*Nothing*
-## Functions
-### proposeVote(address, address, bytes32)
+**Execution cost**: No bound available
 
-*Execution cost: **No bound available.***
 
-**nonpayable**
+Params:
 
-*Inputs:*
+1. **proposalId** *of type `bytes32`*
 
-1. **_avatar** *of type address*
-2. **_originalIntVote** *of type address*
-3. **_originalProposalId** *of type bytes32*
+--- 
+### NewVoteProposal(address,bytes32,address,address,bytes32,uint256)
 
-*Returns:*
 
-1. **unnamed** *of type bytes32*
+**Execution cost**: No bound available
 
----
-### parameters(bytes32)
 
-*Execution cost: **less than 906 gas.***
+Params:
 
-**constant | view**
+1. **_avatar** *of type `address`*
+2. **_proposalId** *of type `bytes32`*
+3. **_intVoteInterface** *of type `address`*
+4. **_originalIntVote** *of type `address`*
+5. **_originalProposalId** *of type `bytes32`*
+6. **_originalNumOfChoices** *of type `uint256`*
 
-*Inputs:*
+--- 
+### OwnershipTransferred(address,address)
 
-1. **unnamed** *of type bytes32*
 
-*Returns:*
+**Execution cost**: No bound available
 
-1. **intVote** *of type address*
-2. **voteParams** *of type bytes32*
 
----
-### transferOwnership(address)
-> Allows the current owner to transfer control of the contract to a newOwner.
+Params:
 
-*Execution cost: **less than 23005 gas.***
+1. **previousOwner** *of type `address`*
+2. **newOwner** *of type `address`*
 
-**nonpayable**
+--- 
+### ProposalDeleted(address,bytes32)
 
-*Inputs:*
 
-1. **newOwner** *of type address- The address to transfer ownership to.*
+**Execution cost**: No bound available
 
-*Returns:*
 
-*Nothing*
+Params:
 
----
-### updateParameters(bytes32)
+1. **_avatar** *of type `address`*
+2. **_proposalId** *of type `bytes32`*
 
-*Execution cost: **less than 20572 gas.***
+--- 
+### ProposalExecuted(address,bytes32)
 
-**nonpayable**
 
-*Inputs:*
+**Execution cost**: No bound available
 
-1. **_hashedParameters** *of type bytes32*
 
-*Returns:*
+Params:
 
-*Nothing*
+1. **_avatar** *of type `address`*
+2. **_proposalId** *of type `bytes32`*
 
----
-### setParameters(bytes32, address)
 
-*Execution cost: **No bound available.***
+## Methods
+### proposeVote(address,address,bytes32)
+>
+> propose to vote in other organization     The function trigger NewVoteProposal event
 
-**nonpayable**
 
-*Inputs:*
+**Execution cost**: No bound available
 
-1. **_voteParams** *of type bytes32*
-2. **_intVote** *of type address*
 
-*Returns:*
+Params:
 
-1. **unnamed** *of type bytes32*
+1. **_avatar** *of type `address`*
 
----
-### owner()
+    > avatar of the organization
 
-*Execution cost: **less than 765 gas.***
+2. **_originalIntVote** *of type `address`*
 
-**constant | view**
+    > the other organization voting machine
 
-*Inputs:*
+3. **_originalProposalId** *of type `bytes32`*
 
-*Nothing*
+    > the other organization proposal id
 
-*Returns:*
 
-1. **unnamed** *of type address*
+Returns:
 
----
-### organizationsData(address, bytes32)
+> an id which represents the proposal
 
-*Execution cost: **No bound available.***
+1. **output_0** *of type `bytes32`*
 
-**constant | view**
-
-*Inputs:*
-
-1. **unnamed** *of type address*
-2. **unnamed** *of type bytes32*
-
-*Returns:*
-
-1. **originalIntVote** *of type address*
-2. **originalProposalId** *of type bytes32*
-3. **originalNumOfChoices** *of type uint256*
-
----
+--- 
 ### hashedParameters()
 
-*Execution cost: **less than 656 gas.***
 
-**constant | view**
+**Execution cost**: less than 656 gas
 
-*Inputs:*
+**Attributes**: constant
 
-*Nothing*
 
-*Returns:*
 
-1. **unnamed** *of type bytes32*
+Returns:
 
----
-### getParametersHash(bytes32, address)
 
-*Execution cost: **No bound available.***
+1. **output_0** *of type `bytes32`*
 
-**constant | pure**
+--- 
+### getParametersHash(bytes32,address)
+>
+> Hash the parameters, and return the hash value
 
-*Inputs:*
 
-1. **_voteParams** *of type bytes32*
-2. **_intVote** *of type address*
+**Execution cost**: less than 564 gas
 
-*Returns:*
+**Attributes**: constant
 
-1. **unnamed** *of type bytes32*
 
----
-### execute(bytes32, address, int256)
+Params:
 
-*Execution cost: **No bound available.***
+1. **_voteParams** *of type `bytes32`*
 
-**nonpayable**
+    > -  voting parameters
 
-*Inputs:*
+2. **_intVote** *of type `address`*
 
-1. **_proposalId** *of type bytes32*
-2. **_avatar** *of type address*
-3. **_param** *of type int256*
+    > - voting machine contract.
 
-*Returns:*
 
-1. **unnamed** *of type bool*
+Returns:
 
----
+> bytes32 -the parameters hash
+
+1. **output_0** *of type `bytes32`*
+
+--- 
 ### action(bytes32[])
+>
 > do the actual voting in the other organization in behalf of the organization's avatar.
 
-*Execution cost: **No bound available.***
 
-**nonpayable**
+**Execution cost**: No bound available
 
-*Inputs:*
 
-1. **_params** *of type bytes32[]- array represent the voting .       _params[0] - the address of the voting machine.       _params[1] - the proposalId.       _params[2] - the voting machine params.*
+Params:
 
-bool which indicate success.
+1. **_params** *of type `bytes32[]`*
 
+    > array represent the voting .       _params[0] - the address of the voting machine.       _params[1] - the proposalId.       _params[2] - the voting machine params.
+
+
+Returns:
+
+> bool which indicate success.
+
+1. **output_0** *of type `bool`*
+
+--- 
+### execute(bytes32,address,int256)
+>
+> execution of proposals, can only be called by the voting machine in which the vote is held.     This function will trigger ProposalDeleted and ProposalExecuted events
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the voting in the voting machine
+
+2. **_avatar** *of type `address`*
+
+    > address of the controller
+
+3. **_param** *of type `int256`*
+
+    > a parameter of the voting result 0 to numOfChoices .
+
+
+Returns:
+
+> bool which indicate success.
+
+1. **output_0** *of type `bool`*
+
+--- 
+### organizationsData(address,bytes32)
+
+
+**Execution cost**: less than 1326 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+2. **param_1** *of type `bytes32`*
+
+Returns:
+
+
+1. **originalIntVote** *of type `address`*
+2. **originalProposalId** *of type `bytes32`*
+3. **originalNumOfChoices** *of type `uint256`*
+
+--- 
+### owner()
+
+
+**Execution cost**: less than 765 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### parameters(bytes32)
+
+
+**Execution cost**: less than 906 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `bytes32`*
+
+Returns:
+
+
+1. **intVote** *of type `address`*
+2. **voteParams** *of type `bytes32`*
+
+--- 
+### setParameters(bytes32,address)
+>
+> Hash the parameters, save them if necessary, and return the hash value
+
+
+**Execution cost**: less than 41099 gas
+
+
+Params:
+
+1. **_voteParams** *of type `bytes32`*
+
+    > -  voting parameters
+
+2. **_intVote** *of type `address`*
+
+    > - voting machine contract.
+
+
+Returns:
+
+> bytes32 -the parameters hash
+
+1. **output_0** *of type `bytes32`*
+
+--- 
+### transferOwnership(address)
+>
+> Allows the current owner to transfer control of the contract to a newOwner.
+
+
+**Execution cost**: less than 23005 gas
+
+
+Params:
+
+1. **newOwner** *of type `address`*
+
+    > The address to transfer ownership to.
+
+
+
+--- 
+### updateParameters(bytes32)
+
+
+**Execution cost**: less than 20572 gas
+
+
+Params:
+
+1. **_hashedParameters** *of type `bytes32`*
+
+
+[Back to the top ↑](#voteinorganizationscheme)

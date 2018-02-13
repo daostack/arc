@@ -23,9 +23,13 @@
     "solium": "solium --dir ./contracts/",
     "truffle": "truffle",
     "build": "rimraf build && truffle compile",
-    "docs": "node scripts/docs/cli.js"
+    "docs:update": "soldoc -q -o docs/generated_docs",
+    "docs:build": "soldoc -q -o docs/generated_docs && mkdocs build",
+    "docs:deploy": "soldoc -q -o docs/generated_docs && mkdocs gh-deploy --force",
+    "docs:preview": "soldoc -q -o docs/generated_docs && mkdocs serve"
   },
   "devDependencies": {
+    "@soldoc/soldoc": "^0.1.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.1",
     "babel-plugin-syntax-async-functions": "^6.13.0",
