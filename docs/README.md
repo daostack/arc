@@ -25,7 +25,7 @@ Check out:
 
 1. [Ethereum](https://www.ethereum.org/) - *Base blockchain.*
 2. **Arc** - This project.
-2. [*Arc.js*](https://github.com/daostack/*Arc*.js) - A *JavaScript library that interfaces with *Arc*, built on top of web3.js.*
+2. [Arc.js](https://github.com/daostack/*Arc*.js) - A *JavaScript library that interfaces with *Arc*, built on top of web3.js.*
 3. Collaborative DApps, built on top of DAOstack using *Arc.js*. eg. [Vanille](https://github.com/daostack/vanille) & [Alchemy](https://github.com/daostack/alchemy)
 
 For more information regarding the entire DAOstack project, check out the [docs repository](https://github.com/daostack/docs).
