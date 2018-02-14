@@ -224,6 +224,14 @@ contract AbsoluteVote is IntVoteInterface {
         return  proposals[_proposalId].open;
     }
 
+    /**
+     * @dev isAbstainAllow returns if the voting machine allow abstain (0)
+     * @return bool true or false
+     */
+    function isAbstainAllow() public pure returns(bool) {
+        return true;
+    }
+
     function cancelVoteInternal(bytes32 _proposalId, address _voter) internal {
         Proposal storage proposal = proposals[_proposalId];
         Voter memory voter = proposal.voters[_voter];

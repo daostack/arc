@@ -22,6 +22,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     );
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+    event VoteOnBehalf(bytes32[] _params);
 
     // Details of a voting proposal:
     struct VoteProposal {
@@ -94,11 +95,14 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
 
-        //The voting choices can be in the range of 0 - originalNumOfChoices+1 .
-        //vote 0 - for not to vote in the other organization.
-        //vote originalNumOfChoices+1 to vote 0 in the other organization.
-        bytes32 proposalId = intVote.propose(originalNumOfChoices+1, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
-
+        uint proposalNumberOfChoices = originalNumOfChoices;
+        if (intVote.isAbstainAllow()) {
+            //The voting choices can be in the range of 0 - originalNumOfChoices+1 .
+            //vote 0 - for not to vote in the other organization.
+            //vote originalNumOfChoices+1 to vote 0 in the other organization.
+            proposalNumberOfChoices += 1;
+        }
+        bytes32 proposalId = intVote.propose(proposalNumberOfChoices, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
 
         organizationsData[_avatar][proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
@@ -162,6 +166,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     */
     function action(bytes32[] _params) public returns(bool) {
         IntVoteInterface intVote = IntVoteInterface(address(_params[0]));
+        VoteOnBehalf(_params);
         return intVote.vote(_params[1], uint(_params[2]));
     }
 }
