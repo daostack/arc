@@ -63,8 +63,8 @@ contract Avatar is Ownable {
                 bytes4(keccak256("action(bytes32[])")),
                 uint256(32),// length of length of the array
                 uint256(_params.length), // length of the array
-                _params)
-        );                 // array itself);
+                _params) // array itself
+        );
         return true;
     }
 
