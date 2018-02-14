@@ -6,6 +6,9 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
+const constants = require('./constants');
+const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
+
 
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
 export const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
@@ -139,6 +142,68 @@ export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50,re
   await votingMachine.absoluteVote.setParameters(reputation.address, precReq, isOwnedVote);
   votingMachine.params = await votingMachine.absoluteVote.getParametersHash(reputation.address, precReq, isOwnedVote);
   return votingMachine;
+};
+
+export const setupGenesisProtocol = async function (accounts,token,
+  _preBoostedVoteRequiredPercentage=50,
+  _preBoostedVotePeriodLimit=60,
+  _boostedVotePeriodLimit=60,
+  _thresholdConstA=1,
+  _thresholdConstB=1,
+  _minimumStakingFee=0,
+  _quietEndingPeriod=0,
+  _proposingRepRewardConstA=60,
+  _proposingRepRewardConstB=1,
+  _stakerFeeRatioForVoters=1,
+  _votersReputationLossRatio=10,
+  _votersGainRepRatioFromLostRep=80,
+  _governanceFormulasInterface=0) {
+  var votingMachine = new VotingMachine();
+  votingMachine.genesisProtocol = await GenesisProtocol.new(token);
+
+  // set up a reputation system
+  votingMachine.reputationArray = [20, 10 ,70];
+  // register some parameters
+  await votingMachine.genesisProtocol.setParameters([_preBoostedVoteRequiredPercentage,
+                                                 _preBoostedVotePeriodLimit,
+                                                 _boostedVotePeriodLimit,
+                                                 _thresholdConstA,
+                                                 _thresholdConstB,
+                                                 _minimumStakingFee,
+                                                 _quietEndingPeriod,
+                                                 _proposingRepRewardConstA,
+                                                 _proposingRepRewardConstB,
+                                                 _stakerFeeRatioForVoters,
+                                                 _votersReputationLossRatio,
+                                                 _votersGainRepRatioFromLostRep], _governanceFormulasInterface);
+  votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_preBoostedVoteRequiredPercentage,
+                                                 _preBoostedVotePeriodLimit,
+                                                 _boostedVotePeriodLimit,
+                                                 _thresholdConstA,
+                                                 _thresholdConstB,
+                                                 _minimumStakingFee,
+                                                 _quietEndingPeriod,
+                                                 _proposingRepRewardConstA,
+                                                 _proposingRepRewardConstB,
+                                                 _stakerFeeRatioForVoters,
+                                                 _votersReputationLossRatio,
+                                                 _votersGainRepRatioFromLostRep], _governanceFormulasInterface);
+
+  return votingMachine;
+};
+
+export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=0) {
+  var org = new Organization();
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,controller,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
+  assert.equal(tx.logs.length, 1);
+  assert.equal(tx.logs[0].event, "NewOrg");
+  var avatarAddress = tx.logs[0].args._avatar;
+  org.avatar = await Avatar.at(avatarAddress);
+  var tokenAddress = await org.avatar.nativeToken();
+  org.token = await DAOToken.at(tokenAddress);
+  var reputationAddress = await org.avatar.nativeReputation();
+  org.reputation = await Reputation.at(reputationAddress);
+  return org;
 };
 
 export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=0) {

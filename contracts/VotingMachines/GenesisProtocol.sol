@@ -679,6 +679,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     }
 
     /**
+     * @dev isAbstainAllow returns if the voting machine allow abstain (0)
+     * @return bool true or false
+     */
+    function isAbstainAllow() public pure returns(bool) {
+        return false;
+    }
+
+    /**
      * @dev Vote for a proposal, if the voter already voted, cancel the last vote and set a new one instead
      * @param _proposalId id of the proposal
      * @param _voter used in case the vote is cast for someone else
