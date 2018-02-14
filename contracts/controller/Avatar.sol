@@ -57,13 +57,15 @@ contract Avatar is Ownable {
     public onlyOwner returns(bool)
     {
         GenericAction(_action, _params);
-        // solium-disable-next-line security/no-low-level-calls
-        bool ret = _action.delegatecall(bytes4(keccak256("action(bytes32[])")),
-        uint256(32),// length of length of the array
-        uint256(_params.length), // length of the array
-        _params);                 // array itself);
-        require(ret);
-        return ret;
+        require(
+          // solium-disable-next-line security/no-low-level-calls
+            _action.delegatecall(
+                bytes4(keccak256("action(bytes32[])")),
+                uint256(32),// length of length of the array
+                uint256(_params.length), // length of the array
+                _params)
+        );                 // array itself);
+        return true;
     }
 
     /**
