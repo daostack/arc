@@ -58,4 +58,10 @@ contract IntVoteInterface {
      * @return voted reputation for the given choice
      */
     function voteStatus(bytes32 _proposalId,uint _choice) public view returns(uint);
+
+    /**
+     * @dev isAbstainAllow returns if the voting machine allow abstain (0)
+     * @return bool true or false
+     */
+    function isAbstainAllow() public pure returns(bool);
 }
