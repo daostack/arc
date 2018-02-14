@@ -5,7 +5,7 @@ process on a certain proposal.
 
 The VotingMachine maintains the voting process and the proposals to vote on, collect votes, and determines the winning vote according to the DAO's pre-defined configuration.
 
-In some cases, such as GenesisProtocol, it also collect stakes, promotes proposals, and maintains a reputation flow for participants according to the DAO's pre-defined configuration.  
+In some cases, such as GenesisProtocol, it also collects stakes, promotes proposals, and maintains a reputation flow for participants according to the DAO's pre-defined configuration.
 
 Each VotingMachine use its own [decision method](#basic-decisions-methods-used-by-votingmachines) and has its own voting choices range.
 
@@ -35,7 +35,7 @@ Currently it allows only YES/NO voting choices (2 choices).
 
 Abstaining is not allowed.
 
-This voting machine is also a UniversalScheme. 
+This voting machine is also a UniversalScheme.
 
 ## basic decisions methods used by VotingMachines
 ### absolute
@@ -43,7 +43,7 @@ This voting machine is also a UniversalScheme.
 A decision is made if at least a certain percentage (P) from the total DAO's reputation voted
 on a certain voting choice. Normally P is 50% though it can be set to any value.
 
-The "winning" choice is the one which first crosses that bar.
+The "winning" choice is the one that first crosses that bar.
 
 AbsoluteVote uses this method.
 

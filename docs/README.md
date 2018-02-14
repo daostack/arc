@@ -62,9 +62,9 @@ Same as [CONTIBUTING](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.m
 2. Commands:
 
     1. `npm run docs:update` - generate documentation to `docs/generated_docs`.
-    2. `npm run docs:build` - update & build website to `site/`. (*)
-    3. `npm run docs:preview` - preview website locally. (*)
-    4. `npm run docs:deploy` - deploy website to `gh-pages` branch so it becomes live. (*)
+    2. (*) `npm run docs:build` - update & build website to `site/`.
+    3. (*) `npm run docs:preview` - preview website locally.
+    4. (*) `npm run docs:deploy` - deploy website to `gh-pages` branch so it becomes live.
 
 3. Check for broken links by using `npm run docs:preview` and checking for warnings.
 4. Please use a spell checker in your IDE to avoid spelling errors.
