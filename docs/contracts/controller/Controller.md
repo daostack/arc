@@ -3,33 +3,35 @@
 
 The controller is the central entity of a DAO.
 
-As the owner of the DAO's [Avatar](./Avatar.md),[Reputation](Reputation.md) and [DAOToken](DAOToken.md) (organs) it controls these organs and can perform "sensitive"
-operations trough these entities (e.g token and reputation operations).
+Each DAO has it's own deployed instance of this contracts (see [UController](UController.md) for a different possibility),
+which acts as the owner of the DAO's [Avatar](./Avatar.md), [Reputation](Reputation.md) and [DAOToken](DAOToken.md).
 
-It is subject to a set of schemes and constraints that determine its behavior, where each scheme has it own operations permissions.
+It can perform "sensitive"operations through these entities (e.g token and reputation operations).
 
-It store scheme's parameters for the specific DAO.
+It is subject to a set of *Schemes* and *Constraints* that determine its behavior, where each scheme has it own operations permissions.
 
-The controller contract is aligned with the ControllerInterface.
+It stores scheme's parameters for the specific DAO.
+
+The [Controller](../../generated_docs/controller/Controller.md) contract implements the [ControllerInterface](../../generated_docs/controller/ControllerInterface.md) Interface.
 
 
 ## Schemes
 
-A single DAO controller might be a subject to multiple schemes, each implements its own logic.
-A scheme can be registered to a controller by a scheme which has registration permission.
+A single DAO controller might be a subject to multiple schemes, each with it's own logic.
+A scheme can only be registered to a controller by a scheme which has registration permission.
 
 
 ### Permissions
 
 The controller holds and enforces the permissions for each scheme.
-e.g registerScheme is allowed to be called only by authorized (CAN_REGISTERED) scheme.
+e.g [registerScheme(...)](../../generated_docs/controller/ControllerInterface/#registerschemeaddressbytes32bytes4address) is allowed to be called only by an authorized (with permission: `CAN_REGISTER`) scheme.
 
-A scheme can have any combination of the following permissions  :
- - REGISTERED -  All registered schemes has this permission.
-                 Only registered schemes can perform controller operations.
- - CAN_REGISTER - grant the scheme the permission to register other schemes.
- - ADD_OR_REMOVE_GLOBAL_CONSTRAINT - grant the scheme the permission to add or remove a global constraint.
- - CAN_UPGRADE - grant the scheme the permission to upgrade the controller.
+A scheme can have any combination of the following permissions:
+
+ - `REGISTERED` -  All registered schemes has this permission. Only registered schemes can perform controller operations.
+ - `CAN_REGISTER` - Grant the scheme the permission to register other schemes.
+ - `ADD_OR_REMOVE_GLOBAL_CONSTRAINT` - Grant the scheme the permission to add or remove a global constraint.
+ - `CAN_UPGRADE` - Grant the scheme the permission to upgrade the controller.
 
 ### Parameters
 
@@ -43,6 +45,6 @@ A controller maintains and enforces global constraints for the organization.
 
 A constraint define what a "cannot be done" in the DAO. e.g limit the number of minted tokens for the DAO.
 
-The global constraints is check before each and after controller operations.
+The global constraints is checked before and after each controller operation.
 
-Only a scheme which grant ADD_OR_REMOVE_GLOBAL_CONSTRAINT permission can add or remove global constraint.
+Only a scheme with the `ADD_OR_REMOVE_GLOBAL_CONSTRAINT` permission can add or remove a global constraint.
