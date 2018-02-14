@@ -3,11 +3,11 @@
 > A scheme for proposing and rewarding contributions to an organization
 
 
-**Execution cost**: less than 21435 gas
+**Execution cost**: less than 21861 gas
 
-**Deployment cost**: less than 1026400 gas
+**Deployment cost**: less than 1431200 gas
 
-**Combined cost**: less than 1047835 gas
+**Combined cost**: less than 1453061 gas
 
 ## Constructor
 
@@ -133,42 +133,12 @@ Params:
 
 
 ## Methods
-### owner()
-
-
-**Execution cost**: less than 699 gas
-
-**Attributes**: constant
-
-
-
-Returns:
-
-
-1. **output_0** *of type `address`*
-
---- 
-### hashedParameters()
-
-
-**Execution cost**: less than 656 gas
-
-**Attributes**: constant
-
-
-
-Returns:
-
-
-1. **output_0** *of type `bytes32`*
-
---- 
 ### getParametersHash(uint256,bytes32,address)
 >
 > return a hash of the given parameters
 
 
-**Execution cost**: less than 733 gas
+**Execution cost**: less than 755 gas
 
 **Attributes**: constant
 
@@ -193,6 +163,53 @@ Returns:
 > a hash of the parameters
 
 1. **output_0** *of type `bytes32`*
+
+--- 
+### hashedParameters()
+
+
+**Execution cost**: less than 766 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `bytes32`*
+
+--- 
+### getPeriodsToPay(bytes32,address,uint256)
+>
+> getPeriodsToPay return the periods left to be paid for reputation,nativeToken,ether or externalToken. The function ignore the reward amount to be paid (which can be zero).
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the voting in the voting machine
+
+2. **_avatar** *of type `address`*
+
+    > address of the controller
+
+3. **_redeemType** *of type `uint256`*
+
+    > - the type of the reward  :        0 - reputation        1 - nativeTokenReward        2 - Ether        3 - ExternalToken
+
+
+Returns:
+
+> periods left to be paid.
+
+1. **output_0** *of type `uint256`*
 
 --- 
 ### execute(bytes32,address,int256)
@@ -224,10 +241,71 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
+### redeemEther(bytes32,address)
+>
+> RedeemEther reward for proposal
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the voting in the voting machine
+
+2. **_avatar** *of type `address`*
+
+    > address of the controller
+
+
+Returns:
+
+> result boolean for success indication.
+
+1. **output_0** *of type `bool`*
+
+--- 
+### parameters(bytes32)
+
+
+**Execution cost**: less than 1148 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `bytes32`*
+
+Returns:
+
+
+1. **orgNativeTokenFee** *of type `uint256`*
+2. **voteApproveParams** *of type `bytes32`*
+3. **intVote** *of type `address`*
+
+--- 
+### owner()
+
+
+**Execution cost**: less than 721 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
 ### organizationsProposals(address,bytes32)
 
 
-**Execution cost**: less than 3214 gas
+**Execution cost**: less than 2981 gas
 
 **Attributes**: constant
 
@@ -250,27 +328,6 @@ Returns:
 8. **periodLength** *of type `uint256`*
 9. **numberOfPeriods** *of type `uint256`*
 10. **executionTime** *of type `uint256`*
-11. **redeemedPeriods** *of type `uint256`*
-
---- 
-### parameters(bytes32)
-
-
-**Execution cost**: less than 1148 gas
-
-**Attributes**: constant
-
-
-Params:
-
-1. **param_0** *of type `bytes32`*
-
-Returns:
-
-
-1. **orgNativeTokenFee** *of type `uint256`*
-2. **voteApproveParams** *of type `bytes32`*
-3. **intVote** *of type `address`*
 
 --- 
 ### proposeContributionReward(address,bytes32,int256,uint256[5],address,address)
@@ -316,7 +373,7 @@ Returns:
 --- 
 ### redeem(bytes32,address,bool[4])
 >
-> redeem reward for proposal
+> redeem rewards for proposal
 
 
 **Execution cost**: No bound available
@@ -344,12 +401,90 @@ Returns:
 1. **result** *of type `bool[4]`*
 
 --- 
+### redeemExternalToken(bytes32,address)
+>
+> RedeemNativeToken reward for proposal
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the voting in the voting machine
+
+2. **_avatar** *of type `address`*
+
+    > address of the controller
+
+
+Returns:
+
+> result boolean for success indication.
+
+1. **output_0** *of type `bool`*
+
+--- 
+### redeemNativeToken(bytes32,address)
+>
+> RedeemNativeToken reward for proposal
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the voting in the voting machine
+
+2. **_avatar** *of type `address`*
+
+    > address of the controller
+
+
+Returns:
+
+> result boolean for success indication.
+
+1. **output_0** *of type `bool`*
+
+--- 
+### redeemReputation(bytes32,address)
+>
+> RedeemReputation reward for proposal
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the voting in the voting machine
+
+2. **_avatar** *of type `address`*
+
+    > address of the controller
+
+
+Returns:
+
+> result boolean for success indication.
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### setParameters(uint256,bytes32,address)
 >
 > hash the parameters, save them if necessary, and return the hash value
 
 
-**Execution cost**: less than 61132 gas
+**Execution cost**: less than 61154 gas
 
 
 Params:
@@ -369,7 +504,7 @@ Returns:
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 
-**Execution cost**: less than 23005 gas
+**Execution cost**: less than 23115 gas
 
 
 Params:
@@ -384,7 +519,7 @@ Params:
 ### updateParameters(bytes32)
 
 
-**Execution cost**: less than 20550 gas
+**Execution cost**: less than 20572 gas
 
 
 Params:
