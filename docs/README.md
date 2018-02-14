@@ -45,7 +45,7 @@ Each DAO is a living entity on the blockchain that can own and manage resources.
 * **[Native token](contracts/controller/DAOToken.md)** - *A Standard [ERC20 token](https://theethereum.wiki/w/index.php/ERC20_Token_Standard) that defines the value system of the DAO. Participants are rewarded for their contributions based on this token*.
 * **[Reputation](contracts/controller/Reputation.md) system** - *Similar to native token but is **non-transferable**. The reputation system is used to assign weight the votes of participants*.
 * **[Avatar](contracts/controller/Avatar.md)** - *This is the public-facing part of the DAO that handles the interaction of the DAO with the rest of the world(eg. interacing with other DAOs, paying third party participants, etc...)*.
-* **Subscribed [Elements](#elements)** - *The set of [Schemes](contracts/universalSchemes) and [Global Constraints](contracts/globalConstraints) that comprise the DAO*.
+* **Subscribed [Elements](#elements)** - *The set of [Schemes](contracts/universalSchemes/README.md) and [Global Constraints](contracts/globalConstraints/README.md) that comprise the DAO*.
 
 For each DAO, the above components are organized in a single smart contract called a *[Controller](contracts/controller/Controller)*, which acts as the owner of those components.
 
