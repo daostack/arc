@@ -6,7 +6,6 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
-const DaoCreator = artifacts.require("./DaoCreator.sol");
 const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 
@@ -160,7 +159,6 @@ export const setupGenesisProtocol = async function (accounts,token,
   _votersGainRepRatioFromLostRep=80,
   _governanceFormulasInterface=0) {
   var votingMachine = new VotingMachine();
-  var accounts = web3.eth.accounts;
   votingMachine.genesisProtocol = await GenesisProtocol.new(token);
 
   // set up a reputation system
