@@ -6,20 +6,13 @@ Arc is the lower layer of the DAO stack. It consists a set of smart contracts de
 
 ## Getting Started
 
-DAOStack integrates with [Truffle](https://github.com/ConsenSys/truffle), an Ethereum development environment.
-Please install truffle.
-
-
-```sh
-npm install -g truffle
-```
 ### Getting the source code
 
 ```sh
 git clone https://github.com/daostack/arc
 ```
 
-### test
+### Test
 ```sh
 npm test
 ```
@@ -34,7 +27,7 @@ To start developing inside this environment:
 2. The container will automatically `git clone` or `git fetch` depending on if `<path to repo>` is empty, and will install any dependencies.
 3. Continue development inside the container.
 
-### using Arc as an npm package
+### Using Arc as an npm package
 
 Please install [Truffle](https://github.com/ConsenSys/truffle) and initialize your project with `truffle init`.
 
