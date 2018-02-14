@@ -97,10 +97,10 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
 
         uint proposalNumberOfChoices = originalNumOfChoices;
         if (intVote.isAbstainAllow()) {
-           //The voting choices can be in the range of 0 - originalNumOfChoices+1 .
-           //vote 0 - for not to vote in the other organization.
-           //vote originalNumOfChoices+1 to vote 0 in the other organization.
-           proposalNumberOfChoices += 1;
+            //The voting choices can be in the range of 0 - originalNumOfChoices+1 .
+            //vote 0 - for not to vote in the other organization.
+            //vote originalNumOfChoices+1 to vote 0 in the other organization.
+            proposalNumberOfChoices += 1;
         }
         bytes32 proposalId = intVote.propose(proposalNumberOfChoices, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
 

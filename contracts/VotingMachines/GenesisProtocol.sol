@@ -683,7 +683,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * @return bool true or false
      */
     function isAbstainAllow() public pure returns(bool) {
-      return false;
+        return false;
     }
 
     /**
