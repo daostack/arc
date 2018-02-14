@@ -10,6 +10,8 @@ Arc is the lower layer of the DAO stack. It consists a set of smart contracts de
 
 ```sh
 git clone https://github.com/daostack/arc
+cd arc
+npm install
 ```
 
 ### Test
