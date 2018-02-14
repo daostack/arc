@@ -1,11 +1,11 @@
 # VotingMachine
 
-***VotingMachine*** is a pluggable component, provided by DAOstack, which can be use by a DAO's schemes to manage a voting
+***VotingMachine*** is a pluggable component, provided by DAOstack, which can be used by a DAO's schemes to manage a voting
 process on a certain proposal.
 
-The VotingMachine maintains the voting process ,the proposals to vote on ,collect votes and determines the winning vote according to pre define DAO's configuration.
+The VotingMachine maintains the voting process and the proposals to vote on, collect votes, and determines the winning vote according to the DAO's pre-defined configuration.
 
-In some cases, such as GenesisProtocol, it also collect stakes, promote proposals and maintains a reputation flow for participants according to pre define DAO's configuration.  
+In some cases, such as GenesisProtocol, it also collect stakes, promotes proposals, and maintains a reputation flow for participants according to the DAO's pre-defined configuration.  
 
 Each VotingMachine use its own [decision method](#basic-decisions-methods-used-by-votingmachines) and has its own voting choices range.
 
@@ -31,35 +31,35 @@ Vote 0 for abstain.
 
 Use absolute and relative decision method.
 
-Currently it allow only YES/NO voting choices (2 choices).
+Currently it allows only YES/NO voting choices (2 choices).
 
-Abstaine is not allowed.
+Abstaining is not allowed.
 
 This voting machine is also a UniversalScheme. 
 
 ## basic decisions methods used by VotingMachines
 ### absolute
 
-A decision is taken if at least a certain percentage P from the total DAO's reputation voted
+A decision is made if at least a certain percentage (P) from the total DAO's reputation voted
 on a certain voting choice. Normally P is 50% though it can be set to any value.
 
-The "winning" choice is the one which first cross that bar.
+The "winning" choice is the one which first crosses that bar.
 
-AbsoluteVote use this method.
+AbsoluteVote uses this method.
 
 
 ### relative
 
-A decision is taken on a timeout T according to the higher relative vote among all votes.
+A decision is made on a timeout (T) according to the higher relative vote among all votes.
 
-The "winning" choice is the one with the higher relative votes(reputation).
+The "winning" choice is the one with the higher relative votes (reputation).
 
 
 ### quorum
 
-A decision is taken if at least a certain percentage P from the total DAO's reputation voted on a certain proposal.
+A decision is made if at least a certain percentage (P) from the total DAO's reputation votes on a certain proposal.
 
-The "winning" choice is the one with the maximum votes(reputation).
+The "winning" choice is the one with the maximum votes (reputation).
 
 ###
 
