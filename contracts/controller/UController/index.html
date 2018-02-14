@@ -372,15 +372,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#neworganization-function" title="newOrganization function" class="md-nav__link">
-    newOrganization function
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#universal-vs-single-controller" title="UNIVERSAL vs SINGLE CONTROLLER" class="md-nav__link">
-    UNIVERSAL vs SINGLE CONTROLLER
+  <a href="#neworganization-function" title="newOrganization(...) function" class="md-nav__link">
+    newOrganization(...) function
   </a>
   
 </li>
@@ -989,15 +982,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#neworganization-function" title="newOrganization function" class="md-nav__link">
-    newOrganization function
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#universal-vs-single-controller" title="UNIVERSAL vs SINGLE CONTROLLER" class="md-nav__link">
-    UNIVERSAL vs SINGLE CONTROLLER
+  <a href="#neworganization-function" title="newOrganization(...) function" class="md-nav__link">
+    newOrganization(...) function
   </a>
   
 </li>
@@ -1021,22 +1007,11 @@
                 
                 <h1 id="ucontroller">UController<a class="headerlink" href="#ucontroller" title="Permanent link">&para;</a></h1>
 <p><a href="../../../generated_docs/controller/UController/">see the generated documentation</a></p>
-<p>The universal controller behave like a <a href="../Controller/">controller</a> for multiple DAOs.</p>
-<p>Any DAO can initiate and register it self via the universal controller.</p>
-<p>As a controller it holds the DAOs organs ( <a href="../Avatar/">Avatar</a>,<a href="../Reputation/">Reputation</a> and <a href="../DAOToken/">DAOToken</a>), maintain schemes permissions and global constraints for each DAOs.</p>
-<p>The universal controller is aligned with the ControllerInterface.</p>
-<h2 id="neworganization-function">newOrganization function<a class="headerlink" href="#neworganization-function" title="Permanent link">&para;</a></h2>
-<p>Using newOrganization function , one can create a new organization with a default scheme with full permissions.</p>
-<h2 id="universal-vs-single-controller">UNIVERSAL vs SINGLE CONTROLLER<a class="headerlink" href="#universal-vs-single-controller" title="Permanent link">&para;</a></h2>
-<ul>
-<li>
-<p>UNIVERSAL CONTROLLER will probably will be deployed by DAOstack so by using it
-   one save the gas cost of deploying a controller when creating a DAO.</p>
-</li>
-<li>
-<p>UNIVERSAL CONTROLLER might be a bit expensive in terms of GAS for each operation.</p>
-</li>
-</ul>
+<p>The <code>UController</code>(Universal Controller) is a universal implementation of the <a href="../../../generated_docs/controller/ControllerInterface/">ControllerInterface</a> which behaves like a <a href="../Controller/">Controller</a>, but for multiple DAOs at the same time.</p>
+<p>Any DAO can initiate and register itself via the Universal Controller.</p>
+<p>As a controller it holds the DAO's organs (<a href="../Avatar/">Avatar</a>, <a href="../Reputation/">Reputation</a> and <a href="../DAOToken/">DAOToken</a>), maintain schemes permissions and global constraints for each DAO.</p>
+<h2 id="neworganization-function"><a href="http://127.0.0.1:8000/generated_docs/controller/UController/#neworganizationaddress">newOrganization(...)</a> function<a class="headerlink" href="#neworganization-function" title="Permanent link">&para;</a></h2>
+<p>Using the <code>newOrganization</code>(...) function , one can create a new organization with a default scheme with full permissions.</p>
                 
                   
                 

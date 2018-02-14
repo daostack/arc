@@ -76,7 +76,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
     <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
     
-      <a href="#examples" tabindex="1" class="md-skip">
+      <a href="#global-constraints-home" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -386,6 +386,8 @@
     
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
     
+      
+    
     
       <label class="md-nav__link md-nav__link--active" for="toc">
         Global Constraints Home
@@ -398,6 +400,8 @@
       
 <nav class="md-nav md-nav--secondary">
   
+  
+    
   
   
     <label class="md-nav__title" for="toc">Table of contents</label>
@@ -1004,6 +1008,8 @@
 <nav class="md-nav md-nav--secondary">
   
   
+    
+  
   
     <label class="md-nav__title" for="toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
@@ -1065,14 +1071,15 @@
                   <a href="https://github.com/daostack/arc/edit/master/docs/contracts/globalConstraints/README.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                  <h1>Global Constraints Home</h1>
-                
-                <p><em>Global Constraint</em>s define certain conditions the DAO must hold at all times. More concretely, they define <em>pre</em> &amp; <em>post</em> conditions that must hold before &amp; after any action the DAO takes.
-They are meant to be <em>Universal</em>(i.e. only one deployed instance), but do not strictly need to be.</p>
+                <h1 id="global-constraints-home">Global Constraints Home<a class="headerlink" href="#global-constraints-home" title="Permanent link">&para;</a></h1>
+<p><a href="../../../generated_docs/globalConstraints/GlobalConstraintInterface/">see the generated documentation</a></p>
+<p>related: <a href="../TokenCapGC/">TokenCapGC</a></p>
+<p><em>Global Constraint</em>s define certain conditions the DAO must hold at all times. More concretely, they define <em>pre</em> &amp; <em>post</em> conditions that must hold before &amp; after any action the DAO takes.
+They are meant to be <em>Universal</em> (i.e. only one deployed instance), but do not strictly need to be.</p>
 <p>When an action is about to happen, the <a href="../../controller/Controller/">Controller</a> consults the <em>Global Constraint</em> and runs it's <code>pre</code> &amp; <code>post</code> methods to see if the conditions hold.
 It passes the following parameters to <code>pre</code> &amp; <code>post</code>:</p>
 <ol>
-<li><code>address scheme</code> - the scheme that performs the action.</li>
+<li><code>address scheme</code> - the scheme that performed the action.</li>
 <li><code>bytes32 hash</code> - a hash of the parameters to be used.</li>
 <li><code>bytes32 method</code> - what kind of event occurred, available <code>method</code>s:<ul>
 <li><code>mintReputation</code></li>
@@ -1146,7 +1153,7 @@ It passes the following parameters to <code>pre</code> &amp; <code>post</code>:<
         <span class="k">return</span> <span class="nb">hash</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="n">function</span> <span class="n">pre</span><span class="p">(</span><span class="n">address</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">bytes32</span> <span class="nb">hash</span><span class="p">,</span> <span class="n">bytes32</span> <span class="n">method</span><span class="p">){</span>
+    <span class="n">function</span> <span class="n">pre</span><span class="p">(</span><span class="n">address</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">bytes32</span> <span class="nb">hash</span><span class="p">,</span> <span class="n">bytes32</span> <span class="n">method</span><span class="p">)</span> <span class="n">public</span> <span class="n">returns</span><span class="p">(</span><span class="nb">bool</span><span class="p">){</span>
         <span class="o">/*</span> <span class="n">This</span> <span class="n">runs</span> <span class="o">*</span><span class="n">before</span><span class="o">*</span> <span class="n">an</span> <span class="n">action</span> <span class="ow">is</span> <span class="n">taken</span> <span class="o">*/</span>
 
         <span class="o">/*</span> <span class="n">make</span> <span class="n">sure</span> <span class="n">no</span> <span class="n">registerations</span> <span class="n">occur</span> <span class="n">between</span> <span class="sb">`start`</span> <span class="ow">and</span> <span class="sb">`end`</span><span class="o">*/</span>
@@ -1158,7 +1165,7 @@ It passes the following parameters to <code>pre</code> &amp; <code>post</code>:<
         <span class="k">return</span> <span class="n">true</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="n">function</span> <span class="n">post</span><span class="p">(</span><span class="n">address</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">bytes32</span> <span class="nb">hash</span><span class="p">,</span> <span class="n">bytes32</span> <span class="n">method</span><span class="p">){</span>
+    <span class="n">function</span> <span class="n">post</span><span class="p">(</span><span class="n">address</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">bytes32</span> <span class="nb">hash</span><span class="p">,</span> <span class="n">bytes32</span> <span class="n">method</span><span class="p">)</span> <span class="n">public</span> <span class="n">returns</span><span class="p">(</span><span class="nb">bool</span><span class="p">){</span>
         <span class="o">/*</span> <span class="n">This</span> <span class="n">runs</span> <span class="o">*</span><span class="n">after</span><span class="o">*</span> <span class="n">an</span> <span class="n">action</span> <span class="ow">is</span> <span class="n">taken</span> <span class="o">*/</span>
         <span class="k">return</span> <span class="n">true</span><span class="p">;</span>
     <span class="p">}</span>
@@ -1174,7 +1181,7 @@ It passes the following parameters to <code>pre</code> &amp; <code>post</code>:<
 4
 5</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>SchemeRegisterTimeLock gc = new SchemeRegisterTimeLock();
 
-/* Somewhere inside a scheme with permission to add global constraints */
+/* Somewhere inside a scheme with `ADD_OR_REMOVE_GLOBAL_CONSTRAINT` permission  */
 bytes32 hash = gc.setParameters(now,now + 2 days)
 contoller.addGlobalConstraint(address(myGlobalConstraint),hash)
 </pre></div>

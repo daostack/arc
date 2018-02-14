@@ -76,7 +76,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
     <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
     
-      <a href="#votingmachine" tabindex="1" class="md-skip">
+      <a href="#voting-machines-home" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -492,8 +492,42 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#voting-machines" title="voting machines" class="md-nav__link">
-    voting machines
+  <a href="#basic-decisions-methods-used-by-voting-machines" title="Basic decisions methods used by voting machines" class="md-nav__link">
+    Basic decisions methods used by voting machines
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#absolute" title="Absolute" class="md-nav__link">
+    Absolute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relative" title="Relative" class="md-nav__link">
+    Relative
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quorum" title="Quorum" class="md-nav__link">
+    Quorum
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#list-of-supported-voting-machines" title="List of supported voting machines" class="md-nav__link">
+    List of supported voting machines
   </a>
   
     <nav class="md-nav">
@@ -516,40 +550,6 @@
           <li class="md-nav__item">
   <a href="#genesisprotocol" title="GenesisProtocol" class="md-nav__link">
     GenesisProtocol
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#basic-decisions-methods-used-by-votingmachines" title="basic decisions methods used by VotingMachines" class="md-nav__link">
-    basic decisions methods used by VotingMachines
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#absolute" title="absolute" class="md-nav__link">
-    absolute
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#relative" title="relative" class="md-nav__link">
-    relative
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#quorum" title="quorum" class="md-nav__link">
-    quorum
   </a>
   
 </li>
@@ -1043,8 +1043,42 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#voting-machines" title="voting machines" class="md-nav__link">
-    voting machines
+  <a href="#basic-decisions-methods-used-by-voting-machines" title="Basic decisions methods used by voting machines" class="md-nav__link">
+    Basic decisions methods used by voting machines
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#absolute" title="Absolute" class="md-nav__link">
+    Absolute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relative" title="Relative" class="md-nav__link">
+    Relative
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quorum" title="Quorum" class="md-nav__link">
+    Quorum
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#list-of-supported-voting-machines" title="List of supported voting machines" class="md-nav__link">
+    List of supported voting machines
   </a>
   
     <nav class="md-nav">
@@ -1076,40 +1110,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#basic-decisions-methods-used-by-votingmachines" title="basic decisions methods used by VotingMachines" class="md-nav__link">
-    basic decisions methods used by VotingMachines
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#absolute" title="absolute" class="md-nav__link">
-    absolute
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#relative" title="relative" class="md-nav__link">
-    relative
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#quorum" title="quorum" class="md-nav__link">
-    quorum
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
       
       
     </ul>
@@ -1127,43 +1127,28 @@
                   <a href="https://github.com/daostack/arc/edit/master/docs/contracts/VotingMachines/README.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="votingmachine">VotingMachine<a class="headerlink" href="#votingmachine" title="Permanent link">&para;</a></h1>
-<p><strong><em>VotingMachine</em></strong> is a pluggable component, provided by DAOstack, which can be used by a DAO's schemes to manage a voting
-process on a certain proposal.</p>
-<p>The VotingMachine maintains the voting process and the proposals to vote on, collect votes, and determines the winning vote according to the DAO's pre-defined configuration.</p>
-<p>In some cases, such as GenesisProtocol, it also collects stakes, promotes proposals, and maintains a reputation flow for participants according to the DAO's pre-defined configuration.</p>
-<p>Each VotingMachine use its own <a href="#basic-decisions-methods-used-by-votingmachines">decision method</a> and has its own voting choices range.</p>
-<h2 id="voting-machines">voting machines<a class="headerlink" href="#voting-machines" title="Permanent link">&para;</a></h2>
-<h3 id="absolutevote">AbsoluteVote<a class="headerlink" href="#absolutevote" title="Permanent link">&para;</a></h3>
-<p>Use absolute decision method.</p>
-<p>Allow voting choices range 0-10.</p>
-<p>Vote 0 for abstain.</p>
-<h3 id="quorumvote">QuorumVote<a class="headerlink" href="#quorumvote" title="Permanent link">&para;</a></h3>
-<p>Use quorum decision method.</p>
-<p>Allow voting choices range 0-10.</p>
-<p>Vote 0 for abstain.</p>
-<h3 id="genesisprotocol">GenesisProtocol<a class="headerlink" href="#genesisprotocol" title="Permanent link">&para;</a></h3>
-<p>Use absolute and relative decision method.</p>
-<p>Currently it allows only YES/NO voting choices (2 choices).</p>
-<p>Abstaining is not allowed.</p>
-<p>This voting machine is also a UniversalScheme.</p>
-<h2 id="basic-decisions-methods-used-by-votingmachines">basic decisions methods used by VotingMachines<a class="headerlink" href="#basic-decisions-methods-used-by-votingmachines" title="Permanent link">&para;</a></h2>
-<h3 id="absolute">absolute<a class="headerlink" href="#absolute" title="Permanent link">&para;</a></h3>
-<p>A decision is made if at least a certain percentage (P) from the total DAO's reputation voted
-on a certain voting choice. Normally P is 50% though it can be set to any value.</p>
+                <h1 id="voting-machines-home">Voting Machines Home<a class="headerlink" href="#voting-machines-home" title="Permanent link">&para;</a></h1>
+<p>A <em>VotingMachine</em> is a pluggable component, provided by DAOstack Arc which can be used by a DAO's schemes to manage a voting process on a certain proposal.</p>
+<p>The <em>VotingMachine</em> maintains the voting process and the proposals to vote on, collects votes, and determines the winning vote according to the DAO's pre-defined configuration.</p>
+<p>In some cases, such as <a href="../../../generated_docs/VotingMachines/GenesisProtocol/">GenesisProtocol</a>, it also collects stakes, promotes proposals, and maintains a reputation flow for participants according to the DAO's pre-defined configuration.</p>
+<p>Each <em>VotingMachine</em> use its own decision method and has its own voting choices range.</p>
+<h2 id="basic-decisions-methods-used-by-voting-machines">Basic decisions methods used by voting machines<a class="headerlink" href="#basic-decisions-methods-used-by-voting-machines" title="Permanent link">&para;</a></h2>
+<h3 id="absolute">Absolute<a class="headerlink" href="#absolute" title="Permanent link">&para;</a></h3>
+<p>A decision is made if at least a certain percentage (<code>P</code>) from the total DAO's reputation voted
+on a certain voting choice. Normally <code>P</code> is 50% though it can be set to any value.</p>
 <p>The "winning" choice is the one that first crosses that bar.</p>
-<p>AbsoluteVote uses this method.</p>
-<h3 id="relative">relative<a class="headerlink" href="#relative" title="Permanent link">&para;</a></h3>
-<p>A decision is made on a timeout (T) according to the higher relative vote among all votes.</p>
+<h3 id="relative">Relative<a class="headerlink" href="#relative" title="Permanent link">&para;</a></h3>
+<p>A decision is made on a timeout (<code>T</code>) according to the higher relative vote among all votes.</p>
 <p>The "winning" choice is the one with the higher relative votes (reputation).</p>
-<h3 id="quorum">quorum<a class="headerlink" href="#quorum" title="Permanent link">&para;</a></h3>
-<p>A decision is made if at least a certain percentage (P) from the total DAO's reputation votes on a certain proposal.</p>
+<h3 id="quorum">Quorum<a class="headerlink" href="#quorum" title="Permanent link">&para;</a></h3>
+<p>A decision is made if at least a certain percentage (<code>P</code>) from the total DAO's reputation votes on a certain proposal.</p>
 <p>The "winning" choice is the one with the maximum votes (reputation).</p>
-<h3 id="_1"><a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<h2 id="list-of-supported-voting-machines">List of supported voting machines<a class="headerlink" href="#list-of-supported-voting-machines" title="Permanent link">&para;</a></h2>
+<p>Below is a list of supported <code>VotingMachines</code> and their decision methods:</p>
 <table>
 <thead>
 <tr>
-<th>VotingMachine</th>
+<th><em>VotingMachine</em></th>
 <th>absolute</th>
 <th>relative</th>
 <th>quorum</th>
@@ -1171,25 +1156,38 @@ on a certain voting choice. Normally P is 50% though it can be set to any value.
 </thead>
 <tbody>
 <tr>
-<td>AbsoluteVote</td>
+<td><a href="#absolutevote">AbsoluteVote</a></td>
 <td>yes</td>
 <td>no</td>
 <td>no</td>
 </tr>
 <tr>
-<td>QuorumVote</td>
+<td><a href="#quorumvote">QuorumVote</a></td>
 <td>no</td>
 <td>no</td>
 <td>yes</td>
 </tr>
 <tr>
-<td>GenesisProtocol</td>
+<td><a href="#genesisprotocol">GenesisProtocol</a></td>
 <td>yes</td>
 <td>yes</td>
 <td>no</td>
 </tr>
 </tbody>
 </table>
+<h3 id="absolutevote"><a href="../../../generated_docs/VotingMachines/AbsoluteVote/">AbsoluteVote</a><a class="headerlink" href="#absolutevote" title="Permanent link">&para;</a></h3>
+<p>Uses an absolute decision method.</p>
+<p>Allow voting choices range 0-10.</p>
+<p>Vote 0 for abstain.</p>
+<h3 id="quorumvote"><a href="../../../generated_docs/VotingMachines/QuorumVote/">QuorumVote</a><a class="headerlink" href="#quorumvote" title="Permanent link">&para;</a></h3>
+<p>Uses a quorum decision method.</p>
+<p>Allow voting choices range 0-10.</p>
+<p>Vote 0 for abstain.</p>
+<h3 id="genesisprotocol"><a href="../../../generated_docs/VotingMachines/GenesisProtocol/">GenesisProtocol</a><a class="headerlink" href="#genesisprotocol" title="Permanent link">&para;</a></h3>
+<p>Use absolute and relative decision method.</p>
+<p>Currently it allows only <code>YES</code>/<code>NO</code> voting choices (2 choices).</p>
+<p>Abstaining is not allowed.</p>
+<p>This voting machine is also a <code>UniversalScheme</code>.</p>
                 
                   
                 
