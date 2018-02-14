@@ -11,7 +11,7 @@ Welcome to *DAOstack Arc* Docs!
 
     even as the number of the participants gets very large.
 
-2. **Security** - *Arc* embodies the best security guidelines and is very well tested.
+2. **Security** - *Arc* is community audited and embodies the best security guidelines and is very well tested.
 3. **Interoperability & Compositionality** - *Arc* can integrate with any other ethereum based framework with ease. Organizations can interact with each other and form hierarchies and other complex structures.
 4. **Modularity** - *Arc* is built in a modular way allowing anyone to extend and expand the ecosystem to support new use-cases.
 5. **General purpose** - *Arc* provides a single unified simple model for building any DAO imaginable.
@@ -47,7 +47,7 @@ Each DAO is a living entity on the blockchain that can own and manage resources.
 * **[Avatar](contracts/controller/Avatar.md)** - *This is the public-facing part of the DAO that handles the interaction of the DAO with the rest of the world(eg. interacing with other DAOs, paying third party participants, etc...)*.
 * **Subscribed [Elements](#elements)** - *The set of [Schemes](contracts/universalSchemes) and [Global Constraints](contracts/globalConstraints) that comprise the DAO*.
 
-For each DAO, the above components are organized in a single smart contract called a *[Controller](contracts/controller/Controller)*, which acts as the owner of the other components.
+For each DAO, the above components are organized in a single smart contract called a *[Controller](contracts/controller/Controller)*, which acts as the owner of those components.
 
 ## Elements
 
@@ -76,4 +76,4 @@ Same as [CONTIBUTING](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.m
 4. Please use a spell checker in your IDE to avoid spelling errors.
 5. In case of missing or incorrect documentation please open an issue with the label `documentation`, indicating the file, line number and any extra details.
 
-(*) - Command requires [mkdocs](http://www.mkdocs.org/) & [mkdocs-material](https://squidfunk.github.io/mkdocs-material/), run `pip install --user mkdocs mkdocs-material`.
+(*) - The command requires [mkdocs](http://www.mkdocs.org/) & [mkdocs-material](https://squidfunk.github.io/mkdocs-material/), run `pip install --user mkdocs mkdocs-material`.
