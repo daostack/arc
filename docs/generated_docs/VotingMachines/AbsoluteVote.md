@@ -2,11 +2,11 @@
 [see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/AbsoluteVote.sol)
 
 
-**Execution cost**: less than 865 gas
+**Execution cost**: less than 872 gas
 
-**Deployment cost**: less than 835800 gas
+**Deployment cost**: less than 842800 gas
 
-**Combined cost**: less than 836665 gas
+**Combined cost**: less than 843672 gas
 
 
 ## Events
@@ -139,7 +139,7 @@ Returns:
 > isVotable check if the proposal is votable
 
 
-**Execution cost**: less than 790 gas
+**Execution cost**: less than 812 gas
 
 **Attributes**: constant
 
@@ -163,7 +163,7 @@ Returns:
 > getNumberOfChoices returns the number of choices possible in this proposal
 
 
-**Execution cost**: less than 712 gas
+**Execution cost**: less than 734 gas
 
 **Attributes**: constant
 
@@ -229,6 +229,24 @@ Params:
 
 Returns:
 
+
+1. **output_0** *of type `bool`*
+
+--- 
+### isAbstainAllow()
+>
+> isAbstainAllow returns if the voting machine allow abstain (0)
+
+
+**Execution cost**: less than 396 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+> bool true or false
 
 1. **output_0** *of type `bool`*
 
@@ -319,7 +337,7 @@ Returns:
 > hash the parameters, save them if necessary, and return the hash value
 
 
-**Execution cost**: less than 61829 gas
+**Execution cost**: less than 61851 gas
 
 
 Params:
@@ -394,7 +412,7 @@ Returns:
 > voteStatus returns the reputation voted for a proposal for a specific voting choice.
 
 
-**Execution cost**: less than 837 gas
+**Execution cost**: less than 859 gas
 
 **Attributes**: constant
 

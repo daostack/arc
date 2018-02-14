@@ -3,11 +3,11 @@
 > A scheme for proposing and rewarding contributions to an organization
 
 
-**Execution cost**: less than 21861 gas
+**Execution cost**: less than 21874 gas
 
-**Deployment cost**: less than 1431200 gas
+**Deployment cost**: less than 1445600 gas
 
-**Combined cost**: less than 1453061 gas
+**Combined cost**: less than 1467474 gas
 
 ## Constructor
 
@@ -80,7 +80,7 @@ Params:
 2. **_proposalId** *of type `bytes32`*
 
 --- 
-### RedeemEther(address,bytes32,uint256)
+### RedeemEther(address,bytes32,address,uint256)
 
 
 **Execution cost**: No bound available
@@ -90,10 +90,11 @@ Params:
 
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
-3. **_amount** *of type `uint256`*
+3. **_beneficiary** *of type `address`*
+4. **_amount** *of type `uint256`*
 
 --- 
-### RedeemExternalToken(address,bytes32,uint256)
+### RedeemExternalToken(address,bytes32,address,uint256)
 
 
 **Execution cost**: No bound available
@@ -103,10 +104,11 @@ Params:
 
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
-3. **_amount** *of type `uint256`*
+3. **_beneficiary** *of type `address`*
+4. **_amount** *of type `uint256`*
 
 --- 
-### RedeemNativeToken(address,bytes32,uint256)
+### RedeemNativeToken(address,bytes32,address,uint256)
 
 
 **Execution cost**: No bound available
@@ -116,10 +118,11 @@ Params:
 
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
-3. **_amount** *of type `uint256`*
+3. **_beneficiary** *of type `address`*
+4. **_amount** *of type `uint256`*
 
 --- 
-### RedeemReputation(address,bytes32,int256)
+### RedeemReputation(address,bytes32,address,int256)
 
 
 **Execution cost**: No bound available
@@ -129,7 +132,8 @@ Params:
 
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
-3. **_amount** *of type `int256`*
+3. **_beneficiary** *of type `address`*
+4. **_amount** *of type `int256`*
 
 
 ## Methods

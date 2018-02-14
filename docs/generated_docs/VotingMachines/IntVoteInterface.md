@@ -12,6 +12,39 @@
 
 
 ## Methods
+### vote(bytes32,uint256)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+2. **_vote** *of type `uint256`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### execute(bytes32)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### cancelProposal(bytes32)
 
 
@@ -40,22 +73,6 @@ Params:
 
 
 --- 
-### execute(bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_proposalId** *of type `bytes32`*
-
-Returns:
-
-
-1. **output_0** *of type `bool`*
-
---- 
 ### getNumberOfChoices(bytes32)
 
 
@@ -72,6 +89,21 @@ Returns:
 
 
 1. **output_0** *of type `uint256`*
+
+--- 
+### isAbstainAllow()
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
 
 --- 
 ### isVotable(bytes32)
@@ -128,23 +160,6 @@ Returns:
 
 
 1. **output_0** *of type `bytes32`*
-
---- 
-### vote(bytes32,uint256)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_proposalId** *of type `bytes32`*
-2. **_vote** *of type `uint256`*
-
-Returns:
-
-
-1. **output_0** *of type `bool`*
 
 --- 
 ### voteStatus(bytes32,uint256)

@@ -3,11 +3,11 @@
 > Genesis Scheme that creates organizations
 
 
-**Execution cost**: less than 5484 gas
+**Execution cost**: less than 5493 gas
 
-**Deployment cost**: less than 4682200 gas
+**Deployment cost**: less than 4685000 gas
 
-**Combined cost**: less than 4687684 gas
+**Combined cost**: less than 4690493 gas
 
 ## Constructor
 
