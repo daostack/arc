@@ -27,6 +27,8 @@ This will run ganache-cli, compile, migrate and run all tests.
 
 ### Docker
 Arc has a prebuilt Docker image that makes development environments consistent and cross-platform.
+To start developing inside this environment:
+
 1. Install [Docker](https://www.docker.com/community-edition#/download) in your favorite OS/platform.
 2. Run `sudo docker run --rm -it -v <path to repo>:/home/arc daostack/arc`.
 2. The container will automatically `git clone` or `git fetch` depending on if `<path to repo>` is empty, and will install any dependencies.
@@ -34,7 +36,7 @@ Arc has a prebuilt Docker image that makes development environments consistent a
 
 ### using Arc as an npm package
 
-Please install Truffle and initialize your project with `truffle init`.
+Please install [Truffle](https://github.com/ConsenSys/truffle) and initialize your project with `truffle init`.
 
 ```sh
 npm install -g truffle
@@ -43,7 +45,6 @@ truffle init
 ```
 To install the @daostack/arc package, run:
 ```sh
-npm init
 npm install @daostack/arc
 ```
 
