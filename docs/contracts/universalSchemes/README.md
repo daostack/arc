@@ -1,3 +1,7 @@
+# Universal Schemes Home
+
+[see the generated documentation](../../generated_docs/universalSchemes/UniversalSchemeInterface.md)
+
 A Scheme defines rules the DAO follows.
 
 ## Universal Scheme

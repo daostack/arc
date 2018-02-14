@@ -1,11 +1,17 @@
 Welcome to *DAOstack Arc* Docs!
 
-*Arc* is the base layer of the DAO stack. It consists of a collection of smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
+*Arc* is the base layer of the [DAO stack](https://github.com/daostack/docs). It consists of a collection of smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
 
 *Arc* is built from the ground up with these principles in mind:
 
-1. **Scalable Decentralized Governance** - *Arc* implements game theoretic & economic techniques (such as: monetization of attention, staking on proposal results, and more...) that ensure high resilience and bandwidth of the organization even as the number of the participants gets very large.
-2. **Security** - *Arc* embodies the best security guidelines and is very well tested.
+1. **Scalable Decentralized Governance** - *Arc* implements game theoretic & economic techniques (such as: monetization of attention, staking on proposal results, and more...) that ensure high:
+
+    - **resilience** - resistance to a disproportionate decision power in the hands of minorities.
+    - **bandwidth** - decision making rate of the organization.
+
+    even as the number of the participants gets very large.
+
+2. **Security** - *Arc* is community audited and embodies the best security guidelines and is very well tested.
 3. **Interoperability & Compositionality** - *Arc* can integrate with any other ethereum based framework with ease. Organizations can interact with each other and form hierarchies and other complex structures.
 4. **Modularity** - *Arc* is built in a modular way allowing anyone to extend and expand the ecosystem to support new use-cases.
 5. **General purpose** - *Arc* provides a single unified simple model for building any DAO imaginable.
@@ -25,7 +31,7 @@ Check out:
 
 1. [Ethereum](https://www.ethereum.org/) - *Base blockchain.*
 2. **Arc** - This project.
-2. [*Arc.js*](https://github.com/daostack/*Arc*.js) - A *JavaScript library that interfaces with *Arc*, built on top of web3.js.*
+2. [Arc.js](https://github.com/daostack/*Arc*.js) - A *JavaScript library that interfaces with *Arc*, built on top of web3.js.*
 3. Collaborative DApps, built on top of DAOstack using *Arc.js*. eg. [Vanille](https://github.com/daostack/vanille) & [Alchemy](https://github.com/daostack/alchemy)
 
 For more information regarding the entire DAOstack project, check out the [docs repository](https://github.com/daostack/docs).
@@ -41,7 +47,7 @@ Each DAO is a living entity on the blockchain that can own and manage resources.
 * **[Avatar](contracts/controller/Avatar.md)** - *This is the public-facing part of the DAO that handles the interaction of the DAO with the rest of the world(eg. interacing with other DAOs, paying third party participants, etc...)*.
 * **Subscribed [Elements](#elements)** - *The set of [Schemes](contracts/universalSchemes) and [Global Constraints](contracts/globalConstraints) that comprise the DAO*.
 
-For each DAO, the above components are organized in a single smart contract called a *[Controller](contracts/controller/Controller)*, which acts as the owner of the other components.
+For each DAO, the above components are organized in a single smart contract called a *[Controller](contracts/controller/Controller)*, which acts as the owner of those components.
 
 ## Elements
 
@@ -62,12 +68,12 @@ Same as [CONTIBUTING](https://github.com/daostack/Arc/blob/master/CONTRIBUTING.m
 2. Commands:
 
     1. `npm run docs:update` - generate documentation to `docs/generated_docs`.
-    2. `npm run docs:build` - update & build website to `site/`. (*)
-    3. `npm run docs:preview` - preview website locally. (*)
-    4. `npm run docs:deploy` - deploy website to `gh-pages` branch so it becomes live. (*)
+    2. (*) `npm run docs:build` - update & build website to `site/`.
+    3. (*) `npm run docs:preview` - preview website locally.
+    4. (*) `npm run docs:deploy` - deploy website to `gh-pages` branch so it becomes live.
 
 3. Check for broken links by using `npm run docs:preview` and checking for warnings.
 4. Please use a spell checker in your IDE to avoid spelling errors.
 5. In case of missing or incorrect documentation please open an issue with the label `documentation`, indicating the file, line number and any extra details.
 
-(*) - Command requires [mkdocs](http://www.mkdocs.org/) & [mkdocs-material](https://squidfunk.github.io/mkdocs-material/), run `pip install --user mkdocs mkdocs-material`.
+(*) - The command requires [mkdocs](http://www.mkdocs.org/) & [mkdocs-material](https://squidfunk.github.io/mkdocs-material/), run `pip install --user mkdocs mkdocs-material`.
