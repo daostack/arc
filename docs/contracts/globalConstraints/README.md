@@ -1,12 +1,16 @@
+# Global Constraints Home
+
+[see the generated documentation](../../generated_docs/globalConstraints/GlobalConstraintInterface.md)
+
 related: [TokenCapGC](TokenCapGC.md)
 
 *Global Constraint*s define certain conditions the DAO must hold at all times. More concretely, they define *pre* & *post* conditions that must hold before & after any action the DAO takes.
-They are meant to be *Universal*(i.e. only one deployed instance), but do not strictly need to be.
+They are meant to be *Universal* (i.e. only one deployed instance), but do not strictly need to be.
 
 When an action is about to happen, the [Controller](../controller/Controller.md) consults the *Global Constraint* and runs it's `pre` & `post` methods to see if the conditions hold.
 It passes the following parameters to `pre` & `post`:
 
-1. `address scheme` - the scheme that performs the action.
+1. `address scheme` - the scheme that performed the action.
 2. `bytes32 hash` - a hash of the parameters to be used.
 3. `bytes32 method` - what kind of event occurred, available `method`s:
     - `mintReputation`
@@ -48,7 +52,7 @@ contract SchemeRegisterTimeLock is GlobalConstraintInterface{
         return hash;
     }
 
-    function pre(address scheme, bytes32 hash, bytes32 method){
+    function pre(address scheme, bytes32 hash, bytes32 method) public returns(bool){
         /* This runs *before* an action is taken */
 
         /* make sure no registerations occur between `start` and `end`*/
@@ -60,7 +64,7 @@ contract SchemeRegisterTimeLock is GlobalConstraintInterface{
         return true;
     }
 
-    function post(address scheme, bytes32 hash, bytes32 method){
+    function post(address scheme, bytes32 hash, bytes32 method) public returns(bool){
         /* This runs *after* an action is taken */
         return true;
     }
@@ -73,7 +77,7 @@ Registering a global constraint is done inside a method of a *Scheme* which is p
 ```
 SchemeRegisterTimeLock gc = new SchemeRegisterTimeLock();
 
-/* Somewhere inside a scheme with permission to add global constraints */
+/* Somewhere inside a scheme with `ADD_OR_REMOVE_GLOBAL_CONSTRAINT` permission  */
 bytes32 hash = gc.setParameters(now,now + 2 days)
 contoller.addGlobalConstraint(address(myGlobalConstraint),hash)
 ```

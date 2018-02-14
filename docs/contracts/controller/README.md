@@ -1,6 +1,8 @@
 # Controller Home
 [see the generated documentation](../../generated_docs/controller/ControllerInterface.md)
 
+related: [Controller](Controller.md) | [UController](UController.md)
+
 The controller is the central entity of a DAO,
 which acts as the owner of the DAO's [Avatar](./Avatar.md), [Reputation](Reputation.md) and [DAOToken](DAOToken.md).
 

@@ -1,6 +1,6 @@
 # VotingMachine
 
-***VotingMachine*** is a pluggable component, provided by DAOstack, which can be used by a DAO's schemes to manage a voting
+A ***VotingMachine*** is a pluggable component, provided by DAOstack, which can be used by a DAO's schemes to manage a voting
 process on a certain proposal.
 
 The VotingMachine maintains the voting process and the proposals to vote on, collect votes, and determines the winning vote according to the DAO's pre-defined configuration.
