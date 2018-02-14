@@ -25,10 +25,10 @@ contract ContributionReward is UniversalScheme {
     );
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
-    event RedeemReputation(address indexed _avatar, bytes32 indexed _proposalId,int _amount);
-    event RedeemEther(address indexed _avatar, bytes32 indexed _proposalId,uint _amount);
-    event RedeemNativeToken(address indexed _avatar, bytes32 indexed _proposalId,uint _amount);
-    event RedeemExternalToken(address indexed _avatar, bytes32 indexed _proposalId,uint _amount);
+    event RedeemReputation(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,int _amount);
+    event RedeemEther(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
+    event RedeemNativeToken(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
+    event RedeemExternalToken(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
 
     // A struct holding the data for a contribution proposal
     struct ContributionProposal {
@@ -210,7 +210,7 @@ contract ContributionReward is UniversalScheme {
         int reputation = int(periodsToPay) * _proposal.reputationChange;
         if (reputation!=0 && ControllerInterface(Avatar(_avatar).owner()).mintReputation(reputation, _proposal.beneficiary,_avatar)) {
             result = true;
-            RedeemReputation(_avatar,_proposalId,reputation);
+            RedeemReputation(_avatar,_proposalId,_proposal.beneficiary,reputation);
         }
         //restore proposal reward.
         proposal.reputationChange = _proposal.reputationChange;
@@ -238,7 +238,7 @@ contract ContributionReward is UniversalScheme {
         uint amount = periodsToPay.mul(_proposal.nativeTokenReward);
         if (amount > 0 && ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, _proposal.beneficiary,_avatar)) {
             result = true;
-            RedeemNativeToken(_avatar,_proposalId,amount);
+            RedeemNativeToken(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
 
         //restore proposal reward.
@@ -267,7 +267,7 @@ contract ContributionReward is UniversalScheme {
 
         if (amount > 0 && ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, _proposal.beneficiary,_avatar)) {
             result = true;
-            RedeemEther(_avatar,_proposalId,amount);
+            RedeemEther(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
         //restore proposal reward.
         proposal.ethReward = _proposal.ethReward;
@@ -295,7 +295,7 @@ contract ContributionReward is UniversalScheme {
             uint amount = periodsToPay.mul(_proposal.externalTokenReward);
             if (amount > 0 && ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar)) {
                 result = true;
-                RedeemExternalToken(_avatar,_proposalId,amount);
+                RedeemExternalToken(_avatar,_proposalId,_proposal.beneficiary,amount);
             }
         }
         //restore proposal reward.
