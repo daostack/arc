@@ -1041,6 +1041,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#isabstainallow" title="isAbstainAllow()" class="md-nav__link">
+    isAbstainAllow()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getparametershashaddressuint256bool" title="getParametersHash(address,uint256,bool)" class="md-nav__link">
     getParametersHash(address,uint256,bool)
   </a>
@@ -1246,6 +1253,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#isabstainallow" title="isAbstainAllow()" class="md-nav__link">
+    isAbstainAllow()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getparametershashaddressuint256bool" title="getParametersHash(address,uint256,bool)" class="md-nav__link">
     getParametersHash(address,uint256,bool)
   </a>
@@ -1325,9 +1339,9 @@
                 
                 <h1 id="quorumvote">QuorumVote<a class="headerlink" href="#quorumvote" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/arc/tree/master/contracts/VotingMachines/QuorumVote.sol">see the source</a></p>
-<p><strong>Execution cost</strong>: less than 872 gas</p>
-<p><strong>Deployment cost</strong>: less than 844600 gas</p>
-<p><strong>Combined cost</strong>: less than 845472 gas</p>
+<p><strong>Execution cost</strong>: less than 885 gas</p>
+<p><strong>Deployment cost</strong>: less than 851600 gas</p>
+<p><strong>Combined cost</strong>: less than 852485 gas</p>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
 <h3 id="cancelproposalbytes32">CancelProposal(bytes32)<a class="headerlink" href="#cancelproposalbytes32" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
@@ -1425,7 +1439,7 @@
 <blockquote>
 <p>isVotable check if the proposal is votable</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 790 gas</p>
+<p><strong>Execution cost</strong>: less than 812 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1448,7 +1462,7 @@
 <blockquote>
 <p>getNumberOfChoices returns the number of choices possible in this proposal</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 712 gas</p>
+<p><strong>Execution cost</strong>: less than 734 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1516,6 +1530,20 @@
 </li>
 </ol>
 <p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
+</ol>
+<hr />
+<h3 id="isabstainallow">isAbstainAllow()<a class="headerlink" href="#isabstainallow" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>isAbstainAllow returns if the voting machine allow abstain (0)</p>
+</blockquote>
+<p><strong>Execution cost</strong>: less than 396 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
+<blockquote>
+<p>bool true or false</p>
+</blockquote>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
@@ -1602,7 +1630,7 @@
 <blockquote>
 <p>hash the parameters, save them if necessary, and return the hash value</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 61829 gas</p>
+<p><strong>Execution cost</strong>: less than 61851 gas</p>
 <p>Params:</p>
 <ol>
 <li><strong>_reputationSystem</strong> <em>of type <code>address</code></em></li>
@@ -1676,7 +1704,7 @@
 <blockquote>
 <p>voteStatus returns the reputation voted for a proposal for a specific voting choice.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 837 gas</p>
+<p><strong>Execution cost</strong>: less than 859 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>

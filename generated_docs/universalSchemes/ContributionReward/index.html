@@ -770,29 +770,29 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeemetheraddressbytes32uint256" title="RedeemEther(address,bytes32,uint256)" class="md-nav__link">
-    RedeemEther(address,bytes32,uint256)
+  <a href="#redeemetheraddressbytes32addressuint256" title="RedeemEther(address,bytes32,address,uint256)" class="md-nav__link">
+    RedeemEther(address,bytes32,address,uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeemexternaltokenaddressbytes32uint256" title="RedeemExternalToken(address,bytes32,uint256)" class="md-nav__link">
-    RedeemExternalToken(address,bytes32,uint256)
+  <a href="#redeemexternaltokenaddressbytes32addressuint256" title="RedeemExternalToken(address,bytes32,address,uint256)" class="md-nav__link">
+    RedeemExternalToken(address,bytes32,address,uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeemnativetokenaddressbytes32uint256" title="RedeemNativeToken(address,bytes32,uint256)" class="md-nav__link">
-    RedeemNativeToken(address,bytes32,uint256)
+  <a href="#redeemnativetokenaddressbytes32addressuint256" title="RedeemNativeToken(address,bytes32,address,uint256)" class="md-nav__link">
+    RedeemNativeToken(address,bytes32,address,uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeemreputationaddressbytes32int256" title="RedeemReputation(address,bytes32,int256)" class="md-nav__link">
-    RedeemReputation(address,bytes32,int256)
+  <a href="#redeemreputationaddressbytes32addressint256" title="RedeemReputation(address,bytes32,address,int256)" class="md-nav__link">
+    RedeemReputation(address,bytes32,address,int256)
   </a>
   
 </li>
@@ -1233,29 +1233,29 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeemetheraddressbytes32uint256" title="RedeemEther(address,bytes32,uint256)" class="md-nav__link">
-    RedeemEther(address,bytes32,uint256)
+  <a href="#redeemetheraddressbytes32addressuint256" title="RedeemEther(address,bytes32,address,uint256)" class="md-nav__link">
+    RedeemEther(address,bytes32,address,uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeemexternaltokenaddressbytes32uint256" title="RedeemExternalToken(address,bytes32,uint256)" class="md-nav__link">
-    RedeemExternalToken(address,bytes32,uint256)
+  <a href="#redeemexternaltokenaddressbytes32addressuint256" title="RedeemExternalToken(address,bytes32,address,uint256)" class="md-nav__link">
+    RedeemExternalToken(address,bytes32,address,uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeemnativetokenaddressbytes32uint256" title="RedeemNativeToken(address,bytes32,uint256)" class="md-nav__link">
-    RedeemNativeToken(address,bytes32,uint256)
+  <a href="#redeemnativetokenaddressbytes32addressuint256" title="RedeemNativeToken(address,bytes32,address,uint256)" class="md-nav__link">
+    RedeemNativeToken(address,bytes32,address,uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeemreputationaddressbytes32int256" title="RedeemReputation(address,bytes32,int256)" class="md-nav__link">
-    RedeemReputation(address,bytes32,int256)
+  <a href="#redeemreputationaddressbytes32addressint256" title="RedeemReputation(address,bytes32,address,int256)" class="md-nav__link">
+    RedeemReputation(address,bytes32,address,int256)
   </a>
   
 </li>
@@ -1412,9 +1412,9 @@
 <blockquote>
 <p>A scheme for proposing and rewarding contributions to an organization</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 21861 gas</p>
-<p><strong>Deployment cost</strong>: less than 1431200 gas</p>
-<p><strong>Combined cost</strong>: less than 1453061 gas</p>
+<p><strong>Execution cost</strong>: less than 21874 gas</p>
+<p><strong>Deployment cost</strong>: less than 1445600 gas</p>
+<p><strong>Combined cost</strong>: less than 1467474 gas</p>
 <h2 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h2>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
 <h3 id="newcontributionproposaladdressbytes32addressbytes32int256uint2565addressaddress">NewContributionProposal(address,bytes32,address,bytes32,int256,uint256[5],address,address)<a class="headerlink" href="#newcontributionproposaladdressbytes32addressbytes32int256uint2565addressaddress" title="Permanent link">&para;</a></h3>
@@ -1462,39 +1462,43 @@
 <li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
 </ol>
 <hr />
-<h3 id="redeemetheraddressbytes32uint256">RedeemEther(address,bytes32,uint256)<a class="headerlink" href="#redeemetheraddressbytes32uint256" title="Permanent link">&para;</a></h3>
+<h3 id="redeemetheraddressbytes32addressuint256">RedeemEther(address,bytes32,address,uint256)<a class="headerlink" href="#redeemetheraddressbytes32addressuint256" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
 <li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
+<li><strong>_beneficiary</strong> <em>of type <code>address</code></em></li>
 <li><strong>_amount</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
-<h3 id="redeemexternaltokenaddressbytes32uint256">RedeemExternalToken(address,bytes32,uint256)<a class="headerlink" href="#redeemexternaltokenaddressbytes32uint256" title="Permanent link">&para;</a></h3>
+<h3 id="redeemexternaltokenaddressbytes32addressuint256">RedeemExternalToken(address,bytes32,address,uint256)<a class="headerlink" href="#redeemexternaltokenaddressbytes32addressuint256" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
 <li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
+<li><strong>_beneficiary</strong> <em>of type <code>address</code></em></li>
 <li><strong>_amount</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
-<h3 id="redeemnativetokenaddressbytes32uint256">RedeemNativeToken(address,bytes32,uint256)<a class="headerlink" href="#redeemnativetokenaddressbytes32uint256" title="Permanent link">&para;</a></h3>
+<h3 id="redeemnativetokenaddressbytes32addressuint256">RedeemNativeToken(address,bytes32,address,uint256)<a class="headerlink" href="#redeemnativetokenaddressbytes32addressuint256" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
 <li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
+<li><strong>_beneficiary</strong> <em>of type <code>address</code></em></li>
 <li><strong>_amount</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
-<h3 id="redeemreputationaddressbytes32int256">RedeemReputation(address,bytes32,int256)<a class="headerlink" href="#redeemreputationaddressbytes32int256" title="Permanent link">&para;</a></h3>
+<h3 id="redeemreputationaddressbytes32addressint256">RedeemReputation(address,bytes32,address,int256)<a class="headerlink" href="#redeemreputationaddressbytes32addressint256" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
 <li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
+<li><strong>_beneficiary</strong> <em>of type <code>address</code></em></li>
 <li><strong>_amount</strong> <em>of type <code>int256</code></em></li>
 </ol>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
