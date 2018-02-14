@@ -1,6 +1,6 @@
 Welcome to *DAOstack Arc* Docs!
 
-*Arc* is the base layer of the DAO stack. It consists of a collection of smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
+*Arc* is the base layer of the [DAO stack](https://github.com/daostack/docs). It consists of a collection of smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
 
 *Arc* is built from the ground up with these principles in mind:
 
