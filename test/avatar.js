@@ -35,6 +35,19 @@ contract('Avatar', function (accounts)  {
         assert.equal(tx.logs[0].args._param, "0x4567000000000000000000000000000000000000000000000000000000000000");
     });
 
+    it("generic call should revert if action revert", async () => {
+        avatar = await setup();
+        let action = await ActionMock.new();
+        await avatar.transferOwnership(action.address);
+        try{
+           await action.genericAction(avatar.address,[0x1234]);
+           assert(false,"generic call should revert if action revert ");
+          }
+          catch(ex){
+          helpers.assertVMException(ex);
+        }
+    });
+
     it("pay ether to avatar", async () => {
         avatar = await setup();
         web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.toWei('1', "ether")});
