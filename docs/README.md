@@ -4,7 +4,13 @@ Welcome to *DAOstack Arc* Docs!
 
 *Arc* is built from the ground up with these principles in mind:
 
-1. **Scalable Decentralized Governance** - *Arc* implements game theoretic & economic techniques (such as: monetization of attention, staking on proposal results, and more...) that ensure high resilience and bandwidth of the organization even as the number of the participants gets very large.
+1. **Scalable Decentralized Governance** - *Arc* implements game theoretic & economic techniques (such as: monetization of attention, staking on proposal results, and more...) that ensure high:
+
+    - **resilience** - resistance to a disproportionate decision power in the hands of minorities.
+    - **bandwidth** - decision making rate of the organization.
+
+    even as the number of the participants gets very large.
+
 2. **Security** - *Arc* embodies the best security guidelines and is very well tested.
 3. **Interoperability & Compositionality** - *Arc* can integrate with any other ethereum based framework with ease. Organizations can interact with each other and form hierarchies and other complex structures.
 4. **Modularity** - *Arc* is built in a modular way allowing anyone to extend and expand the ecosystem to support new use-cases.
