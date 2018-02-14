@@ -1,200 +1,251 @@
 # OrganizationRegister
 [see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/OrganizationRegister.sol)
-
-*Code deposit cost: **less than 358000 gas.***
-
-*Execution cost: **less than 20761 gas.***
-
-*Total deploy cost(deposit + execution): **less than 378761 gas.***
-
 > A universal organization registry.
 
-## Constructors
-### OrganizationRegister()
 
-*Execution cost: **No bound available.***
+**Execution cost**: less than 20761 gas
 
-**nonpayable**
+**Deployment cost**: less than 358000 gas
 
-*Params:*
+**Combined cost**: less than 378761 gas
 
-*Nothing*
+## Constructor
+
+
 
 
 ## Events
-### Promotion(address, address, uint256)
-*Params:*
-
-1. **_registry** *of type address*
-2. **_org** *of type address*
-3. **_amount** *of type uint256*
-
----
-### OwnershipTransferred(address, address)
-*Params:*
-
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
-
----
-### OrgAdded(address, address)
-*Params:*
-
-1. **_registry** *of type address*
-2. **_org** *of type address*
-
----
 ### NewProposal(bytes32)
-*Params:*
-
-1. **proposalId** *of type bytes32*
 
 
-## Fallback
-*Nothing*
-## Functions
-### updateParameters(bytes32)
+**Execution cost**: No bound available
 
-*Execution cost: **less than 20550 gas.***
 
-**nonpayable**
+Params:
 
-*Inputs:*
+1. **proposalId** *of type `bytes32`*
 
-1. **_hashedParameters** *of type bytes32*
+--- 
+### OrgAdded(address,address)
 
-*Returns:*
 
-*Nothing*
+**Execution cost**: No bound available
 
----
-### transferOwnership(address)
-> Allows the current owner to transfer control of the contract to a newOwner.
 
-*Execution cost: **less than 22961 gas.***
+Params:
 
-**nonpayable**
+1. **_registry** *of type `address`*
+2. **_org** *of type `address`*
 
-*Inputs:*
+--- 
+### OwnershipTransferred(address,address)
 
-1. **newOwner** *of type address- The address to transfer ownership to.*
 
-*Returns:*
+**Execution cost**: No bound available
 
-*Nothing*
 
----
-### setParameters(address, uint256, address)
+Params:
 
-*Execution cost: **No bound available.***
+1. **previousOwner** *of type `address`*
+2. **newOwner** *of type `address`*
 
-**nonpayable**
+--- 
+### Promotion(address,address,uint256)
 
-*Inputs:*
 
-1. **_token** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
+**Execution cost**: No bound available
 
-*Returns:*
 
-1. **unnamed** *of type bytes32*
+Params:
 
----
-### parameters(bytes32)
+1. **_registry** *of type `address`*
+2. **_org** *of type `address`*
+3. **_amount** *of type `uint256`*
 
-*Execution cost: **less than 1157 gas.***
 
-**constant | view**
+## Methods
+### addOrPromoteAddress(address,address,uint256)
+>
+> Adding or promoting an address on the registry.     An address(record) to add or promote can be organization address or any contract address.     Adding a record is done by paying at least the minimum required by the registry params.     Promoting a record is done by paying(adding)amount of token to the registry beneficiary.
 
-*Inputs:*
 
-1. **unnamed** *of type bytes32*
+**Execution cost**: No bound available
 
-*Returns:*
 
-1. **fee** *of type uint256*
-2. **token** *of type address*
-3. **beneficiary** *of type address*
+Params:
 
----
-### owner()
+1. **_avatar** *of type `address`*
 
-*Execution cost: **less than 677 gas.***
+    > The _avatar of the organization which own the registry.
 
-**constant | view**
+2. **_record** *of type `address`*
 
-*Inputs:*
+    > The address to add or promote.
 
-*Nothing*
+3. **_amount** *of type `uint256`*
 
-*Returns:*
+    > amount to pay for adding or promoting
 
-1. **unnamed** *of type address*
 
----
-### organizationsRegistery(address, address)
 
-*Execution cost: **No bound available.***
+--- 
+### getParametersHash(address,uint256,address)
+>
+> Hash the parameters ,and return the hash value
 
-**constant | view**
 
-*Inputs:*
+**Execution cost**: less than 722 gas
 
-1. **unnamed** *of type address*
-2. **unnamed** *of type address*
+**Attributes**: constant
 
-*Returns:*
 
-1. **unnamed** *of type uint256*
+Params:
 
----
+1. **_token** *of type `address`*
+
+    > -  the token to pay for register or promotion an address.
+
+2. **_fee** *of type `uint256`*
+
+    > - fee needed for register an address.
+
+3. **_beneficiary** *of type `address`*
+
+    > - the beneficiary payment address
+
+
+Returns:
+
+> bytes32 -the parameters hash
+
+1. **output_0** *of type `bytes32`*
+
+--- 
 ### hashedParameters()
 
-*Execution cost: **less than 612 gas.***
 
-**constant | view**
+**Execution cost**: less than 612 gas
 
-*Inputs:*
-
-*Nothing*
-
-*Returns:*
-
-1. **unnamed** *of type bytes32*
-
----
-### getParametersHash(address, uint256, address)
-
-*Execution cost: **No bound available.***
-
-**constant | pure**
-
-*Inputs:*
-
-1. **_token** *of type address*
-2. **_fee** *of type uint256*
-3. **_beneficiary** *of type address*
-
-*Returns:*
-
-1. **unnamed** *of type bytes32*
-
----
-### addOrPromoteAddress(address, address, uint256)
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_avatar** *of type address*
-2. **_record** *of type address*
-3. **_amount** *of type uint256*
-
-*Returns:*
-
-*Nothing*
+**Attributes**: constant
 
 
+
+Returns:
+
+
+1. **output_0** *of type `bytes32`*
+
+--- 
+### organizationsRegistery(address,address)
+
+
+**Execution cost**: less than 736 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+2. **param_1** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `uint256`*
+
+--- 
+### owner()
+
+
+**Execution cost**: less than 677 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### parameters(bytes32)
+
+
+**Execution cost**: less than 1157 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `bytes32`*
+
+Returns:
+
+
+1. **fee** *of type `uint256`*
+2. **token** *of type `address`*
+3. **beneficiary** *of type `address`*
+
+--- 
+### setParameters(address,uint256,address)
+>
+> Hash the parameters, save if needed and return the hash value
+
+
+**Execution cost**: less than 61765 gas
+
+
+Params:
+
+1. **_token** *of type `address`*
+
+    > -  the token to pay for register or promotion an address.
+
+2. **_fee** *of type `uint256`*
+
+    > - fee needed for register an address.
+
+3. **_beneficiary** *of type `address`*
+
+    > - the beneficiary payment address
+
+
+Returns:
+
+> bytes32 -the parameters hash
+
+1. **output_0** *of type `bytes32`*
+
+--- 
+### transferOwnership(address)
+>
+> Allows the current owner to transfer control of the contract to a newOwner.
+
+
+**Execution cost**: less than 22961 gas
+
+
+Params:
+
+1. **newOwner** *of type `address`*
+
+    > The address to transfer ownership to.
+
+
+
+--- 
+### updateParameters(bytes32)
+
+
+**Execution cost**: less than 20550 gas
+
+
+Params:
+
+1. **_hashedParameters** *of type `bytes32`*
+
+
+[Back to the top ↑](#organizationregister)

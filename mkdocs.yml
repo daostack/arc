@@ -1,5 +1,5 @@
 site_name: DAOstack Arc Docs
-site_url: https://daostack.github.io/arc
+site_url: https://daostack.github.io/arc/README
 repo_url: https://github.com/daostack/arc/
 repo_name: daostack/arc
 site_description: A platform for building DAOs
@@ -24,3 +24,54 @@ extra:
     link: 'https://daostack.slack.com'
   - type: 'telegram'
     link: 'https://t.me/daostackcommunity'
+
+pages:
+- Home: README.md
+- 'Contracts':
+  - 'Contracts Home': 'contracts/README.md'
+  - Controller:
+    - 'Controller Home': 'contracts/controller/README.md'
+    - Avatar: 'contracts/controller/Avatar.md'
+    - Controller: 'contracts/controller/Controller.md'
+    - DAOToken: 'contracts/controller/DAOToken.md'
+    - Reputation: 'contracts/controller/Reputation.md'
+    - UController: 'contracts/controller/UController.md'
+  - 'Global Constraints':
+    - 'Global Constraints Home': 'contracts/globalConstraints/README.md'
+    - TokenCapGC: 'contracts/globalConstraints/TokenCapGC.md'
+  - 'Universal Schemes':
+    - 'Universal Schemes Home': 'contracts/universalSchemes/README.md'
+  - 'Voting Machines':
+    - 'Voting Machines Home': 'contracts/VotingMachines/README.md'
+- 'Generated Docs':
+  - 'Generated Docs Home': 'generated_docs/README.md'
+  - Controller:
+    - ActionInterface: 'generated_docs/controller/ActionInterface.md'
+    - Avatar: 'generated_docs/controller/Avatar.md'
+    - Controller: 'generated_docs/controller/Controller.md'
+    - ControllerInterface: 'generated_docs/controller/ControllerInterface.md'
+    - DAOToken: 'generated_docs/controller/DAOToken.md'
+    - Reputation: 'generated_docs/controller/Reputation.md'
+    - UController: 'generated_docs/controller/UController.md'
+  - 'Global Constraints':
+    - GlobalConstraintInterface: 'generated_docs/globalConstraints/GlobalConstraintInterface.md'
+    - TokenCapGC: 'generated_docs/globalConstraints/TokenCapGC.md'
+  - 'Universal Schemes':
+    - ContributionReward: 'generated_docs/universalSchemes/ContributionReward.md'
+    - DaoCreator: 'generated_docs/universalSchemes/DaoCreator.md'
+    - ExecutableInterface: 'generated_docs/universalSchemes/ExecutableInterface.md'
+    - GlobalConstraintRegistrar: 'generated_docs/universalSchemes/GlobalConstraintRegistrar.md'
+    - OrganizationRegister: 'generated_docs/universalSchemes/OrganizationRegister.md'
+    - SchemeRegistrar: 'generated_docs/universalSchemes/SchemeRegistrar.md'
+    - SimpleICO: 'generated_docs/universalSchemes/SimpleICO.md'
+    - UniversalScheme: 'generated_docs/universalSchemes/UniversalScheme.md'
+    - UniversalSchemeInterface: 'generated_docs/universalSchemes/UniversalSchemeInterface.md'
+    - UpgradeScheme: 'generated_docs/universalSchemes/UpgradeScheme.md'
+    - VestingScheme: 'generated_docs/universalSchemes/VestingScheme.md'
+    - VoteInOrganizationScheme: 'generated_docs/universalSchemes/VoteInOrganizationScheme.md'
+  - 'Voting Machines':
+    - AbsoluteVote: 'generated_docs/VotingMachines/AbsoluteVote.md'
+    - GenesisProtocol: 'generated_docs/VotingMachines/GenesisProtocol.md'
+    - GenesisProtocolFormulasInterface: 'generated_docs/VotingMachines/GenesisProtocolFormulasInterface.md'
+    - IntVoteInterface: 'generated_docs/VotingMachines/IntVoteInterface.md'
+    - QuorumVote: 'generated_docs/VotingMachines/QuorumVote.md'

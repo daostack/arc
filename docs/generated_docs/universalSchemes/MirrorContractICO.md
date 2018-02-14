@@ -1,132 +1,127 @@
 # MirrorContractICO
 [see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/SimpleICO.sol)
-
-*Code deposit cost: **less than 158400 gas.***
-
-*Execution cost: **less than 61130 gas.***
-
-*Total deploy cost(deposit + execution): **less than 219530 gas.***
-
 > An avatar contract for ICO.
 
-## Constructors
-### MirrorContractICO(address, address)
 
-*Execution cost: **No bound available.***
+**Execution cost**: less than 61130 gas
 
-**nonpayable**
+**Deployment cost**: less than 158400 gas
 
-*Params:*
+**Combined cost**: less than 219530 gas
 
-1. **_organization** *of type address*
-2. **_simpleICO** *of type address*
+## Constructor
 
+
+
+Params:
+
+1. **_organization** *of type `address`*
+2. **_simpleICO** *of type `address`*
 
 ## Events
-### OwnershipTransferred(address, address)
-*Params:*
+### OwnershipTransferred(address,address)
 
-1. **previousOwner** *of type address*
-2. **newOwner** *of type address*
 
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **previousOwner** *of type `address`*
+2. **newOwner** *of type `address`*
 
 ## Fallback
-*Execution cost: **No bound available.***
-
-**payable**
 
 
+**Execution cost**: No bound available
 
-## Functions
-### transferOwnership(address)
-> Allows the current owner to transfer control of the contract to a newOwner.
+**Attributes**: payable
 
-*Execution cost: **No bound available.***
 
-**nonpayable**
 
-*Inputs:*
-
-1. **newOwner** *of type address- The address to transfer ownership to.*
-
-*Returns:*
-
-*Nothing*
-
----
-### simpleICO()
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-
-*Nothing*
-
-*Returns:*
-
-1. **unnamed** *of type address*
-
----
-### owner()
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-
-*Nothing*
-
-*Returns:*
-
-1. **unnamed** *of type address*
-
----
-### organization()
-
-*Execution cost: **No bound available.***
-
-**constant | view**
-
-*Inputs:*
-
-*Nothing*
-
-*Returns:*
-
-1. **unnamed** *of type address*
-
----
-### destroyAndSend(address)
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_recipient** *of type address*
-
-*Returns:*
-
-*Nothing*
-
----
+## Methods
 ### destroy()
+>
 > Transfers the current balance to the owner and terminates the contract.
 
-*Execution cost: **No bound available.***
 
-**nonpayable**
-
-*Inputs:*
-
-*Nothing*
-
-*Returns:*
-
-*Nothing*
+**Execution cost**: No bound available
 
 
+
+
+--- 
+### destroyAndSend(address)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_recipient** *of type `address`*
+
+
+--- 
+### organization()
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### owner()
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### simpleICO()
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### transferOwnership(address)
+>
+> Allows the current owner to transfer control of the contract to a newOwner.
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **newOwner** *of type `address`*
+
+    > The address to transfer ownership to.
+
+
+
+[Back to the top ↑](#mirrorcontractico)

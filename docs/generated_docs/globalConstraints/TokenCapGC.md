@@ -1,113 +1,155 @@
 # TokenCapGC
 [see the source](https://github.com/daostack/arc/tree/master/contracts/globalConstraints/TokenCapGC.sol)
-
-*Code deposit cost: **less than 197600 gas.***
-
-*Execution cost: **less than 233 gas.***
-
-*Total deploy cost(deposit + execution): **less than 197833 gas.***
-
 > Token Cap Global Constraint
 
-## Constructors
-*Nothing*
-## Events
-*Nothing*
-## Fallback
-*Nothing*
-## Functions
-### when()
-> when return if this globalConstraints is pre, post or both.
 
-*Execution cost: **less than 325 gas.***
+**Execution cost**: less than 233 gas
 
-**constant | pure**
+**Deployment cost**: less than 197600 gas
 
-*Inputs:*
+**Combined cost**: less than 197833 gas
 
-*Nothing*
 
-CallPhase enum indication  Pre, Post or PreAndPost.
----
-### setParameters(address, uint256)
 
-*Execution cost: **No bound available.***
 
-**nonpayable**
+## Methods
+### getParametersHash(address,uint256)
+>
+> calculate and returns the hash of the given parameters
 
-*Inputs:*
 
-1. **_token** *of type address*
-2. **_cap** *of type uint256*
+**Execution cost**: less than 485 gas
 
-*Returns:*
+**Attributes**: constant
 
-1. **unnamed** *of type bytes32*
 
----
-### pre(address, bytes32, bytes)
+Params:
 
-*Execution cost: **No bound available.***
+1. **_token** *of type `address`*
 
-**constant | pure**
+    > the token to add to the params.
 
-*Inputs:*
+2. **_cap** *of type `uint256`*
 
-1. **unnamed** *of type address*
-2. **unnamed** *of type bytes32*
-3. **unnamed** *of type bytes*
+    > the cap to check the total supply against.
 
-*Returns:*
 
-1. **unnamed** *of type bool*
+Returns:
 
----
-### post(address, bytes32, bytes)
+> the calculated parameters hash
 
-*Execution cost: **No bound available.***
+1. **output_0** *of type `bytes32`*
 
-**constant | view**
-
-*Inputs:*
-
-1. **unnamed** *of type address*
-2. **_paramsHash** *of type bytes32*
-3. **unnamed** *of type bytes*
-
-*Returns:*
-
-1. **unnamed** *of type bool*
-
----
+--- 
 ### params(bytes32)
 
-*Execution cost: **less than 934 gas.***
 
-**constant | view**
+**Execution cost**: less than 934 gas
 
-*Inputs:*
-
-1. **unnamed** *of type bytes32*
-
-*Returns:*
-
-1. **token** *of type address*
-2. **cap** *of type uint256*
-
----
-### getParametersHash(address, uint256)
-
-*Execution cost: **No bound available.***
-
-**constant | pure**
-
-*Inputs:*
-
-1. **_token** *of type address*
-2. **_cap** *of type uint256*
-
-*Returns:*
-
-1. **unnamed** *of type bytes32*
+**Attributes**: constant
 
 
+Params:
+
+1. **param_0** *of type `bytes32`*
+
+Returns:
+
+
+1. **token** *of type `address`*
+2. **cap** *of type `uint256`*
+
+--- 
+### post(address,bytes32,bytes)
+>
+> check the total supply cap.
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+2. **_paramsHash** *of type `bytes32`*
+
+    > the parameters hash to check the total supply cap against.
+
+3. **param_2** *of type `bytes`*
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### pre(address,bytes32,bytes)
+>
+> check the constraint after the action. This global constraint only checks the state after the action, so here we just return true:
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+2. **param_1** *of type `bytes32`*
+3. **param_2** *of type `bytes`*
+
+Returns:
+
+> true
+
+1. **output_0** *of type `bool`*
+
+--- 
+### setParameters(address,uint256)
+>
+> adding a new set of parameters
+
+
+**Execution cost**: less than 40976 gas
+
+
+Params:
+
+1. **_token** *of type `address`*
+
+    > the token to add to the params.
+
+2. **_cap** *of type `uint256`*
+
+    > the cap to check the total supply against.
+
+
+Returns:
+
+> the calculated parameters hash
+
+1. **output_0** *of type `bytes32`*
+
+--- 
+### when()
+>
+> when return if this globalConstraints is pre, post or both.
+
+
+**Execution cost**: less than 325 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+> CallPhase enum indication  Pre, Post or PreAndPost.
+
+1. **output_0** *of type `uint8`*
+
+[Back to the top ↑](#tokencapgc)

@@ -1,483 +1,748 @@
 # UController
 [see the source](https://github.com/daostack/arc/tree/master/contracts/controller/UController.sol)
-
-*Code deposit cost: **less than 3446000 gas.***
-
-*Execution cost: **less than 3847 gas.***
-
-*Total deploy cost(deposit + execution): **less than 3449847 gas.***
-
 > Universal Controller contract
 
-## Constructors
-### UController()
 
-*Execution cost: **No bound available.***
+**Execution cost**: less than 3847 gas
 
-**nonpayable**
+**Deployment cost**: less than 3446000 gas
 
-*Params:*
+**Combined cost**: less than 3449847 gas
 
-*Nothing*
+## Constructor
+
+
 
 
 ## Events
-### ExternalTokenTransfer(address, address, address, uint256)
-*Params:*
-
-1. **_sender** *of type address*
-2. **_externalToken** *of type address*
-3. **_to** *of type address*
-4. **_value** *of type uint256*
-
----
-### RemoveGlobalConstraint(address, uint256, bool, address)
-*Params:*
-
-1. **_globalConstraint** *of type address*
-2. **_index** *of type uint256*
-3. **_isPre** *of type bool*
-4. **_avatar** *of type address*
-
----
-### UpgradeController(address, address, address)
-*Params:*
-
-1. **_oldController** *of type address*
-2. **_newController** *of type address*
-3. **_avatar** *of type address*
+### ExternalTokenTransfer(address,address,address,uint256)
 
----
-### UnregisterScheme(address, address, address)
-*Params:*
 
-1. **_sender** *of type address*
-2. **_scheme** *of type address*
-3. **_avatar** *of type address*
+**Execution cost**: No bound available
 
----
-### SendEther(address, uint256, address)
-*Params:*
 
-1. **_sender** *of type address*
-2. **_amountInWei** *of type uint256*
-3. **_to** *of type address*
+Params:
 
----
-### RegisterScheme(address, address, address)
-*Params:*
+1. **_sender** *of type `address`*
+2. **_externalToken** *of type `address`*
+3. **_to** *of type `address`*
+4. **_value** *of type `uint256`*
 
-1. **_sender** *of type address*
-2. **_scheme** *of type address*
-3. **_avatar** *of type address*
+--- 
+### MintReputation(address,address,int256,address)
 
----
-### MintTokens(address, address, uint256, address)
-*Params:*
 
-1. **_sender** *of type address*
-2. **_beneficiary** *of type address*
-3. **_amount** *of type uint256*
-4. **_avatar** *of type address*
+**Execution cost**: No bound available
 
----
-### MintReputation(address, address, int256, address)
-*Params:*
 
-1. **_sender** *of type address*
-2. **_beneficiary** *of type address*
-3. **_amount** *of type int256*
-4. **_avatar** *of type address*
+Params:
 
----
-### GenericAction(address, bytes32[])
-*Params:*
+1. **_sender** *of type `address`*
+2. **_beneficiary** *of type `address`*
+3. **_amount** *of type `int256`*
+4. **_avatar** *of type `address`*
 
-1. **_sender** *of type address*
-2. **_params** *of type bytes32[]*
+--- 
+### AddGlobalConstraint(address,bytes32,uint8,address)
 
----
-### ExternalTokenTransferFrom(address, address, address, address, uint256)
-*Params:*
 
-1. **_sender** *of type address*
-2. **_externalToken** *of type address*
-3. **_from** *of type address*
-4. **_to** *of type address*
-5. **_value** *of type uint256*
+**Execution cost**: No bound available
 
----
-### ExternalTokenIncreaseApproval(address, address, address, uint256)
-*Params:*
 
-1. **_sender** *of type address*
-2. **_externalToken** *of type address*
-3. **_spender** *of type address*
-4. **_value** *of type uint256*
+Params:
 
----
-### ExternalTokenDecreaseApproval(address, address, address, uint256)
-*Params:*
+1. **_globalConstraint** *of type `address`*
+2. **_params** *of type `bytes32`*
+3. **_when** *of type `uint8`*
+4. **_avatar** *of type `address`*
 
-1. **_sender** *of type address*
-2. **_externalToken** *of type address*
-3. **_spender** *of type address*
-4. **_value** *of type uint256*
+--- 
+### ExternalTokenDecreaseApproval(address,address,address,uint256)
 
----
-### AddGlobalConstraint(address, bytes32, uint8, address)
-*Params:*
 
-1. **_globalConstraint** *of type address*
-2. **_params** *of type bytes32*
-3. **_when** *of type uint8*
-4. **_avatar** *of type address*
+**Execution cost**: No bound available
 
 
-## Fallback
-*Nothing*
-## Functions
-### mintReputation(int256, address, address)
+Params:
 
-*Execution cost: **No bound available.***
+1. **_sender** *of type `address`*
+2. **_externalToken** *of type `address`*
+3. **_spender** *of type `address`*
+4. **_value** *of type `uint256`*
 
-**nonpayable**
+--- 
+### GenericAction(address,bytes32[])
 
-*Inputs:*
 
-1. **_amount** *of type int256*
-2. **_beneficiary** *of type address*
-3. **_avatar** *of type address*
+**Execution cost**: No bound available
 
-*Returns:*
 
-1. **unnamed** *of type bool*
+Params:
 
----
-### unregisterScheme(address, address)
+1. **_sender** *of type `address`*
+2. **_params** *of type `bytes32[]`*
 
-*Execution cost: **No bound available.***
+--- 
+### ExternalTokenIncreaseApproval(address,address,address,uint256)
 
-**nonpayable**
 
-*Inputs:*
+**Execution cost**: No bound available
 
-1. **_scheme** *of type address*
-2. **_avatar** *of type address*
 
-*Returns:*
+Params:
 
-1. **unnamed** *of type bool*
+1. **_sender** *of type `address`*
+2. **_externalToken** *of type `address`*
+3. **_spender** *of type `address`*
+4. **_value** *of type `uint256`*
 
----
-### upgradeController(address, address)
+--- 
+### ExternalTokenTransferFrom(address,address,address,address,uint256)
 
-*Execution cost: **No bound available.***
 
-**nonpayable**
+**Execution cost**: No bound available
 
-*Inputs:*
 
-1. **_newController** *of type address*
-2. **_avatar** *of type address*
+Params:
 
-*Returns:*
+1. **_sender** *of type `address`*
+2. **_externalToken** *of type `address`*
+3. **_from** *of type `address`*
+4. **_to** *of type `address`*
+5. **_value** *of type `uint256`*
 
-1. **unnamed** *of type bool*
+--- 
+### MintTokens(address,address,uint256,address)
 
----
-### unregisterSelf(address)
-> unregister the caller's scheme
 
-*Execution cost: **less than 28509 gas.***
+**Execution cost**: No bound available
 
-**nonpayable**
 
-*Inputs:*
+Params:
 
-1. **_avatar** *of type address- the organization avatar.*
+1. **_sender** *of type `address`*
+2. **_beneficiary** *of type `address`*
+3. **_amount** *of type `uint256`*
+4. **_avatar** *of type `address`*
 
-bool which represents a success
----
-### getSchemePermissions(address, address)
+--- 
+### RegisterScheme(address,address,address)
 
-*Execution cost: **No bound available.***
 
-**constant | view**
+**Execution cost**: No bound available
 
-*Inputs:*
 
-1. **_scheme** *of type address*
-2. **_avatar** *of type address*
+Params:
 
-*Returns:*
+1. **_sender** *of type `address`*
+2. **_scheme** *of type `address`*
+3. **_avatar** *of type `address`*
 
-1. **unnamed** *of type bytes4*
+--- 
+### RemoveGlobalConstraint(address,uint256,bool,address)
 
----
-### newControllers(address)
 
-*Execution cost: **less than 824 gas.***
+**Execution cost**: No bound available
 
-**constant | view**
 
-*Inputs:*
+Params:
 
-1. **unnamed** *of type address*
+1. **_globalConstraint** *of type `address`*
+2. **_index** *of type `uint256`*
+3. **_isPre** *of type `bool`*
+4. **_avatar** *of type `address`*
 
-*Returns:*
+--- 
+### SendEther(address,uint256,address)
 
-1. **unnamed** *of type address*
 
----
-### sendEther(uint256, address, address)
+**Execution cost**: No bound available
 
-*Execution cost: **No bound available.***
 
-**nonpayable**
+Params:
 
-*Inputs:*
+1. **_sender** *of type `address`*
+2. **_amountInWei** *of type `uint256`*
+3. **_to** *of type `address`*
 
-1. **_amountInWei** *of type uint256*
-2. **_to** *of type address*
-3. **_avatar** *of type address*
+--- 
+### UnregisterScheme(address,address,address)
 
-*Returns:*
 
-1. **unnamed** *of type bool*
+**Execution cost**: No bound available
 
----
-### registerScheme(address, bytes32, bytes4, address)
 
-*Execution cost: **No bound available.***
+Params:
 
-**nonpayable**
+1. **_sender** *of type `address`*
+2. **_scheme** *of type `address`*
+3. **_avatar** *of type `address`*
 
-*Inputs:*
+--- 
+### UpgradeController(address,address,address)
 
-1. **_scheme** *of type address*
-2. **_paramsHash** *of type bytes32*
-3. **_permissions** *of type bytes4*
-4. **_avatar** *of type address*
 
-*Returns:*
+**Execution cost**: No bound available
 
-1. **unnamed** *of type bool*
 
----
-### newOrganization(address)
-> newOrganization set up a new organization with default daoCreator.
+Params:
 
-*Execution cost: **No bound available.***
+1. **_oldController** *of type `address`*
+2. **_newController** *of type `address`*
+3. **_avatar** *of type `address`*
 
-**nonpayable**
 
-*Inputs:*
+## Methods
+### mintReputation(int256,address,address)
+>
+> mint reputation .
 
-1. **_avatar** *of type address- the organization avatar*
 
-*Returns:*
+**Execution cost**: No bound available
 
-*Nothing*
 
----
-### removeGlobalConstraint(address, address)
+Params:
 
-*Execution cost: **No bound available.***
+1. **_amount** *of type `int256`*
 
-**nonpayable**
+    > amount of reputation to mint
 
-*Inputs:*
+2. **_beneficiary** *of type `address`*
 
-1. **_globalConstraint** *of type address*
-2. **_avatar** *of type address*
+    > beneficiary address
 
-*Returns:*
+3. **_avatar** *of type `address`*
 
-1. **unnamed** *of type bool*
+    > the organization avatar.
 
----
-### externalTokenTransfer(address, address, uint256, address)
 
-*Execution cost: **No bound available.***
+Returns:
 
-**nonpayable**
+> bool which represents a success
 
-*Inputs:*
+1. **output_0** *of type `bool`*
 
-1. **_externalToken** *of type address*
-2. **_to** *of type address*
-3. **_value** *of type uint256*
-4. **_avatar** *of type address*
+--- 
+### externalTokenTransferFrom(address,address,address,uint256,address)
+>
+> transfer token "from" address "to" address     One must to approve the amount of tokens which can be spend from the     "from" account.This can be done using externalTokenApprove.
 
-*Returns:*
 
-1. **unnamed** *of type bool*
+**Execution cost**: No bound available
 
----
-### getSchemeParameters(address, address)
 
-*Execution cost: **No bound available.***
+Params:
 
-**constant | view**
+1. **_externalToken** *of type `address`*
 
-*Inputs:*
+    > the address of the Token Contract
 
-1. **_scheme** *of type address*
-2. **_avatar** *of type address*
+2. **_from** *of type `address`*
 
-*Returns:*
+    > address of the account to send from
 
-1. **unnamed** *of type bytes32*
+3. **_to** *of type `address`*
 
----
-### isGlobalConstraintRegistered(address, address)
+    > address of the beneficiary
 
-*Execution cost: **No bound available.***
+4. **_value** *of type `uint256`*
 
-**constant | view**
+    > the amount of ether (in Wei) to send
 
-*Inputs:*
+5. **_avatar** *of type `address`*
 
-1. **_globalConstraint** *of type address*
-2. **_avatar** *of type address*
+    > the organization avatar.
 
-*Returns:*
 
-1. **unnamed** *of type bool*
+Returns:
 
----
-### isSchemeRegistered(address, address)
+> bool which represents a success
 
-*Execution cost: **No bound available.***
+1. **output_0** *of type `bool`*
 
-**constant | view**
+--- 
+### addGlobalConstraint(address,bytes32,address)
+>
+> add or update Global Constraint
 
-*Inputs:*
 
-1. **_scheme** *of type address*
-2. **_avatar** *of type address*
+**Execution cost**: No bound available
 
-*Returns:*
 
-1. **unnamed** *of type bool*
+Params:
 
----
-### mintTokens(uint256, address, address)
+1. **_globalConstraint** *of type `address`*
 
-*Execution cost: **No bound available.***
+    > the address of the global constraint to be added.
 
-**nonpayable**
+2. **_params** *of type `bytes32`*
 
-*Inputs:*
+    > the constraint parameters hash.
 
-1. **_amount** *of type uint256*
-2. **_beneficiary** *of type address*
-3. **_avatar** *of type address*
+3. **_avatar** *of type `address`*
 
-*Returns:*
+    > the avatar of the organization
 
-1. **unnamed** *of type bool*
 
----
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### externalTokenDecreaseApproval(address,address,uint256,address)
+>
+> decrease approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_externalToken** *of type `address`*
+
+    > the address of the Token Contract
+
+2. **_spender** *of type `address`*
+
+    > address
+
+3. **_subtractedValue** *of type `uint256`*
+
+    > the amount of ether (in Wei) which the approval is referring to.
+
+4. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### externalTokenTransfer(address,address,uint256,address)
+>
+> send some amount of arbitrary ERC20 Tokens
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_externalToken** *of type `address`*
+
+    > the address of the Token Contract
+
+2. **_to** *of type `address`*
+
+    > address of the beneficiary
+
+3. **_value** *of type `uint256`*
+
+    > the amount of ether (in Wei) to send
+
+4. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### externalTokenIncreaseApproval(address,address,uint256,address)
+>
+> increase approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_externalToken** *of type `address`*
+
+    > the address of the Token Contract
+
+2. **_spender** *of type `address`*
+
+    > address
+
+3. **_addedValue** *of type `uint256`*
+
+    > the amount of ether (in Wei) which the approval is referring to.
+
+4. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### isSchemeRegistered(address,address)
+
+
+**Execution cost**: less than 1151 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+2. **_avatar** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### sendEther(uint256,address,address)
+>
+> send some ether
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amountInWei** *of type `uint256`*
+
+    > the amount of ether (in Wei) to send
+
+2. **_to** *of type `address`*
+
+    > address of the beneficiary
+
+3. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### genericAction(bytes32[],address)
+>
+> do a generic delegate call to the contract which called us. This function use delegatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_params** *of type `bytes32[]`*
+
+    > the params for the call.
+
+2. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### isGlobalConstraintRegistered(address,address)
+
+
+**Execution cost**: less than 1661 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_globalConstraint** *of type `address`*
+2. **_avatar** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### getSchemeParameters(address,address)
+
+
+**Execution cost**: less than 789 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+2. **_avatar** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bytes32`*
+
+--- 
 ### globalConstraintsCount(address)
+>
 > globalConstraintsCount return the global constraint pre and post count
 
-*Execution cost: **less than 1148 gas.***
 
-**constant | view**
+**Execution cost**: less than 1148 gas
 
-*Inputs:*
-
-1. **_avatar** *of type address*
-
-uint globalConstraintsPre count.uint globalConstraintsPost count.
----
-### genericAction(bytes32[], address)
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_params** *of type bytes32[]*
-2. **_avatar** *of type address*
-
-*Returns:*
-
-1. **unnamed** *of type bool*
-
----
-### externalTokenTransferFrom(address, address, address, uint256, address)
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_externalToken** *of type address*
-2. **_from** *of type address*
-3. **_to** *of type address*
-4. **_value** *of type uint256*
-5. **_avatar** *of type address*
-
-*Returns:*
-
-1. **unnamed** *of type bool*
-
----
-### externalTokenIncreaseApproval(address, address, uint256, address)
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_externalToken** *of type address*
-2. **_spender** *of type address*
-3. **_addedValue** *of type uint256*
-4. **_avatar** *of type address*
-
-*Returns:*
-
-1. **unnamed** *of type bool*
-
----
-### externalTokenDecreaseApproval(address, address, uint256, address)
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_externalToken** *of type address*
-2. **_spender** *of type address*
-3. **_subtractedValue** *of type uint256*
-4. **_avatar** *of type address*
-
-*Returns:*
-
-1. **unnamed** *of type bool*
-
----
-### addGlobalConstraint(address, bytes32, address)
-
-*Execution cost: **No bound available.***
-
-**nonpayable**
-
-*Inputs:*
-
-1. **_globalConstraint** *of type address*
-2. **_params** *of type bytes32*
-3. **_avatar** *of type address*
-
-*Returns:*
-
-1. **unnamed** *of type bool*
+**Attributes**: constant
 
 
+Params:
+
+1. **_avatar** *of type `address`*
+
+Returns:
+
+> uint globalConstraintsPre count.uint globalConstraintsPost count.
+
+1. **output_0** *of type `uint256`*
+2. **output_1** *of type `uint256`*
+
+--- 
+### getSchemePermissions(address,address)
+
+
+**Execution cost**: less than 1120 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+2. **_avatar** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bytes4`*
+
+--- 
+### mintTokens(uint256,address,address)
+>
+> mint tokens .
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amount** *of type `uint256`*
+
+    > amount of token to mint
+
+2. **_beneficiary** *of type `address`*
+
+    > beneficiary address
+
+3. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### newOrganization(address)
+>
+> newOrganization set up a new organization with default daoCreator.
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_avatar** *of type `address`*
+
+    > the organization avatar
+
+
+
+--- 
+### newControllers(address)
+
+
+**Execution cost**: less than 824 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### removeGlobalConstraint(address,address)
+>
+> remove Global Constraint
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_globalConstraint** *of type `address`*
+
+    > the address of the global constraint to be remove.
+
+2. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### registerScheme(address,bytes32,bytes4,address)
+>
+> register or update a scheme
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+
+    > the address of the scheme
+
+2. **_paramsHash** *of type `bytes32`*
+
+    > a hashed configuration of the usage of the scheme
+
+3. **_permissions** *of type `bytes4`*
+
+    > the permissions the new scheme will have
+
+4. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### unregisterScheme(address,address)
+>
+> unregister a scheme
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+
+    > the address of the scheme
+
+2. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### unregisterSelf(address)
+>
+> unregister the caller's scheme
+
+
+**Execution cost**: less than 28509 gas
+
+
+Params:
+
+1. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### upgradeController(address,address)
+>
+> upgrade the Controller     The function will trigger an event 'UpgradeController'.
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_newController** *of type `address`*
+
+    > the address of the new controller.
+
+2. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+[Back to the top ↑](#ucontroller)

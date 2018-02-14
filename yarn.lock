@@ -54,6 +54,21 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
+"@soldoc/markdown@^0.0.1-alpha-0.30":
+  version "0.0.1-alpha-0.30"
+  resolved "https://registry.yarnpkg.com/@soldoc/markdown/-/markdown-0.0.1-alpha-0.30.tgz#f0dde2dfbe12706a24c3f48da15e67573dbd2fe6"
+
+"@soldoc/soldoc@^0.0.1-alpha-0.30":
+  version "0.0.1-alpha-0.30"
+  resolved "https://registry.yarnpkg.com/@soldoc/soldoc/-/soldoc-0.0.1-alpha-0.30.tgz#ac8f5f135ef39ef077f8d09db823ec2a81412c4b"
+  dependencies:
+    "@soldoc/markdown" "^0.0.1-alpha-0.30"
+    deep-assign "^2.0.0"
+    shelljs "^0.8.1"
+    solc "^0.4.19"
+    valid-url "^1.0.9"
+    yargs "^11.0.0"
+
 abbrev@1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.0.tgz#d0554c2256636e2f56e7c2e5ad183f859428d81f"
@@ -1449,6 +1464,12 @@ decamelize@^1.0.0, decamelize@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
+deep-assign@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/deep-assign/-/deep-assign-2.0.0.tgz#ebe06b1f07f08dae597620e3dd1622f371a1c572"
+  dependencies:
+    is-obj "^1.0.0"
+
 deep-equal@~0.2.0:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-0.2.2.tgz#84b745896f34c684e98f2ce0e42abaf43bba017d"
@@ -2663,6 +2684,10 @@ is-number@^3.0.0:
   resolved "https://registry.yarnpkg.com/is-number/-/is-number-3.0.0.tgz#24fd6201a4782cf50561c810276afc7d12d71195"
   dependencies:
     kind-of "^3.0.2"
+
+is-obj@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-obj/-/is-obj-1.0.1.tgz#3e4729ac1f5fde025cd7d83a896dab9f4f67db0f"
 
 is-path-cwd@^1.0.0:
   version "1.0.0"
@@ -4859,6 +4884,10 @@ v8flags@^2.1.1:
   resolved "https://registry.yarnpkg.com/v8flags/-/v8flags-2.1.1.tgz#aab1a1fa30d45f88dd321148875ac02c0b55e5b4"
   dependencies:
     user-home "^1.1.1"
+
+valid-url@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/valid-url/-/valid-url-1.0.9.tgz#1c14479b40f1397a75782f115e4086447433a200"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.1"
