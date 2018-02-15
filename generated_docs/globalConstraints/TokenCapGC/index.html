@@ -706,15 +706,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#postaddressbytes32bytes" title="post(address,bytes32,bytes)" class="md-nav__link">
-    post(address,bytes32,bytes)
+  <a href="#postaddressbytes32bytes32" title="post(address,bytes32,bytes32)" class="md-nav__link">
+    post(address,bytes32,bytes32)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#preaddressbytes32bytes" title="pre(address,bytes32,bytes)" class="md-nav__link">
-    pre(address,bytes32,bytes)
+  <a href="#preaddressbytes32bytes32" title="pre(address,bytes32,bytes32)" class="md-nav__link">
+    pre(address,bytes32,bytes32)
   </a>
   
 </li>
@@ -1052,15 +1052,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#postaddressbytes32bytes" title="post(address,bytes32,bytes)" class="md-nav__link">
-    post(address,bytes32,bytes)
+  <a href="#postaddressbytes32bytes32" title="post(address,bytes32,bytes32)" class="md-nav__link">
+    post(address,bytes32,bytes32)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#preaddressbytes32bytes" title="pre(address,bytes32,bytes)" class="md-nav__link">
-    pre(address,bytes32,bytes)
+  <a href="#preaddressbytes32bytes32" title="pre(address,bytes32,bytes32)" class="md-nav__link">
+    pre(address,bytes32,bytes32)
   </a>
   
 </li>
@@ -1106,15 +1106,15 @@
 <blockquote>
 <p>Token Cap Global Constraint</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 233 gas</p>
-<p><strong>Deployment cost</strong>: less than 197600 gas</p>
-<p><strong>Combined cost</strong>: less than 197833 gas</p>
+<p><strong>Execution cost</strong>: less than 209 gas</p>
+<p><strong>Deployment cost</strong>: less than 172000 gas</p>
+<p><strong>Combined cost</strong>: less than 172209 gas</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h3 id="getparametershashaddressuint256">getParametersHash(address,uint256)<a class="headerlink" href="#getparametershashaddressuint256" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>calculate and returns the hash of the given parameters</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 485 gas</p>
+<p><strong>Execution cost</strong>: less than 463 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1152,7 +1152,7 @@
 <li><strong>cap</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
-<h3 id="postaddressbytes32bytes">post(address,bytes32,bytes)<a class="headerlink" href="#postaddressbytes32bytes" title="Permanent link">&para;</a></h3>
+<h3 id="postaddressbytes32bytes32">post(address,bytes32,bytes32)<a class="headerlink" href="#postaddressbytes32bytes32" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>check the total supply cap.</p>
 </blockquote>
@@ -1168,7 +1168,7 @@
 </blockquote>
 </li>
 <li>
-<p><strong>param_2</strong> <em>of type <code>bytes</code></em></p>
+<p><strong>param_2</strong> <em>of type <code>bytes32</code></em></p>
 </li>
 </ol>
 <p>Returns:</p>
@@ -1179,17 +1179,17 @@
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
-<h3 id="preaddressbytes32bytes">pre(address,bytes32,bytes)<a class="headerlink" href="#preaddressbytes32bytes" title="Permanent link">&para;</a></h3>
+<h3 id="preaddressbytes32bytes32">pre(address,bytes32,bytes32)<a class="headerlink" href="#preaddressbytes32bytes32" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>check the constraint after the action. This global constraint only checks the state after the action, so here we just return true:</p>
 </blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
+<p><strong>Execution cost</strong>: less than 325 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
 <li><strong>param_0</strong> <em>of type <code>address</code></em></li>
 <li><strong>param_1</strong> <em>of type <code>bytes32</code></em></li>
-<li><strong>param_2</strong> <em>of type <code>bytes</code></em></li>
+<li><strong>param_2</strong> <em>of type <code>bytes32</code></em></li>
 </ol>
 <p>Returns:</p>
 <blockquote>
