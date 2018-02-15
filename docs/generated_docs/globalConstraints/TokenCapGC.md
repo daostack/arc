@@ -3,11 +3,11 @@
 > Token Cap Global Constraint
 
 
-**Execution cost**: less than 233 gas
+**Execution cost**: less than 209 gas
 
-**Deployment cost**: less than 197600 gas
+**Deployment cost**: less than 172000 gas
 
-**Combined cost**: less than 197833 gas
+**Combined cost**: less than 172209 gas
 
 
 
@@ -18,7 +18,7 @@
 > calculate and returns the hash of the given parameters
 
 
-**Execution cost**: less than 485 gas
+**Execution cost**: less than 463 gas
 
 **Attributes**: constant
 
@@ -60,7 +60,7 @@ Returns:
 2. **cap** *of type `uint256`*
 
 --- 
-### post(address,bytes32,bytes)
+### post(address,bytes32,bytes32)
 >
 > check the total supply cap.
 
@@ -77,7 +77,7 @@ Params:
 
     > the parameters hash to check the total supply cap against.
 
-3. **param_2** *of type `bytes`*
+3. **param_2** *of type `bytes32`*
 
 Returns:
 
@@ -86,12 +86,12 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### pre(address,bytes32,bytes)
+### pre(address,bytes32,bytes32)
 >
 > check the constraint after the action. This global constraint only checks the state after the action, so here we just return true:
 
 
-**Execution cost**: No bound available
+**Execution cost**: less than 325 gas
 
 **Attributes**: constant
 
@@ -100,7 +100,7 @@ Params:
 
 1. **param_0** *of type `address`*
 2. **param_1** *of type `bytes32`*
-3. **param_2** *of type `bytes`*
+3. **param_2** *of type `bytes32`*
 
 Returns:
 
