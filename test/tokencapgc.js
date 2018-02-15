@@ -1,5 +1,30 @@
+import * as helpers from './helpers';
 const DAOToken   = artifacts.require("./DAOToken.sol");
 const TokenCapGC = artifacts.require('./globalConstraints/TokenCapGC.sol');
+const Controller = artifacts.require("./Controller.sol");
+const Reputation = artifacts.require("./Reputation.sol");
+const Avatar = artifacts.require("./Avatar.sol");
+
+
+let reputation, avatar,accounts,token,controller;
+const setup = async function (permission='0') {
+  var _controller;
+  accounts = web3.eth.accounts;
+  token  = await DAOToken.new("TEST","TST");
+  // set up a reputation system
+  reputation = await Reputation.new();
+  avatar = await Avatar.new('name', token.address, reputation.address);
+  if (permission!='0'){
+    _controller = await Controller.new(avatar.address,{from:accounts[1]});
+    await _controller.registerScheme(accounts[0],0,permission,0,{from:accounts[1]});
+    await _controller.unregisterSelf(0,{from:accounts[1]});
+  }
+  else {
+    _controller = await Controller.new(avatar.address);
+  }
+  controller = _controller;
+  return _controller;
+};
 
 contract('TokenCapGC', function (accounts)  {
     it("setParameters", async () => {
@@ -45,4 +70,23 @@ contract('TokenCapGC', function (accounts)  {
     //token total supply is 101
     assert.equal(post,true);
   });
+
+  it("mintTokens check", async () => {
+
+    controller = await setup();
+    var tokenCapGC = await TokenCapGC.new();
+    await tokenCapGC.setParameters(token.address,100);
+    var tokenCapGCParamsHash =  await tokenCapGC.getParametersHash(token.address,100);
+    await controller.addGlobalConstraint(tokenCapGC.address,tokenCapGCParamsHash,helpers.NULL_ADDRESS);
+    //var globalConstraints = await constraint("mintTokens");
+    await token.transferOwnership(controller.address);
+    await controller.mintTokens(50,accounts[0],helpers.NULL_ADDRESS);
+    try {
+      await controller.mintTokens(51,accounts[0],helpers.NULL_ADDRESS);
+      assert(false,"mint tokens should fail due to the tokenCapGC global constraint ");
+    }
+    catch(ex){
+      helpers.assertVMException(ex);
+    }
+    });
 });

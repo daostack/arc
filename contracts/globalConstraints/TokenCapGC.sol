@@ -48,7 +48,7 @@ contract TokenCapGC {
      * This global constraint only checks the state after the action, so here we just return true:
      * @return true
      */
-    function pre(address, bytes32, bytes) public pure returns(bool) {
+    function pre(address, bytes32, bytes32) public pure returns(bool) {
         return true;
     }
 
@@ -57,7 +57,7 @@ contract TokenCapGC {
      * @param  _paramsHash the parameters hash to check the total supply cap against.
      * @return bool which represents a success
      */
-    function post(address, bytes32 _paramsHash, bytes) public view returns(bool) {
+    function post(address, bytes32 _paramsHash, bytes32) public view returns(bool) {
         if ((params[_paramsHash].token != StandardToken(0)) &&
             ( params[_paramsHash].token.totalSupply() > params[_paramsHash].cap)) {
             return false;

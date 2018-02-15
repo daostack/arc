@@ -9,11 +9,11 @@ contract GlobalConstraintMock {
         bool pre;
         bool post;
     }
-    mapping (bytes=>TestParam) testParams;
+    mapping (bytes32=>TestParam) testParams;
 
     GlobalConstraintInterface.CallPhase currentCallPhase ;
 
-    function setConstraint(bytes method,bool pre,bool post) public returns(bool) {
+    function setConstraint(bytes32 method,bool pre,bool post) public returns(bool) {
         testParams[method].pre = pre;
         testParams[method].post = post;
 
@@ -29,11 +29,11 @@ contract GlobalConstraintMock {
 
     }
 
-    function pre(address, bytes32, bytes method) public view returns(bool) {
+    function pre(address, bytes32, bytes32 method) public view returns(bool) {
         return testParams[method].pre;
     }
 
-    function post(address, bytes32 , bytes method) public view returns(bool) {
+    function post(address, bytes32 , bytes32 method) public view returns(bool) {
         return testParams[method].post;
     }
 
