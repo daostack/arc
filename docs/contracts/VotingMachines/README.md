@@ -12,7 +12,7 @@ Each *VotingMachine* use its own decision method and has its own voting choices 
 
 ### Absolute
 
-A decision is made if at least a certain percentage (`P`) from the total DAO's reputation voted
+A decision is made if more than a certain percentage (`P`) from the total DAO's reputation voted
 on a certain voting choice. Normally `P` is 50% though it can be set to any value.
 
 The "winning" choice is the one that first crosses that bar.
