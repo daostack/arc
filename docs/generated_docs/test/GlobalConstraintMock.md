@@ -2,40 +2,20 @@
 [see the source](https://github.com/daostack/arc/tree/master/contracts/test/GlobalConstraintMock.sol)
 
 
-**Execution cost**: less than 264 gas
+**Execution cost**: less than 154 gas
 
-**Deployment cost**: less than 225200 gas
+**Deployment cost**: less than 109800 gas
 
-**Combined cost**: less than 225464 gas
+**Combined cost**: less than 109954 gas
 
 
 
 
 ## Methods
-### post(address,bytes32,bytes)
+### post(address,bytes32,bytes32)
 
 
-**Execution cost**: No bound available
-
-**Attributes**: constant
-
-
-Params:
-
-1. **param_0** *of type `address`*
-2. **param_1** *of type `bytes32`*
-3. **method** *of type `bytes`*
-
-Returns:
-
-
-1. **output_0** *of type `bool`*
-
---- 
-### pre(address,bytes32,bytes)
-
-
-**Execution cost**: No bound available
+**Execution cost**: less than 518 gas
 
 **Attributes**: constant
 
@@ -44,7 +24,7 @@ Params:
 
 1. **param_0** *of type `address`*
 2. **param_1** *of type `bytes32`*
-3. **method** *of type `bytes`*
+3. **method** *of type `bytes32`*
 
 Returns:
 
@@ -52,15 +32,35 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### setConstraint(bytes,bool,bool)
+### pre(address,bytes32,bytes32)
 
 
-**Execution cost**: No bound available
+**Execution cost**: less than 529 gas
+
+**Attributes**: constant
 
 
 Params:
 
-1. **method** *of type `bytes`*
+1. **param_0** *of type `address`*
+2. **param_1** *of type `bytes32`*
+3. **method** *of type `bytes32`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### setConstraint(bytes32,bool,bool)
+
+
+**Execution cost**: less than 40883 gas
+
+
+Params:
+
+1. **method** *of type `bytes32`*
 2. **pre** *of type `bool`*
 3. **post** *of type `bool`*
 
