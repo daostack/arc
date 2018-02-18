@@ -26,7 +26,7 @@ contract GlobalConstraintMock {
                      currentCallPhase = GlobalConstraintInterface.CallPhase.Post;
           }
         }
-
+        return true;
     }
 
     function pre(address, bytes32, bytes32 method) public view returns(bool) {
