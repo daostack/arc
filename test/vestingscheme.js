@@ -87,11 +87,11 @@ contract('VestingScheme', function(accounts) {
          await helpers.checkVoteInfo(testSetup.vestingSchemeParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.vestingSchemeParams.votingMachine.reputationArray[0]]);
         });
 
-        it("proposeVestingAgreement check assert _signaturesReqToCancel >= _signersArray.length", async function() {
+        it("proposeVestingAgreement check assert _signaturesReqToCancel <= _signersArray.length", async function() {
           var testSetup = await setup(accounts);
           var _signaturesReqToCancel = 5;
           var _signersArray = [];
-          for (var i=0;i<=_signaturesReqToCancel;i++){
+          for (var i=0;i<_signaturesReqToCancel-1;i++){
             _signersArray[i] = accounts[i];
           }
 
@@ -107,7 +107,7 @@ contract('VestingScheme', function(accounts) {
                                                                          _signaturesReqToCancel,
                                                                          _signersArray,
                                                                          testSetup.org.avatar.address);
-           assert(false,"proposeVestingAgreement should fail - due to _signaturesReqToCancel >= _signersArray.length !");
+           assert(false,"proposeVestingAgreement should fail - due to _signaturesReqToCancel > _signersArray.length !");
           }catch(ex){
            helpers.assertVMException(ex);
           }
@@ -298,13 +298,13 @@ contract('VestingScheme', function(accounts) {
                  assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.vestingScheme.address),amountPerPeriod*numberOfAgreedPeriods);
                 });
 
-                it("createVestedAgreement check assert _signaturesReqToCancel >= _signersArray.length", async function() {
+                it("createVestedAgreement check assert _signaturesReqToCancel <= _signersArray.length", async function() {
                   var testSetup = await setup(accounts);
                   var _signaturesReqToCancel = 5;
                   var amountPerPeriod =3;
                   var numberOfAgreedPeriods = 7;
                   var _signersArray = [];
-                  for (var i=0;i<=_signaturesReqToCancel;i++){
+                  for (var i=0;i<_signaturesReqToCance-1;i++){
                     _signersArray[i] = accounts[i];
                   }
 
@@ -320,7 +320,7 @@ contract('VestingScheme', function(accounts) {
                                                                                    11,
                                                                                    _signaturesReqToCancel,
                                                                                    _signersArray,{from:accounts[1]});
-                   assert(false,"createVestedAgreement should fail - due to _signaturesReqToCancel >= _signersArray.length !");
+                   assert(false,"createVestedAgreement should fail - due to _signaturesReqToCancel > _signersArray.length !");
                   }catch(ex){
                    helpers.assertVMException(ex);
                   }
