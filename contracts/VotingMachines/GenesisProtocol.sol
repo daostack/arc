@@ -75,10 +75,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
 
-    uint constant NUM_OF_CHOICES = 2;
+    uint constant public NUM_OF_CHOICES = 2;
     uint constant public NO = 2;
     uint constant public YES = 1;
-    uint proposalsCnt; // Total number of proposals
+    uint public proposalsCnt; // Total number of proposals
     mapping(address=>uint) public orgBoostedProposalsCnt;
     StandardToken public stakingToken;
     /**

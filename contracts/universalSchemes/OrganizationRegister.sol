@@ -74,9 +74,7 @@ contract OrganizationRegister is UniversalScheme {
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         // Pay promotion, if the org was not listed the minimum is the fee:
-        if ((organizationsRegistery[_avatar][_record] == 0) && (_amount < params.fee) ) {
-            revert();
-        }
+        require((organizationsRegistery[_avatar][_record] > 0) || (_amount >= params.fee));
 
         params.token.transferFrom(msg.sender, params.beneficiary, _amount);
         if (organizationsRegistery[_avatar][_record] == 0)
