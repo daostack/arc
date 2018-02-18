@@ -72,21 +72,15 @@ contract SchemeRegistrar is UniversalScheme {
           // Add a scheme:
             if (proposal.proposalType == 1) {
                 if (proposal.isRegistering == false) {
-                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1),_avatar)) {
-                        revert();
-                      }
+                    require(controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1),_avatar));
                     } else {
-                    if (!controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3),_avatar)) {
-                        revert();
-                    }
+                    require(controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3),_avatar));
                 }
-                }
+            }
           // Remove a scheme:
             if ( proposal.proposalType == 2 ) {
-                if (!controller.unregisterScheme(proposal.scheme,_avatar)) {
-                    revert();
-                  }
-                }
+                require(controller.unregisterScheme(proposal.scheme,_avatar));
+            }
           }
         ProposalExecuted(_avatar, _proposalId);
         return true;

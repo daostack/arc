@@ -54,7 +54,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     // A mapping from index to Agreement
     mapping(uint=>Agreement) public agreements;
 
-    uint agreementsCounter;
+    uint public agreementsCounter;
 
     // Modifier, only the signers on an agreement:
     modifier onlySigner(uint _agreementId) {

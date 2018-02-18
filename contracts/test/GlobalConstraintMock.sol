@@ -9,9 +9,9 @@ contract GlobalConstraintMock {
         bool pre;
         bool post;
     }
-    mapping (bytes32=>TestParam) testParams;
+    mapping (bytes32=>TestParam) public testParams;
 
-    GlobalConstraintInterface.CallPhase currentCallPhase ;
+    GlobalConstraintInterface.CallPhase public currentCallPhase ;
 
     function setConstraint(bytes32 method,bool pre,bool post) public returns(bool) {
         testParams[method].pre = pre;

@@ -52,7 +52,7 @@ contract UController is ControllerInterface {
     }
 
     //mapping between organization's avatar address to Organization
-    mapping(address=>Organization) organizations;
+    mapping(address=>Organization) public organizations;
   // newController will point to the new controller after the present controller is upgraded
   //  address public newController;
     mapping(address=>address) public newControllers;//mapping between avatar address and newController address

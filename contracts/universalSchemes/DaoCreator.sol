@@ -13,7 +13,7 @@ import "../controller/Controller.sol";
 
 contract DaoCreator {
 
-    mapping(address=>address) locks;
+    mapping(address=>address) public locks;
 
     event NewOrg (address _avatar);
     event InitialSchemesSet (address _avatar);

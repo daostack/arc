@@ -11,7 +11,7 @@ import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract Reputation is Ownable {
 
-    mapping (address => uint256) balances;
+    mapping (address => uint256) public balances;
     uint256 public totalSupply;
     uint public decimals = 18;
 

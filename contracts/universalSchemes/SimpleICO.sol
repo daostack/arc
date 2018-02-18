@@ -32,9 +32,7 @@ contract MirrorContractICO is Destructible {
         require(msg.value != 0);
 
         // Return ether if couldn't donate.
-        if (simpleICO.donate.value(msg.value)(organization, msg.sender) == 0) {
-            revert();
-        }
+        require(simpleICO.donate.value(msg.value)(organization, msg.sender) != 0);
     }
 }
 
@@ -211,7 +209,7 @@ contract SimpleICO is UniversalScheme {
      * The donator will get the change in ethers.
      * @param _avatar The Avatar's of the organization.
      * @param _beneficiary The donator's address - which will receive the ICO's tokens.
-     * @return bool which represents a successful of the function
+     * @return uint number of tokens minted for the donation.
      */
     function donate(Avatar _avatar, address _beneficiary) public payable returns(uint) {
         Organization memory org = organizationsICOInfo[_avatar];
@@ -234,19 +232,17 @@ contract SimpleICO is UniversalScheme {
         } else {
             incomingEther = msg.value;
         }
+
         uint tokens = incomingEther.mul(params.price);
+        // Update total raised, call event and return amount of tokens bought:
+        organizationsICOInfo[_avatar].totalEthRaised += incomingEther;
         // Send ether to the defined address, mint, and send change to beneficiary:
         params.beneficiary.transfer(incomingEther);
 
-        ControllerInterface controller = ControllerInterface(_avatar.owner());
-        if (!controller.mintTokens(tokens, _beneficiary,address(_avatar))) {
-            revert();
-        }
+        require(ControllerInterface(_avatar.owner()).mintTokens(tokens, _beneficiary,address(_avatar)));
         if (change != 0) {
             _beneficiary.transfer(change);
         }
-        // Update total raised, call event and return amount of tokens bought:
-        organizationsICOInfo[_avatar].totalEthRaised += incomingEther;
         DonationReceived(_avatar, _beneficiary, incomingEther, tokens);
         return tokens;
     }

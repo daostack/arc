@@ -111,9 +111,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
-        if (organizationsProposals[_avatar][proposalId].proposalType != 0) {
-            revert();
-        }
+        require(organizationsProposals[_avatar][proposalId].proposalType == 0);
 
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 2,
@@ -151,25 +149,19 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
         // Upgrading controller:
             if (proposal.proposalType == 1) {
-                if (!controller.upgradeController(proposal.upgradeContract,_avatar)) {
-                    revert();
-                  }
-                }
+                require(controller.upgradeController(proposal.upgradeContract,_avatar));
+            }
 
         // Changing upgrade scheme:
             if (proposal.proposalType == 2) {
                 bytes4 permissions = controller.getSchemePermissions(this,_avatar);
 
-                if (!controller.registerScheme(proposal.upgradeContract, proposal.params, permissions,_avatar)) {
-                    revert();
-                  }
+                require(controller.registerScheme(proposal.upgradeContract, proposal.params, permissions,_avatar));
                 if (proposal.upgradeContract != address(this) ) {
-                    if (!controller.unregisterSelf(_avatar)) {
-                        revert();
-                      }
+                    require(controller.unregisterSelf(_avatar));
                     }
                   }
-                }
+        }
 
         return true;
     }
