@@ -303,25 +303,23 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory params = parameters[paramsHash];
         Proposal storage proposal = proposals[_proposalId];
-        Proposal memory tmpProposal;
+        Proposal memory tmpProposal = proposal;
         uint executionBar = Avatar(proposal.avatar).nativeReputation().totalSupply() * params.preBoostedVoteRequiredPercentage/100;
 
         if (proposal.state == ProposalState.PreBoosted) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.submittedTime) >= params.preBoostedVotePeriodLimit) {
-                tmpProposal = proposal;
                 ExecuteProposal(_proposalId, NO);
-                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(0));
-                proposals[_proposalId].state = ProposalState.Closed;
+                proposal.state = ProposalState.Closed;
                 proposal.winningVote = NO;
+                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
                 return true;
              }
         // Check if someone crossed the absolute vote execution bar.
             if (proposal.votes[proposal.winningVote] > executionBar) {
-                tmpProposal = proposal;
                 ExecuteProposal(_proposalId, proposal.winningVote);
+                proposal.state = ProposalState.Executed;
                 (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
-                proposals[_proposalId].state = ProposalState.Executed;
                 return true;
                }
            //check if the proposal crossed its absolutePhaseScoreLimit or preBoostedVotePeriodLimit
@@ -337,20 +335,18 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             (proposal.state == ProposalState.QuietEndingPeriod)) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= proposal.boostedVotePeriodLimit) {
-                tmpProposal = proposal;
                 ExecuteProposal(_proposalId, proposal.winningVote);
-                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
-                proposals[_proposalId].state = ProposalState.Executed;
+                proposal.state = ProposalState.Executed;
                 orgBoostedProposalsCnt[tmpProposal.avatar]--;
+                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
                 return true;
              }
 
          // Check if someone crossed the absolute vote execution bar.
             if (proposal.votes[proposal.winningVote] > executionBar) {
-                tmpProposal = proposal;
                 ExecuteProposal(_proposalId, proposal.winningVote);
-                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
                 proposal.state = ProposalState.Executed;
+                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
                 return true;
             }
        }
@@ -735,17 +731,17 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             }
             proposal.winningVote = _vote;
         }
-        proposal.totalVotes = rep.add(proposal.totalVotes);
-        if (proposal.state != ProposalState.Boosted) {
-            uint reputationDeposit = (params.votersReputationLossRatio * rep)/100;
-            ControllerInterface(Avatar(proposal.avatar).owner()).mintReputation((-1) * int(reputationDeposit),_voter,proposal.avatar);
-            proposal.lostReputation += reputationDeposit;
-        }
         proposal.voters[_voter] = Voter({
             reputation: rep,
             vote: _vote,
             preBoosted:(proposal.state == ProposalState.PreBoosted)
         });
+        proposal.totalVotes = rep.add(proposal.totalVotes);
+        if (proposal.state != ProposalState.Boosted) {
+            uint reputationDeposit = (params.votersReputationLossRatio * rep)/100;
+            proposal.lostReputation += reputationDeposit;
+            ControllerInterface(Avatar(proposal.avatar).owner()).mintReputation((-1) * int(reputationDeposit),_voter,proposal.avatar);
+        }
         // Event:
         VoteProposal(_proposalId, _voter, _vote, reputation);
         // execute the proposal if this vote was decisive:

@@ -304,7 +304,7 @@ contract('VestingScheme', function(accounts) {
                   var amountPerPeriod =3;
                   var numberOfAgreedPeriods = 7;
                   var _signersArray = [];
-                  for (var i=0;i<_signaturesReqToCance-1;i++){
+                  for (var i=0;i<_signaturesReqToCancel-1;i++){
                     _signersArray[i] = accounts[i];
                   }
 
