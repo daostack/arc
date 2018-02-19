@@ -232,6 +232,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     function stake(bytes32 _proposalId, uint _vote, uint _amount) public returns(bool) {
         // 0 is not a valid vote.
         require(_vote <= NUM_OF_CHOICES && _vote > 0);
+        require(_amount > 0);
         if (execute(_proposalId)) {
             return true;
         }
@@ -454,11 +455,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         Parameters memory params = parameters[paramsHash];
         if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             Proposal storage proposal = proposals[_proposalId];
-            if (proposal.stakes[proposals[_proposalId].winningVote] == 0) {
+            if (proposal.stakes[proposal.winningVote] == 0) {
               //this can be reached if the winningVote is NO
                 return 0;
             }
-            return (proposal.stakers[_beneficiary].amount * proposal.totalStakes) / proposal.stakes[proposals[_proposalId].winningVote];
+            return (proposal.stakers[_beneficiary].amount * proposal.totalStakes) / proposal.stakes[proposal.winningVote];
         } else {
             return (params.governanceFormulasInterface).getRedeemableTokensStaker(_proposalId,_beneficiary);
         }
@@ -498,7 +499,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         Proposal storage proposal = proposals[_proposalId];
         if (proposal.totalVotes == 0)
            return 0;
-
         if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             return (proposal.votersStakes * (proposal.voters[_beneficiary].reputation / proposal.totalVotes));
         } else {
