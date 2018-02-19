@@ -308,25 +308,20 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         Proposal storage proposal = proposals[_proposalId];
         Proposal memory tmpProposal = proposal;
         uint executionBar = Avatar(proposal.avatar).nativeReputation().totalSupply() * params.preBoostedVoteRequiredPercentage/100;
+        bool toExecute;
 
         if (proposal.state == ProposalState.PreBoosted) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.submittedTime) >= params.preBoostedVotePeriodLimit) {
-                ExecuteProposal(_proposalId, NO);
                 proposal.state = ProposalState.Closed;
                 proposal.winningVote = NO;
-                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
-                return true;
-             }
-        // Check if someone crossed the absolute vote execution bar.
-            if (proposal.votes[proposal.winningVote] > executionBar) {
-                ExecuteProposal(_proposalId, proposal.winningVote);
+                toExecute = true;
+             } else if (proposal.votes[proposal.winningVote] > executionBar) {
+              // someone crossed the absolute vote execution bar.
                 proposal.state = ProposalState.Executed;
-                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
-                return true;
-               }
-           //check if the proposal crossed its absolutePhaseScoreLimit or preBoostedVotePeriodLimit
-            if ( shouldBoost(_proposalId)) {
+                toExecute = true;
+               } else if ( shouldBoost(_proposalId)) {
+                //the proposal crossed its absolutePhaseScoreLimit or preBoostedVotePeriodLimit
                 //change proposal mode to boosted mode.
                 proposal.state = ProposalState.Boosted;
                 // solium-disable-next-line security/no-block-members
@@ -334,26 +329,25 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
                 orgBoostedProposalsCnt[proposal.avatar]++;
               }
            }
+
         if ((proposal.state == ProposalState.Boosted) ||
             (proposal.state == ProposalState.QuietEndingPeriod)) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= proposal.boostedVotePeriodLimit) {
-                ExecuteProposal(_proposalId, proposal.winningVote);
                 proposal.state = ProposalState.Executed;
                 orgBoostedProposalsCnt[tmpProposal.avatar]--;
-                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
-                return true;
-             }
-
-         // Check if someone crossed the absolute vote execution bar.
-            if (proposal.votes[proposal.winningVote] > executionBar) {
-                ExecuteProposal(_proposalId, proposal.winningVote);
+                toExecute = true;
+             } else if (proposal.votes[proposal.winningVote] > executionBar) {
+               // someone crossed the absolute vote execution bar.
                 proposal.state = ProposalState.Executed;
-                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
-                return true;
+                toExecute = true;
             }
        }
-        return false;
+        if (toExecute) {
+            ExecuteProposal(_proposalId, proposal.winningVote);
+            (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
+        }
+        return toExecute;
     }
 
     /**
