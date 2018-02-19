@@ -225,6 +225,150 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx.logs[0].args._paramsHash, testSetup.genesisProtocolParams.paramsHash);
   });
 
+
+  it("check organization params validity", async function() {
+    var preBoostedVoteRequiredPercentage = 0;
+    var stakerFeeRatioForVoters = 1;
+    var votersReputationLossRatio = 1;
+    var votersGainRepRatioFromLostRep =1 ;
+    var proposingRepRewardConstB = 0;
+    var scoreThresholdParamsA = 8;
+    var scoreThresholdParamsB = 9;
+
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  1,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " 0 < preBoostedVoteRequiredPercentage <=100    ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+    preBoostedVoteRequiredPercentage = 101;
+
+
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  1,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " 0 < preBoostedVoteRequiredPercentage <=100    ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+    preBoostedVoteRequiredPercentage = 100;
+    stakerFeeRatioForVoters = 101;
+
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  1,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " stakerFeeRatioForVoters <=100    ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+    stakerFeeRatioForVoters = 100;
+    votersReputationLossRatio = 101;
+
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  1,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " votersReputationLossRatio <=100    ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+    votersReputationLossRatio = 100;
+    votersGainRepRatioFromLostRep = 101;
+
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  1,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " votersGainRepRatioFromLostRep <=100    ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+    votersGainRepRatioFromLostRep = 100;
+
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  proposingRepRewardConstB,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " proposingRepRewardConstB > 0 ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+  });
+
   it("log the VoteProposal event on voting ", async function() {
     var testSetup = await setup(accounts);
     let numberOfChoices = 2;
@@ -548,6 +692,24 @@ contract('GenesisProtocol', function (accounts) {
       } catch (ex) {
         helpers.assertVMException(ex);
       }
+  });
+
+
+  it("stake with zero amount will fail", async () => {
+
+    var testSetup = await setup(accounts);
+    let tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
+    var proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+    await testSetup.standardTokenMock.approve(testSetup.genesisProtocol.address,10);
+
+    try {
+      await testSetup.genesisProtocol.stake(proposalId,1,0);
+      assert(false, 'stake with zero amount should revert');
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
+
   });
 
   it("stake on boosted proposal is not allowed", async () => {
