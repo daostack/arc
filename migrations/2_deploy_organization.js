@@ -5,15 +5,11 @@ var Controller = artifacts.require('./Controller.sol');
 var UController = artifacts.require('./UController.sol');
 var DaoCreator = artifacts.require('./DaoCreator.sol');
 var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.sol');
-var DAOToken = artifacts.require('./DAOToken.sol');
-var Reputation = artifacts.require('./Reputation.sol');
 var SchemeRegistrar = artifacts.require('./SchemeRegistrar.sol');
 var SimpleICO = artifacts.require('./SimpleICO.sol');
 var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 var ContributionReward = artifacts.require('./ContributionReward.sol');
-var TokenCapGC = artifacts.require('./TokenCapGC.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
-var OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
 
 // TEST_ORGANIZATION ORG parameters:
 const orgName = "TEST_ORGANIZATION";
@@ -40,9 +36,7 @@ module.exports = async function(deployer) {
           initTokenInWei, initRepInWei,0);
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       var ControllerInst = await Controller.at(await AvatarInst.owner());
-      var tokenAddress = await ControllerInst.nativeToken();
       var reputationAddress = await ControllerInst.nativeReputation();
-      var DAOTokenInst = await DAOToken.at(tokenAddress);
       await deployer.deploy(AbsoluteVote);
       // Deploy AbsoluteVote:
       var AbsoluteVoteInst = await AbsoluteVote.deployed();
@@ -97,7 +91,7 @@ module.exports = async function(deployer) {
       //now deploy with universal controller
       await deployer.deploy(UController, {gas: constants.GENESIS_SCHEME_GAS_LIMIT});
       var uController = await UController.deployed();
-      var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
+      returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
           initTokenInWei, initRepInWei,uController.address);
       AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       await daoCreatorInst.setSchemes(
@@ -106,5 +100,4 @@ module.exports = async function(deployer) {
           paramsArray,
           permissionArray);
     });
-
-  }
+  };
