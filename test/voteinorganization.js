@@ -19,7 +19,7 @@ const setupVoteInOrganizationParams = async function(
                                             tokenAddress = 0
                                             ) {
   var voteInOrganizationParams = new VoteInOrganizationParams();
-  if (genesisProtocol == true){
+  if (genesisProtocol === true){
       voteInOrganizationParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress);
       await voteInOrganization.setParameters(voteInOrganizationParams.votingMachine.params,voteInOrganizationParams.votingMachine.genesisProtocol.address);
       voteInOrganizationParams.paramsHash = await voteInOrganization.getParametersHash(voteInOrganizationParams.votingMachine.params,voteInOrganizationParams.votingMachine.genesisProtocol.address);
@@ -39,7 +39,7 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.voteInOrganization = await VoteInOrganizationScheme.new();
    testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
-   if (reputationAccount == 0) {
+   if (reputationAccount === 0) {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],[20,10,70]);
    } else {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],[20,10,70]);

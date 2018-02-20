@@ -14,7 +14,7 @@ const setup = async function (permission='0') {
   // set up a reputation system
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', token.address, reputation.address);
-  if (permission!='0'){
+  if (permission !== '0'){
     _controller = await Controller.new(avatar.address,{from:accounts[1]});
     await _controller.registerScheme(accounts[0],0,permission,0,{from:accounts[1]});
     await _controller.unregisterSelf(0,{from:accounts[1]});

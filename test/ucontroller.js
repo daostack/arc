@@ -20,7 +20,7 @@ const setup = async function (permission='0x00000000') {
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', token.address, reputation.address);
   await avatar.transferOwnership(uController.address);
-  if (permission!='0x00000000'){
+  if (permission !== '0x00000000'){
     await uController.newOrganization(avatar.address,{from:accounts[1]});
     await uController.registerScheme(accounts[0],0,permission,avatar.address,{from:accounts[1]});
     await uController.unregisterSelf(0,{from:accounts[1]});

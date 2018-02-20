@@ -34,7 +34,7 @@ const setupNewController = async function (permission='0x00000000') {
   var reputation = await Reputation.new();
   var avatar = await Avatar.new('name', token.address, reputation.address);
   var _controller;
-  if (permission!='0'){
+  if (permission !== '0'){
     _controller = await Controller.new(avatar.address,{from:accounts[1]});
     await _controller.registerScheme(accounts[0],0,permission,0,{from:accounts[1]});
     await _controller.unregisterSelf(0,{from:accounts[1]});
