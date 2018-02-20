@@ -98,7 +98,7 @@ export const outOfGasMessage = 'VM Exception while processing transaction: out o
 
 export function assertJumpOrOutOfGas(error) {
     let condition = (
-        error.message == outOfGasMessage ||
+        error.message === outOfGasMessage ||
         error.message.search('invalid JUMP') > -1
     );
     assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error, got this instead: ' + error.message);
@@ -133,7 +133,7 @@ export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50,re
   votingMachine.reputationArray = [20, 40 ,70];
   await reputation.mint(accounts[0], votingMachine.reputationArray[0]);
   await reputation.mint(accounts[1], votingMachine.reputationArray[1]);
-  if (reputationAccount==0){
+  if (reputationAccount === 0){
     await reputation.mint(accounts[2], votingMachine.reputationArray[2]);
   }else {
     await reputation.mint(reputationAccount, votingMachine.reputationArray[2]);

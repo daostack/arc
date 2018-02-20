@@ -21,7 +21,7 @@ const setupGlobalConstraintRegistrarParams = async function(
                                             token
                                             ) {
   var globalConstraintRegistrarParams = new GlobalConstraintRegistrarParams();
-  if (genesisProtocol == true) {
+  if (genesisProtocol === true) {
     globalConstraintRegistrarParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token);
     await globalConstraintRegistrar.setParameters(globalConstraintRegistrarParams.votingMachine.params,
                                                   globalConstraintRegistrarParams.votingMachine.genesisProtocol.address);
