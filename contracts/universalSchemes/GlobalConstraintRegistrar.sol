@@ -24,7 +24,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         address indexed _intVoteInterface,
         address _gc
     );
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // The struct that holds the information of a global constraint proposed to be added or removed.
@@ -74,6 +74,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         // Check if vote was successful:
         GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
         delete organizationsData[_avatar].proposals[_proposalId];
+        ProposalDeleted(_avatar,_proposalId);
 
         if (_param == 1 ) {
 
@@ -90,7 +91,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
                 retVal = controller.removeGlobalConstraint(proposal.gc,_avatar);
               }
         }
-        ProposalExecuted(_avatar, _proposalId);
+        ProposalExecuted(_avatar, _proposalId,_param);
         return retVal;
     }
 

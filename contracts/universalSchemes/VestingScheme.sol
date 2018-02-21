@@ -12,9 +12,9 @@ import "./UniversalScheme.sol";
 contract VestingScheme is UniversalScheme, ExecutableInterface {
     using SafeMath for uint;
 
-    event ProposalExecuted(address indexed _avatar);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
+    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
     event AgreementProposal(address indexed _avatar, bytes32 _proposalId);
-    event Execution(address indexed _avatar, bytes32 _proposalId, int _result);
     event NewVestedAgreement(uint indexed _agreementId);
     event SignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
     event RevokeSignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
@@ -229,11 +229,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-
-        Execution(_avatar, _proposalId, _param);
-
         Agreement memory proposedAgreement = organizationsData[_avatar][_proposalId];
         delete organizationsData[_avatar][_proposalId];
+        ProposalDeleted(_avatar,_proposalId);
 
         // Check if vote was successful:
         if (_param == 1) {
@@ -245,7 +243,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
             agreementsCounter++;
         // Log the new agreement:
             NewVestedAgreement(agreementsCounter-1);
-       }
+        }
+        ProposalExecuted(_avatar,_proposalId,_param);
         return true;
     }
 

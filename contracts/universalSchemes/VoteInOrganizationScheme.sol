@@ -20,7 +20,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         bytes32 _originalProposalId,
         uint _originalNumOfChoices
     );
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
     event VoteOnBehalf(bytes32[] _params);
 
@@ -152,7 +152,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
             tmp[2] = bytes32(param);
             retVal = controller.genericAction(tmp,_avatar);
           }
-        ProposalExecuted(_avatar, _proposalId);
+        ProposalExecuted(_avatar, _proposalId,_param);
         return retVal;
     }
 
