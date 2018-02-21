@@ -23,8 +23,7 @@ contract ContributionReward is UniversalScheme {
         StandardToken _externalToken,
         address _beneficiary
     );
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
-    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event RedeemReputation(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,int _amount);
     event RedeemEther(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
     event RedeemNativeToken(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
@@ -186,7 +185,7 @@ contract ContributionReward is UniversalScheme {
           // solium-disable-next-line security/no-block-members
             organizationsProposals[_avatar][_proposalId].executionTime = now;
         }
-        ProposalExecuted(_avatar, _proposalId);
+        ProposalExecuted(_avatar, _proposalId,_param);
         return true;
     }
 

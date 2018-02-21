@@ -23,7 +23,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         address newUpgradeScheme,
         bytes32 _params
     );
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // Details of an upgrade proposal:
@@ -142,6 +142,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
         delete organizationsProposals[_avatar][_proposalId];
+        ProposalDeleted(_avatar,_proposalId);
         // Check if vote was successful:
         if (_param == 1) {
 
@@ -162,7 +163,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
                     }
                   }
         }
-
+        ProposalExecuted(_avatar, _proposalId,_param);
         return true;
     }
 }

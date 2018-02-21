@@ -23,7 +23,7 @@ contract SchemeRegistrar is UniversalScheme {
         address indexed _intVoteInterface,
         address _scheme
     );
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // a SchemeProposal is a  proposal to add or remove a scheme to/from the an organization
@@ -64,6 +64,7 @@ contract SchemeRegistrar is UniversalScheme {
 
         SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
         delete organizationsProposals[_avatar][_proposalId];
+        ProposalDeleted(_avatar,_proposalId);
         if (_param == 1) {
 
           // Define controller and get the params:
@@ -82,7 +83,7 @@ contract SchemeRegistrar is UniversalScheme {
                 require(controller.unregisterScheme(proposal.scheme,_avatar));
             }
           }
-        ProposalExecuted(_avatar, _proposalId);
+        ProposalExecuted(_avatar, _proposalId,_param);
         return true;
     }
 
