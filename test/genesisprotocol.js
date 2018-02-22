@@ -402,6 +402,7 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx.logs[1].event, "ExecuteProposal");
     assert.equal(tx.logs[1].args._proposalId, proposalId);
     assert.equal(tx.logs[1].args._decision, 2);
+    assert.equal(tx.logs[1].args._executionState, 2);
   });
 
   it("should log the ExecuteProposal event after time pass for preBoostedVotePeriodLimit (decision == 2 )", async function() {
@@ -419,6 +420,7 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx.logs[0].event, "ExecuteProposal");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
     assert.equal(tx.logs[0].args._decision, 2);
+    assert.equal(tx.logs[0].args._executionState, 1);
   });
 
   it("All options can be voted (1-2)", async function() {

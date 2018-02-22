@@ -13,6 +13,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     using SafeMath for uint;
 
     enum ProposalState { Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
+    enum ExecutionState { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
+
     //Organization's parameters
     struct Parameters {
         uint preBoostedVoteRequiredPercentage; // the absolute vote percentages bar.
@@ -66,7 +68,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     }
 
     event NewProposal(bytes32 indexed _proposalId, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event ExecuteProposal(bytes32 indexed _proposalId, uint _decision);
+    event ExecuteProposal(bytes32 indexed _proposalId, uint _decision,uint _totalReputation,ExecutionState _executionState);
     event VoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation);
     event Stake(bytes32 indexed _proposalId, address indexed _voter,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
@@ -308,19 +310,20 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         Parameters memory params = parameters[paramsHash];
         Proposal storage proposal = proposals[_proposalId];
         Proposal memory tmpProposal = proposal;
-        uint executionBar = Avatar(proposal.avatar).nativeReputation().totalSupply() * params.preBoostedVoteRequiredPercentage/100;
-        bool toExecute;
+        uint totalReputation = Avatar(proposal.avatar).nativeReputation().totalSupply();
+        uint executionBar = totalReputation * params.preBoostedVoteRequiredPercentage/100;
+        ExecutionState executionState = ExecutionState.None;
 
         if (proposal.state == ProposalState.PreBoosted) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.submittedTime) >= params.preBoostedVotePeriodLimit) {
                 proposal.state = ProposalState.Closed;
                 proposal.winningVote = NO;
-                toExecute = true;
+                executionState = ExecutionState.PreBoostedTimeOut;
              } else if (proposal.votes[proposal.winningVote] > executionBar) {
               // someone crossed the absolute vote execution bar.
                 proposal.state = ProposalState.Executed;
-                toExecute = true;
+                executionState = ExecutionState.PreBoostedBarCrossed;
                } else if ( shouldBoost(_proposalId)) {
                 //the proposal crossed its absolutePhaseScoreLimit or preBoostedVotePeriodLimit
                 //change proposal mode to boosted mode.
@@ -337,18 +340,18 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             if ((now - proposal.boostedPhaseTime) >= proposal.boostedVotePeriodLimit) {
                 proposal.state = ProposalState.Executed;
                 orgBoostedProposalsCnt[tmpProposal.avatar]--;
-                toExecute = true;
+                executionState = ExecutionState.BoostedTimeOut;
              } else if (proposal.votes[proposal.winningVote] > executionBar) {
                // someone crossed the absolute vote execution bar.
                 proposal.state = ProposalState.Executed;
-                toExecute = true;
+                executionState = ExecutionState.BoostedBarCrossed;
             }
        }
-        if (toExecute) {
-            ExecuteProposal(_proposalId, proposal.winningVote);
+        if (executionState != ExecutionState.None) {
+            ExecuteProposal(_proposalId, proposal.winningVote, totalReputation, executionState);
             (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
         }
-        return toExecute;
+        return (executionState != ExecutionState.None);
     }
 
     /**
