@@ -20,7 +20,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        address newUpgradeScheme,
+        address _newUpgradeScheme,
         bytes32 _params
     );
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
