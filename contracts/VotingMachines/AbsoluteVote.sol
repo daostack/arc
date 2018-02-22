@@ -33,7 +33,7 @@ contract AbsoluteVote is IntVoteInterface {
 
     event NewProposal(bytes32 indexed _proposalId, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
     event CancelProposal(bytes32 indexed _proposalId);
-    event ExecuteProposal(bytes32 indexed _proposalId, uint _decision);
+    event ExecuteProposal(bytes32 indexed _proposalId, uint _decision, uint _totalReputation);
     event VoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
     event CancelVoting(bytes32 indexed _proposalId, address indexed _voter);
 
@@ -176,7 +176,7 @@ contract AbsoluteVote is IntVoteInterface {
             if (proposal.votes[cnt] > totalReputation*precReq/100) {
                 Proposal memory tmpProposal = proposal;
                 deleteProposal(_proposalId);
-                ExecuteProposal(_proposalId, cnt);
+                ExecuteProposal(_proposalId, cnt, totalReputation);
                 (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(cnt));
                 return true;
             }
