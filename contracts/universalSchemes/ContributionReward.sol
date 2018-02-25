@@ -347,8 +347,9 @@ contract ContributionReward is UniversalScheme {
     * @return  periods left to be paid.
     */
     function getPeriodsToPay(bytes32 _proposalId, address _avatar,uint _redeemType) public view returns (uint) {
-
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        if (_proposal.executionTime == 0)
+            return 0;
         // solium-disable-next-line security/no-block-members
         uint periodsFromExecution = (now.sub(_proposal.executionTime)).div(_proposal.periodLength);
         uint periodsToPay;
@@ -360,5 +361,19 @@ contract ContributionReward is UniversalScheme {
         return periodsToPay;
     }
 
+    /**
+    * @dev getRedeemedPeriods return the already redeemed periods for reputation, nativeToken, ether or externalToken.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _avatar address of the controller
+    * @param _redeemType - the type of the reward  :
+    *         0 - reputation
+    *         1 - nativeTokenReward
+    *         2 - Ether
+    *         3 - ExternalToken
+    * @return redeemed period.
+    */
+    function getRedeemedPeriods(bytes32 _proposalId, address _avatar,uint _redeemType) public view returns (uint) {
+        return organizationsProposals[_avatar][_proposalId].redeemedPeriods[_redeemType];
+    }
 
 }
