@@ -4,9 +4,12 @@ import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 /**
- * @title Simple static reputation storage
- * @dev The reputation is represented by the owner of the contract
- * which is usually the controller's address
+ * @title Reputation system
+ * @dev A DAO has Reputation System which allows peers to rate other peers in order to build trust .
+ * A reputation is use to assign influence measure to a DAO'S peers.
+ * Reputation is similar to regular tokens but with one crucial difference: It is non-transferable.
+ * The Reputation contract maintain a map of address to reputation value.
+ * It provides an onlyOwner function to mint ,negative or positive, reputation for a specific address.
  */
 
 contract Reputation is Ownable {
@@ -45,12 +48,13 @@ contract Reputation is Ownable {
     /**
     * @dev adding/reducing reputation of a given address, updating the total supply,
     * and triggering an event of the operation.
+    * Max reputation allowed is capped by INT256_MAX = 2**255 - Any value minted over this MAX will cause a revert.
+    * Min reputation allowed is 0. - Any value minted below this MIN will be trim to 0.
     * @param _to the address which we gives/takes reputation amount
     * @param _amount the reputation amount to be added/reduced
     * @return bool which represents a successful of the function
     */
     function mint(address _to, int256 _amount) public onlyOwner capTotalSupply returns (bool) {
-        // create new tokens and add them to the given account
         int amountMinted = _amount;
 
         if (int(balances[_to]) + _amount >= 0 ) {
