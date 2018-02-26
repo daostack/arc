@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.19;
 
 import "./UniversalSchemeInterface.sol";
 import "../controller/ControllerInterface.sol";
@@ -7,10 +7,8 @@ import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 
 
-contract UniversalScheme is Ownable, UniversalSchemeInterface { //
+contract UniversalScheme is Ownable, UniversalSchemeInterface {
     bytes32 public hashedParameters; // For other parameters.
-
-    event NewProposal(bytes32 proposalId);
 
     function updateParameters(
         bytes32 _hashedParameters
@@ -27,5 +25,4 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface { //
     function getParametersFromController(Avatar _avatar) internal view returns(bytes32) {
         return ControllerInterface(_avatar.owner()).getSchemeParameters(this,address(_avatar));
     }
-
 }
