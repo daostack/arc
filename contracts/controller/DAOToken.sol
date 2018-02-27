@@ -2,6 +2,7 @@ pragma solidity ^0.4.19;
 
 import "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
 import "zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
+import "zeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
 import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
 
 
@@ -11,7 +12,7 @@ import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
  * @dev ERC20 compatible token. It is a mintable, destructible, burnable token.
  */
 
-contract DAOToken is MintableToken,Destructible,BurnableToken {
+contract DAOToken is MintableToken, Destructible, BurnableToken, ERC827Token {
 
     string public name;
     string public symbol;
