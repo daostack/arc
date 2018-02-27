@@ -23,6 +23,10 @@
       
         <meta name="lang:search.language" content="en">
       
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
         <meta name="lang:search.result.none" content="No matching documents">
       
         <meta name="lang:search.result.one" content="1 matching document">
@@ -32,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.5.4">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.6.6">
     
     
       
@@ -40,15 +44,16 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.aa3de92b.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.78aab2dc.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.792431c1.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.6079476c.css">
       
     
     
       <script src="../../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
@@ -59,7 +64,6 @@
     
   </head>
   
-  
     
     
     <body dir="ltr" data-md-color-primary="teal" data-md-color-accent="amber">
@@ -68,7 +72,24 @@
       <defs>
         
         
-          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
         
       </defs>
     </svg>
@@ -666,6 +687,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#balancesaddress" title="balances(address)" class="md-nav__link">
+    balances(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#decimals" title="decimals()" class="md-nav__link">
     decimals()
   </a>
@@ -711,6 +739,8 @@
     </nav>
   
 </li>
+      
+      
       
       
       
@@ -1106,6 +1136,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#balancesaddress" title="balances(address)" class="md-nav__link">
+    balances(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#decimals" title="decimals()" class="md-nav__link">
     decimals()
   </a>
@@ -1154,6 +1191,8 @@
       
       
       
+      
+      
     </ul>
   
 </nav>
@@ -1172,11 +1211,11 @@
                 <h1 id="reputation">Reputation<a class="headerlink" href="#reputation" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/arc/tree/master/contracts/controller/Reputation.sol">see the source</a></p>
 <blockquote>
-<p>Simple static reputation storage</p>
+<p>Reputation system</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 50663 gas</p>
-<p><strong>Deployment cost</strong>: less than 168000 gas</p>
-<p><strong>Combined cost</strong>: less than 218663 gas</p>
+<p><strong>Execution cost</strong>: less than 50675 gas</p>
+<p><strong>Deployment cost</strong>: less than 180000 gas</p>
+<p><strong>Combined cost</strong>: less than 230675 gas</p>
 <h2 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h2>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
 <h3 id="mintaddressint256">Mint(address,int256)<a class="headerlink" href="#mintaddressint256" title="Permanent link">&para;</a></h3>
@@ -1195,8 +1234,20 @@
 <li><strong>newOwner</strong> <em>of type <code>address</code></em></li>
 </ol>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
+<h3 id="balancesaddress">balances(address)<a class="headerlink" href="#balancesaddress" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 542 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>param_0</strong> <em>of type <code>address</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
 <h3 id="decimals">decimals()<a class="headerlink" href="#decimals" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 395 gas</p>
+<p><strong>Execution cost</strong>: less than 417 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Returns:</p>
 <ol>
@@ -1205,9 +1256,9 @@
 <hr />
 <h3 id="mintaddressint256_1">mint(address,int256)<a class="headerlink" href="#mintaddressint256_1" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>adding/reducing reputation of a given address, updating the total supply, and triggering an event of the operation.</p>
+<p>adding/reducing reputation of a given address, updating the total supply, and triggering an event of the operation. Max reputation allowed is capped by INT256_MAX = 2**255 - Any value minted over this MAX will cause a revert. Min reputation allowed is 0. - Any value minted below this MIN will be trim to 0.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 43407 gas</p>
+<p><strong>Execution cost</strong>: less than 43429 gas</p>
 <p>Params:</p>
 <ol>
 <li>
@@ -1232,7 +1283,7 @@
 </ol>
 <hr />
 <h3 id="owner">owner()<a class="headerlink" href="#owner" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 573 gas</p>
+<p><strong>Execution cost</strong>: less than 595 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Returns:</p>
 <ol>
@@ -1243,7 +1294,7 @@
 <blockquote>
 <p>return the reputation amount of a given owner</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 661 gas</p>
+<p><strong>Execution cost</strong>: less than 683 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1271,7 +1322,7 @@
 <blockquote>
 <p>Allows the current owner to transfer control of the contract to a newOwner.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 22832 gas</p>
+<p><strong>Execution cost</strong>: less than 22854 gas</p>
 <p>Params:</p>
 <ol>
 <li>
@@ -1363,7 +1414,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.f041762f.js"></script>
+      <script src="../../../assets/javascripts/application.02434462.js"></script>
       
       <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
       

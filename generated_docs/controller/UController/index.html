@@ -23,6 +23,10 @@
       
         <meta name="lang:search.language" content="en">
       
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
         <meta name="lang:search.result.none" content="No matching documents">
       
         <meta name="lang:search.result.one" content="1 matching document">
@@ -32,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.5.4">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.6.6">
     
     
       
@@ -40,15 +44,16 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.aa3de92b.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.78aab2dc.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.792431c1.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.6079476c.css">
       
     
     
       <script src="../../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
@@ -59,7 +64,6 @@
     
   </head>
   
-  
     
     
     <body dir="ltr" data-md-color-primary="teal" data-md-color-accent="amber">
@@ -68,7 +72,24 @@
       <defs>
         
         
-          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
         
       </defs>
     </svg>
@@ -804,15 +825,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#sendetheruint256addressaddress" title="sendEther(uint256,address,address)" class="md-nav__link">
-    sendEther(uint256,address,address)
+  <a href="#genericactionbytes32address" title="genericAction(bytes32[],address)" class="md-nav__link">
+    genericAction(bytes32[],address)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#genericactionbytes32address" title="genericAction(bytes32[],address)" class="md-nav__link">
-    genericAction(bytes32[],address)
+  <a href="#neworganizationaddress" title="newOrganization(address)" class="md-nav__link">
+    newOrganization(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minttokensuint256addressaddress" title="mintTokens(uint256,address,address)" class="md-nav__link">
+    mintTokens(uint256,address,address)
   </a>
   
 </li>
@@ -846,22 +874,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#minttokensuint256addressaddress" title="mintTokens(uint256,address,address)" class="md-nav__link">
-    mintTokens(uint256,address,address)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#neworganizationaddress" title="newOrganization(address)" class="md-nav__link">
-    newOrganization(address)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#newcontrollersaddress" title="newControllers(address)" class="md-nav__link">
     newControllers(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#organizationsaddress" title="organizations(address)" class="md-nav__link">
+    organizations(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registerschemeaddressbytes32bytes4address" title="registerScheme(address,bytes32,bytes4,address)" class="md-nav__link">
+    registerScheme(address,bytes32,bytes4,address)
   </a>
   
 </li>
@@ -874,8 +902,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#registerschemeaddressbytes32bytes4address" title="registerScheme(address,bytes32,bytes4,address)" class="md-nav__link">
-    registerScheme(address,bytes32,bytes4,address)
+  <a href="#sendetheruint256addressaddress" title="sendEther(uint256,address,address)" class="md-nav__link">
+    sendEther(uint256,address,address)
   </a>
   
 </li>
@@ -905,6 +933,8 @@
     </nav>
   
 </li>
+      
+      
       
       
       
@@ -1414,15 +1444,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#sendetheruint256addressaddress" title="sendEther(uint256,address,address)" class="md-nav__link">
-    sendEther(uint256,address,address)
+  <a href="#genericactionbytes32address" title="genericAction(bytes32[],address)" class="md-nav__link">
+    genericAction(bytes32[],address)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#genericactionbytes32address" title="genericAction(bytes32[],address)" class="md-nav__link">
-    genericAction(bytes32[],address)
+  <a href="#neworganizationaddress" title="newOrganization(address)" class="md-nav__link">
+    newOrganization(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minttokensuint256addressaddress" title="mintTokens(uint256,address,address)" class="md-nav__link">
+    mintTokens(uint256,address,address)
   </a>
   
 </li>
@@ -1456,22 +1493,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#minttokensuint256addressaddress" title="mintTokens(uint256,address,address)" class="md-nav__link">
-    mintTokens(uint256,address,address)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#neworganizationaddress" title="newOrganization(address)" class="md-nav__link">
-    newOrganization(address)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#newcontrollersaddress" title="newControllers(address)" class="md-nav__link">
     newControllers(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#organizationsaddress" title="organizations(address)" class="md-nav__link">
+    organizations(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registerschemeaddressbytes32bytes4address" title="registerScheme(address,bytes32,bytes4,address)" class="md-nav__link">
+    registerScheme(address,bytes32,bytes4,address)
   </a>
   
 </li>
@@ -1484,8 +1521,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#registerschemeaddressbytes32bytes4address" title="registerScheme(address,bytes32,bytes4,address)" class="md-nav__link">
-    registerScheme(address,bytes32,bytes4,address)
+  <a href="#sendetheruint256addressaddress" title="sendEther(uint256,address,address)" class="md-nav__link">
+    sendEther(uint256,address,address)
   </a>
   
 </li>
@@ -1518,6 +1555,8 @@
       
       
       
+      
+      
     </ul>
   
 </nav>
@@ -1538,9 +1577,9 @@
 <blockquote>
 <p>Universal Controller contract</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 3847 gas</p>
-<p><strong>Deployment cost</strong>: less than 3446000 gas</p>
-<p><strong>Combined cost</strong>: less than 3449847 gas</p>
+<p><strong>Execution cost</strong>: less than 3879 gas</p>
+<p><strong>Deployment cost</strong>: less than 3474200 gas</p>
+<p><strong>Combined cost</strong>: less than 3478079 gas</p>
 <h2 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h2>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
 <h3 id="externaltokentransferaddressaddressaddressuint256">ExternalTokenTransfer(address,address,address,uint256)<a class="headerlink" href="#externaltokentransferaddressaddressaddressuint256" title="Permanent link">&para;</a></h3>
@@ -1903,7 +1942,7 @@
 </ol>
 <hr />
 <h3 id="isschemeregisteredaddressaddress">isSchemeRegistered(address,address)<a class="headerlink" href="#isschemeregisteredaddressaddress" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 1151 gas</p>
+<p><strong>Execution cost</strong>: less than 1173 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1911,40 +1950,6 @@
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
 </ol>
 <p>Returns:</p>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
-</ol>
-<hr />
-<h3 id="sendetheruint256addressaddress">sendEther(uint256,address,address)<a class="headerlink" href="#sendetheruint256addressaddress" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>send some ether</p>
-</blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_amountInWei</strong> <em>of type <code>uint256</code></em></p>
-<blockquote>
-<p>the amount of ether (in Wei) to send</p>
-</blockquote>
-</li>
-<li>
-<p><strong>_to</strong> <em>of type <code>address</code></em></p>
-<blockquote>
-<p>address of the beneficiary</p>
-</blockquote>
-</li>
-<li>
-<p><strong>_avatar</strong> <em>of type <code>address</code></em></p>
-<blockquote>
-<p>the organization avatar.</p>
-</blockquote>
-</li>
-</ol>
-<p>Returns:</p>
-<blockquote>
-<p>bool which represents a success</p>
-</blockquote>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
@@ -1977,62 +1982,19 @@
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
-<h3 id="isglobalconstraintregisteredaddressaddress">isGlobalConstraintRegistered(address,address)<a class="headerlink" href="#isglobalconstraintregisteredaddressaddress" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 1661 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li><strong>_globalConstraint</strong> <em>of type <code>address</code></em></li>
-<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
-</ol>
-<p>Returns:</p>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
-</ol>
-<hr />
-<h3 id="getschemeparametersaddressaddress">getSchemeParameters(address,address)<a class="headerlink" href="#getschemeparametersaddressaddress" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 789 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li><strong>_scheme</strong> <em>of type <code>address</code></em></li>
-<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
-</ol>
-<p>Returns:</p>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<hr />
-<h3 id="globalconstraintscountaddress">globalConstraintsCount(address)<a class="headerlink" href="#globalconstraintscountaddress" title="Permanent link">&para;</a></h3>
+<h3 id="neworganizationaddress">newOrganization(address)<a class="headerlink" href="#neworganizationaddress" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>globalConstraintsCount return the global constraint pre and post count</p>
+<p>newOrganization set up a new organization with default daoCreator.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 1148 gas</p>
-<p><strong>Attributes</strong>: constant</p>
+<p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
-<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
-</ol>
-<p>Returns:</p>
+<li>
+<p><strong>_avatar</strong> <em>of type <code>address</code></em></p>
 <blockquote>
-<p>uint globalConstraintsPre count.uint globalConstraintsPost count.</p>
+<p>the organization avatar</p>
 </blockquote>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>output_1</strong> <em>of type <code>uint256</code></em></li>
-</ol>
-<hr />
-<h3 id="getschemepermissionsaddressaddress">getSchemePermissions(address,address)<a class="headerlink" href="#getschemepermissionsaddressaddress" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 1120 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li><strong>_scheme</strong> <em>of type <code>address</code></em></li>
-<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
-</ol>
-<p>Returns:</p>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>bytes4</code></em></li>
+</li>
 </ol>
 <hr />
 <h3 id="minttokensuint256addressaddress">mintTokens(uint256,address,address)<a class="headerlink" href="#minttokensuint256addressaddress" title="Permanent link">&para;</a></h3>
@@ -2069,19 +2031,62 @@
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
-<h3 id="neworganizationaddress">newOrganization(address)<a class="headerlink" href="#neworganizationaddress" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>newOrganization set up a new organization with default daoCreator.</p>
-</blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
+<h3 id="isglobalconstraintregisteredaddressaddress">isGlobalConstraintRegistered(address,address)<a class="headerlink" href="#isglobalconstraintregisteredaddressaddress" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 1683 gas</p>
+<p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
-<li>
-<p><strong>_avatar</strong> <em>of type <code>address</code></em></p>
+<li><strong>_globalConstraint</strong> <em>of type <code>address</code></em></li>
+<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
+</ol>
+<hr />
+<h3 id="getschemeparametersaddressaddress">getSchemeParameters(address,address)<a class="headerlink" href="#getschemeparametersaddressaddress" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 789 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>_scheme</strong> <em>of type <code>address</code></em></li>
+<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
+</ol>
+<hr />
+<h3 id="globalconstraintscountaddress">globalConstraintsCount(address)<a class="headerlink" href="#globalconstraintscountaddress" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>the organization avatar</p>
+<p>globalConstraintsCount return the global constraint pre and post count</p>
 </blockquote>
-</li>
+<p><strong>Execution cost</strong>: less than 1170 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>uint globalConstraintsPre count.uint globalConstraintsPost count.</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>output_1</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
+<h3 id="getschemepermissionsaddressaddress">getSchemePermissions(address,address)<a class="headerlink" href="#getschemepermissionsaddressaddress" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 1142 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>_scheme</strong> <em>of type <code>address</code></em></li>
+<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bytes4</code></em></li>
 </ol>
 <hr />
 <h3 id="newcontrollersaddress">newControllers(address)<a class="headerlink" href="#newcontrollersaddress" title="Permanent link">&para;</a></h3>
@@ -2094,6 +2099,60 @@
 <p>Returns:</p>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>address</code></em></li>
+</ol>
+<hr />
+<h3 id="organizationsaddress">organizations(address)<a class="headerlink" href="#organizationsaddress" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 1369 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>param_0</strong> <em>of type <code>address</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>nativeToken</strong> <em>of type <code>address</code></em></li>
+<li><strong>nativeReputation</strong> <em>of type <code>address</code></em></li>
+<li><strong>exist</strong> <em>of type <code>bool</code></em></li>
+</ol>
+<hr />
+<h3 id="registerschemeaddressbytes32bytes4address">registerScheme(address,bytes32,bytes4,address)<a class="headerlink" href="#registerschemeaddressbytes32bytes4address" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>register or update a scheme</p>
+</blockquote>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_scheme</strong> <em>of type <code>address</code></em></p>
+<blockquote>
+<p>the address of the scheme</p>
+</blockquote>
+</li>
+<li>
+<p><strong>_paramsHash</strong> <em>of type <code>bytes32</code></em></p>
+<blockquote>
+<p>a hashed configuration of the usage of the scheme</p>
+</blockquote>
+</li>
+<li>
+<p><strong>_permissions</strong> <em>of type <code>bytes4</code></em></p>
+<blockquote>
+<p>the permissions the new scheme will have</p>
+</blockquote>
+</li>
+<li>
+<p><strong>_avatar</strong> <em>of type <code>address</code></em></p>
+<blockquote>
+<p>the organization avatar.</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>bool which represents a success</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
 <h3 id="removeglobalconstraintaddressaddress">removeGlobalConstraint(address,address)<a class="headerlink" href="#removeglobalconstraintaddressaddress" title="Permanent link">&para;</a></h3>
@@ -2124,29 +2183,23 @@
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
-<h3 id="registerschemeaddressbytes32bytes4address">registerScheme(address,bytes32,bytes4,address)<a class="headerlink" href="#registerschemeaddressbytes32bytes4address" title="Permanent link">&para;</a></h3>
+<h3 id="sendetheruint256addressaddress">sendEther(uint256,address,address)<a class="headerlink" href="#sendetheruint256addressaddress" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>register or update a scheme</p>
+<p>send some ether</p>
 </blockquote>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li>
-<p><strong>_scheme</strong> <em>of type <code>address</code></em></p>
+<p><strong>_amountInWei</strong> <em>of type <code>uint256</code></em></p>
 <blockquote>
-<p>the address of the scheme</p>
+<p>the amount of ether (in Wei) to send</p>
 </blockquote>
 </li>
 <li>
-<p><strong>_paramsHash</strong> <em>of type <code>bytes32</code></em></p>
+<p><strong>_to</strong> <em>of type <code>address</code></em></p>
 <blockquote>
-<p>a hashed configuration of the usage of the scheme</p>
-</blockquote>
-</li>
-<li>
-<p><strong>_permissions</strong> <em>of type <code>bytes4</code></em></p>
-<blockquote>
-<p>the permissions the new scheme will have</p>
+<p>address of the beneficiary</p>
 </blockquote>
 </li>
 <li>
@@ -2196,7 +2249,7 @@
 <blockquote>
 <p>unregister the caller's scheme</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 28509 gas</p>
+<p><strong>Execution cost</strong>: less than 28531 gas</p>
 <p>Params:</p>
 <ol>
 <li>
@@ -2323,7 +2376,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.f041762f.js"></script>
+      <script src="../../../assets/javascripts/application.02434462.js"></script>
       
       <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
       

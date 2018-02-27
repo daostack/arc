@@ -23,6 +23,10 @@
       
         <meta name="lang:search.language" content="en">
       
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
         <meta name="lang:search.result.none" content="No matching documents">
       
         <meta name="lang:search.result.one" content="1 matching document">
@@ -32,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.5.4">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.6.6">
     
     
       
@@ -40,15 +44,16 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.aa3de92b.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.78aab2dc.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.792431c1.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.6079476c.css">
       
     
     
       <script src="../../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
@@ -59,7 +64,6 @@
     
   </head>
   
-  
     
     
     <body dir="ltr" data-md-color-primary="teal" data-md-color-accent="amber">
@@ -68,7 +72,24 @@
       <defs>
         
         
-          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
         
       </defs>
     </svg>
@@ -915,8 +936,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#executeproposalbytes32uint256" title="ExecuteProposal(bytes32,uint256)" class="md-nav__link">
-    ExecuteProposal(bytes32,uint256)
+  <a href="#executeproposalbytes32uint256uint256uint8" title="ExecuteProposal(bytes32,uint256,uint256,uint8)" class="md-nav__link">
+    ExecuteProposal(bytes32,uint256,uint256,uint8)
   </a>
   
 </li>
@@ -924,13 +945,6 @@
           <li class="md-nav__item">
   <a href="#newproposalbytes32uint256addressbytes32" title="NewProposal(bytes32,uint256,address,bytes32)" class="md-nav__link">
     NewProposal(bytes32,uint256,address,bytes32)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#newproposalbytes32" title="NewProposal(bytes32)" class="md-nav__link">
-    NewProposal(bytes32)
   </a>
   
 </li>
@@ -984,8 +998,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#getredeemablereputationstakerbytes32address" title="getRedeemableReputationStaker(bytes32,address)" class="md-nav__link">
-    getRedeemableReputationStaker(bytes32,address)
+  <a href="#num_of_choices" title="NUM_OF_CHOICES()" class="md-nav__link">
+    NUM_OF_CHOICES()
   </a>
   
 </li>
@@ -1040,15 +1054,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cancelproposalbytes32" title="cancelProposal(bytes32)" class="md-nav__link">
-    cancelProposal(bytes32)
+  <a href="#yes" title="YES()" class="md-nav__link">
+    YES()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#yes" title="YES()" class="md-nav__link">
-    YES()
+  <a href="#cancelproposalbytes32" title="cancelProposal(bytes32)" class="md-nav__link">
+    cancelProposal(bytes32)
   </a>
   
 </li>
@@ -1063,6 +1077,13 @@
           <li class="md-nav__item">
   <a href="#getnumberofchoicesbytes32" title="getNumberOfChoices(bytes32)" class="md-nav__link">
     getNumberOfChoices(bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getredeemablereputationstakerbytes32address" title="getRedeemableReputationStaker(bytes32,address)" class="md-nav__link">
+    getRedeemableReputationStaker(bytes32,address)
   </a>
   
 </li>
@@ -1096,15 +1117,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ownervotebytes32uint256address" title="ownerVote(bytes32,uint256,address)" class="md-nav__link">
-    ownerVote(bytes32,uint256,address)
+  <a href="#isvotablebytes32" title="isVotable(bytes32)" class="md-nav__link">
+    isVotable(bytes32)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#isvotablebytes32" title="isVotable(bytes32)" class="md-nav__link">
-    isVotable(bytes32)
+  <a href="#ownervotebytes32uint256address" title="ownerVote(bytes32,uint256,address)" class="md-nav__link">
+    ownerVote(bytes32,uint256,address)
   </a>
   
 </li>
@@ -1124,8 +1145,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeembytes32address" title="redeem(bytes32,address)" class="md-nav__link">
-    redeem(bytes32,address)
+  <a href="#thresholdaddress" title="threshold(address)" class="md-nav__link">
+    threshold(address)
   </a>
   
 </li>
@@ -1138,6 +1159,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#scorethresholdparamsaddress" title="scoreThresholdParams(address)" class="md-nav__link">
+    scoreThresholdParams(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#proposalavatarbytes32" title="proposalAvatar(bytes32)" class="md-nav__link">
     proposalAvatar(bytes32)
   </a>
@@ -1145,8 +1173,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#scorethresholdparamsaddress" title="scoreThresholdParams(address)" class="md-nav__link">
-    scoreThresholdParams(address)
+  <a href="#proposalscnt" title="proposalsCnt()" class="md-nav__link">
+    proposalsCnt()
   </a>
   
 </li>
@@ -1159,8 +1187,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#proposalsbytes32" title="proposals(bytes32)" class="md-nav__link">
-    proposals(bytes32)
+  <a href="#redeembytes32address" title="redeem(bytes32,address)" class="md-nav__link">
+    redeem(bytes32,address)
   </a>
   
 </li>
@@ -1173,22 +1201,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#proposalsbytes32" title="proposals(bytes32)" class="md-nav__link">
+    proposals(bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#proposalstatusbytes32" title="proposalStatus(bytes32)" class="md-nav__link">
     proposalStatus(bytes32)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stakebytes32uint256uint256" title="stake(bytes32,uint256,uint256)" class="md-nav__link">
-    stake(bytes32,uint256,uint256)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#shouldboostbytes32" title="shouldBoost(bytes32)" class="md-nav__link">
-    shouldBoost(bytes32)
   </a>
   
 </li>
@@ -1222,8 +1243,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#thresholdaddress" title="threshold(address)" class="md-nav__link">
-    threshold(address)
+  <a href="#stakebytes32uint256uint256" title="stake(bytes32,uint256,uint256)" class="md-nav__link">
+    stake(bytes32,uint256,uint256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shouldboostbytes32" title="shouldBoost(bytes32)" class="md-nav__link">
+    shouldBoost(bytes32)
   </a>
   
 </li>
@@ -1281,6 +1309,8 @@
     </nav>
   
 </li>
+      
+      
       
       
       
@@ -1373,8 +1403,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#executeproposalbytes32uint256" title="ExecuteProposal(bytes32,uint256)" class="md-nav__link">
-    ExecuteProposal(bytes32,uint256)
+  <a href="#executeproposalbytes32uint256uint256uint8" title="ExecuteProposal(bytes32,uint256,uint256,uint8)" class="md-nav__link">
+    ExecuteProposal(bytes32,uint256,uint256,uint8)
   </a>
   
 </li>
@@ -1382,13 +1412,6 @@
           <li class="md-nav__item">
   <a href="#newproposalbytes32uint256addressbytes32" title="NewProposal(bytes32,uint256,address,bytes32)" class="md-nav__link">
     NewProposal(bytes32,uint256,address,bytes32)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#newproposalbytes32" title="NewProposal(bytes32)" class="md-nav__link">
-    NewProposal(bytes32)
   </a>
   
 </li>
@@ -1442,8 +1465,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#getredeemablereputationstakerbytes32address" title="getRedeemableReputationStaker(bytes32,address)" class="md-nav__link">
-    getRedeemableReputationStaker(bytes32,address)
+  <a href="#num_of_choices" title="NUM_OF_CHOICES()" class="md-nav__link">
+    NUM_OF_CHOICES()
   </a>
   
 </li>
@@ -1498,15 +1521,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cancelproposalbytes32" title="cancelProposal(bytes32)" class="md-nav__link">
-    cancelProposal(bytes32)
+  <a href="#yes" title="YES()" class="md-nav__link">
+    YES()
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#yes" title="YES()" class="md-nav__link">
-    YES()
+  <a href="#cancelproposalbytes32" title="cancelProposal(bytes32)" class="md-nav__link">
+    cancelProposal(bytes32)
   </a>
   
 </li>
@@ -1521,6 +1544,13 @@
           <li class="md-nav__item">
   <a href="#getnumberofchoicesbytes32" title="getNumberOfChoices(bytes32)" class="md-nav__link">
     getNumberOfChoices(bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getredeemablereputationstakerbytes32address" title="getRedeemableReputationStaker(bytes32,address)" class="md-nav__link">
+    getRedeemableReputationStaker(bytes32,address)
   </a>
   
 </li>
@@ -1554,15 +1584,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ownervotebytes32uint256address" title="ownerVote(bytes32,uint256,address)" class="md-nav__link">
-    ownerVote(bytes32,uint256,address)
+  <a href="#isvotablebytes32" title="isVotable(bytes32)" class="md-nav__link">
+    isVotable(bytes32)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#isvotablebytes32" title="isVotable(bytes32)" class="md-nav__link">
-    isVotable(bytes32)
+  <a href="#ownervotebytes32uint256address" title="ownerVote(bytes32,uint256,address)" class="md-nav__link">
+    ownerVote(bytes32,uint256,address)
   </a>
   
 </li>
@@ -1582,8 +1612,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#redeembytes32address" title="redeem(bytes32,address)" class="md-nav__link">
-    redeem(bytes32,address)
+  <a href="#thresholdaddress" title="threshold(address)" class="md-nav__link">
+    threshold(address)
   </a>
   
 </li>
@@ -1596,6 +1626,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#scorethresholdparamsaddress" title="scoreThresholdParams(address)" class="md-nav__link">
+    scoreThresholdParams(address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#proposalavatarbytes32" title="proposalAvatar(bytes32)" class="md-nav__link">
     proposalAvatar(bytes32)
   </a>
@@ -1603,8 +1640,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#scorethresholdparamsaddress" title="scoreThresholdParams(address)" class="md-nav__link">
-    scoreThresholdParams(address)
+  <a href="#proposalscnt" title="proposalsCnt()" class="md-nav__link">
+    proposalsCnt()
   </a>
   
 </li>
@@ -1617,8 +1654,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#proposalsbytes32" title="proposals(bytes32)" class="md-nav__link">
-    proposals(bytes32)
+  <a href="#redeembytes32address" title="redeem(bytes32,address)" class="md-nav__link">
+    redeem(bytes32,address)
   </a>
   
 </li>
@@ -1631,22 +1668,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#proposalsbytes32" title="proposals(bytes32)" class="md-nav__link">
+    proposals(bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#proposalstatusbytes32" title="proposalStatus(bytes32)" class="md-nav__link">
     proposalStatus(bytes32)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stakebytes32uint256uint256" title="stake(bytes32,uint256,uint256)" class="md-nav__link">
-    stake(bytes32,uint256,uint256)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#shouldboostbytes32" title="shouldBoost(bytes32)" class="md-nav__link">
-    shouldBoost(bytes32)
   </a>
   
 </li>
@@ -1680,8 +1710,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#thresholdaddress" title="threshold(address)" class="md-nav__link">
-    threshold(address)
+  <a href="#stakebytes32uint256uint256" title="stake(bytes32,uint256,uint256)" class="md-nav__link">
+    stake(bytes32,uint256,uint256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shouldboostbytes32" title="shouldBoost(bytes32)" class="md-nav__link">
+    shouldBoost(bytes32)
   </a>
   
 </li>
@@ -1742,6 +1779,8 @@
       
       
       
+      
+      
     </ul>
   
 </nav>
@@ -1762,21 +1801,23 @@
 <blockquote>
 <p>A governance contract -an organization's voting machine scheme.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 43822 gas</p>
-<p><strong>Deployment cost</strong>: less than 2895400 gas</p>
-<p><strong>Combined cost</strong>: less than 2939222 gas</p>
+<p><strong>Execution cost</strong>: less than 43576 gas</p>
+<p><strong>Deployment cost</strong>: less than 2694200 gas</p>
+<p><strong>Combined cost</strong>: less than 2737776 gas</p>
 <h2 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h2>
 <p>Params:</p>
 <ol>
 <li><strong>_stakingToken</strong> <em>of type <code>address</code></em></li>
 </ol>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
-<h3 id="executeproposalbytes32uint256">ExecuteProposal(bytes32,uint256)<a class="headerlink" href="#executeproposalbytes32uint256" title="Permanent link">&para;</a></h3>
+<h3 id="executeproposalbytes32uint256uint256uint8">ExecuteProposal(bytes32,uint256,uint256,uint8)<a class="headerlink" href="#executeproposalbytes32uint256uint256uint8" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
 <li><strong>_decision</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>_totalReputation</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>_executionState</strong> <em>of type <code>uint8</code></em></li>
 </ol>
 <hr />
 <h3 id="newproposalbytes32uint256addressbytes32">NewProposal(bytes32,uint256,address,bytes32)<a class="headerlink" href="#newproposalbytes32uint256addressbytes32" title="Permanent link">&para;</a></h3>
@@ -1787,13 +1828,6 @@
 <li><strong>_numOfChoices</strong> <em>of type <code>uint256</code></em></li>
 <li><strong>_proposer</strong> <em>of type <code>address</code></em></li>
 <li><strong>_paramsHash</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<hr />
-<h3 id="newproposalbytes32">NewProposal(bytes32)<a class="headerlink" href="#newproposalbytes32" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p>Params:</p>
-<ol>
-<li><strong>proposalId</strong> <em>of type <code>bytes32</code></em></li>
 </ol>
 <hr />
 <h3 id="ownershiptransferredaddressaddress">OwnershipTransferred(address,address)<a class="headerlink" href="#ownershiptransferredaddressaddress" title="Permanent link">&para;</a></h3>
@@ -1842,37 +1876,16 @@
 <li><strong>_reputation</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<h3 id="getredeemablereputationstakerbytes32address">getRedeemableReputationStaker(bytes32,address)<a class="headerlink" href="#getredeemablereputationstakerbytes32address" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>getRedeemableReputationStaker return the redeemable reputation which a staker is entitle to.</p>
-</blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
+<h3 id="num_of_choices">NUM_OF_CHOICES()<a class="headerlink" href="#num_of_choices" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 720 gas</p>
 <p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
-<blockquote>
-<p>the ID of the proposal</p>
-</blockquote>
-</li>
-<li>
-<p><strong>_beneficiary</strong> <em>of type <code>address</code></em></p>
-<blockquote>
-<p>the beneficiary .</p>
-</blockquote>
-</li>
-</ol>
 <p>Returns:</p>
-<blockquote>
-<p>uint proposer redeem reputation amount.</p>
-</blockquote>
 <ol>
-<li><strong>output_0</strong> <em>of type <code>int256</code></em></li>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
 <h3 id="hashedparameters">hashedParameters()<a class="headerlink" href="#hashedparameters" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 1338 gas</p>
+<p><strong>Execution cost</strong>: less than 1382 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Returns:</p>
 <ol>
@@ -2006,11 +2019,19 @@
 <li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
+<h3 id="yes">YES()<a class="headerlink" href="#yes" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 852 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
 <h3 id="cancelproposalbytes32">cancelProposal(bytes32)<a class="headerlink" href="#cancelproposalbytes32" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 1485 gas</p>
+<p><strong>Execution cost</strong>: less than 1507 gas</p>
 <p>Params:</p>
 <ol>
 <li>
@@ -2023,14 +2044,6 @@
 <p>Returns:</p>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
-</ol>
-<hr />
-<h3 id="yes">YES()<a class="headerlink" href="#yes" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 808 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Returns:</p>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
 <h3 id="getredeemabletokensstakerbytes32address">getRedeemableTokensStaker(bytes32,address)<a class="headerlink" href="#getredeemabletokensstakerbytes32address" title="Permanent link">&para;</a></h3>
@@ -2066,7 +2079,7 @@
 <blockquote>
 <p>getNumberOfChoices returns the number of choices possible in this proposal</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 1020 gas</p>
+<p><strong>Execution cost</strong>: less than 1064 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -2085,11 +2098,40 @@
 <li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
+<h3 id="getredeemablereputationstakerbytes32address">getRedeemableReputationStaker(bytes32,address)<a class="headerlink" href="#getredeemablereputationstakerbytes32address" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>getRedeemableReputationStaker return the redeemable reputation which a staker is entitle to.</p>
+</blockquote>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
+<blockquote>
+<p>the ID of the proposal</p>
+</blockquote>
+</li>
+<li>
+<p><strong>_beneficiary</strong> <em>of type <code>address</code></em></p>
+<blockquote>
+<p>the beneficiary .</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>uint proposer redeem reputation amount.</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>int256</code></em></li>
+</ol>
+<hr />
 <h3 id="cancelvotebytes32">cancelVote(bytes32)<a class="headerlink" href="#cancelvotebytes32" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 1678 gas</p>
+<p><strong>Execution cost</strong>: less than 1700 gas</p>
 <p>Params:</p>
 <ol>
 <li>
@@ -2104,7 +2146,7 @@
 <blockquote>
 <p>voteStatus returns the reputation voted for a proposal for a specific voting choice.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 1189 gas</p>
+<p><strong>Execution cost</strong>: less than 1233 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -2154,7 +2196,7 @@
 </ol>
 <hr />
 <h3 id="orgboostedproposalscntaddress">orgBoostedProposalsCnt(address)<a class="headerlink" href="#orgboostedproposalscntaddress" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 1419 gas</p>
+<p><strong>Execution cost</strong>: less than 1463 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -2165,11 +2207,34 @@
 <li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
+<h3 id="isvotablebytes32">isVotable(bytes32)<a class="headerlink" href="#isvotablebytes32" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>isVotable check if the proposal is votable</p>
+</blockquote>
+<p><strong>Execution cost</strong>: less than 1892 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
+<blockquote>
+<p>the ID of the proposal</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>bool true or false</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
+</ol>
+<hr />
 <h3 id="ownervotebytes32uint256address">ownerVote(bytes32,uint256,address)<a class="headerlink" href="#ownervotebytes32uint256address" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>voting function with owner functionality (can vote on behalf of someone else)</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 1550 gas</p>
+<p><strong>Execution cost</strong>: less than 1572 gas</p>
 <p>Params:</p>
 <ol>
 <li>
@@ -2191,11 +2256,105 @@
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
-<h3 id="isvotablebytes32">isVotable(bytes32)<a class="headerlink" href="#isvotablebytes32" title="Permanent link">&para;</a></h3>
+<h3 id="isabstainallow">isAbstainAllow()<a class="headerlink" href="#isabstainallow" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>isVotable check if the proposal is votable</p>
+<p>isAbstainAllow returns if the voting machine allow abstain (0)</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 1848 gas</p>
+<p><strong>Execution cost</strong>: less than 484 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
+<blockquote>
+<p>bool true or false</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
+</ol>
+<hr />
+<h3 id="owner">owner()<a class="headerlink" href="#owner" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 1029 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>address</code></em></li>
+</ol>
+<hr />
+<h3 id="thresholdaddress">threshold(address)<a class="headerlink" href="#thresholdaddress" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>threshold return the organization's score threshold which required by a proposal to shift to boosted state. This threshold is dynamically set and it depend on the number of boosted proposal.</p>
+</blockquote>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_avatar</strong> <em>of type <code>address</code></em></p>
+<blockquote>
+<p>the organization avatar</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>int thresholdConstA.</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>int256</code></em></li>
+</ol>
+<hr />
+<h3 id="setparametersuint25612address">setParameters(uint256[12],address)<a class="headerlink" href="#setparametersuint25612address" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>hash the parameters, save them if necessary, and return the hash value</p>
+</blockquote>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_params</strong> <em>of type <code>uint256[12]</code></em></p>
+<blockquote>
+<p>a parameters array   _params[0] - _preBoostedVoteRequiredPercentage,   _params[1] - _preBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.   _params[2] -_boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.   _params[3] -_thresholdConstA,   _params[4] -_thresholdConstB,   _params[5] -_minimumStakingFee,   _params[6] -_quietEndingPeriod,   _params[7] -_proposingRepRewardConstA,   _params[8] -_proposingRepRewardConstB,   _params[9] -_stakerFeeRatioForVoters,   _params[10] -_votersReputationLossRatio,   _params[11] -_votersGainRepRatioFromLostRep</p>
+</blockquote>
+</li>
+<li>
+<p><strong>_governanceFormulasInterface</strong> <em>of type <code>address</code></em></p>
+<blockquote>
+<p>override the default formulas.</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
+</ol>
+<hr />
+<h3 id="scorethresholdparamsaddress">scoreThresholdParams(address)<a class="headerlink" href="#scorethresholdparamsaddress" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>scoreThresholdParams return the score threshold params for a given organization.</p>
+</blockquote>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_avatar</strong> <em>of type <code>address</code></em></p>
+<blockquote>
+<p>the organization's avatar</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>uint thresholdConstAuint thresholdConstB</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>output_1</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
+<h3 id="proposalavatarbytes32">proposalAvatar(bytes32)<a class="headerlink" href="#proposalavatarbytes32" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>proposalAvatar return the avatar for a given proposal</p>
+</blockquote>
+<p><strong>Execution cost</strong>: less than 1585 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -2208,32 +2367,41 @@
 </ol>
 <p>Returns:</p>
 <blockquote>
-<p>bool true or false</p>
+<p>uint total reputation supply</p>
 </blockquote>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
-</ol>
-<hr />
-<h3 id="isabstainallow">isAbstainAllow()<a class="headerlink" href="#isabstainallow" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>isAbstainAllow returns if the voting machine allow abstain (0)</p>
-</blockquote>
-<p><strong>Execution cost</strong>: less than 462 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Returns:</p>
-<blockquote>
-<p>bool true or false</p>
-</blockquote>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
-</ol>
-<hr />
-<h3 id="owner">owner()<a class="headerlink" href="#owner" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 1007 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Returns:</p>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>address</code></em></li>
+</ol>
+<hr />
+<h3 id="proposalscnt">proposalsCnt()<a class="headerlink" href="#proposalscnt" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 524 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
+<h3 id="scorebytes32">score(bytes32)<a class="headerlink" href="#scorebytes32" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>score return the proposal score</p>
+</blockquote>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
+<blockquote>
+<p>the ID of the proposal</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>uint proposal score.</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>int256</code></em></li>
 </ol>
 <hr />
 <h3 id="redeembytes32address">redeem(bytes32,address)<a class="headerlink" href="#redeembytes32address" title="Permanent link">&para;</a></h3>
@@ -2264,125 +2432,6 @@
 </blockquote>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
-</ol>
-<hr />
-<h3 id="setparametersuint25612address">setParameters(uint256[12],address)<a class="headerlink" href="#setparametersuint25612address" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>hash the parameters, save them if necessary, and return the hash value</p>
-</blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_params</strong> <em>of type <code>uint256[12]</code></em></p>
-<blockquote>
-<p>a parameters array   _params[0] - _preBoostedVoteRequiredPercentage,   _params[1] - _preBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.   _params[2] -_boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.   _params[3] -_thresholdConstA,   _params[4] -_thresholdConstB,   _params[5] -_minimumStakingFee,   _params[6] -_quietEndingPeriod,   _params[7] -_proposingRepRewardConstA,   _params[8] -_proposingRepRewardConstB,   _params[9] -_stakerFeeRatioForVoters,   _params[10] -_votersReputationLossRatio,   _params[11] -_votersGainRepRatioFromLostRep</p>
-</blockquote>
-</li>
-<li>
-<p><strong>_governanceFormulasInterface</strong> <em>of type <code>address</code></em></p>
-<blockquote>
-<p>override the default formulas.</p>
-</blockquote>
-</li>
-</ol>
-<p>Returns:</p>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<hr />
-<h3 id="proposalavatarbytes32">proposalAvatar(bytes32)<a class="headerlink" href="#proposalavatarbytes32" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>proposalAvatar return the avatar for a given proposal</p>
-</blockquote>
-<p><strong>Execution cost</strong>: less than 1541 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
-<blockquote>
-<p>the ID of the proposal</p>
-</blockquote>
-</li>
-</ol>
-<p>Returns:</p>
-<blockquote>
-<p>uint total reputation supply</p>
-</blockquote>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>address</code></em></li>
-</ol>
-<hr />
-<h3 id="scorethresholdparamsaddress">scoreThresholdParams(address)<a class="headerlink" href="#scorethresholdparamsaddress" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>scoreThresholdParams return the score threshold params for a given organization.</p>
-</blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_avatar</strong> <em>of type <code>address</code></em></p>
-<blockquote>
-<p>the organization's avatar</p>
-</blockquote>
-</li>
-</ol>
-<p>Returns:</p>
-<blockquote>
-<p>uint thresholdConstAuint thresholdConstB</p>
-</blockquote>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>output_1</strong> <em>of type <code>uint256</code></em></li>
-</ol>
-<hr />
-<h3 id="scorebytes32">score(bytes32)<a class="headerlink" href="#scorebytes32" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>score return the proposal score</p>
-</blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
-<blockquote>
-<p>the ID of the proposal</p>
-</blockquote>
-</li>
-</ol>
-<p>Returns:</p>
-<blockquote>
-<p>uint proposal score.</p>
-</blockquote>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>int256</code></em></li>
-</ol>
-<hr />
-<h3 id="proposalsbytes32">proposals(bytes32)<a class="headerlink" href="#proposalsbytes32" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 4066 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li><strong>param_0</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<p>Returns:</p>
-<ol>
-<li><strong>avatar</strong> <em>of type <code>address</code></em></li>
-<li><strong>numOfChoices</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>executable</strong> <em>of type <code>address</code></em></li>
-<li><strong>totalVotes</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>totalStakes</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>votersStakes</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>lostReputation</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>submittedTime</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>boostedPhaseTime</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>state</strong> <em>of type <code>uint8</code></em></li>
-<li><strong>winningVote</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>proposer</strong> <em>of type <code>address</code></em></li>
-<li><strong>boostedVotePeriodLimit</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
 <h3 id="proposeuint256bytes32addressaddressaddress">propose(uint256,bytes32,address,address,address)<a class="headerlink" href="#proposeuint256bytes32addressaddressaddress" title="Permanent link">&para;</a></h3>
@@ -2431,11 +2480,35 @@
 <li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
 </ol>
 <hr />
+<h3 id="proposalsbytes32">proposals(bytes32)<a class="headerlink" href="#proposalsbytes32" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 4088 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>param_0</strong> <em>of type <code>bytes32</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>avatar</strong> <em>of type <code>address</code></em></li>
+<li><strong>numOfChoices</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>executable</strong> <em>of type <code>address</code></em></li>
+<li><strong>totalVotes</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>totalStakes</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>votersStakes</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>lostReputation</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>submittedTime</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>boostedPhaseTime</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>state</strong> <em>of type <code>uint8</code></em></li>
+<li><strong>winningVote</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>proposer</strong> <em>of type <code>address</code></em></li>
+<li><strong>boostedVotePeriodLimit</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
 <h3 id="proposalstatusbytes32">proposalStatus(bytes32)<a class="headerlink" href="#proposalstatusbytes32" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>proposalStatus return the total votes and stakes for a given proposal</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 1352 gas</p>
+<p><strong>Execution cost</strong>: less than 1374 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -2454,6 +2527,74 @@
 <li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 <li><strong>output_1</strong> <em>of type <code>uint256</code></em></li>
 <li><strong>output_2</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
+<h3 id="updateparametersbytes32">updateParameters(bytes32)<a class="headerlink" href="#updateparametersbytes32" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 20616 gas</p>
+<p>Params:</p>
+<ol>
+<li><strong>_hashedParameters</strong> <em>of type <code>bytes32</code></em></li>
+</ol>
+<hr />
+<h3 id="statebytes32">state(bytes32)<a class="headerlink" href="#statebytes32" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>voteStake return the state for a given proposal</p>
+</blockquote>
+<p><strong>Execution cost</strong>: less than 848 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
+<blockquote>
+<p>the ID of the proposal</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>ProposalState proposal state</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>uint8</code></em></li>
+</ol>
+<hr />
+<h3 id="stakingtoken">stakingToken()<a class="headerlink" href="#stakingtoken" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 941 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>address</code></em></li>
+</ol>
+<hr />
+<h3 id="stakerbytes32address">staker(bytes32,address)<a class="headerlink" href="#stakerbytes32address" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>staker return the vote and stake amount for a given proposal and staker</p>
+</blockquote>
+<p><strong>Execution cost</strong>: less than 1408 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
+<blockquote>
+<p>the ID of the proposal</p>
+</blockquote>
+</li>
+<li>
+<p><strong>_staker</strong> <em>of type <code>address</code></em></p>
+<blockquote>
+<p>staker address</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>uint voteuint amount</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>output_1</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
 <h3 id="stakebytes32uint256uint256">stake(bytes32,uint256,uint256)<a class="headerlink" href="#stakebytes32uint256uint256" title="Permanent link">&para;</a></h3>
@@ -2513,97 +2654,6 @@
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
-<h3 id="updateparametersbytes32">updateParameters(bytes32)<a class="headerlink" href="#updateparametersbytes32" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 20594 gas</p>
-<p>Params:</p>
-<ol>
-<li><strong>_hashedParameters</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<hr />
-<h3 id="statebytes32">state(bytes32)<a class="headerlink" href="#statebytes32" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>voteStake return the state for a given proposal</p>
-</blockquote>
-<p><strong>Execution cost</strong>: less than 826 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
-<blockquote>
-<p>the ID of the proposal</p>
-</blockquote>
-</li>
-</ol>
-<p>Returns:</p>
-<blockquote>
-<p>ProposalState proposal state</p>
-</blockquote>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>uint8</code></em></li>
-</ol>
-<hr />
-<h3 id="stakingtoken">stakingToken()<a class="headerlink" href="#stakingtoken" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 919 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Returns:</p>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>address</code></em></li>
-</ol>
-<hr />
-<h3 id="stakerbytes32address">staker(bytes32,address)<a class="headerlink" href="#stakerbytes32address" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>staker return the vote and stake amount for a given proposal and staker</p>
-</blockquote>
-<p><strong>Execution cost</strong>: less than 1386 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
-<blockquote>
-<p>the ID of the proposal</p>
-</blockquote>
-</li>
-<li>
-<p><strong>_staker</strong> <em>of type <code>address</code></em></p>
-<blockquote>
-<p>staker address</p>
-</blockquote>
-</li>
-</ol>
-<p>Returns:</p>
-<blockquote>
-<p>uint voteuint amount</p>
-</blockquote>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>output_1</strong> <em>of type <code>uint256</code></em></li>
-</ol>
-<hr />
-<h3 id="thresholdaddress">threshold(address)<a class="headerlink" href="#thresholdaddress" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>threshold return the organization's score threshold which required by a proposal to shift to boosted state. This threshold is dynamically set and it depend on the number of boosted proposal.</p>
-</blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_avatar</strong> <em>of type <code>address</code></em></p>
-<blockquote>
-<p>the organization avatar</p>
-</blockquote>
-</li>
-</ol>
-<p>Returns:</p>
-<blockquote>
-<p>int thresholdConstA.</p>
-</blockquote>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>int256</code></em></li>
-</ol>
-<hr />
 <h3 id="totalreputationsupplybytes32">totalReputationSupply(bytes32)<a class="headerlink" href="#totalreputationsupplybytes32" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>totalReputationSupply return the total reputation supply for a given proposal</p>
@@ -2631,7 +2681,7 @@
 <blockquote>
 <p>Allows the current owner to transfer control of the contract to a newOwner.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 23734 gas</p>
+<p><strong>Execution cost</strong>: less than 23778 gas</p>
 <p>Params:</p>
 <ol>
 <li>
@@ -2704,7 +2754,7 @@
 <blockquote>
 <p>voteStake return the amount stakes for a given proposal and vote</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 903 gas</p>
+<p><strong>Execution cost</strong>: less than 925 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -2747,7 +2797,7 @@
 <blockquote>
 <p>voteStake return the winningVote for a given proposal</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 712 gas</p>
+<p><strong>Execution cost</strong>: less than 734 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -2847,7 +2897,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.f041762f.js"></script>
+      <script src="../../../assets/javascripts/application.02434462.js"></script>
       
       <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
       

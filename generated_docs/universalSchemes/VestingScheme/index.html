@@ -23,6 +23,10 @@
       
         <meta name="lang:search.language" content="en">
       
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
         <meta name="lang:search.result.none" content="No matching documents">
       
         <meta name="lang:search.result.one" content="1 matching document">
@@ -32,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.5.4">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.6.6">
     
     
       
@@ -40,15 +44,16 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.aa3de92b.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.78aab2dc.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.792431c1.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.6079476c.css">
       
     
     
       <script src="../../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
@@ -59,7 +64,6 @@
     
   </head>
   
-  
     
     
     <body dir="ltr" data-md-color-primary="teal" data-md-color-accent="amber">
@@ -68,7 +72,24 @@
       <defs>
         
         
-          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
         
       </defs>
     </svg>
@@ -876,20 +897,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#executionaddressbytes32int256" title="Execution(address,bytes32,int256)" class="md-nav__link">
-    Execution(address,bytes32,int256)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#newproposalbytes32" title="NewProposal(bytes32)" class="md-nav__link">
-    NewProposal(bytes32)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#newvestedagreementuint256" title="NewVestedAgreement(uint256)" class="md-nav__link">
     NewVestedAgreement(uint256)
   </a>
@@ -904,8 +911,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#proposalexecutedaddress" title="ProposalExecuted(address)" class="md-nav__link">
-    ProposalExecuted(address)
+  <a href="#proposaldeletedaddressbytes32" title="ProposalDeleted(address,bytes32)" class="md-nav__link">
+    ProposalDeleted(address,bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposalexecutedaddressbytes32int256" title="ProposalExecuted(address,bytes32,int256)" class="md-nav__link">
+    ProposalExecuted(address,bytes32,int256)
   </a>
   
 </li>
@@ -938,43 +952,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#revokesigntocancelagreementuint256" title="revokeSignToCancelAgreement(uint256)" class="md-nav__link">
-    revokeSignToCancelAgreement(uint256)
+  <a href="#signtocancelagreementuint256" title="signToCancelAgreement(uint256)" class="md-nav__link">
+    signToCancelAgreement(uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#hashedparameters" title="hashedParameters()" class="md-nav__link">
-    hashedParameters()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#getparametershashbytes32address" title="getParametersHash(bytes32,address)" class="md-nav__link">
-    getParametersHash(bytes32,address)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#createvestedagreementaddressaddressaddressuint256uint256uint256uint256uint256uint256address" title="createVestedAgreement(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[])" class="md-nav__link">
-    createVestedAgreement(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[])
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#executebytes32addressint256" title="execute(bytes32,address,int256)" class="md-nav__link">
-    execute(bytes32,address,int256)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#collectuint256_1" title="collect(uint256)" class="md-nav__link">
-    collect(uint256)
+  <a href="#agreementscounter" title="agreementsCounter()" class="md-nav__link">
+    agreementsCounter()
   </a>
   
 </li>
@@ -982,13 +968,6 @@
           <li class="md-nav__item">
   <a href="#agreementsuint256" title="agreements(uint256)" class="md-nav__link">
     agreements(uint256)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#organizationsdataaddressbytes32" title="organizationsData(address,bytes32)" class="md-nav__link">
-    organizationsData(address,bytes32)
   </a>
   
 </li>
@@ -1008,6 +987,48 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#hashedparameters" title="hashedParameters()" class="md-nav__link">
+    hashedParameters()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#createvestedagreementaddressaddressaddressuint256uint256uint256uint256uint256uint256address" title="createVestedAgreement(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[])" class="md-nav__link">
+    createVestedAgreement(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collectuint256_1" title="collect(uint256)" class="md-nav__link">
+    collect(uint256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#organizationsdataaddressbytes32" title="organizationsData(address,bytes32)" class="md-nav__link">
+    organizationsData(address,bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executebytes32addressint256" title="execute(bytes32,address,int256)" class="md-nav__link">
+    execute(bytes32,address,int256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getparametershashbytes32address" title="getParametersHash(bytes32,address)" class="md-nav__link">
+    getParametersHash(bytes32,address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#proposevestingagreementaddressaddressuint256uint256uint256uint256uint256uint256addressaddress" title="proposeVestingAgreement(address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[],address)" class="md-nav__link">
     proposeVestingAgreement(address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[],address)
   </a>
@@ -1015,15 +1036,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#setparametersbytes32address" title="setParameters(bytes32,address)" class="md-nav__link">
-    setParameters(bytes32,address)
+  <a href="#revokesigntocancelagreementuint256" title="revokeSignToCancelAgreement(uint256)" class="md-nav__link">
+    revokeSignToCancelAgreement(uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#signtocancelagreementuint256" title="signToCancelAgreement(uint256)" class="md-nav__link">
-    signToCancelAgreement(uint256)
+  <a href="#setparametersbytes32address" title="setParameters(bytes32,address)" class="md-nav__link">
+    setParameters(bytes32,address)
   </a>
   
 </li>
@@ -1046,6 +1067,8 @@
     </nav>
   
 </li>
+      
+      
       
       
       
@@ -1219,20 +1242,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#executionaddressbytes32int256" title="Execution(address,bytes32,int256)" class="md-nav__link">
-    Execution(address,bytes32,int256)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#newproposalbytes32" title="NewProposal(bytes32)" class="md-nav__link">
-    NewProposal(bytes32)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#newvestedagreementuint256" title="NewVestedAgreement(uint256)" class="md-nav__link">
     NewVestedAgreement(uint256)
   </a>
@@ -1247,8 +1256,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#proposalexecutedaddress" title="ProposalExecuted(address)" class="md-nav__link">
-    ProposalExecuted(address)
+  <a href="#proposaldeletedaddressbytes32" title="ProposalDeleted(address,bytes32)" class="md-nav__link">
+    ProposalDeleted(address,bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposalexecutedaddressbytes32int256" title="ProposalExecuted(address,bytes32,int256)" class="md-nav__link">
+    ProposalExecuted(address,bytes32,int256)
   </a>
   
 </li>
@@ -1281,43 +1297,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#revokesigntocancelagreementuint256" title="revokeSignToCancelAgreement(uint256)" class="md-nav__link">
-    revokeSignToCancelAgreement(uint256)
+  <a href="#signtocancelagreementuint256" title="signToCancelAgreement(uint256)" class="md-nav__link">
+    signToCancelAgreement(uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#hashedparameters" title="hashedParameters()" class="md-nav__link">
-    hashedParameters()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#getparametershashbytes32address" title="getParametersHash(bytes32,address)" class="md-nav__link">
-    getParametersHash(bytes32,address)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#createvestedagreementaddressaddressaddressuint256uint256uint256uint256uint256uint256address" title="createVestedAgreement(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[])" class="md-nav__link">
-    createVestedAgreement(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[])
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#executebytes32addressint256" title="execute(bytes32,address,int256)" class="md-nav__link">
-    execute(bytes32,address,int256)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#collectuint256_1" title="collect(uint256)" class="md-nav__link">
-    collect(uint256)
+  <a href="#agreementscounter" title="agreementsCounter()" class="md-nav__link">
+    agreementsCounter()
   </a>
   
 </li>
@@ -1325,13 +1313,6 @@
           <li class="md-nav__item">
   <a href="#agreementsuint256" title="agreements(uint256)" class="md-nav__link">
     agreements(uint256)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#organizationsdataaddressbytes32" title="organizationsData(address,bytes32)" class="md-nav__link">
-    organizationsData(address,bytes32)
   </a>
   
 </li>
@@ -1351,6 +1332,48 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#hashedparameters" title="hashedParameters()" class="md-nav__link">
+    hashedParameters()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#createvestedagreementaddressaddressaddressuint256uint256uint256uint256uint256uint256address" title="createVestedAgreement(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[])" class="md-nav__link">
+    createVestedAgreement(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[])
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collectuint256_1" title="collect(uint256)" class="md-nav__link">
+    collect(uint256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#organizationsdataaddressbytes32" title="organizationsData(address,bytes32)" class="md-nav__link">
+    organizationsData(address,bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executebytes32addressint256" title="execute(bytes32,address,int256)" class="md-nav__link">
+    execute(bytes32,address,int256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getparametershashbytes32address" title="getParametersHash(bytes32,address)" class="md-nav__link">
+    getParametersHash(bytes32,address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#proposevestingagreementaddressaddressuint256uint256uint256uint256uint256uint256addressaddress" title="proposeVestingAgreement(address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[],address)" class="md-nav__link">
     proposeVestingAgreement(address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[],address)
   </a>
@@ -1358,15 +1381,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#setparametersbytes32address" title="setParameters(bytes32,address)" class="md-nav__link">
-    setParameters(bytes32,address)
+  <a href="#revokesigntocancelagreementuint256" title="revokeSignToCancelAgreement(uint256)" class="md-nav__link">
+    revokeSignToCancelAgreement(uint256)
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#signtocancelagreementuint256" title="signToCancelAgreement(uint256)" class="md-nav__link">
-    signToCancelAgreement(uint256)
+  <a href="#setparametersbytes32address" title="setParameters(bytes32,address)" class="md-nav__link">
+    setParameters(bytes32,address)
   </a>
   
 </li>
@@ -1392,6 +1415,8 @@
       
       
       
+      
+      
     </ul>
   
 </nav>
@@ -1412,9 +1437,9 @@
 <blockquote>
 <p>A scheme for vesting.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 21840 gas</p>
-<p><strong>Deployment cost</strong>: less than 1413000 gas</p>
-<p><strong>Combined cost</strong>: less than 1434840 gas</p>
+<p><strong>Execution cost</strong>: less than 21861 gas</p>
+<p><strong>Deployment cost</strong>: less than 1430800 gas</p>
+<p><strong>Combined cost</strong>: less than 1452661 gas</p>
 <h2 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h2>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
 <h3 id="agreementcanceluint256">AgreementCancel(uint256)<a class="headerlink" href="#agreementcanceluint256" title="Permanent link">&para;</a></h3>
@@ -1439,22 +1464,6 @@
 <li><strong>_agreementId</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
-<h3 id="executionaddressbytes32int256">Execution(address,bytes32,int256)<a class="headerlink" href="#executionaddressbytes32int256" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p>Params:</p>
-<ol>
-<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
-<li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
-<li><strong>_result</strong> <em>of type <code>int256</code></em></li>
-</ol>
-<hr />
-<h3 id="newproposalbytes32">NewProposal(bytes32)<a class="headerlink" href="#newproposalbytes32" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p>Params:</p>
-<ol>
-<li><strong>proposalId</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<hr />
 <h3 id="newvestedagreementuint256">NewVestedAgreement(uint256)<a class="headerlink" href="#newvestedagreementuint256" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
@@ -1470,11 +1479,21 @@
 <li><strong>newOwner</strong> <em>of type <code>address</code></em></li>
 </ol>
 <hr />
-<h3 id="proposalexecutedaddress">ProposalExecuted(address)<a class="headerlink" href="#proposalexecutedaddress" title="Permanent link">&para;</a></h3>
+<h3 id="proposaldeletedaddressbytes32">ProposalDeleted(address,bytes32)<a class="headerlink" href="#proposaldeletedaddressbytes32" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
+<li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
+</ol>
+<hr />
+<h3 id="proposalexecutedaddressbytes32int256">ProposalExecuted(address,bytes32,int256)<a class="headerlink" href="#proposalexecutedaddressbytes32int256" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p>Params:</p>
+<ol>
+<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
+<li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
+<li><strong>_param</strong> <em>of type <code>int256</code></em></li>
 </ol>
 <hr />
 <h3 id="revokesigntocancelagreementuint256address">RevokeSignToCancelAgreement(uint256,address)<a class="headerlink" href="#revokesigntocancelagreementuint256address" title="Permanent link">&para;</a></h3>
@@ -1493,11 +1512,11 @@
 <li><strong>_signer</strong> <em>of type <code>address</code></em></li>
 </ol>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<h3 id="revokesigntocancelagreementuint256">revokeSignToCancelAgreement(uint256)<a class="headerlink" href="#revokesigntocancelagreementuint256" title="Permanent link">&para;</a></h3>
+<h3 id="signtocancelagreementuint256">signToCancelAgreement(uint256)<a class="headerlink" href="#signtocancelagreementuint256" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>Function to revoke vote for canceling agreement.</p>
+<p>Function to sign to cancel an agreement.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 43398 gas</p>
+<p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li>
@@ -1508,43 +1527,61 @@
 </li>
 </ol>
 <hr />
+<h3 id="agreementscounter">agreementsCounter()<a class="headerlink" href="#agreementscounter" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 766 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
+<h3 id="agreementsuint256">agreements(uint256)<a class="headerlink" href="#agreementsuint256" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 3271 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>param_0</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>token</strong> <em>of type <code>address</code></em></li>
+<li><strong>beneficiary</strong> <em>of type <code>address</code></em></li>
+<li><strong>returnOnCancelAddress</strong> <em>of type <code>address</code></em></li>
+<li><strong>startingBlock</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>amountPerPeriod</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>periodLength</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>numOfAgreedPeriods</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>cliffInPeriods</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>signaturesReqToCancel</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>collectedPeriods</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>signaturesReceivedCounter</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
+<h3 id="owner">owner()<a class="headerlink" href="#owner" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 787 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>address</code></em></li>
+</ol>
+<hr />
+<h3 id="parametersbytes32">parameters(bytes32)<a class="headerlink" href="#parametersbytes32" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 894 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>param_0</strong> <em>of type <code>bytes32</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>voteParams</strong> <em>of type <code>bytes32</code></em></li>
+<li><strong>intVote</strong> <em>of type <code>address</code></em></li>
+</ol>
+<hr />
 <h3 id="hashedparameters">hashedParameters()<a class="headerlink" href="#hashedparameters" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: less than 744 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Returns:</p>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<hr />
-<h3 id="getparametershashbytes32address">getParametersHash(bytes32,address)<a class="headerlink" href="#getparametershashbytes32address" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>Hash the parameters, and return the hash value</p>
-</blockquote>
-<p><strong>Execution cost</strong>: less than 564 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_voteParams</strong> <em>of type <code>bytes32</code></em></p>
-<blockquote>
-<ul>
-<li>voting parameters</li>
-</ul>
-</blockquote>
-</li>
-<li>
-<p><strong>_intVote</strong> <em>of type <code>address</code></em></p>
-<blockquote>
-<ul>
-<li>voting machine contract.</li>
-</ul>
-</blockquote>
-</li>
-</ol>
-<p>Returns:</p>
-<blockquote>
-<p>bytes32 -the parameters hash</p>
-</blockquote>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
 </ol>
@@ -1625,6 +1662,44 @@
 <li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
+<h3 id="collectuint256_1">collect(uint256)<a class="headerlink" href="#collectuint256_1" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>Function for a beneficiary to collect.</p>
+</blockquote>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_agreementId</strong> <em>of type <code>uint256</code></em></p>
+<blockquote>
+<p>the relevant agreement.</p>
+</blockquote>
+</li>
+</ol>
+<hr />
+<h3 id="organizationsdataaddressbytes32">organizationsData(address,bytes32)<a class="headerlink" href="#organizationsdataaddressbytes32" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 3220 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>param_0</strong> <em>of type <code>address</code></em></li>
+<li><strong>param_1</strong> <em>of type <code>bytes32</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>token</strong> <em>of type <code>address</code></em></li>
+<li><strong>beneficiary</strong> <em>of type <code>address</code></em></li>
+<li><strong>returnOnCancelAddress</strong> <em>of type <code>address</code></em></li>
+<li><strong>startingBlock</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>amountPerPeriod</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>periodLength</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>numOfAgreedPeriods</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>cliffInPeriods</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>signaturesReqToCancel</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>collectedPeriods</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>signaturesReceivedCounter</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
 <h3 id="executebytes32addressint256">execute(bytes32,address,int256)<a class="headerlink" href="#executebytes32addressint256" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>execution of proposals, can only be called by the voting machine in which the vote is held.</p>
@@ -1659,85 +1734,37 @@
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
-<h3 id="collectuint256_1">collect(uint256)<a class="headerlink" href="#collectuint256_1" title="Permanent link">&para;</a></h3>
+<h3 id="getparametershashbytes32address">getParametersHash(bytes32,address)<a class="headerlink" href="#getparametershashbytes32address" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>Function for a beneficiary to collect.</p>
+<p>Hash the parameters, and return the hash value</p>
 </blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
+<p><strong>Execution cost</strong>: less than 564 gas</p>
+<p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
 <li>
-<p><strong>_agreementId</strong> <em>of type <code>uint256</code></em></p>
+<p><strong>_voteParams</strong> <em>of type <code>bytes32</code></em></p>
 <blockquote>
-<p>the relevant agreement.</p>
+<ul>
+<li>voting parameters</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p><strong>_intVote</strong> <em>of type <code>address</code></em></p>
+<blockquote>
+<ul>
+<li>voting machine contract.</li>
+</ul>
 </blockquote>
 </li>
 </ol>
-<hr />
-<h3 id="agreementsuint256">agreements(uint256)<a class="headerlink" href="#agreementsuint256" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 3271 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li><strong>param_0</strong> <em>of type <code>uint256</code></em></li>
-</ol>
 <p>Returns:</p>
+<blockquote>
+<p>bytes32 -the parameters hash</p>
+</blockquote>
 <ol>
-<li><strong>token</strong> <em>of type <code>address</code></em></li>
-<li><strong>beneficiary</strong> <em>of type <code>address</code></em></li>
-<li><strong>returnOnCancelAddress</strong> <em>of type <code>address</code></em></li>
-<li><strong>startingBlock</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>amountPerPeriod</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>periodLength</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>numOfAgreedPeriods</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>cliffInPeriods</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>signaturesReqToCancel</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>collectedPeriods</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>signaturesReceivedCounter</strong> <em>of type <code>uint256</code></em></li>
-</ol>
-<hr />
-<h3 id="organizationsdataaddressbytes32">organizationsData(address,bytes32)<a class="headerlink" href="#organizationsdataaddressbytes32" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 3220 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li><strong>param_0</strong> <em>of type <code>address</code></em></li>
-<li><strong>param_1</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<p>Returns:</p>
-<ol>
-<li><strong>token</strong> <em>of type <code>address</code></em></li>
-<li><strong>beneficiary</strong> <em>of type <code>address</code></em></li>
-<li><strong>returnOnCancelAddress</strong> <em>of type <code>address</code></em></li>
-<li><strong>startingBlock</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>amountPerPeriod</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>periodLength</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>numOfAgreedPeriods</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>cliffInPeriods</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>signaturesReqToCancel</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>collectedPeriods</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>signaturesReceivedCounter</strong> <em>of type <code>uint256</code></em></li>
-</ol>
-<hr />
-<h3 id="owner">owner()<a class="headerlink" href="#owner" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 787 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Returns:</p>
-<ol>
-<li><strong>output_0</strong> <em>of type <code>address</code></em></li>
-</ol>
-<hr />
-<h3 id="parametersbytes32">parameters(bytes32)<a class="headerlink" href="#parametersbytes32" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 894 gas</p>
-<p><strong>Attributes</strong>: constant</p>
-<p>Params:</p>
-<ol>
-<li><strong>param_0</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<p>Returns:</p>
-<ol>
-<li><strong>voteParams</strong> <em>of type <code>bytes32</code></em></li>
-<li><strong>intVote</strong> <em>of type <code>address</code></em></li>
+<li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
 </ol>
 <hr />
 <h3 id="proposevestingagreementaddressaddressuint256uint256uint256uint256uint256uint256addressaddress">proposeVestingAgreement(address,address,uint256,uint256,uint256,uint256,uint256,uint256,address[],address)<a class="headerlink" href="#proposevestingagreementaddressaddressuint256uint256uint256uint256uint256uint256addressaddress" title="Permanent link">&para;</a></h3>
@@ -1816,6 +1843,21 @@
 <li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
 </ol>
 <hr />
+<h3 id="revokesigntocancelagreementuint256">revokeSignToCancelAgreement(uint256)<a class="headerlink" href="#revokesigntocancelagreementuint256" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>Function to revoke vote for canceling agreement.</p>
+</blockquote>
+<p><strong>Execution cost</strong>: less than 43398 gas</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_agreementId</strong> <em>of type <code>uint256</code></em></p>
+<blockquote>
+<p>the relevant agreement.</p>
+</blockquote>
+</li>
+</ol>
+<hr />
 <h3 id="setparametersbytes32address">setParameters(bytes32,address)<a class="headerlink" href="#setparametersbytes32address" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>Hash the parameters, save them if necessary, and return the hash value</p>
@@ -1846,21 +1888,6 @@
 </blockquote>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
-</ol>
-<hr />
-<h3 id="signtocancelagreementuint256">signToCancelAgreement(uint256)<a class="headerlink" href="#signtocancelagreementuint256" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>Function to sign to cancel an agreement.</p>
-</blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p>Params:</p>
-<ol>
-<li>
-<p><strong>_agreementId</strong> <em>of type <code>uint256</code></em></p>
-<blockquote>
-<p>the relevant agreement.</p>
-</blockquote>
-</li>
 </ol>
 <hr />
 <h3 id="transferownershipaddress">transferOwnership(address)<a class="headerlink" href="#transferownershipaddress" title="Permanent link">&para;</a></h3>
@@ -1966,7 +1993,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.f041762f.js"></script>
+      <script src="../../../assets/javascripts/application.02434462.js"></script>
       
       <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
       

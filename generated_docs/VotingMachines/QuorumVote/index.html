@@ -23,6 +23,10 @@
       
         <meta name="lang:search.language" content="en">
       
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
         <meta name="lang:search.result.none" content="No matching documents">
       
         <meta name="lang:search.result.one" content="1 matching document">
@@ -32,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.5.4">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.6.6">
     
     
       
@@ -40,15 +44,16 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.aa3de92b.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.78aab2dc.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.792431c1.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.6079476c.css">
       
     
     
       <script src="../../../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
@@ -59,7 +64,6 @@
     
   </head>
   
-  
     
     
     <body dir="ltr" data-md-color-primary="teal" data-md-color-accent="amber">
@@ -68,7 +72,24 @@
       <defs>
         
         
-          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
         
       </defs>
     </svg>
@@ -958,8 +979,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#executeproposalbytes32uint256" title="ExecuteProposal(bytes32,uint256)" class="md-nav__link">
-    ExecuteProposal(bytes32,uint256)
+  <a href="#executeproposalbytes32uint256uint256" title="ExecuteProposal(bytes32,uint256,uint256)" class="md-nav__link">
+    ExecuteProposal(bytes32,uint256,uint256)
   </a>
   
 </li>
@@ -992,8 +1013,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cancelvotebytes32" title="cancelVote(bytes32)" class="md-nav__link">
-    cancelVote(bytes32)
+  <a href="#max_num_of_choices" title="MAX_NUM_OF_CHOICES()" class="md-nav__link">
+    MAX_NUM_OF_CHOICES()
   </a>
   
 </li>
@@ -1022,6 +1043,13 @@
           <li class="md-nav__item">
   <a href="#getnumberofchoicesbytes32" title="getNumberOfChoices(bytes32)" class="md-nav__link">
     getNumberOfChoices(bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancelvotebytes32" title="cancelVote(bytes32)" class="md-nav__link">
+    cancelVote(bytes32)
   </a>
   
 </li>
@@ -1057,6 +1085,13 @@
           <li class="md-nav__item">
   <a href="#proposalsbytes32" title="proposals(bytes32)" class="md-nav__link">
     proposals(bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposalscnt" title="proposalsCnt()" class="md-nav__link">
+    proposalsCnt()
   </a>
   
 </li>
@@ -1107,6 +1142,8 @@
     </nav>
   
 </li>
+      
+      
       
       
       
@@ -1170,8 +1207,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#executeproposalbytes32uint256" title="ExecuteProposal(bytes32,uint256)" class="md-nav__link">
-    ExecuteProposal(bytes32,uint256)
+  <a href="#executeproposalbytes32uint256uint256" title="ExecuteProposal(bytes32,uint256,uint256)" class="md-nav__link">
+    ExecuteProposal(bytes32,uint256,uint256)
   </a>
   
 </li>
@@ -1204,8 +1241,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cancelvotebytes32" title="cancelVote(bytes32)" class="md-nav__link">
-    cancelVote(bytes32)
+  <a href="#max_num_of_choices" title="MAX_NUM_OF_CHOICES()" class="md-nav__link">
+    MAX_NUM_OF_CHOICES()
   </a>
   
 </li>
@@ -1234,6 +1271,13 @@
           <li class="md-nav__item">
   <a href="#getnumberofchoicesbytes32" title="getNumberOfChoices(bytes32)" class="md-nav__link">
     getNumberOfChoices(bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancelvotebytes32" title="cancelVote(bytes32)" class="md-nav__link">
+    cancelVote(bytes32)
   </a>
   
 </li>
@@ -1269,6 +1313,13 @@
           <li class="md-nav__item">
   <a href="#proposalsbytes32" title="proposals(bytes32)" class="md-nav__link">
     proposals(bytes32)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposalscnt" title="proposalsCnt()" class="md-nav__link">
+    proposalsCnt()
   </a>
   
 </li>
@@ -1322,6 +1373,8 @@
       
       
       
+      
+      
     </ul>
   
 </nav>
@@ -1339,9 +1392,9 @@
                 
                 <h1 id="quorumvote">QuorumVote<a class="headerlink" href="#quorumvote" title="Permanent link">&para;</a></h1>
 <p><a href="https://github.com/daostack/arc/tree/master/contracts/VotingMachines/QuorumVote.sol">see the source</a></p>
-<p><strong>Execution cost</strong>: less than 885 gas</p>
-<p><strong>Deployment cost</strong>: less than 851600 gas</p>
-<p><strong>Combined cost</strong>: less than 852485 gas</p>
+<p><strong>Execution cost</strong>: less than 898 gas</p>
+<p><strong>Deployment cost</strong>: less than 867200 gas</p>
+<p><strong>Combined cost</strong>: less than 868098 gas</p>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
 <h3 id="cancelproposalbytes32">CancelProposal(bytes32)<a class="headerlink" href="#cancelproposalbytes32" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
@@ -1358,12 +1411,13 @@
 <li><strong>_voter</strong> <em>of type <code>address</code></em></li>
 </ol>
 <hr />
-<h3 id="executeproposalbytes32uint256">ExecuteProposal(bytes32,uint256)<a class="headerlink" href="#executeproposalbytes32uint256" title="Permanent link">&para;</a></h3>
+<h3 id="executeproposalbytes32uint256uint256">ExecuteProposal(bytes32,uint256,uint256)<a class="headerlink" href="#executeproposalbytes32uint256uint256" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></li>
 <li><strong>_decision</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>_totalReputation</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
 <h3 id="newproposalbytes32uint256addressbytes32">NewProposal(bytes32,uint256,address,bytes32)<a class="headerlink" href="#newproposalbytes32uint256addressbytes32" title="Permanent link">&para;</a></h3>
@@ -1387,19 +1441,12 @@
 <li><strong>_isOwnerVote</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<h3 id="cancelvotebytes32">cancelVote(bytes32)<a class="headerlink" href="#cancelvotebytes32" title="Permanent link">&para;</a></h3>
-<blockquote>
-<p>Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct</p>
-</blockquote>
-<p><strong>Execution cost</strong>: No bound available</p>
-<p>Params:</p>
+<h3 id="max_num_of_choices">MAX_NUM_OF_CHOICES()<a class="headerlink" href="#max_num_of_choices" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 434 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
 <ol>
-<li>
-<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
-<blockquote>
-<p>id of the proposal</p>
-</blockquote>
-</li>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
 <h3 id="parametersbytes32">parameters(bytes32)<a class="headerlink" href="#parametersbytes32" title="Permanent link">&para;</a></h3>
@@ -1439,7 +1486,7 @@
 <blockquote>
 <p>isVotable check if the proposal is votable</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 812 gas</p>
+<p><strong>Execution cost</strong>: less than 856 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1462,7 +1509,7 @@
 <blockquote>
 <p>getNumberOfChoices returns the number of choices possible in this proposal</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 734 gas</p>
+<p><strong>Execution cost</strong>: less than 778 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1479,6 +1526,21 @@
 </blockquote>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
+<h3 id="cancelvotebytes32">cancelVote(bytes32)<a class="headerlink" href="#cancelvotebytes32" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct</p>
+</blockquote>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_proposalId</strong> <em>of type <code>bytes32</code></em></p>
+<blockquote>
+<p>id of the proposal</p>
+</blockquote>
+</li>
 </ol>
 <hr />
 <h3 id="ownervotebytes32uint256address">ownerVote(bytes32,uint256,address)<a class="headerlink" href="#ownervotebytes32uint256address" title="Permanent link">&para;</a></h3>
@@ -1538,7 +1600,7 @@
 <blockquote>
 <p>isAbstainAllow returns if the voting machine allow abstain (0)</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 396 gas</p>
+<p><strong>Execution cost</strong>: less than 418 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Returns:</p>
 <blockquote>
@@ -1566,7 +1628,7 @@
 </ol>
 <hr />
 <h3 id="proposalsbytes32">proposals(bytes32)<a class="headerlink" href="#proposalsbytes32" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 2210 gas</p>
+<p><strong>Execution cost</strong>: less than 2232 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1581,6 +1643,14 @@
 <li><strong>paramsHash</strong> <em>of type <code>bytes32</code></em></li>
 <li><strong>totalVotes</strong> <em>of type <code>uint256</code></em></li>
 <li><strong>open</strong> <em>of type <code>bool</code></em></li>
+</ol>
+<hr />
+<h3 id="proposalscnt">proposalsCnt()<a class="headerlink" href="#proposalscnt" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: less than 524 gas</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
 <h3 id="proposeuint256bytes32addressaddressaddress">propose(uint256,bytes32,address,address,address)<a class="headerlink" href="#proposeuint256bytes32addressaddressaddress" title="Permanent link">&para;</a></h3>
@@ -1630,7 +1700,7 @@
 <blockquote>
 <p>hash the parameters, save them if necessary, and return the hash value</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 61851 gas</p>
+<p><strong>Execution cost</strong>: less than 61895 gas</p>
 <p>Params:</p>
 <ol>
 <li><strong>_reputationSystem</strong> <em>of type <code>address</code></em></li>
@@ -1704,7 +1774,7 @@
 <blockquote>
 <p>voteStatus returns the reputation voted for a proposal for a specific voting choice.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 859 gas</p>
+<p><strong>Execution cost</strong>: less than 903 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1810,7 +1880,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.f041762f.js"></script>
+      <script src="../../../assets/javascripts/application.02434462.js"></script>
       
       <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
       
