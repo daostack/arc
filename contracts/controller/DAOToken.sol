@@ -69,7 +69,7 @@ contract DAOTokenMiniMe is Destructible, MiniMeToken {
         return generateTokens(_owner,_amount);
     }
 
-    // delegate implementaion of mint
+    // delegate implementaion of burn
     function burn(uint _amount) public returns(bool ok) {
         return destroyTokens(msg.sender,_amount);
     }

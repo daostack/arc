@@ -1,5 +1,5 @@
 Arguments: 
-  /home/matan/.local/share/umake/nodejs/nodejs-lang/bin/node /home/matan/.npm_modules/bin/yarn truffle exec test/gasReport.js
+  /home/matan/.local/share/umake/nodejs/nodejs-lang/bin/node /home/matan/.npm_modules/bin/yarn docs:preview
 
 PATH: 
   /home/matan/.local/share/umake/nodejs/nodejs-lang/bin:/home/matan/.npm_modules/bin:/home/matan/bin:/home/matan/.local/bin:/home/matan/.local/share/umake/nodejs/nodejs-lang/bin:/home/matan/.npm_modules/bin:/home/matan/bin:/home/matan/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
@@ -5369,7 +5369,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c truffle exec test/gasReport.js
+  Arguments: -c soldoc -q -o docs/generated_docs && mkdocs serve
   Directory: /home/matan/Projects/daostack/arc
   Output:
   
