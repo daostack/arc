@@ -1,13 +1,13 @@
 # Reputation
 [see the source](https://github.com/daostack/arc/tree/master/contracts/controller/Reputation.sol)
-> Simple static reputation storage
+> Reputation system
 
 
-**Execution cost**: less than 50663 gas
+**Execution cost**: less than 50675 gas
 
-**Deployment cost**: less than 168000 gas
+**Deployment cost**: less than 180000 gas
 
-**Combined cost**: less than 218663 gas
+**Combined cost**: less than 230675 gas
 
 ## Constructor
 
@@ -40,10 +40,28 @@ Params:
 
 
 ## Methods
+### balances(address)
+
+
+**Execution cost**: less than 542 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `uint256`*
+
+--- 
 ### decimals()
 
 
-**Execution cost**: less than 395 gas
+**Execution cost**: less than 417 gas
 
 **Attributes**: constant
 
@@ -57,10 +75,10 @@ Returns:
 --- 
 ### mint(address,int256)
 >
-> adding/reducing reputation of a given address, updating the total supply, and triggering an event of the operation.
+> adding/reducing reputation of a given address, updating the total supply, and triggering an event of the operation. Max reputation allowed is capped by INT256_MAX = 2**255 - Any value minted over this MAX will cause a revert. Min reputation allowed is 0. - Any value minted below this MIN will be trim to 0.
 
 
-**Execution cost**: less than 43407 gas
+**Execution cost**: less than 43429 gas
 
 
 Params:
@@ -84,7 +102,7 @@ Returns:
 ### owner()
 
 
-**Execution cost**: less than 573 gas
+**Execution cost**: less than 595 gas
 
 **Attributes**: constant
 
@@ -101,7 +119,7 @@ Returns:
 > return the reputation amount of a given owner
 
 
-**Execution cost**: less than 661 gas
+**Execution cost**: less than 683 gas
 
 **Attributes**: constant
 
@@ -139,7 +157,7 @@ Returns:
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 
-**Execution cost**: less than 22832 gas
+**Execution cost**: less than 22854 gas
 
 
 Params:

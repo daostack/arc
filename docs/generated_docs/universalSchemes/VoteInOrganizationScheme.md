@@ -5,9 +5,9 @@
 
 **Execution cost**: less than 21070 gas
 
-**Deployment cost**: less than 669800 gas
+**Deployment cost**: less than 671200 gas
 
-**Combined cost**: less than 690870 gas
+**Combined cost**: less than 692270 gas
 
 ## Constructor
 
@@ -15,17 +15,6 @@
 
 
 ## Events
-### NewProposal(bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **proposalId** *of type `bytes32`*
-
---- 
 ### NewVoteProposal(address,bytes32,address,address,bytes32,uint256)
 
 
@@ -66,7 +55,7 @@ Params:
 2. **_proposalId** *of type `bytes32`*
 
 --- 
-### ProposalExecuted(address,bytes32)
+### ProposalExecuted(address,bytes32,int256)
 
 
 **Execution cost**: No bound available
@@ -76,6 +65,7 @@ Params:
 
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
+3. **_param** *of type `int256`*
 
 --- 
 ### VoteOnBehalf(bytes32[])

@@ -3,11 +3,11 @@
 > A governance contract -an organization's voting machine scheme.
 
 
-**Execution cost**: less than 43822 gas
+**Execution cost**: less than 43576 gas
 
-**Deployment cost**: less than 2895400 gas
+**Deployment cost**: less than 2694200 gas
 
-**Combined cost**: less than 2939222 gas
+**Combined cost**: less than 2737776 gas
 
 ## Constructor
 
@@ -18,7 +18,7 @@ Params:
 1. **_stakingToken** *of type `address`*
 
 ## Events
-### ExecuteProposal(bytes32,uint256)
+### ExecuteProposal(bytes32,uint256,uint256,uint8)
 
 
 **Execution cost**: No bound available
@@ -28,6 +28,8 @@ Params:
 
 1. **_proposalId** *of type `bytes32`*
 2. **_decision** *of type `uint256`*
+3. **_totalReputation** *of type `uint256`*
+4. **_executionState** *of type `uint8`*
 
 --- 
 ### NewProposal(bytes32,uint256,address,bytes32)
@@ -42,17 +44,6 @@ Params:
 2. **_numOfChoices** *of type `uint256`*
 3. **_proposer** *of type `address`*
 4. **_paramsHash** *of type `bytes32`*
-
---- 
-### NewProposal(bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **proposalId** *of type `bytes32`*
 
 --- 
 ### OwnershipTransferred(address,address)
@@ -122,38 +113,25 @@ Params:
 
 
 ## Methods
-### getRedeemableReputationStaker(bytes32,address)
->
-> getRedeemableReputationStaker return the redeemable reputation which a staker is entitle to.
+### NUM_OF_CHOICES()
 
 
-**Execution cost**: No bound available
+**Execution cost**: less than 720 gas
 
 **Attributes**: constant
 
 
-Params:
-
-1. **_proposalId** *of type `bytes32`*
-
-    > the ID of the proposal
-
-2. **_beneficiary** *of type `address`*
-
-    > the beneficiary .
-
 
 Returns:
 
-> uint proposer redeem reputation amount.
 
-1. **output_0** *of type `int256`*
+1. **output_0** *of type `uint256`*
 
 --- 
 ### hashedParameters()
 
 
-**Execution cost**: less than 1338 gas
+**Execution cost**: less than 1382 gas
 
 **Attributes**: constant
 
@@ -303,12 +281,27 @@ Returns:
 1. **output_0** *of type `uint256`*
 
 --- 
+### YES()
+
+
+**Execution cost**: less than 852 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `uint256`*
+
+--- 
 ### cancelProposal(bytes32)
 >
 > Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
 
 
-**Execution cost**: less than 1485 gas
+**Execution cost**: less than 1507 gas
 
 
 Params:
@@ -322,21 +315,6 @@ Returns:
 
 
 1. **output_0** *of type `bool`*
-
---- 
-### YES()
-
-
-**Execution cost**: less than 808 gas
-
-**Attributes**: constant
-
-
-
-Returns:
-
-
-1. **output_0** *of type `uint256`*
 
 --- 
 ### getRedeemableTokensStaker(bytes32,address)
@@ -372,7 +350,7 @@ Returns:
 > getNumberOfChoices returns the number of choices possible in this proposal
 
 
-**Execution cost**: less than 1020 gas
+**Execution cost**: less than 1064 gas
 
 **Attributes**: constant
 
@@ -391,12 +369,40 @@ Returns:
 1. **output_0** *of type `uint256`*
 
 --- 
+### getRedeemableReputationStaker(bytes32,address)
+>
+> getRedeemableReputationStaker return the redeemable reputation which a staker is entitle to.
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the proposal
+
+2. **_beneficiary** *of type `address`*
+
+    > the beneficiary .
+
+
+Returns:
+
+> uint proposer redeem reputation amount.
+
+1. **output_0** *of type `int256`*
+
+--- 
 ### cancelVote(bytes32)
 >
 > Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
 
 
-**Execution cost**: less than 1678 gas
+**Execution cost**: less than 1700 gas
 
 
 Params:
@@ -413,7 +419,7 @@ Params:
 > voteStatus returns the reputation voted for a proposal for a specific voting choice.
 
 
-**Execution cost**: less than 1189 gas
+**Execution cost**: less than 1233 gas
 
 **Attributes**: constant
 
@@ -469,7 +475,7 @@ Returns:
 ### orgBoostedProposalsCnt(address)
 
 
-**Execution cost**: less than 1419 gas
+**Execution cost**: less than 1463 gas
 
 **Attributes**: constant
 
@@ -484,12 +490,36 @@ Returns:
 1. **output_0** *of type `uint256`*
 
 --- 
+### isVotable(bytes32)
+>
+> isVotable check if the proposal is votable
+
+
+**Execution cost**: less than 1892 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the proposal
+
+
+Returns:
+
+> bool true or false
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### ownerVote(bytes32,uint256,address)
 >
 > voting function with owner functionality (can vote on behalf of someone else)
 
 
-**Execution cost**: less than 1550 gas
+**Execution cost**: less than 1572 gas
 
 
 Params:
@@ -508,36 +538,12 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### isVotable(bytes32)
->
-> isVotable check if the proposal is votable
-
-
-**Execution cost**: less than 1848 gas
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_proposalId** *of type `bytes32`*
-
-    > the ID of the proposal
-
-
-Returns:
-
-> bool true or false
-
-1. **output_0** *of type `bool`*
-
---- 
 ### isAbstainAllow()
 >
 > isAbstainAllow returns if the voting machine allow abstain (0)
 
 
-**Execution cost**: less than 462 gas
+**Execution cost**: less than 484 gas
 
 **Attributes**: constant
 
@@ -553,7 +559,7 @@ Returns:
 ### owner()
 
 
-**Execution cost**: less than 1007 gas
+**Execution cost**: less than 1029 gas
 
 **Attributes**: constant
 
@@ -565,30 +571,28 @@ Returns:
 1. **output_0** *of type `address`*
 
 --- 
-### redeem(bytes32,address)
+### threshold(address)
 >
-> redeem a reward for a successful stake, vote or proposing. The function use a beneficiary address as a parameter (and not msg.sender) to enable users to redeem on behalf of someone else.
+> threshold return the organization's score threshold which required by a proposal to shift to boosted state. This threshold is dynamically set and it depend on the number of boosted proposal.
 
 
 **Execution cost**: No bound available
 
+**Attributes**: constant
+
 
 Params:
 
-1. **_proposalId** *of type `bytes32`*
+1. **_avatar** *of type `address`*
 
-    > the ID of the proposal
-
-2. **_beneficiary** *of type `address`*
-
-    > - the beneficiary address
+    > the organization avatar
 
 
 Returns:
 
-> bool true or false.
+> int thresholdConstA.
 
-1. **output_0** *of type `bool`*
+1. **output_0** *of type `int256`*
 
 --- 
 ### setParameters(uint256[12],address)
@@ -616,30 +620,6 @@ Returns:
 1. **output_0** *of type `bytes32`*
 
 --- 
-### proposalAvatar(bytes32)
->
-> proposalAvatar return the avatar for a given proposal
-
-
-**Execution cost**: less than 1541 gas
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_proposalId** *of type `bytes32`*
-
-    > the ID of the proposal
-
-
-Returns:
-
-> uint total reputation supply
-
-1. **output_0** *of type `address`*
-
---- 
 ### scoreThresholdParams(address)
 >
 > scoreThresholdParams return the score threshold params for a given organization.
@@ -663,6 +643,45 @@ Returns:
 
 1. **output_0** *of type `uint256`*
 2. **output_1** *of type `uint256`*
+
+--- 
+### proposalAvatar(bytes32)
+>
+> proposalAvatar return the avatar for a given proposal
+
+
+**Execution cost**: less than 1585 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the proposal
+
+
+Returns:
+
+> uint total reputation supply
+
+1. **output_0** *of type `address`*
+
+--- 
+### proposalsCnt()
+
+
+**Execution cost**: less than 524 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `uint256`*
 
 --- 
 ### score(bytes32)
@@ -689,34 +708,30 @@ Returns:
 1. **output_0** *of type `int256`*
 
 --- 
-### proposals(bytes32)
+### redeem(bytes32,address)
+>
+> redeem a reward for a successful stake, vote or proposing. The function use a beneficiary address as a parameter (and not msg.sender) to enable users to redeem on behalf of someone else.
 
 
-**Execution cost**: less than 4066 gas
-
-**Attributes**: constant
+**Execution cost**: No bound available
 
 
 Params:
 
-1. **param_0** *of type `bytes32`*
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the proposal
+
+2. **_beneficiary** *of type `address`*
+
+    > - the beneficiary address
+
 
 Returns:
 
+> bool true or false.
 
-1. **avatar** *of type `address`*
-2. **numOfChoices** *of type `uint256`*
-3. **executable** *of type `address`*
-4. **totalVotes** *of type `uint256`*
-5. **totalStakes** *of type `uint256`*
-6. **votersStakes** *of type `uint256`*
-7. **lostReputation** *of type `uint256`*
-8. **submittedTime** *of type `uint256`*
-9. **boostedPhaseTime** *of type `uint256`*
-10. **state** *of type `uint8`*
-11. **winningVote** *of type `uint256`*
-12. **proposer** *of type `address`*
-13. **boostedVotePeriodLimit** *of type `uint256`*
+1. **output_0** *of type `bool`*
 
 --- 
 ### propose(uint256,bytes32,address,address,address)
@@ -757,12 +772,42 @@ Returns:
 1. **output_0** *of type `bytes32`*
 
 --- 
+### proposals(bytes32)
+
+
+**Execution cost**: less than 4088 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `bytes32`*
+
+Returns:
+
+
+1. **avatar** *of type `address`*
+2. **numOfChoices** *of type `uint256`*
+3. **executable** *of type `address`*
+4. **totalVotes** *of type `uint256`*
+5. **totalStakes** *of type `uint256`*
+6. **votersStakes** *of type `uint256`*
+7. **lostReputation** *of type `uint256`*
+8. **submittedTime** *of type `uint256`*
+9. **boostedPhaseTime** *of type `uint256`*
+10. **state** *of type `uint8`*
+11. **winningVote** *of type `uint256`*
+12. **proposer** *of type `address`*
+13. **boostedVotePeriodLimit** *of type `uint256`*
+
+--- 
 ### proposalStatus(bytes32)
 >
 > proposalStatus return the total votes and stakes for a given proposal
 
 
-**Execution cost**: less than 1352 gas
+**Execution cost**: less than 1374 gas
 
 **Attributes**: constant
 
@@ -781,6 +826,86 @@ Returns:
 1. **output_0** *of type `uint256`*
 2. **output_1** *of type `uint256`*
 3. **output_2** *of type `uint256`*
+
+--- 
+### updateParameters(bytes32)
+
+
+**Execution cost**: less than 20616 gas
+
+
+Params:
+
+1. **_hashedParameters** *of type `bytes32`*
+
+
+--- 
+### state(bytes32)
+>
+> voteStake return the state for a given proposal
+
+
+**Execution cost**: less than 848 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the proposal
+
+
+Returns:
+
+> ProposalState proposal state
+
+1. **output_0** *of type `uint8`*
+
+--- 
+### stakingToken()
+
+
+**Execution cost**: less than 941 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### staker(bytes32,address)
+>
+> staker return the vote and stake amount for a given proposal and staker
+
+
+**Execution cost**: less than 1408 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the proposal
+
+2. **_staker** *of type `address`*
+
+    > staker address
+
+
+Returns:
+
+> uint voteuint amount
+
+1. **output_0** *of type `uint256`*
+2. **output_1** *of type `uint256`*
 
 --- 
 ### stake(bytes32,uint256,uint256)
@@ -837,110 +962,6 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### updateParameters(bytes32)
-
-
-**Execution cost**: less than 20594 gas
-
-
-Params:
-
-1. **_hashedParameters** *of type `bytes32`*
-
-
---- 
-### state(bytes32)
->
-> voteStake return the state for a given proposal
-
-
-**Execution cost**: less than 826 gas
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_proposalId** *of type `bytes32`*
-
-    > the ID of the proposal
-
-
-Returns:
-
-> ProposalState proposal state
-
-1. **output_0** *of type `uint8`*
-
---- 
-### stakingToken()
-
-
-**Execution cost**: less than 919 gas
-
-**Attributes**: constant
-
-
-
-Returns:
-
-
-1. **output_0** *of type `address`*
-
---- 
-### staker(bytes32,address)
->
-> staker return the vote and stake amount for a given proposal and staker
-
-
-**Execution cost**: less than 1386 gas
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_proposalId** *of type `bytes32`*
-
-    > the ID of the proposal
-
-2. **_staker** *of type `address`*
-
-    > staker address
-
-
-Returns:
-
-> uint voteuint amount
-
-1. **output_0** *of type `uint256`*
-2. **output_1** *of type `uint256`*
-
---- 
-### threshold(address)
->
-> threshold return the organization's score threshold which required by a proposal to shift to boosted state. This threshold is dynamically set and it depend on the number of boosted proposal.
-
-
-**Execution cost**: No bound available
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_avatar** *of type `address`*
-
-    > the organization avatar
-
-
-Returns:
-
-> int thresholdConstA.
-
-1. **output_0** *of type `int256`*
-
---- 
 ### totalReputationSupply(bytes32)
 >
 > totalReputationSupply return the total reputation supply for a given proposal
@@ -970,7 +991,7 @@ Returns:
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 
-**Execution cost**: less than 23734 gas
+**Execution cost**: less than 23778 gas
 
 
 Params:
@@ -1042,7 +1063,7 @@ Returns:
 > voteStake return the amount stakes for a given proposal and vote
 
 
-**Execution cost**: less than 903 gas
+**Execution cost**: less than 925 gas
 
 **Attributes**: constant
 
@@ -1089,7 +1110,7 @@ Returns:
 > voteStake return the winningVote for a given proposal
 
 
-**Execution cost**: less than 712 gas
+**Execution cost**: less than 734 gas
 
 **Attributes**: constant
 

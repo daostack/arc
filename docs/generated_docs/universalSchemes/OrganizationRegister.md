@@ -15,17 +15,6 @@
 
 
 ## Events
-### NewProposal(bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **proposalId** *of type `bytes32`*
-
---- 
 ### OrgAdded(address,address)
 
 

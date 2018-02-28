@@ -3,11 +3,11 @@
 > A registrar for Schemes for organizations
 
 
-**Execution cost**: less than 21141 gas
+**Execution cost**: less than 21154 gas
 
-**Deployment cost**: less than 741400 gas
+**Deployment cost**: less than 752000 gas
 
-**Combined cost**: less than 762541 gas
+**Combined cost**: less than 773154 gas
 
 ## Constructor
 
@@ -15,17 +15,6 @@
 
 
 ## Events
-### NewProposal(bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **proposalId** *of type `bytes32`*
-
---- 
 ### NewSchemeProposal(address,bytes32,address,address,bytes32,bool)
 
 
@@ -66,7 +55,7 @@ Params:
 2. **_proposalId** *of type `bytes32`*
 
 --- 
-### ProposalExecuted(address,bytes32)
+### ProposalExecuted(address,bytes32,int256)
 
 
 **Execution cost**: No bound available
@@ -76,6 +65,7 @@ Params:
 
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
+3. **_param** *of type `int256`*
 
 --- 
 ### RemoveSchemeProposal(address,bytes32,address,address)

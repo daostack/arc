@@ -3,11 +3,11 @@
 > Universal Controller contract
 
 
-**Execution cost**: less than 3847 gas
+**Execution cost**: less than 3879 gas
 
-**Deployment cost**: less than 3446000 gas
+**Deployment cost**: less than 3474200 gas
 
-**Combined cost**: less than 3449847 gas
+**Combined cost**: less than 3478079 gas
 
 ## Constructor
 
@@ -396,7 +396,7 @@ Returns:
 ### isSchemeRegistered(address,address)
 
 
-**Execution cost**: less than 1151 gas
+**Execution cost**: less than 1173 gas
 
 **Attributes**: constant
 
@@ -408,36 +408,6 @@ Params:
 
 Returns:
 
-
-1. **output_0** *of type `bool`*
-
---- 
-### sendEther(uint256,address,address)
->
-> send some ether
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_amountInWei** *of type `uint256`*
-
-    > the amount of ether (in Wei) to send
-
-2. **_to** *of type `address`*
-
-    > address of the beneficiary
-
-3. **_avatar** *of type `address`*
-
-    > the organization avatar.
-
-
-Returns:
-
-> bool which represents a success
 
 1. **output_0** *of type `bool`*
 
@@ -468,10 +438,57 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
+### newOrganization(address)
+>
+> newOrganization set up a new organization with default daoCreator.
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_avatar** *of type `address`*
+
+    > the organization avatar
+
+
+
+--- 
+### mintTokens(uint256,address,address)
+>
+> mint tokens .
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amount** *of type `uint256`*
+
+    > amount of token to mint
+
+2. **_beneficiary** *of type `address`*
+
+    > beneficiary address
+
+3. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### isGlobalConstraintRegistered(address,address)
 
 
-**Execution cost**: less than 1661 gas
+**Execution cost**: less than 1683 gas
 
 **Attributes**: constant
 
@@ -511,7 +528,7 @@ Returns:
 > globalConstraintsCount return the global constraint pre and post count
 
 
-**Execution cost**: less than 1148 gas
+**Execution cost**: less than 1170 gas
 
 **Attributes**: constant
 
@@ -531,7 +548,7 @@ Returns:
 ### getSchemePermissions(address,address)
 
 
-**Execution cost**: less than 1120 gas
+**Execution cost**: less than 1142 gas
 
 **Attributes**: constant
 
@@ -545,53 +562,6 @@ Returns:
 
 
 1. **output_0** *of type `bytes4`*
-
---- 
-### mintTokens(uint256,address,address)
->
-> mint tokens .
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_amount** *of type `uint256`*
-
-    > amount of token to mint
-
-2. **_beneficiary** *of type `address`*
-
-    > beneficiary address
-
-3. **_avatar** *of type `address`*
-
-    > the organization avatar.
-
-
-Returns:
-
-> bool which represents a success
-
-1. **output_0** *of type `bool`*
-
---- 
-### newOrganization(address)
->
-> newOrganization set up a new organization with default daoCreator.
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_avatar** *of type `address`*
-
-    > the organization avatar
-
-
 
 --- 
 ### newControllers(address)
@@ -610,6 +580,60 @@ Returns:
 
 
 1. **output_0** *of type `address`*
+
+--- 
+### organizations(address)
+
+
+**Execution cost**: less than 1369 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+
+Returns:
+
+
+1. **nativeToken** *of type `address`*
+2. **nativeReputation** *of type `address`*
+3. **exist** *of type `bool`*
+
+--- 
+### registerScheme(address,bytes32,bytes4,address)
+>
+> register or update a scheme
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+
+    > the address of the scheme
+
+2. **_paramsHash** *of type `bytes32`*
+
+    > a hashed configuration of the usage of the scheme
+
+3. **_permissions** *of type `bytes4`*
+
+    > the permissions the new scheme will have
+
+4. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
 
 --- 
 ### removeGlobalConstraint(address,address)
@@ -638,9 +662,9 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### registerScheme(address,bytes32,bytes4,address)
+### sendEther(uint256,address,address)
 >
-> register or update a scheme
+> send some ether
 
 
 **Execution cost**: No bound available
@@ -648,19 +672,15 @@ Returns:
 
 Params:
 
-1. **_scheme** *of type `address`*
+1. **_amountInWei** *of type `uint256`*
 
-    > the address of the scheme
+    > the amount of ether (in Wei) to send
 
-2. **_paramsHash** *of type `bytes32`*
+2. **_to** *of type `address`*
 
-    > a hashed configuration of the usage of the scheme
+    > address of the beneficiary
 
-3. **_permissions** *of type `bytes4`*
-
-    > the permissions the new scheme will have
-
-4. **_avatar** *of type `address`*
+3. **_avatar** *of type `address`*
 
     > the organization avatar.
 
@@ -703,7 +723,7 @@ Returns:
 > unregister the caller's scheme
 
 
-**Execution cost**: less than 28509 gas
+**Execution cost**: less than 28531 gas
 
 
 Params:

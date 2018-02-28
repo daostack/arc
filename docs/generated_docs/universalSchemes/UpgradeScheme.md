@@ -3,11 +3,11 @@
 > A scheme to manage the upgrade of an organization.
 
 
-**Execution cost**: less than 21115 gas
+**Execution cost**: less than 21134 gas
 
-**Deployment cost**: less than 714400 gas
+**Deployment cost**: less than 735800 gas
 
-**Combined cost**: less than 735515 gas
+**Combined cost**: less than 756934 gas
 
 ## Constructor
 
@@ -26,19 +26,8 @@ Params:
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
 3. **_intVoteInterface** *of type `address`*
-4. **newUpgradeScheme** *of type `address`*
+4. **_newUpgradeScheme** *of type `address`*
 5. **_params** *of type `bytes32`*
-
---- 
-### NewProposal(bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **proposalId** *of type `bytes32`*
 
 --- 
 ### NewUpgradeProposal(address,bytes32,address,address)
@@ -79,7 +68,7 @@ Params:
 2. **_proposalId** *of type `bytes32`*
 
 --- 
-### ProposalExecuted(address,bytes32)
+### ProposalExecuted(address,bytes32,int256)
 
 
 **Execution cost**: No bound available
@@ -89,6 +78,7 @@ Params:
 
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
+3. **_param** *of type `int256`*
 
 
 ## Methods
