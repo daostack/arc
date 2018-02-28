@@ -86,6 +86,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
+    "minimetoken": "^0.2.0",
     "zeppelin-solidity": "1.7.0"
   }
 }
