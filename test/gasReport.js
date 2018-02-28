@@ -82,14 +82,14 @@ module.exports = async (callback) => {
         bool _transfersEnabled
   */
 
-  // const MiniMe = await report(async () => {
-  //     const factory = await MiniMeTokenFactory.new();
-  //     const instance = await DAOTokenMiniMe.new(factory.address,0, 0, "TokenName", 18, "TKN", true);
-  //     return instance;
-  // });
+  const MiniMe = await report(async () => {
+      const factory = await MiniMeTokenFactory.new();
+      const instance = await DAOTokenMiniMe.new(factory.address,0, 0, "TokenName", 18, "TKN", true);
+      return instance;
+  });
   console.log('ERC20',ERC20);
   console.log('ERC827',ERC827);
-  //console.log('MiniMe',MiniMe);
+  console.log('MiniMe',MiniMe);
   //await report('MiniMe', DAOTokenMiniMe, "TokenName", "TKN");
   callback();
 };
