@@ -76,9 +76,6 @@ module.exports = async (finished) => {
     const instance = await DAOTokenMiniMe.new(factory.address, 0, 0, "TokenName", 18, "TKN", true);
     await instance.changeController(web3.eth.accounts[0]);
 
-    const transfersEnabled = await instance.transfersEnabled();
-    console.log('transfersEnabled',transfersEnabled);
-
     const result = web3.eth.estimateGas({data: DAOTokenMiniMe.binary});
     return {instance, gas: result};
   };
