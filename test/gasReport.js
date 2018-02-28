@@ -1,10 +1,16 @@
-const DAOTokenERC20 = artifacts.require("./DAOTokenERC20.sol");
+const DAOToken = artifacts.require("./DAOToken.sol");
 const DAOTokenERC827 = artifacts.require("./DAOTokenERC827.sol");
 const DAOTokenMiniMe = artifacts.require("./DAOTokenMiniMe.sol");
 const MiniMeTokenFactory = artifacts.require("MiniMeTokenFactory");
 
+const deploy = async (Token,...args) => {
+  const result = web3.eth.estimateGas({data: Token.binary});
+  const instance = await Token.new(...args);
+  return {instance, gas: result};
+};
 
 const report = async (deploy) => {
+
   const mint = async (instance) => {
     const result = await instance.mint.estimateGas(web3.eth.accounts[0],10000);
     await instance.mint(web3.eth.accounts[0],10000);
@@ -47,17 +53,9 @@ const report = async (deploy) => {
     return result;
   };
 
-  /*
-    function totalSupply() public view returns (uint256);
-    function balanceOf(address who) public view returns (uint256);
-    function transfer(address to, uint256 value) public returns (bool);
-    function allowance(address owner, address spender) public view returns (uint256);
-    function transferFrom(address from, address to, uint256 value) public returns (bool);
-    function approve(address spender, uint256 value) public returns (bool);
-   */
-
   const gas = {};
-  const instance = await deploy();
+  const {instance,gas: deployGas} = await deploy();
+  gas.deploy = deployGas;
   gas.mint = await mint(instance);
   gas.burn = await burn(instance);
   gas.totalSupply = await totalSupply(instance);
@@ -69,27 +67,40 @@ const report = async (deploy) => {
   return gas;
 };
 
-module.exports = async (callback) => {
-  const ERC20 = await report(() => DAOTokenERC20.new("TokenName", "TKN"));
-  const ERC827 = await report(() => DAOTokenERC827.new("TokenName", "TKN"));
-  /*
-        address _tokenFactory,
-        address _parentToken,
-        uint _parentSnapShotBlock,
-        string _tokenName,
-        uint8 _decimalUnits,
-        string _tokenSymbol,
-        bool _transfersEnabled
-  */
+module.exports = async (finished) => {
+  const ERC20 = await report(()=>deploy(DAOToken, "TokenName", "TKN"));
+  const ERC827 = await report(()=>deploy(DAOTokenERC827, "TokenName", "TKN"));
 
-  const MiniMe = await report(async () => {
-      const factory = await MiniMeTokenFactory.new();
-      const instance = await DAOTokenMiniMe.new(factory.address,0, 0, "TokenName", 18, "TKN", true);
-      return instance;
-  });
-  console.log('ERC20',ERC20);
-  console.log('ERC827',ERC827);
-  console.log('MiniMe',MiniMe);
-  //await report('MiniMe', DAOTokenMiniMe, "TokenName", "TKN");
-  callback();
+  const deployDAOTokenMiniMe = async () => {
+    const factory = await MiniMeTokenFactory.new();
+    const instance = await DAOTokenMiniMe.new(factory.address, 0, 0, "TokenName", 18, "TKN", true);
+    await instance.changeController(web3.eth.accounts[0]);
+
+    const transfersEnabled = await instance.transfersEnabled();
+    console.log('transfersEnabled',transfersEnabled);
+
+    const result = web3.eth.estimateGas({data: DAOTokenMiniMe.binary});
+    return {instance, gas: result};
+  };
+
+  const MiniMe = await report(deployDAOTokenMiniMe);
+
+  const line = (...args) => console.log(args.reduce((acc,arg) => acc + ' ' + (arg + '').padEnd(13),''));
+
+  line('function','ERC20','ERC827','Diff(%)','MiniMe','Diff(%)');
+  line('========','=====','======','=======','======','=======');
+  for(let key in ERC20){
+    const erc20 = ERC20[key];
+    const erc827 = ERC827[key];
+    const minime = MiniMe[key];
+
+    const diff = (comparedTo) => {
+      const percent = 100*(comparedTo - erc20)/erc20;
+      return `${percent<0?'':'+'}${percent.toFixed(1)}%`;
+    };
+
+    line(key,erc20,erc827,diff(erc827),minime,diff(minime));
+  }
+
+  finished();
 };
