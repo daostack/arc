@@ -3,11 +3,11 @@
 > A scheme to manage global constraint for organizations
 
 
-**Execution cost**: less than 21121 gas
+**Execution cost**: less than 21134 gas
 
-**Deployment cost**: less than 721000 gas
+**Deployment cost**: less than 732800 gas
 
-**Combined cost**: less than 742121 gas
+**Combined cost**: less than 753934 gas
 
 ## Constructor
 
@@ -29,17 +29,6 @@ Params:
 4. **_gc** *of type `address`*
 5. **_params** *of type `bytes32`*
 6. **_voteToRemoveParams** *of type `bytes32`*
-
---- 
-### NewProposal(bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **proposalId** *of type `bytes32`*
 
 --- 
 ### OwnershipTransferred(address,address)
@@ -66,7 +55,7 @@ Params:
 2. **_proposalId** *of type `bytes32`*
 
 --- 
-### ProposalExecuted(address,bytes32)
+### ProposalExecuted(address,bytes32,int256)
 
 
 **Execution cost**: No bound available
@@ -76,6 +65,7 @@ Params:
 
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
+3. **_param** *of type `int256`*
 
 --- 
 ### RemoveGlobalConstraintsProposal(address,bytes32,address,address)

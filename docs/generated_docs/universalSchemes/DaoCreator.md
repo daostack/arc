@@ -3,11 +3,11 @@
 > Genesis Scheme that creates organizations
 
 
-**Execution cost**: less than 5493 gas
+**Execution cost**: less than 5528 gas
 
-**Deployment cost**: less than 4685000 gas
+**Deployment cost**: less than 4710800 gas
 
-**Combined cost**: less than 4690493 gas
+**Combined cost**: less than 4716328 gas
 
 ## Constructor
 
@@ -80,6 +80,24 @@ Params:
 Returns:
 
 > The address of the avatar of the controller
+
+1. **output_0** *of type `address`*
+
+--- 
+### locks(address)
+
+
+**Execution cost**: less than 761 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+
+Returns:
+
 
 1. **output_0** *of type `address`*
 

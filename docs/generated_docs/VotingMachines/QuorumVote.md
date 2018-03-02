@@ -2,11 +2,11 @@
 [see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/QuorumVote.sol)
 
 
-**Execution cost**: less than 885 gas
+**Execution cost**: less than 898 gas
 
-**Deployment cost**: less than 851600 gas
+**Deployment cost**: less than 867200 gas
 
-**Combined cost**: less than 852485 gas
+**Combined cost**: less than 868098 gas
 
 
 ## Events
@@ -33,7 +33,7 @@ Params:
 2. **_voter** *of type `address`*
 
 --- 
-### ExecuteProposal(bytes32,uint256)
+### ExecuteProposal(bytes32,uint256,uint256)
 
 
 **Execution cost**: No bound available
@@ -43,6 +43,7 @@ Params:
 
 1. **_proposalId** *of type `bytes32`*
 2. **_decision** *of type `uint256`*
+3. **_totalReputation** *of type `uint256`*
 
 --- 
 ### NewProposal(bytes32,uint256,address,bytes32)
@@ -75,21 +76,19 @@ Params:
 
 
 ## Methods
-### cancelVote(bytes32)
->
-> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
+### MAX_NUM_OF_CHOICES()
 
 
-**Execution cost**: No bound available
+**Execution cost**: less than 434 gas
+
+**Attributes**: constant
 
 
-Params:
 
-1. **_proposalId** *of type `bytes32`*
-
-    > id of the proposal
+Returns:
 
 
+1. **output_0** *of type `uint256`*
 
 --- 
 ### parameters(bytes32)
@@ -138,7 +137,7 @@ Returns:
 > isVotable check if the proposal is votable
 
 
-**Execution cost**: less than 812 gas
+**Execution cost**: less than 856 gas
 
 **Attributes**: constant
 
@@ -162,7 +161,7 @@ Returns:
 > getNumberOfChoices returns the number of choices possible in this proposal
 
 
-**Execution cost**: less than 734 gas
+**Execution cost**: less than 778 gas
 
 **Attributes**: constant
 
@@ -179,6 +178,23 @@ Returns:
 > uint that contains number of choices
 
 1. **output_0** *of type `uint256`*
+
+--- 
+### cancelVote(bytes32)
+>
+> Cancel the vote of the msg.sender: subtract the reputation amount from the votes and delete the voter from the proposal struct
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > id of the proposal
+
+
 
 --- 
 ### ownerVote(bytes32,uint256,address)
@@ -237,7 +253,7 @@ Returns:
 > isAbstainAllow returns if the voting machine allow abstain (0)
 
 
-**Execution cost**: less than 396 gas
+**Execution cost**: less than 418 gas
 
 **Attributes**: constant
 
@@ -275,7 +291,7 @@ Returns:
 ### proposals(bytes32)
 
 
-**Execution cost**: less than 2210 gas
+**Execution cost**: less than 2232 gas
 
 **Attributes**: constant
 
@@ -294,6 +310,21 @@ Returns:
 5. **paramsHash** *of type `bytes32`*
 6. **totalVotes** *of type `uint256`*
 7. **open** *of type `bool`*
+
+--- 
+### proposalsCnt()
+
+
+**Execution cost**: less than 524 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `uint256`*
 
 --- 
 ### propose(uint256,bytes32,address,address,address)
@@ -336,7 +367,7 @@ Returns:
 > hash the parameters, save them if necessary, and return the hash value
 
 
-**Execution cost**: less than 61851 gas
+**Execution cost**: less than 61895 gas
 
 
 Params:
@@ -411,7 +442,7 @@ Returns:
 > voteStatus returns the reputation voted for a proposal for a specific voting choice.
 
 
-**Execution cost**: less than 859 gas
+**Execution cost**: less than 903 gas
 
 **Attributes**: constant
 

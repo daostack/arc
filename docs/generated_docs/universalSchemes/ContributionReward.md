@@ -3,11 +3,11 @@
 > A scheme for proposing and rewarding contributions to an organization
 
 
-**Execution cost**: less than 21874 gas
+**Execution cost**: less than 21909 gas
 
-**Deployment cost**: less than 1445600 gas
+**Deployment cost**: less than 1473400 gas
 
-**Combined cost**: less than 1467474 gas
+**Combined cost**: less than 1495309 gas
 
 ## Constructor
 
@@ -33,17 +33,6 @@ Params:
 8. **_beneficiary** *of type `address`*
 
 --- 
-### NewProposal(bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **proposalId** *of type `bytes32`*
-
---- 
 ### OwnershipTransferred(address,address)
 
 
@@ -56,7 +45,7 @@ Params:
 2. **newOwner** *of type `address`*
 
 --- 
-### ProposalDeleted(address,bytes32)
+### ProposalExecuted(address,bytes32,int256)
 
 
 **Execution cost**: No bound available
@@ -66,18 +55,7 @@ Params:
 
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
-
---- 
-### ProposalExecuted(address,bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_avatar** *of type `address`*
-2. **_proposalId** *of type `bytes32`*
+3. **_param** *of type `int256`*
 
 --- 
 ### RedeemEther(address,bytes32,address,uint256)
@@ -172,7 +150,7 @@ Returns:
 ### hashedParameters()
 
 
-**Execution cost**: less than 766 gas
+**Execution cost**: less than 788 gas
 
 **Attributes**: constant
 
@@ -212,6 +190,38 @@ Params:
 Returns:
 
 > periods left to be paid.
+
+1. **output_0** *of type `uint256`*
+
+--- 
+### getRedeemedPeriods(bytes32,address,uint256)
+>
+> getRedeemedPeriods return the already redeemed periods for reputation, nativeToken, ether or externalToken.
+
+
+**Execution cost**: less than 989 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the voting in the voting machine
+
+2. **_avatar** *of type `address`*
+
+    > address of the controller
+
+3. **_redeemType** *of type `uint256`*
+
+    > - the type of the reward  :        0 - reputation        1 - nativeTokenReward        2 - Ether        3 - ExternalToken
+
+
+Returns:
+
+> redeemed period.
 
 1. **output_0** *of type `uint256`*
 
@@ -508,7 +518,7 @@ Returns:
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 
-**Execution cost**: less than 23115 gas
+**Execution cost**: less than 23137 gas
 
 
 Params:

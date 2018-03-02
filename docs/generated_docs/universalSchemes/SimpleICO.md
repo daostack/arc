@@ -3,11 +3,11 @@
 > SimpleICO scheme.
 
 
-**Execution cost**: less than 21277 gas
+**Execution cost**: less than 21284 gas
 
-**Deployment cost**: less than 876400 gas
+**Deployment cost**: less than 878200 gas
 
-**Combined cost**: less than 897677 gas
+**Combined cost**: less than 899484 gas
 
 ## Constructor
 
@@ -27,17 +27,6 @@ Params:
 2. **_beneficiary** *of type `address`*
 3. **_incomingEther** *of type `uint256`*
 4. **_tokensAmount** *of type `uint256`*
-
---- 
-### NewProposal(bytes32)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **proposalId** *of type `bytes32`*
 
 --- 
 ### OwnershipTransferred(address,address)
@@ -106,7 +95,7 @@ Params:
 
 Returns:
 
-> bool which represents a successful of the function
+> uint number of tokens minted for the donation.
 
 1. **output_0** *of type `uint256`*
 
