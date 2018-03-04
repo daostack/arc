@@ -12,7 +12,7 @@ import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
  * @dev ERC20 compatible token. It is a mintable, destructible, burnable token.
  */
 
-contract DAOToken is MintableToken, Destructible, BurnableToken, ERC827Token {
+contract DAOToken is ERC827Token,MintableToken,BurnableToken {
 
     string public name;
     string public symbol;
