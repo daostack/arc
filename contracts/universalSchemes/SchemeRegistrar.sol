@@ -16,7 +16,7 @@ contract SchemeRegistrar is UniversalScheme {
         address indexed _intVoteInterface,
         address _scheme,
         bytes32 _parametersHash,
-        bool _isRegistering
+        bytes4 _permissions
     );
     event RemoveSchemeProposal(address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -31,7 +31,7 @@ contract SchemeRegistrar is UniversalScheme {
         address scheme; //
         bytes32 parametersHash;
         uint proposalType; // 1: add a scheme, 2: remove a scheme.
-        bool isRegistering;
+        bytes4 permissions;
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
@@ -72,11 +72,7 @@ contract SchemeRegistrar is UniversalScheme {
 
           // Add a scheme:
             if (proposal.proposalType == 1) {
-                if (proposal.isRegistering == false) {
-                    require(controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(1),_avatar));
-                    } else {
-                    require(controller.registerScheme(proposal.scheme, proposal.parametersHash, bytes4(3),_avatar));
-                }
+                require(controller.registerScheme(proposal.scheme, proposal.parametersHash, proposal.permissions,_avatar));
             }
           // Remove a scheme:
             if ( proposal.proposalType == 2 ) {
@@ -117,8 +113,7 @@ contract SchemeRegistrar is UniversalScheme {
     * @param _avatar the address of the organization the scheme will be registered for
     * @param _scheme the address of the scheme to be registered
     * @param _parametersHash a hash of the configuration of the _scheme
-    * @param _isRegistering a boolean represent if the scheme is a registering scheme
-    *      that can register other schemes
+    * @param _permissions the permission of the scheme to be registered
     * @return a proposal Id
     * @dev NB: not only proposes the vote, but also votes for it
     */
@@ -126,7 +121,7 @@ contract SchemeRegistrar is UniversalScheme {
         Avatar _avatar,
         address _scheme,
         bytes32 _parametersHash,
-        bool _isRegistering
+        bytes4 _permissions
     )
     public
     returns(bytes32)
@@ -140,14 +135,14 @@ contract SchemeRegistrar is UniversalScheme {
             scheme: _scheme,
             parametersHash: _parametersHash,
             proposalType: 1,
-            isRegistering: _isRegistering
+            permissions: _permissions
         });
         NewSchemeProposal(
             _avatar,
             proposalId,
             controllerParams.intVote,
             _scheme, _parametersHash,
-            _isRegistering
+            _permissions
         );
         organizationsProposals[_avatar][proposalId] = proposal;
 
