@@ -33,7 +33,7 @@ module.exports = async function(deployer) {
       var daoCreatorInst = await DaoCreator.deployed();
       // Create DAOstack:
       var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,0);
+          initTokenInWei, initRepInWei,0,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       var ControllerInst = await Controller.at(await AvatarInst.owner());
       var reputationAddress = await ControllerInst.nativeReputation();

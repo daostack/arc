@@ -17,14 +17,6 @@ contract('DAOToken', accounts => {
         assert.equal(owner, accounts[0]);
     });
 
-    it("should be destructible", async () => {
-        // we only test that the function actually exists
-        // "real" tests are in zeppelin-solidity/Destructible.js
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
-        let txnhash = await token.destroy();
-        assert.isOk(txnhash);
-    });
-
     it("should mint tokens to owner account", async () => {
         helpers.etherForEveryone();
 

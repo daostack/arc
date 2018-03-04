@@ -5,7 +5,7 @@
 
 **Execution cost**: No bound available
 
-**Deployment cost**: less than 687800 gas
+**Deployment cost**: less than 904600 gas
 
 **Combined cost**: No bound available
 
@@ -90,34 +90,39 @@ Params:
 
 
 ## Methods
-### balanceOf(address)
+### decreaseApproval(address,uint256,bytes)
 >
-> Gets the balance of the specified address.
+> Addition to StandardToken methods. Decrease the amount of tokens that an owner allowed to a spender and execute a call with the sent data.   * approve should be called when allowed[_spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
 
 
-**Execution cost**: less than 796 gas
-
-**Attributes**: constant
+**Execution cost**: No bound available
 
 
 Params:
 
-1. **_owner** *of type `address`*
+1. **_spender** *of type `address`*
 
-    > The address to query the the balance of.
+    > The address which will spend the funds.
+
+2. **_subtractedValue** *of type `uint256`*
+
+    > The amount of tokens to decrease the allowance by.
+
+3. **_data** *of type `bytes`*
+
+    > ABI-encoded contract call to call `_spender` address.
 
 
 Returns:
 
-> An uint256 representing the amount owned by the passed address.
 
-1. **balance** *of type `uint256`*
+1. **output_0** *of type `bool`*
 
 --- 
 ### destroyAndSend(address)
 
 
-**Execution cost**: less than 30980 gas
+**Execution cost**: less than 31090 gas
 
 
 Params:
@@ -156,7 +161,7 @@ Returns:
 > Function to check the amount of tokens that an owner allowed to a spender.
 
 
-**Execution cost**: less than 1049 gas
+**Execution cost**: less than 1159 gas
 
 **Attributes**: constant
 
@@ -184,16 +189,40 @@ Returns:
 > Transfers the current balance to the owner and terminates the contract.
 
 
-**Execution cost**: less than 30945 gas
+**Execution cost**: less than 31011 gas
 
 
 
 
 --- 
+### balanceOf(address)
+>
+> Gets the balance of the specified address.
+
+
+**Execution cost**: less than 840 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_owner** *of type `address`*
+
+    > The address to query the the balance of.
+
+
+Returns:
+
+> An uint256 representing the amount owned by the passed address.
+
+1. **balance** *of type `uint256`*
+
+--- 
 ### DECIMAL()
 
 
-**Execution cost**: less than 349 gas
+**Execution cost**: less than 393 gas
 
 **Attributes**: constant
 
@@ -222,6 +251,36 @@ Params:
 
 
 --- 
+### approve(address,uint256,bytes)
+>
+> Addition to ERC20 token methods. It allows to approve the transfer of value and execute a call with the sent data. Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_spender** *of type `address`*
+
+    > The address that will spend the funds.
+
+2. **_value** *of type `uint256`*
+
+    > The amount of tokens to be spent.
+
+3. **_data** *of type `bytes`*
+
+    > ABI-encoded contract call to call `_to` address.
+
+
+Returns:
+
+> true if the call function was executed successfully
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### decreaseApproval(address,uint256)
 >
 > Decrease the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
@@ -247,19 +306,29 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### symbol()
+### transfer(address,uint256)
+>
+> transfer token for a specified address
 
 
-**Execution cost**: No bound available
+**Execution cost**: less than 44031 gas
 
-**Attributes**: constant
 
+Params:
+
+1. **_to** *of type `address`*
+
+    > The address to transfer to.
+
+2. **_value** *of type `uint256`*
+
+    > The amount to be transferred.
 
 
 Returns:
 
 
-1. **output_0** *of type `string`*
+1. **output_0** *of type `bool`*
 
 --- 
 ### mint(address,uint256)
@@ -288,12 +357,41 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
+### increaseApproval(address,uint256,bytes)
+>
+> Addition to StandardToken methods. Increase the amount of tokens that an owner allowed to a spender and execute a call with the sent data.   * approve should be called when allowed[_spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_spender** *of type `address`*
+
+    > The address which will spend the funds.
+
+2. **_addedValue** *of type `uint256`*
+
+    > The amount of tokens to increase the allowance by.
+
+3. **_data** *of type `bytes`*
+
+    > ABI-encoded contract call to call `_spender` address.
+
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### finishMinting()
 >
 > Function to stop minting new tokens.
 
 
-**Execution cost**: less than 22080 gas
+**Execution cost**: less than 22146 gas
 
 
 
@@ -309,7 +407,7 @@ Returns:
 > Increase the amount of tokens that an owner allowed to a spender.   * approve should be called when allowed[_spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
 
 
-**Execution cost**: less than 23173 gas
+**Execution cost**: less than 23283 gas
 
 
 Params:
@@ -362,7 +460,7 @@ Returns:
 ### owner()
 
 
-**Execution cost**: less than 793 gas
+**Execution cost**: less than 859 gas
 
 **Attributes**: constant
 
@@ -374,12 +472,27 @@ Returns:
 1. **output_0** *of type `address`*
 
 --- 
+### symbol()
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `string`*
+
+--- 
 ### totalSupply()
 >
 > total number of tokens in existence
 
 
-**Execution cost**: less than 439 gas
+**Execution cost**: less than 461 gas
 
 **Attributes**: constant
 
@@ -391,27 +504,32 @@ Returns:
 1. **output_0** *of type `uint256`*
 
 --- 
-### transfer(address,uint256)
+### transfer(address,uint256,bytes)
 >
-> transfer token for a specified address
+> Addition to ERC20 token methods. Transfer tokens to a specified address and execute a call with the sent data on the same transaction
 
 
-**Execution cost**: less than 43965 gas
+**Execution cost**: No bound available
 
 
 Params:
 
 1. **_to** *of type `address`*
 
-    > The address to transfer to.
+    > address The address which you want to transfer to
 
 2. **_value** *of type `uint256`*
 
-    > The amount to be transferred.
+    > uint256 the amout of tokens to be transfered
+
+3. **_data** *of type `bytes`*
+
+    > ABI-encoded contract call to call `_to` address.
 
 
 Returns:
 
+> true if the call function was executed successfully
 
 1. **output_0** *of type `bool`*
 
@@ -445,12 +563,46 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
+### transferFrom(address,address,uint256,bytes)
+>
+> Addition to ERC20 token methods. Transfer tokens from one address to another and make a contract call on the same transaction
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_from** *of type `address`*
+
+    > The address which you want to send tokens from
+
+2. **_to** *of type `address`*
+
+    > The address which you want to transfer to
+
+3. **_value** *of type `uint256`*
+
+    > The amout of tokens to be transferred
+
+4. **_data** *of type `bytes`*
+
+    > ABI-encoded contract call to call `_to` address.
+
+
+Returns:
+
+> true if the call function was executed successfully
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### transferOwnership(address)
 >
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 
-**Execution cost**: less than 23118 gas
+**Execution cost**: less than 23228 gas
 
 
 Params:

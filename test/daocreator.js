@@ -20,7 +20,7 @@ const setup = async function (accounts,founderToken,founderReputation,useUContro
     uController = await UController.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
     uControllerAddress = uController.address;
   }
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[founderToken],[founderReputation],uControllerAddress);
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[founderToken],[founderReputation],uControllerAddress,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
