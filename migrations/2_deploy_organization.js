@@ -80,7 +80,7 @@ module.exports = async function(deployer) {
                           simpleICOInst.address,
                           contributionRewardInst.address];
       const paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams,simpleICOParams,contributionRewardParams];
-      const permissionArray = ['0x80000003', '0x80000005', '0x80000009','0x80000001','0x80000001'];
+      const permissionArray = ['0x0000001F', '0x00000005', '0x00000009','0x00000001','0x00000001'];
 
       // set DAOstack initial schmes:
       await daoCreatorInst.setSchemes(
@@ -92,7 +92,7 @@ module.exports = async function(deployer) {
       await deployer.deploy(UController, {gas: constants.GENESIS_SCHEME_GAS_LIMIT});
       var uController = await UController.deployed();
       returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,uController.address);
+          initTokenInWei, initRepInWei,uController.address,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
       AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       await daoCreatorInst.setSchemes(
           AvatarInst.address,

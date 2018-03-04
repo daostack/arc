@@ -74,7 +74,7 @@ contract Controller is ControllerInterface {
         avatar = _avatar;
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
-        schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0xF)});
+        schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x1F)});
     }
 
   // Do not allow mistaken calls:
@@ -171,10 +171,10 @@ contract Controller is ControllerInterface {
     // Implementation is a bit messy. One must recall logic-circuits ^^
 
     // produces non-zero if sender does not have all of the perms that are changing between old and new
-        require(bytes4(15)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
+        require(bytes4(0x1F)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
 
     // produces non-zero if sender does not have all of the perms in the old scheme
-        require(bytes4(15)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
+        require(bytes4(0x1F)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
     // Add or change the scheme:
         schemes[_scheme].paramsHash = _paramsHash;
@@ -199,7 +199,7 @@ contract Controller is ControllerInterface {
             return false;
           }
     // Check the unregistering scheme has enough permissions:
-        require(bytes4(15)&(schemes[_scheme].permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
+        require(bytes4(0x1F)&(schemes[_scheme].permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
     // Unregister:
         UnregisterScheme(msg.sender, _scheme);
