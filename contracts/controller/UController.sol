@@ -24,6 +24,7 @@ contract UController is ControllerInterface {
                             // 2nd bit: Scheme can register other schemes
                             // 3th bit: Scheme can add/remove global constraints
                             // 4rd bit: Scheme can upgrade the controller
+                            // 5th bit: Scheme can call delegatecall
     }
 
     struct GlobalConstraint {
@@ -108,6 +109,11 @@ contract UController is ControllerInterface {
 
     modifier onlyUpgradingScheme(address _avatar) {
         require(organizations[_avatar].schemes[msg.sender].permissions&bytes4(8) == bytes4(8));
+        _;
+    }
+
+    modifier onlyDelegateScheme(address _avatar) {
+        require(organizations[_avatar].schemes[msg.sender].permissions&bytes4(16) == bytes4(16));
         _;
     }
 
@@ -341,7 +347,7 @@ contract UController is ControllerInterface {
     */
     function genericAction(bytes32[] _params,address _avatar)
     public
-    onlyRegisteredScheme(_avatar)
+    onlyDelegateScheme(_avatar)
     onlySubjectToConstraint("genericAction",_avatar)
     returns(bool)
     {

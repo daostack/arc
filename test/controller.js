@@ -258,7 +258,7 @@ contract('Controller', function (accounts)  {
         });
 
         it("generic call", async () => {
-          controller = await setup();
+          controller = await setup('0x00000010');
           await avatar.transferOwnership(controller.address);
           var tx = await controller.genericAction([0],helpers.NULL_ADDRESS);
           assert.equal(tx.logs.length, 2);
@@ -428,10 +428,9 @@ contract('Controller', function (accounts)  {
                  });
 
                  it("globalConstraints generic call  add & remove", async () => {
-                    controller = await setup();
+                    controller = await setup('0x00000014');
                     var globalConstraints = await constraint("genericAction");
                     await avatar.transferOwnership(controller.address);
-
                     try {
                     await controller.genericAction([0],helpers.NULL_ADDRESS);
                     assert(false,"genericAction should fail due to the global constraint ");
