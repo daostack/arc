@@ -45,7 +45,7 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],[20,10,70]);
    }
    testSetup.voteInOrganizationParams= await setupVoteInOrganizationParams(testSetup.voteInOrganization,accounts,reputationAccount,genesisProtocol,tokenAddress);
-   var permissions = "0x00000000";
+   var permissions = "0x00000010";
    if (genesisProtocol) {
      await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                           [testSetup.voteInOrganization.address,testSetup.voteInOrganizationParams.votingMachine.genesisProtocol.address],

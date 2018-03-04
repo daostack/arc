@@ -285,7 +285,7 @@ contract('UController', function (accounts)  {
   });
 
   it("generic call", async () => {
-    controller = await  setup();
+    controller = await  setup('0x00000010');
     var tx = await controller.genericAction([0],avatar.address);
     assert.equal(tx.logs.length, 2);
     assert.equal(tx.logs[0].event, "GenericAction");
@@ -450,7 +450,7 @@ contract('UController', function (accounts)  {
                  });
 
                  it("globalConstraints generic call  add & remove", async () => {
-                    controller = await  setup();
+                    controller = await  setup('0x00000014');
                     var globalConstraints = await constraint("genericAction");
 
                     try {
