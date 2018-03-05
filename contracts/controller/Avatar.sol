@@ -1,6 +1,5 @@
 pragma solidity ^0.4.19;
 
-import "./Controller.sol";
 import "./Reputation.sol";
 import "./DAOToken.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
