@@ -7,7 +7,7 @@ import "./GenesisProtocolFormulasInterface.sol";
 
 
 /**
- * @title A governance contract -an organization's voting machine scheme.
+ * @title GenesisProtocol implementation -an organization's voting machine scheme.
  */
 contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolFormulasInterface {
     using SafeMath for uint;
@@ -22,7 +22,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         uint boostedVotePeriodLimit; //the time limit for a proposal to be in an relative voting mode.
         uint thresholdConstA;//constant A for threshold calculation . threshold =A * (e ** (numberOfBoostedProposals/B))
         uint thresholdConstB;//constant B for threshold calculation . threshold =A * (e ** (numberOfBoostedProposals/B))
-        GenesisProtocolFormulasInterface governanceFormulasInterface; //Contract to override default protocol formulas.If will be used if it is not 0.
+        GenesisProtocolFormulasInterface genesisProtocolFormulasInterface; //Contract to override default protocol formulas.If will be used if it is not 0.
         uint minimumStakingFee; //minimum staking fee allowed.
         uint quietEndingPeriod; //quite ending period
         uint proposingRepRewardConstA;//constant A for calculate proposer reward. proposerReward =A +B*(R+ - R-)
@@ -115,12 +115,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      *    _params[9] -_stakerFeeRatioForVoters,
      *    _params[10] -_votersReputationLossRatio,
      *    _params[11] -_votersGainRepRatioFromLostRep
-     * @param _governanceFormulasInterface override the default formulas.
+     * @param _genesisProtocolFormulasInterface override the default formulas.
     */
     function setParameters(
 
         uint[12] _params, //use array here due to stack too deep issue.
-        GenesisProtocolFormulasInterface _governanceFormulasInterface
+        GenesisProtocolFormulasInterface _genesisProtocolFormulasInterface
         )
     public
     returns(bytes32)
@@ -132,7 +132,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         require(_params[11] <= 100); //votersGainRepRatioFromLostRep
         bytes32 hashedParameters = getParametersHash(
             _params,
-            _governanceFormulasInterface
+            _genesisProtocolFormulasInterface
             );
         parameters[hashedParameters] = Parameters({
             preBoostedVoteRequiredPercentage: _params[0],
@@ -147,7 +147,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             stakerFeeRatioForVoters:_params[9],
             votersReputationLossRatio:_params[10],
             votersGainRepRatioFromLostRep:_params[11],
-            governanceFormulasInterface:_governanceFormulasInterface
+            genesisProtocolFormulasInterface:_genesisProtocolFormulasInterface
 
         });
         return hashedParameters;
@@ -158,7 +158,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
    */
     function getParametersHash(
         uint[12] _params, //use array here due to stack too deep issue.
-        GenesisProtocolFormulasInterface _governanceFormulasInterface)
+        GenesisProtocolFormulasInterface _genesisProtocolFormulasInterface)
         public
         pure
         returns(bytes32)
@@ -176,7 +176,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             _params[9],
             _params[10],
             _params[11],
-            _governanceFormulasInterface);
+            _genesisProtocolFormulasInterface);
     }
 
     /**
@@ -407,10 +407,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         address avatar = proposals[_proposalId].avatar;
         bytes32 paramsHash = getParametersFromController(Avatar(avatar));
         Parameters memory params = parameters[paramsHash];
-        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
+        if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             return (_score(_proposalId) >= threshold(avatar));
         } else {
-            return (params.governanceFormulasInterface).shouldBoost(_proposalId);
+            return (params.genesisProtocolFormulasInterface).shouldBoost(_proposalId);
         }
     }
 
@@ -422,10 +422,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     function score(bytes32 _proposalId) public view returns(int) {
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory params = parameters[paramsHash];
-        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
+        if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             return _score(_proposalId);
         } else {
-            return (params.governanceFormulasInterface).score(_proposalId);
+            return (params.genesisProtocolFormulasInterface).score(_proposalId);
         }
     }
 
@@ -440,10 +440,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         uint e = 2;
         bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
         Parameters memory params = parameters[paramsHash];
-        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
+        if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             return int(params.thresholdConstA * (e ** (orgBoostedProposalsCnt[_avatar]/params.thresholdConstB)));
         } else {
-            return int((params.governanceFormulasInterface).threshold(_avatar));
+            return int((params.genesisProtocolFormulasInterface).threshold(_avatar));
         }
     }
 
@@ -456,7 +456,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     function getRedeemableTokensStaker(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory params = parameters[paramsHash];
-        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
+        if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             Proposal storage proposal = proposals[_proposalId];
             if (proposal.stakes[proposal.winningVote] == 0) {
               //this can be reached if the winningVote is NO
@@ -464,7 +464,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             }
             return (proposal.stakers[_beneficiary].amount * proposal.totalStakes) / proposal.stakes[proposal.winningVote];
         } else {
-            return (params.governanceFormulasInterface).getRedeemableTokensStaker(_proposalId,_beneficiary);
+            return (params.genesisProtocolFormulasInterface).getRedeemableTokensStaker(_proposalId,_beneficiary);
         }
     }
 
@@ -477,7 +477,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
         Parameters memory params = parameters[paramsHash];
         int rep;
-        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
+        if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             Proposal storage proposal = proposals[_proposalId];
             if (proposal.winningVote == NO) {
                 rep = 0;
@@ -485,7 +485,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
                 rep = int(params.proposingRepRewardConstA + params.proposingRepRewardConstB * (proposal.votes[YES]-proposal.votes[NO]));
             }
         } else {
-            rep = int((params.governanceFormulasInterface).getRedeemableReputationProposer(_proposalId));
+            rep = int((params.genesisProtocolFormulasInterface).getRedeemableReputationProposer(_proposalId));
         }
         return rep;
     }
@@ -502,10 +502,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         Proposal storage proposal = proposals[_proposalId];
         if (proposal.totalVotes == 0)
            return 0;
-        if (params.governanceFormulasInterface == GenesisProtocolFormulasInterface(0)) {
+        if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             return (proposal.votersStakes * (proposal.voters[_beneficiary].reputation / proposal.totalVotes));
         } else {
-            return (params.governanceFormulasInterface).getRedeemableTokensVoter(_proposalId,_beneficiary);
+            return (params.genesisProtocolFormulasInterface).getRedeemableTokensVoter(_proposalId,_beneficiary);
         }
     }
 
