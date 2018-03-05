@@ -18,11 +18,11 @@ contract('VotingMachine', (accounts)=>{
     const executable = await ExecutableTest.new();
 
     const absoluteParams = await absolute.setParameters.call(rep.address,50,true);
-    await absolute.setParameters.sendTransaction(rep.address,50,true);
+    await absolute.setParameters(rep.address,50,true);
     const genesisParams = await genesis.setParameters.call([50,60,60,1,1,0,0,60,1,1,10,80],0);
-    await genesis.setParameters.sendTransaction([50,60,60,1,1,0,0,60,1,1,10,80],0);
+    await genesis.setParameters([50,60,60,1,1,0,0,60,1,1,10,80],0);
     const quoromParams = await quorum.setParameters.call(rep.address,50,true);
-    await quorum.setParameters.sendTransaction(rep.address,50,true);
+    await quorum.setParameters(rep.address,50,true);
 
     const absoluteProposalId = await absolute.propose(5, absoluteParams, avatar.address, executable.address,accounts[0]);
     const genesisProposalId = await genesis.propose(2, genesisParams, avatar.address, executable.address,accounts[0]);
