@@ -26,7 +26,7 @@ contract('VotingMachine', (accounts)=>{
 
     const absoluteProposalId = await absolute.propose(5, absoluteParams, avatar.address, executable.address,accounts[0]);
     const genesisProposalId = await genesis.propose(2, genesisParams, avatar.address, executable.address,accounts[0]);
-    const quorumProposalId = await quorum.propose(5, absoluteParams, avatar.address, executable.address,accounts[0]);
+    const quorumProposalId = await quorum.propose(5, quoromParams, avatar.address, executable.address,accounts[0]);
 
     assert(absoluteProposalId !== genesisProposalId, 'AbsoluteVote gives the same proposalId as GenesisProtocol');
     assert(genesisProposalId !== quorumProposalId, 'GenesisProtocol gives the same proposalId as QuorumVote');
