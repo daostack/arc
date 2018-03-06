@@ -97,7 +97,6 @@ contract('ContributionReward', function(accounts) {
        var balanceBefore  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);
        //give approval to scheme to do the fees transfer
        await testSetup.org.token.approve(testSetup.contributionReward.address,100);
-       await testSetup.standardTokenMock.approve(testSetup.contributionReward.address,100);
        var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                       "description",
                                                                       0,
