@@ -1039,7 +1039,6 @@ contract('GenesisProtocol', function (accounts) {
       let tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
       var proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
-      await testSetup.standardTokenMock.approve(testSetup.genesisProtocol.address,100);
       await testSetup.genesisProtocol.vote(proposalId,1);
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
 
