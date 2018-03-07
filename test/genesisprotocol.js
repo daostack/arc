@@ -679,6 +679,50 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx.logs[0].args._voter, accounts[0]);
     assert.equal(tx.logs[0].args._vote, 1);
     assert.equal(tx.logs[0].args._amount, 10);
+
+  });
+
+  it("multiple stakes ", async () => {
+
+    var testSetup = await setup(accounts,50,60,60,100,100);
+    let tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
+    var proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+    await testSetup.standardTokenMock.approve(testSetup.genesisProtocol.address,30);
+
+    let staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    assert.equal(staker[0],0);
+    assert.equal(staker[1],0);
+
+    tx = await testSetup.genesisProtocol.stake(proposalId,1,10);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "Stake");
+    assert.equal(tx.logs[0].args._voter, accounts[0]);
+    assert.equal(tx.logs[0].args._vote, 1);
+    assert.equal(tx.logs[0].args._amount, 10);
+    staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    assert.equal(staker[0],1);
+    assert.equal(staker[1],10);
+
+    //add more stake on the same vote
+    tx = await testSetup.genesisProtocol.stake(proposalId,1,10);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "Stake");
+    assert.equal(tx.logs[0].args._voter, accounts[0]);
+    assert.equal(tx.logs[0].args._vote, 1);
+    assert.equal(tx.logs[0].args._amount, 10);
+    staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    assert.equal(staker[0],1);
+    assert.equal(staker[1],20);
+    //try to stake with different vote as before
+    tx = await testSetup.genesisProtocol.stake(proposalId,2,10);
+    assert.equal(tx.logs.length, 0);
+    staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    assert.equal(staker[0],1);
+    assert.equal(staker[1],20);
+
+    let proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
+    assert.equal(proposalStatus[1],18); //totalStakes -votersFee
   });
 
   it("stake without approval - fail", async () => {

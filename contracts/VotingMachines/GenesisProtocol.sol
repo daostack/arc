@@ -238,21 +238,29 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         if (execute(_proposalId)) {
             return true;
         }
-        if (proposals[_proposalId].state != ProposalState.PreBoosted) {
+
+        Proposal storage proposal = proposals[_proposalId];
+
+        if (proposal.state != ProposalState.PreBoosted) {
             return false;
         }
-        Proposal storage proposal = proposals[_proposalId];
+
+        // enable to increase stake only on the previous stake vote
+        Staker storage staker = proposal.stakers[msg.sender];
+        if ((staker.amount > 0) && (staker.vote != _vote)) {
+            return false;
+        }
+
         uint amount = _amount;
 
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
+        bytes32 paramsHash = getParametersFromController(Avatar(proposal.avatar));
         Parameters memory params = parameters[paramsHash];
         require(amount >= params.minimumStakingFee);
         stakingToken.transferFrom(msg.sender, address(this), amount);
 
-        proposal.stakers[msg.sender] = Staker({
-            amount: amount,
-            vote: _vote
-        });
+        staker.amount += amount;
+        staker.vote = _vote;
+
         proposal.votersStakes += (params.stakerFeeRatioForVoters * amount)/100;
         proposal.stakes[_vote] = amount.add(proposal.stakes[_vote]);
         amount = ((100-params.stakerFeeRatioForVoters)*amount)/100;
