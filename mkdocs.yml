@@ -1,9 +1,10 @@
 site_name: DAOstack Arc Docs
-site_url: https://daostack.github.io/arc/README
 repo_url: https://github.com/daostack/arc/
 repo_name: daostack/arc
 site_description: A platform for building DAOs
 docs_dir: docs
+extra_templates:
+- index.html
 markdown_extensions:
 - admonition
 - codehilite:
