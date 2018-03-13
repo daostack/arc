@@ -556,7 +556,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         int rep;
         if ((proposal.stakers[_beneficiary].amount>0) &&
              (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
-            rep = int((proposal.stakers[_beneficiary].amount * (proposal.lostReputation * (100 - params.votersGainRepRatioFromLostRep))) /(proposal.stakes[proposal.winningVote]*100));
+            rep = int((proposal.stakers[_beneficiary].amount * (proposal.lostReputation * (100 - params.votersGainRepRatioFromLostRep)))/(proposal.stakes[proposal.winningVote]*100));
         }
         return rep;
     }
