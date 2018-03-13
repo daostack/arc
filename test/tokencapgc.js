@@ -33,7 +33,7 @@ contract('TokenCapGC', function (accounts)  {
       var token  = await DAOToken.new("TEST","TST");
       await tokenCapGC.setParameters(token.address,100);
       paramsHash = await tokenCapGC.getParametersHash(token.address,100);
-      var param = await tokenCapGC.params(paramsHash);
+      var param = await tokenCapGC.parameters(paramsHash);
       assert.equal(param[1].toNumber(),100);
     });
 

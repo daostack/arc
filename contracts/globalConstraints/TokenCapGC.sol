@@ -17,7 +17,7 @@ contract TokenCapGC {
     }
 
     // Mapping from the hash of the parameters to the parameters themselves:
-    mapping (bytes32=>Parameters) public params;
+    mapping (bytes32=>Parameters) public parameters;
 
 
     /**
@@ -28,8 +28,8 @@ contract TokenCapGC {
      */
     function setParameters(StandardToken _token, uint _cap) public returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_token, _cap);
-        params[paramsHash].token = _token;
-        params[paramsHash].cap = _cap;
+        parameters[paramsHash].token = _token;
+        parameters[paramsHash].cap = _cap;
         return paramsHash;
     }
 
@@ -58,8 +58,8 @@ contract TokenCapGC {
      * @return bool which represents a success
      */
     function post(address, bytes32 _paramsHash, bytes32) public view returns(bool) {
-        if ((params[_paramsHash].token != StandardToken(0)) &&
-            ( params[_paramsHash].token.totalSupply() > params[_paramsHash].cap)) {
+        if ((parameters[_paramsHash].token != StandardToken(0)) &&
+            ( parameters[_paramsHash].token.totalSupply() > parameters[_paramsHash].cap)) {
             return false;
           }
         return true;
