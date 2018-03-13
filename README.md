@@ -30,7 +30,7 @@ We take no responsibility for your implementation decisions and any security pro
     }
     ```
     You should be able to find all `@daostack/arc` already built contracts (<contract>.json) ready for deployment under `node_modules/@daostack/arc/build/contracts/` folder.
-4. Read the [documentation](https://daostack.github.io/arc/README) to get a better understanding of how to use Arc.
+4. Read the [documentation](https://daostack.github.io/arc/) to get a better understanding of how to use Arc.
 
 ## Contribute
 
