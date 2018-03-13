@@ -114,6 +114,8 @@ contract DaoCreator {
     ) private returns(address)
     {
         // Create Token, Reputation and Avatar:
+        require(_founders.length == _foundersTokenAmount.length);
+        require(_founders.length == _foundersReputationAmount.length);
         DAOToken  nativeToken = new DAOToken(_tokenName, _tokenSymbol);
         Reputation  nativeReputation = new Reputation();
         Avatar  avatar = new Avatar(_orgName, nativeToken, nativeReputation);
