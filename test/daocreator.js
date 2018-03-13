@@ -290,7 +290,6 @@ contract('DaoCreator', function(accounts) {
 
     it("forgeOrg with different params length should revert", async function() {
         var amountToMint = 10;
-        ///await setup(accounts,amountToMint,amountToMint,true);
         daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
         var uControllerAddress = 0;
         try {

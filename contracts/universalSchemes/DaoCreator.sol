@@ -140,7 +140,7 @@ contract DaoCreator {
         nativeToken.transferOwnership(controller);
         nativeReputation.transferOwnership(controller);
 
-        locks[avatar] = msg.sender;
+        locks[address(avatar)] = msg.sender;
 
         NewOrg (address(avatar));
         return (address(avatar));
