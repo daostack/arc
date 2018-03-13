@@ -511,7 +511,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         if (proposal.totalVotes == 0)
            return 0;
         if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
-            return (proposal.votersStakes * (proposal.voters[_beneficiary].reputation / proposal.totalVotes));
+            return ((proposal.votersStakes * proposal.voters[_beneficiary].reputation) / proposal.totalVotes);
         } else {
             return (params.genesisProtocolFormulasInterface).getRedeemableTokensVoter(_proposalId,_beneficiary);
         }
@@ -540,7 +540,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             rep = int((proposal.voters[_beneficiary].reputation * params.votersReputationLossRatio)/100);
         }
 
-        return rep + int((proposal.voters[_beneficiary].reputation * ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100))/proposal.totalVotes);
+        return rep + int((proposal.voters[_beneficiary].reputation * proposal.lostReputation * params.votersGainRepRatioFromLostRep)/(proposal.totalVotes*100));
     }
 
     /**
@@ -556,7 +556,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         int rep;
         if ((proposal.stakers[_beneficiary].amount>0) &&
              (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
-            rep = int((proposal.stakers[_beneficiary].amount * ((proposal.lostReputation * (100 - params.votersGainRepRatioFromLostRep))/100)) / proposal.stakes[proposal.winningVote]);
+            rep = int((proposal.stakers[_beneficiary].amount * (proposal.lostReputation * (100 - params.votersGainRepRatioFromLostRep))) /(proposal.stakes[proposal.winningVote]*100));
         }
         return rep;
     }
