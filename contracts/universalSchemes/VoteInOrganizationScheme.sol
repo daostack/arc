@@ -8,9 +8,6 @@ import "./UniversalScheme.sol";
  * @title VoteInOrganizationScheme.
  * @dev A scheme to allow an organization to vote in a proposal.
  */
-
-// ToDo: Documentation and tests!
-
 contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, ActionInterface {
     event NewVoteProposal(
         address indexed _avatar,
@@ -124,7 +121,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
     *      This function will trigger ProposalDeleted and ProposalExecuted events
     * @param _proposalId the ID of the voting in the voting machine
-    * @param _avatar address of the controller
+    * @param _avatar address of the organization's avatar
     * @param _param a parameter of the voting result 0 to numOfChoices .
     * @return bool which indicate success.
     */
