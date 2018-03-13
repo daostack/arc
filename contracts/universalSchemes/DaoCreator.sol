@@ -84,7 +84,7 @@ contract DaoCreator {
         controller.unregisterScheme(this,address(_avatar));
 
         // Remove lock:
-        delete locks[_avatar];
+        delete locks[address(_avatar)];
 
         InitialSchemesSet(address(_avatar));
     }
