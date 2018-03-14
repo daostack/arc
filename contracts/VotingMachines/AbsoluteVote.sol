@@ -248,7 +248,8 @@ contract AbsoluteVote is IntVoteInterface {
             Voter storage voter = proposal.voters[_voters[i]];
              //check that the voters already votes.
             if (voter.reputation > 0) {
-                //if the reputation change..so update.
+                //update only if there is a mismatch between the voter's system reputation
+                //and the reputation stored in the voting machine for the voter.
                 uint rep = params.reputationSystem.reputationOf(_voters[i]);
                 if (rep > voter.reputation) {
                     proposal.votes[voter.vote] = proposal.votes[voter.vote].add(rep - voter.reputation);
@@ -263,6 +264,7 @@ contract AbsoluteVote is IntVoteInterface {
                 }
              }
         }
+        return true;
     }
 
     function cancelVoteInternal(bytes32 _proposalId, address _voter) internal {
