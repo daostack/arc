@@ -221,6 +221,73 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(tx.logs[1].args._decision, 4);
   });
 
+  it("refreshReputation reputation positive update ", async function() {
+    absoluteVote = await setupAbsoluteVote(true, 50);
+
+    // propose a vote
+    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
+    let tx = await absoluteVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
+    const proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+
+    // now lets vote with a minority reputation
+    await absoluteVote.vote(proposalId, 1);
+
+    // another minority reputation:
+    await absoluteVote.vote(proposalId, 0, { from: accounts[1] });
+
+    await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, reputationArray[0]+reputationArray[1], true]);
+
+
+    // not enough to execute yet
+    tx = await absoluteVote.execute(proposalId);
+    assert.equal(tx.logs.length, 0);
+    await reputation.mint(accounts[1], 90);
+    tx = await absoluteVote.execute(proposalId);
+    assert.equal(tx.logs.length, 0);
+    tx = await absoluteVote.refreshReputation(proposalId,[accounts[0],accounts[1]]);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "RefreshReputation");
+    assert.equal(tx.logs[0].args._proposalId, proposalId);
+    assert.equal(tx.logs[0].args._voter, accounts[1]);
+    assert.equal(tx.logs[0].args._reputation, reputationArray[1]+90);
+
+    await checkProposalInfo(proposalId, [accounts[0], avatar.address, 6, executable.address, paramsHash, reputationArray[0]+reputationArray[1]+90, true]);
+
+    // the decisive vote is cast now and the proposal will be executed
+    tx = await absoluteVote.execute(proposalId);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "ExecuteProposal");
+    assert.equal(tx.logs[0].args._proposalId, proposalId);
+    assert.equal(tx.logs[0].args._decision, 0);
+  });
+
+  it("refreshReputation reputation negative update ", async function() {
+    absoluteVote = await setupAbsoluteVote(true, 50);
+
+    // propose a vote
+    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
+    let tx = await absoluteVote.propose(2, paramsHash, avatar.address, executable.address,accounts[0]);
+    const proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+
+    //  account[0] votes for option 1, but does not pass the bar
+    await absoluteVote.vote(proposalId, 1);
+    await checkProposalInfo(proposalId, [accounts[0], avatar.address, 2, executable.address, paramsHash, reputationArray[0], true]);
+    tx = await absoluteVote.refreshReputation(proposalId,[accounts[0],accounts[1]]);
+    //no change
+    assert.equal(tx.logs.length, 0);
+    await reputation.mint(accounts[0],-100);
+    tx = await absoluteVote.refreshReputation(proposalId,[accounts[0],accounts[1]]);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "RefreshReputation");
+    assert.equal(tx.logs[0].args._proposalId, proposalId);
+    assert.equal(tx.logs[0].args._voter, accounts[0]);
+    assert.equal(tx.logs[0].args._reputation, 0);
+    await checkProposalInfo(proposalId, [accounts[0], avatar.address, 2, executable.address, paramsHash, 0, true]);
+  });
+
+
   it("All options can be voted (0-9)", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
