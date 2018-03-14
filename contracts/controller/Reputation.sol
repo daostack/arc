@@ -30,14 +30,6 @@ contract Reputation is Ownable {
     }
 
     /**
-    * @dev the constructor initiate a reputation system with no supply at all
-    */
-    function Reputation() public {
-        balances[msg.sender] = 0;
-        totalSupply = 0;
-    }
-
-    /**
     * @dev return the reputation amount of a given owner
     * @param _owner an address of the owner which we want to get his reputation
     */
