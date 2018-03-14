@@ -36,6 +36,8 @@ contract AbsoluteVote is IntVoteInterface {
     event ExecuteProposal(bytes32 indexed _proposalId, uint _decision, uint _totalReputation);
     event VoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
     event CancelVoting(bytes32 indexed _proposalId, address indexed _voter);
+    event RefreshReputation(bytes32 indexed _proposalId, address indexed _voter,uint _reputation);
+
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
@@ -230,6 +232,37 @@ contract AbsoluteVote is IntVoteInterface {
      */
     function isAbstainAllow() public pure returns(bool) {
         return true;
+    }
+
+    /**
+     * @dev refreshReputation refresh the reputation for a given voters list
+     * @param _proposalId the ID of the proposal
+     * @param _voters list to be refreshed
+     * @return bool true or false
+     */
+    function refreshReputation(bytes32 _proposalId, address[] _voters) public returns(bool) {
+        Proposal storage proposal = proposals[_proposalId];
+        Parameters memory params = parameters[proposal.paramsHash];
+
+        for (uint i = 0; i < _voters.length; i++) {
+            Voter storage voter = proposal.voters[_voters[i]];
+             //check that the voters already votes.
+            if (voter.reputation > 0) {
+                //if the reputation change..so update.
+                uint rep = params.reputationSystem.reputationOf(_voters[i]);
+                if (rep > voter.reputation) {
+                    proposal.votes[voter.vote] = proposal.votes[voter.vote].add(rep - voter.reputation);
+                    proposal.totalVotes = (proposal.totalVotes).add(rep - voter.reputation);
+                  } else if (rep < voter.reputation) {
+                    proposal.votes[voter.vote] = proposal.votes[voter.vote].sub(voter.reputation - rep);
+                    proposal.totalVotes = (proposal.totalVotes).sub(voter.reputation - rep);
+                  }
+                if (rep != voter.reputation) {
+                    voter.reputation = rep;
+                    RefreshReputation(_proposalId,_voters[i],rep);
+                }
+             }
+        }
     }
 
     function cancelVoteInternal(bytes32 _proposalId, address _voter) internal {
