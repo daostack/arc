@@ -31,7 +31,7 @@ const setup = async function (accounts) {
    testSetup.vestingSchemeParams= await setupVestingSchemeParams(testSetup.vestingScheme);
    //give some tokens to organization avatar so it could register the universal scheme.
    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   var permissions = "0x0000000F";
+   var permissions = "0x000000001";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.vestingScheme.address],[testSetup.vestingSchemeParams.paramsHash],[permissions]);
 
    return testSetup;

@@ -80,7 +80,7 @@ module.exports = async function(deployer) {
                           simpleICOInst.address,
                           contributionRewardInst.address];
       const paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams,simpleICOParams,contributionRewardParams];
-      const permissionArray = ['0x0000001F', '0x00000005', '0x00000009','0x00000001','0x00000001'];
+      const permissionArray = ['0x0000001F', '0x00000005', '0x0000000a','0x00000001','0x00000001'];
 
       // set DAOstack initial schmes:
       await daoCreatorInst.setSchemes(
