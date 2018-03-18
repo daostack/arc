@@ -119,16 +119,22 @@ contract Controller is ControllerInterface {
         }
     }
 
+    modifier isAvatarValid(address _avatar) {
+        require(_avatar == address(avatar));
+        _;
+    }
+
     /**
      * @dev mint reputation .
      * @param  _amount amount of reputation to mint
      * @param _beneficiary beneficiary address
      * @return bool which represents a success
      */
-    function mintReputation(int256 _amount, address _beneficiary,address)
+    function mintReputation(int256 _amount, address _beneficiary,address _avatar)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("mintReputation")
+    isAvatarValid(_avatar)
     returns(bool)
     {
         MintReputation(msg.sender, _beneficiary, _amount);
@@ -141,10 +147,11 @@ contract Controller is ControllerInterface {
      * @param _beneficiary beneficiary address
      * @return bool which represents a success
      */
-    function mintTokens(uint256 _amount, address _beneficiary,address)
+    function mintTokens(uint256 _amount, address _beneficiary,address _avatar)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("mintTokens")
+    isAvatarValid(_avatar)
     returns(bool)
     {
         MintTokens(msg.sender, _beneficiary, _amount);
@@ -158,10 +165,11 @@ contract Controller is ControllerInterface {
    * @param _permissions the permissions the new scheme will have
    * @return bool which represents a success
    */
-    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions,address)
+    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions,address _avatar)
     public
     onlyRegisteringSchemes
     onlySubjectToConstraint("registerScheme")
+    isAvatarValid(_avatar)
     returns(bool)
     {
 
@@ -188,10 +196,11 @@ contract Controller is ControllerInterface {
      * @param _scheme the address of the scheme
      * @return bool which represents a success
      */
-    function unregisterScheme( address _scheme,address)
+    function unregisterScheme( address _scheme,address _avatar)
     public
     onlyRegisteringSchemes
     onlySubjectToConstraint("unregisterScheme")
+    isAvatarValid(_avatar)
     returns(bool)
     {
     //check if the scheme is register
@@ -211,8 +220,8 @@ contract Controller is ControllerInterface {
      * @dev unregister the caller's scheme
      * @return bool which represents a success
      */
-    function unregisterSelf(address) public returns(bool) {
-        if (isSchemeRegistered(msg.sender,address(0)) == false) {
+    function unregisterSelf(address _avatar) isAvatarValid(_avatar) public returns(bool) {
+        if (isSchemeRegistered(msg.sender,_avatar) == false) {
             return false;
         }
         delete schemes[msg.sender];
@@ -220,15 +229,15 @@ contract Controller is ControllerInterface {
         return true;
     }
 
-    function isSchemeRegistered(address _scheme,address) public view returns(bool) {
+    function isSchemeRegistered(address _scheme,address _avatar) isAvatarValid(_avatar) public view returns(bool) {
         return (schemes[_scheme].permissions&bytes4(1) != bytes4(0));
     }
 
-    function getSchemeParameters(address _scheme,address) public view returns(bytes32) {
+    function getSchemeParameters(address _scheme,address _avatar) isAvatarValid(_avatar) public view returns(bytes32) {
         return schemes[_scheme].paramsHash;
     }
 
-    function getSchemePermissions(address _scheme,address) public view returns(bytes4) {
+    function getSchemePermissions(address _scheme,address _avatar) isAvatarValid(_avatar) public view returns(bytes4) {
         return schemes[_scheme].permissions;
     }
 
@@ -237,11 +246,19 @@ contract Controller is ControllerInterface {
     * @return uint globalConstraintsPre count.
     * @return uint globalConstraintsPost count.
     */
-    function globalConstraintsCount(address) public view returns(uint,uint) {
+    function globalConstraintsCount(address _avatar)
+        isAvatarValid(_avatar)
+        public
+        view
+        returns(uint,uint) {
         return (globalConstraintsPre.length,globalConstraintsPost.length);
     }
 
-    function isGlobalConstraintRegistered(address _globalConstraint,address) public view returns(bool) {
+    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar)
+        isAvatarValid(_avatar)
+        public
+        view
+        returns(bool) {
         return (globalConstraintsRegisterPre[_globalConstraint].register || globalConstraintsRegisterPost[_globalConstraint].register);
     }
 
@@ -251,8 +268,11 @@ contract Controller is ControllerInterface {
      * @param _params the constraint parameters hash.
      * @return bool which represents a success
      */
-    function addGlobalConstraint(address _globalConstraint, bytes32 _params,address)
-    public onlyGlobalConstraintsScheme returns(bool)
+    function addGlobalConstraint(address _globalConstraint, bytes32 _params,address _avatar)
+    public
+    onlyGlobalConstraintsScheme
+    isAvatarValid(_avatar)
+    returns(bool)
     {
         GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
         if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
@@ -280,8 +300,11 @@ contract Controller is ControllerInterface {
      * @param _globalConstraint the address of the global constraint to be remove.
      * @return bool which represents a success
      */
-    function removeGlobalConstraint (address _globalConstraint,address)
-    public onlyGlobalConstraintsScheme returns(bool)
+    function removeGlobalConstraint (address _globalConstraint,address _avatar)
+    public
+    onlyGlobalConstraintsScheme
+    isAvatarValid(_avatar)
+    returns(bool)
     {
         GlobalConstraintRegister memory globalConstraintRegister;
         GlobalConstraint memory globalConstraint;
@@ -326,8 +349,11 @@ contract Controller is ControllerInterface {
     * @param  _newController the address of the new controller.
     * @return bool which represents a success
     */
-    function upgradeController(address _newController,address)
-    public onlyUpgradingScheme returns(bool)
+    function upgradeController(address _newController,address _avatar)
+    public
+    onlyUpgradingScheme
+    isAvatarValid(_avatar)
+    returns(bool)
     {
         require(newController == address(0));   // so the upgrade could be done once for a contract.
         require(_newController != address(0));
@@ -350,10 +376,11 @@ contract Controller is ControllerInterface {
     * @param _params the params for the call.
     * @return bool which represents success
     */
-    function genericAction(bytes32[] _params,address)
+    function genericAction(bytes32[] _params,address _avatar)
     public
     onlyDelegateScheme
     onlySubjectToConstraint("genericAction")
+    isAvatarValid(_avatar)
     returns(bool)
     {
         GenericAction(msg.sender, _params);
@@ -366,10 +393,11 @@ contract Controller is ControllerInterface {
    * @param _to address of the beneficiary
    * @return bool which represents a success
    */
-    function sendEther(uint _amountInWei, address _to,address)
+    function sendEther(uint _amountInWei, address _to,address _avatar)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("sendEther")
+    isAvatarValid(_avatar)
     returns(bool)
     {
         SendEther(msg.sender, _amountInWei, _to);
@@ -383,10 +411,11 @@ contract Controller is ControllerInterface {
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value,address)
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value,address _avatar)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenTransfer")
+    isAvatarValid(_avatar)
     returns(bool)
     {
         ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
@@ -403,10 +432,11 @@ contract Controller is ControllerInterface {
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value,address)
+    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value,address _avatar)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenTransferFrom")
+    isAvatarValid(_avatar)
     returns(bool)
     {
         ExternalTokenTransferFrom(msg.sender, _externalToken, _from, _to, _value);
@@ -421,10 +451,11 @@ contract Controller is ControllerInterface {
     * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue,address)
+    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue,address _avatar)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenIncreaseApproval")
+    isAvatarValid(_avatar)
     returns(bool)
     {
         ExternalTokenIncreaseApproval(msg.sender,_externalToken,_spender,_addedValue);
@@ -439,13 +470,23 @@ contract Controller is ControllerInterface {
     * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address)
+    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address _avatar)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenDecreaseApproval")
+    isAvatarValid(_avatar)
     returns(bool)
     {
         ExternalTokenDecreaseApproval(msg.sender,_externalToken,_spender,_subtractedValue);
         return avatar.externalTokenDecreaseApproval(_externalToken, _spender, _subtractedValue);
+    }
+
+    /**
+     * @dev getNativeReputation
+     * @param _avatar the organization avatar.
+     * @return organization native reputation
+     */
+    function getNativeReputation(address _avatar) isAvatarValid(_avatar) public view returns(address) {
+        return address(nativeReputation);
     }
 }

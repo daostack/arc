@@ -3,9 +3,9 @@ pragma solidity ^0.4.19;
 import "../universalSchemes/ExecutableInterface.sol";
 
 
-contract IntVoteInterface {
-    modifier onlyProposalOwner(bytes32 _proposalId) {_;}
-    modifier votable(bytes32 _proposalId) {_;}
+interface IntVoteInterface {
+    modifier onlyProposalOwner(bytes32 _proposalId) {revert(); _;}
+    modifier votable(bytes32 _proposalId) {revert(); _;}
 
     /**
      * @dev register a new proposal with the given parameters. Every proposal has a unique ID which is being

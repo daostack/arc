@@ -12,7 +12,7 @@ import "./GenesisProtocolFormulasInterface.sol";
 contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolFormulasInterface {
     using SafeMath for uint;
 
-    enum ProposalState { Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
+    enum ProposalState { None ,Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
     enum ExecutionState { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
 
     //Organization's parameters
@@ -52,7 +52,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         uint numOfChoices;
         ExecutableInterface executable; // will be executed if the proposal will pass
         uint totalVotes;
-        uint totalStakes;
+        uint[2] totalStakes;// [(total stakes - votersStakes)],[totalRedeembleStakes]
         uint votersStakes;
         uint lostReputation;
         uint submittedTime;
@@ -60,7 +60,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         ProposalState state;
         uint winningVote; //the winning vote.
         address proposer;
-        uint boostedVotePeriodLimit;
+        uint currentBoostedVotePeriodLimit;
+        bytes32 paramsHash;
         mapping(uint=>uint) votes;
         mapping(address=>Voter) voters;
         mapping(uint=>uint) stakes;
@@ -130,11 +131,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         require(_params[9] <= 100); //stakerFeeRatioForVoters
         require(_params[10] <= 100); //votersReputationLossRatio
         require(_params[11] <= 100); //votersGainRepRatioFromLostRep
-        bytes32 hashedParameters = getParametersHash(
+        require(_params[1] >= _params[6]); //boostedVotePeriodLimit >= quietEndingPeriod
+        bytes32 paramsHash = getParametersHash(
             _params,
             _genesisProtocolFormulasInterface
             );
-        parameters[hashedParameters] = Parameters({
+        parameters[paramsHash] = Parameters({
             preBoostedVoteRequiredPercentage: _params[0],
             preBoostedVotePeriodLimit: _params[1],
             boostedVotePeriodLimit: _params[2],
@@ -150,7 +152,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             genesisProtocolFormulasInterface:_genesisProtocolFormulasInterface
 
         });
-        return hashedParameters;
+        return paramsHash;
     }
 
   /**
@@ -195,10 +197,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         //Check parameters existence.
         bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
         require(parameters[paramsHash].preBoostedVoteRequiredPercentage > 0);
-          // Generate a unique ID:
+        // Generate a unique ID:
         bytes32 proposalId = keccak256(this, proposalsCnt);
         proposalsCnt++;
-          // Open proposal:
+        // Open proposal:
         Proposal memory proposal;
         proposal.numOfChoices = _numOfChoices;
         proposal.avatar = _avatar;
@@ -206,9 +208,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         proposal.state = ProposalState.PreBoosted;
         // solium-disable-next-line security/no-block-members
         proposal.submittedTime = now;
-        proposal.boostedVotePeriodLimit = parameters[paramsHash].boostedVotePeriodLimit;
+        proposal.currentBoostedVotePeriodLimit = parameters[paramsHash].boostedVotePeriodLimit;
         proposal.proposer = _proposer;
         proposal.winningVote = NO;
+        proposal.paramsHash = paramsHash;
         proposals[proposalId] = proposal;
         NewProposal(proposalId, _numOfChoices, msg.sender, paramsHash);
         return proposalId;
@@ -252,19 +255,17 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         }
 
         uint amount = _amount;
-
-        bytes32 paramsHash = getParametersFromController(Avatar(proposal.avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposal.paramsHash];
         require(amount >= params.minimumStakingFee);
         stakingToken.transferFrom(msg.sender, address(this), amount);
-
+        proposal.totalStakes[1] = proposal.totalStakes[1].add(amount);
         staker.amount += amount;
         staker.vote = _vote;
 
         proposal.votersStakes += (params.stakerFeeRatioForVoters * amount)/100;
         proposal.stakes[_vote] = amount.add(proposal.stakes[_vote]);
         amount = ((100-params.stakerFeeRatioForVoters)*amount)/100;
-        proposal.totalStakes = amount.add(proposal.totalStakes);
+        proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
       // Event:
         Stake(_proposalId, msg.sender, _vote, _amount);
       // execute the proposal if this vote was decisive:
@@ -314,11 +315,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     *              false - otherwise.
    */
     function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool) {
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
-        Parameters memory params = parameters[paramsHash];
         Proposal storage proposal = proposals[_proposalId];
+        Parameters memory params = parameters[proposal.paramsHash];
         Proposal memory tmpProposal = proposal;
-        uint totalReputation = Avatar(proposal.avatar).nativeReputation().totalSupply();
+        uint totalReputation = Reputation(ControllerInterface(Avatar(proposal.avatar).owner()).getNativeReputation(proposal.avatar)).totalSupply();
         uint executionBar = totalReputation * params.preBoostedVoteRequiredPercentage/100;
         ExecutionState executionState = ExecutionState.None;
 
@@ -345,7 +345,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         if ((proposal.state == ProposalState.Boosted) ||
             (proposal.state == ProposalState.QuietEndingPeriod)) {
             // solium-disable-next-line security/no-block-members
-            if ((now - proposal.boostedPhaseTime) >= proposal.boostedVotePeriodLimit) {
+            if ((now - proposal.boostedPhaseTime) >= proposal.currentBoostedVotePeriodLimit) {
                 proposal.state = ProposalState.Executed;
                 orgBoostedProposalsCnt[tmpProposal.avatar]--;
                 executionState = ExecutionState.BoostedTimeOut;
@@ -376,11 +376,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         uint amount;
         int reputation;
         if ((proposal.stakers[_beneficiary].amount>0) &&
-             (proposal.stakers[_beneficiary].vote == proposals[_proposalId].winningVote)) {
+             (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
             //as staker
             amount = getRedeemableTokensStaker(_proposalId,_beneficiary);
             reputation = getRedeemableReputationStaker(_proposalId,_beneficiary);
-            proposals[_proposalId].stakers[_beneficiary].amount = 0;
+            proposal.stakers[_beneficiary].amount = 0;
         }
         if (proposal.voters[_beneficiary].reputation != 0 ) {
             //as voter
@@ -396,6 +396,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
 
         }
         if (amount != 0) {
+            proposal.totalStakes[1] = proposal.totalStakes[1].sub(amount);
             stakingToken.transfer(_beneficiary, amount);
             Redeem(_proposalId,_beneficiary,amount);
         }
@@ -413,10 +414,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      */
     function shouldBoost(bytes32 _proposalId) public view returns(bool) {
         address avatar = proposals[_proposalId].avatar;
-        bytes32 paramsHash = getParametersFromController(Avatar(avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
         if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
-            return (_score(_proposalId) >= threshold(avatar));
+            return (_score(_proposalId) >= threshold(_proposalId,avatar));
         } else {
             return (params.genesisProtocolFormulasInterface).shouldBoost(_proposalId);
         }
@@ -428,8 +428,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * @return uint proposal score.
      */
     function score(bytes32 _proposalId) public view returns(int) {
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
         if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             return _score(_proposalId);
         } else {
@@ -444,14 +443,13 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * @param _avatar the organization avatar
      * @return int thresholdConstA.
      */
-    function threshold(address _avatar) public view returns(int) {
+    function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
         uint e = 2;
-        bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
         if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             return int(params.thresholdConstA * (e ** (orgBoostedProposalsCnt[_avatar]/params.thresholdConstB)));
         } else {
-            return int((params.genesisProtocolFormulasInterface).threshold(_avatar));
+            return int((params.genesisProtocolFormulasInterface).threshold(_proposalId,_avatar));
         }
     }
 
@@ -462,15 +460,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * @return uint redeem amount .
      */
     function getRedeemableTokensStaker(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
         if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             Proposal storage proposal = proposals[_proposalId];
             if (proposal.stakes[proposal.winningVote] == 0) {
               //this can be reached if the winningVote is NO
                 return 0;
             }
-            return (proposal.stakers[_beneficiary].amount * proposal.totalStakes) / proposal.stakes[proposal.winningVote];
+            return (proposal.stakers[_beneficiary].amount * proposal.totalStakes[0]) / proposal.stakes[proposal.winningVote];
         } else {
             return (params.genesisProtocolFormulasInterface).getRedeemableTokensStaker(_proposalId,_beneficiary);
         }
@@ -482,8 +479,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * @return int proposer redeem reputation.
      */
     function getRedeemableReputationProposer(bytes32 _proposalId) public view returns(int) {
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
         int rep;
         if (params.genesisProtocolFormulasInterface == GenesisProtocolFormulasInterface(0)) {
             Proposal storage proposal = proposals[_proposalId];
@@ -505,8 +501,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * @return uint proposer redeem reputation amount.
      */
     function getRedeemableTokensVoter(bytes32 _proposalId, address _beneficiary) public view returns(uint) {
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
         Proposal storage proposal = proposals[_proposalId];
         if (proposal.totalVotes == 0)
            return 0;
@@ -521,11 +516,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * @dev getRedeemableReputationVoter return the redeemable reputation which a voter is entitle to.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary the beneficiary .
-     * @return uint proposer redeem reputation amount.
+     * @return int proposer redeem reputation amount.
      */
     function getRedeemableReputationVoter(bytes32 _proposalId, address _beneficiary) public view returns(int) {
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
         Proposal storage proposal = proposals[_proposalId];
         int rep;
         if (proposal.state == ProposalState.Closed) {
@@ -550,10 +544,13 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * @return uint proposer redeem reputation amount.
      */
     function getRedeemableReputationStaker(bytes32 _proposalId, address _beneficiary) public view returns(int) {
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
         Proposal storage proposal = proposals[_proposalId];
         int rep;
+        if (proposal.state == ProposalState.Closed) {
+           //no reputation flow occurs so no reputation flow for staker
+            return 0;
+        }
         if ((proposal.stakers[_beneficiary].amount>0) &&
              (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
             rep = int((proposal.stakers[_beneficiary].amount * (proposal.lostReputation * (100 - params.votersGainRepRatioFromLostRep)))/(proposal.stakes[proposal.winningVote]*100));
@@ -609,7 +606,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @return uint voterStakes
     */
     function proposalStatus(bytes32 _proposalId) public view returns(uint, uint, uint) {
-        return (proposals[_proposalId].totalVotes, proposals[_proposalId].totalStakes, proposals[_proposalId].votersStakes);
+        return (proposals[_proposalId].totalVotes, proposals[_proposalId].totalStakes[0], proposals[_proposalId].votersStakes);
     }
 
     /**
@@ -708,12 +705,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             return true;
         }
 
-        bytes32 paramsHash = getParametersFromController(Avatar(proposals[_proposalId].avatar));
-        Parameters memory params = parameters[paramsHash];
+        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
         Proposal storage proposal = proposals[_proposalId];
 
         // Check voter has enough reputation:
-        uint reputation = Avatar(proposal.avatar).nativeReputation().reputationOf(_voter);
+        uint reputation = Reputation(ControllerInterface(Avatar(proposal.avatar).owner()).getNativeReputation(proposal.avatar)).reputationOf(_voter);
         require(reputation >= _rep);
         uint rep = _rep;
         if (rep == 0) {
@@ -733,7 +729,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
                 //quietEndingPeriod
                 proposal.boostedPhaseTime = _now;
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
-                    proposal.boostedVotePeriodLimit = params.quietEndingPeriod;
+                    proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
                     proposal.state = ProposalState.QuietEndingPeriod;
                 }
             }
@@ -751,7 +747,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             ControllerInterface(Avatar(proposal.avatar).owner()).mintReputation((-1) * int(reputationDeposit),_voter,proposal.avatar);
         }
         // Event:
-        VoteProposal(_proposalId, _voter, _vote, reputation);
+        VoteProposal(_proposalId, _voter, _vote, rep);
         // execute the proposal if this vote was decisive:
         return execute(_proposalId);
     }

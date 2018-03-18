@@ -60,7 +60,7 @@ contract Avatar is Ownable {
           // solium-disable-next-line security/no-low-level-calls
             _action.delegatecall(
                 bytes4(keccak256("action(bytes32[])")),
-                uint256(32),// length of length of the array
+                uint256(32),// pointer to the length of the array
                 uint256(_params.length), // length of the array
                 _params) // array itself
         );
