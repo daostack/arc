@@ -179,4 +179,15 @@ interface ControllerInterface {
     function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address _avatar)
     public
     returns(bool);
-}
+
+    /**
+     * @dev getNativeReputation
+     * @param _avatar the organization avatar.
+     * @return organization native reputation
+     */
+    function getNativeReputation(address _avatar)
+    public
+    view
+    returns(address);
+
+    }

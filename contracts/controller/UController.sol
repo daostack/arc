@@ -58,6 +58,12 @@ contract UController is ControllerInterface {
   //  address public newController;
     mapping(address=>address) public newControllers;//mapping between avatar address and newController address
 
+    //mapping for all reputation system addresses registered.
+    mapping(address=>bool) public reputations;
+    //mapping for all tokens addresses registered.
+    mapping(address=>bool) public tokens;
+
+
     event MintReputation (address indexed _sender, address indexed _beneficiary, int256 _amount,address indexed _avatar);
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount, address indexed _avatar);
     event RegisterScheme (address indexed _sender, address indexed _scheme,address indexed _avatar);
@@ -84,9 +90,15 @@ contract UController is ControllerInterface {
     {
         require(!organizations[address(_avatar)].exist);
         require(_avatar.owner() == address(this));
+        //To guaranty uniqueness for the reputation systems.
+        require(!reputations[_avatar.nativeReputation()]);
+        //To guaranty uniqueness for the reputation systems.
+        require(!tokens[_avatar.nativeToken()]);
         organizations[address(_avatar)].exist = true;
         organizations[address(_avatar)].nativeToken = _avatar.nativeToken();
         organizations[address(_avatar)].nativeReputation = _avatar.nativeReputation();
+        reputations[_avatar.nativeReputation()] = true;
+        tokens[_avatar.nativeToken()] =  true;
         organizations[address(_avatar)].schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x1F)});
         RegisterScheme(msg.sender, msg.sender,_avatar);
     }
@@ -499,5 +511,14 @@ contract UController is ControllerInterface {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @dev getNativeReputation
+     * @param _avatar the organization avatar.
+     * @return organization native reputation
+     */
+    function getNativeReputation(address _avatar) public view returns(address) {
+        return address(organizations[_avatar].nativeReputation);
     }
 }
