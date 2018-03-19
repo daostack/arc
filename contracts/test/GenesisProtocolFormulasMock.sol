@@ -44,22 +44,24 @@ contract GenesisProtocolFormulasMock is GenesisProtocolFormulasInterface {
         return int(thresholdConstA * (e ** (orgBoostedProposalsCnt/thresholdConstB)));
     }
 
-    function getRedeemableTokensStaker(bytes32 _proposalId,address _staker) public view returns (uint) {
+    function getRedeemableTokensStakerWithAmount(bytes32 _proposalId,address ,uint _amount) public view returns (uint) {
         uint dummy;
-        uint amount;
         uint totalStakes;
         uint winningVote = GenesisProtocol(msg.sender).winningVote(_proposalId);
         uint winningStake = GenesisProtocol(msg.sender).voteStake(_proposalId,winningVote);
-        (dummy,amount) = GenesisProtocol(msg.sender).staker(_proposalId,_staker);
         (dummy,totalStakes,dummy,dummy) = GenesisProtocol(msg.sender).proposalStatus(_proposalId);
-        return (amount * totalStakes) / winningStake;
+        return (_amount * totalStakes) / winningStake;
     }
 
     function getRedeemableReputationProposer(bytes32 ) public view returns(int) {
         return 0;
     }
 
-    function getRedeemableTokensVoter(bytes32 , address ) public view returns(uint) {
+    function getRedeemableTokensVoterWithReputation(bytes32 , address ,uint ) public view returns(uint) {
+        return 0;
+    }
+
+    function getRedeemableReputationStakerWithAmount(bytes32 ,address ,uint ) public view returns(int) {
         return 0;
     }
 }
