@@ -1,7 +1,5 @@
 const helpers = require('./helpers');
 const constants = require('./constants');
-const DAOToken = artifacts.require("./DAOToken.sol");
-const Reputation = artifacts.require("./Reputation.sol");
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const SimpleICO = artifacts.require("./SimpleICO.sol");
@@ -24,17 +22,8 @@ const setupSimpleICOParams = async function(accounts,
 };
 var daoCreator;
 const setupOrganization = async function (daoCreatorOwner,founderToken,founderReputation) {
-  var org = new helpers.Organization();
   daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],0,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
-  assert.equal(tx.logs.length, 1);
-  assert.equal(tx.logs[0].event, "NewOrg");
-  var avatarAddress = tx.logs[0].args._avatar;
-  org.avatar = await Avatar.at(avatarAddress);
-  var tokenAddress = await org.avatar.nativeToken();
-  org.token = await DAOToken.at(tokenAddress);
-  var reputationAddress = await org.avatar.nativeReputation();
-  org.reputation = await Reputation.at(reputationAddress);
+  var org = await helpers.setupOrganization(daoCreator,daoCreatorOwner,founderToken,founderReputation);
   return org;
 };
 

@@ -16,7 +16,7 @@ contract GenesisProtocolFormulasMock is GenesisProtocolFormulasInterface {
         address avatar;
         avatar = GenesisProtocol(msg.sender).proposalAvatar(_proposalId);
         int score = int(GenesisProtocol(msg.sender).voteStake(_proposalId,GenesisProtocol(msg.sender).YES())) - int(GenesisProtocol(msg.sender).voteStake(_proposalId,GenesisProtocol(msg.sender).NO()));
-        return (score >= threshold(avatar));
+        return (score >= threshold(_proposalId,avatar));
     }
 
     /**
@@ -35,7 +35,7 @@ contract GenesisProtocolFormulasMock is GenesisProtocolFormulasInterface {
      * @param _avatar the organization avatar
      * @return int thresholdConstA.
      */
-    function threshold(address _avatar) public view returns (int) {
+    function threshold(bytes32 ,address _avatar) public view returns (int) {
         uint thresholdConstA;
         uint thresholdConstB;
         uint e = 2;
@@ -51,7 +51,7 @@ contract GenesisProtocolFormulasMock is GenesisProtocolFormulasInterface {
         uint winningVote = GenesisProtocol(msg.sender).winningVote(_proposalId);
         uint winningStake = GenesisProtocol(msg.sender).voteStake(_proposalId,winningVote);
         (dummy,amount) = GenesisProtocol(msg.sender).staker(_proposalId,_staker);
-        (dummy,totalStakes,dummy) = GenesisProtocol(msg.sender).proposalStatus(_proposalId);
+        (dummy,totalStakes,dummy,dummy) = GenesisProtocol(msg.sender).proposalStatus(_proposalId);
         return (amount * totalStakes) / winningStake;
     }
 

@@ -98,7 +98,7 @@ contract UController is ControllerInterface {
         organizations[address(_avatar)].nativeToken = _avatar.nativeToken();
         organizations[address(_avatar)].nativeReputation = _avatar.nativeReputation();
         reputations[_avatar.nativeReputation()] = true;
-        tokens[_avatar.nativeToken()] =  true;
+        tokens[_avatar.nativeToken()] = true;
         organizations[address(_avatar)].schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x1F)});
         RegisterScheme(msg.sender, msg.sender,_avatar);
     }
@@ -462,6 +462,15 @@ contract UController is ControllerInterface {
     }
 
     /**
+     * @dev getNativeReputation
+     * @param _avatar the organization avatar.
+     * @return organization native reputation
+     */
+    function getNativeReputation(address _avatar) public view returns(address) {
+        return address(organizations[_avatar].nativeReputation);
+    }
+
+    /**
      * @dev removeGlobalConstraintPre
      * @param _globalConstraint the address of the global constraint to be remove.
      * @param _avatar the organization avatar.
@@ -511,14 +520,5 @@ contract UController is ControllerInterface {
             return true;
         }
         return false;
-    }
-
-    /**
-     * @dev getNativeReputation
-     * @param _avatar the organization avatar.
-     * @return organization native reputation
-     */
-    function getNativeReputation(address _avatar) public view returns(address) {
-        return address(organizations[_avatar].nativeReputation);
     }
 }

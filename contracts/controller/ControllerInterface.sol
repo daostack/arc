@@ -189,5 +189,4 @@ interface ControllerInterface {
     public
     view
     returns(address);
-
-    }
+}
