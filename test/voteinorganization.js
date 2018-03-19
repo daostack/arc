@@ -5,6 +5,7 @@ const VoteInOrganizationScheme = artifacts.require('./VoteInOrganizationScheme.s
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ExecutableTest = artifacts.require("./ExecutableTest.sol");
+const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
 export class VoteInOrganizationParams {
   constructor() {
@@ -38,7 +39,8 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.voteInOrganization = await VoteInOrganizationScheme.new();
-   testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    if (reputationAccount === 0) {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],[20,10,70]);
    } else {

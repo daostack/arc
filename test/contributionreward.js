@@ -3,6 +3,7 @@ const constants = require('./constants');
 const ContributionReward = artifacts.require("./ContributionReward.sol");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
+const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 
 
@@ -60,7 +61,8 @@ const setup = async function (accounts,orgNativeTokenFee=0) {
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.contributionReward = await ContributionReward.new();
-   testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.contributionRewardParams= await setupContributionRewardParams(testSetup.contributionReward,orgNativeTokenFee);
    var permissions = "0x00000000";

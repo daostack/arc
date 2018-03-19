@@ -8,7 +8,6 @@ const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
-const DaoOrgansCreator = artifacts.require("./DaoOrgansCreator.sol");
 
 
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -195,12 +194,7 @@ export const setupGenesisProtocol = async function (accounts,token,
 
 export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=0) {
   var org = new Organization();
-  var daoOrgansCreator = await DaoOrgansCreator.new();
-  var tx = await daoOrgansCreator.createDaoOrgans("TEST","TST" ,daoCreatorOwner,founderToken,founderReputation);
-  assert.equal(tx.logs.length, 1);
-  assert.equal(tx.logs[0].event, "NewDaoOrgans");
-
-  tx = await daoCreator.forgeOrg(daoOrgansCreator.address,"testOrg",tx.logs[0].args._nativeToken,tx.logs[0].args._nativeReputation,controller,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,controller,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -214,11 +208,7 @@ export const setupOrganizationWithArrays = async function (daoCreator,daoCreator
 
 export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=0) {
   var org = new Organization();
-  var daoOrgansCreator = await DaoOrgansCreator.new();
-  var tx =await daoOrgansCreator.createDaoOrgans("TEST","TST", [daoCreatorOwner],[founderToken],[founderReputation]);
-  assert.equal(tx.logs.length, 1);
-  assert.equal(tx.logs[0].event, "NewDaoOrgans");
-  tx = await daoCreator.forgeOrg(daoOrgansCreator.address,"testOrg",tx.logs[0].args._nativeToken,tx.logs[0].args._nativeReputation,controller,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],controller,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -229,6 +219,7 @@ export const setupOrganization = async function (daoCreator,daoCreatorOwner,foun
   org.reputation = await Reputation.at(reputationAddress);
   return org;
 };
+
 
 export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
   let voteInfo;

@@ -4,6 +4,8 @@ const DaoCreator = artifacts.require("./DaoCreator.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const SimpleICO = artifacts.require("./SimpleICO.sol");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+
 
 
 const setupSimpleICOParams = async function(accounts,
@@ -22,7 +24,8 @@ const setupSimpleICOParams = async function(accounts,
 };
 var daoCreator;
 const setupOrganization = async function (daoCreatorOwner,founderToken,founderReputation) {
-  daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+  var controllerCreator = await ControllerCreator.new();
+  daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
   var org = await helpers.setupOrganization(daoCreator,daoCreatorOwner,founderToken,founderReputation);
   return org;
 };

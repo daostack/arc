@@ -101,10 +101,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         _;
     }
 
-    modifier onlyProposalOwner(bytes32 _proposalId) {
-        _;
-    }
-
     /**
      * @dev hash the parameters, save them if necessary, and return the hash value
      * @param _params a parameters array
@@ -136,7 +132,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         require(_params[9] <= 100); //stakerFeeRatioForVoters
         require(_params[10] <= 100); //votersReputationLossRatio
         require(_params[11] <= 100); //votersGainRepRatioFromLostRep
-        require(_params[1] >= _params[6]); //boostedVotePeriodLimit >= quietEndingPeriod
+        require(_params[2] >= _params[6]); //boostedVotePeriodLimit >= quietEndingPeriod
         bytes32 paramsHash = getParametersHash(
             _params,
             _genesisProtocolFormulasInterface
@@ -225,9 +221,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
 
   /**
    * @dev Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
-   * @param _proposalId the proposal ID
    */
-    function cancelProposal(bytes32 _proposalId) public onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool) {
+    function cancelProposal(bytes32 ) public returns(bool) {
         //This is not allowed.
         return false;
     }
@@ -291,11 +286,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
 
   /**
    * @dev voting function with owner functionality (can vote on behalf of someone else)
-   * @param _proposalId id of the proposal
    * @return bool true - the proposal has been executed
    *              false - otherwise.
    */
-    function ownerVote(bytes32 _proposalId, uint , address ) public onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool) {
+    function ownerVote(bytes32 , uint , address ) public returns(bool) {
       //This is not allowed.
         return false;
     }

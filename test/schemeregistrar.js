@@ -5,6 +5,8 @@ const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const UniversalScheme = artifacts.require('./UniversalScheme.sol');
 const Controller = artifacts.require('./Controller.sol');
+const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+
 
 
 export class SchemeRegistrarParams {
@@ -27,7 +29,8 @@ const setup = async function (accounts) {
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.schemeRegistrar = await SchemeRegistrar.new();
-   testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(testSetup.schemeRegistrar);
    var permissions = "0x0000001F";
