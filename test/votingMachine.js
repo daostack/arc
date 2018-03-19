@@ -7,11 +7,14 @@ const Reputation = artifacts.require('Reputation');
 const ExecutableTest = artifacts.require('ExecutableTest');
 const Avatar = artifacts.require('Avatar');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
+const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+
 
 const setupGenesisProtocol = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    testSetup.votingMachine = await helpers.setupGenesisProtocol(accounts,0);
-   testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    var permissions = "0x00000000";
    testSetup.executable = await ExecutableTest.new();

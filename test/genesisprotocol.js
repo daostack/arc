@@ -5,6 +5,7 @@ const ExecutableTest = artifacts.require("./ExecutableTest.sol");
 const constants = require("./constants");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
+const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const GenesisProtocolFormulasMock = artifacts.require("./test/GenesisProtocolFormulasMock.sol");
 
 export class GenesisProtocolParams {
@@ -80,7 +81,8 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.standardTokenMock.address);
-   testSetup.daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.reputationArray = [20, 10, 70 ];
    testSetup.org = await setupOrganization(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
    testSetup.genesisProtocolParams= await setupGenesisProtocolParams(testSetup,_preBoostedVoteRequiredPercentage,

@@ -7,116 +7,93 @@ import "../controller/UController.sol";
 import "../controller/Controller.sol";
 
 
-contract DaoOrgansCreator {
-    event NewDaoOrgans (address _nativeToken,address _nativeReputation);
+/**
+ * @title ControllerCreator for creating a single controller.
+ */
 
-    function createDaoOrgans (
-        string _tokenName,
-        string _tokenSymbol,
-        address[] _founders,
-        uint[] _foundersTokenAmount,
-        int[] _foundersReputationAmount
-    )
-    external
-    returns(address,address)
-    {
-        return _createDaoOrgans(
-            _tokenName,
-            _tokenSymbol,
-            _founders,
-            _foundersTokenAmount,
-            _foundersReputationAmount
-        );
+contract ControllerCreator {
+
+    function create(Avatar _avatar) public returns(address) {
+        return address(new Controller(_avatar));
     }
 
-    function transferOwnership (
-        DAOToken  _nativeToken,
-        Reputation _nativeReputation)
-        public
-        {
-          // Transfer ownership:
-        _nativeToken.transferOwnership(msg.sender);
-        _nativeReputation.transferOwnership(msg.sender);
-    }
-
-    function _createDaoOrgans (
-        string _tokenName,
-        string _tokenSymbol,
-        address[] _founders,
-        uint[] _foundersTokenAmount,
-        int[] _foundersReputationAmount
+    function setSchemes (
+        Avatar _avatar,
+        address[] _schemes,
+        bytes32[] _params,
+        bytes4[] _permissions
     )
-    private
-    returns(address,address)
+     public
     {
-      // Create Token, Reputation and Avatar:
-        require(_founders.length == _foundersTokenAmount.length);
-        require(_founders.length == _foundersReputationAmount.length);
-        DAOToken  nativeToken = new DAOToken(_tokenName, _tokenSymbol);
-        Reputation  nativeReputation = new Reputation();
-
-        // Mint token and reputation for founders:
-        for (uint i = 0 ; i < _founders.length ; i++ ) {
-            require(_founders[i] != address(0));
-            nativeToken.mint(_founders[i],_foundersTokenAmount[i]);
-            nativeReputation.mint(_founders[i],_foundersReputationAmount[i]);
+      // register initial schemes:
+        ControllerInterface controller = ControllerInterface(_avatar.owner());
+        for ( uint i = 0 ; i < _schemes.length ; i++ ) {
+            controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
         }
-        NewDaoOrgans(address(nativeToken),address(nativeReputation));
-        return (address(nativeToken),address(nativeReputation));
+
+      // Unregister self:
+        controller.unregisterScheme(this,address(_avatar));
     }
 }
-
 
 /**
  * @title Genesis Scheme that creates organizations
  */
 
+
 contract DaoCreator {
 
-    mapping(address=>address) public locks;
+
+    struct Lock {
+        address sender;
+        bool    uController;
+    }
+
+    mapping(address=>Lock) public locks;
 
     event NewOrg (address _avatar);
     event InitialSchemesSet (address _avatar);
-    function DaoCreator() public {}
+    ControllerCreator controllerCreator;
+
+    function DaoCreator(ControllerCreator _controllerCreator) public {
+        controllerCreator = _controllerCreator;
+    }
+
   /**
     * @dev Create a new organization
-    * @param  _orgName organization's name
-    * @param  _nativeToken organization's token contract
-    * @param  _nativeReputation  organization's reputation contract
+    * @param _orgName The name of the new organization
+    * @param _tokenName The name of the token associated with the organization
+    * @param _tokenSymbol The symbol of the token
+    * @param _founders An array with the addresses of the founders of the organization
+    * @param _foundersTokenAmount An array of amount of tokens that the founders
+    *  receive in the new organization
+    * @param _foundersReputationAmount An array of amount of reputation that the
+    *   founders receive in the new organization
     * @param  _uController universal controller instance
     *         if _uController address equal to zero the organization will use none universal controller.
     * @return The address of the avatar of the controller
     */
     function forgeOrg (
-        DaoOrgansCreator daoOrgansCreator,
         bytes32 _orgName,
-        DAOToken _nativeToken,
-        Reputation _nativeReputation,
+        string _tokenName,
+        string _tokenSymbol,
+        address[] _founders,
+        uint[] _foundersTokenAmount,
+        int[] _foundersReputationAmount,
         UController _uController
       )
       external
       returns(address)
       {
-        ControllerInterface  controller;
-        Avatar  avatar = new Avatar(_orgName, _nativeToken, _nativeReputation);
-        // Create Controller:
-        if (UController(0) == _uController) {
-            controller = new Controller(avatar);
-            avatar.transferOwnership(controller);
-        } else {
-            controller = _uController;
-            avatar.transferOwnership(controller);
-            _uController.newOrganization(avatar);
-        }
-        // Transfer ownership:
-        daoOrgansCreator.transferOwnership(_nativeToken,_nativeReputation);
-        _nativeToken.transferOwnership(controller);
-        _nativeReputation.transferOwnership(controller);
-
-        locks[address(avatar)] = msg.sender;
-
-        NewOrg (address(avatar));
-        return (address(avatar));
+        //The call for the private function is needed to bypass a deep stack issues
+        return _forgeOrg(
+            _orgName,
+            _tokenName,
+            _tokenSymbol,
+            _founders,
+            _foundersTokenAmount,
+            _foundersReputationAmount,
+            _uController);
     }
 
      /**
@@ -136,20 +113,80 @@ contract DaoCreator {
     {
         // this action can only be executed by the account that holds the lock
         // for this controller
-        require(locks[address(_avatar)] == msg.sender);
+        require(locks[address(_avatar)].sender == msg.sender);
 
-        // register initial schemes:
-        ControllerInterface controller = ControllerInterface(_avatar.owner());
-        for ( uint i = 0 ; i < _schemes.length ; i++ ) {
-            controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
+        if (locks[address(_avatar)].uController) {
+            // register initial schemes:
+            ControllerInterface controller = ControllerInterface(_avatar.owner());
+            for ( uint i = 0 ; i < _schemes.length ; i++ ) {
+                controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
+            }
+          // Unregister self:
+            controller.unregisterScheme(this,address(_avatar));
+        } else {
+            controllerCreator.setSchemes(_avatar,_schemes,_params,_permissions);
         }
-
-        // Unregister self:
-        controller.unregisterScheme(this,address(_avatar));
-
         // Remove lock:
         delete locks[address(_avatar)];
-
         InitialSchemesSet(address(_avatar));
+    }
+
+    /**
+     * @dev Create a new organization
+     * @param _orgName The name of the new organization
+     * @param _tokenName The name of the token associated with the organization
+     * @param _tokenSymbol The symbol of the token
+     * @param _founders An array with the addresses of the founders of the organization
+     * @param _foundersTokenAmount An array of amount of tokens that the founders
+     *  receive in the new organization
+     * @param _foundersReputationAmount An array of amount of reputation that the
+     *   founders receive in the new organization
+     * @param  _uController universal controller instance
+     *         if _uController address equal to zero the organization will use none universal controller.
+     * @return The address of the avatar of the controller
+     */
+    function _forgeOrg (
+        bytes32 _orgName,
+        string _tokenName,
+        string _tokenSymbol,
+        address[] _founders,
+        uint[] _foundersTokenAmount,
+        int[] _foundersReputationAmount,
+        UController _uController
+    ) private returns(address)
+    {
+        // Create Token, Reputation and Avatar:
+        require(_founders.length == _foundersTokenAmount.length);
+        require(_founders.length == _foundersReputationAmount.length);
+        DAOToken  nativeToken = new DAOToken(_tokenName, _tokenSymbol);
+        Reputation  nativeReputation = new Reputation();
+        Avatar  avatar = new Avatar(_orgName, nativeToken, nativeReputation);
+        ControllerInterface  controller;
+
+        // Mint token and reputation for founders:
+        for (uint i = 0 ; i < _founders.length ; i++ ) {
+            require(_founders[i] != address(0));
+            nativeToken.mint(_founders[i],_foundersTokenAmount[i]);
+            nativeReputation.mint(_founders[i],_foundersReputationAmount[i]);
+        }
+
+        // Create Controller:
+        if (UController(0) == _uController) {
+            controller = ControllerInterface(controllerCreator.create(avatar));
+            avatar.transferOwnership(controller);
+        } else {
+            controller = _uController;
+            avatar.transferOwnership(controller);
+            _uController.newOrganization(avatar);
+            locks[address(avatar)].uController = true;
+        }
+        // Transfer ownership:
+        nativeToken.transferOwnership(controller);
+        nativeReputation.transferOwnership(controller);
+
+        locks[address(avatar)].sender = msg.sender;
+
+        NewOrg (address(avatar));
+        return (address(avatar));
     }
 }
