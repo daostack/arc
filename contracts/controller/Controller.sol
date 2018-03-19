@@ -250,7 +250,8 @@ contract Controller is ControllerInterface {
         isAvatarValid(_avatar)
         public
         view
-        returns(uint,uint) {
+        returns(uint,uint)
+        {
         return (globalConstraintsPre.length,globalConstraintsPost.length);
     }
 
@@ -258,7 +259,8 @@ contract Controller is ControllerInterface {
         isAvatarValid(_avatar)
         public
         view
-        returns(bool) {
+        returns(bool)
+        {
         return (globalConstraintsRegisterPre[_globalConstraint].register || globalConstraintsRegisterPost[_globalConstraint].register);
     }
 

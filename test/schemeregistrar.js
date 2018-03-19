@@ -84,7 +84,7 @@ contract('SchemeRegistrar', function(accounts) {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
       var controller = await Controller.at(await testSetup.org.avatar.owner());
-      assert.equal(await controller.isSchemeRegistered(universalScheme.address,0),true);
+      assert.equal(await controller.isSchemeRegistered(universalScheme.address,testSetup.org.avatar.address),true);
      });
 
      it("execute proposeScheme  and execute -yes - permissions== 0x00000001", async function() {
@@ -96,8 +96,8 @@ contract('SchemeRegistrar', function(accounts) {
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
        await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
        var controller = await Controller.at(await testSetup.org.avatar.owner());
-       assert.equal(await controller.isSchemeRegistered(accounts[0],0),true);
-       assert.equal(await controller.getSchemePermissions(accounts[0],0),"0x00000001");
+       assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
+       assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000001");
       });
 
       it("execute proposeScheme  and execute -yes - permissions== 0x00000002", async function() {
@@ -109,8 +109,8 @@ contract('SchemeRegistrar', function(accounts) {
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
         var controller = await Controller.at(await testSetup.org.avatar.owner());
-        assert.equal(await controller.isSchemeRegistered(accounts[0],0),true);
-        assert.equal(await controller.getSchemePermissions(accounts[0],0),"0x00000003");
+        assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
+        assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000003");
        });
 
        it("execute proposeScheme  and execute -yes - permissions== 0x00000003", async function() {
@@ -122,8 +122,8 @@ contract('SchemeRegistrar', function(accounts) {
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
          await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
          var controller = await Controller.at(await testSetup.org.avatar.owner());
-         assert.equal(await controller.isSchemeRegistered(accounts[0],0),true);
-         assert.equal(await controller.getSchemePermissions(accounts[0],0),"0x00000003");
+         assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
+         assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000003");
         });
 
         it("execute proposeScheme  and execute -yes - permissions== 0x00000008", async function() {
@@ -135,8 +135,8 @@ contract('SchemeRegistrar', function(accounts) {
           var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
           await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
           var controller = await Controller.at(await testSetup.org.avatar.owner());
-          assert.equal(await controller.isSchemeRegistered(accounts[0],0),true);
-          assert.equal(await controller.getSchemePermissions(accounts[0],0),"0x00000009");
+          assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
+          assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000009");
          });
 
          it("execute proposeScheme  and execute -yes - permissions== 0x00000010", async function() {
@@ -148,8 +148,8 @@ contract('SchemeRegistrar', function(accounts) {
            var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
            await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
            var controller = await Controller.at(await testSetup.org.avatar.owner());
-           assert.equal(await controller.isSchemeRegistered(accounts[0],0),true);
-           assert.equal(await controller.getSchemePermissions(accounts[0],0),"0x00000011");
+           assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
+           assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000011");
           });
 
       it("execute proposeScheme  and execute -yes - isRegistering==FALSE ", async function() {
@@ -161,8 +161,8 @@ contract('SchemeRegistrar', function(accounts) {
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
         var controller = await Controller.at(await testSetup.org.avatar.owner());
-        assert.equal(await controller.isSchemeRegistered(accounts[0],0),true);
-        assert.equal(await controller.getSchemePermissions(accounts[0],0),"0x00000001");
+        assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
+        assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000001");
        });
 
 
@@ -181,7 +181,7 @@ contract('SchemeRegistrar', function(accounts) {
          await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,2,{from:accounts[2]});
          var controller = await Controller.at(await testSetup.org.avatar.owner());
          //should not register because the decision is "no"
-         assert.equal(await controller.isSchemeRegistered(accounts[0],0),false);
+         assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),false);
          //check organizationsProposals after execution
          organizationsProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
          assert.equal(organizationsProposals[2],0);//proposalType
@@ -193,10 +193,10 @@ contract('SchemeRegistrar', function(accounts) {
           var tx = await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address);
           var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
           var controller = await Controller.at(await testSetup.org.avatar.owner());
-          assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,0),true);
+          assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,testSetup.org.avatar.address),true);
           //Vote with reputation to trigger execution
           await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-          assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,0),false);
+          assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,testSetup.org.avatar.address),false);
           //check organizationsProposals after execution
           var organizationsProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
           assert.equal(organizationsProposals[2],0);//proposalType

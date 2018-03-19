@@ -52,11 +52,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         uint numOfChoices;
         ExecutableInterface executable; // will be executed if the proposal will pass
         uint totalVotes;
-        uint[2] totalStakes;// [(total stakes - votersStakes)],[totalRedeembleStakes]
         uint votersStakes;
         uint lostReputation;
         uint submittedTime;
         uint boostedPhaseTime; //the time the proposal shift to relative mode.
+        uint[2] totalStakes;// [(total stakes - votersStakes)],[totalRedeemableStakes]
         ProposalState state;
         uint winningVote; //the winning vote.
         address proposer;
@@ -101,6 +101,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         _;
     }
 
+    modifier onlyProposalOwner(bytes32 _proposalId) {
+        _;
+    }
+
     /**
      * @dev hash the parameters, save them if necessary, and return the hash value
      * @param _params a parameters array
@@ -127,7 +131,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     returns(bytes32)
     {
         require(_params[0] <= 100 && _params[0] > 0); //preBoostedVoteRequiredPercentage
-        require(_params[8] > 0); //_proposingRepRewardConstB cannot be zero.
+        require(_params[4] > 0); //_thresholdConstB cannot be zero.
         require(_params[9] <= 100); //stakerFeeRatioForVoters
         require(_params[10] <= 100); //votersReputationLossRatio
         require(_params[11] <= 100); //votersGainRepRatioFromLostRep
@@ -196,6 +200,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         require(ExecutableInterface(_executable) != address(0));
         //Check parameters existence.
         bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
+
         require(parameters[paramsHash].preBoostedVoteRequiredPercentage > 0);
         // Generate a unique ID:
         bytes32 proposalId = keccak256(this, proposalsCnt);
@@ -264,7 +269,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
 
         proposal.votersStakes += (params.stakerFeeRatioForVoters * amount)/100;
         proposal.stakes[_vote] = amount.add(proposal.stakes[_vote]);
-        amount = ((100-params.stakerFeeRatioForVoters)*amount)/100;
+        amount = amount - ((params.stakerFeeRatioForVoters*amount)/100);
         proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
       // Event:
         Stake(_proposalId, msg.sender, _vote, _amount);
@@ -351,6 +356,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
                 executionState = ExecutionState.BoostedTimeOut;
              } else if (proposal.votes[proposal.winningVote] > executionBar) {
                // someone crossed the absolute vote execution bar.
+                orgBoostedProposalsCnt[tmpProposal.avatar]--;
                 proposal.state = ProposalState.Executed;
                 executionState = ExecutionState.BoostedBarCrossed;
             }
@@ -553,7 +559,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
         }
         if ((proposal.stakers[_beneficiary].amount>0) &&
              (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
-            rep = int((proposal.stakers[_beneficiary].amount * (proposal.lostReputation * (100 - params.votersGainRepRatioFromLostRep)))/(proposal.stakes[proposal.winningVote]*100));
+            rep = int((proposal.stakers[_beneficiary].amount * ( proposal.lostReputation - ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote]);
         }
         return rep;
     }
@@ -603,10 +609,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
       * @param _proposalId the ID of the proposal
       * @return uint totalVotes
       * @return uint totalStakes
+      * @return uint totalRedeemableStakes
       * @return uint voterStakes
     */
-    function proposalStatus(bytes32 _proposalId) public view returns(uint, uint, uint) {
-        return (proposals[_proposalId].totalVotes, proposals[_proposalId].totalStakes[0], proposals[_proposalId].votersStakes);
+    function proposalStatus(bytes32 _proposalId) public view returns(uint, uint, uint,uint) {
+        return (proposals[_proposalId].totalVotes, proposals[_proposalId].totalStakes[0],proposals[_proposalId].totalStakes[1], proposals[_proposalId].votersStakes);
     }
 
     /**

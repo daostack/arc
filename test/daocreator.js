@@ -6,6 +6,7 @@ var Web3Utils = require('web3-utils');
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const DaoCreator = artifacts.require("./DaoCreator.sol");
+const DaoOrgansCreator = artifacts.require("./DaoOrgansCreator.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const Controller = artifacts.require("./Controller.sol");
 const UController = artifacts.require("./UController.sol");
@@ -15,12 +16,16 @@ const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 var avatar,token,reputation,daoCreator,uController;
 const setup = async function (accounts,founderToken,founderReputation,useUController=false) {
   daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+  var daoOrgansCreator = await DaoOrgansCreator.new();
   var uControllerAddress = 0;
   if (useUController){
     uController = await UController.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
     uControllerAddress = uController.address;
   }
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[founderToken],[founderReputation],uControllerAddress,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+  var tx =await daoOrgansCreator.createDaoOrgans("TEST","TST", [accounts[0]],[founderToken],[founderReputation]);
+  assert.equal(tx.logs[0].event, "NewDaoOrgans");
+
+  tx = await daoCreator.forgeOrg(daoOrgansCreator.address,"testOrg",tx.logs[0].args._nativeToken,tx.logs[0].args._nativeReputation,uControllerAddress,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -136,7 +141,7 @@ contract('DaoCreator', function(accounts) {
         await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
-        var isSchemeRegistered = await controller.isSchemeRegistered(accounts[1],helpers.NULL_ADDRESS);
+        var isSchemeRegistered = await controller.isSchemeRegistered(accounts[1],avatar.address);
         assert.equal(isSchemeRegistered,true);
     });
 
@@ -146,12 +151,12 @@ contract('DaoCreator', function(accounts) {
         await setup(accounts,amountToMint,amountToMint);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
-        var isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,helpers.NULL_ADDRESS);
+        var isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,avatar.address);
         assert.equal(isSchemeRegistered,true);
         await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
-        isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,helpers.NULL_ADDRESS);
+        isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,avatar.address);
         assert.equal(isSchemeRegistered,false);
     });
 
@@ -288,13 +293,19 @@ contract('DaoCreator', function(accounts) {
         }
     });
 
-    it("forgeOrg with different params length should revert", async function() {
-        var amountToMint = 10;
-        daoCreator = await DaoCreator.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
-        var uControllerAddress = 0;
+    it("createDaoOrgans with different params length should revert", async function() {
+        var daoOrgansCreator = await DaoOrgansCreator.new();
         try {
-         await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[amountToMint],[],uControllerAddress,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
-         assert(false,"should revert  because reputation array size is 0");
+             await daoOrgansCreator.createDaoOrgans("TEST","TST", [accounts[0]],[10],[]);
+             assert(false,"should revert  because reputation array size is 0");
+        }
+        catch(ex){
+          helpers.assertVMException(ex);
+        }
+
+        try {
+             await daoOrgansCreator.createDaoOrgans("TEST","TST", [accounts[0],0,accounts[1]],[10,10,10],[10,10,10]);
+             assert(false,"should revert  because rone of the founders is 0");
         }
         catch(ex){
           helpers.assertVMException(ex);

@@ -77,12 +77,12 @@ contract('TokenCapGC', function (accounts)  {
     var tokenCapGC = await TokenCapGC.new();
     await tokenCapGC.setParameters(token.address,100);
     var tokenCapGCParamsHash =  await tokenCapGC.getParametersHash(token.address,100);
-    await controller.addGlobalConstraint(tokenCapGC.address,tokenCapGCParamsHash,helpers.NULL_ADDRESS);
+    await controller.addGlobalConstraint(tokenCapGC.address,tokenCapGCParamsHash,avatar.address);
     //var globalConstraints = await constraint("mintTokens");
     await token.transferOwnership(controller.address);
-    await controller.mintTokens(50,accounts[0],helpers.NULL_ADDRESS);
+    await controller.mintTokens(50,accounts[0],avatar.address);
     try {
-      await controller.mintTokens(51,accounts[0],helpers.NULL_ADDRESS);
+      await controller.mintTokens(51,accounts[0],avatar.address);
       assert(false,"mint tokens should fail due to the tokenCapGC global constraint ");
     }
     catch(ex){

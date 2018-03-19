@@ -7,7 +7,7 @@ interface GenesisProtocolFormulasInterface {
 
     function score(bytes32 _proposalId) public view returns (int);
 
-    function threshold(bytes32 _proposalId ,address _avatar) public view returns (int);
+    function threshold(bytes32 _proposalId,address _avatar) public view returns (int);
 
     function getRedeemableTokensStaker(bytes32 _proposalId,address _staker) public view returns (uint);
 
