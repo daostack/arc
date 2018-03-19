@@ -131,7 +131,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
     returns(bytes32)
     {
         require(_params[0] <= 100 && _params[0] > 0); //preBoostedVoteRequiredPercentage
-        require(_params[4] > 0); //_thresholdConstB cannot be zero.
+        require(_params[4] > 0 && _params[4] <= 0xFF); //_thresholdConstB cannot be zero.
+        require(_params[3] <= 0xFF); //_thresholdConstA
         require(_params[9] <= 100); //stakerFeeRatioForVoters
         require(_params[10] <= 100); //votersReputationLossRatio
         require(_params[11] <= 100); //votersGainRepRatioFromLostRep
@@ -352,11 +353,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= proposal.currentBoostedVotePeriodLimit) {
                 proposal.state = ProposalState.Executed;
-                orgBoostedProposalsCnt[tmpProposal.avatar]--;
+                orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
                 executionState = ExecutionState.BoostedTimeOut;
              } else if (proposal.votes[proposal.winningVote] > executionBar) {
                // someone crossed the absolute vote execution bar.
-                orgBoostedProposalsCnt[tmpProposal.avatar]--;
+                orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
                 proposal.state = ProposalState.Executed;
                 executionState = ExecutionState.BoostedBarCrossed;
             }
@@ -448,7 +449,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme,GenesisProtocolForm
      * a proposal to shift to boosted state.
      * This threshold is dynamically set and it depend on the number of boosted proposal.
      * @param _avatar the organization avatar
-     * @return int thresholdConstA.
+     * @return int organization's score threshold.
      */
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
         uint e = 2;
