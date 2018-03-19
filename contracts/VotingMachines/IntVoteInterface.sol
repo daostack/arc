@@ -3,7 +3,7 @@ pragma solidity ^0.4.19;
 import "../universalSchemes/ExecutableInterface.sol";
 
 
-contract IntVoteInterface {
+interface IntVoteInterface {
     modifier onlyProposalOwner(bytes32 _proposalId) {revert(); _;}
     modifier votable(bytes32 _proposalId) {revert(); _;}
 
