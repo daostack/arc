@@ -14,25 +14,10 @@ import "../controller/Controller.sol";
 contract ControllerCreator {
 
     function create(Avatar _avatar) public returns(address) {
-        return address(new Controller(_avatar));
-    }
-
-    function setSchemes (
-        Avatar _avatar,
-        address[] _schemes,
-        bytes32[] _params,
-        bytes4[] _permissions
-    )
-     public
-    {
-      // register initial schemes:
-        ControllerInterface controller = ControllerInterface(_avatar.owner());
-        for ( uint i = 0 ; i < _schemes.length ; i++ ) {
-            controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
-        }
-
-      // Unregister self:
+        Controller controller = new Controller(_avatar);
+        controller.registerScheme(msg.sender,bytes32(0),bytes4(0x1F),address(_avatar));
         controller.unregisterScheme(this,address(_avatar));
+        return address(controller);
     }
 }
 
@@ -43,13 +28,7 @@ contract ControllerCreator {
 
 contract DaoCreator {
 
-
-    struct Lock {
-        address sender;
-        bool    uController;
-    }
-
-    mapping(address=>Lock) public locks;
+    mapping(address=>address) public locks;
 
     event NewOrg (address _avatar);
     event InitialSchemesSet (address _avatar);
@@ -113,19 +92,14 @@ contract DaoCreator {
     {
         // this action can only be executed by the account that holds the lock
         // for this controller
-        require(locks[address(_avatar)].sender == msg.sender);
-
-        if (locks[address(_avatar)].uController) {
-            // register initial schemes:
-            ControllerInterface controller = ControllerInterface(_avatar.owner());
-            for ( uint i = 0 ; i < _schemes.length ; i++ ) {
-                controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
-            }
-          // Unregister self:
-            controller.unregisterScheme(this,address(_avatar));
-        } else {
-            controllerCreator.setSchemes(_avatar,_schemes,_params,_permissions);
+        require(locks[address(_avatar)] == msg.sender);
+        // register initial schemes:
+        ControllerInterface controller = ControllerInterface(_avatar.owner());
+        for ( uint i = 0 ; i < _schemes.length ; i++ ) {
+            controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
         }
+        // Unregister self:
+        controller.unregisterScheme(this,address(_avatar));
         // Remove lock:
         delete locks[address(_avatar)];
         InitialSchemesSet(address(_avatar));
@@ -178,13 +152,12 @@ contract DaoCreator {
             controller = _uController;
             avatar.transferOwnership(controller);
             _uController.newOrganization(avatar);
-            locks[address(avatar)].uController = true;
         }
         // Transfer ownership:
         nativeToken.transferOwnership(controller);
         nativeReputation.transferOwnership(controller);
 
-        locks[address(avatar)].sender = msg.sender;
+        locks[address(avatar)] = msg.sender;
 
         NewOrg (address(avatar));
         return (address(avatar));
