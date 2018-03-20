@@ -18,7 +18,7 @@ contract OrganizationRegister is UniversalScheme {
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
-    mapping(address=>mapping(address=>uint)) public organizationsRegistery;
+    mapping(address=>mapping(address=>uint)) public organizationsRegistry;
 
     mapping(bytes32=>Parameters) public parameters;
 
@@ -74,12 +74,12 @@ contract OrganizationRegister is UniversalScheme {
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         // Pay promotion, if the org was not listed the minimum is the fee:
-        require((organizationsRegistery[_avatar][_record] > 0) || (_amount >= params.fee));
+        require((organizationsRegistry[_avatar][_record] > 0) || (_amount >= params.fee));
 
         params.token.transferFrom(msg.sender, params.beneficiary, _amount);
-        if (organizationsRegistery[_avatar][_record] == 0)
+        if (organizationsRegistry[_avatar][_record] == 0)
           OrgAdded(_avatar, _record);
-        organizationsRegistery[_avatar][_record] += _amount;
+        organizationsRegistry[_avatar][_record] += _amount;
         Promotion(_avatar, _record, _amount);
     }
 }
