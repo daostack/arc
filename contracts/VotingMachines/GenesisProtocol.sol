@@ -463,7 +463,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @dev getRedeemableTokensVoter return the redeemable amount which a voter is entitle to.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary the beneficiary .
-     * @return uint proposer redeem reputation amount.
+     * @return uint voter redeem token amount.
      */
     function getRedeemableTokensVoter(bytes32 _proposalId, address _beneficiary) public view returns(uint) {
         Proposal storage proposal = proposals[_proposalId];
@@ -476,7 +476,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @dev getRedeemableReputationVoter return the redeemable reputation which a voter is entitle to.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary the beneficiary .
-     * @return int proposer redeem reputation amount.
+     * @return int voter redeem reputation amount.
      */
     function getRedeemableReputationVoter(bytes32 _proposalId,address _beneficiary) public view returns(int) {
         Proposal storage proposal = proposals[_proposalId];
@@ -502,7 +502,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @dev getRedeemableReputationStaker return the redeemable reputation which a staker is entitle to.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary the beneficiary .
-     * @return uint proposer redeem reputation amount.
+     * @return int staker redeem reputation amount.
      */
     function getRedeemableReputationStaker(bytes32 _proposalId,address _beneficiary) public view returns(int) {
         Proposal storage proposal = proposals[_proposalId];
@@ -564,7 +564,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
       * @dev proposalStatus return the total votes and stakes for a given proposal
       * @param _proposalId the ID of the proposal
       * @return uint totalVotes
-      * @return uint totalStakes
+      * @return uint stakersStakes
       * @return uint totalRedeemableStakes
       * @return uint voterStakes
     */
