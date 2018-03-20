@@ -6,7 +6,6 @@ const constants = require("./constants");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-const GenesisProtocolFormulasMock = artifacts.require("./test/GenesisProtocolFormulasMock.sol");
 
 export class GenesisProtocolParams {
   constructor() {
@@ -26,8 +25,7 @@ const setupGenesisProtocolParams = async function(
                                             _proposingRepRewardConstB=1,
                                             _stakerFeeRatioForVoters=1,
                                             _votersReputationLossRatio=10,
-                                            _votersGainRepRatioFromLostRep=80,
-                                            _governanceFormulasInterface=0
+                                            _votersGainRepRatioFromLostRep=80
                                             ) {
   var genesisProtocolParams = new GenesisProtocolParams();
   await testSetup.genesisProtocol.setParameters([_preBoostedVoteRequiredPercentage,
@@ -41,7 +39,7 @@ const setupGenesisProtocolParams = async function(
                                                  _proposingRepRewardConstB,
                                                  _stakerFeeRatioForVoters,
                                                  _votersReputationLossRatio,
-                                                 _votersGainRepRatioFromLostRep], _governanceFormulasInterface);
+                                                 _votersGainRepRatioFromLostRep]);
   genesisProtocolParams.paramsHash = await testSetup.genesisProtocol.getParametersHash([_preBoostedVoteRequiredPercentage,
                                                  _preBoostedVotePeriodLimit,
                                                  _boostedVotePeriodLimit,
@@ -53,7 +51,7 @@ const setupGenesisProtocolParams = async function(
                                                  _proposingRepRewardConstB,
                                                  _stakerFeeRatioForVoters,
                                                  _votersReputationLossRatio,
-                                                 _votersGainRepRatioFromLostRep], _governanceFormulasInterface);
+                                                 _votersGainRepRatioFromLostRep]);
   return genesisProtocolParams;
 };
 
@@ -76,8 +74,7 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
                                       _proposingRepRewardConstB=1,
                                       _stakerFeeRatioForVoters=1,
                                       _votersReputationLossRatio=10,
-                                      _votersGainRepRatioFromLostRep=80,
-                                      _governanceFormulasInterface=0) {
+                                      _votersGainRepRatioFromLostRep=80) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.standardTokenMock.address);
@@ -96,8 +93,7 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
                                          _proposingRepRewardConstB,
                                          _stakerFeeRatioForVoters,
                                          _votersReputationLossRatio,
-                                         _votersGainRepRatioFromLostRep,
-                                         _governanceFormulasInterface);
+                                         _votersGainRepRatioFromLostRep);
    var permissions = "0x00000000";
    testSetup.executable = await ExecutableTest.new();
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.genesisProtocol.address],[testSetup.genesisProtocolParams.paramsHash],[permissions]);
@@ -945,46 +941,6 @@ contract('GenesisProtocol', function (accounts) {
       helpers.assertVMException(ex);
     }
   });
-
-    it("genesisProtocolFormulasInterface ", async () => {
-
-      var genesisProtocolFormulasMock = await GenesisProtocolFormulasMock.new();
-      // _preBoostedVoteRequiredPercentage=50,
-      // _preBoostedVotePeriodLimit=60,
-      // _boostedVotePeriodLimit=60,
-      // _thresholdConstA=1,
-      // _thresholdConstB=1,
-      // _minimumStakingFee=0,
-      // _quietEndingPeriod=0,
-      // _proposingRepRewardConstA=60,
-      // _proposingRepRewardConstB=1,
-      // _stakerFeeRatioForVoters=1,
-      // _votersReputationLossRatio=0,
-      // _votersGainRepRatioFromLostRep=0,
-      // _governanceFormulasInterface=0
-      var testSetup = await setup(accounts,50,60,60,1,1,0,0,60,1,1,0,0,genesisProtocolFormulasMock.address);
-      let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
-      var proposalId = await getValueFromLogs(tx, '_proposalId');
-      assert.isOk(proposalId);
-      await testSetup.standardTokenMock.approve(testSetup.genesisProtocol.address,100);
-      var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
-      await testSetup.genesisProtocol.vote(proposalId,1);
-      assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
-      assert.equal(await testSetup.genesisProtocol.score(proposalId),0);
-      await testSetup.genesisProtocol.stake(proposalId,1,100);
-      proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
-      let proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
-      assert.equal(proposalStatus[1],99); //totalStakes
-      assert.equal(proposalInfo[4],1);  //voterStakes
-      assert.equal(proposalInfo[8],4);   //state
-      assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),true);
-      var score = 100;
-      assert.equal(await testSetup.genesisProtocol.score(proposalId),score);
-      await helpers.increaseTime(61);
-      await testSetup.genesisProtocol.execute(proposalId);
-      var redeemAmount = await testSetup.genesisProtocol.getRedeemableTokensStaker(proposalId,accounts[0]);
-      assert.equal(redeemAmount,((99*99)/99));
-    });
 
     it("dynamic threshold ", async () => {
       var testSetup = await setup(accounts);
