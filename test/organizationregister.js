@@ -70,7 +70,7 @@ contract('OrganizationRegister', function(accounts) {
        assert.equal(tx.logs[1].event, "Promotion");
        var  registery = await helpers.getValueFromLogs(tx, '_registry');
        var org = await helpers.getValueFromLogs(tx, '_org');
-       var registeryAmount  = await testSetup.organizationRegister.organizationsRegistery(registery,org);
+       var registeryAmount  = await testSetup.organizationRegister.organizationsRegistry(registery,org);
        assert.equal(amount,registeryAmount);
        //now try to promote.
        tx = await testSetup.organizationRegister.addOrPromoteAddress(testSetup.org.avatar.address,
@@ -80,7 +80,7 @@ contract('OrganizationRegister', function(accounts) {
        assert.equal(tx.logs[0].event, "Promotion");
        registery = await helpers.getValueFromLogs(tx, '_registry');
        org = await helpers.getValueFromLogs(tx, '_org');
-       registeryAmount  = await testSetup.organizationRegister.organizationsRegistery(registery,org);
+       registeryAmount  = await testSetup.organizationRegister.organizationsRegistry(registery,org);
        assert.equal(amount+1,registeryAmount);
       });
 
