@@ -148,12 +148,12 @@ contract('DaoCreator', function(accounts) {
         await setup(accounts,amountToMint,amountToMint);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
-        var isSchemeRegistered = await controller.isSchemeRegistered(controllerCreator.address,avatar.address);
+        var isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,avatar.address);
         assert.equal(isSchemeRegistered,true);
         await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
-        isSchemeRegistered = await controller.isSchemeRegistered(controllerCreator.address,avatar.address);
+        isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,avatar.address);
         assert.equal(isSchemeRegistered,false);
     });
 
