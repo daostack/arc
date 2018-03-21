@@ -156,8 +156,7 @@ export const setupGenesisProtocol = async function (accounts,token,
   _proposingRepRewardConstB=1,
   _stakerFeeRatioForVoters=1,
   _votersReputationLossRatio=10,
-  _votersGainRepRatioFromLostRep=80,
-  _governanceFormulasInterface=0) {
+  _votersGainRepRatioFromLostRep=80) {
   var votingMachine = new VotingMachine();
   votingMachine.genesisProtocol = await GenesisProtocol.new(token);
 
@@ -175,7 +174,7 @@ export const setupGenesisProtocol = async function (accounts,token,
                                                  _proposingRepRewardConstB,
                                                  _stakerFeeRatioForVoters,
                                                  _votersReputationLossRatio,
-                                                 _votersGainRepRatioFromLostRep], _governanceFormulasInterface);
+                                                 _votersGainRepRatioFromLostRep]);
   votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_preBoostedVoteRequiredPercentage,
                                                  _preBoostedVotePeriodLimit,
                                                  _boostedVotePeriodLimit,
@@ -187,7 +186,7 @@ export const setupGenesisProtocol = async function (accounts,token,
                                                  _proposingRepRewardConstB,
                                                  _stakerFeeRatioForVoters,
                                                  _votersReputationLossRatio,
-                                                 _votersGainRepRatioFromLostRep], _governanceFormulasInterface);
+                                                 _votersGainRepRatioFromLostRep]);
 
   return votingMachine;
 };
