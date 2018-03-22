@@ -910,15 +910,21 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),true);
     await helpers.increaseTime(61);
     await testSetup.genesisProtocol.execute(proposalId);
-    var redeemAmount = await testSetup.genesisProtocol.getRedeemableTokensStaker(proposalId,accounts[0]);
-    assert.equal(redeemAmount,((99*99)/99));
+    var stakerRedeemAmount = await testSetup.genesisProtocol.getRedeemableTokensStaker(proposalId,accounts[0]);
+    assert.equal(stakerRedeemAmount,((99*99)/99));
+    var voterRedeemAmount = await testSetup.genesisProtocol.getRedeemableTokensVoter(proposalId,accounts[0]);
+    assert.equal(voterRedeemAmount,1);
     assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]),900);
+    var proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
+    assert.equal(proposalStatus[2],100);
     tx = await testSetup.genesisProtocol.redeem(proposalId,accounts[0]);
+    proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
+    assert.equal(proposalStatus[2],0);
     assert.equal(tx.logs.length,2);
     assert.equal(tx.logs[0].event, "Redeem");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
     assert.equal(tx.logs[0].args._beneficiary, accounts[0]);
-    assert.equal(tx.logs[0].args._amount, 100);
+    assert.equal(tx.logs[0].args._amount, voterRedeemAmount.toNumber()+stakerRedeemAmount.toNumber());
     assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]),1000);
   });
 
