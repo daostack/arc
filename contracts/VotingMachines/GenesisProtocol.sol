@@ -29,7 +29,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                                       // All stakers pay a portion of their stake to all voters, stakerFeeRatioForVoters * (s+ + s-).
                                       //All voters (pre and during boosting period) divide this portion in proportion to their reputation.
         uint votersReputationLossRatio;//Unsuccessful pre booster voters lose votersReputationLossRatio% of their reputation.
-        uint votersGainRepRatioFromLostRep; //the percentages the lost reputation which is divided by the successful pre boosted voters, in proportion to their reputation.
+        uint votersGainRepRatioFromLostRep; //the percentages of the lost reputation which is divided by the successful pre boosted voters, in proportion to their reputation.
                                             //The rest (100-votersGainRepRatioFromLostRep)% of lost reputation is divided between the successful wagers, in proportion to their stake.
 
 
@@ -54,7 +54,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         uint lostReputation;
         uint submittedTime;
         uint boostedPhaseTime; //the time the proposal shift to relative mode.
-        uint[2] totalStakes;// [(total stakes - votersStakes)],[totalRedeemableStakes]
+        uint[2] totalStakes;// totalStakes[0] - (amount staked minus fee) - Total number of tokens staked which can be redeemable by stakers.
+                            // totalStakes[1] - (amount staked) - Total number of redeemable tokens.
         ProposalState state;
         uint winningVote; //the winning vote.
         address proposer;
@@ -495,7 +496,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         //give back reputation for the voter
             returnReputation = int((reputation * params.votersReputationLossRatio)/100);
         }
-        return returnReputation + int((reputation * proposal.lostReputation * params.votersGainRepRatioFromLostRep)/(proposal.totalVotes*100));
+        return returnReputation + int(reputation * ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)/proposal.totalVotes);
     }
 
     /**
