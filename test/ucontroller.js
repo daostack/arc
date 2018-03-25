@@ -90,7 +90,7 @@ contract('UController', function (accounts)  {
     let tx =  await controller.burnReputation(amountToMint-1,accounts[0],avatar.address);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "BurnReputation");
-    assert.equal(tx.logs[0].args._amount, amountToMint);
+    assert.equal(tx.logs[0].args._amount, amountToMint-1);
     assert.equal(tx.logs[0].args._owner, accounts[0]);
     let rep = await reputation.reputationOf(accounts[0]);
     assert.equal(rep,1);
