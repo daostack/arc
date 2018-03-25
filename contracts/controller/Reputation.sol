@@ -1,6 +1,7 @@
 pragma solidity ^0.4.19;
 
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 
 /**
@@ -13,21 +14,16 @@ import "zeppelin-solidity/contracts/ownership/Ownable.sol";
  */
 
 contract Reputation is Ownable {
+    using SafeMath for uint;
 
     mapping (address => uint256) public balances;
     uint256 public totalSupply;
     uint public decimals = 18;
 
     // Event indicating minting of reputation to an address.
-    event Mint(address indexed to, int256 amount);
-
-    /**
-    * @dev enforce a cap to avoid casting problems
-    */
-    modifier capTotalSupply() {
-        _;
-        require(int(totalSupply) >= 0);
-    }
+    event Mint(address indexed _owner, uint256 _amount);
+    // Event indicating burning of reputation for an address.
+    event Burn(address indexed _owner, uint256 _amount);
 
     /**
     * @dev return the reputation amount of a given owner
@@ -38,27 +34,41 @@ contract Reputation is Ownable {
     }
 
     /**
-    * @dev adding/reducing reputation of a given address, updating the total supply,
-    * and triggering an event of the operation.
-    * Max reputation allowed is capped by INT256_MAX = 2**255 - Any value minted over this MAX will cause a revert.
-    * Min reputation allowed is 0. - Any value minted below this MIN will be trim to 0.
-    * @param _to the address which we gives/takes reputation amount
-    * @param _amount the reputation amount to be added/reduced
-    * @return bool which represents a successful of the function
+    * @dev Generates `_amount` of reputation that are assigned to `_owner`
+    * @param _owner The address that will be assigned the new reputation
+    * @param _amount The quantity of reputation to be generated
+    * @return True if the reputation are generated correctly
     */
-    function mint(address _to, int256 _amount) public onlyOwner capTotalSupply returns (bool) {
-        int amountMinted = _amount;
+    function mint(address _owner, uint _amount)
+    public
+    onlyOwner
+    returns (bool)
+    {
+        totalSupply = totalSupply.add(_amount);
+        balances[_owner] = balances[_owner].add(_amount);
+        Mint(_owner, _amount);
+        return true;
+    }
 
-        if (int(balances[_to]) + _amount >= 0 ) {
-            balances[_to] = uint(int(balances[_to]) + _amount);
-            totalSupply = uint(int(totalSupply) + _amount);
-        } else {
-            amountMinted = (-1)*int(balances[_to]);
-            totalSupply -= balances[_to];
-            balances[_to] = 0;
+    /**
+    * @dev Burns `_amount` of reputation from `_owner`
+    * if _amount tokens to burn > balances[_owner] the balance of _owner will turn to zero.
+    * @param _owner The address that will lose the reputation
+    * @param _amount The quantity of reputation to burn
+    * @return True if the reputation are burned correctly
+    */
+    function burn(address _owner, uint _amount)
+    onlyOwner
+    public
+    returns (bool)
+    {
+        uint amountMinted = _amount;
+        if (balances[_owner] < _amount) {
+            amountMinted = balances[_owner];
         }
-
-        Mint(_to, amountMinted);
+        totalSupply = totalSupply.sub(amountMinted);
+        balances[_owner] = balances[_owner].sub(amountMinted);
+        Burn(_owner, amountMinted);
         return true;
     }
 }

@@ -207,8 +207,12 @@ contract ContributionReward is UniversalScheme {
         //set proposal reward to zero to prevent reentrancy attack.
         proposal.reputationChange = 0;
         int reputation = int(periodsToPay) * _proposal.reputationChange;
-        if (reputation!=0 && ControllerInterface(Avatar(_avatar).owner()).mintReputation(reputation, _proposal.beneficiary,_avatar)) {
+        if ((reputation > 0 ) && ControllerInterface(Avatar(_avatar).owner()).mintReputation(uint(reputation), _proposal.beneficiary,_avatar)) {
             result = true;
+        } else if ((reputation < 0 ) && ControllerInterface(Avatar(_avatar).owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary,_avatar)) {
+            result = true;
+        }
+        if (result) {
             RedeemReputation(_avatar,_proposalId,_proposal.beneficiary,reputation);
         }
         //restore proposal reward.

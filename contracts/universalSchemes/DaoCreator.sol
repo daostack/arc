@@ -58,7 +58,7 @@ contract DaoCreator {
         string _tokenSymbol,
         address[] _founders,
         uint[] _foundersTokenAmount,
-        int[] _foundersReputationAmount,
+        uint[] _foundersReputationAmount,
         UController _uController
       )
       external
@@ -125,7 +125,7 @@ contract DaoCreator {
         string _tokenSymbol,
         address[] _founders,
         uint[] _foundersTokenAmount,
-        int[] _foundersReputationAmount,
+        uint[] _foundersReputationAmount,
         UController _uController
     ) private returns(address)
     {

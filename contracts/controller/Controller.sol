@@ -53,7 +53,8 @@ contract Controller is ControllerInterface {
   // globalConstraintsRegisterPost indicate if a globalConstraints is registered as a post global constraint
     mapping(address=>GlobalConstraintRegister) public globalConstraintsRegisterPost;
 
-    event MintReputation (address indexed _sender, address indexed _beneficiary, int256 _amount);
+    event MintReputation (address indexed _sender, address indexed _owner, uint256 _amount);
+    event BurnReputation (address indexed _sender, address indexed _owner, uint256 _amount);
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
     event RegisterScheme (address indexed _sender, address indexed _scheme);
     event UnregisterScheme (address indexed _sender, address indexed _scheme);
@@ -125,20 +126,37 @@ contract Controller is ControllerInterface {
     }
 
     /**
-     * @dev mint reputation .
+     * @dev Mint `_amount` of reputation that are assigned to `_owner` .
      * @param  _amount amount of reputation to mint
-     * @param _beneficiary beneficiary address
+     * @param _owner beneficiary address
      * @return bool which represents a success
      */
-    function mintReputation(int256 _amount, address _beneficiary,address _avatar)
+    function mintReputation(uint256 _amount, address _owner,address _avatar)
     public
     onlyRegisteredScheme
     onlySubjectToConstraint("mintReputation")
     isAvatarValid(_avatar)
     returns(bool)
     {
-        MintReputation(msg.sender, _beneficiary, _amount);
-        return nativeReputation.mint(_beneficiary, _amount);
+        MintReputation(msg.sender, _owner, _amount);
+        return nativeReputation.mint(_owner, _amount);
+    }
+
+    /**
+     * @dev Burns `_amount` of reputation from `_owner`
+     * @param _amount amount of reputation to burn
+     * @param _owner The address that will lose the reputation
+     * @return bool which represents a success
+     */
+    function burnReputation(uint256 _amount, address _owner,address _avatar)
+    public
+    onlyRegisteredScheme
+    onlySubjectToConstraint("mintReputation")
+    isAvatarValid(_avatar)
+    returns(bool)
+    {
+        BurnReputation(msg.sender, _owner, _amount);
+        return nativeReputation.burn(_owner, _amount);
     }
 
     /**

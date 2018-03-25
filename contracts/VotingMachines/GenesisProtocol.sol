@@ -72,7 +72,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     event VoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation);
     event Stake(bytes32 indexed _proposalId, address indexed _voter,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
-    event RedeemReputation(bytes32 indexed _proposalId, address indexed _beneficiary,int _amount);
+    event RedeemReputation(bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
@@ -364,7 +364,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         Proposal storage proposal = proposals[_proposalId];
         require((proposal.state == ProposalState.Executed) || (proposal.state == ProposalState.Closed));
         uint amount;
-        int reputation;
+        uint reputation;
         if ((proposal.stakers[_beneficiary].amount>0) &&
              (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
             //as staker
@@ -446,16 +446,16 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     /**
      * @dev getRedeemableReputationProposer return the redeemable reputation which a proposer is entitle to.
      * @param _proposalId the ID of the proposal
-     * @return int proposer redeem reputation.
+     * @return uint proposer redeem reputation.
      */
-    function getRedeemableReputationProposer(bytes32 _proposalId) public view returns(int) {
-        int rep;
+    function getRedeemableReputationProposer(bytes32 _proposalId) public view returns(uint) {
+        uint rep;
         Proposal storage proposal = proposals[_proposalId];
         if (proposal.winningVote == NO) {
             rep = 0;
         } else {
             Parameters memory params = parameters[proposal.paramsHash];
-            rep = int(params.proposingRepRewardConstA + params.proposingRepRewardConstB * (proposal.votes[YES]-proposal.votes[NO]));
+            rep = params.proposingRepRewardConstA + params.proposingRepRewardConstB * (proposal.votes[YES]-proposal.votes[NO]);
         }
         return rep;
     }
@@ -477,16 +477,16 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @dev getRedeemableReputationVoter return the redeemable reputation which a voter is entitle to.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary the beneficiary .
-     * @return int voter redeem reputation amount.
+     * @return uint voter redeem reputation amount.
      */
-    function getRedeemableReputationVoter(bytes32 _proposalId,address _beneficiary) public view returns(int) {
+    function getRedeemableReputationVoter(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
         Proposal storage proposal = proposals[_proposalId];
         Parameters memory params = parameters[proposal.paramsHash];
-        int returnReputation;
+        uint returnReputation;
         uint reputation = proposals[_proposalId].voters[_beneficiary].reputation;
         if (proposal.state == ProposalState.Closed) {
            //no reputation flow occurs so give back reputation for the voter
-            return int((reputation * params.votersReputationLossRatio)/100);
+            return ((reputation * params.votersReputationLossRatio)/100);
         }
         if (proposal.totalVotes == 0) {
             return 0;
@@ -494,21 +494,21 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
 
         if (proposal.voters[_beneficiary].preBoosted && (proposal.winningVote == proposal.voters[_beneficiary].vote )) {
         //give back reputation for the voter
-            returnReputation = int((reputation * params.votersReputationLossRatio)/100);
+            returnReputation = (reputation * params.votersReputationLossRatio)/100;
         }
-        return returnReputation + int(reputation * ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)/proposal.totalVotes);
+        return returnReputation + (reputation * ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)/proposal.totalVotes);
     }
 
     /**
      * @dev getRedeemableReputationStaker return the redeemable reputation which a staker is entitle to.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary the beneficiary .
-     * @return int staker redeem reputation amount.
+     * @return uint staker redeem reputation amount.
      */
-    function getRedeemableReputationStaker(bytes32 _proposalId,address _beneficiary) public view returns(int) {
+    function getRedeemableReputationStaker(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
         Proposal storage proposal = proposals[_proposalId];
         Parameters memory params = parameters[proposal.paramsHash];
-        int rep;
+        uint rep;
         if (proposal.state == ProposalState.Closed) {
            //no reputation flow occurs so no reputation flow for staker
             return 0;
@@ -516,7 +516,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         uint amount = proposal.stakers[_beneficiary].amount;
         if ((amount>0) &&
             (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
-            rep = int((amount * ( proposal.lostReputation - ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote]);
+            rep = (amount * ( proposal.lostReputation - ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote];
         }
         return rep;
     }
@@ -699,7 +699,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         if (proposal.state != ProposalState.Boosted) {
             uint reputationDeposit = (params.votersReputationLossRatio * rep)/100;
             proposal.lostReputation += reputationDeposit;
-            ControllerInterface(Avatar(proposal.avatar).owner()).mintReputation((-1) * int(reputationDeposit),_voter,proposal.avatar);
+            ControllerInterface(Avatar(proposal.avatar).owner()).burnReputation(reputationDeposit,_voter,proposal.avatar);
         }
         // Event:
         VoteProposal(_proposalId, _voter, _vote, rep);
