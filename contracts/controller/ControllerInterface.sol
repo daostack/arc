@@ -14,22 +14,22 @@ import "../globalConstraints/GlobalConstraintInterface.sol";
 interface ControllerInterface {
 
     /**
-     * @dev Mint `_amount` of reputation that are assigned to `_owner` .
+     * @dev Mint `_amount` of reputation that are assigned to `_to` .
      * @param  _amount amount of reputation to mint
-     * @param _owner beneficiary address
+     * @param _to beneficiary address
      * @return bool which represents a success
     */
-    function mintReputation(uint256 _amount, address _owner,address _avatar)
+    function mintReputation(uint256 _amount, address _to,address _avatar)
     public
     returns(bool);
 
     /**
-     * @dev Burns `_amount` of reputation from `_owner`
+     * @dev Burns `_amount` of reputation from `_from`
      * @param _amount amount of reputation to burn
-     * @param _owner The address that will lose the reputation
+     * @param _from The address that will lose the reputation
      * @return bool which represents a success
      */
-    function burnReputation(uint256 _amount, address _owner,address _avatar)
+    function burnReputation(uint256 _amount, address _from,address _avatar)
     public
     returns(bool);
 

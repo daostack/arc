@@ -112,7 +112,7 @@ contract('Reputation', accounts => {
 
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "Mint");
-        assert.equal(tx.logs[0].args._owner, accounts[1]);
+        assert.equal(tx.logs[0].args._to, accounts[1]);
         assert.equal(tx.logs[0].args._amount.toNumber(), 1000);
     });
 
@@ -124,14 +124,14 @@ contract('Reputation', accounts => {
 
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "Burn");
-        assert.equal(tx.logs[0].args._owner, accounts[1]);
+        assert.equal(tx.logs[0].args._from, accounts[1]);
         assert.equal(tx.logs[0].args._amount.toNumber(), 200);
 
         tx = await reputation.burn(accounts[1], 1000, { from: accounts[0] });
 
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "Burn");
-        assert.equal(tx.logs[0].args._owner, accounts[1]);
+        assert.equal(tx.logs[0].args._from, accounts[1]);
         assert.equal(tx.logs[0].args._amount.toNumber(), 800);
     });
 

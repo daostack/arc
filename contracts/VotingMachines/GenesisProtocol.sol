@@ -123,12 +123,15 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     returns(bytes32)
     {
         require(_params[0] <= 100 && _params[0] > 0); //preBoostedVoteRequiredPercentage
-        require(_params[4] > 0 && _params[4] <= 0xFF); //_thresholdConstB cannot be zero.
-        require(_params[3] <= 0xFF); //_thresholdConstA
+        require(_params[4] > 0 && _params[4] <= 100000000 ether); //_thresholdConstB cannot be zero.
+        require(_params[3] <= 100000000 ether); //_thresholdConstA
         require(_params[9] <= 100); //stakerFeeRatioForVoters
         require(_params[10] <= 100); //votersReputationLossRatio
         require(_params[11] <= 100); //votersGainRepRatioFromLostRep
         require(_params[2] >= _params[6]); //boostedVotePeriodLimit >= quietEndingPeriod
+        require(_params[7] <= 100000000 ether); //_proposingRepRewardConstA
+        require(_params[8] <= 100000000 ether); //_proposingRepRewardConstB
+
         bytes32 paramsHash = getParametersHash(_params);
         parameters[paramsHash] = Parameters({
             preBoostedVoteRequiredPercentage: _params[0],

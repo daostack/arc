@@ -350,6 +350,116 @@ contract('GenesisProtocol', function (accounts) {
     } catch(error) {
       helpers.assertVMException(error);
     }
+    scoreThresholdParamsB = web3.toWei(100000001);
+
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  proposingRepRewardConstB,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " scoreThresholdParamsB < 100000000* 10^8 ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+    scoreThresholdParamsB = 1;
+    scoreThresholdParamsA = web3.toWei(100000001);
+
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  proposingRepRewardConstB,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " scoreThresholdParamsA < 100000000* 10^8 ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+    scoreThresholdParamsA = web3.toWei(100000001);
+
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  proposingRepRewardConstB,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " scoreThresholdParamsA < 100000000* 10^8 ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+    scoreThresholdParamsA = 1;
+    proposingRepRewardConstB = web3.toWei(100000001);
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  60,
+                  proposingRepRewardConstB,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " proposingRepRewardConstB < 100000000* 10^8 ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+    proposingRepRewardConstB = 1;
+    let proposingRepRewardConstA = web3.toWei(100000001);
+    try {
+      await setup(accounts,
+                  preBoostedVoteRequiredPercentage,
+                  60,
+                  60,
+                  scoreThresholdParamsA,
+                  scoreThresholdParamsB,
+                  0,
+                  20,
+                  proposingRepRewardConstA,
+                  proposingRepRewardConstB,
+                  stakerFeeRatioForVoters,
+                  votersReputationLossRatio,
+                  votersGainRepRatioFromLostRep,
+                  0);
+      assert(false, " proposingRepRewardConstA < 100000000* 10^8 ");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+
   });
 
   it("log the VoteProposal event on voting ", async function() {

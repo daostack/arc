@@ -50,7 +50,7 @@ contract('Controller', function (accounts)  {
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "MintReputation");
         assert.equal(tx.logs[0].args._amount, amountToMint);
-        assert.equal(tx.logs[0].args._owner, accounts[0]);
+        assert.equal(tx.logs[0].args._to, accounts[0]);
         let rep = await reputation.reputationOf(accounts[0]);
         assert.equal(rep,amountToMint);
     });
@@ -63,7 +63,7 @@ contract('Controller', function (accounts)  {
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "BurnReputation");
         assert.equal(tx.logs[0].args._amount, amountToMint-1);
-        assert.equal(tx.logs[0].args._owner, accounts[0]);
+        assert.equal(tx.logs[0].args._from, accounts[0]);
         let rep = await reputation.reputationOf(accounts[0]);
         assert.equal(rep,1);
     });
@@ -386,7 +386,7 @@ contract('Controller', function (accounts)  {
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "MintReputation");
           assert.equal(tx.logs[0].args._amount, amountToMint);
-          assert.equal(tx.logs[0].args._owner, accounts[0]);
+          assert.equal(tx.logs[0].args._to, accounts[0]);
           let rep = await reputation.reputationOf(accounts[0]);
           assert.equal(rep,amountToMint);
           });

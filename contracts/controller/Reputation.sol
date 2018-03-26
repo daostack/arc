@@ -10,7 +10,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * A reputation is use to assign influence measure to a DAO'S peers.
  * Reputation is similar to regular tokens but with one crucial difference: It is non-transferable.
  * The Reputation contract maintain a map of address to reputation value.
- * It provides an onlyOwner function to mint ,negative or positive, reputation for a specific address.
+ * It provides an onlyOwner functions to mint and burn reputation _to (or _from) a specific address.
  */
 
 contract Reputation is Ownable {
@@ -21,9 +21,9 @@ contract Reputation is Ownable {
     uint public decimals = 18;
 
     // Event indicating minting of reputation to an address.
-    event Mint(address indexed _owner, uint256 _amount);
+    event Mint(address indexed _to, uint256 _amount);
     // Event indicating burning of reputation for an address.
-    event Burn(address indexed _owner, uint256 _amount);
+    event Burn(address indexed _from, uint256 _amount);
 
     /**
     * @dev return the reputation amount of a given owner
@@ -34,41 +34,41 @@ contract Reputation is Ownable {
     }
 
     /**
-    * @dev Generates `_amount` of reputation that are assigned to `_owner`
-    * @param _owner The address that will be assigned the new reputation
+    * @dev Generates `_amount` of reputation that are assigned to `_to`
+    * @param _to The address that will be assigned the new reputation
     * @param _amount The quantity of reputation to be generated
     * @return True if the reputation are generated correctly
     */
-    function mint(address _owner, uint _amount)
+    function mint(address _to, uint _amount)
     public
     onlyOwner
     returns (bool)
     {
         totalSupply = totalSupply.add(_amount);
-        balances[_owner] = balances[_owner].add(_amount);
-        Mint(_owner, _amount);
+        balances[_to] = balances[_to].add(_amount);
+        Mint(_to, _amount);
         return true;
     }
 
     /**
-    * @dev Burns `_amount` of reputation from `_owner`
-    * if _amount tokens to burn > balances[_owner] the balance of _owner will turn to zero.
-    * @param _owner The address that will lose the reputation
+    * @dev Burns `_amount` of reputation from `_from`
+    * if _amount tokens to burn > balances[_from] the balance of _from will turn to zero.
+    * @param _from The address that will lose the reputation
     * @param _amount The quantity of reputation to burn
     * @return True if the reputation are burned correctly
     */
-    function burn(address _owner, uint _amount)
+    function burn(address _from, uint _amount)
     onlyOwner
     public
     returns (bool)
     {
         uint amountMinted = _amount;
-        if (balances[_owner] < _amount) {
-            amountMinted = balances[_owner];
+        if (balances[_from] < _amount) {
+            amountMinted = balances[_from];
         }
         totalSupply = totalSupply.sub(amountMinted);
-        balances[_owner] = balances[_owner].sub(amountMinted);
-        Burn(_owner, amountMinted);
+        balances[_from] = balances[_from].sub(amountMinted);
+        Burn(_from, amountMinted);
         return true;
     }
 }
