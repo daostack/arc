@@ -78,8 +78,22 @@ contract('UController', function (accounts)  {
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "MintReputation");
     assert.equal(tx.logs[0].args._amount, amountToMint);
+    assert.equal(tx.logs[0].args._to, accounts[0]);
     let rep = await reputation.reputationOf(accounts[0]);
     assert.equal(rep,amountToMint);
+  });
+
+  it("burn reputation via controller", async () => {
+    controller = await  setup();
+    await reputation.transferOwnership(controller.address);
+    await controller.mintReputation(amountToMint,accounts[0],avatar.address);
+    let tx =  await controller.burnReputation(amountToMint-1,accounts[0],avatar.address);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "BurnReputation");
+    assert.equal(tx.logs[0].args._amount, amountToMint-1);
+    assert.equal(tx.logs[0].args._from, accounts[0]);
+    let rep = await reputation.reputationOf(accounts[0]);
+    assert.equal(rep,1);
   });
 
   it("mint tokens via controller", async () => {

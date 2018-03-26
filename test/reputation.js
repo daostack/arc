@@ -66,16 +66,14 @@ contract('Reputation', accounts => {
     it("check total reputation overflow", async () => {
         let rep = await Reputation.new();
         let BigNumber = require('bignumber.js');
-        let bigNum = ((new BigNumber(2)).toPower(253));
+        let bigNum = ((new BigNumber(2)).toPower(256).sub(1));
 
-        await rep.mint(accounts[0], bigNum);
-        await rep.mint(accounts[0], bigNum);
         await rep.mint(accounts[0], bigNum);
 
         let totalRepBefore = await rep.totalSupply();
 
         try {
-            await rep.mint(accounts[1], bigNum);
+            await rep.mint(accounts[1], 1);
             throw 'an error'; // make sure that an error is thrown
         } catch (error) {
             helpers.assertVMException(error);
@@ -91,7 +89,7 @@ contract('Reputation', accounts => {
         let reputation = await Reputation.new();
 
         await reputation.mint(accounts[1], 1500);
-        await reputation.mint(accounts[1], -500);
+        await reputation.burn(accounts[1], 500);
 
         value = await reputation.reputationOf(accounts[1]);
         let totalRepSupply = await reputation.totalSupply();
@@ -114,27 +112,27 @@ contract('Reputation', accounts => {
 
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "Mint");
-        assert.equal(tx.logs[0].args.to, accounts[1]);
-        assert.equal(tx.logs[0].args.amount.toNumber(), 1000);
+        assert.equal(tx.logs[0].args._to, accounts[1]);
+        assert.equal(tx.logs[0].args._amount.toNumber(), 1000);
     });
 
     it("log negative Mint event on negative mint", async () => {
         const reputation = await Reputation.new();
 
         await reputation.mint(accounts[1], 1000, { from: accounts[0] });
-        let tx = await reputation.mint(accounts[1], -200, { from: accounts[0] });
+        let tx = await reputation.burn(accounts[1], 200, { from: accounts[0] });
 
         assert.equal(tx.logs.length, 1);
-        assert.equal(tx.logs[0].event, "Mint");
-        assert.equal(tx.logs[0].args.to, accounts[1]);
-        assert.equal(tx.logs[0].args.amount.toNumber(), -200);
+        assert.equal(tx.logs[0].event, "Burn");
+        assert.equal(tx.logs[0].args._from, accounts[1]);
+        assert.equal(tx.logs[0].args._amount.toNumber(), 200);
 
-        tx = await reputation.mint(accounts[1], -1000, { from: accounts[0] });
+        tx = await reputation.burn(accounts[1], 1000, { from: accounts[0] });
 
         assert.equal(tx.logs.length, 1);
-        assert.equal(tx.logs[0].event, "Mint");
-        assert.equal(tx.logs[0].args.to, accounts[1]);
-        assert.equal(tx.logs[0].args.amount.toNumber(), -800);
+        assert.equal(tx.logs[0].event, "Burn");
+        assert.equal(tx.logs[0].args._from, accounts[1]);
+        assert.equal(tx.logs[0].args._amount.toNumber(), 800);
     });
 
     it("mint (plus) should be reflected in totalSupply", async () => {
@@ -168,11 +166,11 @@ contract('Reputation', accounts => {
         let totalSupply = await reputation.totalSupply();
         assert.equal(totalSupply.toNumber(), 1000);
 
-        await reputation.mint(accounts[1], -500, { from: accounts[0] });
+        await reputation.burn(accounts[1], 500, { from: accounts[0] });
         totalSupply = await reputation.totalSupply();
         assert.equal(totalSupply.toNumber(), 500);
 
-        await reputation.mint(accounts[1], -700, { from: accounts[0] });
+        await reputation.burn(accounts[1], 700, { from: accounts[0] });
         totalSupply = await reputation.totalSupply();
         assert.equal(totalSupply.toNumber(), 0);
     });
@@ -181,13 +179,13 @@ contract('Reputation', accounts => {
         const reputation = await Reputation.new();
 
         await reputation.mint(accounts[1], 1000, { from: accounts[0] });
-        await reputation.mint(accounts[1], -500, { from: accounts[0] });
+        await reputation.burn(accounts[1], 500, { from: accounts[0] });
 
         let amount = await reputation.reputationOf(accounts[1]);
 
         assert.equal(amount.toNumber(), 500);
 
-        await reputation.mint(accounts[1], -700, { from: accounts[0] });
+        await reputation.burn(accounts[1], 700, { from: accounts[0] });
         amount = await reputation.reputationOf(accounts[1]);
         assert.equal(amount.toNumber(), 0);
     });
@@ -221,7 +219,7 @@ contract('Reputation', accounts => {
 
         let amount = await reputation.reputationOf(accounts[1]);
         assert.equal(amount.toNumber(), 1);
-        await reputation.mint(accounts[1], -2, { from: accounts[0] });
+        await reputation.burn(accounts[1], 2, { from: accounts[0] });
         let rep = await reputation.reputationOf(accounts[1]);
         assert.equal(rep.toNumber(), 0);
     });
@@ -233,7 +231,7 @@ contract('Reputation', accounts => {
 
         let amount = await reputation.totalSupply();
         assert.equal(amount.toNumber(), 1);
-        await reputation.mint(accounts[1], -2, { from: accounts[0] });
+        await reputation.burn(accounts[1], 2, { from: accounts[0] });
         let rep = await reputation.totalSupply();
         assert.equal(rep.toNumber(), 0);
     });

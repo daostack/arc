@@ -277,7 +277,7 @@ contract('AbsoluteVote', function (accounts) {
     tx = await absoluteVote.refreshReputation(proposalId,[accounts[0],accounts[1]]);
     //no change
     assert.equal(tx.logs.length, 0);
-    await reputation.mint(accounts[0],-100);
+    await reputation.burn(accounts[0],100);
     tx = await absoluteVote.refreshReputation(proposalId,[accounts[0],accounts[1]]);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RefreshReputation");

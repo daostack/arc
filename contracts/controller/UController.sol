@@ -64,7 +64,8 @@ contract UController is ControllerInterface {
     mapping(address=>bool) public tokens;
 
 
-    event MintReputation (address indexed _sender, address indexed _beneficiary, int256 _amount,address indexed _avatar);
+    event MintReputation (address indexed _sender, address indexed _to, uint256 _amount,address indexed _avatar);
+    event BurnReputation (address indexed _sender, address indexed _from, uint256 _amount,address indexed _avatar);
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount, address indexed _avatar);
     event RegisterScheme (address indexed _sender, address indexed _scheme,address indexed _avatar);
     event UnregisterScheme (address indexed _sender, address indexed _scheme, address indexed _avatar);
@@ -143,20 +144,36 @@ contract UController is ControllerInterface {
     }
 
     /**
-     * @dev mint reputation .
+     * @dev Mint `_amount` of reputation that are assigned to `_to` .
      * @param  _amount amount of reputation to mint
-     * @param _beneficiary beneficiary address
-     * @param _avatar the organization avatar.
+     * @param _to beneficiary address
+     * @param _avatar the address of the organization's avatar
      * @return bool which represents a success
      */
-    function mintReputation(int256 _amount, address _beneficiary, address _avatar)
+    function mintReputation(uint256 _amount, address _to, address _avatar)
     public
     onlyRegisteredScheme(_avatar)
     onlySubjectToConstraint("mintReputation",_avatar)
     returns(bool)
     {
-        MintReputation(msg.sender, _beneficiary, _amount,_avatar);
-        return organizations[_avatar].nativeReputation.mint(_beneficiary, _amount);
+        MintReputation(msg.sender, _to, _amount,_avatar);
+        return organizations[_avatar].nativeReputation.mint(_to, _amount);
+    }
+
+    /**
+     * @dev Burns `_amount` of reputation from `_from`
+     * @param _amount amount of reputation to burn
+     * @param _from The address that will lose the reputation
+     * @return bool which represents a success
+     */
+    function burnReputation(uint256 _amount, address _from,address _avatar)
+    public
+    onlyRegisteredScheme(_avatar)
+    onlySubjectToConstraint("burnReputation",_avatar)
+    returns(bool)
+    {
+        BurnReputation(msg.sender, _from, _amount,_avatar);
+        return organizations[_avatar].nativeReputation.burn(_from, _amount);
     }
 
     /**
