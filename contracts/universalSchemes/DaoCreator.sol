@@ -50,6 +50,7 @@ contract DaoCreator {
     *   founders receive in the new organization
     * @param  _uController universal controller instance
     *         if _uController address equal to zero the organization will use none universal controller.
+    * @param  _cap token cap - 0 for no cap.
     * @return The address of the avatar of the controller
     */
     function forgeOrg (
@@ -59,7 +60,8 @@ contract DaoCreator {
         address[] _founders,
         uint[] _foundersTokenAmount,
         uint[] _foundersReputationAmount,
-        UController _uController
+        UController _uController,
+        uint _cap
       )
       external
       returns(address)
@@ -72,7 +74,8 @@ contract DaoCreator {
             _founders,
             _foundersTokenAmount,
             _foundersReputationAmount,
-            _uController);
+            _uController,
+            _cap);
     }
 
      /**
@@ -117,6 +120,7 @@ contract DaoCreator {
      *   founders receive in the new organization
      * @param  _uController universal controller instance
      *         if _uController address equal to zero the organization will use none universal controller.
+     * @param  _cap token cap - 0 for no cap.
      * @return The address of the avatar of the controller
      */
     function _forgeOrg (
@@ -126,13 +130,14 @@ contract DaoCreator {
         address[] _founders,
         uint[] _foundersTokenAmount,
         uint[] _foundersReputationAmount,
-        UController _uController
+        UController _uController,
+        uint _cap
     ) private returns(address)
     {
         // Create Token, Reputation and Avatar:
         require(_founders.length == _foundersTokenAmount.length);
         require(_founders.length == _foundersReputationAmount.length);
-        DAOToken  nativeToken = new DAOToken(_tokenName, _tokenSymbol);
+        DAOToken  nativeToken = new DAOToken(_tokenName, _tokenSymbol,_cap);
         Reputation  nativeReputation = new Reputation();
         Avatar  avatar = new Avatar(_orgName, nativeToken, nativeReputation);
         ControllerInterface  controller;

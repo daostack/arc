@@ -31,7 +31,7 @@ const setupUpgradeSchemeParams = async function(
 
 const setupNewController = async function (permission='0x00000000') {
   var accounts = web3.eth.accounts;
-  var token  = await DAOToken.new("TEST","TST");
+  var token  = await DAOToken.new("TEST","TST",0);
   // set up a reputation system
   var reputation = await Reputation.new();
   var avatar = await Avatar.new('name', token.address, reputation.address);

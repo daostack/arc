@@ -15,7 +15,7 @@ var amountToMint = 10;
 const setup = async function (permission='0x00000000') {
   var uController = await UController.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
   accounts = web3.eth.accounts;
-  token  = await DAOToken.new("TEST","TST");
+  token  = await DAOToken.new("TEST","TST",0);
   // set up a reputation system
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', token.address, reputation.address);
@@ -49,7 +49,7 @@ contract('UController', function (accounts)  {
   it("newOrganization without controller owner of the avatar", async () => {
     var uController = await UController.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
     accounts = web3.eth.accounts;
-    token  = await DAOToken.new("TEST","TST");
+    token  = await DAOToken.new("TEST","TST",0);
     // set up a reputation system
     reputation = await Reputation.new();
     avatar = await Avatar.new('name', token.address, reputation.address);
