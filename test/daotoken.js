@@ -6,13 +6,13 @@ contract('DAOToken', accounts => {
     const testTokenName = "DAOstack";
     const testTokenSymbol = "STACK";
     it("should put 0 Coins in the first account", async () => {
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
         let balance = await token.balanceOf.call(accounts[0]);
         assert.equal(balance.valueOf(), 0);
     });
 
     it("should be owned by its creator", async () => {
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
         let owner = await token.owner();
         assert.equal(owner, accounts[0]);
     });
@@ -21,7 +21,7 @@ contract('DAOToken', accounts => {
         helpers.etherForEveryone();
 
         let owner, totalSupply, userSupply;
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
         totalSupply = await token.totalSupply();
         owner = await token.owner();
         userSupply = await token.balanceOf(owner);
@@ -44,7 +44,7 @@ contract('DAOToken', accounts => {
 
     it("should allow minting tokens only by owner", async () => {
         helpers.etherForEveryone();
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
         let owner = await token.owner();
         let totalSupply = await token.totalSupply();
 
@@ -62,7 +62,7 @@ contract('DAOToken', accounts => {
     });
 
     it("log the Mint event on mint", async () => {
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
 
         const tx = await token.mint(accounts[1], 1000, { from: accounts[0] });
 
@@ -73,7 +73,7 @@ contract('DAOToken', accounts => {
     });
 
     it("mint should be reflected in totalSupply", async () => {
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
 
         await token.mint(accounts[1], 1000, { from: accounts[0] });
         let amount = await token.totalSupply();
@@ -87,7 +87,7 @@ contract('DAOToken', accounts => {
     });
 
     it("mint should be reflected in balances", async () => {
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
 
         await token.mint(accounts[1], 1000, { from: accounts[0] });
 
@@ -97,7 +97,7 @@ contract('DAOToken', accounts => {
     });
 
     it("totalSupply is 0 on init", async () => {
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
 
         const totalSupply = await token.totalSupply();
 
@@ -105,7 +105,7 @@ contract('DAOToken', accounts => {
     });
 
     it("burn", async () => {
-        const token = await DAOToken.new(testTokenName,testTokenSymbol);
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
 
         await token.mint(accounts[1], 1000, { from: accounts[0] });
 
@@ -124,9 +124,35 @@ contract('DAOToken', accounts => {
         assert.equal(totalSupply.toNumber(), 900);
     });
 
+    it("CappedToken ", async () => {
+        let cap = 100000000;
+        const token = await DAOToken.new(testTokenName,testTokenSymbol,cap);
+
+        await token.mint(accounts[1], cap);
+
+        var amount = await token.balanceOf(accounts[1]);
+
+        assert.equal(amount.toNumber(), cap);
+
+        let totalSupply = await token.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), cap);
+
+        try {
+            await token.mint(accounts[1], 1);
+            throw 'an error';
+        } catch (error) {
+            helpers.assertVMException(error);
+        }
+
+        totalSupply = await token.totalSupply();
+
+        assert.equal(totalSupply.toNumber(), cap);
+    });
+
     describe('onlyOwner', () => {
         it('mint by owner', async () => {
-            const token = await DAOToken.new(testTokenName, testTokenSymbol);
+            const token = await DAOToken.new(testTokenName, testTokenSymbol,0);
             try {
                 await token.mint(accounts[1], 10, { from: accounts[0] });
             } catch (ex) {
@@ -135,7 +161,7 @@ contract('DAOToken', accounts => {
         });
 
         it('mint by not owner', async () => {
-            const token = await DAOToken.new(testTokenName, testTokenSymbol);
+            const token = await DAOToken.new(testTokenName, testTokenSymbol,0);
 
             try {
                 await token.mint(accounts[1], 10, { from: accounts[1] });

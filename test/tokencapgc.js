@@ -10,7 +10,7 @@ let reputation, avatar,accounts,token,controller;
 const setup = async function (permission='0') {
   var _controller;
   accounts = web3.eth.accounts;
-  token  = await DAOToken.new("TEST","TST");
+  token  = await DAOToken.new("TEST","TST",0);
   // set up a reputation system
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', token.address, reputation.address);
@@ -30,7 +30,7 @@ contract('TokenCapGC', function (accounts)  {
     it("setParameters", async () => {
       var paramsHash;
       var tokenCapGC = await TokenCapGC.new();
-      var token  = await DAOToken.new("TEST","TST");
+      var token  = await DAOToken.new("TEST","TST",0);
       await tokenCapGC.setParameters(token.address,100);
       paramsHash = await tokenCapGC.getParametersHash(token.address,100);
       var param = await tokenCapGC.parameters(paramsHash);
@@ -40,7 +40,7 @@ contract('TokenCapGC', function (accounts)  {
   it("pre and post", async () => {
     var paramsHash,post,pre;
     var tokenCapGC = await TokenCapGC.new();
-    var token  = await DAOToken.new("TEST","TST");
+    var token  = await DAOToken.new("TEST","TST",0);
     await tokenCapGC.setParameters(token.address,100);
     paramsHash = await tokenCapGC.getParametersHash(token.address,100);
     pre = await tokenCapGC.pre(token.address,paramsHash,0);
@@ -58,7 +58,7 @@ contract('TokenCapGC', function (accounts)  {
   it("post with wrong paramHash", async () => {
     var post;
     var tokenCapGC = await TokenCapGC.new();
-    var token  = await DAOToken.new("TEST","TST");
+    var token  = await DAOToken.new("TEST","TST",0);
     await tokenCapGC.setParameters(token.address,100);
     await tokenCapGC.getParametersHash(token.address,100);
     post = await tokenCapGC.post(token.address,1,0);

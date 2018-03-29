@@ -13,7 +13,7 @@ var amountToMint = 10;
 const setup = async function (permission='0') {
   var _controller;
   accounts = web3.eth.accounts;
-  token  = await DAOToken.new("TEST","TST");
+  token  = await DAOToken.new("TEST","TST",0);
   // set up a reputation system
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', token.address, reputation.address);

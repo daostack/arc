@@ -21,6 +21,7 @@ const initRep = 10;
 const initRepInWei = [web3.toWei(initRep)];
 const initToken = 1000;
 const initTokenInWei = [web3.toWei(initToken)];
+const cap = web3.toWei(100000000);
 
 
 // DAOstack parameters for universal schemes:
@@ -36,7 +37,7 @@ module.exports = async function(deployer) {
       var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address);
       // Create DAOstack:
       var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,0,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
+          initTokenInWei, initRepInWei,0,cap,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       var ControllerInst = await Controller.at(await AvatarInst.owner());
       var reputationAddress = await ControllerInst.nativeReputation();
@@ -95,7 +96,7 @@ module.exports = async function(deployer) {
       await deployer.deploy(UController, {gas: constants.GENESIS_SCHEME_GAS_LIMIT});
       var uController = await UController.deployed();
       returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,uController.address,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
+          initTokenInWei, initRepInWei,uController.address,cap,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
       AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       await daoCreatorInst.setSchemes(
           AvatarInst.address,
