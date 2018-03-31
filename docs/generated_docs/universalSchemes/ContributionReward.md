@@ -3,11 +3,11 @@
 > A scheme for proposing and rewarding contributions to an organization
 
 
-**Execution cost**: less than 21909 gas
+**Execution cost**: less than 21923 gas
 
-**Deployment cost**: less than 1473400 gas
+**Deployment cost**: less than 1485400 gas
 
-**Combined cost**: less than 1495309 gas
+**Combined cost**: less than 1507323 gas
 
 ## Constructor
 

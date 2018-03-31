@@ -3,11 +3,11 @@
 > A scheme to manage global constraint for organizations
 
 
-**Execution cost**: less than 21134 gas
+**Execution cost**: less than 21109 gas
 
-**Deployment cost**: less than 732800 gas
+**Deployment cost**: less than 705400 gas
 
-**Combined cost**: less than 753934 gas
+**Combined cost**: less than 726509 gas
 
 ## Constructor
 

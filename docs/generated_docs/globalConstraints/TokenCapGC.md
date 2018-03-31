@@ -5,9 +5,9 @@
 
 **Execution cost**: less than 209 gas
 
-**Deployment cost**: less than 172000 gas
+**Deployment cost**: less than 169800 gas
 
-**Combined cost**: less than 172209 gas
+**Combined cost**: less than 170009 gas
 
 
 
@@ -18,7 +18,7 @@
 > calculate and returns the hash of the given parameters
 
 
-**Execution cost**: less than 463 gas
+**Execution cost**: less than 485 gas
 
 **Attributes**: constant
 
@@ -41,10 +41,10 @@ Returns:
 1. **output_0** *of type `bytes32`*
 
 --- 
-### params(bytes32)
+### parameters(bytes32)
 
 
-**Execution cost**: less than 934 gas
+**Execution cost**: less than 846 gas
 
 **Attributes**: constant
 
@@ -91,7 +91,7 @@ Returns:
 > check the constraint after the action. This global constraint only checks the state after the action, so here we just return true:
 
 
-**Execution cost**: less than 325 gas
+**Execution cost**: less than 347 gas
 
 **Attributes**: constant
 
@@ -114,7 +114,7 @@ Returns:
 > adding a new set of parameters
 
 
-**Execution cost**: less than 40976 gas
+**Execution cost**: less than 40998 gas
 
 
 Params:

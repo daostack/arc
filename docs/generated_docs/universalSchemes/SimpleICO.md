@@ -3,11 +3,11 @@
 > SimpleICO scheme.
 
 
-**Execution cost**: less than 21284 gas
+**Execution cost**: less than 21271 gas
 
-**Deployment cost**: less than 878200 gas
+**Deployment cost**: less than 865200 gas
 
-**Combined cost**: less than 899484 gas
+**Combined cost**: less than 886471 gas
 
 ## Constructor
 

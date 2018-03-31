@@ -3,11 +3,11 @@
 > An Avatar holds tokens, reputation and ether for a controller
 
 
-**Execution cost**: less than 81478 gas
+**Execution cost**: less than 81472 gas
 
-**Deployment cost**: less than 478600 gas
+**Deployment cost**: less than 467400 gas
 
-**Combined cost**: less than 560078 gas
+**Combined cost**: less than 548872 gas
 
 ## Constructor
 

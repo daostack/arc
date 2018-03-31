@@ -12,22 +12,23 @@
 
 
 ## Methods
-### mintReputation(int256,address,address)
+### globalConstraintsCount(address)
 
 
 **Execution cost**: No bound available
 
+**Attributes**: constant
+
 
 Params:
 
-1. **_amount** *of type `int256`*
-2. **_beneficiary** *of type `address`*
-3. **_avatar** *of type `address`*
+1. **_avatar** *of type `address`*
 
 Returns:
 
 
-1. **output_0** *of type `bool`*
+1. **output_0** *of type `uint256`*
+2. **output_1** *of type `uint256`*
 
 --- 
 ### externalTokenTransferFrom(address,address,address,uint256,address)
@@ -106,6 +107,24 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
+### burnReputation(uint256,address,address)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amount** *of type `uint256`*
+2. **_from** *of type `address`*
+3. **_avatar** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### externalTokenIncreaseApproval(address,address,uint256,address)
 
 
@@ -125,17 +144,15 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### isSchemeRegistered(address,address)
+### genericAction(bytes32[],address)
 
 
 **Execution cost**: No bound available
 
-**Attributes**: constant
-
 
 Params:
 
-1. **_scheme** *of type `address`*
+1. **_params** *of type `bytes32[]`*
 2. **_avatar** *of type `address`*
 
 Returns:
@@ -200,7 +217,7 @@ Returns:
 1. **output_0** *of type `bytes32`*
 
 --- 
-### globalConstraintsCount(address)
+### getNativeReputation(address)
 
 
 **Execution cost**: No bound available
@@ -215,8 +232,7 @@ Params:
 Returns:
 
 
-1. **output_0** *of type `uint256`*
-2. **output_1** *of type `uint256`*
+1. **output_0** *of type `address`*
 
 --- 
 ### getSchemePermissions(address,address)
@@ -238,7 +254,26 @@ Returns:
 1. **output_0** *of type `bytes4`*
 
 --- 
-### genericAction(bytes32[],address)
+### isSchemeRegistered(address,address)
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+2. **_avatar** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### mintReputation(uint256,address,address)
 
 
 **Execution cost**: No bound available
@@ -246,8 +281,9 @@ Returns:
 
 Params:
 
-1. **_params** *of type `bytes32[]`*
-2. **_avatar** *of type `address`*
+1. **_amount** *of type `uint256`*
+2. **_to** *of type `address`*
+3. **_avatar** *of type `address`*
 
 Returns:
 

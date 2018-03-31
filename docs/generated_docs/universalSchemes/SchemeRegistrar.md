@@ -3,11 +3,11 @@
 > A registrar for Schemes for organizations
 
 
-**Execution cost**: less than 21154 gas
+**Execution cost**: less than 21089 gas
 
-**Deployment cost**: less than 752000 gas
+**Deployment cost**: less than 689600 gas
 
-**Combined cost**: less than 773154 gas
+**Combined cost**: less than 710689 gas
 
 ## Constructor
 
@@ -15,7 +15,7 @@
 
 
 ## Events
-### NewSchemeProposal(address,bytes32,address,address,bytes32,bool)
+### NewSchemeProposal(address,bytes32,address,address,bytes32,bytes4)
 
 
 **Execution cost**: No bound available
@@ -28,7 +28,7 @@ Params:
 3. **_intVoteInterface** *of type `address`*
 4. **_scheme** *of type `address`*
 5. **_parametersHash** *of type `bytes32`*
-6. **_isRegistering** *of type `bool`*
+6. **_permissions** *of type `bytes4`*
 
 --- 
 ### OwnershipTransferred(address,address)
@@ -83,66 +83,6 @@ Params:
 
 
 ## Methods
-### proposeToRemoveScheme(address,address)
->
-> propose to remove a scheme for a controller
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_avatar** *of type `address`*
-
-    > the address of the controller from which we want to remove a scheme
-
-2. **_scheme** *of type `address`*
-
-    > the address of the scheme we want to remove    * NB: not only registers the proposal, but also votes for it
-
-
-Returns:
-
-
-1. **output_0** *of type `bytes32`*
-
---- 
-### hashedParameters()
-
-
-**Execution cost**: less than 656 gas
-
-**Attributes**: constant
-
-
-
-Returns:
-
-
-1. **output_0** *of type `bytes32`*
-
---- 
-### getParametersHash(bytes32,bytes32,address)
-
-
-**Execution cost**: less than 711 gas
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_voteRegisterParams** *of type `bytes32`*
-2. **_voteRemoveParams** *of type `bytes32`*
-3. **_intVote** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `bytes32`*
-
---- 
 ### execute(bytes32,address,int256)
 >
 > execute a  proposal This method can only be called by the voting machine in which the vote is held.
@@ -172,10 +112,45 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
+### hashedParameters()
+
+
+**Execution cost**: less than 656 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `bytes32`*
+
+--- 
+### getParametersHash(bytes32,bytes32,address)
+
+
+**Execution cost**: less than 733 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_voteRegisterParams** *of type `bytes32`*
+2. **_voteRemoveParams** *of type `bytes32`*
+3. **_intVote** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bytes32`*
+
+--- 
 ### organizationsProposals(address,bytes32)
 
 
-**Execution cost**: less than 1571 gas
+**Execution cost**: less than 1711 gas
 
 **Attributes**: constant
 
@@ -191,7 +166,7 @@ Returns:
 1. **scheme** *of type `address`*
 2. **parametersHash** *of type `bytes32`*
 3. **proposalType** *of type `uint256`*
-4. **isRegistering** *of type `bool`*
+4. **permissions** *of type `bytes4`*
 
 --- 
 ### owner()
@@ -229,7 +204,7 @@ Returns:
 3. **intVote** *of type `address`*
 
 --- 
-### proposeScheme(address,address,bytes32,bool)
+### proposeScheme(address,address,bytes32,bytes4)
 >
 > create a proposal to register a schemeNB: not only proposes the vote, but also votes for it
 
@@ -251,14 +226,39 @@ Params:
 
     > a hash of the configuration of the _scheme
 
-4. **_isRegistering** *of type `bool`*
+4. **_permissions** *of type `bytes4`*
 
-    > a boolean represent if the scheme is a registering scheme     that can register other schemes
+    > the permission of the scheme to be registered
 
 
 Returns:
 
 > a proposal Id
+
+1. **output_0** *of type `bytes32`*
+
+--- 
+### proposeToRemoveScheme(address,address)
+>
+> propose to remove a scheme for a controller
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_avatar** *of type `address`*
+
+    > the address of the controller from which we want to remove a scheme
+
+2. **_scheme** *of type `address`*
+
+    > the address of the scheme we want to remove    * NB: not only registers the proposal, but also votes for it
+
+
+Returns:
+
 
 1. **output_0** *of type `bytes32`*
 
@@ -303,7 +303,7 @@ Params:
 ### updateParameters(bytes32)
 
 
-**Execution cost**: less than 20572 gas
+**Execution cost**: less than 20594 gas
 
 
 Params:

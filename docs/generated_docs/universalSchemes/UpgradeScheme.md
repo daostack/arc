@@ -3,11 +3,11 @@
 > A scheme to manage the upgrade of an organization.
 
 
-**Execution cost**: less than 21134 gas
+**Execution cost**: less than 21109 gas
 
-**Deployment cost**: less than 735800 gas
+**Deployment cost**: less than 707200 gas
 
-**Combined cost**: less than 756934 gas
+**Combined cost**: less than 728309 gas
 
 ## Constructor
 

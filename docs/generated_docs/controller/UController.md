@@ -3,11 +3,11 @@
 > Universal Controller contract
 
 
-**Execution cost**: less than 3879 gas
+**Execution cost**: less than 4240 gas
 
-**Deployment cost**: less than 3474200 gas
+**Deployment cost**: less than 3752800 gas
 
-**Combined cost**: less than 3478079 gas
+**Combined cost**: less than 3757040 gas
 
 ## Constructor
 
@@ -29,7 +29,7 @@ Params:
 4. **_value** *of type `uint256`*
 
 --- 
-### MintReputation(address,address,int256,address)
+### MintReputation(address,address,uint256,address)
 
 
 **Execution cost**: No bound available
@@ -38,8 +38,8 @@ Params:
 Params:
 
 1. **_sender** *of type `address`*
-2. **_beneficiary** *of type `address`*
-3. **_amount** *of type `int256`*
+2. **_to** *of type `address`*
+3. **_amount** *of type `uint256`*
 4. **_avatar** *of type `address`*
 
 --- 
@@ -71,18 +71,6 @@ Params:
 4. **_value** *of type `uint256`*
 
 --- 
-### GenericAction(address,bytes32[])
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_sender** *of type `address`*
-2. **_params** *of type `bytes32[]`*
-
---- 
 ### ExternalTokenIncreaseApproval(address,address,address,uint256)
 
 
@@ -95,6 +83,18 @@ Params:
 2. **_externalToken** *of type `address`*
 3. **_spender** *of type `address`*
 4. **_value** *of type `uint256`*
+
+--- 
+### GenericAction(address,bytes32[])
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_sender** *of type `address`*
+2. **_params** *of type `bytes32[]`*
 
 --- 
 ### ExternalTokenTransferFrom(address,address,address,address,uint256)
@@ -110,6 +110,20 @@ Params:
 3. **_from** *of type `address`*
 4. **_to** *of type `address`*
 5. **_value** *of type `uint256`*
+
+--- 
+### BurnReputation(address,address,uint256,address)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_sender** *of type `address`*
+2. **_from** *of type `address`*
+3. **_amount** *of type `uint256`*
+4. **_avatar** *of type `address`*
 
 --- 
 ### MintTokens(address,address,uint256,address)
@@ -193,34 +207,26 @@ Params:
 
 
 ## Methods
-### mintReputation(int256,address,address)
+### globalConstraintsCount(address)
 >
-> mint reputation .
+> globalConstraintsCount return the global constraint pre and post count
 
 
-**Execution cost**: No bound available
+**Execution cost**: less than 1192 gas
+
+**Attributes**: constant
 
 
 Params:
 
-1. **_amount** *of type `int256`*
-
-    > amount of reputation to mint
-
-2. **_beneficiary** *of type `address`*
-
-    > beneficiary address
-
-3. **_avatar** *of type `address`*
-
-    > the organization avatar.
-
+1. **_avatar** *of type `address`*
 
 Returns:
 
-> bool which represents a success
+> uint globalConstraintsPre count.uint globalConstraintsPost count.
 
-1. **output_0** *of type `bool`*
+1. **output_0** *of type `uint256`*
+2. **output_1** *of type `uint256`*
 
 --- 
 ### externalTokenTransferFrom(address,address,address,uint256,address)
@@ -359,6 +365,33 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
+### burnReputation(uint256,address,address)
+>
+> Burns `_amount` of reputation from `_from`
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amount** *of type `uint256`*
+
+    > amount of reputation to burn
+
+2. **_from** *of type `address`*
+
+    > The address that will lose the reputation
+
+3. **_avatar** *of type `address`*
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### externalTokenIncreaseApproval(address,address,uint256,address)
 >
 > increase approval for the spender address to spend a specified amount of tokens     on behalf of msg.sender.
@@ -396,7 +429,7 @@ Returns:
 ### isSchemeRegistered(address,address)
 
 
-**Execution cost**: less than 1173 gas
+**Execution cost**: less than 1217 gas
 
 **Attributes**: constant
 
@@ -488,7 +521,7 @@ Returns:
 ### isGlobalConstraintRegistered(address,address)
 
 
-**Execution cost**: less than 1683 gas
+**Execution cost**: less than 1771 gas
 
 **Attributes**: constant
 
@@ -504,10 +537,40 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
+### mintReputation(uint256,address,address)
+>
+> Mint `_amount` of reputation that are assigned to `_to` .
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amount** *of type `uint256`*
+
+    > amount of reputation to mint
+
+2. **_to** *of type `address`*
+
+    > beneficiary address
+
+3. **_avatar** *of type `address`*
+
+    > the address of the organization's avatar
+
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### getSchemeParameters(address,address)
 
 
-**Execution cost**: less than 789 gas
+**Execution cost**: less than 811 gas
 
 **Attributes**: constant
 
@@ -523,12 +586,12 @@ Returns:
 1. **output_0** *of type `bytes32`*
 
 --- 
-### globalConstraintsCount(address)
+### getNativeReputation(address)
 >
-> globalConstraintsCount return the global constraint pre and post count
+> getNativeReputation
 
 
-**Execution cost**: less than 1170 gas
+**Execution cost**: less than 1062 gas
 
 **Attributes**: constant
 
@@ -537,18 +600,20 @@ Params:
 
 1. **_avatar** *of type `address`*
 
+    > the organization avatar.
+
+
 Returns:
 
-> uint globalConstraintsPre count.uint globalConstraintsPost count.
+> organization native reputation
 
-1. **output_0** *of type `uint256`*
-2. **output_1** *of type `uint256`*
+1. **output_0** *of type `address`*
 
 --- 
 ### getSchemePermissions(address,address)
 
 
-**Execution cost**: less than 1142 gas
+**Execution cost**: less than 1186 gas
 
 **Attributes**: constant
 
@@ -567,7 +632,7 @@ Returns:
 ### newControllers(address)
 
 
-**Execution cost**: less than 824 gas
+**Execution cost**: less than 846 gas
 
 **Attributes**: constant
 
@@ -585,7 +650,7 @@ Returns:
 ### organizations(address)
 
 
-**Execution cost**: less than 1369 gas
+**Execution cost**: less than 1391 gas
 
 **Attributes**: constant
 
@@ -662,6 +727,24 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
+### reputations(address)
+
+
+**Execution cost**: less than 617 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### sendEther(uint256,address,address)
 >
 > send some ether
@@ -688,6 +771,24 @@ Params:
 Returns:
 
 > bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### tokens(address)
+
+
+**Execution cost**: less than 1057 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `address`*
+
+Returns:
+
 
 1. **output_0** *of type `bool`*
 
@@ -723,7 +824,7 @@ Returns:
 > unregister the caller's scheme
 
 
-**Execution cost**: less than 28531 gas
+**Execution cost**: less than 28553 gas
 
 
 Params:

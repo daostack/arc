@@ -3,11 +3,11 @@
 > A scheme for vesting.
 
 
-**Execution cost**: less than 21861 gas
+**Execution cost**: less than 21833 gas
 
-**Deployment cost**: less than 1430800 gas
+**Deployment cost**: less than 1404800 gas
 
-**Combined cost**: less than 1452661 gas
+**Combined cost**: less than 1426633 gas
 
 ## Constructor
 

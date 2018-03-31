@@ -3,11 +3,11 @@
 > A universal organization registry.
 
 
-**Execution cost**: less than 20761 gas
+**Execution cost**: less than 20754 gas
 
-**Deployment cost**: less than 358000 gas
+**Deployment cost**: less than 350200 gas
 
-**Combined cost**: less than 378761 gas
+**Combined cost**: less than 370954 gas
 
 ## Constructor
 
@@ -125,7 +125,7 @@ Returns:
 1. **output_0** *of type `bytes32`*
 
 --- 
-### organizationsRegistery(address,address)
+### organizationsRegistry(address,address)
 
 
 **Execution cost**: less than 736 gas
