@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.6.6">
+      <meta name="generator" content="mkdocs-0.17.3, mkdocs-material-2.7.1">
     
     
       
@@ -91,8 +91,8 @@
         
       </defs>
     </svg>
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
     
       <a href="#reputation" tabindex="1" class="md-skip">
@@ -643,13 +643,6 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#constructor" title="Constructor" class="md-nav__link">
-    Constructor
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#events" title="Events" class="md-nav__link">
     Events
   </a>
@@ -658,8 +651,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#mintaddressint256" title="Mint(address,int256)" class="md-nav__link">
-    Mint(address,int256)
+  <a href="#burnaddressuint256" title="Burn(address,uint256)" class="md-nav__link">
+    Burn(address,uint256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mintaddressuint256" title="Mint(address,uint256)" class="md-nav__link">
+    Mint(address,uint256)
   </a>
   
 </li>
@@ -692,6 +692,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#burnaddressuint256_1" title="burn(address,uint256)" class="md-nav__link">
+    burn(address,uint256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#decimals" title="decimals()" class="md-nav__link">
     decimals()
   </a>
@@ -699,8 +706,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mintaddressint256_1" title="mint(address,int256)" class="md-nav__link">
-    mint(address,int256)
+  <a href="#mintaddressuint256_1" title="mint(address,uint256)" class="md-nav__link">
+    mint(address,uint256)
   </a>
   
 </li>
@@ -1092,13 +1099,6 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#constructor" title="Constructor" class="md-nav__link">
-    Constructor
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#events" title="Events" class="md-nav__link">
     Events
   </a>
@@ -1107,8 +1107,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#mintaddressint256" title="Mint(address,int256)" class="md-nav__link">
-    Mint(address,int256)
+  <a href="#burnaddressuint256" title="Burn(address,uint256)" class="md-nav__link">
+    Burn(address,uint256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mintaddressuint256" title="Mint(address,uint256)" class="md-nav__link">
+    Mint(address,uint256)
   </a>
   
 </li>
@@ -1141,6 +1148,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#burnaddressuint256_1" title="burn(address,uint256)" class="md-nav__link">
+    burn(address,uint256)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#decimals" title="decimals()" class="md-nav__link">
     decimals()
   </a>
@@ -1148,8 +1162,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mintaddressint256_1" title="mint(address,int256)" class="md-nav__link">
-    mint(address,int256)
+  <a href="#mintaddressuint256_1" title="mint(address,uint256)" class="md-nav__link">
+    mint(address,uint256)
   </a>
   
 </li>
@@ -1211,17 +1225,24 @@
 <blockquote>
 <p>Reputation system</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 50675 gas</p>
-<p><strong>Deployment cost</strong>: less than 180000 gas</p>
-<p><strong>Combined cost</strong>: less than 230675 gas</p>
-<h2 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h2>
+<p><strong>Execution cost</strong>: less than 40630 gas</p>
+<p><strong>Deployment cost</strong>: less than 234600 gas</p>
+<p><strong>Combined cost</strong>: less than 275230 gas</p>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
-<h3 id="mintaddressint256">Mint(address,int256)<a class="headerlink" href="#mintaddressint256" title="Permanent link">&para;</a></h3>
+<h3 id="burnaddressuint256">Burn(address,uint256)<a class="headerlink" href="#burnaddressuint256" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
-<li><strong>to</strong> <em>of type <code>address</code></em></li>
-<li><strong>amount</strong> <em>of type <code>int256</code></em></li>
+<li><strong>_from</strong> <em>of type <code>address</code></em></li>
+<li><strong>_amount</strong> <em>of type <code>uint256</code></em></li>
+</ol>
+<hr />
+<h3 id="mintaddressuint256">Mint(address,uint256)<a class="headerlink" href="#mintaddressuint256" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p>Params:</p>
+<ol>
+<li><strong>_to</strong> <em>of type <code>address</code></em></li>
+<li><strong>_amount</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
 <h3 id="ownershiptransferredaddressaddress">OwnershipTransferred(address,address)<a class="headerlink" href="#ownershiptransferredaddressaddress" title="Permanent link">&para;</a></h3>
@@ -1244,6 +1265,34 @@
 <li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
+<h3 id="burnaddressuint256_1">burn(address,uint256)<a class="headerlink" href="#burnaddressuint256_1" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>Burns <code>_amount</code> of reputation from <code>_from</code> if _amount tokens to burn &gt; balances[_from] the balance of _from will turn to zero.</p>
+</blockquote>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p>Params:</p>
+<ol>
+<li>
+<p><strong>_from</strong> <em>of type <code>address</code></em></p>
+<blockquote>
+<p>The address that will lose the reputation</p>
+</blockquote>
+</li>
+<li>
+<p><strong>_amount</strong> <em>of type <code>uint256</code></em></p>
+<blockquote>
+<p>The quantity of reputation to burn</p>
+</blockquote>
+</li>
+</ol>
+<p>Returns:</p>
+<blockquote>
+<p>True if the reputation are burned correctly</p>
+</blockquote>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
+</ol>
+<hr />
 <h3 id="decimals">decimals()<a class="headerlink" href="#decimals" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: less than 417 gas</p>
 <p><strong>Attributes</strong>: constant</p>
@@ -1252,36 +1301,36 @@
 <li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
-<h3 id="mintaddressint256_1">mint(address,int256)<a class="headerlink" href="#mintaddressint256_1" title="Permanent link">&para;</a></h3>
+<h3 id="mintaddressuint256_1">mint(address,uint256)<a class="headerlink" href="#mintaddressuint256_1" title="Permanent link">&para;</a></h3>
 <blockquote>
-<p>adding/reducing reputation of a given address, updating the total supply, and triggering an event of the operation. Max reputation allowed is capped by INT256_MAX = 2**255 - Any value minted over this MAX will cause a revert. Min reputation allowed is 0. - Any value minted below this MIN will be trim to 0.</p>
+<p>Generates <code>_amount</code> of reputation that are assigned to <code>_to</code></p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 43429 gas</p>
+<p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
 <li>
 <p><strong>_to</strong> <em>of type <code>address</code></em></p>
 <blockquote>
-<p>the address which we gives/takes reputation amount</p>
+<p>The address that will be assigned the new reputation</p>
 </blockquote>
 </li>
 <li>
-<p><strong>_amount</strong> <em>of type <code>int256</code></em></p>
+<p><strong>_amount</strong> <em>of type <code>uint256</code></em></p>
 <blockquote>
-<p>the reputation amount to be added/reduced</p>
+<p>The quantity of reputation to be generated</p>
 </blockquote>
 </li>
 </ol>
 <p>Returns:</p>
 <blockquote>
-<p>bool which represents a successful of the function</p>
+<p>True if the reputation are generated correctly</p>
 </blockquote>
 <ol>
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
 <h3 id="owner">owner()<a class="headerlink" href="#owner" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 595 gas</p>
+<p><strong>Execution cost</strong>: less than 617 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Returns:</p>
 <ol>
@@ -1292,7 +1341,7 @@
 <blockquote>
 <p>return the reputation amount of a given owner</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 683 gas</p>
+<p><strong>Execution cost</strong>: less than 727 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1320,7 +1369,7 @@
 <blockquote>
 <p>Allows the current owner to transfer control of the contract to a newOwner.</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 22854 gas</p>
+<p><strong>Execution cost</strong>: less than 22898 gas</p>
 <p>Params:</p>
 <ol>
 <li>
@@ -1337,6 +1386,8 @@
               
               
                 
+
+
               
             </article>
           </div>
@@ -1412,9 +1463,9 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.02434462.js"></script>
+      <script src="../../../assets/javascripts/application.8eb9be28.js"></script>
       
-      <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
+      <script>app.initialize({version:"0.17.3",url:{base:"../../.."}})</script>
       
     
     

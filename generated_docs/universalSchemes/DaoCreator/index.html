@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.6.6">
+      <meta name="generator" content="mkdocs-0.17.3, mkdocs-material-2.7.1">
     
     
       
@@ -91,8 +91,8 @@
         
       </defs>
     </svg>
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
     
       <a href="#daocreator" tabindex="1" class="md-skip">
@@ -793,8 +793,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#forgeorgbytes32stringstringaddressuint256int256address" title="forgeOrg(bytes32,string,string,address[],uint256[],int256[],address)" class="md-nav__link">
-    forgeOrg(bytes32,string,string,address[],uint256[],int256[],address)
+  <a href="#forgeorgbytes32stringstringaddressuint256uint256addressuint256" title="forgeOrg(bytes32,string,string,address[],uint256[],uint256[],address,uint256)" class="md-nav__link">
+    forgeOrg(bytes32,string,string,address[],uint256[],uint256[],address,uint256)
   </a>
   
 </li>
@@ -1106,8 +1106,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#forgeorgbytes32stringstringaddressuint256int256address" title="forgeOrg(bytes32,string,string,address[],uint256[],int256[],address)" class="md-nav__link">
-    forgeOrg(bytes32,string,string,address[],uint256[],int256[],address)
+  <a href="#forgeorgbytes32stringstringaddressuint256uint256addressuint256" title="forgeOrg(bytes32,string,string,address[],uint256[],uint256[],address,uint256)" class="md-nav__link">
+    forgeOrg(bytes32,string,string,address[],uint256[],uint256[],address,uint256)
   </a>
   
 </li>
@@ -1155,10 +1155,14 @@
 <blockquote>
 <p>Genesis Scheme that creates organizations</p>
 </blockquote>
-<p><strong>Execution cost</strong>: less than 5528 gas</p>
-<p><strong>Deployment cost</strong>: less than 4710800 gas</p>
-<p><strong>Combined cost</strong>: less than 4716328 gas</p>
+<p><strong>Execution cost</strong>: less than 22864 gas</p>
+<p><strong>Deployment cost</strong>: less than 2275200 gas</p>
+<p><strong>Combined cost</strong>: less than 2298064 gas</p>
 <h2 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h2>
+<p>Params:</p>
+<ol>
+<li><strong>_controllerCreator</strong> <em>of type <code>address</code></em></li>
+</ol>
 <h2 id="events">Events<a class="headerlink" href="#events" title="Permanent link">&para;</a></h2>
 <h3 id="initialschemessetaddress">InitialSchemesSet(address)<a class="headerlink" href="#initialschemessetaddress" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
@@ -1174,7 +1178,7 @@
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
 </ol>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<h3 id="forgeorgbytes32stringstringaddressuint256int256address">forgeOrg(bytes32,string,string,address[],uint256[],int256[],address)<a class="headerlink" href="#forgeorgbytes32stringstringaddressuint256int256address" title="Permanent link">&para;</a></h3>
+<h3 id="forgeorgbytes32stringstringaddressuint256uint256addressuint256">forgeOrg(bytes32,string,string,address[],uint256[],uint256[],address,uint256)<a class="headerlink" href="#forgeorgbytes32stringstringaddressuint256uint256addressuint256" title="Permanent link">&para;</a></h3>
 <blockquote>
 <p>Create a new organization</p>
 </blockquote>
@@ -1212,7 +1216,7 @@
 </blockquote>
 </li>
 <li>
-<p><strong>_foundersReputationAmount</strong> <em>of type <code>int256[]</code></em></p>
+<p><strong>_foundersReputationAmount</strong> <em>of type <code>uint256[]</code></em></p>
 <blockquote>
 <p>An array of amount of reputation that the  founders receive in the new organization</p>
 </blockquote>
@@ -1221,6 +1225,12 @@
 <p><strong>_uController</strong> <em>of type <code>address</code></em></p>
 <blockquote>
 <p>universal controller instance        if _uController address equal to zero the organization will use none universal controller.</p>
+</blockquote>
+</li>
+<li>
+<p><strong>_cap</strong> <em>of type <code>uint256</code></em></p>
+<blockquote>
+<p>token cap - 0 for no cap.</p>
 </blockquote>
 </li>
 </ol>
@@ -1233,7 +1243,7 @@
 </ol>
 <hr />
 <h3 id="locksaddress">locks(address)<a class="headerlink" href="#locksaddress" title="Permanent link">&para;</a></h3>
-<p><strong>Execution cost</strong>: less than 761 gas</p>
+<p><strong>Execution cost</strong>: less than 739 gas</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
@@ -1283,6 +1293,8 @@
               
               
                 
+
+
               
             </article>
           </div>
@@ -1358,9 +1370,9 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.02434462.js"></script>
+      <script src="../../../assets/javascripts/application.8eb9be28.js"></script>
       
-      <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
+      <script>app.initialize({version:"0.17.3",url:{base:"../../.."}})</script>
       
     
     

@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../img/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.6.6">
+      <meta name="generator" content="mkdocs-0.17.3, mkdocs-material-2.7.1">
     
     
       
@@ -91,8 +91,8 @@
         
       </defs>
     </svg>
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
     
       <a href="#controllerinterface" tabindex="1" class="md-skip">
@@ -627,8 +627,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#mintreputationint256addressaddress" title="mintReputation(int256,address,address)" class="md-nav__link">
-    mintReputation(int256,address,address)
+  <a href="#globalconstraintscountaddress" title="globalConstraintsCount(address)" class="md-nav__link">
+    globalConstraintsCount(address)
   </a>
   
 </li>
@@ -662,6 +662,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#burnreputationuint256addressaddress" title="burnReputation(uint256,address,address)" class="md-nav__link">
+    burnReputation(uint256,address,address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#externaltokenincreaseapprovaladdressaddressuint256address" title="externalTokenIncreaseApproval(address,address,uint256,address)" class="md-nav__link">
     externalTokenIncreaseApproval(address,address,uint256,address)
   </a>
@@ -669,8 +676,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#isschemeregisteredaddressaddress" title="isSchemeRegistered(address,address)" class="md-nav__link">
-    isSchemeRegistered(address,address)
+  <a href="#genericactionbytes32address" title="genericAction(bytes32[],address)" class="md-nav__link">
+    genericAction(bytes32[],address)
   </a>
   
 </li>
@@ -697,8 +704,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#globalconstraintscountaddress" title="globalConstraintsCount(address)" class="md-nav__link">
-    globalConstraintsCount(address)
+  <a href="#getnativereputationaddress" title="getNativeReputation(address)" class="md-nav__link">
+    getNativeReputation(address)
   </a>
   
 </li>
@@ -711,8 +718,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#genericactionbytes32address" title="genericAction(bytes32[],address)" class="md-nav__link">
-    genericAction(bytes32[],address)
+  <a href="#isschemeregisteredaddressaddress" title="isSchemeRegistered(address,address)" class="md-nav__link">
+    isSchemeRegistered(address,address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mintreputationuint256addressaddress" title="mintReputation(uint256,address,address)" class="md-nav__link">
+    mintReputation(uint256,address,address)
   </a>
   
 </li>
@@ -1150,8 +1164,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#mintreputationint256addressaddress" title="mintReputation(int256,address,address)" class="md-nav__link">
-    mintReputation(int256,address,address)
+  <a href="#globalconstraintscountaddress" title="globalConstraintsCount(address)" class="md-nav__link">
+    globalConstraintsCount(address)
   </a>
   
 </li>
@@ -1185,6 +1199,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#burnreputationuint256addressaddress" title="burnReputation(uint256,address,address)" class="md-nav__link">
+    burnReputation(uint256,address,address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#externaltokenincreaseapprovaladdressaddressuint256address" title="externalTokenIncreaseApproval(address,address,uint256,address)" class="md-nav__link">
     externalTokenIncreaseApproval(address,address,uint256,address)
   </a>
@@ -1192,8 +1213,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#isschemeregisteredaddressaddress" title="isSchemeRegistered(address,address)" class="md-nav__link">
-    isSchemeRegistered(address,address)
+  <a href="#genericactionbytes32address" title="genericAction(bytes32[],address)" class="md-nav__link">
+    genericAction(bytes32[],address)
   </a>
   
 </li>
@@ -1220,8 +1241,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#globalconstraintscountaddress" title="globalConstraintsCount(address)" class="md-nav__link">
-    globalConstraintsCount(address)
+  <a href="#getnativereputationaddress" title="getNativeReputation(address)" class="md-nav__link">
+    getNativeReputation(address)
   </a>
   
 </li>
@@ -1234,8 +1255,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#genericactionbytes32address" title="genericAction(bytes32[],address)" class="md-nav__link">
-    genericAction(bytes32[],address)
+  <a href="#isschemeregisteredaddressaddress" title="isSchemeRegistered(address,address)" class="md-nav__link">
+    isSchemeRegistered(address,address)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mintreputationuint256addressaddress" title="mintReputation(uint256,address,address)" class="md-nav__link">
+    mintReputation(uint256,address,address)
   </a>
   
 </li>
@@ -1312,17 +1340,17 @@
 <p><strong>Deployment cost</strong>: No bound available</p>
 <p><strong>Combined cost</strong>: No bound available</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<h3 id="mintreputationint256addressaddress">mintReputation(int256,address,address)<a class="headerlink" href="#mintreputationint256addressaddress" title="Permanent link">&para;</a></h3>
+<h3 id="globalconstraintscountaddress">globalConstraintsCount(address)<a class="headerlink" href="#globalconstraintscountaddress" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
+<p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
-<li><strong>_amount</strong> <em>of type <code>int256</code></em></li>
-<li><strong>_beneficiary</strong> <em>of type <code>address</code></em></li>
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
 </ol>
 <p>Returns:</p>
 <ol>
-<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
+<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>output_1</strong> <em>of type <code>uint256</code></em></li>
 </ol>
 <hr />
 <h3 id="externaltokentransferfromaddressaddressaddressuint256address">externalTokenTransferFrom(address,address,address,uint256,address)<a class="headerlink" href="#externaltokentransferfromaddressaddressaddressuint256address" title="Permanent link">&para;</a></h3>
@@ -1381,6 +1409,19 @@
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
+<h3 id="burnreputationuint256addressaddress">burnReputation(uint256,address,address)<a class="headerlink" href="#burnreputationuint256addressaddress" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p>Params:</p>
+<ol>
+<li><strong>_amount</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>_from</strong> <em>of type <code>address</code></em></li>
+<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
+</ol>
+<hr />
 <h3 id="externaltokenincreaseapprovaladdressaddressuint256address">externalTokenIncreaseApproval(address,address,uint256,address)<a class="headerlink" href="#externaltokenincreaseapprovaladdressaddressuint256address" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
@@ -1395,12 +1436,11 @@
 <li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
 </ol>
 <hr />
-<h3 id="isschemeregisteredaddressaddress">isSchemeRegistered(address,address)<a class="headerlink" href="#isschemeregisteredaddressaddress" title="Permanent link">&para;</a></h3>
+<h3 id="genericactionbytes32address">genericAction(bytes32[],address)<a class="headerlink" href="#genericactionbytes32address" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
-<p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
 <ol>
-<li><strong>_scheme</strong> <em>of type <code>address</code></em></li>
+<li><strong>_params</strong> <em>of type <code>bytes32[]</code></em></li>
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
 </ol>
 <p>Returns:</p>
@@ -1447,7 +1487,7 @@
 <li><strong>output_0</strong> <em>of type <code>bytes32</code></em></li>
 </ol>
 <hr />
-<h3 id="globalconstraintscountaddress">globalConstraintsCount(address)<a class="headerlink" href="#globalconstraintscountaddress" title="Permanent link">&para;</a></h3>
+<h3 id="getnativereputationaddress">getNativeReputation(address)<a class="headerlink" href="#getnativereputationaddress" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p><strong>Attributes</strong>: constant</p>
 <p>Params:</p>
@@ -1456,8 +1496,7 @@
 </ol>
 <p>Returns:</p>
 <ol>
-<li><strong>output_0</strong> <em>of type <code>uint256</code></em></li>
-<li><strong>output_1</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>output_0</strong> <em>of type <code>address</code></em></li>
 </ol>
 <hr />
 <h3 id="getschemepermissionsaddressaddress">getSchemePermissions(address,address)<a class="headerlink" href="#getschemepermissionsaddressaddress" title="Permanent link">&para;</a></h3>
@@ -1473,11 +1512,25 @@
 <li><strong>output_0</strong> <em>of type <code>bytes4</code></em></li>
 </ol>
 <hr />
-<h3 id="genericactionbytes32address">genericAction(bytes32[],address)<a class="headerlink" href="#genericactionbytes32address" title="Permanent link">&para;</a></h3>
+<h3 id="isschemeregisteredaddressaddress">isSchemeRegistered(address,address)<a class="headerlink" href="#isschemeregisteredaddressaddress" title="Permanent link">&para;</a></h3>
+<p><strong>Execution cost</strong>: No bound available</p>
+<p><strong>Attributes</strong>: constant</p>
+<p>Params:</p>
+<ol>
+<li><strong>_scheme</strong> <em>of type <code>address</code></em></li>
+<li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
+</ol>
+<p>Returns:</p>
+<ol>
+<li><strong>output_0</strong> <em>of type <code>bool</code></em></li>
+</ol>
+<hr />
+<h3 id="mintreputationuint256addressaddress">mintReputation(uint256,address,address)<a class="headerlink" href="#mintreputationuint256addressaddress" title="Permanent link">&para;</a></h3>
 <p><strong>Execution cost</strong>: No bound available</p>
 <p>Params:</p>
 <ol>
-<li><strong>_params</strong> <em>of type <code>bytes32[]</code></em></li>
+<li><strong>_amount</strong> <em>of type <code>uint256</code></em></li>
+<li><strong>_to</strong> <em>of type <code>address</code></em></li>
 <li><strong>_avatar</strong> <em>of type <code>address</code></em></li>
 </ol>
 <p>Returns:</p>
@@ -1565,6 +1618,8 @@
               
               
                 
+
+
               
             </article>
           </div>
@@ -1640,9 +1695,9 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.02434462.js"></script>
+      <script src="../../../assets/javascripts/application.8eb9be28.js"></script>
       
-      <script>app.initialize({version:"0.17.2",url:{base:"../../.."}})</script>
+      <script>app.initialize({version:"0.17.3",url:{base:"../../.."}})</script>
       
     
     
