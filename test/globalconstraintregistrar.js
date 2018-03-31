@@ -212,7 +212,8 @@ contract('GlobalConstraintRegistrar', function(accounts) {
           var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
           var testSetup = await setup(accounts,true,standardTokenMock.address);
           var globalConstraintMock =await GlobalConstraintMock.new();
-          await globalConstraintMock.setConstraint("mintReputation",true,true);
+          //genesisProtocol use burn reputation.
+          await globalConstraintMock.setConstraint("burnReputation",true,true);
 
           var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                          globalConstraintMock.address,
