@@ -5,9 +5,9 @@
 
 **Execution cost**: less than 61130 gas
 
-**Deployment cost**: less than 158400 gas
+**Deployment cost**: less than 155800 gas
 
-**Combined cost**: less than 219530 gas
+**Combined cost**: less than 216930 gas
 
 ## Constructor
 

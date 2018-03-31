@@ -5,7 +5,7 @@
 
 **Execution cost**: No bound available
 
-**Deployment cost**: less than 2596800 gas
+**Deployment cost**: less than 2823400 gas
 
 **Combined cost**: No bound available
 
@@ -32,7 +32,7 @@ Params:
 4. **_value** *of type `uint256`*
 
 --- 
-### MintReputation(address,address,int256)
+### MintReputation(address,address,uint256)
 
 
 **Execution cost**: No bound available
@@ -41,8 +41,8 @@ Params:
 Params:
 
 1. **_sender** *of type `address`*
-2. **_beneficiary** *of type `address`*
-3. **_amount** *of type `int256`*
+2. **_to** *of type `address`*
+3. **_amount** *of type `uint256`*
 
 --- 
 ### AddGlobalConstraint(address,bytes32,uint8)
@@ -72,18 +72,6 @@ Params:
 4. **_value** *of type `uint256`*
 
 --- 
-### GenericAction(address,bytes32[])
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_sender** *of type `address`*
-2. **_params** *of type `bytes32[]`*
-
---- 
 ### ExternalTokenIncreaseApproval(address,address,address,uint256)
 
 
@@ -96,6 +84,18 @@ Params:
 2. **_externalToken** *of type `address`*
 3. **_spender** *of type `address`*
 4. **_value** *of type `uint256`*
+
+--- 
+### GenericAction(address,bytes32[])
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_sender** *of type `address`*
+2. **_params** *of type `bytes32[]`*
 
 --- 
 ### ExternalTokenTransferFrom(address,address,address,address,uint256)
@@ -111,6 +111,19 @@ Params:
 3. **_from** *of type `address`*
 4. **_to** *of type `address`*
 5. **_value** *of type `uint256`*
+
+--- 
+### BurnReputation(address,address,uint256)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_sender** *of type `address`*
+2. **_from** *of type `address`*
+3. **_amount** *of type `uint256`*
 
 --- 
 ### MintTokens(address,address,uint256)
@@ -190,28 +203,31 @@ Params:
 ## Fallback
 
 
-**Execution cost**: less than 764 gas
+**Execution cost**: less than 808 gas
 
 
 
 ## Methods
-### globalConstraintsRegisterPost(address)
+### globalConstraintsCount(address)
+>
+> globalConstraintsCount return the global constraint pre and post count
 
 
-**Execution cost**: less than 1148 gas
+**Execution cost**: less than 1416 gas
 
 **Attributes**: constant
 
 
 Params:
 
-1. **param_0** *of type `address`*
+1. **_avatar** *of type `address`*
 
 Returns:
 
+> uint globalConstraintsPre count.uint globalConstraintsPost count.
 
-1. **register** *of type `bool`*
-2. **index** *of type `uint256`*
+1. **output_0** *of type `uint256`*
+2. **output_1** *of type `uint256`*
 
 --- 
 ### externalTokenTransferFrom(address,address,address,uint256,address)
@@ -240,7 +256,7 @@ Params:
 
     > the amount of ether (in Wei) to send
 
-5. **param_4** *of type `address`*
+5. **_avatar** *of type `address`*
 
 Returns:
 
@@ -267,7 +283,7 @@ Params:
 
     > the constraint parameters hash.
 
-3. **param_2** *of type `address`*
+3. **_avatar** *of type `address`*
 
 Returns:
 
@@ -298,7 +314,7 @@ Params:
 
     > the amount of ether (in Wei) which the approval is referring to.
 
-4. **param_3** *of type `address`*
+4. **_avatar** *of type `address`*
 
 Returns:
 
@@ -329,7 +345,34 @@ Params:
 
     > the amount of ether (in Wei) to send
 
-4. **param_3** *of type `address`*
+4. **_avatar** *of type `address`*
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### burnReputation(uint256,address,address)
+>
+> Burns `_amount` of reputation from `_from`
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amount** *of type `uint256`*
+
+    > amount of reputation to burn
+
+2. **_from** *of type `address`*
+
+    > The address that will lose the reputation
+
+3. **_avatar** *of type `address`*
 
 Returns:
 
@@ -360,7 +403,7 @@ Params:
 
     > the amount of ether (in Wei) which the approval is referring to.
 
-4. **param_3** *of type `address`*
+4. **_avatar** *of type `address`*
 
 Returns:
 
@@ -384,10 +427,10 @@ Returns:
 1. **output_0** *of type `address`*
 
 --- 
-### getSchemePermissions(address,address)
+### isSchemeRegistered(address,address)
 
 
-**Execution cost**: less than 1213 gas
+**Execution cost**: less than 1517 gas
 
 **Attributes**: constant
 
@@ -395,17 +438,17 @@ Returns:
 Params:
 
 1. **_scheme** *of type `address`*
-2. **param_1** *of type `address`*
+2. **_avatar** *of type `address`*
 
 Returns:
 
 
-1. **output_0** *of type `bytes4`*
+1. **output_0** *of type `bool`*
 
 --- 
-### removeGlobalConstraint(address,address)
+### genericAction(bytes32[],address)
 >
-> remove Global Constraint
+> do a generic delegate call to the contract which called us. This function use delegatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
 
 
 **Execution cost**: No bound available
@@ -413,34 +456,38 @@ Returns:
 
 Params:
 
-1. **_globalConstraint** *of type `address`*
+1. **_params** *of type `bytes32[]`*
 
-    > the address of the global constraint to be remove.
+    > the params for the call.
 
-2. **param_1** *of type `address`*
+2. **_avatar** *of type `address`*
 
 Returns:
 
-> bool which represents a success
+> bool which represents success
 
 1. **output_0** *of type `bool`*
 
 --- 
-### isGlobalConstraintRegistered(address,address)
+### upgradeController(address,address)
+>
+> upgrade the Controller     The function will trigger an event 'UpgradeController'.
 
 
-**Execution cost**: less than 1641 gas
-
-**Attributes**: constant
+**Execution cost**: No bound available
 
 
 Params:
 
-1. **_globalConstraint** *of type `address`*
-2. **param_1** *of type `address`*
+1. **_newController** *of type `address`*
+
+    > the address of the new controller.
+
+2. **_avatar** *of type `address`*
 
 Returns:
 
+> bool which represents a success
 
 1. **output_0** *of type `bool`*
 
@@ -463,11 +510,30 @@ Params:
 
     > beneficiary address
 
-3. **param_2** *of type `address`*
+3. **_avatar** *of type `address`*
 
 Returns:
 
 > bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### isGlobalConstraintRegistered(address,address)
+
+
+**Execution cost**: less than 2006 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_globalConstraint** *of type `address`*
+2. **_avatar** *of type `address`*
+
+Returns:
+
 
 1. **output_0** *of type `bool`*
 
@@ -491,50 +557,23 @@ Returns:
 2. **params** *of type `bytes32`*
 
 --- 
-### globalConstraintsPost(uint256)
+### globalConstraintsRegisterPost(address)
 
 
-**Execution cost**: less than 1698 gas
+**Execution cost**: less than 1148 gas
 
 **Attributes**: constant
 
 
 Params:
 
-1. **param_0** *of type `uint256`*
+1. **param_0** *of type `address`*
 
 Returns:
 
 
-1. **gcAddress** *of type `address`*
-2. **params** *of type `bytes32`*
-
---- 
-### mintReputation(int256,address,address)
->
-> mint reputation .
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_amount** *of type `int256`*
-
-    > amount of reputation to mint
-
-2. **_beneficiary** *of type `address`*
-
-    > beneficiary address
-
-3. **param_2** *of type `address`*
-
-Returns:
-
-> bool which represents a success
-
-1. **output_0** *of type `bool`*
+1. **register** *of type `bool`*
+2. **index** *of type `uint256`*
 
 --- 
 ### globalConstraintsRegisterPre(address)
@@ -556,26 +595,112 @@ Returns:
 2. **index** *of type `uint256`*
 
 --- 
-### globalConstraintsCount(address)
+### mintReputation(uint256,address,address)
 >
-> globalConstraintsCount return the global constraint pre and post count
+> Mint `_amount` of reputation that are assigned to `_to` .
 
 
-**Execution cost**: less than 1076 gas
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amount** *of type `uint256`*
+
+    > amount of reputation to mint
+
+2. **_to** *of type `address`*
+
+    > beneficiary address
+
+3. **_avatar** *of type `address`*
+
+Returns:
+
+> bool which represents a success
+
+1. **output_0** *of type `bool`*
+
+--- 
+### getNativeReputation(address)
+>
+> getNativeReputation
+
+
+**Execution cost**: less than 1375 gas
 
 **Attributes**: constant
 
 
 Params:
 
-1. **param_0** *of type `address`*
+1. **_avatar** *of type `address`*
+
+    > the organization avatar.
+
 
 Returns:
 
-> uint globalConstraintsPre count.uint globalConstraintsPost count.
+> organization native reputation
 
-1. **output_0** *of type `uint256`*
-2. **output_1** *of type `uint256`*
+1. **output_0** *of type `address`*
+
+--- 
+### getSchemePermissions(address,address)
+
+
+**Execution cost**: less than 1558 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+2. **_avatar** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bytes4`*
+
+--- 
+### globalConstraintsPost(uint256)
+
+
+**Execution cost**: less than 1720 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `uint256`*
+
+Returns:
+
+
+1. **gcAddress** *of type `address`*
+2. **params** *of type `bytes32`*
+
+--- 
+### getSchemeParameters(address,address)
+
+
+**Execution cost**: less than 1045 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+2. **_avatar** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bytes32`*
 
 --- 
 ### nativeReputation()
@@ -593,46 +718,34 @@ Returns:
 1. **output_0** *of type `address`*
 
 --- 
-### genericAction(bytes32[],address)
->
-> do a generic delegate call to the contract which called us. This function use delegatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
+### nativeToken()
 
 
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_params** *of type `bytes32[]`*
-
-    > the params for the call.
-
-2. **param_1** *of type `address`*
-
-Returns:
-
-> bool which represents success
-
-1. **output_0** *of type `bool`*
-
---- 
-### isSchemeRegistered(address,address)
-
-
-**Execution cost**: less than 1172 gas
+**Execution cost**: less than 1098 gas
 
 **Attributes**: constant
 
 
-Params:
-
-1. **_scheme** *of type `address`*
-2. **param_1** *of type `address`*
 
 Returns:
 
 
-1. **output_0** *of type `bool`*
+1. **output_0** *of type `address`*
+
+--- 
+### newController()
+
+
+**Execution cost**: less than 658 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
 
 --- 
 ### registerScheme(address,bytes32,bytes4,address)
@@ -657,7 +770,7 @@ Params:
 
     > the permissions the new scheme will have
 
-4. **param_3** *of type `address`*
+4. **_avatar** *of type `address`*
 
 Returns:
 
@@ -666,59 +779,33 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### newController()
+### removeGlobalConstraint(address,address)
+>
+> remove Global Constraint
 
 
-**Execution cost**: less than 658 gas
-
-**Attributes**: constant
-
-
-
-Returns:
-
-
-1. **output_0** *of type `address`*
-
---- 
-### getSchemeParameters(address,address)
-
-
-**Execution cost**: less than 722 gas
-
-**Attributes**: constant
+**Execution cost**: No bound available
 
 
 Params:
 
-1. **_scheme** *of type `address`*
-2. **param_1** *of type `address`*
+1. **_globalConstraint** *of type `address`*
+
+    > the address of the global constraint to be remove.
+
+2. **_avatar** *of type `address`*
 
 Returns:
 
+> bool which represents a success
 
-1. **output_0** *of type `bytes32`*
-
---- 
-### nativeToken()
-
-
-**Execution cost**: less than 1076 gas
-
-**Attributes**: constant
-
-
-
-Returns:
-
-
-1. **output_0** *of type `address`*
+1. **output_0** *of type `bool`*
 
 --- 
 ### schemes(address)
 
 
-**Execution cost**: less than 1433 gas
+**Execution cost**: less than 1455 gas
 
 **Attributes**: constant
 
@@ -752,7 +839,7 @@ Params:
 
     > address of the beneficiary
 
-3. **param_2** *of type `address`*
+3. **_avatar** *of type `address`*
 
 Returns:
 
@@ -775,7 +862,7 @@ Params:
 
     > the address of the scheme
 
-2. **param_1** *of type `address`*
+2. **_avatar** *of type `address`*
 
 Returns:
 
@@ -789,35 +876,12 @@ Returns:
 > unregister the caller's scheme
 
 
-**Execution cost**: less than 28009 gas
+**Execution cost**: less than 28653 gas
 
 
 Params:
 
-1. **param_0** *of type `address`*
-
-Returns:
-
-> bool which represents a success
-
-1. **output_0** *of type `bool`*
-
---- 
-### upgradeController(address,address)
->
-> upgrade the Controller     The function will trigger an event 'UpgradeController'.
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_newController** *of type `address`*
-
-    > the address of the new controller.
-
-2. **param_1** *of type `address`*
+1. **_avatar** *of type `address`*
 
 Returns:
 

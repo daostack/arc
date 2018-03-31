@@ -3,11 +3,11 @@
 > VoteInOrganizationScheme.
 
 
-**Execution cost**: less than 21070 gas
+**Execution cost**: less than 21051 gas
 
-**Deployment cost**: less than 671200 gas
+**Deployment cost**: less than 650400 gas
 
-**Combined cost**: less than 692270 gas
+**Combined cost**: less than 671451 gas
 
 ## Constructor
 
@@ -191,7 +191,7 @@ Params:
 
 2. **_avatar** *of type `address`*
 
-    > address of the controller
+    > address of the organization's avatar
 
 3. **_param** *of type `int256`*
 

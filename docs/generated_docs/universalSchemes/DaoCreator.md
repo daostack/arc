@@ -3,16 +3,19 @@
 > Genesis Scheme that creates organizations
 
 
-**Execution cost**: less than 5528 gas
+**Execution cost**: less than 22864 gas
 
-**Deployment cost**: less than 4710800 gas
+**Deployment cost**: less than 2275200 gas
 
-**Combined cost**: less than 4716328 gas
+**Combined cost**: less than 2298064 gas
 
 ## Constructor
 
 
 
+Params:
+
+1. **_controllerCreator** *of type `address`*
 
 ## Events
 ### InitialSchemesSet(address)
@@ -38,7 +41,7 @@ Params:
 
 
 ## Methods
-### forgeOrg(bytes32,string,string,address[],uint256[],int256[],address)
+### forgeOrg(bytes32,string,string,address[],uint256[],uint256[],address,uint256)
 >
 > Create a new organization
 
@@ -68,13 +71,17 @@ Params:
 
     > An array of amount of tokens that the founders receive in the new organization
 
-6. **_foundersReputationAmount** *of type `int256[]`*
+6. **_foundersReputationAmount** *of type `uint256[]`*
 
     > An array of amount of reputation that the  founders receive in the new organization
 
 7. **_uController** *of type `address`*
 
     > universal controller instance        if _uController address equal to zero the organization will use none universal controller.
+
+8. **_cap** *of type `uint256`*
+
+    > token cap - 0 for no cap.
 
 
 Returns:
@@ -87,7 +94,7 @@ Returns:
 ### locks(address)
 
 
-**Execution cost**: less than 761 gas
+**Execution cost**: less than 739 gas
 
 **Attributes**: constant
 

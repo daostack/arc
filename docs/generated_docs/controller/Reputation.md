@@ -3,19 +3,15 @@
 > Reputation system
 
 
-**Execution cost**: less than 50675 gas
+**Execution cost**: less than 40630 gas
 
-**Deployment cost**: less than 180000 gas
+**Deployment cost**: less than 234600 gas
 
-**Combined cost**: less than 230675 gas
-
-## Constructor
-
-
+**Combined cost**: less than 275230 gas
 
 
 ## Events
-### Mint(address,int256)
+### Burn(address,uint256)
 
 
 **Execution cost**: No bound available
@@ -23,8 +19,20 @@
 
 Params:
 
-1. **to** *of type `address`*
-2. **amount** *of type `int256`*
+1. **_from** *of type `address`*
+2. **_amount** *of type `uint256`*
+
+--- 
+### Mint(address,uint256)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_to** *of type `address`*
+2. **_amount** *of type `uint256`*
 
 --- 
 ### OwnershipTransferred(address,address)
@@ -58,6 +66,32 @@ Returns:
 1. **output_0** *of type `uint256`*
 
 --- 
+### burn(address,uint256)
+>
+> Burns `_amount` of reputation from `_from` if _amount tokens to burn > balances[_from] the balance of _from will turn to zero.
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_from** *of type `address`*
+
+    > The address that will lose the reputation
+
+2. **_amount** *of type `uint256`*
+
+    > The quantity of reputation to burn
+
+
+Returns:
+
+> True if the reputation are burned correctly
+
+1. **output_0** *of type `bool`*
+
+--- 
 ### decimals()
 
 
@@ -73,28 +107,28 @@ Returns:
 1. **output_0** *of type `uint256`*
 
 --- 
-### mint(address,int256)
+### mint(address,uint256)
 >
-> adding/reducing reputation of a given address, updating the total supply, and triggering an event of the operation. Max reputation allowed is capped by INT256_MAX = 2**255 - Any value minted over this MAX will cause a revert. Min reputation allowed is 0. - Any value minted below this MIN will be trim to 0.
+> Generates `_amount` of reputation that are assigned to `_to`
 
 
-**Execution cost**: less than 43429 gas
+**Execution cost**: No bound available
 
 
 Params:
 
 1. **_to** *of type `address`*
 
-    > the address which we gives/takes reputation amount
+    > The address that will be assigned the new reputation
 
-2. **_amount** *of type `int256`*
+2. **_amount** *of type `uint256`*
 
-    > the reputation amount to be added/reduced
+    > The quantity of reputation to be generated
 
 
 Returns:
 
-> bool which represents a successful of the function
+> True if the reputation are generated correctly
 
 1. **output_0** *of type `bool`*
 
@@ -102,7 +136,7 @@ Returns:
 ### owner()
 
 
-**Execution cost**: less than 595 gas
+**Execution cost**: less than 617 gas
 
 **Attributes**: constant
 
@@ -119,7 +153,7 @@ Returns:
 > return the reputation amount of a given owner
 
 
-**Execution cost**: less than 683 gas
+**Execution cost**: less than 727 gas
 
 **Attributes**: constant
 
@@ -157,7 +191,7 @@ Returns:
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 
-**Execution cost**: less than 22854 gas
+**Execution cost**: less than 22898 gas
 
 
 Params:

@@ -2,11 +2,11 @@
 [see the source](https://github.com/daostack/arc/tree/master/contracts/VotingMachines/AbsoluteVote.sol)
 
 
-**Execution cost**: less than 891 gas
+**Execution cost**: less than 1036 gas
 
-**Deployment cost**: less than 858400 gas
+**Deployment cost**: less than 1002000 gas
 
-**Combined cost**: less than 859291 gas
+**Combined cost**: less than 1003036 gas
 
 
 ## Events
@@ -60,6 +60,19 @@ Params:
 4. **_paramsHash** *of type `bytes32`*
 
 --- 
+### RefreshReputation(bytes32,address,uint256)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+2. **_voter** *of type `address`*
+3. **_reputation** *of type `uint256`*
+
+--- 
 ### VoteProposal(bytes32,address,uint256,uint256,bool)
 
 
@@ -76,19 +89,30 @@ Params:
 
 
 ## Methods
-### MAX_NUM_OF_CHOICES()
+### refreshReputation(bytes32,address[])
+>
+> refreshReputation refresh the reputation for a given voters list
 
 
-**Execution cost**: less than 434 gas
+**Execution cost**: No bound available
 
-**Attributes**: constant
 
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the proposal
+
+2. **_voters** *of type `address[]`*
+
+    > list to be refreshed
 
 
 Returns:
 
+> bool true or false
 
-1. **output_0** *of type `uint256`*
+1. **output_0** *of type `bool`*
 
 --- 
 ### parameters(bytes32)
@@ -138,7 +162,7 @@ Returns:
 > isVotable check if the proposal is votable
 
 
-**Execution cost**: less than 856 gas
+**Execution cost**: less than 878 gas
 
 **Attributes**: constant
 
@@ -162,7 +186,7 @@ Returns:
 > getNumberOfChoices returns the number of choices possible in this proposal
 
 
-**Execution cost**: less than 778 gas
+**Execution cost**: less than 800 gas
 
 **Attributes**: constant
 
@@ -289,6 +313,21 @@ Returns:
 1. **output_0** *of type `bytes32`*
 
 --- 
+### MAX_NUM_OF_CHOICES()
+
+
+**Execution cost**: less than 456 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `uint256`*
+
+--- 
 ### proposals(bytes32)
 
 
@@ -368,7 +407,7 @@ Returns:
 > hash the parameters, save them if necessary, and return the hash value
 
 
-**Execution cost**: less than 61895 gas
+**Execution cost**: less than 61917 gas
 
 
 Params:
@@ -443,7 +482,7 @@ Returns:
 > voteStatus returns the reputation voted for a proposal for a specific voting choice.
 
 
-**Execution cost**: less than 903 gas
+**Execution cost**: less than 925 gas
 
 **Attributes**: constant
 

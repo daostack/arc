@@ -2,11 +2,11 @@
 [see the source](https://github.com/daostack/arc/tree/master/contracts/test/ActionMock.sol)
 
 
-**Execution cost**: less than 197 gas
+**Execution cost**: less than 191 gas
 
-**Deployment cost**: less than 155400 gas
+**Deployment cost**: less than 152800 gas
 
-**Combined cost**: less than 155597 gas
+**Combined cost**: less than 152991 gas
 
 
 ## Events

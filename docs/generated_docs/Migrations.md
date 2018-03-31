@@ -2,11 +2,11 @@
 [see the source](https://github.com/daostack/arc/tree/master/contracts/Migrations.sol)
 
 
-**Execution cost**: less than 20515 gas
+**Execution cost**: less than 20527 gas
 
-**Deployment cost**: less than 97400 gas
+**Deployment cost**: less than 112200 gas
 
-**Combined cost**: less than 117915 gas
+**Combined cost**: less than 132727 gas
 
 ## Constructor
 
@@ -34,7 +34,7 @@ Returns:
 ### owner()
 
 
-**Execution cost**: less than 570 gas
+**Execution cost**: less than 432 gas
 
 **Attributes**: constant
 
@@ -49,7 +49,7 @@ Returns:
 ### setCompleted(uint256)
 
 
-**Execution cost**: less than 20520 gas
+**Execution cost**: less than 20451 gas
 
 
 Params:
