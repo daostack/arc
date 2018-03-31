@@ -54,10 +54,10 @@ For each DAO, the above components are organized in a single smart contract call
 The main configurable and extendable building blocks of DAOs are:
 *Schemes* and *Global Constraints*, which are collectively called *elements*.
 
-* **[Schemes](contracts/universalSchemes/)** *define the "dos" of the DAO, the rules under which actions are taken, based on the participants' input.* Examples of Schemes are:
+* **[Schemes](contracts/universalSchemes/README.md)** *define the "dos" of the DAO, the rules under which actions are taken, based on the participants' input.* Examples of Schemes are:
     * Rewarding contributions when other participants recognize them as worthy.
     * Voting on proposals and automatically executing the chosen proposal.
-* **[Global constraints](contracts/globalConstraints/)** *define the "don'ts" of the DAO, the conditions that must always hold and can prevent an action from being taken if it violates these conditions.* Examples of Global Constraints are:
+* **[Global constraints](contracts/globalConstraints/README.md)** *define the "don'ts" of the DAO, the conditions that must always hold and can prevent an action from being taken if it violates these conditions.* Examples of Global Constraints are:
     * Limiting the amount of tokens or reputation that can be minted per day.
     * Blacklisting certain participants from performing certain actions.
 
