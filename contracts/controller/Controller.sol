@@ -151,7 +151,7 @@ contract Controller is ControllerInterface {
     function burnReputation(uint256 _amount, address _from,address _avatar)
     public
     onlyRegisteredScheme
-    onlySubjectToConstraint("mintReputation")
+    onlySubjectToConstraint("burnReputation")
     isAvatarValid(_avatar)
     returns(bool)
     {
