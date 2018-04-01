@@ -86,8 +86,12 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
-        organizationsProposals[_avatar][proposalId].proposalType = 1;
-        organizationsProposals[_avatar][proposalId].upgradeContract = _newController;
+        UpgradeProposal memory proposal = UpgradeProposal({
+            proposalType: 1,
+            upgradeContract: _newController,
+            params: bytes32(0)
+        });
+        organizationsProposals[_avatar][proposalId] = proposal;
         NewUpgradeProposal(_avatar, proposalId, params.intVote, _newController);
         params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the proposal submitter.*/
         return proposalId;
@@ -141,6 +145,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        require(proposal.proposalType != 0);
         delete organizationsProposals[_avatar][_proposalId];
         ProposalDeleted(_avatar,_proposalId);
         // Check if vote was successful:

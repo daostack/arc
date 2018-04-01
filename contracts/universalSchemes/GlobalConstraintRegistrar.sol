@@ -73,6 +73,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         bool retVal = true;
         // Check if vote was successful:
         GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
+        require(proposal.gc != address(0));
         delete organizationsData[_avatar].proposals[_proposalId];
         ProposalDeleted(_avatar,_proposalId);
 

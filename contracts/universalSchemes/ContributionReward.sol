@@ -180,6 +180,7 @@ contract ContributionReward is UniversalScheme {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         require(organizationsProposals[_avatar][_proposalId].executionTime == 0);
+        require(organizationsProposals[_avatar][_proposalId].beneficiary != address(0));
         // Check if vote was successful:
         if (_param == 1) {
           // solium-disable-next-line security/no-block-members
@@ -203,16 +204,18 @@ contract ContributionReward is UniversalScheme {
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,0);
         bool result;
 
-        proposal.redeemedPeriods[0] = proposal.redeemedPeriods[0].add(periodsToPay);
         //set proposal reward to zero to prevent reentrancy attack.
         proposal.reputationChange = 0;
         int reputation = int(periodsToPay) * _proposal.reputationChange;
-        if ((reputation > 0 ) && ControllerInterface(Avatar(_avatar).owner()).mintReputation(uint(reputation), _proposal.beneficiary,_avatar)) {
+        if (reputation > 0 ) {
+            require(ControllerInterface(Avatar(_avatar).owner()).mintReputation(uint(reputation), _proposal.beneficiary,_avatar));
             result = true;
-        } else if ((reputation < 0 ) && ControllerInterface(Avatar(_avatar).owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary,_avatar)) {
+        } else if (reputation < 0 ) {
+            require(ControllerInterface(Avatar(_avatar).owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary,_avatar));
             result = true;
         }
         if (result) {
+            proposal.redeemedPeriods[0] = proposal.redeemedPeriods[0].add(periodsToPay);
             RedeemReputation(_avatar,_proposalId,_proposal.beneficiary,reputation);
         }
         //restore proposal reward.
@@ -233,13 +236,13 @@ contract ContributionReward is UniversalScheme {
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,1);
         bool result;
-
-        proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.nativeTokenReward = 0;
 
         uint amount = periodsToPay.mul(_proposal.nativeTokenReward);
-        if (amount > 0 && ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, _proposal.beneficiary,_avatar)) {
+        if (amount > 0) {
+            require(ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, _proposal.beneficiary,_avatar));
+            proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
             result = true;
             RedeemNativeToken(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
@@ -262,16 +265,17 @@ contract ContributionReward is UniversalScheme {
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,2);
         bool result;
-
-        proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.ethReward = 0;
         uint amount = periodsToPay.mul(_proposal.ethReward);
 
-        if (amount > 0 && ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, _proposal.beneficiary,_avatar)) {
+        if (amount > 0) {
+            require(ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, _proposal.beneficiary,_avatar));
+            proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
             result = true;
             RedeemEther(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
+
         //restore proposal reward.
         proposal.ethReward = _proposal.ethReward;
         return result;
@@ -290,13 +294,14 @@ contract ContributionReward is UniversalScheme {
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,3);
         bool result;
-        proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.externalTokenReward = 0;
 
         if (proposal.externalToken != address(0) && _proposal.externalTokenReward > 0) {
             uint amount = periodsToPay.mul(_proposal.externalTokenReward);
-            if (amount > 0 && ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar)) {
+            if (amount > 0) {
+                require(ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar));
+                proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);
                 result = true;
                 RedeemExternalToken(_avatar,_proposalId,_proposal.beneficiary,amount);
             }

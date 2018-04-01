@@ -162,7 +162,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         require(_periodLength > 0);
         // Collect funds:
         uint totalAmount = _amountPerPeriod.mul(_numOfAgreedPeriods);
-        _token.transferFrom(msg.sender, this, totalAmount);
+        require(_token.transferFrom(msg.sender, this, totalAmount));
 
         // Write parameters:
         agreements[agreementsCounter].token = _token;
@@ -230,6 +230,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         Agreement memory proposedAgreement = organizationsData[_avatar][_proposalId];
+        require(proposedAgreement.periodLength > 0);
         delete organizationsData[_avatar][_proposalId];
         ProposalDeleted(_avatar,_proposalId);
 
@@ -308,7 +309,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
 
         // Transfer:
         uint tokensToTransfer = periodsToPay.mul(agreement.amountPerPeriod);
-        agreement.token.transfer(agreement.beneficiary, tokensToTransfer);
+        require(agreement.token.transfer(agreement.beneficiary, tokensToTransfer));
 
         // Log collecting:
         Collect(_agreementId);
@@ -323,7 +324,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         delete  agreements[_agreementId];
         uint periodsLeft = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
         uint tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
-        agreement.token.transfer(agreement.returnOnCancelAddress, tokensLeft);
+        require(agreement.token.transfer(agreement.returnOnCancelAddress, tokensLeft));
         // Log canceling agreement:
         AgreementCancel(_agreementId);
     }

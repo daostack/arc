@@ -10,6 +10,7 @@ import "./UniversalScheme.sol";
 
 
 contract OrganizationRegister is UniversalScheme {
+    using SafeMath for uint;
 
     struct Parameters {
         uint fee;
@@ -76,10 +77,11 @@ contract OrganizationRegister is UniversalScheme {
         // Pay promotion, if the org was not listed the minimum is the fee:
         require((organizationsRegistry[_avatar][_record] > 0) || (_amount >= params.fee));
 
-        params.token.transferFrom(msg.sender, params.beneficiary, _amount);
-        if (organizationsRegistry[_avatar][_record] == 0)
-          OrgAdded(_avatar, _record);
-        organizationsRegistry[_avatar][_record] += _amount;
+        require(params.token.transferFrom(msg.sender, params.beneficiary, _amount));
+        if (organizationsRegistry[_avatar][_record] == 0) {
+            OrgAdded(_avatar, _record);
+        }
+        organizationsRegistry[_avatar][_record] = organizationsRegistry[_avatar][_record].add(_amount);
         Promotion(_avatar, _record, _amount);
     }
 }

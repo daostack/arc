@@ -61,8 +61,8 @@ contract SchemeRegistrar is UniversalScheme {
     function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
           // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-
         SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        require(proposal.scheme != address(0));
         delete organizationsProposals[_avatar][_proposalId];
         ProposalDeleted(_avatar,_proposalId);
         if (_param == 1) {
@@ -127,6 +127,7 @@ contract SchemeRegistrar is UniversalScheme {
     returns(bytes32)
     {
         // propose
+        require(_scheme != address(0));
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
         bytes32 proposalId = controllerParams.intVote.propose(2, controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this),msg.sender);

@@ -137,6 +137,7 @@ contract DaoCreator {
         // Create Token, Reputation and Avatar:
         require(_founders.length == _foundersTokenAmount.length);
         require(_founders.length == _foundersReputationAmount.length);
+        require(_founders.length > 0);
         DAOToken  nativeToken = new DAOToken(_tokenName, _tokenSymbol,_cap);
         Reputation  nativeReputation = new Reputation();
         Avatar  avatar = new Avatar(_orgName, nativeToken, nativeReputation);
