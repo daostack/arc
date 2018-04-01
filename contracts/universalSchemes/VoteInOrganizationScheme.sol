@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -108,7 +108,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
             originalNumOfChoices: originalNumOfChoices,
             exist: true
         });
-        NewVoteProposal(
+        emit NewVoteProposal(
             _avatar,
             proposalId,
             params.intVote,
@@ -135,7 +135,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         VoteProposal memory proposal = organizationsData[_avatar][_proposalId];
         require(proposal.exist);
         delete organizationsData[_avatar][_proposalId];
-        ProposalDeleted(_avatar, _proposalId);
+        emit ProposalDeleted(_avatar, _proposalId);
         bool retVal = true;
         // If no decision do nothing:
         if (_param != 0) {
@@ -152,7 +152,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
             tmp[2] = bytes32(param);
             retVal = controller.genericAction(tmp,_avatar);
           }
-        ProposalExecuted(_avatar, _proposalId,_param);
+        emit ProposalExecuted(_avatar, _proposalId,_param);
         return retVal;
     }
 
@@ -166,7 +166,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     */
     function action(bytes32[] _params) public returns(bool) {
         IntVoteInterface intVote = IntVoteInterface(address(_params[0]));
-        VoteOnBehalf(_params);
+        emit VoteOnBehalf(_params);
         return intVote.vote(_params[1], uint(_params[2]));
     }
 }

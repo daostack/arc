@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "../controller/DAOToken.sol";
 import "../controller/Reputation.sol";
@@ -105,7 +105,7 @@ contract DaoCreator {
         controller.unregisterScheme(this,address(_avatar));
         // Remove lock:
         delete locks[address(_avatar)];
-        InitialSchemesSet(address(_avatar));
+        emit InitialSchemesSet(address(_avatar));
     }
 
     /**
@@ -165,7 +165,7 @@ contract DaoCreator {
 
         locks[address(avatar)] = msg.sender;
 
-        NewOrg (address(avatar));
+        emit NewOrg (address(avatar));
         return (address(avatar));
     }
 }

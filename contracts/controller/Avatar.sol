@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./Reputation.sol";
 import "./DAOToken.sol";
@@ -41,7 +41,7 @@ contract Avatar is Ownable {
     * @dev enables an avatar to receive ethers
     */
     function() public payable {
-        ReceiveEther(msg.sender, msg.value);
+        emit ReceiveEther(msg.sender, msg.value);
     }
 
     /**
@@ -55,7 +55,7 @@ contract Avatar is Ownable {
     function genericAction(address _action, bytes32[] _params)
     public onlyOwner returns(bool)
     {
-        GenericAction(_action, _params);
+        emit GenericAction(_action, _params);
         require(
           // solium-disable-next-line security/no-low-level-calls
             _action.delegatecall(
@@ -75,7 +75,7 @@ contract Avatar is Ownable {
     */
     function sendEther(uint _amountInWei, address _to) public onlyOwner returns(bool) {
         _to.transfer(_amountInWei);
-        SendEther(_amountInWei, _to);
+        emit SendEther(_amountInWei, _to);
         return true;
     }
 
@@ -90,7 +90,7 @@ contract Avatar is Ownable {
     public onlyOwner returns(bool)
     {
         _externalToken.transfer(_to, _value);
-        ExternalTokenTransfer(_externalToken, _to, _value);
+        emit ExternalTokenTransfer(_externalToken, _to, _value);
         return true;
     }
 
@@ -111,7 +111,7 @@ contract Avatar is Ownable {
     public onlyOwner returns(bool)
     {
         _externalToken.transferFrom(_from, _to, _value);
-        ExternalTokenTransferFrom(_externalToken, _from, _to, _value);
+        emit ExternalTokenTransferFrom(_externalToken, _from, _to, _value);
         return true;
     }
 
@@ -127,7 +127,7 @@ contract Avatar is Ownable {
     public onlyOwner returns(bool)
     {
         _externalToken.increaseApproval(_spender, _addedValue);
-        ExternalTokenIncreaseApproval(_externalToken, _spender, _addedValue);
+        emit ExternalTokenIncreaseApproval(_externalToken, _spender, _addedValue);
         return true;
     }
 
@@ -143,7 +143,7 @@ contract Avatar is Ownable {
     public onlyOwner returns(bool)
     {
         _externalToken.decreaseApproval(_spender, _subtractedValue);
-        ExternalTokenDecreaseApproval(_externalToken,_spender, _subtractedValue);
+        emit ExternalTokenDecreaseApproval(_externalToken,_spender, _subtractedValue);
         return true;
     }
 

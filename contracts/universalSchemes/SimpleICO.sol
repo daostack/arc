@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./UniversalScheme.sol";
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -243,7 +243,7 @@ contract SimpleICO is UniversalScheme {
         if (change != 0) {
             _beneficiary.transfer(change);
         }
-        DonationReceived(_avatar, _beneficiary, incomingEther, tokens);
+        emit DonationReceived(_avatar, _beneficiary, incomingEther, tokens);
         return tokens;
     }
 }
