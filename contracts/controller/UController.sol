@@ -356,14 +356,14 @@ contract UController is ControllerInterface {
         require(_newController != address(0));
         newControllers[_avatar] = _newController;
         (Avatar(_avatar)).transferOwnership(_newController);
-        require(Avatar(_avatar).owner() != _newController);
+        require(Avatar(_avatar).owner() == _newController);
         if (organizations[_avatar].nativeToken.owner() == address(this)) {
             organizations[_avatar].nativeToken.transferOwnership(_newController);
-            require(organizations[_avatar].nativeToken.owner() != _newController);
+            require(organizations[_avatar].nativeToken.owner() == _newController);
         }
         if (organizations[_avatar].nativeReputation.owner() == address(this)) {
             organizations[_avatar].nativeReputation.transferOwnership(_newController);
-            require(organizations[_avatar].nativeReputation.owner() != _newController);
+            require(organizations[_avatar].nativeReputation.owner() == _newController);
         }
         UpgradeController(this,_newController,_avatar);
         return true;

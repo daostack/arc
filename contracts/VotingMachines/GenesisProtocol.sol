@@ -428,7 +428,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
         uint e = 2;
         Parameters memory params = parameters[proposals[_proposalId].paramsHash];
-        return int(params.thresholdConstA * (e ** (orgBoostedProposalsCnt[_avatar]/params.thresholdConstB)));
+        uint power = orgBoostedProposalsCnt[_avatar]/params.thresholdConstB;
+        if (power > 100) {
+            power = 100;
+        }
+        return int(params.thresholdConstA * (e ** power));
     }
 
     /**
