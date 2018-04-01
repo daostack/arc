@@ -171,7 +171,9 @@ contract AbsoluteVote is IntVoteInterface {
    */
     function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
-        uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
+        Reputation reputation = parameters[proposal.paramsHash].reputationSystem;
+        require(reputation != address(0));
+        uint totalReputation = reputation.totalSupply();
         uint precReq = parameters[proposal.paramsHash].precReq;
         // Check if someone crossed the bar:
         for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {

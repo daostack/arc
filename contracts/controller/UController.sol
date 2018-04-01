@@ -75,9 +75,9 @@ contract UController is ControllerInterface {
     event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
-    event UpgradeController(address _oldController,address _newController,address _avatar);
-    event AddGlobalConstraint(address _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when,address indexed _avatar);
-    event RemoveGlobalConstraint(address _globalConstraint ,uint256 _index,bool _isPre,address indexed _avatar);
+    event UpgradeController(address indexed _oldController,address _newController,address _avatar);
+    event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when,address indexed _avatar);
+    event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre,address indexed _avatar);
 
     function UController()public {}
 
@@ -356,11 +356,14 @@ contract UController is ControllerInterface {
         require(_newController != address(0));
         newControllers[_avatar] = _newController;
         (Avatar(_avatar)).transferOwnership(_newController);
+        require(Avatar(_avatar).owner() != _newController);
         if (organizations[_avatar].nativeToken.owner() == address(this)) {
             organizations[_avatar].nativeToken.transferOwnership(_newController);
+            require(organizations[_avatar].nativeToken.owner() != _newController);
         }
         if (organizations[_avatar].nativeReputation.owner() == address(this)) {
             organizations[_avatar].nativeReputation.transferOwnership(_newController);
+            require(organizations[_avatar].nativeReputation.owner() != _newController);
         }
         UpgradeController(this,_newController,_avatar);
         return true;

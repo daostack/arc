@@ -4,6 +4,8 @@ import "../universalSchemes/ExecutableInterface.sol";
 
 
 interface IntVoteInterface {
+    //When implementing this interface please do not only override function and modifier,
+    //but also to keep the modifiers on the overridden functions.
     modifier onlyProposalOwner(bytes32 _proposalId) {revert(); _;}
     modifier votable(bytes32 _proposalId) {revert(); _;}
 

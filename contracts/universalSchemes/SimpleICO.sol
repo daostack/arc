@@ -152,12 +152,12 @@ contract SimpleICO is UniversalScheme {
      * @dev start an ICO
      * @param _avatar The Avatar's of the organization
      */
-    function start(Avatar _avatar) public {
+    function start(address _avatar) public {
         require(!isActive(_avatar));
         Organization memory org;
-        org.paramsHash = getParametersFromController(_avatar);
+        org.paramsHash = getParametersFromController(Avatar(_avatar));
         require(parameters[org.paramsHash].cap != 0);
-        org.avatarContractICO = new MirrorContractICO(_avatar, this);
+        org.avatarContractICO = new MirrorContractICO(Avatar(_avatar), this);
         organizationsICOInfo[_avatar] = org;
     }
 

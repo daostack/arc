@@ -250,7 +250,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         uint amount = _amount;
         Parameters memory params = parameters[proposal.paramsHash];
         require(amount >= params.minimumStakingFee);
-        stakingToken.transferFrom(msg.sender, address(this), amount);
+        require(stakingToken.transferFrom(msg.sender, address(this), amount));
         proposal.totalStakes[1] = proposal.totalStakes[1].add(amount); //update totalRedeemableStakes
         staker.amount += amount;
         staker.vote = _vote;
@@ -291,9 +291,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     }
 
   /**
-   * @dev Cancel the vote of the msg.sender: subtract the reputation amount from the votes
-   * and delete the voter from the proposal struct
-   * @param _proposalId id of the proposal
+   * @dev Cancel the vote of the msg.sender.
+   * cancel vote is not allow in genesisProtocol so this function doing nothing.
+   * This function is here in order to comply to the IntVoteInterface .
    */
     function cancelVote(bytes32 _proposalId) public votable(_proposalId) {
        //this is not allowed
@@ -389,7 +389,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         }
         if (amount != 0) {
             proposal.totalStakes[1] = proposal.totalStakes[1].sub(amount);
-            stakingToken.transfer(_beneficiary, amount);
+            require(stakingToken.transfer(_beneficiary, amount));
             Redeem(_proposalId,_beneficiary,amount);
         }
         if (reputation != 0 ) {

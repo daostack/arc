@@ -64,9 +64,9 @@ contract Controller is ControllerInterface {
     event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
     event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
-    event UpgradeController(address _oldController,address _newController);
-    event AddGlobalConstraint(address _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when);
-    event RemoveGlobalConstraint(address _globalConstraint ,uint256 _index,bool _isPre);
+    event UpgradeController(address indexed _oldController,address _newController);
+    event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when);
+    event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre);
 
     function Controller(
         Avatar _avatar
@@ -379,11 +379,14 @@ contract Controller is ControllerInterface {
         require(_newController != address(0));
         newController = _newController;
         avatar.transferOwnership(_newController);
+        require(avatar.owner()==_newController);
         if (nativeToken.owner() == address(this)) {
             nativeToken.transferOwnership(_newController);
+            require(nativeToken.owner()==_newController);
         }
         if (nativeReputation.owner() == address(this)) {
             nativeReputation.transferOwnership(_newController);
+            require(nativeReputation.owner()==_newController);
         }
         UpgradeController(this,newController);
         return true;

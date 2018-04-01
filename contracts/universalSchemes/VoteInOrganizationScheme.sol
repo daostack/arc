@@ -26,6 +26,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         IntVoteInterface originalIntVote;
         bytes32 originalProposalId;
         uint originalNumOfChoices;
+        bool exist;
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
@@ -104,7 +105,8 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         organizationsData[_avatar][proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
             originalProposalId: _originalProposalId,
-            originalNumOfChoices: originalNumOfChoices
+            originalNumOfChoices: originalNumOfChoices,
+            exist: true
         });
         NewVoteProposal(
             _avatar,
@@ -131,6 +133,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
 
         // Save proposal to memory and delete from storage:
         VoteProposal memory proposal = organizationsData[_avatar][_proposalId];
+        require(proposal.exist);
         delete organizationsData[_avatar][_proposalId];
         ProposalDeleted(_avatar, _proposalId);
         bool retVal = true;
