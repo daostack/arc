@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -92,7 +92,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
             params: bytes32(0)
         });
         organizationsProposals[_avatar][proposalId] = proposal;
-        NewUpgradeProposal(_avatar, proposalId, params.intVote, _newController);
+        emit NewUpgradeProposal(_avatar, proposalId, params.intVote, _newController);
         params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the proposal submitter.*/
         return proposalId;
     }
@@ -124,7 +124,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         });
         organizationsProposals[_avatar][proposalId] = proposal;
 
-        ChangeUpgradeSchemeProposal(
+        emit ChangeUpgradeSchemeProposal(
             _avatar,
             proposalId,
             params.intVote,
@@ -147,7 +147,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.proposalType != 0);
         delete organizationsProposals[_avatar][_proposalId];
-        ProposalDeleted(_avatar,_proposalId);
+        emit ProposalDeleted(_avatar,_proposalId);
         // Check if vote was successful:
         if (_param == 1) {
 
@@ -168,7 +168,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
                     }
                   }
         }
-        ProposalExecuted(_avatar, _proposalId,_param);
+        emit ProposalExecuted(_avatar, _proposalId,_param);
         return true;
     }
 }

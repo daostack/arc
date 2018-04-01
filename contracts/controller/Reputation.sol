@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/math/SafeMath.sol";
@@ -46,7 +46,7 @@ contract Reputation is Ownable {
     {
         totalSupply = totalSupply.add(_amount);
         balances[_to] = balances[_to].add(_amount);
-        Mint(_to, _amount);
+        emit Mint(_to, _amount);
         return true;
     }
 
@@ -68,7 +68,7 @@ contract Reputation is Ownable {
         }
         totalSupply = totalSupply.sub(amountMinted);
         balances[_from] = balances[_from].sub(amountMinted);
-        Burn(_from, amountMinted);
+        emit Burn(_from, amountMinted);
         return true;
     }
 }

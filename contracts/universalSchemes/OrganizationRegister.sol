@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./UniversalScheme.sol";
 
@@ -79,9 +79,9 @@ contract OrganizationRegister is UniversalScheme {
 
         require(params.token.transferFrom(msg.sender, params.beneficiary, _amount));
         if (organizationsRegistry[_avatar][_record] == 0) {
-            OrgAdded(_avatar, _record);
+            emit OrgAdded(_avatar, _record);
         }
         organizationsRegistry[_avatar][_record] = organizationsRegistry[_avatar][_record].add(_amount);
-        Promotion(_avatar, _record, _amount);
+        emit Promotion(_avatar, _record, _amount);
     }
 }

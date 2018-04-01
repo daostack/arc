@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -64,7 +64,7 @@ contract SchemeRegistrar is UniversalScheme {
         SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.scheme != address(0));
         delete organizationsProposals[_avatar][_proposalId];
-        ProposalDeleted(_avatar,_proposalId);
+        emit ProposalDeleted(_avatar,_proposalId);
         if (_param == 1) {
 
           // Define controller and get the params:
@@ -79,7 +79,7 @@ contract SchemeRegistrar is UniversalScheme {
                 require(controller.unregisterScheme(proposal.scheme,_avatar));
             }
           }
-        ProposalExecuted(_avatar, _proposalId,_param);
+        emit ProposalExecuted(_avatar, _proposalId,_param);
         return true;
     }
 
@@ -138,7 +138,7 @@ contract SchemeRegistrar is UniversalScheme {
             proposalType: 1,
             permissions: _permissions
         });
-        NewSchemeProposal(
+        emit NewSchemeProposal(
             _avatar,
             proposalId,
             controllerParams.intVote,
@@ -171,7 +171,7 @@ contract SchemeRegistrar is UniversalScheme {
 
         organizationsProposals[_avatar][proposalId].proposalType = 2;
         organizationsProposals[_avatar][proposalId].scheme = _scheme;
-        RemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);
+        emit RemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);
         // vote for this proposal
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;

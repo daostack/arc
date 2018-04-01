@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -125,7 +125,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
 
         // Log:
-        AgreementProposal(_avatar, proposalId);
+        emit AgreementProposal(_avatar, proposalId);
         return proposalId;
     }
 
@@ -184,7 +184,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         agreementsCounter++;
 
         // Log new agreement and return id:
-        NewVestedAgreement(agreementsCounter-1);
+        emit NewVestedAgreement(agreementsCounter-1);
         return(agreementsCounter-1);
     }
 
@@ -232,7 +232,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         Agreement memory proposedAgreement = organizationsData[_avatar][_proposalId];
         require(proposedAgreement.periodLength > 0);
         delete organizationsData[_avatar][_proposalId];
-        ProposalDeleted(_avatar,_proposalId);
+        emit ProposalDeleted(_avatar,_proposalId);
 
         // Check if vote was successful:
         if (_param == 1) {
@@ -243,9 +243,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:
-            NewVestedAgreement(agreementsCounter-1);
+            emit NewVestedAgreement(agreementsCounter-1);
         }
-        ProposalExecuted(_avatar,_proposalId,_param);
+        emit ProposalExecuted(_avatar,_proposalId,_param);
         return true;
     }
 
@@ -263,7 +263,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         agreement.signaturesReceived[msg.sender] = true;
         agreement.signaturesReceivedCounter++;
 
-        SignToCancelAgreement(_agreementId,msg.sender);
+        emit SignToCancelAgreement(_agreementId,msg.sender);
 
         // Check if threshold crossed:
         if (agreement.signaturesReceivedCounter == agreement.signaturesReqToCancel) {
@@ -285,7 +285,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         agreement.signaturesReceived[msg.sender] = false;
         agreement.signaturesReceivedCounter--;
 
-        RevokeSignToCancelAgreement(_agreementId,msg.sender);
+        emit RevokeSignToCancelAgreement(_agreementId,msg.sender);
     }
 
     /**
@@ -312,7 +312,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         require(agreement.token.transfer(agreement.beneficiary, tokensToTransfer));
 
         // Log collecting:
-        Collect(_agreementId);
+        emit Collect(_agreementId);
     }
 
     /**
@@ -326,6 +326,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         uint tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
         require(agreement.token.transfer(agreement.returnOnCancelAddress, tokensLeft));
         // Log canceling agreement:
-        AgreementCancel(_agreementId);
+        emit AgreementCancel(_agreementId);
     }
 }

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "../universalSchemes/ExecutableInterface.sol";
 
@@ -25,23 +25,23 @@ interface IntVoteInterface {
         address _avatar,
         ExecutableInterface _executable,
         address _proposer
-        ) public returns(bytes32);
+        ) external returns(bytes32);
 
     // Only owned proposals and only the owner:
-    function cancelProposal(bytes32 _proposalId) public onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool);
+    function cancelProposal(bytes32 _proposalId) external onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool);
 
     // Only owned proposals and only the owner:
-    function ownerVote(bytes32 _proposalId, uint _vote, address _voter) public onlyProposalOwner(_proposalId) returns(bool);
+    function ownerVote(bytes32 _proposalId, uint _vote, address _voter) external onlyProposalOwner(_proposalId) returns(bool);
 
-    function vote(bytes32 _proposalId, uint _vote) public votable(_proposalId) returns(bool);
+    function vote(bytes32 _proposalId, uint _vote) external votable(_proposalId) returns(bool);
 
     function voteWithSpecifiedAmounts(
         bytes32 _proposalId,
         uint _vote,
         uint _rep,
-        uint _token) public votable(_proposalId) returns(bool);
+        uint _token) external votable(_proposalId) returns(bool);
 
-    function cancelVote(bytes32 _proposalId) public votable(_proposalId);
+    function cancelVote(bytes32 _proposalId) external votable(_proposalId);
 
     //@dev execute check if the proposal has been decided, and if so, execute the proposal
     //@param _proposalId the id of the proposal
@@ -49,9 +49,9 @@ interface IntVoteInterface {
     //             false - otherwise.
     function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool);
 
-    function getNumberOfChoices(bytes32 _proposalId) public view returns(uint);
+    function getNumberOfChoices(bytes32 _proposalId) external view returns(uint);
 
-    function isVotable(bytes32 _proposalId) public view returns(bool);
+    function isVotable(bytes32 _proposalId) external view returns(bool);
 
     /**
      * @dev voteStatus returns the reputation voted for a proposal for a specific voting choice.
@@ -59,11 +59,11 @@ interface IntVoteInterface {
      * @param _choice the index in the
      * @return voted reputation for the given choice
      */
-    function voteStatus(bytes32 _proposalId,uint _choice) public view returns(uint);
+    function voteStatus(bytes32 _proposalId,uint _choice) external view returns(uint);
 
     /**
      * @dev isAbstainAllow returns if the voting machine allow abstain (0)
      * @return bool true or false
      */
-    function isAbstainAllow() public pure returns(bool);
+    function isAbstainAllow() external pure returns(bool);
 }

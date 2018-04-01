@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
@@ -96,82 +96,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
    * @dev Check that the proposal is votable (open and not executed yet)
    */
     modifier votable(bytes32 _proposalId) {
-        require(isVotable(_proposalId));
+        require(_isVotable(_proposalId));
         _;
-    }
-
-    /**
-     * @dev hash the parameters, save them if necessary, and return the hash value
-     * @param _params a parameters array
-     *    _params[0] - _preBoostedVoteRequiredPercentage,
-     *    _params[1] - _preBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
-     *    _params[2] -_boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.
-     *    _params[3] -_thresholdConstA,
-     *    _params[4] -_thresholdConstB,
-     *    _params[5] -_minimumStakingFee,
-     *    _params[6] -_quietEndingPeriod,
-     *    _params[7] -_proposingRepRewardConstA,
-     *    _params[8] -_proposingRepRewardConstB,
-     *    _params[9] -_stakerFeeRatioForVoters,
-     *    _params[10] -_votersReputationLossRatio,
-     *    _params[11] -_votersGainRepRatioFromLostRep
-    */
-    function setParameters(
-        uint[12] _params //use array here due to stack too deep issue.
-    )
-    public
-    returns(bytes32)
-    {
-        require(_params[0] <= 100 && _params[0] > 0); //preBoostedVoteRequiredPercentage
-        require(_params[4] > 0 && _params[4] <= 100000000 ether); //_thresholdConstB cannot be zero.
-        require(_params[3] <= 100000000 ether); //_thresholdConstA
-        require(_params[9] <= 100); //stakerFeeRatioForVoters
-        require(_params[10] <= 100); //votersReputationLossRatio
-        require(_params[11] <= 100); //votersGainRepRatioFromLostRep
-        require(_params[2] >= _params[6]); //boostedVotePeriodLimit >= quietEndingPeriod
-        require(_params[7] <= 100000000 ether); //_proposingRepRewardConstA
-        require(_params[8] <= 100000000 ether); //_proposingRepRewardConstB
-
-        bytes32 paramsHash = getParametersHash(_params);
-        parameters[paramsHash] = Parameters({
-            preBoostedVoteRequiredPercentage: _params[0],
-            preBoostedVotePeriodLimit: _params[1],
-            boostedVotePeriodLimit: _params[2],
-            thresholdConstA:_params[3],
-            thresholdConstB:_params[4],
-            minimumStakingFee: _params[5],
-            quietEndingPeriod: _params[6],
-            proposingRepRewardConstA: _params[7],
-            proposingRepRewardConstB:_params[8],
-            stakerFeeRatioForVoters:_params[9],
-            votersReputationLossRatio:_params[10],
-            votersGainRepRatioFromLostRep:_params[11]
-        });
-        return paramsHash;
-    }
-
-  /**
-   * @dev hashParameters returns a hash of the given parameters
-   */
-    function getParametersHash(
-        uint[12] _params) //use array here due to stack too deep issue.
-        public
-        pure
-        returns(bytes32)
-        {
-        return keccak256(
-            _params[0],
-            _params[1],
-            _params[2],
-            _params[3],
-            _params[4],
-            _params[5],
-            _params[6],
-            _params[7],
-            _params[8],
-            _params[9],
-            _params[10],
-            _params[11]);
     }
 
     /**
@@ -183,7 +109,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @param _proposer address
      * @return proposal's id.
      */
-    function propose(uint _numOfChoices, bytes32 , address _avatar, ExecutableInterface _executable,address _proposer) public returns(bytes32) {
+    function propose(uint _numOfChoices, bytes32 , address _avatar, ExecutableInterface _executable,address _proposer) external returns(bytes32) {
           // Check valid params and number of choices:
         require(_numOfChoices == NUM_OF_CHOICES);
         require(ExecutableInterface(_executable) != address(0));
@@ -207,14 +133,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         proposal.winningVote = NO;
         proposal.paramsHash = paramsHash;
         proposals[proposalId] = proposal;
-        NewProposal(proposalId, _numOfChoices, msg.sender, paramsHash);
+        emit NewProposal(proposalId, _numOfChoices, msg.sender, paramsHash);
         return proposalId;
     }
 
   /**
    * @dev Cancel a proposal, only the owner can call this function and only if allowOwner flag is true.
    */
-    function cancelProposal(bytes32 ) public returns(bool) {
+    function cancelProposal(bytes32 ) external returns(bool) {
         //This is not allowed.
         return false;
     }
@@ -227,7 +153,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return bool true - the proposal has been executed
      *              false - otherwise.
      */
-    function stake(bytes32 _proposalId, uint _vote, uint _amount) public returns(bool) {
+    function stake(bytes32 _proposalId, uint _vote, uint _amount) external returns(bool) {
         // 0 is not a valid vote.
         require(_vote <= NUM_OF_CHOICES && _vote > 0);
         require(_amount > 0);
@@ -260,7 +186,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         amount = amount - ((params.stakerFeeRatioForVoters*amount)/100);
         proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
       // Event:
-        Stake(_proposalId, msg.sender, _vote, _amount);
+        emit Stake(_proposalId, msg.sender, _vote, _amount);
       // execute the proposal if this vote was decisive:
         return execute(_proposalId);
     }
@@ -272,7 +198,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
    * @return bool true - the proposal has been executed
    *              false - otherwise.
    */
-    function vote(bytes32 _proposalId, uint _vote) public votable(_proposalId) returns(bool) {
+    function vote(bytes32 _proposalId, uint _vote) external votable(_proposalId) returns(bool) {
         return internalVote(_proposalId, msg.sender, _vote, 0);
     }
 
@@ -281,12 +207,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
    * @return bool true - the proposal has been executed
    *              false - otherwise.
    */
-    function ownerVote(bytes32 , uint , address ) public returns(bool) {
+    function ownerVote(bytes32 , uint , address ) external returns(bool) {
       //This is not allowed.
         return false;
     }
 
-    function voteWithSpecifiedAmounts(bytes32 _proposalId,uint _vote,uint _rep,uint) public votable(_proposalId) returns(bool) {
+    function voteWithSpecifiedAmounts(bytes32 _proposalId,uint _vote,uint _rep,uint) external votable(_proposalId) returns(bool) {
         return internalVote(_proposalId,msg.sender,_vote,_rep);
     }
 
@@ -295,9 +221,130 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
    * cancel vote is not allow in genesisProtocol so this function doing nothing.
    * This function is here in order to comply to the IntVoteInterface .
    */
-    function cancelVote(bytes32 _proposalId) public votable(_proposalId) {
+    function cancelVote(bytes32 _proposalId) external votable(_proposalId) {
        //this is not allowed
         return;
+    }
+    
+  /**
+    * @dev getNumberOfChoices returns the number of choices possible in this proposal
+    * @param _proposalId the ID of the proposals
+    * @return uint that contains number of choices
+    */
+    function getNumberOfChoices(bytes32 _proposalId) external view returns(uint) {
+        return proposals[_proposalId].numOfChoices;
+    }
+
+    /**
+     * @dev voteInfo returns the vote and the amount of reputation of the user committed to this proposal
+     * @param _proposalId the ID of the proposal
+     * @param _voter the address of the voter
+     * @return uint vote - the voters vote
+     *        uint reputation - amount of reputation committed by _voter to _proposalId
+     */
+    function voteInfo(bytes32 _proposalId, address _voter) external view returns(uint, uint) {
+        Voter memory voter = proposals[_proposalId].voters[_voter];
+        return (voter.vote, voter.reputation);
+    }
+
+    /**
+    * @dev voteStatus returns the reputation voted for a proposal for a specific voting choice.
+    * @param _proposalId the ID of the proposal
+    * @param _choice the index in the
+    * @return voted reputation for the given choice
+    */
+    function voteStatus(bytes32 _proposalId,uint _choice) external view returns(uint) {
+        return proposals[_proposalId].votes[_choice];
+    }
+
+    /**
+    * @dev isVotable check if the proposal is votable
+    * @param _proposalId the ID of the proposal
+    * @return bool true or false
+    */
+    function isVotable(bytes32 _proposalId) external view returns(bool) {
+        return _isVotable(_proposalId);
+    }
+
+    /**
+    * @dev proposalStatus return the total votes and stakes for a given proposal
+    * @param _proposalId the ID of the proposal
+    * @return uint totalVotes
+    * @return uint stakersStakes
+    * @return uint totalRedeemableStakes
+    * @return uint voterStakes
+    */
+    function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint,uint) {
+        return (proposals[_proposalId].totalVotes, proposals[_proposalId].totalStakes[0],proposals[_proposalId].totalStakes[1], proposals[_proposalId].votersStakes);
+    }
+
+  /**
+    * @dev proposalAvatar return the avatar for a given proposal
+    * @param _proposalId the ID of the proposal
+    * @return uint total reputation supply
+    */
+    function proposalAvatar(bytes32 _proposalId) external view returns(address) {
+        return (proposals[_proposalId].avatar);
+    }
+
+  /**
+    * @dev scoreThresholdParams return the score threshold params for a given
+    * organization.
+    * @param _avatar the organization's avatar
+    * @return uint thresholdConstA
+    * @return uint thresholdConstB
+    */
+    function scoreThresholdParams(address _avatar) external view returns(uint,uint) {
+        bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
+        Parameters memory params = parameters[paramsHash];
+        return (params.thresholdConstA,params.thresholdConstB);
+    }
+
+    /**
+      * @dev staker return the vote and stake amount for a given proposal and staker
+      * @param _proposalId the ID of the proposal
+      * @param _staker staker address
+      * @return uint vote
+      * @return uint amount
+    */
+    function staker(bytes32 _proposalId,address _staker) external view returns(uint,uint) {
+        return (proposals[_proposalId].stakers[_staker].vote,proposals[_proposalId].stakers[_staker].amount);
+    }
+
+    /**
+      * @dev voteStake return the amount stakes for a given proposal and vote
+      * @param _proposalId the ID of the proposal
+      * @param _vote vote number
+      * @return uint stake amount
+    */
+    function voteStake(bytes32 _proposalId,uint _vote) external view returns(uint) {
+        return proposals[_proposalId].stakes[_vote];
+    }
+
+  /**
+    * @dev voteStake return the winningVote for a given proposal
+    * @param _proposalId the ID of the proposal
+    * @return uint winningVote
+    */
+    function winningVote(bytes32 _proposalId) external view returns(uint) {
+        return proposals[_proposalId].winningVote;
+    }
+
+    /**
+      * @dev voteStake return the state for a given proposal
+      * @param _proposalId the ID of the proposal
+      * @return ProposalState proposal state
+    */
+    function state(bytes32 _proposalId) external view returns(ProposalState) {
+        return proposals[_proposalId].state;
+    }
+
+   /**
+    * @dev isAbstainAllow returns if the voting machine allow abstain (0)
+    * @return bool true or false
+    */
+    function isAbstainAllow() external pure returns(bool) {
+        return false;
     }
 
   /**
@@ -349,7 +396,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             }
        }
         if (executionState != ExecutionState.None) {
-            ExecuteProposal(_proposalId, proposal.winningVote, totalReputation, executionState);
+            emit ExecuteProposal(_proposalId, proposal.winningVote, totalReputation, executionState);
             (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
         }
         return (executionState != ExecutionState.None);
@@ -390,11 +437,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         if (amount != 0) {
             proposal.totalStakes[1] = proposal.totalStakes[1].sub(amount);
             require(stakingToken.transfer(_beneficiary, amount));
-            Redeem(_proposalId,_beneficiary,amount);
+            emit Redeem(_proposalId,_beneficiary,amount);
         }
         if (reputation != 0 ) {
             ControllerInterface(Avatar(proposal.avatar).owner()).mintReputation(reputation,_beneficiary,proposal.avatar);
-            RedeemReputation(_proposalId,_beneficiary,reputation);
+            emit RedeemReputation(_proposalId,_beneficiary,reputation);
         }
         return true;
     }
@@ -528,125 +575,78 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         return rep;
     }
 
+    /**
+     * @dev hash the parameters, save them if necessary, and return the hash value
+     * @param _params a parameters array
+     *    _params[0] - _preBoostedVoteRequiredPercentage,
+     *    _params[1] - _preBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
+     *    _params[2] -_boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.
+     *    _params[3] -_thresholdConstA,
+     *    _params[4] -_thresholdConstB,
+     *    _params[5] -_minimumStakingFee,
+     *    _params[6] -_quietEndingPeriod,
+     *    _params[7] -_proposingRepRewardConstA,
+     *    _params[8] -_proposingRepRewardConstB,
+     *    _params[9] -_stakerFeeRatioForVoters,
+     *    _params[10] -_votersReputationLossRatio,
+     *    _params[11] -_votersGainRepRatioFromLostRep
+    */
+    function setParameters(
+        uint[12] _params //use array here due to stack too deep issue.
+    )
+    public
+    returns(bytes32)
+    {
+        require(_params[0] <= 100 && _params[0] > 0); //preBoostedVoteRequiredPercentage
+        require(_params[4] > 0 && _params[4] <= 100000000 ether); //_thresholdConstB cannot be zero.
+        require(_params[3] <= 100000000 ether); //_thresholdConstA
+        require(_params[9] <= 100); //stakerFeeRatioForVoters
+        require(_params[10] <= 100); //votersReputationLossRatio
+        require(_params[11] <= 100); //votersGainRepRatioFromLostRep
+        require(_params[2] >= _params[6]); //boostedVotePeriodLimit >= quietEndingPeriod
+        require(_params[7] <= 100000000 ether); //_proposingRepRewardConstA
+        require(_params[8] <= 100000000 ether); //_proposingRepRewardConstB
+
+        bytes32 paramsHash = getParametersHash(_params);
+        parameters[paramsHash] = Parameters({
+            preBoostedVoteRequiredPercentage: _params[0],
+            preBoostedVotePeriodLimit: _params[1],
+            boostedVotePeriodLimit: _params[2],
+            thresholdConstA:_params[3],
+            thresholdConstB:_params[4],
+            minimumStakingFee: _params[5],
+            quietEndingPeriod: _params[6],
+            proposingRepRewardConstA: _params[7],
+            proposingRepRewardConstB:_params[8],
+            stakerFeeRatioForVoters:_params[9],
+            votersReputationLossRatio:_params[10],
+            votersGainRepRatioFromLostRep:_params[11]
+        });
+        return paramsHash;
+    }
+
   /**
-   * @dev getNumberOfChoices returns the number of choices possible in this proposal
-   * @param _proposalId the ID of the proposals
-   * @return uint that contains number of choices
+   * @dev hashParameters returns a hash of the given parameters
    */
-    function getNumberOfChoices(bytes32 _proposalId) public view returns(uint) {
-        return proposals[_proposalId].numOfChoices;
-    }
-
-  /**
-   * @dev voteInfo returns the vote and the amount of reputation of the user committed to this proposal
-   * @param _proposalId the ID of the proposal
-   * @param _voter the address of the voter
-   * @return uint vote - the voters vote
-   *        uint reputation - amount of reputation committed by _voter to _proposalId
-   */
-    function voteInfo(bytes32 _proposalId, address _voter) public view returns(uint, uint) {
-        Voter memory voter = proposals[_proposalId].voters[_voter];
-        return (voter.vote, voter.reputation);
-    }
-
-    /**
-     * @dev voteStatus returns the reputation voted for a proposal for a specific voting choice.
-     * @param _proposalId the ID of the proposal
-     * @param _choice the index in the
-     * @return voted reputation for the given choice
-     */
-    function voteStatus(bytes32 _proposalId,uint _choice) public view returns(uint) {
-        return proposals[_proposalId].votes[_choice];
-    }
-
-    /**
-      * @dev isVotable check if the proposal is votable
-      * @param _proposalId the ID of the proposal
-      * @return bool true or false
-    */
-    function isVotable(bytes32 _proposalId) public view returns(bool) {
-        return ((proposals[_proposalId].state == ProposalState.PreBoosted)||(proposals[_proposalId].state == ProposalState.Boosted)||(proposals[_proposalId].state == ProposalState.QuietEndingPeriod));
-    }
-
-    /**
-      * @dev proposalStatus return the total votes and stakes for a given proposal
-      * @param _proposalId the ID of the proposal
-      * @return uint totalVotes
-      * @return uint stakersStakes
-      * @return uint totalRedeemableStakes
-      * @return uint voterStakes
-    */
-    function proposalStatus(bytes32 _proposalId) public view returns(uint, uint, uint,uint) {
-        return (proposals[_proposalId].totalVotes, proposals[_proposalId].totalStakes[0],proposals[_proposalId].totalStakes[1], proposals[_proposalId].votersStakes);
-    }
-
-    /**
-      * @dev proposalAvatar return the avatar for a given proposal
-      * @param _proposalId the ID of the proposal
-      * @return uint total reputation supply
-    */
-    function proposalAvatar(bytes32 _proposalId) public view returns(address) {
-        return (proposals[_proposalId].avatar);
-    }
-
-    /**
-      * @dev scoreThresholdParams return the score threshold params for a given
-      * organization.
-      * @param _avatar the organization's avatar
-      * @return uint thresholdConstA
-      * @return uint thresholdConstB
-    */
-    function scoreThresholdParams(address _avatar) public view returns(uint,uint) {
-        bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
-        Parameters memory params = parameters[paramsHash];
-        return (params.thresholdConstA,params.thresholdConstB);
-    }
-
-    /**
-      * @dev staker return the vote and stake amount for a given proposal and staker
-      * @param _proposalId the ID of the proposal
-      * @param _staker staker address
-      * @return uint vote
-      * @return uint amount
-    */
-    function staker(bytes32 _proposalId,address _staker) public view returns(uint,uint) {
-        return (proposals[_proposalId].stakers[_staker].vote,proposals[_proposalId].stakers[_staker].amount);
-    }
-
-    /**
-      * @dev voteStake return the amount stakes for a given proposal and vote
-      * @param _proposalId the ID of the proposal
-      * @param _vote vote number
-      * @return uint stake amount
-    */
-    function voteStake(bytes32 _proposalId,uint _vote) public view returns(uint) {
-        return proposals[_proposalId].stakes[_vote];
-    }
-
-    /**
-      * @dev voteStake return the winningVote for a given proposal
-      * @param _proposalId the ID of the proposal
-      * @return uint winningVote
-    */
-    function winningVote(bytes32 _proposalId) public view returns(uint) {
-        return proposals[_proposalId].winningVote;
-    }
-
-    /**
-      * @dev voteStake return the state for a given proposal
-      * @param _proposalId the ID of the proposal
-      * @return ProposalState proposal state
-    */
-    function state(bytes32 _proposalId) public view returns(ProposalState) {
-        return proposals[_proposalId].state;
-    }
-
-    /**
-     * @dev isAbstainAllow returns if the voting machine allow abstain (0)
-     * @return bool true or false
-     */
-    function isAbstainAllow() public pure returns(bool) {
-        return false;
+    function getParametersHash(
+        uint[12] _params) //use array here due to stack too deep issue.
+        public
+        pure
+        returns(bytes32)
+        {
+        return keccak256(
+            _params[0],
+            _params[1],
+            _params[2],
+            _params[3],
+            _params[4],
+            _params[5],
+            _params[6],
+            _params[7],
+            _params[8],
+            _params[9],
+            _params[10],
+            _params[11]);
     }
 
     /**
@@ -709,7 +709,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             ControllerInterface(Avatar(proposal.avatar).owner()).burnReputation(reputationDeposit,_voter,proposal.avatar);
         }
         // Event:
-        VoteProposal(_proposalId, _voter, _vote, rep);
+        emit VoteProposal(_proposalId, _voter, _vote, rep);
         // execute the proposal if this vote was decisive:
         return execute(_proposalId);
     }
@@ -723,5 +723,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function _score(bytes32 _proposalId) private view returns(int) {
         Proposal storage proposal = proposals[_proposalId];
         return int(proposal.stakes[YES]) - int(proposal.stakes[NO]);
+    }
+
+    /**
+      * @dev _isVotable check if the proposal is votable
+      * @param _proposalId the ID of the proposal
+      * @return bool true or false
+    */
+    function _isVotable(bytes32 _proposalId) private view returns(bool) {
+        return ((proposals[_proposalId].state == ProposalState.PreBoosted)||(proposals[_proposalId].state == ProposalState.Boosted)||(proposals[_proposalId].state == ProposalState.QuietEndingPeriod));
     }
 }

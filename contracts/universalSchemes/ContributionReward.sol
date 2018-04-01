@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -154,7 +154,7 @@ contract ContributionReward is UniversalScheme {
         });
         organizationsProposals[_avatar][contributionId] = proposal;
 
-        NewContributionProposal(
+        emit NewContributionProposal(
             _avatar,
             contributionId,
             controllerParams.intVote,
@@ -186,7 +186,7 @@ contract ContributionReward is UniversalScheme {
           // solium-disable-next-line security/no-block-members
             organizationsProposals[_avatar][_proposalId].executionTime = now;
         }
-        ProposalExecuted(_avatar, _proposalId,_param);
+        emit ProposalExecuted(_avatar, _proposalId,_param);
         return true;
     }
 
@@ -216,7 +216,7 @@ contract ContributionReward is UniversalScheme {
         }
         if (result) {
             proposal.redeemedPeriods[0] = proposal.redeemedPeriods[0].add(periodsToPay);
-            RedeemReputation(_avatar,_proposalId,_proposal.beneficiary,reputation);
+            emit RedeemReputation(_avatar,_proposalId,_proposal.beneficiary,reputation);
         }
         //restore proposal reward.
         proposal.reputationChange = _proposal.reputationChange;
@@ -244,7 +244,7 @@ contract ContributionReward is UniversalScheme {
             require(ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, _proposal.beneficiary,_avatar));
             proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
             result = true;
-            RedeemNativeToken(_avatar,_proposalId,_proposal.beneficiary,amount);
+            emit RedeemNativeToken(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
 
         //restore proposal reward.
@@ -273,7 +273,7 @@ contract ContributionReward is UniversalScheme {
             require(ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, _proposal.beneficiary,_avatar));
             proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
             result = true;
-            RedeemEther(_avatar,_proposalId,_proposal.beneficiary,amount);
+            emit RedeemEther(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
 
         //restore proposal reward.
@@ -303,7 +303,7 @@ contract ContributionReward is UniversalScheme {
                 require(ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar));
                 proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);
                 result = true;
-                RedeemExternalToken(_avatar,_proposalId,_proposal.beneficiary,amount);
+                emit RedeemExternalToken(_avatar,_proposalId,_proposal.beneficiary,amount);
             }
         }
         //restore proposal reward.

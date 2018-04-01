@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./Avatar.sol";
 import "./Reputation.sol";
@@ -20,7 +20,7 @@ interface ControllerInterface {
      * @return bool which represents a success
     */
     function mintReputation(uint256 _amount, address _to,address _avatar)
-    public
+    external
     returns(bool);
 
     /**
@@ -30,7 +30,7 @@ interface ControllerInterface {
      * @return bool which represents a success
      */
     function burnReputation(uint256 _amount, address _from,address _avatar)
-    public
+    external
     returns(bool);
 
     /**
@@ -41,7 +41,7 @@ interface ControllerInterface {
      * @return bool which represents a success
      */
     function mintTokens(uint256 _amount, address _beneficiary,address _avatar)
-    public
+    external
     returns(bool);
 
   /**
@@ -53,7 +53,7 @@ interface ControllerInterface {
    * @return bool which represents a success
    */
     function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions,address _avatar)
-    public
+    external
     returns(bool);
 
     /**
@@ -63,29 +63,29 @@ interface ControllerInterface {
      * @return bool which represents a success
      */
     function unregisterScheme(address _scheme,address _avatar)
-    public
+    external
     returns(bool);
     /**
      * @dev unregister the caller's scheme
      * @param _avatar address
      * @return bool which represents a success
      */
-    function unregisterSelf(address _avatar) public returns(bool);
+    function unregisterSelf(address _avatar) external returns(bool);
 
-    function isSchemeRegistered( address _scheme,address _avatar) public view returns(bool);
+    function isSchemeRegistered( address _scheme,address _avatar) external view returns(bool);
 
-    function getSchemeParameters(address _scheme,address _avatar) public view returns(bytes32);
+    function getSchemeParameters(address _scheme,address _avatar) external view returns(bytes32);
 
-    function getSchemePermissions(address _scheme,address _avatar) public view returns(bytes4);
+    function getSchemePermissions(address _scheme,address _avatar) external view returns(bytes4);
 
     /**
      * @dev globalConstraintsCount return the global constraint pre and post count
      * @return uint globalConstraintsPre count.
      * @return uint globalConstraintsPost count.
      */
-    function globalConstraintsCount(address _avatar) public view returns(uint,uint);
+    function globalConstraintsCount(address _avatar) external view returns(uint,uint);
 
-    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) public view returns(bool);
+    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) external view returns(bool);
 
     /**
      * @dev add or update Global Constraint
@@ -95,7 +95,7 @@ interface ControllerInterface {
      * @return bool which represents a success
      */
     function addGlobalConstraint(address _globalConstraint, bytes32 _params,address _avatar)
-    public returns(bool);
+    external returns(bool);
 
     /**
      * @dev remove Global Constraint
@@ -104,7 +104,7 @@ interface ControllerInterface {
      * @return bool which represents a success
      */
     function removeGlobalConstraint (address _globalConstraint,address _avatar)
-    public  returns(bool);
+    external  returns(bool);
 
   /**
     * @dev upgrade the Controller
@@ -114,7 +114,7 @@ interface ControllerInterface {
     * @return bool which represents a success
     */
     function upgradeController(address _newController,address _avatar)
-    public returns(bool);
+    external returns(bool);
     /**
     * @dev do a generic delegate call to the contract which called us.
     * This function use delegatecall and might expose the organization to security
@@ -124,7 +124,7 @@ interface ControllerInterface {
     * @return bool which represents success
     */
     function genericAction(bytes32[] _params,address _avatar)
-    public
+    external
     returns(bool);
   /**
    * @dev send some ether
@@ -134,7 +134,7 @@ interface ControllerInterface {
    * @return bool which represents a success
    */
     function sendEther(uint _amountInWei, address _to,address _avatar)
-    public returns(bool);
+    external returns(bool);
 
     /**
     * @dev send some amount of arbitrary ERC20 Tokens
@@ -145,7 +145,7 @@ interface ControllerInterface {
     * @return bool which represents a success
     */
     function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value,address _avatar)
-    public
+    external
     returns(bool);
 
     /**
@@ -160,7 +160,7 @@ interface ControllerInterface {
     * @return bool which represents a success
     */
     function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value,address _avatar)
-    public
+    external
     returns(bool);
 
     /**
@@ -173,7 +173,7 @@ interface ControllerInterface {
     * @return bool which represents a success
     */
     function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue,address _avatar)
-    public
+    external
     returns(bool);
 
     /**
@@ -186,7 +186,7 @@ interface ControllerInterface {
     * @return bool which represents a success
     */
     function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address _avatar)
-    public
+    external
     returns(bool);
 
     /**
@@ -195,7 +195,7 @@ interface ControllerInterface {
      * @return organization native reputation
      */
     function getNativeReputation(address _avatar)
-    public
+    external
     view
     returns(address);
 }

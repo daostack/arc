@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.21;
 
 import "./UniversalScheme.sol";
 import "../VotingMachines/IntVoteInterface.sol";
@@ -75,7 +75,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
         require(proposal.gc != address(0));
         delete organizationsData[_avatar].proposals[_proposalId];
-        ProposalDeleted(_avatar,_proposalId);
+        emit ProposalDeleted(_avatar,_proposalId);
 
         if (_param == 1 ) {
 
@@ -92,7 +92,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
                 retVal = controller.removeGlobalConstraint(proposal.gc,_avatar);
               }
         }
-        ProposalExecuted(_avatar, _proposalId,_param);
+        emit ProposalExecuted(_avatar, _proposalId,_param);
         return retVal;
     }
 
@@ -153,7 +153,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         });
 
         organizationsData[_avatar].proposals[proposalId] = proposal;
-        NewGlobalConstraintsProposal(
+        emit NewGlobalConstraintsProposal(
             _avatar,
             proposalId,
             intVote,
@@ -187,7 +187,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         });
 
         organizationsData[_avatar].proposals[proposalId] = proposal;
-        RemoveGlobalConstraintsProposal(_avatar, proposalId, intVote, _gc);
+        emit RemoveGlobalConstraintsProposal(_avatar, proposalId, intVote, _gc);
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
     }
