@@ -67,12 +67,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         mapping(address=>Staker) stakers;
     }
 
-    event NewProposal(bytes32 indexed _proposalId, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event ExecuteProposal(bytes32 indexed _proposalId, uint _decision,uint _totalReputation,ExecutionState _executionState);
-    event VoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation);
-    event Stake(bytes32 indexed _proposalId, address indexed _voter,uint _vote,uint _amount);
-    event Redeem(bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
-    event RedeemReputation(bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
+    event NewProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
+    event ExecuteProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _decision,uint _totalReputation,ExecutionState _executionState);
+    event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation);
+    event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _vote,uint _amount);
+    event Redeem(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
+    event RedeemReputation(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
@@ -133,7 +133,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         proposal.winningVote = NO;
         proposal.paramsHash = paramsHash;
         proposals[proposalId] = proposal;
-        emit NewProposal(proposalId, _numOfChoices, msg.sender, paramsHash);
+        emit NewProposal(proposalId, _avatar, _numOfChoices, msg.sender, paramsHash);
         return proposalId;
     }
 
@@ -186,7 +186,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         amount = amount - ((params.stakerFeeRatioForVoters*amount)/100);
         proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
       // Event:
-        emit Stake(_proposalId, msg.sender, _vote, _amount);
+        emit Stake(_proposalId, proposal.avatar, msg.sender, _vote, _amount);
       // execute the proposal if this vote was decisive:
         return execute(_proposalId);
     }
@@ -225,7 +225,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
        //this is not allowed
         return;
     }
-    
+
   /**
     * @dev getNumberOfChoices returns the number of choices possible in this proposal
     * @param _proposalId the ID of the proposals
@@ -396,7 +396,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             }
        }
         if (executionState != ExecutionState.None) {
-            emit ExecuteProposal(_proposalId, proposal.winningVote, totalReputation, executionState);
+            emit ExecuteProposal(_proposalId, proposal.avatar, proposal.winningVote, totalReputation, executionState);
             (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
         }
         return (executionState != ExecutionState.None);
@@ -437,11 +437,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         if (amount != 0) {
             proposal.totalStakes[1] = proposal.totalStakes[1].sub(amount);
             require(stakingToken.transfer(_beneficiary, amount));
-            emit Redeem(_proposalId,_beneficiary,amount);
+            emit Redeem(_proposalId,proposal.avatar,_beneficiary,amount);
         }
         if (reputation != 0 ) {
             ControllerInterface(Avatar(proposal.avatar).owner()).mintReputation(reputation,_beneficiary,proposal.avatar);
-            emit RedeemReputation(_proposalId,_beneficiary,reputation);
+            emit RedeemReputation(_proposalId,proposal.avatar,_beneficiary,reputation);
         }
         return true;
     }
@@ -709,7 +709,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             ControllerInterface(Avatar(proposal.avatar).owner()).burnReputation(reputationDeposit,_voter,proposal.avatar);
         }
         // Event:
-        emit VoteProposal(_proposalId, _voter, _vote, rep);
+        emit VoteProposal(_proposalId, proposal.avatar, _voter, _vote, rep);
         // execute the proposal if this vote was decisive:
         return execute(_proposalId);
     }
