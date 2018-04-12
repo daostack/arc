@@ -68,18 +68,19 @@ contract('SimpleICO', function(accounts) {
     var paramHash = await simpleICO.getParametersHash(1000,2,0,0,accounts[1],accounts[1]);
     var parameters = await simpleICO.parameters(paramHash);
     assert.equal(parameters[0].toNumber(),1000);
-    });
+  });
 
-    it("simpleICO start with cap zero should revert ", async function() {
+  it("simpleICO setParameters with cap zero should revert", async function() {
+    var simpleICO = await SimpleICO.new();
 
-      var testSetup = await setup(accounts,0);
-      try {
-       await testSetup.simpleICO.start(testSetup.org.avatar.address);
-       assert(false,"start should  fail - because params has cap zero");
-      }catch(ex){
-       helpers.assertVMException(ex);
-     }
-    });
+    try {
+     await simpleICO.setParameters(0,2,0,0,accounts[1],accounts[1]);
+     assert(false,"setParameters with cap zero should revert");
+    }catch(ex){
+     helpers.assertVMException(ex);
+    }
+
+  });
 
     it("simpleICO isActive ", async function() {
       var testSetup = await setup(accounts);

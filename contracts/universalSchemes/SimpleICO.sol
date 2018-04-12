@@ -95,6 +95,7 @@ contract SimpleICO is UniversalScheme {
         public
         returns(bytes32)
     {
+        require(_cap != 0);
         bytes32 paramsHash = getParametersHash(
             _cap,
             _price,
