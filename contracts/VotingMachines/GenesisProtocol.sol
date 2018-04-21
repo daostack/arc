@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
@@ -86,7 +86,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     /**
      * @dev Constructor
      */
-    function GenesisProtocol(StandardToken _stakingToken)
+    constructor(StandardToken _stakingToken)
     public
     {
         stakingToken = _stakingToken;

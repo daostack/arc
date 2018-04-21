@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./UniversalScheme.sol";
 
@@ -26,10 +26,6 @@ contract OrganizationRegister is UniversalScheme {
     event OrgAdded( address indexed _registry, address indexed _org);
     event Promotion( address indexed _registry, address indexed _org, uint _amount);
 
-    /**
-     * @dev Constructor
-     */
-    function OrganizationRegister() public {}
 
     /**
     * @dev Hash the parameters, save if needed and return the hash value

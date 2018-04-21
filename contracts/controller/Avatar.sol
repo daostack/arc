@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./Reputation.sol";
 import "./DAOToken.sol";
@@ -31,7 +31,7 @@ contract Avatar is Ownable {
     * @dev the constructor takes organization name, native token and reputation system
     and creates an avatar for a controller
     */
-    function Avatar(bytes32 _orgName, DAOToken _nativeToken, Reputation _nativeReputation) public {
+    constructor(bytes32 _orgName, DAOToken _nativeToken, Reputation _nativeReputation) public {
         orgName = _orgName;
         nativeToken = _nativeToken;
         nativeReputation = _nativeReputation;

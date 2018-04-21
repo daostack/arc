@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -45,10 +45,6 @@ contract SchemeRegistrar is UniversalScheme {
     }
     mapping(bytes32=>Parameters) public parameters;
 
-    /**
-    * @dev The Constructor
-    */
-    function SchemeRegistrar() public {}
 
     /**
     * @dev execute a  proposal

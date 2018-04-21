@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../controller/DAOToken.sol";
 import "../controller/Reputation.sol";
@@ -34,7 +34,7 @@ contract DaoCreator {
     event InitialSchemesSet (address _avatar);
     ControllerCreator controllerCreator;
 
-    function DaoCreator(ControllerCreator _controllerCreator) public {
+    constructor(ControllerCreator _controllerCreator) public {
         controllerCreator = _controllerCreator;
     }
 

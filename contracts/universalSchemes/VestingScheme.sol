@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -67,11 +67,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         require(agreements[_agreementId].beneficiary == msg.sender);
         _;
     }
-
-    /**
-     * @dev Constructor
-     */
-    function VestingScheme() public {}
 
     /**
     * @dev Proposing a vesting agreement in an organization.

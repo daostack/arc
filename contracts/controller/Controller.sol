@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./Avatar.sol";
 import "./Reputation.sol";
@@ -68,7 +68,7 @@ contract Controller is ControllerInterface {
     event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when);
     event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre);
 
-    function Controller(
+    constructor(
         Avatar _avatar
     ) public
     {

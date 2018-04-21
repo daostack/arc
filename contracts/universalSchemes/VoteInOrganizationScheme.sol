@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -40,11 +40,6 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
-
-    /**
-     * @dev Constructor
-     */
-    function VoteInOrganizationScheme() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value

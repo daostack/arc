@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./Avatar.sol";
 import "./Reputation.sol";
@@ -79,7 +79,6 @@ contract UController is ControllerInterface {
     event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when,address indexed _avatar);
     event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre,address indexed _avatar);
 
-    function UController() public {}
 
    /**
     * @dev newOrganization set up a new organization with default daoCreator.
