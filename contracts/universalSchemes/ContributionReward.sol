@@ -21,7 +21,7 @@ contract ContributionReward is UniversalScheme {
         int _reputationChange,
         uint[5]  _rewards,
         StandardToken _externalToken,
-        address _beneficiary
+        address[] _beneficiaries
     );
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event RedeemReputation(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,int _amount);
@@ -33,11 +33,11 @@ contract ContributionReward is UniversalScheme {
     struct ContributionProposal {
         bytes32 contributionDescriptionHash; // Hash of contribution document.
         uint nativeTokenReward; // Reward asked in the native token of the organization.
-        int reputationChange; // Organization reputation reward requested.
+        int reputationChange; // Organization reputation reward requested per beneficiary.
         uint ethReward;
         StandardToken externalToken;
         uint externalTokenReward;
-        address beneficiary;
+        address[] beneficiaries;
         uint periodLength;
         uint numberOfPeriods;
         uint executionTime;
@@ -111,7 +111,7 @@ contract ContributionReward is UniversalScheme {
     *         rewards[3] - Period length
     *         rewards[4] - Number of periods
     * @param _externalToken Address of external token, if reward is requested there
-    * @param _beneficiary Who gets the rewards
+    * @param _beneficiaries Who gets the rewards
     */
     function proposeContributionReward(
         Avatar _avatar,
@@ -119,7 +119,7 @@ contract ContributionReward is UniversalScheme {
         int _reputationChange,
         uint[5] _rewards,
         StandardToken _externalToken,
-        address _beneficiary
+        address[] _beneficiaries
     ) public
       returns(bytes32)
     {
@@ -133,9 +133,9 @@ contract ContributionReward is UniversalScheme {
         bytes32 contributionId = controllerParams.intVote.propose(2, controllerParams.voteApproveParams, _avatar, ExecutableInterface(this),msg.sender);
 
         // Check beneficiary is not null:
-        address beneficiary = _beneficiary;
-        if (beneficiary == address(0)) {
-            beneficiary = msg.sender;
+        if (_beneficiaries.length == 0) {
+            _beneficiaries = new address[](1);
+            _beneficiaries[0] = msg.sender;
         }
 
         // Set the struct:
@@ -146,7 +146,7 @@ contract ContributionReward is UniversalScheme {
             ethReward: _rewards[1],
             externalToken: _externalToken,
             externalTokenReward: _rewards[2],
-            beneficiary: beneficiary,
+            beneficiaries: _beneficiaries,
             periodLength: _rewards[3],
             numberOfPeriods: _rewards[4],
             executionTime: 0,
@@ -162,7 +162,7 @@ contract ContributionReward is UniversalScheme {
             _reputationChange,
             _rewards,
             _externalToken,
-            beneficiary
+            _beneficiaries
         );
 
         // vote for this proposal
@@ -172,7 +172,7 @@ contract ContributionReward is UniversalScheme {
 
     /**
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-    * @param _proposalId the ID of the voting in the voting machine
+    * @param _proposalId the ID of the proposal
     * @param _avatar address of the controller
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
@@ -180,7 +180,7 @@ contract ContributionReward is UniversalScheme {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         require(organizationsProposals[_avatar][_proposalId].executionTime == 0);
-        require(organizationsProposals[_avatar][_proposalId].beneficiary != address(0));
+        require(organizationsProposals[_avatar][_proposalId].beneficiaries.length > 0);
         // Check if vote was successful:
         if (_param == 1) {
           // solium-disable-next-line security/no-block-members
@@ -192,7 +192,7 @@ contract ContributionReward is UniversalScheme {
 
     /**
     * @dev RedeemReputation reward for proposal
-    * @param _proposalId the ID of the voting in the voting machine
+    * @param _proposalId the ID of the proposal
     * @param _avatar address of the controller
     * @return  result boolean for success indication.
     */
@@ -207,16 +207,20 @@ contract ContributionReward is UniversalScheme {
         //set proposal reward to zero to prevent reentrancy attack.
         proposal.reputationChange = 0;
         int reputation = int(periodsToPay) * _proposal.reputationChange;
-        if (reputation > 0 ) {
-            require(ControllerInterface(Avatar(_avatar).owner()).mintReputation(uint(reputation), _proposal.beneficiary,_avatar));
+        if (reputation != 0) {
+            uint numBeneficiaries = _proposal.beneficiaries.length;
+            for (uint i = 0; i<numBeneficiaries; i++) {
+                address beneficiary = _proposal.beneficiaries[i];
+
+                if (reputation > 0) {
+                    require(ControllerInterface(Avatar(_avatar).owner()).mintReputation(uint(reputation), beneficiary,_avatar));
+                } else if (reputation < 0 ) {
+                    require(ControllerInterface(Avatar(_avatar).owner()).burnReputation(uint(reputation*(-1)), beneficiary,_avatar));
+                }
+                emit RedeemReputation(_avatar,_proposalId,beneficiary,reputation);
+            }
+            proposal.redeemedPeriods[0] = _proposal.redeemedPeriods[0].add(periodsToPay);
             result = true;
-        } else if (reputation < 0 ) {
-            require(ControllerInterface(Avatar(_avatar).owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary,_avatar));
-            result = true;
-        }
-        if (result) {
-            proposal.redeemedPeriods[0] = proposal.redeemedPeriods[0].add(periodsToPay);
-            emit RedeemReputation(_avatar,_proposalId,_proposal.beneficiary,reputation);
         }
         //restore proposal reward.
         proposal.reputationChange = _proposal.reputationChange;
@@ -225,7 +229,7 @@ contract ContributionReward is UniversalScheme {
 
     /**
     * @dev RedeemNativeToken reward for proposal
-    * @param _proposalId the ID of the voting in the voting machine
+    * @param _proposalId the ID of the proposal
     * @param _avatar address of the controller
     * @return  result boolean for success indication.
     */
@@ -241,10 +245,14 @@ contract ContributionReward is UniversalScheme {
 
         uint amount = periodsToPay.mul(_proposal.nativeTokenReward);
         if (amount > 0) {
-            require(ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, _proposal.beneficiary,_avatar));
-            proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
+            uint numBeneficiaries = _proposal.beneficiaries.length;
+            for (uint i = 0; i<numBeneficiaries; i++) {
+                address beneficiary = _proposal.beneficiaries[i];
+                require(ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, beneficiary,_avatar));
+                emit RedeemNativeToken(_avatar,_proposalId,beneficiary,amount);
+            }
+            proposal.redeemedPeriods[1] = _proposal.redeemedPeriods[1].add(periodsToPay);
             result = true;
-            emit RedeemNativeToken(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
 
         //restore proposal reward.
@@ -254,7 +262,7 @@ contract ContributionReward is UniversalScheme {
 
     /**
     * @dev RedeemEther reward for proposal
-    * @param _proposalId the ID of the voting in the voting machine
+    * @param _proposalId the ID of the proposal
     * @param _avatar address of the controller
     * @return  result boolean for success indication.
     */
@@ -268,12 +276,16 @@ contract ContributionReward is UniversalScheme {
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.ethReward = 0;
         uint amount = periodsToPay.mul(_proposal.ethReward);
-
         if (amount > 0) {
-            require(ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, _proposal.beneficiary,_avatar));
-            proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
+            uint numBeneficiaries = _proposal.beneficiaries.length;
+            for (uint i = 0; i<numBeneficiaries; i++) {
+                address beneficiary = _proposal.beneficiaries[i];
+
+                require(ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, beneficiary,_avatar));
+                emit RedeemEther(_avatar,_proposalId,beneficiary,amount);
+            }
+            proposal.redeemedPeriods[2] = _proposal.redeemedPeriods[2].add(periodsToPay);
             result = true;
-            emit RedeemEther(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
 
         //restore proposal reward.
@@ -283,7 +295,7 @@ contract ContributionReward is UniversalScheme {
 
     /**
     * @dev RedeemNativeToken reward for proposal
-    * @param _proposalId the ID of the voting in the voting machine
+    * @param _proposalId the ID of the proposal
     * @param _avatar address of the controller
     * @return  result boolean for success indication.
     */
@@ -300,10 +312,14 @@ contract ContributionReward is UniversalScheme {
         if (proposal.externalToken != address(0) && _proposal.externalTokenReward > 0) {
             uint amount = periodsToPay.mul(_proposal.externalTokenReward);
             if (amount > 0) {
-                require(ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar));
-                proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);
+                uint numBeneficiaries = _proposal.beneficiaries.length;
+                for (uint i = 0; i<numBeneficiaries; i++) {
+                    address beneficiary = _proposal.beneficiaries[i];
+                    require(ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, beneficiary, amount,_avatar));
+                    emit RedeemExternalToken(_avatar,_proposalId,beneficiary,amount);
+                }
+                proposal.redeemedPeriods[3] = _proposal.redeemedPeriods[3].add(periodsToPay);
                 result = true;
-                emit RedeemExternalToken(_avatar,_proposalId,_proposal.beneficiary,amount);
             }
         }
         //restore proposal reward.
@@ -313,7 +329,7 @@ contract ContributionReward is UniversalScheme {
 
     /**
     * @dev redeem rewards for proposal
-    * @param _proposalId the ID of the voting in the voting machine
+    * @param _proposalId the ID of the proposal
     * @param _avatar address of the controller
     * @param _whatToRedeem whatToRedeem array:
     *         whatToRedeem[0] - reputation
@@ -346,7 +362,7 @@ contract ContributionReward is UniversalScheme {
     /**
     * @dev getPeriodsToPay return the periods left to be paid for reputation,nativeToken,ether or externalToken.
     * The function ignore the reward amount to be paid (which can be zero).
-    * @param _proposalId the ID of the voting in the voting machine
+    * @param _proposalId the ID of the proposal
     * @param _avatar address of the controller
     * @param _redeemType - the type of the reward  :
     *         0 - reputation
@@ -372,7 +388,7 @@ contract ContributionReward is UniversalScheme {
 
     /**
     * @dev getRedeemedPeriods return the already redeemed periods for reputation, nativeToken, ether or externalToken.
-    * @param _proposalId the ID of the voting in the voting machine
+    * @param _proposalId the ID of the proposal
     * @param _avatar address of the controller
     * @param _redeemType - the type of the reward  :
     *         0 - reputation
@@ -385,4 +401,13 @@ contract ContributionReward is UniversalScheme {
         return organizationsProposals[_avatar][_proposalId].redeemedPeriods[_redeemType];
     }
 
+    /**
+    * @dev getBeneficiaries return the abeneficiaries of the given proposal.
+    * @param _proposalId the ID of the proposal
+    * @param _avatar address of the controller
+    * @return array of beneficiary addresses.
+    */
+    function getBeneficiaries(bytes32 _proposalId, address _avatar) public view returns (address[]) {
+        return organizationsProposals[_avatar][_proposalId].beneficiaries;
+    }
 }
