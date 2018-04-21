@@ -132,10 +132,13 @@ contract ContributionReward is UniversalScheme {
 
         bytes32 contributionId = controllerParams.intVote.propose(2, controllerParams.voteApproveParams, _avatar, ExecutableInterface(this),msg.sender);
 
+        address[] memory beneficiaries;
         // Check beneficiary is not null:
         if (_beneficiaries.length == 0) {
-            _beneficiaries = new address[](1);
-            _beneficiaries[0] = msg.sender;
+            beneficiaries = new address[](1);
+            beneficiaries[0] = msg.sender;
+        } else {
+            beneficiaries = _beneficiaries;
         }
 
         // Set the struct:
@@ -146,7 +149,7 @@ contract ContributionReward is UniversalScheme {
             ethReward: _rewards[1],
             externalToken: _externalToken,
             externalTokenReward: _rewards[2],
-            beneficiaries: _beneficiaries,
+            beneficiaries: beneficiaries,
             periodLength: _rewards[3],
             numberOfPeriods: _rewards[4],
             executionTime: 0,
