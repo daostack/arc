@@ -82,7 +82,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     event RedeemReputation(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
-    mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
+    // Proposal by avatar and proposalId
+    mapping(address=>mapping(bytes32=>Proposal)) public organizationProposals;
 
     uint constant public NUM_OF_CHOICES = 2;
     uint constant public NO = 2;
