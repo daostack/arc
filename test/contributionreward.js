@@ -316,7 +316,6 @@ contract('ContributionReward', function (accounts) {
         );
         //Vote with reputation to trigger execution
         var proposalId = helpers.getValueFromLogs(tx, '_proposalId', 1);
-        var organizationsProposals = await testSetup.contributionReward.organizationsProposals(testSetup.org.avatar.address, proposalId);
         var beneficiaries = await testSetup.contributionReward.getBeneficiaries(proposalId, testSetup.org.avatar.address);
         assert.equal(beneficiaries[0], otherAvatar.address);//beneficiary
         await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId, 0, { from: accounts[2] });
