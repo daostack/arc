@@ -84,7 +84,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
 
-    uint constant public NUM_OF_CHOICES = 2;
+    uint constant public MAX_NUM_OF_CHOICES = 2;
     uint constant public NO = 2;
     uint constant public YES = 1;
     uint public proposalsCnt; // Total number of proposals
@@ -120,7 +120,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         returns(bytes32)
     {
           // Check valid params and number of choices:
-        require(_numOfChoices == NUM_OF_CHOICES);
+        require(_numOfChoices == MAX_NUM_OF_CHOICES);
         require(ExecutableInterface(_executable) != address(0));
         //Check parameters existence.
         bytes32 paramsHash = getParametersFromController(Avatar(_avatar));
@@ -164,7 +164,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      */
     function stake(bytes32 _proposalId, uint _vote, uint _amount) external returns(bool) {
         // 0 is not a valid vote.
-        require(_vote <= NUM_OF_CHOICES && _vote > 0);
+        require(_vote <= MAX_NUM_OF_CHOICES && _vote > 0);
         require(_amount > 0);
         if (execute(_proposalId)) {
             return true;
@@ -684,7 +684,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      */
     function internalVote(bytes32 _proposalId, address _voter, uint _vote, uint _rep) private returns(bool) {
         // 0 is not a valid vote.
-        require(_vote <= NUM_OF_CHOICES && _vote > 0);
+        require(_vote <= MAX_NUM_OF_CHOICES && _vote > 0);
         if (execute(_proposalId)) {
             return true;
         }
