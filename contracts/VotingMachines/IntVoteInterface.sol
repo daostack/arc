@@ -11,7 +11,7 @@ interface IntVoteInterface {
 
     event NewProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
     event ExecuteProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _decision, uint _totalReputation);
-    event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
+    event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation);
     event CancelProposal(bytes32 indexed _proposalId, address indexed _avatar );
     event CancelVoting(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter);
 
