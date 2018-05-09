@@ -941,4 +941,12 @@ contract('AbsoluteVote', function (accounts) {
     await checkIsVotableWithAbsoluteVote(proposalId2,true,absoluteVote2);
 
   });
+
+  it('getAllowedRangeOfChoices', async function () {
+    let absoluteVote = await AbsoluteVote.new();
+    let allowedRange;
+    allowedRange = await absoluteVote.getAllowedRangeOfChoices();
+    assert.equal(allowedRange[0],1);
+    assert.equal(allowedRange[1],10);
+  });
 });

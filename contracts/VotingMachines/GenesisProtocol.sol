@@ -347,6 +347,15 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         return false;
     }
 
+    /**
+     * @dev getAllowedRangeOfChoices returns the allowed range of choices for a voting machine.
+     * @return min - minimum number of choices
+               max - maximum number of choices
+     */
+    function getAllowedRangeOfChoices() external pure returns(uint min,uint max) {
+        return (NUM_OF_CHOICES,NUM_OF_CHOICES);
+    }
+
   /**
     * @dev execute check if the proposal has been decided, and if so, execute the proposal
     * @param _proposalId the id of the proposal

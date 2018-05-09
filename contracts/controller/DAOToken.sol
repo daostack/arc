@@ -14,6 +14,7 @@ contract DAOToken is ERC827Token,MintableToken,BurnableToken {
 
     string public name;
     string public symbol;
+    // solium-disable-next-line uppercase
     uint8 public constant decimals = 18;
     uint public cap;
 

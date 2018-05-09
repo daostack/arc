@@ -66,4 +66,11 @@ interface IntVoteInterface {
      * @return bool true or false
      */
     function isAbstainAllow() external pure returns(bool);
+
+    /**
+     * @dev getAllowedRangeOfChoices returns the allowed range of choices for a voting machine.
+     * @return min - minimum number of choices
+               max - maximum number of choices
+     */
+    function getAllowedRangeOfChoices() external pure returns(uint min,uint max);
 }
