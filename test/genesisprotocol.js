@@ -1211,4 +1211,12 @@ contract('GenesisProtocol', function (accounts) {
       assert.isOk(proposalId);
       assert.equal(await testSetup.genesisProtocol.proposalAvatar(proposalId),testSetup.org.avatar.address);
     });
+
+    it('getAllowedRangeOfChoices', async function () {
+      var testSetup = await setup(accounts);
+      let allowedRange = await testSetup.genesisProtocol.getAllowedRangeOfChoices();
+
+      assert.equal(allowedRange[0],2);
+      assert.equal(allowedRange[1],2);
+    });
 });
