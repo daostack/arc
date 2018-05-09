@@ -316,7 +316,7 @@ Returns:
 1. **output_0** *of type `address`*
 
 --- 
-### organizationsProposals(address,bytes32)
+### organizationProposals(address,bytes32)
 
 
 **Execution cost**: less than 2981 gas

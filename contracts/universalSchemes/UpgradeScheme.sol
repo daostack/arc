@@ -34,7 +34,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     }
 
     // A mapping from the organization's (Avatar) address to the saved data of the organization:
-    mapping(address=>mapping(bytes32=>UpgradeProposal)) public organizationsProposals;
+    mapping(address=>mapping(bytes32=>UpgradeProposal)) public organizationProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
@@ -86,7 +86,7 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
             upgradeContract: _newController,
             params: bytes32(0)
         });
-        organizationsProposals[_avatar][proposalId] = proposal;
+        organizationProposals[_avatar][proposalId] = proposal;
         emit NewUpgradeProposal(_avatar, proposalId, params.intVote, _newController);
         params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the proposal submitter.*/
         return proposalId;
@@ -110,14 +110,14 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
-        require(organizationsProposals[_avatar][proposalId].proposalType == 0);
+        require(organizationProposals[_avatar][proposalId].proposalType == 0);
 
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 2,
             upgradeContract: _scheme,
             params: _params
         });
-        organizationsProposals[_avatar][proposalId] = proposal;
+        organizationProposals[_avatar][proposalId] = proposal;
 
         emit ChangeUpgradeSchemeProposal(
             _avatar,
@@ -139,9 +139,9 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-        UpgradeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        UpgradeProposal memory proposal = organizationProposals[_avatar][_proposalId];
         require(proposal.proposalType != 0);
-        delete organizationsProposals[_avatar][_proposalId];
+        delete organizationProposals[_avatar][_proposalId];
         emit ProposalDeleted(_avatar,_proposalId);
         // Check if vote was successful:
         if (_param == 1) {

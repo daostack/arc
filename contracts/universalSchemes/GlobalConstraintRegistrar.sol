@@ -36,7 +36,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
 
     // GCProposal by avatar and proposalId
-    mapping(address=>mapping(bytes32=>GCProposal)) public organizationsProposals;
+    mapping(address=>mapping(bytes32=>GCProposal)) public organizationProposals;
 
     // voteToRemoveParams hash by avatar and proposal.gc
     mapping(address=>mapping(address=>bytes32)) public voteToRemoveParams;
@@ -62,9 +62,9 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         bool retVal = true;
         // Check if vote was successful:
-        GCProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        GCProposal memory proposal = organizationProposals[_avatar][_proposalId];
         require(proposal.gc != address(0));
-        delete organizationsProposals[_avatar][_proposalId];
+        delete organizationProposals[_avatar][_proposalId];
         emit ProposalDeleted(_avatar,_proposalId);
 
         if (_param == 1 ) {
@@ -142,7 +142,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
             voteToRemoveParams: _voteToRemoveParams
         });
 
-        organizationsProposals[_avatar][proposalId] = proposal;
+        organizationProposals[_avatar][proposalId] = proposal;
         emit NewGlobalConstraintsProposal(
             _avatar,
             proposalId,
@@ -175,7 +175,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
             voteToRemoveParams: 0
         });
 
-        organizationsProposals[_avatar][proposalId] = proposal;
+        organizationProposals[_avatar][proposalId] = proposal;
         emit RemoveGlobalConstraintsProposal(_avatar, proposalId, intVote, _gc);
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
