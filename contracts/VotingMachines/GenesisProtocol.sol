@@ -85,6 +85,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
 
     uint constant public MAX_NUM_OF_CHOICES = 2;
+    uint constant public MIN_NUM_OF_CHOICES = 2;
     uint constant public NO = 2;
     uint constant public YES = 1;
     uint public proposalsCnt; // Total number of proposals

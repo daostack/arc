@@ -68,6 +68,19 @@ contract('GlobalConstraintRegistrar', function(accounts) {
      assert.equal(parameters[1],params.votingMachine.absoluteVote.address);
      });
 
+    it("proposeGlobalConstraint organizationsProposals", async function() {
+      var testSetup = await setup(accounts);
+      var globalConstraintMock = await GlobalConstraintMock.new();
+
+      var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
+                                                                     globalConstraintMock.address,
+                                                                     "0x1234",
+                                                                     "0x1234");
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      var organizationsProposals = await testSetup.globalConstraintRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
+      assert.equal(organizationsProposals[0],globalConstraintMock.address);
+     });
+
     it("proposeGlobalConstraint log", async function() {
       var testSetup = await setup(accounts);
       var globalConstraintMock = await GlobalConstraintMock.new();

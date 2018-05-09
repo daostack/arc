@@ -43,6 +43,7 @@ contract AbsoluteVote is IntVoteInterface {
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
 
     uint public constant MAX_NUM_OF_CHOICES = 10;
+    uint public constant MIN_NUM_OF_CHOICES = 1;
     uint public proposalsCnt; // Total amount of proposals
 
   /**
@@ -76,7 +77,7 @@ contract AbsoluteVote is IntVoteInterface {
     {
         // Check valid params and number of choices:
         require(parameters[_paramsHash].reputationSystem != address(0));
-        require(_numOfChoices > 0 && _numOfChoices <= MAX_NUM_OF_CHOICES);
+        require(_numOfChoices >= MIN_NUM_OF_CHOICES && _numOfChoices <= MAX_NUM_OF_CHOICES);
         // Generate a unique ID:
         bytes32 proposalId = keccak256(this, proposalsCnt);
         proposalsCnt++;
