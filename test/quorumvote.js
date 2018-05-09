@@ -518,6 +518,7 @@ contract('QuorumVote', function (accounts) {
     assert.equal(voteTX.logs.length, 2);
     assert.equal(voteTX.logs[1].event, "ExecuteProposal");
     assert.equal(voteTX.logs[1].args._proposalId, proposalId);
+    assert.equal(voteTX.logs[1].args._avatar, avatar.address);
     assert.equal(voteTX.logs[1].args._decision, 0);
   });
 

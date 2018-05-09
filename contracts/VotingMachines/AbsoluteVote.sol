@@ -31,12 +31,12 @@ contract AbsoluteVote is IntVoteInterface {
         bool open; // voting open flag
     }
 
-    event NewProposal(bytes32 indexed _proposalId, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event CancelProposal(bytes32 indexed _proposalId);
-    event ExecuteProposal(bytes32 indexed _proposalId, uint _decision, uint _totalReputation);
-    event VoteProposal(bytes32 indexed _proposalId, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
-    event CancelVoting(bytes32 indexed _proposalId, address indexed _voter);
-    event RefreshReputation(bytes32 indexed _proposalId, address indexed _voter,uint _reputation);
+    event NewProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
+    event CancelProposal(bytes32 indexed _proposalId, address indexed _avatar);
+    event ExecuteProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _decision, uint _totalReputation);
+    event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
+    event CancelVoting(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter);
+    event RefreshReputation(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _reputation);
 
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
@@ -89,7 +89,7 @@ contract AbsoluteVote is IntVoteInterface {
         proposal.owner = msg.sender;
         proposal.open = true;
         proposals[proposalId] = proposal;
-        emit NewProposal(proposalId, _numOfChoices, msg.sender, _paramsHash);
+        emit NewProposal(proposalId, _avatar, _numOfChoices, msg.sender, _paramsHash);
         return proposalId;
     }
 
@@ -98,11 +98,13 @@ contract AbsoluteVote is IntVoteInterface {
    * @param _proposalId the proposal ID
    */
     function cancelProposal(bytes32 _proposalId) external onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool) {
+
         if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
             return false;
         }
+        address avatar = proposals[_proposalId].avatar;
         deleteProposal(_proposalId);
-        emit CancelProposal(_proposalId);
+        emit CancelProposal(_proposalId, avatar);
         return true;
     }
 
@@ -224,7 +226,7 @@ contract AbsoluteVote is IntVoteInterface {
                   }
                 if (rep != voter.reputation) {
                     voter.reputation = rep;
-                    emit RefreshReputation(_proposalId,_voters[i],rep);
+                    emit RefreshReputation(_proposalId, proposal.avatar, _voters[i],rep);
                 }
              }
         }
@@ -257,7 +259,7 @@ contract AbsoluteVote is IntVoteInterface {
             if (proposal.votes[cnt] > totalReputation*precReq/100) {
                 Proposal memory tmpProposal = proposal;
                 deleteProposal(_proposalId);
-                emit ExecuteProposal(_proposalId, cnt, totalReputation);
+                emit ExecuteProposal(_proposalId, tmpProposal.avatar, cnt, totalReputation);
                 (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(cnt));
                 return true;
             }
@@ -292,7 +294,7 @@ contract AbsoluteVote is IntVoteInterface {
         proposal.votes[voter.vote] = (proposal.votes[voter.vote]).sub(voter.reputation);
         proposal.totalVotes = (proposal.totalVotes).sub(voter.reputation);
         delete proposal.voters[_voter];
-        emit CancelVoting(_proposalId, _voter);
+        emit CancelVoting(_proposalId, proposal.avatar, _voter);
     }
 
     function deleteProposal(bytes32 _proposalId) internal {
@@ -336,7 +338,7 @@ contract AbsoluteVote is IntVoteInterface {
             vote: _vote
         });
         // Event:
-        emit VoteProposal(_proposalId, _voter, _vote, reputation, (_voter != msg.sender));
+        emit VoteProposal(_proposalId, proposal.avatar, _voter, _vote, reputation, (_voter != msg.sender));
         // execute the proposal if this vote was decisive:
         return execute(_proposalId);
     }

@@ -151,6 +151,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "NewProposal");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
+    assert.equal(tx.logs[0].args._avatar, avatar.address);
     assert.equal(tx.logs[0].args._proposer, accounts[0]);
     assert.equal(tx.logs[0].args._paramsHash, paramsHash);
   });
@@ -169,6 +170,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(newtx.logs.length, 1);
     assert.equal(newtx.logs[0].event, "CancelProposal");
     assert.equal(newtx.logs[0].args._proposalId, proposalId);
+    assert.equal(newtx.logs[0].args._avatar, avatar.address);
   });
 
   it("should log the VoteProposal and CancelVoting events on voting and canceling the vote", async function() {
@@ -185,6 +187,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(voteTX.logs.length, 1);
     assert.equal(voteTX.logs[0].event, "VoteProposal");
     assert.equal(voteTX.logs[0].args._proposalId, proposalId);
+    assert.equal(voteTX.logs[0].args._avatar, avatar.address);
     assert.equal(voteTX.logs[0].args._voter, accounts[0]);
     assert.equal(voteTX.logs[0].args._vote, 1);
     assert.equal(voteTX.logs[0].args._reputation, reputationArray[0]);
@@ -193,6 +196,7 @@ contract('AbsoluteVote', function (accounts) {
     let cancelVoteTX = await absoluteVote.cancelVote(proposalId);
     assert.equal(cancelVoteTX.logs.length, 1);
     assert.equal(cancelVoteTX.logs[0].event, "CancelVoting");
+    assert.equal(cancelVoteTX.logs[0].args._avatar, avatar.address);
     assert.equal(cancelVoteTX.logs[0].args._proposalId, proposalId);
     assert.equal(cancelVoteTX.logs[0].args._voter, accounts[0]);
   });
@@ -218,6 +222,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(tx.logs.length, 2);
     assert.equal(tx.logs[1].event, "ExecuteProposal");
     assert.equal(tx.logs[1].args._proposalId, proposalId);
+    assert.equal(tx.logs[1].args._avatar, avatar.address);
     assert.equal(tx.logs[1].args._decision, 4);
   });
 
@@ -249,6 +254,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RefreshReputation");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
+    assert.equal(tx.logs[0].args._avatar, avatar.address);
     assert.equal(tx.logs[0].args._voter, accounts[1]);
     assert.equal(tx.logs[0].args._reputation, reputationArray[1]+90);
 
@@ -259,6 +265,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "ExecuteProposal");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
+    assert.equal(tx.logs[0].args._avatar, avatar.address);
     assert.equal(tx.logs[0].args._decision, 0);
   });
 
@@ -282,6 +289,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RefreshReputation");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
+    assert.equal(tx.logs[0].args._avatar, avatar.address);
     assert.equal(tx.logs[0].args._voter, accounts[0]);
     assert.equal(tx.logs[0].args._reputation, 0);
     await checkProposalInfo(proposalId, [accounts[0], avatar.address, 2, executable.address, paramsHash, 0, true]);
