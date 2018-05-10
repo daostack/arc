@@ -147,7 +147,7 @@ Returns:
 1. **output_0** *of type `bytes32`*
 
 --- 
-### organizationProposals(address,bytes32)
+### organizationsProposals(address,bytes32)
 
 
 **Execution cost**: less than 1348 gas
