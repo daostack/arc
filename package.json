@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.0-alpha.38",
+  "version": "0.0.0-alpha.39",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -39,7 +39,7 @@
     "bignumber.js": "^5.0.0",
     "cross-conf-env": "^1.1.2",
     "default-options": "^1.0.0",
-    "eslint": "^4.17.0",
+    "eslint": "^4.19.1",
     "eslint-config-defaults": "^9.0.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.8.0",
@@ -55,13 +55,10 @@
     "run-with-ganache": "^0.1.1",
     "solc": "^0.4.23",
     "solc-cli": "^0.3.0",
-    "solium": "^1.1.6",
-    "truffle": "^4.1.7",
+    "solium": "^1.1.7",
+    "truffle": "^4.1.8",
     "truffle-contract": "^3.0.5",
-    "uint32": "^0.2.1",
-    "web3-typescript-typings": "^0.9.8",
-    "web3-utils": "^1.0.0-beta.29",
-    "when": "^3.7.8"
+    "uint32": "^0.2.1"
   },
   "repository": {
     "type": "git",
@@ -86,6 +83,6 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "zeppelin-solidity": "1.8.0"
+    "openzeppelin-solidity": "1.9.0"
   }
 }

@@ -110,13 +110,13 @@ contract Controller is ControllerInterface {
     }
 
     modifier onlySubjectToConstraint(bytes32 func) {
-        uint index;
-        for (index = 0;index<globalConstraintsPre.length;index++) {
-            require((GlobalConstraintInterface(globalConstraintsPre[index].gcAddress)).pre(msg.sender, globalConstraintsPre[index].params, func));
+        uint idx;
+        for (idx = 0;idx<globalConstraintsPre.length;idx++) {
+            require((GlobalConstraintInterface(globalConstraintsPre[idx].gcAddress)).pre(msg.sender,globalConstraintsPre[idx].params,func));
         }
         _;
-        for (index = 0;index<globalConstraintsPost.length;index++) {
-            require((GlobalConstraintInterface(globalConstraintsPost[index].gcAddress)).post(msg.sender, globalConstraintsPost[index].params, func));
+        for (idx = 0;idx<globalConstraintsPost.length;idx++) {
+            require((GlobalConstraintInterface(globalConstraintsPost[idx].gcAddress)).post(msg.sender,globalConstraintsPost[idx].params,func));
         }
     }
 

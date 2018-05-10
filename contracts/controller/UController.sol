@@ -76,7 +76,11 @@ contract UController is ControllerInterface {
     event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event UpgradeController(address indexed _oldController,address _newController,address _avatar);
-    event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when,address indexed _avatar);
+    event AddGlobalConstraint(address indexed _globalConstraint,
+                              bytes32 _params,
+                              GlobalConstraintInterface.CallPhase _when,
+                              address indexed _avatar
+    );
     event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre,address indexed _avatar);
 
 
@@ -130,15 +134,15 @@ contract UController is ControllerInterface {
     }
 
     modifier onlySubjectToConstraint(bytes32 func,address _avatar) {
-        uint index;
+        uint idx;
         GlobalConstraint[] memory globalConstraintsPre = organizations[_avatar].globalConstraintsPre;
         GlobalConstraint[] memory globalConstraintsPost = organizations[_avatar].globalConstraintsPost;
-        for (index = 0;index<globalConstraintsPre.length;index++) {
-            require((GlobalConstraintInterface(globalConstraintsPre[index].gcAddress)).pre(msg.sender, globalConstraintsPre[index].params, func));
+        for (idx = 0;idx<globalConstraintsPre.length;idx++) {
+            require((GlobalConstraintInterface(globalConstraintsPre[idx].gcAddress)).pre(msg.sender, globalConstraintsPre[idx].params, func));
         }
         _;
-        for (index = 0;index<globalConstraintsPost.length;index++) {
-            require((GlobalConstraintInterface(globalConstraintsPost[index].gcAddress)).post(msg.sender, globalConstraintsPost[index].params, func));
+        for (idx = 0;idx<globalConstraintsPost.length;idx++) {
+            require((GlobalConstraintInterface(globalConstraintsPost[idx].gcAddress)).post(msg.sender, globalConstraintsPost[idx].params, func));
         }
     }
 

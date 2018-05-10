@@ -126,7 +126,12 @@ contract SchemeRegistrar is UniversalScheme {
         require(_scheme != address(0));
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
-        bytes32 proposalId = controllerParams.intVote.propose(2, controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this),msg.sender);
+        bytes32 proposalId = controllerParams.intVote.propose(2,
+                                                              controllerParams.voteRegisterParams,
+                                                              _avatar,
+                                                              ExecutableInterface(this),
+                                                              msg.sender
+        );
 
         SchemeProposal memory proposal = SchemeProposal({
             scheme: _scheme,
