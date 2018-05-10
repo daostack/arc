@@ -93,8 +93,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     /**
      * @dev Constructor
      */
-    constructor(StandardToken _stakingToken)
-    public
+    constructor(StandardToken _stakingToken) public
     {
         stakingToken = _stakingToken;
     }
@@ -119,7 +118,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function propose(uint _numOfChoices, bytes32 , address _avatar, ExecutableInterface _executable,address _proposer)
         external
         returns(bytes32)
-        {
+    {
           // Check valid params and number of choices:
         require(_numOfChoices == NUM_OF_CHOICES);
         require(ExecutableInterface(_executable) != address(0));

@@ -76,10 +76,11 @@ contract UController is ControllerInterface {
     event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event UpgradeController(address indexed _oldController,address _newController,address _avatar);
-    event AddGlobalConstraint(address indexed _globalConstraint,
-                              bytes32 _params,
-                              GlobalConstraintInterface.CallPhase _when,
-                              address indexed _avatar
+    event AddGlobalConstraint(
+        address indexed _globalConstraint,
+        bytes32 _params,
+        GlobalConstraintInterface.CallPhase _when,
+        address indexed _avatar
     );
     event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre,address indexed _avatar);
 

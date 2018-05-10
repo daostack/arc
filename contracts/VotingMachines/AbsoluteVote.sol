@@ -73,7 +73,7 @@ contract AbsoluteVote is IntVoteInterface {
     function propose(uint _numOfChoices, bytes32 _paramsHash, address _avatar, ExecutableInterface _executable,address)
         external
         returns(bytes32)
-        {
+    {
         // Check valid params and number of choices:
         require(parameters[_paramsHash].reputationSystem != address(0));
         require(_numOfChoices > 0 && _numOfChoices <= MAX_NUM_OF_CHOICES);
@@ -130,7 +130,7 @@ contract AbsoluteVote is IntVoteInterface {
         onlyProposalOwner(_proposalId)
         votable(_proposalId)
         returns(bool)
-        {
+    {
         if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
             return false;
         }

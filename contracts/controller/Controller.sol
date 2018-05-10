@@ -68,9 +68,7 @@ contract Controller is ControllerInterface {
     event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when);
     event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre);
 
-    constructor(
-        Avatar _avatar
-    ) public
+    constructor( Avatar _avatar) public
     {
         avatar = _avatar;
         nativeToken = avatar.nativeToken();
