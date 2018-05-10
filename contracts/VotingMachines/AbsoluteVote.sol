@@ -31,11 +31,7 @@ contract AbsoluteVote is IntVoteInterface {
         bool open; // voting open flag
     }
 
-    event NewProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event CancelProposal(bytes32 indexed _proposalId, address indexed _avatar);
-    event ExecuteProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _decision, uint _totalReputation);
     event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
-    event CancelVoting(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter);
     event RefreshReputation(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _reputation);
 
 

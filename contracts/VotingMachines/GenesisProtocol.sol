@@ -82,14 +82,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         mapping(address=>Staker) stakers;
     }
 
-    event NewProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
     event ExecuteProposal(bytes32 indexed _proposalId,
                           address indexed _avatar,
                           uint _decision,
                           uint _totalReputation,
                           ExecutionState _executionState
     );
-    event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation);
     event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
     event RedeemDaoBounty(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
