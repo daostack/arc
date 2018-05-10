@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -43,11 +43,6 @@ contract UpgradeScheme is UniversalScheme, ExecutableInterface {
     }
 
     mapping(bytes32=>Parameters) public parameters;
-
-    /**
-    * @dev Constructor
-    */
-    function UpgradeScheme() public {}
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value

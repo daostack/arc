@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
@@ -70,7 +70,10 @@ contract AbsoluteVote is IntVoteInterface {
      * @param _executable This contract will be executed when vote is over.
      * @return proposal's id.
      */
-    function propose(uint _numOfChoices, bytes32 _paramsHash, address _avatar, ExecutableInterface _executable,address) external returns(bytes32) {
+    function propose(uint _numOfChoices, bytes32 _paramsHash, address _avatar, ExecutableInterface _executable,address)
+        external
+        returns(bytes32)
+    {
         // Check valid params and number of choices:
         require(parameters[_paramsHash].reputationSystem != address(0));
         require(_numOfChoices > 0 && _numOfChoices <= MAX_NUM_OF_CHOICES);
@@ -122,7 +125,12 @@ contract AbsoluteVote is IntVoteInterface {
    * @return bool true - the proposal has been executed
    *              false - otherwise.
    */
-    function ownerVote(bytes32 _proposalId, uint _vote, address _voter) external onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool) {
+    function ownerVote(bytes32 _proposalId, uint _vote, address _voter)
+        external
+        onlyProposalOwner(_proposalId)
+        votable(_proposalId)
+        returns(bool)
+    {
         if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
             return false;
         }

@@ -1,10 +1,10 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../universalSchemes/UniversalScheme.sol";
 
 
 contract UniversalSchemeMock is UniversalScheme {
 
-    function UniversalSchemeMock() public {
+    constructor() public {
     }
 }

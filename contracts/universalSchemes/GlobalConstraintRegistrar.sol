@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./UniversalScheme.sol";
 import "../VotingMachines/IntVoteInterface.sol";
@@ -53,11 +53,6 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     }
 
     mapping(bytes32=>Parameters) public parameters;
-
-    /**
-     * @dev Constructor
-     */
-    function GlobalConstraintRegistrar() public {}
 
     /**
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.

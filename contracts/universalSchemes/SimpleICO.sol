@@ -1,9 +1,9 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "./UniversalScheme.sol";
-import "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
-import "zeppelin-solidity/contracts/lifecycle/Destructible.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/lifecycle/Destructible.sol";
 
 
 /**
@@ -18,7 +18,7 @@ contract MirrorContractICO is Destructible {
     * @param _organization The organization's avatar.
     * @param _simpleICO The ICO Scheme.
     */
-    function MirrorContractICO(Avatar _organization, SimpleICO _simpleICO) public {
+    constructor(Avatar _organization, SimpleICO _simpleICO) public {
         organization = _organization;
         simpleICO = _simpleICO;
     }
@@ -68,11 +68,6 @@ contract SimpleICO is UniversalScheme {
     mapping(bytes32=>Parameters) public parameters;
 
     event DonationReceived(address indexed organization, address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
-
-    /**
-     * @dev Constructor
-     */
-    function SimpleICO() public {}
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value

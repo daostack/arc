@@ -1,8 +1,8 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
-import "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
-import "zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
-import "zeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
 
 
 /**
@@ -24,7 +24,7 @@ contract DAOToken is ERC827Token,MintableToken,BurnableToken {
     * @param _symbol - token symbol
     * @param _cap - token cap - 0 value means no cap
     */
-    function DAOToken(string _name, string _symbol,uint _cap) public {
+    constructor(string _name, string _symbol,uint _cap) public {
         name = _name;
         symbol = _symbol;
         cap = _cap;

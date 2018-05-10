@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -45,10 +45,6 @@ contract SchemeRegistrar is UniversalScheme {
     }
     mapping(bytes32=>Parameters) public parameters;
 
-    /**
-    * @dev The Constructor
-    */
-    function SchemeRegistrar() public {}
 
     /**
     * @dev execute a  proposal
@@ -130,7 +126,13 @@ contract SchemeRegistrar is UniversalScheme {
         require(_scheme != address(0));
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
-        bytes32 proposalId = controllerParams.intVote.propose(2, controllerParams.voteRegisterParams, _avatar, ExecutableInterface(this),msg.sender);
+        bytes32 proposalId = controllerParams.intVote.propose(
+            2,
+            controllerParams.voteRegisterParams,
+            _avatar,
+            ExecutableInterface(this),
+            msg.sender
+        );
 
         SchemeProposal memory proposal = SchemeProposal({
             scheme: _scheme,

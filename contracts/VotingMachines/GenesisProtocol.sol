@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
@@ -29,8 +29,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                                       // All stakers pay a portion of their stake to all voters, stakerFeeRatioForVoters * (s+ + s-).
                                       //All voters (pre and during boosting period) divide this portion in proportion to their reputation.
         uint votersReputationLossRatio;//Unsuccessful pre booster voters lose votersReputationLossRatio% of their reputation.
-        uint votersGainRepRatioFromLostRep; //the percentages of the lost reputation which is divided by the successful pre boosted voters, in proportion to their reputation.
-                                            //The rest (100-votersGainRepRatioFromLostRep)% of lost reputation is divided between the successful wagers, in proportion to their stake.
+        uint votersGainRepRatioFromLostRep; //the percentages of the lost reputation which is divided by the successful pre boosted voters,
+                                            //in proportion to their reputation.
+                                            //The rest (100-votersGainRepRatioFromLostRep)% of lost reputation is divided between the successful wagers,
+                                            //in proportion to their stake.
 
 
     }
@@ -68,7 +70,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     }
 
     event NewProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event ExecuteProposal(bytes32 indexed _proposalId, address indexed _avatar, uint _decision,uint _totalReputation,ExecutionState _executionState);
+    event ExecuteProposal(bytes32 indexed _proposalId,
+                          address indexed _avatar,
+                          uint _decision,
+                          uint _totalReputation,
+                          ExecutionState _executionState
+    );
     event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation);
     event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
@@ -86,8 +93,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     /**
      * @dev Constructor
      */
-    function GenesisProtocol(StandardToken _stakingToken)
-    public
+    constructor(StandardToken _stakingToken) public
     {
         stakingToken = _stakingToken;
     }
@@ -109,7 +115,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @param _proposer address
      * @return proposal's id.
      */
-    function propose(uint _numOfChoices, bytes32 , address _avatar, ExecutableInterface _executable,address _proposer) external returns(bytes32) {
+    function propose(uint _numOfChoices, bytes32 , address _avatar, ExecutableInterface _executable,address _proposer)
+        external
+        returns(bytes32)
+    {
           // Check valid params and number of choices:
         require(_numOfChoices == NUM_OF_CHOICES);
         require(ExecutableInterface(_executable) != address(0));
@@ -275,7 +284,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     * @return uint voterStakes
     */
     function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint,uint) {
-        return (proposals[_proposalId].totalVotes, proposals[_proposalId].totalStakes[0],proposals[_proposalId].totalStakes[1], proposals[_proposalId].votersStakes);
+        return (proposals[_proposalId].totalVotes,
+                proposals[_proposalId].totalStakes[0],
+                proposals[_proposalId].totalStakes[1],
+                proposals[_proposalId].votersStakes
+        );
     }
 
   /**
@@ -740,6 +753,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
       * @return bool true or false
     */
     function _isVotable(bytes32 _proposalId) private view returns(bool) {
-        return ((proposals[_proposalId].state == ProposalState.PreBoosted)||(proposals[_proposalId].state == ProposalState.Boosted)||(proposals[_proposalId].state == ProposalState.QuietEndingPeriod));
+        ProposalState pState = proposals[_proposalId].state;
+        return ((pState == ProposalState.PreBoosted)||(pState == ProposalState.Boosted)||(pState == ProposalState.QuietEndingPeriod));
     }
 }

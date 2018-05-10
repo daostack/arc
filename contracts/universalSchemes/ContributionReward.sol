@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -56,11 +56,6 @@ contract ContributionReward is UniversalScheme {
     }
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
-
-    /**
-    * @dev constructor
-    */
-    function ContributionReward() public {}
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value
@@ -130,7 +125,13 @@ contract ContributionReward is UniversalScheme {
             _avatar.nativeToken().transferFrom(msg.sender, _avatar, controllerParams.orgNativeTokenFee);
         }
 
-        bytes32 contributionId = controllerParams.intVote.propose(2, controllerParams.voteApproveParams, _avatar, ExecutableInterface(this),msg.sender);
+        bytes32 contributionId = controllerParams.intVote.propose(
+            2,
+            controllerParams.voteApproveParams,
+           _avatar,
+           ExecutableInterface(this),
+           msg.sender
+        );
 
         // Check beneficiary is not null:
         address beneficiary = _beneficiary;
