@@ -15,8 +15,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
     event AgreementProposal(address indexed _avatar, bytes32 indexed _proposalId);
-    // _proposalId will only be set when agreement is created by proposal
-    event NewVestedAgreement(uint indexed _agreementId, bytes32 indexed _proposalId);
+    event NewVestedAgreement(uint indexed _agreementId);
+    event ProposedVestedAgreement(uint indexed _agreementId, bytes32 indexed _proposalId);
     event SignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
     event RevokeSignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
     event AgreementCancel(uint indexed _agreementId);
@@ -180,7 +180,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         agreementsCounter++;
 
         // Log new agreement and return id:
-        emit NewVestedAgreement(agreementsCounter-1, "");
+        emit NewVestedAgreement(agreementsCounter-1);
         return(agreementsCounter-1);
     }
 
@@ -239,7 +239,8 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:
-            emit NewVestedAgreement(agreementsCounter-1, _proposalId);
+            emit NewVestedAgreement(agreementsCounter-1);
+            emit ProposedVestedAgreement(agreementsCounter-1, _proposalId);
         }
         emit ProposalExecuted(_avatar,_proposalId,_param);
         return true;

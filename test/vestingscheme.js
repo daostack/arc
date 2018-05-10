@@ -115,7 +115,7 @@ contract('VestingScheme', function(accounts) {
           }
          });
 
-           it("execute proposeVestingAgreement- NewVestedAgreement supplies proposalId ", async function() {
+           it("execute proposeVestingAgreement- ProposedVestedAgreement supplies proposalId ", async function() {
              var testSetup = await setup(accounts);
 
 
@@ -133,7 +133,7 @@ contract('VestingScheme', function(accounts) {
              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
              await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
             const found = await new Promise((resolve) => {
-                testSetup.vestingScheme.NewVestedAgreement({_proposalId: proposalId}, {fromBlock: 0})
+                testSetup.vestingScheme.ProposedVestedAgreement({_proposalId: proposalId}, {fromBlock: 0})
                     .get((err,events) => {
                         if (events.length === 1) {
                             resolve(events[0].args._proposalId === proposalId);
@@ -142,7 +142,7 @@ contract('VestingScheme', function(accounts) {
                         }
                     });
                 });
-                assert(found, "NewVestedAgreement did not supply the proposalId");
+                assert(found, "ProposedVestedAgreement did not supply the proposalId");
             });
 
            it("execute proposeVestingAgreement controller -yes - proposal data delete", async function() {
@@ -249,7 +249,7 @@ contract('VestingScheme', function(accounts) {
                assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),amountPerPeriod*numberOfAgreedPeriods);
               });
 
-              it("createVestedAgreement check agreement and proposal ids", async function() {
+              it("createVestedAgreement check agreement", async function() {
                 var testSetup = await setup(accounts);
                 var amountPerPeriod =3;
                 var numberOfAgreedPeriods = 7;
@@ -269,8 +269,6 @@ contract('VestingScheme', function(accounts) {
                 assert.equal(tx.logs[0].event, "NewVestedAgreement");
                 var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
                 assert.equal(agreementId,0);
-                var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-                assert.equal(proposalId,helpers.NULL_HASH);
                 tx = await testSetup.vestingScheme.createVestedAgreement( testSetup.standardTokenMock.address,
                                                                           accounts[0],
                                                                                accounts[1],
@@ -286,8 +284,6 @@ contract('VestingScheme', function(accounts) {
                 assert.equal(tx.logs[0].event, "NewVestedAgreement");
                 agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
                 assert.equal(agreementId,1);
-                proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-                assert.equal(proposalId,helpers.NULL_HASH);
                });
 
               it("createVestedAgreement check periodLength==0 ", async function() {
