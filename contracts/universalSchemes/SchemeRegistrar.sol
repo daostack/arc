@@ -35,7 +35,7 @@ contract SchemeRegistrar is UniversalScheme {
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
-    mapping(address=>mapping(bytes32=>SchemeProposal)) public organizationProposals;
+    mapping(address=>mapping(bytes32=>SchemeProposal)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
@@ -57,9 +57,9 @@ contract SchemeRegistrar is UniversalScheme {
     function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
           // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-        SchemeProposal memory proposal = organizationProposals[_avatar][_proposalId];
+        SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.scheme != address(0));
-        delete organizationProposals[_avatar][_proposalId];
+        delete organizationsProposals[_avatar][_proposalId];
         emit ProposalDeleted(_avatar,_proposalId);
         if (_param == 1) {
 
@@ -147,7 +147,7 @@ contract SchemeRegistrar is UniversalScheme {
             _scheme, _parametersHash,
             _permissions
         );
-        organizationProposals[_avatar][proposalId] = proposal;
+        organizationsProposals[_avatar][proposalId] = proposal;
 
         // vote for this proposal
         controllerParams.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
@@ -171,8 +171,8 @@ contract SchemeRegistrar is UniversalScheme {
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, _avatar, ExecutableInterface(this),msg.sender);
 
-        organizationProposals[_avatar][proposalId].proposalType = 2;
-        organizationProposals[_avatar][proposalId].scheme = _scheme;
+        organizationsProposals[_avatar][proposalId].proposalType = 2;
+        organizationsProposals[_avatar][proposalId].scheme = _scheme;
         emit RemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);
         // vote for this proposal
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.

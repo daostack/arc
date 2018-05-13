@@ -131,12 +131,12 @@ contract('VestingScheme', function(accounts) {
                                                                             testSetup.org.avatar.address);
             //Vote with reputation to trigger execution
              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-             //check organizationProposals before execution
-             var organizationProposals = await testSetup.vestingScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+             //check organizationsProposals before execution
+             var organizationProposals = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
              assert.equal(organizationProposals[0],testSetup.org.token.address);//proposalType
              await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-             //check organizationProposals after execution
-             organizationProposals = await testSetup.vestingScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+             //check organizationsProposals after execution
+             organizationProposals = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
              assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
             });
 
@@ -154,8 +154,8 @@ contract('VestingScheme', function(accounts) {
                                                                              [],
                                                                              testSetup.org.avatar.address);
               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-              //check organizationProposals before execution
-              var organizationProposals = await testSetup.vestingScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+              //check organizationsProposals before execution
+              var organizationProposals = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
               assert.equal(organizationProposals[0],testSetup.org.token.address);
               try{
               await testSetup.vestingScheme.execute(proposalId,testSetup.org.avatar.address,0);
@@ -179,14 +179,14 @@ contract('VestingScheme', function(accounts) {
                                                                              [],
                                                                              testSetup.org.avatar.address);
               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-              //check organizationProposals before execution
-              var organizationProposals = await testSetup.vestingScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+              //check organizationsProposals before execution
+              var organizationProposals = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
               assert.equal(organizationProposals[0],testSetup.org.token.address);
 
               //Vote with reputation to trigger execution
               await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
-              //check organizationProposals after execution
-              organizationProposals = await testSetup.vestingScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+              //check organizationsProposals after execution
+              organizationProposals = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
               assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
              });
 
@@ -208,13 +208,13 @@ contract('VestingScheme', function(accounts) {
                                                                               testSetup.org.avatar.address);
               //Vote with reputation to trigger execution
                var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-               //check organizationProposals before execution
-               var organizationProposals = await testSetup.vestingScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+               //check organizationsProposals before execution
+               var organizationProposals = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
                assert.equal(organizationProposals[0],testSetup.org.token.address);
                assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),0);
                await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-               //check organizationProposals after execution
-               organizationProposals = await testSetup.vestingScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+               //check organizationsProposals after execution
+               organizationProposals = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
                assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
                assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),amountPerPeriod*numberOfAgreedPeriods);
               });

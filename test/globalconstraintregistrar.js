@@ -82,7 +82,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
       assert.equal(voteToRemoveParams, "0x1235000000000000000000000000000000000000000000000000000000000000");
      });
 
-    it("proposeGlobalConstraint organizationProposals", async function() {
+    it("proposeGlobalConstraint organizationsProposals", async function() {
       var testSetup = await setup(accounts);
       var globalConstraintMock = await GlobalConstraintMock.new();
 
@@ -91,7 +91,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                      "0x1234",
                                                                      "0x1234");
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      var organizationProposals = await testSetup.globalConstraintRegistrar.organizationProposals(testSetup.org.avatar.address,proposalId);
+      var organizationProposals = await testSetup.globalConstraintRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
       assert.equal(organizationProposals[0],globalConstraintMock.address);
      });
 

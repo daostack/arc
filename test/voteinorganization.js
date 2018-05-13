@@ -108,8 +108,8 @@ contract('VoteInOrganizationScheme', function(accounts) {
                                                                  originalProposalId);
              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
              await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
-             //check organizationProposals after execution
-             var organizationProposals = await testSetup.voteInOrganization.organizationProposals(testSetup.org.avatar.address,proposalId);
+             //check organizationsProposals after execution
+             var organizationProposals = await testSetup.voteInOrganization.organizationsProposals(testSetup.org.avatar.address,proposalId);
              assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
             });
 
@@ -127,11 +127,11 @@ contract('VoteInOrganizationScheme', function(accounts) {
                                                                   anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address,
                                                                   originalProposalId);
               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-              var organizationProposals = await testSetup.voteInOrganization.organizationProposals(testSetup.org.avatar.address,proposalId);
+              var organizationProposals = await testSetup.voteInOrganization.organizationsProposals(testSetup.org.avatar.address,proposalId);
               assert.equal(organizationProposals[0],anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);//new contract address
               await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-              //check organizationProposals after execution
-              organizationProposals = await testSetup.voteInOrganization.organizationProposals(testSetup.org.avatar.address,proposalId);
+              //check organizationsProposals after execution
+              organizationProposals = await testSetup.voteInOrganization.organizationsProposals(testSetup.org.avatar.address,proposalId);
               assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
              });
 

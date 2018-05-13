@@ -45,7 +45,7 @@ contract ContributionReward is UniversalScheme {
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
-    mapping(address=>mapping(bytes32=>ContributionProposal)) public organizationProposals;
+    mapping(address=>mapping(bytes32=>ContributionProposal)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     // A contribution fee can be in the organization token or the scheme token or a combination
@@ -153,7 +153,7 @@ contract ContributionReward is UniversalScheme {
             executionTime: 0,
             redeemedPeriods:[uint(0),uint(0),uint(0),uint(0)]
         });
-        organizationProposals[_avatar][contributionId] = proposal;
+        organizationsProposals[_avatar][contributionId] = proposal;
 
         emit NewContributionProposal(
             _avatar,
@@ -180,12 +180,12 @@ contract ContributionReward is UniversalScheme {
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-        require(organizationProposals[_avatar][_proposalId].executionTime == 0);
-        require(organizationProposals[_avatar][_proposalId].beneficiary != address(0));
+        require(organizationsProposals[_avatar][_proposalId].executionTime == 0);
+        require(organizationsProposals[_avatar][_proposalId].beneficiary != address(0));
         // Check if vote was successful:
         if (_param == 1) {
           // solium-disable-next-line security/no-block-members
-            organizationProposals[_avatar][_proposalId].executionTime = now;
+            organizationsProposals[_avatar][_proposalId].executionTime = now;
         }
         emit ProposalExecuted(_avatar, _proposalId,_param);
         return true;
@@ -199,8 +199,8 @@ contract ContributionReward is UniversalScheme {
     */
     function redeemReputation(bytes32 _proposalId, address _avatar) public returns(bool) {
 
-        ContributionProposal memory _proposal = organizationProposals[_avatar][_proposalId];
-        ContributionProposal storage proposal = organizationProposals[_avatar][_proposalId];
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,0);
         bool result;
@@ -232,8 +232,8 @@ contract ContributionReward is UniversalScheme {
     */
     function redeemNativeToken(bytes32 _proposalId, address _avatar) public returns(bool) {
 
-        ContributionProposal memory _proposal = organizationProposals[_avatar][_proposalId];
-        ContributionProposal storage proposal = organizationProposals[_avatar][_proposalId];
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,1);
         bool result;
@@ -261,8 +261,8 @@ contract ContributionReward is UniversalScheme {
     */
     function redeemEther(bytes32 _proposalId, address _avatar) public returns(bool) {
 
-        ContributionProposal memory _proposal = organizationProposals[_avatar][_proposalId];
-        ContributionProposal storage proposal = organizationProposals[_avatar][_proposalId];
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,2);
         bool result;
@@ -290,8 +290,8 @@ contract ContributionReward is UniversalScheme {
     */
     function redeemExternalToken(bytes32 _proposalId, address _avatar) public returns(bool) {
 
-        ContributionProposal memory _proposal = organizationProposals[_avatar][_proposalId];
-        ContributionProposal storage proposal = organizationProposals[_avatar][_proposalId];
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
+        ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,3);
         bool result;
@@ -357,7 +357,7 @@ contract ContributionReward is UniversalScheme {
     * @return  periods left to be paid.
     */
     function getPeriodsToPay(bytes32 _proposalId, address _avatar,uint _redeemType) public view returns (uint) {
-        ContributionProposal memory _proposal = organizationProposals[_avatar][_proposalId];
+        ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         if (_proposal.executionTime == 0)
             return 0;
         // solium-disable-next-line security/no-block-members
@@ -383,7 +383,7 @@ contract ContributionReward is UniversalScheme {
     * @return redeemed period.
     */
     function getRedeemedPeriods(bytes32 _proposalId, address _avatar,uint _redeemType) public view returns (uint) {
-        return organizationProposals[_avatar][_proposalId].redeemedPeriods[_redeemType];
+        return organizationsProposals[_avatar][_proposalId].redeemedPeriods[_redeemType];
     }
 
 }

@@ -176,8 +176,8 @@ contract('SchemeRegistrar', function(accounts) {
 
          var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,isRegistering);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-         //check organizationProposals before execution
-         var organizationProposals = await testSetup.schemeRegistrar.organizationProposals(testSetup.org.avatar.address,proposalId);
+         //check organizationsProposals before execution
+         var organizationProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
          assert.equal(organizationProposals[2].toNumber(),1);//proposalType
 
          //Vote with reputation to trigger execution
@@ -185,8 +185,8 @@ contract('SchemeRegistrar', function(accounts) {
          var controller = await Controller.at(await testSetup.org.avatar.owner());
          //should not register because the decision is "no"
          assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),false);
-         //check organizationProposals after execution
-         organizationProposals = await testSetup.schemeRegistrar.organizationProposals(testSetup.org.avatar.address,proposalId);
+         //check organizationsProposals after execution
+         organizationProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
          assert.equal(organizationProposals[2],0);//proposalType
         });
 
@@ -200,8 +200,8 @@ contract('SchemeRegistrar', function(accounts) {
           //Vote with reputation to trigger execution
           await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
           assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,testSetup.org.avatar.address),false);
-          //check organizationProposals after execution
-          var organizationProposals = await testSetup.schemeRegistrar.organizationProposals(testSetup.org.avatar.address,proposalId);
+          //check organizationsProposals after execution
+          var organizationProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
           assert.equal(organizationProposals[2],0);//proposalType
          });
    it("execute proposeScheme  and execute -yes - autoRegisterOrganization==TRUE arc scheme", async function() {

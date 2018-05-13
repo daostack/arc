@@ -127,14 +127,14 @@ contract('UpgradeScheme', function(accounts) {
              var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
              //Vote with reputation to trigger execution
              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-             //check organizationProposals before execution
-             var organizationProposals = await testSetup.upgradeScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+             //check organizationsProposals before execution
+             var organizationProposals = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
              assert.equal(organizationProposals[0],newController.address);//new contract address
              assert.equal(organizationProposals[2].toNumber(),1);//proposalType
              await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
              assert.equal(newController.address,await testSetup.org.avatar.owner());
-             //check organizationProposals after execution
-             organizationProposals = await testSetup.upgradeScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+             //check organizationsProposals after execution
+             organizationProposals = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
              assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
              assert.equal(organizationProposals[2],0);//proposalType
             });
@@ -145,8 +145,8 @@ contract('UpgradeScheme', function(accounts) {
               var newController = await setupNewController();
               var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-              //check organizationProposals before execution
-              var organizationProposals = await testSetup.upgradeScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+              //check organizationsProposals before execution
+              var organizationProposals = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
               assert.equal(organizationProposals[0],newController.address);//new contract address
               assert.equal(organizationProposals[2].toNumber(),1);//proposalType
 
@@ -154,8 +154,8 @@ contract('UpgradeScheme', function(accounts) {
               await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
               //should not upgrade because the decision is "no"
               assert.notEqual(newController.address,await testSetup.org.avatar.owner());
-              //check organizationProposals after execution
-              organizationProposals = await testSetup.upgradeScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+              //check organizationsProposals after execution
+              organizationProposals = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
               assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
               assert.equal(organizationProposals[2],0);//proposalType
              });
@@ -168,8 +168,8 @@ contract('UpgradeScheme', function(accounts) {
                //Vote with reputation to trigger execution
                var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
-               //check organizationProposals before execution
-               var organizationProposals = await testSetup.upgradeScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+               //check organizationsProposals before execution
+               var organizationProposals = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
                assert.equal(organizationProposals[0],accounts[0]);//new contract address
                assert.equal(organizationProposals[2].toNumber(),2);//proposalType
 
@@ -180,8 +180,8 @@ contract('UpgradeScheme', function(accounts) {
 
                await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
 
-               //check organizationProposals after execution
-               organizationProposals = await testSetup.upgradeScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+               //check organizationsProposals after execution
+               organizationProposals = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
                assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
                assert.equal(organizationProposals[2],0);//proposalType
 
@@ -198,8 +198,8 @@ contract('UpgradeScheme', function(accounts) {
                 //Vote with reputation to trigger execution
                 var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
-                //check organizationProposals before execution
-                var organizationProposals = await testSetup.upgradeScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+                //check organizationsProposals before execution
+                var organizationProposals = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
                 assert.equal(organizationProposals[0],accounts[0]);//new contract address
                 assert.equal(organizationProposals[2].toNumber(),2);//proposalType
 
@@ -210,8 +210,8 @@ contract('UpgradeScheme', function(accounts) {
 
                 await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
 
-                //check organizationProposals after execution
-                organizationProposals = await testSetup.upgradeScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+                //check organizationsProposals after execution
+                organizationProposals = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
                 assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
                 assert.equal(organizationProposals[2],0);//proposalType
 
@@ -234,8 +234,8 @@ contract('UpgradeScheme', function(accounts) {
 
                  await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
 
-                 //check organizationProposals after execution
-                 var organizationProposals = await testSetup.upgradeScheme.organizationProposals(testSetup.org.avatar.address,proposalId);
+                 //check organizationsProposals after execution
+                 var organizationProposals = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
                  assert.equal(organizationProposals[0],0x0000000000000000000000000000000000000000);//new contract address
                  assert.equal(organizationProposals[2],0);//proposalType
 
