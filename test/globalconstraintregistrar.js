@@ -91,8 +91,8 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                      "0x1234",
                                                                      "0x1234");
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      var organizationProposals = await testSetup.globalConstraintRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
-      assert.equal(organizationProposals[0],globalConstraintMock.address);
+      var organizationProposal = await testSetup.globalConstraintRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
+      assert.equal(organizationProposal[0],globalConstraintMock.address);
      });
 
     it("proposeGlobalConstraint log", async function() {
