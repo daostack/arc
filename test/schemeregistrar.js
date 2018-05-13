@@ -177,8 +177,8 @@ contract('SchemeRegistrar', function(accounts) {
          var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,isRegistering);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
          //check organizationsProposals before execution
-         var organizationsProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
-         assert.equal(organizationsProposals[2].toNumber(),1);//proposalType
+         var organizationProposal = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
+         assert.equal(organizationProposal[2].toNumber(),1);//proposalType
 
          //Vote with reputation to trigger execution
          await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,2,{from:accounts[2]});
@@ -186,8 +186,8 @@ contract('SchemeRegistrar', function(accounts) {
          //should not register because the decision is "no"
          assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),false);
          //check organizationsProposals after execution
-         organizationsProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
-         assert.equal(organizationsProposals[2],0);//proposalType
+         organizationProposal = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
+         assert.equal(organizationProposal[2],0);//proposalType
         });
 
         it("execute proposeToRemoveScheme ", async function() {
@@ -201,8 +201,8 @@ contract('SchemeRegistrar', function(accounts) {
           await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
           assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,testSetup.org.avatar.address),false);
           //check organizationsProposals after execution
-          var organizationsProposals = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
-          assert.equal(organizationsProposals[2],0);//proposalType
+          var organizationProposal = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
+          assert.equal(organizationProposal[2],0);//proposalType
          });
    it("execute proposeScheme  and execute -yes - autoRegisterOrganization==TRUE arc scheme", async function() {
      var testSetup = await setup(accounts);

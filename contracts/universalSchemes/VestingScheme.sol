@@ -46,7 +46,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
-    mapping(address=>mapping(bytes32=>Agreement)) public organizationsData;
+    mapping(address=>mapping(bytes32=>Agreement)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
@@ -104,18 +104,18 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         require(_periodLength > 0);
         // Write the signers mapping:
         for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
-            organizationsData[_avatar][proposalId].signers[_signersArray[cnt]] = true;
+            organizationsProposals[_avatar][proposalId].signers[_signersArray[cnt]] = true;
         }
         // Write parameters:
-        organizationsData[_avatar][proposalId].token = Avatar(_avatar).nativeToken();
-        organizationsData[_avatar][proposalId].beneficiary = _beneficiary;
-        organizationsData[_avatar][proposalId].returnOnCancelAddress = _returnOnCancelAddress;
-        organizationsData[_avatar][proposalId].startingBlock = _startingBlock;
-        organizationsData[_avatar][proposalId].amountPerPeriod = _amountPerPeriod;
-        organizationsData[_avatar][proposalId].periodLength = _periodLength;
-        organizationsData[_avatar][proposalId].numOfAgreedPeriods = _numOfAgreedPeriods;
-        organizationsData[_avatar][proposalId].cliffInPeriods = _cliffInPeriods;
-        organizationsData[_avatar][proposalId].signaturesReqToCancel = _signaturesReqToCancel;
+        organizationsProposals[_avatar][proposalId].token = Avatar(_avatar).nativeToken();
+        organizationsProposals[_avatar][proposalId].beneficiary = _beneficiary;
+        organizationsProposals[_avatar][proposalId].returnOnCancelAddress = _returnOnCancelAddress;
+        organizationsProposals[_avatar][proposalId].startingBlock = _startingBlock;
+        organizationsProposals[_avatar][proposalId].amountPerPeriod = _amountPerPeriod;
+        organizationsProposals[_avatar][proposalId].periodLength = _periodLength;
+        organizationsProposals[_avatar][proposalId].numOfAgreedPeriods = _numOfAgreedPeriods;
+        organizationsProposals[_avatar][proposalId].cliffInPeriods = _cliffInPeriods;
+        organizationsProposals[_avatar][proposalId].signaturesReqToCancel = _signaturesReqToCancel;
 
         params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
 
@@ -224,9 +224,9 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-        Agreement memory proposedAgreement = organizationsData[_avatar][_proposalId];
+        Agreement memory proposedAgreement = organizationsProposals[_avatar][_proposalId];
         require(proposedAgreement.periodLength > 0);
-        delete organizationsData[_avatar][_proposalId];
+        delete organizationsProposals[_avatar][_proposalId];
         emit ProposalDeleted(_avatar,_proposalId);
 
         // Check if vote was successful:

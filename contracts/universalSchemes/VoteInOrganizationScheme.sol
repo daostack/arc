@@ -30,7 +30,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
-    mapping(address=>mapping(bytes32=>VoteProposal)) public organizationsData;
+    mapping(address=>mapping(bytes32=>VoteProposal)) public organizationsProposals;
 
 
     struct Parameters {
@@ -97,7 +97,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         }
         bytes32 proposalId = intVote.propose(proposalNumberOfChoices, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
 
-        organizationsData[_avatar][proposalId] = VoteProposal({
+        organizationsProposals[_avatar][proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
             originalProposalId: _originalProposalId,
             originalNumOfChoices: originalNumOfChoices,
@@ -127,9 +127,9 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
 
         // Save proposal to memory and delete from storage:
-        VoteProposal memory proposal = organizationsData[_avatar][_proposalId];
+        VoteProposal memory proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.exist);
-        delete organizationsData[_avatar][_proposalId];
+        delete organizationsProposals[_avatar][_proposalId];
         emit ProposalDeleted(_avatar, _proposalId);
         bool retVal = true;
         // If no decision do nothing:

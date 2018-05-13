@@ -35,16 +35,11 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         bytes32 voteToRemoveParams; // Voting parameters for removing this GC.
     }
 
-    // Struct holding the data for each organization
-    struct Organization {
-        bytes32 voteRegisterParams; // The voting parameters for adding a GC.
-        IntVoteInterface intVote; // The voting machine in which the voting takes place.
-        mapping(bytes32=>GCProposal) proposals; // A mapping from the proposal ID to the proposal itself.
-        mapping(address=>bytes32) voteToRemoveParams; // A mapping that saves the parameters for removing each GC.
-    }
+    // GCProposal by avatar and proposalId
+    mapping(address=>mapping(bytes32=>GCProposal)) public organizationsProposals;
 
-    // A mapping from the organization (Avatar) address to the saved data of the organization:
-    mapping(address=>Organization) public organizationsData;
+    // voteToRemoveParams hash by avatar and proposal.gc
+    mapping(address=>mapping(address=>bytes32)) public voteToRemoveParams;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
@@ -67,9 +62,9 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
         bool retVal = true;
         // Check if vote was successful:
-        GCProposal memory proposal = organizationsData[_avatar].proposals[_proposalId];
+        GCProposal memory proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.gc != address(0));
-        delete organizationsData[_avatar].proposals[_proposalId];
+        delete organizationsProposals[_avatar][_proposalId];
         emit ProposalDeleted(_avatar,_proposalId);
 
         if (_param == 1 ) {
@@ -80,7 +75,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         // Adding a GC
             if (proposal.proposalType == 1) {
                 retVal = controller.addGlobalConstraint(proposal.gc, proposal.params,_avatar);
-                organizationsData[_avatar].voteToRemoveParams[proposal.gc] = proposal.voteToRemoveParams;
+                voteToRemoveParams[_avatar][proposal.gc] = proposal.voteToRemoveParams;
               }
         // Removing a GC
             if (proposal.proposalType == 2) {
@@ -147,7 +142,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
             voteToRemoveParams: _voteToRemoveParams
         });
 
-        organizationsData[_avatar].proposals[proposalId] = proposal;
+        organizationsProposals[_avatar][proposalId] = proposal;
         emit NewGlobalConstraintsProposal(
             _avatar,
             proposalId,
@@ -167,12 +162,11 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     * @return bytes32 -the proposal id
     */
     function proposeToRemoveGC(Avatar _avatar, address _gc) public returns(bytes32) {
-        Organization storage org = organizationsData[_avatar];
         Controller controller = Controller(Avatar(_avatar).owner());
         require(controller.isGlobalConstraintRegistered(_gc,address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(2, org.voteToRemoveParams[_gc], _avatar, ExecutableInterface(this),msg.sender);
+        bytes32 proposalId = intVote.propose(2, voteToRemoveParams[_avatar][_gc], _avatar, ExecutableInterface(this),msg.sender);
 
         GCProposal memory proposal = GCProposal({
             gc: _gc,
@@ -181,7 +175,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
             voteToRemoveParams: 0
         });
 
-        organizationsData[_avatar].proposals[proposalId] = proposal;
+        organizationsProposals[_avatar][proposalId] = proposal;
         emit RemoveGlobalConstraintsProposal(_avatar, proposalId, intVote, _gc);
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;

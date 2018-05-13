@@ -68,6 +68,33 @@ contract('GlobalConstraintRegistrar', function(accounts) {
      assert.equal(parameters[1],params.votingMachine.absoluteVote.address);
      });
 
+    it("proposeGlobalConstraint voteToRemoveParams", async function() {
+      var testSetup = await setup(accounts);
+      var globalConstraintMock = await GlobalConstraintMock.new();
+
+      var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
+                                                                     globalConstraintMock.address,
+                                                                     "0x1234",
+                                                                     "0x1235");
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+      var voteToRemoveParams = await testSetup.globalConstraintRegistrar.voteToRemoveParams(testSetup.org.avatar.address, globalConstraintMock.address);
+      assert.equal(voteToRemoveParams, "0x1235000000000000000000000000000000000000000000000000000000000000");
+     });
+
+    it("proposeGlobalConstraint organizationsProposals", async function() {
+      var testSetup = await setup(accounts);
+      var globalConstraintMock = await GlobalConstraintMock.new();
+
+      var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
+                                                                     globalConstraintMock.address,
+                                                                     "0x1234",
+                                                                     "0x1234");
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      var organizationProposal = await testSetup.globalConstraintRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
+      assert.equal(organizationProposal[0],globalConstraintMock.address);
+     });
+
     it("proposeGlobalConstraint log", async function() {
       var testSetup = await setup(accounts);
       var globalConstraintMock = await GlobalConstraintMock.new();

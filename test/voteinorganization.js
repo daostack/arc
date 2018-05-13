@@ -108,9 +108,9 @@ contract('VoteInOrganizationScheme', function(accounts) {
                                                                  originalProposalId);
              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
              await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
-             //check organizationsData after execution
-             var organizationsData = await testSetup.voteInOrganization.organizationsData(testSetup.org.avatar.address,proposalId);
-             assert.equal(organizationsData[0],0x0000000000000000000000000000000000000000);//new contract address
+             //check organizationsProposals after execution
+             var organizationProposal = await testSetup.voteInOrganization.organizationsProposals(testSetup.org.avatar.address,proposalId);
+             assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
             });
 
             it("execute proposeVote -positive decision - proposal data delete", async function() {
@@ -127,12 +127,12 @@ contract('VoteInOrganizationScheme', function(accounts) {
                                                                   anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address,
                                                                   originalProposalId);
               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-              var organizationsData = await testSetup.voteInOrganization.organizationsData(testSetup.org.avatar.address,proposalId);
-              assert.equal(organizationsData[0],anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);//new contract address
+              var organizationProposal = await testSetup.voteInOrganization.organizationsProposals(testSetup.org.avatar.address,proposalId);
+              assert.equal(organizationProposal[0],anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);//new contract address
               await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-              //check organizationsData after execution
-              organizationsData = await testSetup.voteInOrganization.organizationsData(testSetup.org.avatar.address,proposalId);
-              assert.equal(organizationsData[0],0x0000000000000000000000000000000000000000);//new contract address
+              //check organizationsProposals after execution
+              organizationProposal = await testSetup.voteInOrganization.organizationsProposals(testSetup.org.avatar.address,proposalId);
+              assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
              });
 
              it("execute proposeVote -positive decision - check action", async function() {
