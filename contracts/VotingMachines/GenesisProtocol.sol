@@ -33,6 +33,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                                             //in proportion to their reputation.
                                             //The rest (100-votersGainRepRatioFromLostRep)% of lost reputation is divided between the successful wagers,
                                             //in proportion to their stake.
+        uint daoBountyConst;//The DAO adds up a bounty for successful staker.
+                            //The bounty formula is: s * daoBountyConst, where s+ is the wager staked for the proposal,
+                            //and  daoBountyConst is a constant factor that is configurable and changeable by the DAO given.
+                            //  daoBountyConst should be greater than stakerFeeRatioForVoters and less than 2 * stakerFeeRatioForVoters.
+        uint daoBountyLimit;//The daoBounty cannot be greater than daoBountyLimit.
+
 
 
     }
@@ -44,7 +50,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
 
     struct Staker {
         uint vote; // YES(1) ,NO(2)
-        uint amount; // amount of voter's reputation
+        uint amount; // amount of staker's stake
+        uint amountForBounty; // amount of staker's stake which will be use for bounty calculation
     }
 
     struct Proposal {
@@ -79,6 +86,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation);
     event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
+    event RedeemDaoBounty(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
     event RedeemReputation(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
@@ -188,6 +196,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         require(stakingToken.transferFrom(msg.sender, address(this), amount));
         proposal.totalStakes[1] = proposal.totalStakes[1].add(amount); //update totalRedeemableStakes
         staker.amount += amount;
+        staker.amountForBounty = staker.amount;
         staker.vote = _vote;
 
         proposal.votersStakes += (params.stakerFeeRatioForVoters * amount)/100;
@@ -469,6 +478,31 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     }
 
     /**
+     * @dev redeemDaoBounty a reward for a successful stake, vote or proposing.
+     * The function use a beneficiary address as a parameter (and not msg.sender) to enable
+     * users to redeem on behalf of someone else.
+     * @param _proposalId the ID of the proposal
+     * @param _beneficiary - the beneficiary address
+     * @return bool true or false.
+     */
+    function redeemDaoBounty(bytes32 _proposalId,address _beneficiary) public returns(bool) {
+        Proposal storage proposal = proposals[_proposalId];
+        require((proposal.state == ProposalState.Executed) || (proposal.state == ProposalState.Closed));
+        uint amount;
+        if ((proposal.stakers[_beneficiary].amountForBounty>0) &&
+             (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
+            //as staker
+            amount = getRedeemableTokensStakerBounty(_proposalId,_beneficiary);
+            proposal.stakers[_beneficiary].amountForBounty = 0;
+        }
+        if (amount != 0) {
+            require(ControllerInterface(Avatar(proposal.avatar).owner()).externalTokenTransfer(stakingToken,_beneficiary,amount,proposal.avatar));
+            emit RedeemDaoBounty(_proposalId,proposal.avatar,_beneficiary,amount);
+        }
+        return true;
+    }
+
+    /**
      * @dev shouldBoost check if a proposal should be shifted to boosted phase.
      * @param _proposalId the ID of the proposal
      * @return bool true or false.
@@ -502,6 +536,26 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             power = 100;
         }
         return int(params.thresholdConstA * (e ** power));
+    }
+
+    /**
+     * @dev getRedeemableTokensStakerBounty return the redeem bounty amount which a certain staker is entitle to.
+     * @param _proposalId the ID of the proposal
+     * @param _beneficiary the beneficiary .
+     * @return uint redeem amount .
+     */
+    function getRedeemableTokensStakerBounty(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
+        Proposal storage proposal = proposals[_proposalId];
+        Parameters memory params = parameters[proposal.paramsHash];
+        if (proposal.stakes[proposal.winningVote] == 0) {
+        //this can be reached if the winningVote is NO
+            return 0;
+        }
+        uint daoBounty = (params.daoBountyConst.mul(proposal.stakers[_beneficiary].amountForBounty))/100;
+        if (daoBounty > params.daoBountyLimit) {
+            daoBounty = params.daoBountyLimit;
+        }
+        return daoBounty;
     }
 
     /**
@@ -603,18 +657,20 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      *    _params[0] - _preBoostedVoteRequiredPercentage,
      *    _params[1] - _preBoostedVotePeriodLimit, //the time limit for a proposal to be in an absolute voting mode.
      *    _params[2] -_boostedVotePeriodLimit, //the time limit for a proposal to be in an relative voting mode.
-     *    _params[3] -_thresholdConstA,
-     *    _params[4] -_thresholdConstB,
-     *    _params[5] -_minimumStakingFee,
-     *    _params[6] -_quietEndingPeriod,
-     *    _params[7] -_proposingRepRewardConstA,
-     *    _params[8] -_proposingRepRewardConstB,
-     *    _params[9] -_stakerFeeRatioForVoters,
-     *    _params[10] -_votersReputationLossRatio,
+     *    _params[3] -_thresholdConstA
+     *    _params[4] -_thresholdConstB
+     *    _params[5] -_minimumStakingFee
+     *    _params[6] -_quietEndingPeriod
+     *    _params[7] -_proposingRepRewardConstA
+     *    _params[8] -_proposingRepRewardConstB
+     *    _params[9] -_stakerFeeRatioForVoters
+     *    _params[10] -_votersReputationLossRatio
      *    _params[11] -_votersGainRepRatioFromLostRep
+     *    _params[12] - _daoBountyConst
+     *    _params[13] - _daoBountyLimit
     */
     function setParameters(
-        uint[12] _params //use array here due to stack too deep issue.
+        uint[14] _params //use array here due to stack too deep issue.
     )
     public
     returns(bytes32)
@@ -628,6 +684,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         require(_params[2] >= _params[6]); //boostedVotePeriodLimit >= quietEndingPeriod
         require(_params[7] <= 100000000 ether); //_proposingRepRewardConstA
         require(_params[8] <= 100000000 ether); //_proposingRepRewardConstB
+        require(_params[12] < (2 * _params[9])); //_daoBountyConst < 2 * stakerFeeRatioForVoters
+        require(_params[12] > _params[9]);//_daoBountyConst > stakerFeeRatioForVoters
+
 
         bytes32 paramsHash = getParametersHash(_params);
         parameters[paramsHash] = Parameters({
@@ -642,7 +701,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             proposingRepRewardConstB:_params[8],
             stakerFeeRatioForVoters:_params[9],
             votersReputationLossRatio:_params[10],
-            votersGainRepRatioFromLostRep:_params[11]
+            votersGainRepRatioFromLostRep:_params[11],
+            daoBountyConst:_params[12],
+            daoBountyLimit:_params[13]
         });
         return paramsHash;
     }
@@ -651,7 +712,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
    * @dev hashParameters returns a hash of the given parameters
    */
     function getParametersHash(
-        uint[12] _params) //use array here due to stack too deep issue.
+        uint[14] _params) //use array here due to stack too deep issue.
         public
         pure
         returns(bytes32)
@@ -668,7 +729,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             _params[8],
             _params[9],
             _params[10],
-            _params[11]);
+            _params[11],
+            _params[12],
+            _params[13]);
     }
 
     /**
