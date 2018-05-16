@@ -23,8 +23,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         uint thresholdConstB;//constant B for threshold calculation . threshold =A * (e ** (numberOfBoostedProposals/B))
         uint minimumStakingFee; //minimum staking fee allowed.
         uint quietEndingPeriod; //quite ending period
-        uint proposingRepRewardConstA;//constant A for calculate proposer reward. proposerReward =A +B*(R+ - R-)
-        uint proposingRepRewardConstB;//constant B for calculate proposing reward.proposerReward =A +B*(R+ - R-)
+        uint proposingRepRewardConstA;//constant A for calculate proposer reward. proposerReward =(A*(RTotal) +B*(R+ - R-))/1000
+        uint proposingRepRewardConstB;//constant B for calculate proposing reward.proposerReward =(A*(RTotal) +B*(R+ - R-))/1000
         uint stakerFeeRatioForVoters; // The “ratio of stake” to be paid to voters.
                                       // All stakers pay a portion of their stake to all voters, stakerFeeRatioForVoters * (s+ + s-).
                                       //All voters (pre and during boosting period) divide this portion in proportion to their reputation.
@@ -531,7 +531,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             rep = 0;
         } else {
             Parameters memory params = parameters[proposal.paramsHash];
-            rep = params.proposingRepRewardConstA + params.proposingRepRewardConstB * (proposal.votes[YES]-proposal.votes[NO]);
+            rep = (params.proposingRepRewardConstA.mul(proposal.totalVotes) + params.proposingRepRewardConstB.mul(proposal.votes[YES]-proposal.votes[NO]))/1000;
         }
         return rep;
     }
