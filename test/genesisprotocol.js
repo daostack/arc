@@ -70,8 +70,8 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
                                       _thresholdConstB=1,
                                       _minimumStakingFee=0,
                                       _quietEndingPeriod=0,
-                                      _proposingRepRewardConstA=60,
-                                      _proposingRepRewardConstB=1,
+                                      _proposingRepRewardConstA=60000,
+                                      _proposingRepRewardConstB=1000,
                                       _stakerFeeRatioForVoters=1,
                                       _votersReputationLossRatio=10,
                                       _votersGainRepRatioFromLostRep=80) {
@@ -1111,8 +1111,8 @@ contract('GenesisProtocol', function (accounts) {
       var rep4Vote = await testSetup.genesisProtocol.getRedeemableReputationVoter(proposalId,accounts[0]);
       assert.equal(rep4Vote,3);
       var rep4Propose = await testSetup.genesisProtocol.getRedeemableReputationProposer(proposalId);
-      //proposingRepRewardConstA + proposingRepRewardConstB* (votes[1]-proposal.votes[0]) = 60 + 1*(20-0)
-      assert.equal(rep4Propose,80);
+      //(params.proposingRepRewardConstA.mul(proposal.totalVotes) + params.proposingRepRewardConstB.mul(proposal.votes[YES]-proposal.votes[NO]))/1000;
+      assert.equal(rep4Propose,((60000*20)+ 1000*(20-0))/1000);
       tx = await testSetup.genesisProtocol.redeem(proposalId,accounts[0]);
       assert.equal(tx.logs.length, 2);
       assert.equal(tx.logs[0].event, "Redeem");
