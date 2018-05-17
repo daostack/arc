@@ -428,11 +428,13 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             }
        }
         if (executionState != ExecutionState.None) {
-            uint daoBountyRemain = (params.daoBountyConst.mul(proposal.stakes[proposal.winningVote]))/100;
-            if ( daoBountyRemain > params.daoBountyLimit) {
-                daoBountyRemain = params.daoBountyLimit;
+            if (proposal.winningVote == YES) {
+                uint daoBountyRemain = (params.daoBountyConst.mul(proposal.stakes[proposal.winningVote]))/100;
+                if (daoBountyRemain > params.daoBountyLimit) {
+                    daoBountyRemain = params.daoBountyLimit;
+                }
+                proposal.daoBountyRemain = daoBountyRemain;
             }
-            proposal.daoBountyRemain = daoBountyRemain;
             emit ExecuteProposal(_proposalId, proposal.avatar, proposal.winningVote, totalReputation, executionState);
             (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
         }
@@ -555,8 +557,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         Proposal storage proposal = proposals[_proposalId];
         Parameters memory params = parameters[proposal.paramsHash];
         uint totalWinningStakes = proposal.stakes[proposal.winningVote];
-        if (totalWinningStakes == 0) {
-        //this can be reached if the winningVote is NO
+        if ((proposal.winningVote != YES)||(totalWinningStakes == 0)) {
             return 0;
         }
         uint beneficiaryLimit = (proposal.stakers[_beneficiary].amountForBounty.mul(params.daoBountyLimit)) / totalWinningStakes;
