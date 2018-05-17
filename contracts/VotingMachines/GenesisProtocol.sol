@@ -693,8 +693,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         require(_params[10] <= 100); //votersReputationLossRatio
         require(_params[11] <= 100); //votersGainRepRatioFromLostRep
         require(_params[2] >= _params[6]); //boostedVotePeriodLimit >= quietEndingPeriod
-        require(_params[7] <= 100000000 ether); //_proposingRepRewardConstA
-        require(_params[8] <= 100000000 ether); //_proposingRepRewardConstB
+        require(_params[7] <= 100000000); //_proposingRepRewardConstA
+        require(_params[8] <= 100000000); //_proposingRepRewardConstB
         require(_params[12] < (2 * _params[9])); //_daoBountyConst < 2 * stakerFeeRatioForVoters
         require(_params[12] > _params[9]);//_daoBountyConst > stakerFeeRatioForVoters
 
