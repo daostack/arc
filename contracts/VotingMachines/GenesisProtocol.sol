@@ -70,7 +70,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         address proposer;
         uint currentBoostedVotePeriodLimit;
         bytes32 paramsHash;
-        uint daoBountyLimit;
+        uint daoBountyRemain;
         mapping(uint=>uint) votes;
         mapping(address=>Voter) voters;
         mapping(uint=>uint) stakes;
@@ -150,7 +150,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         proposal.proposer = _proposer;
         proposal.winningVote = NO;
         proposal.paramsHash = paramsHash;
-        proposal.daoBountyLimit = parameters[paramsHash].daoBountyLimit;
         proposals[proposalId] = proposal;
         emit NewProposal(proposalId, _avatar, _numOfChoices, msg.sender, paramsHash);
         return proposalId;
@@ -429,6 +428,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             }
        }
         if (executionState != ExecutionState.None) {
+            uint daoBountyRemain = (params.daoBountyConst.mul(proposal.stakes[proposal.winningVote]))/100;
+            if ( daoBountyRemain > params.daoBountyLimit) {
+                daoBountyRemain = params.daoBountyLimit;
+            }
+            proposal.daoBountyRemain = daoBountyRemain;
             emit ExecuteProposal(_proposalId, proposal.avatar, proposal.winningVote, totalReputation, executionState);
             (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
         }
@@ -498,7 +502,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             proposal.stakers[_beneficiary].amountForBounty = 0;
         }
         if (amount != 0) {
-            proposal.daoBountyLimit = proposal.daoBountyLimit.sub(amount);
+            proposal.daoBountyRemain = proposal.daoBountyRemain.sub(amount);
             require(ControllerInterface(Avatar(proposal.avatar).owner()).externalTokenTransfer(stakingToken,_beneficiary,amount,proposal.avatar));
             emit RedeemDaoBounty(_proposalId,proposal.avatar,_beneficiary,amount);
         }
@@ -571,11 +575,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      */
     function getRedeemableTokensStaker(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
         Proposal storage proposal = proposals[_proposalId];
-        if (proposal.stakes[proposal.winningVote] == 0) {
+        uint totalWinningStakes = proposal.stakes[proposal.winningVote];
+        if (totalWinningStakes == 0) {
         //this can be reached if the winningVote is NO
             return 0;
         }
-        return (proposal.stakers[_beneficiary].amount * proposal.totalStakes[0]) / proposal.stakes[proposal.winningVote];
+        return (proposal.stakers[_beneficiary].amount * proposal.totalStakes[0]) / totalWinningStakes;
     }
 
     /**
