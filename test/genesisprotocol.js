@@ -471,7 +471,7 @@ contract('GenesisProtocol', function (accounts) {
 
 
   });
-  
+
   it("log the VoteProposal event on voting ", async function() {
     var testSetup = await setup(accounts);
     let numberOfChoices = 2;
@@ -1259,6 +1259,7 @@ contract('GenesisProtocol', function (accounts) {
       assert.equal(tx.logs[0].args._amount, voterRedeemAmount.toNumber()+stakerRedeemAmount.toNumber());
       assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]),1000);
       var stakerRedeemAmountBaunty = await testSetup.genesisProtocol.getRedeemableTokensStakerBounty(proposalId,accounts[0]);
+      assert.equal(stakerRedeemAmountBaunty,10);
         try {
           await testSetup.genesisProtocol.redeemDaoBounty(proposalId,accounts[0]);
           assert(false, 'there is no tokens on the dao for bounty');
