@@ -154,9 +154,12 @@ export const setupGenesisProtocol = async function (accounts,token,
   _quietEndingPeriod=0,
   _proposingRepRewardConstA=60,
   _proposingRepRewardConstB=1,
-  _stakerFeeRatioForVoters=1,
+  _stakerFeeRatioForVoters=10,
   _votersReputationLossRatio=10,
-  _votersGainRepRatioFromLostRep=80) {
+  _votersGainRepRatioFromLostRep=80,
+  _daoBountyConst=15,
+  _daoBountyLimt=10
+  ) {
   var votingMachine = new VotingMachine();
   votingMachine.genesisProtocol = await GenesisProtocol.new(token);
 
@@ -174,7 +177,9 @@ export const setupGenesisProtocol = async function (accounts,token,
                                                  _proposingRepRewardConstB,
                                                  _stakerFeeRatioForVoters,
                                                  _votersReputationLossRatio,
-                                                 _votersGainRepRatioFromLostRep]);
+                                                 _votersGainRepRatioFromLostRep,
+                                                 _daoBountyConst,
+                                                 _daoBountyLimt]);
   votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_preBoostedVoteRequiredPercentage,
                                                  _preBoostedVotePeriodLimit,
                                                  _boostedVotePeriodLimit,
@@ -186,7 +191,9 @@ export const setupGenesisProtocol = async function (accounts,token,
                                                  _proposingRepRewardConstB,
                                                  _stakerFeeRatioForVoters,
                                                  _votersReputationLossRatio,
-                                                 _votersGainRepRatioFromLostRep]);
+                                                 _votersGainRepRatioFromLostRep,
+                                                 _daoBountyConst,
+                                                 _daoBountyLimt]);
 
   return votingMachine;
 };
