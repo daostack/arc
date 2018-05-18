@@ -18,7 +18,7 @@ There are currently two implementations of the [Controller Interface](../../gene
 provided by Arc:
 
 - [Controller](Controller.md) - A controller instance deployed for each DAO.
-- [UController](UController.md) - A single, universal controller instance deployed for may DAOs.
+- [UController](UController.md) - A single, universal controller instance deployed for many DAOs.
 
 #### Choosing an implementation
 
