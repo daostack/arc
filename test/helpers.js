@@ -8,6 +8,7 @@ const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
+const RealMath = artifacts.require("./RealMath.sol");
 
 
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -161,6 +162,8 @@ export const setupGenesisProtocol = async function (accounts,token,
   _daoBountyLimt=10
   ) {
   var votingMachine = new VotingMachine();
+  await RealMath.new();
+  await GenesisProtocol.link(RealMath);
   votingMachine.genesisProtocol = await GenesisProtocol.new(token);
 
   // set up a reputation system

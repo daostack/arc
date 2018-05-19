@@ -3,6 +3,7 @@ pragma solidity ^0.4.23;
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
 import "../universalSchemes/UniversalScheme.sol";
+import { RealMath } from "../libs/RealMath.sol";
 
 
 /**
@@ -538,13 +539,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return int organization's score threshold.
      */
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
-        uint e = 2;
+        int88 e = 2;
         Parameters memory params = parameters[proposals[_proposalId].paramsHash];
-        uint power = orgBoostedProposalsCnt[_avatar]/params.thresholdConstB;
-        if (power > 100) {
-            power = 100;
+        int128 power = RealMath.div(RealMath.toReal(int88(orgBoostedProposalsCnt[_avatar])),RealMath.toReal(int88(params.thresholdConstB)));
+        if (RealMath.fromReal(power) > 86) {
+            power = RealMath.toReal(int88(86));
         }
-        return int(params.thresholdConstA * (e ** power));
+        int128 res = RealMath.mul(RealMath.toReal(int88(params.thresholdConstA)),RealMath.pow(RealMath.toReal(e),power));
+        return RealMath.fromReal(res);
     }
 
     /**
