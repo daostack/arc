@@ -162,7 +162,6 @@ export const setupGenesisProtocol = async function (accounts,token,
   _daoBountyLimt=10
   ) {
   var votingMachine = new VotingMachine();
-  await RealMath.new();
   await GenesisProtocol.link(RealMath);
   votingMachine.genesisProtocol = await GenesisProtocol.new(token);
 

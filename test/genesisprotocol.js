@@ -86,9 +86,7 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
                                       _daoBountyLimt =10 ) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
-   await RealMath.new();
    await GenesisProtocol.link(RealMath);
-
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.standardTokenMock.address);
 
    var controllerCreator = await ControllerCreator.new();

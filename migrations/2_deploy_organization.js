@@ -11,6 +11,7 @@ var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 var ContributionReward = artifacts.require('./ContributionReward.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var ControllerCreator = artifacts.require('./ControllerCreator.sol');
+var RealMath = artifacts.require('./RealMath.sol');
 
 // TEST_ORGANIZATION ORG parameters:
 const orgName = "TEST_ORGANIZATION";
@@ -104,4 +105,5 @@ module.exports = async function(deployer) {
           paramsArray,
           permissionArray);
      });
+     await deployer.deploy(RealMath);
   };
