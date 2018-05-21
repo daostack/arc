@@ -6,7 +6,6 @@ const constants = require("./constants");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-const RealMath = artifacts.require("./RealMath.sol");
 
 export class GenesisProtocolParams {
   constructor() {
@@ -86,7 +85,6 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
                                       _daoBountyLimt =10 ) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
-   await GenesisProtocol.link(RealMath);
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.standardTokenMock.address);
 
    var controllerCreator = await ControllerCreator.new();

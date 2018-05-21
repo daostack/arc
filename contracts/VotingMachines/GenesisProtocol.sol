@@ -11,6 +11,8 @@ import { RealMath } from "../libs/RealMath.sol";
  */
 contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     using SafeMath for uint;
+    using RealMath for int216;
+    using RealMath for int256;
 
     enum ProposalState { None ,Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
     enum ExecutionState { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
@@ -539,14 +541,15 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return int organization's score threshold.
      */
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
-        int88 e = 2;
+        int216 e = 2;
         Parameters memory params = parameters[proposals[_proposalId].paramsHash];
-        int128 power = RealMath.div(RealMath.toReal(int88(orgBoostedProposalsCnt[_avatar])),RealMath.toReal(int88(params.thresholdConstB)));
-        if (RealMath.fromReal(power) > 86) {
-            power = RealMath.toReal(int88(86));
+        int256 power = int216(orgBoostedProposalsCnt[_avatar]).toReal().div(int216(params.thresholdConstB).toReal());
+
+        if (power.fromReal() > 100 ) {
+            power = int216(100).toReal();
         }
-        int128 res = RealMath.mul(RealMath.toReal(int88(params.thresholdConstA)),RealMath.pow(RealMath.toReal(e),power));
-        return RealMath.fromReal(res);
+        int256 res = int216(params.thresholdConstA).toReal().mul(e.toReal().pow(power));
+        return res.fromReal();
     }
 
     /**

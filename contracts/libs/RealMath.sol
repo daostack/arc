@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 
 /**
  * RealMath: fixed-point math library, based on fractional and integer parts.
- * Using int128 as real88x40, which isn't in Solidity yet.
+ * Using int256 as real216x40, which isn't in Solidity yet.
  * 40 fractional bits gets us down to 1E-12 precision, while still letting us
  * go up to galaxy scale counting in meters.
  * Internally uses the wider int256 for some math.
@@ -22,7 +22,7 @@ library RealMath {
     /**
      * How many total bits are there?
      */
-    int256 constant REAL_BITS = 128;
+    int256 constant REAL_BITS = 256;
 
     /**
      * How many fractional bits are there?
@@ -37,68 +37,68 @@ library RealMath {
     /**
      * What's the first non-fractional bit
      */
-    int128 constant REAL_ONE = int128(1) << REAL_FBITS;
+    int256 constant REAL_ONE = int256(1) << REAL_FBITS;
 
     /**
      * What's the last fractional bit?
      */
-    int128 constant REAL_HALF = REAL_ONE >> 1;
+    int256 constant REAL_HALF = REAL_ONE >> 1;
 
     /**
      * What's two? Two is pretty useful.
      */
-    int128 constant REAL_TWO = REAL_ONE << 1;
+    int256 constant REAL_TWO = REAL_ONE << 1;
 
     /**
      * And our logarithms are based on ln(2).
      */
-    int128 constant REAL_LN_TWO = 762123384786;
+    int256 constant REAL_LN_TWO = 762123384786;
 
     /**
      * It is also useful to have Pi around.
      */
-    int128 constant REAL_PI = 3454217652358;
+    int256 constant REAL_PI = 3454217652358;
 
     /**
      * And half Pi, to save on divides.
      * TODO: That might not be how the compiler handles constants.
      */
-    int128 constant REAL_HALF_PI = 1727108826179;
+    int256 constant REAL_HALF_PI = 1727108826179;
 
     /**
      * And two pi, which happens to be odd in its most accurate representation.
      */
-    int128 constant REAL_TWO_PI = 6908435304715;
+    int256 constant REAL_TWO_PI = 6908435304715;
 
     /**
      * What's the sign bit?
      */
-    int128 constant SIGN_MASK = int128(1) << 127;
+    int256 constant SIGN_MASK = int256(1) << 255;
 
 
     /**
      * Convert an integer to a real. Preserves sign.
      */
-    function toReal(int88 ipart) public pure returns (int128) {
-        return int128(ipart) * REAL_ONE;
+    function toReal(int216 ipart) internal pure returns (int256) {
+        return int256(ipart) * REAL_ONE;
     }
 
     /**
      * Convert a real to an integer. Preserves sign.
      */
-    function fromReal(int128 realValue) public pure returns (int88) {
-        return int88(realValue / REAL_ONE);
+    function fromReal(int256 realValue) internal pure returns (int216) {
+        return int216(realValue / REAL_ONE);
     }
 
     /**
      * Round a real to the nearest integral real value.
      */
-    function round(int128 realValue) public pure returns (int128) {
+    function round(int256 realValue) internal pure returns (int256) {
         // First, truncate.
-        int88 ipart = fromReal(realValue);
+        int216 ipart = fromReal(realValue);
         if ((fractionalBits(realValue) & (uint40(1) << (REAL_FBITS - 1))) > 0) {
             // High fractional bit is set. Round up.
-            if (realValue < int128(0)) {
+            if (realValue < int256(0)) {
                 // Rounding up for a negative number is rounding down.
                 ipart -= 1;
             } else {
@@ -109,9 +109,9 @@ library RealMath {
     }
 
     /**
-     * Get the absolute value of a real. Just the same as abs on a normal int128.
+     * Get the absolute value of a real. Just the same as abs on a normal int256.
      */
-    function abs(int128 realValue) public pure returns (int128) {
+    function abs(int256 realValue) internal pure returns (int256) {
         if (realValue > 0) {
             return realValue;
         } else {
@@ -122,14 +122,14 @@ library RealMath {
     /**
      * Returns the fractional bits of a real. Ignores the sign of the real.
      */
-    function fractionalBits(int128 realValue) public pure returns (uint40) {
+    function fractionalBits(int256 realValue) internal pure returns (uint40) {
         return uint40(abs(realValue) % REAL_ONE);
     }
 
     /**
      * Get the fractional part of a real, as a real. Ignores sign (so fpart(-0.5) is 0.5).
      */
-    function fpart(int128 realValue) public pure returns (int128) {
+    function fpart(int256 realValue) internal pure returns (int256) {
         // This gets the fractional part but strips the sign
         return abs(realValue) % REAL_ONE;
     }
@@ -137,9 +137,9 @@ library RealMath {
     /**
      * Get the fractional part of a real, as a real. Respects sign (so fpartSigned(-0.5) is -0.5).
      */
-    function fpartSigned(int128 realValue) public pure returns (int128) {
+    function fpartSigned(int256 realValue) internal pure returns (int256) {
         // This gets the fractional part but strips the sign
-        int128 fractional = fpart(realValue);
+        int256 fractional = fpart(realValue);
         if (realValue < 0) {
             // Add the negative sign back in.
             return -fractional;
@@ -151,7 +151,7 @@ library RealMath {
     /**
      * Get the integer part of a fixed point value.
      */
-    function ipart(int128 realValue) public pure returns (int128) {
+    function ipart(int256 realValue) internal pure returns (int256) {
         // Subtract out the fractional part to get the real part.
         return realValue - fpartSigned(realValue);
     }
@@ -159,25 +159,25 @@ library RealMath {
     /**
      * Multiply one real by another. Truncates overflows.
      */
-    function mul(int128 realA, int128 realB) public pure returns (int128) {
+    function mul(int256 realA, int256 realB) internal pure returns (int256) {
         // When multiplying fixed point in x.y and z.w formats we get (x+z).(y+w) format.
         // So we just have to clip off the extra REAL_FBITS fractional bits.
-        return int128((int256(realA) * int256(realB)) >> REAL_FBITS);
+        return int256((int256(realA) * int256(realB)) >> REAL_FBITS);
     }
 
     /**
      * Divide one real by another real. Truncates overflows.
      */
-    function div(int128 realNumerator, int128 realDenominator) public pure returns (int128) {
+    function div(int256 realNumerator, int256 realDenominator) internal pure returns (int256) {
         // We use the reverse of the multiplication trick: convert numerator from
         // x.y to (x+z).(y+w) fixed point, then divide by denom in z.w fixed point.
-        return int128((int256(realNumerator) * REAL_ONE) / int256(realDenominator));
+        return int256((int256(realNumerator) * REAL_ONE) / int256(realDenominator));
     }
 
     /**
      * Create a real from a rational fraction.
      */
-    function fraction(int88 numerator, int88 denominator) public pure returns (int128) {
+    function fraction(int216 numerator, int216 denominator) internal pure returns (int256) {
         return div(toReal(numerator), toReal(denominator));
     }
 
@@ -189,17 +189,17 @@ library RealMath {
      * Raise a number to a positive integer power in O(log power) time.
      * See <https://stackoverflow.com/a/101613>
      */
-    function ipow(int128 realBase, int88 exponent) public pure returns (int128) {
+    function ipow(int256 realBase, int216 exponent) internal pure returns (int256) {
         if (exponent < 0) {
             // Negative powers are not allowed here.
             revert();
         }
 
-        int128 tempRealBase = realBase;
-        int128 tempExponent = exponent;
+        int256 tempRealBase = realBase;
+        int256 tempExponent = exponent;
 
         // Start with the 0th power
-        int128 realResult = REAL_ONE;
+        int256 realResult = REAL_ONE;
         while (tempExponent != 0) {
             // While there are still bits set
             if ((tempExponent & 0x1) == 0x1) {
@@ -240,7 +240,6 @@ library RealMath {
     function findbit(uint256 val) internal pure returns (uint8 index) {
         index = 0;
         // We and the value with alternating bit patters of various pitches to find it.
-
         if (val & 0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA != 0) {
             // Picth 1
             index |= 1;
@@ -283,17 +282,17 @@ library RealMath {
      *
      * Rejects 0 or negative arguments.
      */
-    function rescale(int128 realArg) internal pure returns (int128 realScaled, int88 shift) {
+    function rescale(int256 realArg) internal pure returns (int256 realScaled, int216 shift) {
         if (realArg <= 0) {
             // Not in domain!
             revert();
         }
 
         // Find the high bit
-        int88 highBit = findbit(hibit(uint256(realArg)));
+        int216 highBit = findbit(hibit(uint256(realArg)));
 
         // We'll shift so the high bit is the lowest non-fractional bit.
-        shift = highBit - int88(REAL_FBITS);
+        shift = highBit - int216(REAL_FBITS);
 
         if (shift < 0) {
             // Shift left
@@ -314,7 +313,7 @@ library RealMath {
      * Note that it is potentially possible to get an un-converged value; lack
      * of convergence does not throw.
      */
-    function lnLimited(int128 realArg, int maxIterations) public pure returns (int128) {
+    function lnLimited(int256 realArg, int maxIterations) internal pure returns (int256) {
         if (realArg <= 0) {
             // Outside of acceptable domain
             revert();
@@ -327,19 +326,19 @@ library RealMath {
         }
 
         // We know it's positive, so rescale it to be between [1 and 2)
-        int128 realRescaled;
-        int88 shift;
+        int256 realRescaled;
+        int216 shift;
         (realRescaled, shift) = rescale(realArg);
 
         // Compute the argument to iterate on
-        int128 realSeriesArg = div(realRescaled - REAL_ONE, realRescaled + REAL_ONE);
+        int256 realSeriesArg = div(realRescaled - REAL_ONE, realRescaled + REAL_ONE);
 
         // We will accumulate the result here
-        int128 realSeriesResult = 0;
+        int256 realSeriesResult = 0;
 
-        for (int88 n = 0; n < maxIterations; n++) {
+        for (int216 n = 0; n < maxIterations; n++) {
             // Compute term n of the series
-            int128 realTerm = div(ipow(realSeriesArg, 2 * n + 1), toReal(2 * n + 1));
+            int256 realTerm = div(ipow(realSeriesArg, 2 * n + 1), toReal(2 * n + 1));
             // And add it in
             realSeriesResult += realTerm;
             if (realTerm == 0) {
@@ -362,7 +361,7 @@ library RealMath {
      * wait until convergence. Note that it is potentially possible to get an
      * un-converged value; lack of convergence does not throw.
      */
-    function ln(int128 realArg) public pure returns (int128) {
+    function ln(int256 realArg) internal pure returns (int256) {
         return lnLimited(realArg, 100);
     }
 
@@ -375,14 +374,14 @@ library RealMath {
      * Note that it is potentially possible to get an un-converged value; lack
      * of convergence does not throw.
      */
-    function expLimited(int128 realArg, int maxIterations) public pure returns (int128) {
+    function expLimited(int256 realArg, int maxIterations) internal pure returns (int256) {
         // We will accumulate the result here
-        int128 realResult = 0;
+        int256 realResult = 0;
 
         // We use this to save work computing terms
-        int128 realTerm = REAL_ONE;
+        int256 realTerm = REAL_ONE;
 
-        for (int88 n = 0; n < maxIterations; n++) {
+        for (int216 n = 0; n < maxIterations; n++) {
             // Add in the term
             realResult += realTerm;
 
@@ -406,14 +405,14 @@ library RealMath {
      * convergence. Note that it is potentially possible to get an un-converged
      * value; lack of convergence does not throw.
      */
-    function exp(int128 realArg) public pure returns (int128) {
+    function exp(int256 realArg) internal pure returns (int256) {
         return expLimited(realArg, 100);
     }
 
     /**
      * Raise any number to any power, except for negative bases to fractional powers.
      */
-    function pow(int128 realBase, int128 realExponent) public pure returns (int128) {
+    function pow(int256 realBase, int256 realExponent) internal pure returns (int256) {
         if (realExponent == 0) {
             // Anything to the 0 is 1
             return REAL_ONE;
@@ -454,8 +453,51 @@ library RealMath {
     /**
      * Compute the square root of a number.
      */
-    function sqrt(int128 realArg) public pure returns (int128) {
+    function sqrt(int256 realArg) internal pure returns (int256) {
         return pow(realArg, REAL_HALF);
     }
-    
+
+    /**
+     * Compute the sin of a number to a certain number of Taylor series terms.
+     */
+    function sinLimited(int256 _realArg, int216 maxIterations) internal pure returns (int256) {
+        // First bring the number into 0 to 2 pi
+        // TODO: This will introduce an error for very large numbers, because the error in our Pi will compound.
+        // But for actual reasonable angle values we should be fine.
+        int256 realArg = _realArg;
+        realArg = realArg % REAL_TWO_PI;
+
+        int256 accumulator = REAL_ONE;
+
+        // We sum from large to small iteration so that we can have higher powers in later terms
+        for (int216 iteration = maxIterations - 1; iteration >= 0; iteration--) {
+            accumulator = REAL_ONE - mul(div(mul(realArg, realArg), toReal((2 * iteration + 2) * (2 * iteration + 3))), accumulator);
+            // We can't stop early; we need to make it to the first term.
+        }
+
+        return mul(realArg, accumulator);
+    }
+
+    /**
+     * Calculate sin(x) with a sensible maximum iteration count to wait until
+     * convergence.
+     */
+    function sin(int256 realArg) internal pure returns (int256) {
+        return sinLimited(realArg, 15);
+    }
+
+    /**
+     * Calculate cos(x).
+     */
+    function cos(int256 realArg) internal pure returns (int256) {
+        return sin(realArg + REAL_HALF_PI);
+    }
+
+    /**
+     * Calculate tan(x). May overflow for large results. May throw if tan(x)
+     * would be infinite, or return an approximation, or overflow.
+     */
+    function tan(int256 realArg) internal pure returns (int256) {
+        return div(sin(realArg), cos(realArg));
+    }
 }
