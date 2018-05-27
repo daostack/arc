@@ -1,5 +1,8 @@
 pragma solidity ^0.4.21;
 
+import "zeppelin-solidity/contracts/math/Math.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
+
 /**
  * @title Base class for contracts which deal with fine-grained permissions to their operations.
  * @dev The `Protected` base class manages a set of locks for each resourse/operation and a set of keys for each address.
@@ -8,6 +11,9 @@ pragma solidity ^0.4.21;
  *      Use the `locked(..)` modifier to lock a resource/operation with a lock.
  */
 contract Protected {
+    using Math for uint;
+    using SafeMath for uint;
+
     struct Key {
         bool exists;
         bool transferable;
@@ -89,14 +95,14 @@ contract Protected {
         if (uses > 0 && uses == key.uses) {
             keys[id][from].exists = false;
         } else {
-            keys[id][from].uses -= uses;
+            keys[id][from].uses = keys[id][from].uses.sub(uses);
         }
 
         if(keys[id][to].exists) {
             // Merge capabilities (note: this can be a problem since it might expand capabilities)
             keys[id][to].transferable = transferable;
-            keys[id][to].expiration = max(expiration, keys[id][to].expiration);
-            keys[id][to].uses += uses;
+            keys[id][to].expiration = keys[id][to].expiration.max256(expiration);
+            keys[id][to].uses = keys[id][to].uses.add(uses);
         } else {
             keys[id][to].exists = true;
             keys[id][to].transferable = transferable;
@@ -175,16 +181,6 @@ contract Protected {
 
         _;
     }
-
-
-    // utils
-    function max(uint a, uint b) private pure returns(uint) {
-        if(a > b) {
-            return a;
-        } else {
-            return b;
-        }
-    }
 }
 
 
@@ -196,16 +192,14 @@ contract ProtectedController is Protected {
     mapping(uint => uint) public schemes;
 
     function ProtectedController() public {
-        lock("RegisterScheme");
         /*
             The sender has *2 days from now* to register *up to 10* schemes, he *can transfer* this capability to other accounts
         */
-        transferKeyFrom("RegisterScheme", this, msg.sender, true, now + 2 days, 10);
+        lock("registerScheme");
+        transferKeyFrom("registerScheme", this, msg.sender, true, now + 2 days, 10);
     }
 
-    function registerScheme() locked("RegisterScheme") public {
-        schemes[schemesRegistered] = 0;
-
+    function registerScheme() locked("registerScheme") public {
         /*
             Once registered, *only* the original registerer can set the scheme params *once* *within 4 days*.
         */
