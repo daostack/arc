@@ -14,6 +14,12 @@ contract Protected {
     using Math for uint;
     using SafeMath for uint;
 
+    /**
+     * Placeholder value for parameeters whose value doesnt matter in the lock id
+     * e.g. `lock(keccak256(methodname, param1, ANYTHING, param2))`
+     */
+    uint internal constant ANYTHING = keccak256(this);
+
     struct Key {
         bool exists;
         bool transferable;
@@ -31,6 +37,11 @@ contract Protected {
 
     /**
      * @dev Create a new key for a new lock. The owner of the key is the contract itself.
+     * @notice The convention for lock ids is:
+     *           - restricting a method: `lock(methodName)`
+     *           - restricting to specific params: `lock(keccak256(methodName, param1, param2))`
+     *           - use ANYTHING for irrelevent parameters: `lock(keccak256(methodName, param1, ANYTHING, param3))`
+     *           - traling `ANYTHING`s are implied: use `lock(keccak256(methodName, param1))` instead of `lock(keccak256(methodName, param1, ANYTHING))`
      * @param id unique lock id
      * @param expiration key can be used only before expiration time.
      * @param uses key can be used only #uses times.
@@ -162,22 +173,40 @@ contract Protected {
     }
 
     /**
-     * @dev A modifier that locks a function with a lock id.
-     * @notice The key of the sender is used everytime this is called.
-     * @param id lock id.
+     * @dev A modifier that locks a function with lock ids.
+            The lock ids are "ORed" together, meaning the lock can be opened by a key that unlocks any one of the ids.
+            This allows us to create complex boolean predicates:
+            ```
+            function myMethod()
+                only(["louis", "tom"])
+                only(["jerry"])
+            {
+                // restricted to: (louis || tom) && jerry
+            }
+            ```
+     * @notice the modifier tries each key in order until one matches, the key that matches will be used one time. if none match, a revert occurs.
+     * @param ids array of lock ids.
      */
-    modifier locked(bytes32 id) {
-        Key memory key = keys[id][msg.sender];
-        require(key.exists);
-        require(key.expiration == 0 || key.expiration >= now);
-
-        if (key.uses == 1) {
-            keys[id][msg.sender].exists = false;
-        } else if (key.uses > 1){
-            keys[id][msg.sender].uses --;
+    modifier only(bytes32[] ids) {
+        bool used = false;
+        for(uint i = 0 ; i < ids.length; i++){
+            Key memory key = keys[ids[i]][msg.sender];
+            if (
+                key.exists &&
+                (key.expiration == 0 || key.expiration >= now)
+            ) {
+                if (key.uses == 1) {
+                    keys[id][msg.sender].exists = false;
+                } else if (key.uses > 1){
+                    keys[id][msg.sender].uses --;
+                }
+                emit Use(id, msg.sender);
+                used = true;
+            }
         }
-
-        emit Use(id, msg.sender);
+        if(!used) {
+            revert;
+        }
 
         _;
     }
@@ -199,7 +228,7 @@ contract ProtectedController is Protected {
         transferKeyFrom("registerScheme", this, msg.sender, true, now + 2 days, 10);
     }
 
-    function registerScheme() locked("registerScheme") public {
+    function registerScheme() only(["registerScheme"]) public {
         /*
             Once registered, *only* the original registerer can set the scheme params *once* *within 4 days*.
         */
@@ -209,7 +238,7 @@ contract ProtectedController is Protected {
         schemesRegistered++;
     }
 
-    function setParam(uint scheme, uint param) locked(keccak256("setParam", scheme)) public {
+    function setParam(uint scheme, uint param) only([keccak256("setParam", scheme)]) public {
         schemes[scheme] = param;
     }
 }
