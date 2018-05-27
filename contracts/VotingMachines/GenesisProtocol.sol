@@ -3,6 +3,7 @@ pragma solidity ^0.4.23;
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
 import "../universalSchemes/UniversalScheme.sol";
+import { RealMath } from "../libs/RealMath.sol";
 
 
 /**
@@ -10,6 +11,8 @@ import "../universalSchemes/UniversalScheme.sol";
  */
 contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     using SafeMath for uint;
+    using RealMath for int216;
+    using RealMath for int256;
 
     enum ProposalState { None ,Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
     enum ExecutionState { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
@@ -538,13 +541,15 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return int organization's score threshold.
      */
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
-        uint e = 2;
+        int216 e = 2;
         Parameters memory params = parameters[proposals[_proposalId].paramsHash];
-        uint power = orgBoostedProposalsCnt[_avatar]/params.thresholdConstB;
-        if (power > 100) {
-            power = 100;
+        int256 power = int216(orgBoostedProposalsCnt[_avatar]).toReal().div(int216(params.thresholdConstB).toReal());
+
+        if (power.fromReal() > 100 ) {
+            power = int216(100).toReal();
         }
-        return int(params.thresholdConstA * (e ** power));
+        int256 res = int216(params.thresholdConstA).toReal().mul(e.toReal().pow(power));
+        return res.fromReal();
     }
 
     /**
