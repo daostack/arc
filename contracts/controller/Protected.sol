@@ -226,6 +226,12 @@ contract ProtectedController is Protected {
         */
         lock("registerScheme");
         transferKeyFrom("registerScheme", this, msg.sender, true, now + 2 days, 10);
+
+        /*
+            Only the sender can reset the schemes at any time, only once.
+        */
+        lock("reset");
+        transferKeyFrom("reset", this, msg.sender, false, 0, 1);
     }
 
     function registerScheme() only(["registerScheme"]) public {
@@ -240,5 +246,12 @@ contract ProtectedController is Protected {
 
     function setParam(uint scheme, uint param) only([keccak256("setParam", scheme)]) public {
         schemes[scheme] = param;
+    }
+
+    function reset() only(["reset"]) public {
+        for(uint i = 0; i < schemesRegistered; i++) {
+            schemes[i] = 0;
+        }
+        schemesRegistered = 0;
     }
 }
