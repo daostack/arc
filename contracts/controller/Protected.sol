@@ -8,17 +8,17 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
  * @dev The `Protected` base class manages a set of locks for each resourse/operation and a set of keys for each address.
  *      keys can be created, transfered, used, and expired.
  *      Use the `lock(..)` function to create a new lock.
- *      Use the `locked(..)` modifier to lock a resource/operation with a lock.
+ *      Use the `only(..)` modifier to lock a resource/operation with a lock.
  */
 contract Protected {
     using Math for uint;
     using SafeMath for uint;
 
     /**
-     * Placeholder value for parameeters whose value doesnt matter in the lock id
+     * Random placeholder value for parameeters whose value doesnt matter in the lock id
      * e.g. `lock(keccak256(methodname, param1, ANYTHING, param2))`
      */
-    uint internal constant ANYTHING = keccak256(this);
+    uint internal constant ANYTHING = keccak256(this + 1);
 
     struct Key {
         bool exists;
@@ -111,7 +111,7 @@ contract Protected {
 
         if(keys[id][to].exists) {
             // Merge capabilities (note: this can be a problem since it might expand capabilities)
-            keys[id][to].transferable = transferable;
+            keys[id][to].transferable = transferable || keys[id][to].transferable;
             keys[id][to].expiration = keys[id][to].expiration.max256(expiration);
             keys[id][to].uses = keys[id][to].uses.add(uses);
         } else {
