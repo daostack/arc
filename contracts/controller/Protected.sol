@@ -15,7 +15,7 @@ contract Protected {
     using SafeMath for uint;
 
     /**
-     * Random placeholder value for parameeters whose value doesnt matter in the lock id
+     * Random placeholder value for parameters whose value doesnt matter in the lock id
      * e.g. `lock(keccak256(methodname, param1, ANYTHING, param2))`
      */
     uint internal constant ANYTHING = keccak256(this + 1);
@@ -53,8 +53,6 @@ contract Protected {
 
         keys[id][this].exists = true;
         keys[id][this].transferable = true;
-        keys[id][this].expiration = 0;
-        keys[id][this].uses = 0;
 
         emit Lock(id);
     }
@@ -111,7 +109,7 @@ contract Protected {
 
         if(keys[id][to].exists) {
             // Merge capabilities (note: this can be a problem since it might expand capabilities)
-            keys[id][to].transferable = transferable || keys[id][to].transferable;
+            keys[id][to].transferable |= transferable;
             keys[id][to].expiration = keys[id][to].expiration.max256(expiration);
             keys[id][to].uses = keys[id][to].uses.add(uses);
         } else {
@@ -202,6 +200,7 @@ contract Protected {
                 }
                 emit Use(id, msg.sender);
                 used = true;
+                break;
             }
         }
         if(!used) {
