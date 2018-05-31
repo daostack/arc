@@ -76,6 +76,8 @@ interface ControllerInterface {
 
     function getSchemeParameters(address _scheme,address _avatar) external view returns(bytes32);
 
+    function getGlobalConstraintParameters(address _globalConstraint,address _avatar) external view returns(bytes32);
+
     function getSchemePermissions(address _scheme,address _avatar) external view returns(bytes4);
 
     /**
