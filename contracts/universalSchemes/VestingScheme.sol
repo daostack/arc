@@ -239,7 +239,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:
-            emit NewVestedAgreement(agreementsCounter-1);
             emit ProposedVestedAgreement(agreementsCounter-1, _proposalId);
         }
         emit ProposalExecuted(_avatar,_proposalId,_param);

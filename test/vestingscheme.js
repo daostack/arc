@@ -70,7 +70,7 @@ contract('VestingScheme', function(accounts) {
        assert.equal(tx.logs[0].event, "AgreementProposal");
        var avatarAddress = await helpers.getValueFromLogs(tx, '_avatar',1);
        assert.equal(avatarAddress,testSetup.org.avatar.address);
- });
+      });
 
        it("proposeVestingAgreement check owner vote", async function() {
          var testSetup = await setup(accounts);
@@ -133,7 +133,7 @@ contract('VestingScheme', function(accounts) {
              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
              await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
             const found = await new Promise((resolve) => {
-                testSetup.vestingScheme.ProposedVestedAgreement({_proposalId: proposalId}, {fromBlock: 0})
+                testSetup.vestingScheme.ProposedVestedAgreement({_proposalId: proposalId}, {fromBlock: tx.blockNumber})
                     .get((err,events) => {
                         if (events.length === 1) {
                             resolve(events[0].args._proposalId === proposalId);
@@ -249,7 +249,7 @@ contract('VestingScheme', function(accounts) {
                assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),amountPerPeriod*numberOfAgreedPeriods);
               });
 
-              it("createVestedAgreement check agreement", async function() {
+              it("createVestedAgreement check agreement id ", async function() {
                 var testSetup = await setup(accounts);
                 var amountPerPeriod =3;
                 var numberOfAgreedPeriods = 7;
