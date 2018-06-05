@@ -115,6 +115,36 @@ contract('VestingScheme', function(accounts) {
           }
          });
 
+           it("execute proposeVestingAgreement- ProposedVestedAgreement supplies proposalId ", async function() {
+             var testSetup = await setup(accounts);
+
+
+             var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+                                                                            accounts[1],
+                                                                            web3.eth.blockNumber,
+                                                                            15,
+                                                                            2,
+                                                                            3,
+                                                                            11,
+                                                                            0,
+                                                                            [],
+                                                                            testSetup.org.avatar.address);
+            //Vote with reputation to trigger execution
+             var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+             await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+            const found = await new Promise((resolve) => {
+                testSetup.vestingScheme.ProposedVestedAgreement({_proposalId: proposalId}, {fromBlock: tx.blockNumber})
+                    .get((err,events) => {
+                        if (events.length === 1) {
+                            resolve(events[0].args._proposalId === proposalId);
+                        } else {
+                            resolve(false);
+                        }
+                    });
+                });
+                assert(found, "ProposedVestedAgreement did not supply the proposalId");
+            });
+
            it("execute proposeVestingAgreement controller -yes - proposal data delete", async function() {
              var testSetup = await setup(accounts);
 
