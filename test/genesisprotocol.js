@@ -524,7 +524,6 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx.logs.length, 3);
     assert.equal(tx.logs[2].event, "GPExecuteProposal");
     assert.equal(tx.logs[2].args._proposalId, proposalId);
-    assert.equal(tx.logs[2].args._decision, 2);
     assert.equal(tx.logs[2].args._executionState, 2);
   });
 
@@ -542,7 +541,6 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx.logs.length, 2);
     assert.equal(tx.logs[1].event, "GPExecuteProposal");
     assert.equal(tx.logs[1].args._proposalId, proposalId);
-    assert.equal(tx.logs[1].args._decision, 2);
     assert.equal(tx.logs[1].args._executionState, 1);
   });
 

@@ -84,8 +84,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
 
     event GPExecuteProposal(bytes32 indexed _proposalId,
                           address indexed _avatar,
-                          uint _decision,
-                          uint _totalReputation,
                           ExecutionState _executionState
     );
     event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _vote,uint _amount);
@@ -439,7 +437,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                 proposal.daoBountyRemain = daoBountyRemain;
             }
             emit ExecuteProposal(_proposalId, proposal.avatar, proposal.winningVote, totalReputation);
-            emit GPExecuteProposal(_proposalId, proposal.avatar, proposal.winningVote, totalReputation, executionState);
+            emit GPExecuteProposal(_proposalId, proposal.avatar, executionState);
             (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
         }
         return (executionState != ExecutionState.None);

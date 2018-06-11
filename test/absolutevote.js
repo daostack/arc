@@ -209,8 +209,6 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(voteTX.logs[1].args._proposalId, proposalId);
     assert.equal(voteTX.logs[1].args._avatar, avatar.address);
     assert.equal(voteTX.logs[1].args._voter, accounts[0]);
-    assert.equal(voteTX.logs[1].args._vote, 1);
-    assert.equal(voteTX.logs[1].args._reputation, reputationArray[0]);
     assert.equal(voteTX.logs[1].args._isOwnerVote, false);
 
     let cancelVoteTX = await absoluteVote.cancelVote(proposalId);
