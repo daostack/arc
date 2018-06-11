@@ -10,31 +10,31 @@ module.exports = {
       network_id: 1,
       host: "localhost",
       port: 8546,
-      gas: 4600000
+      gas: 4610000
     },
     ropsten: {
       network_id: 3,
       host: "localhost",
       port: 8545,
-      gas: 4600000
+      gas: 4610000
     },
     rinkeby: {
       network_id: 4,
       host: "localhost",
       port: 8545,
-      gas: 4600000
+      gas: 4610000
     },
     kovan: {
       network_id: 42,
       host: "localhost",
       port: 8545,
-      gas: 4600000
+      gas: 4610000
     },
     development: {
       network_id: "*",
       host: "localhost",
       port: 8545,
-      gas: 4600000
+      gas: 4610000
     },
   },
   solc: {
