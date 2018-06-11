@@ -94,7 +94,6 @@ contract AbsoluteVote is IntVoteInterface {
    * @param _proposalId the proposal ID
    */
     function cancelProposal(bytes32 _proposalId) external onlyProposalOwner(_proposalId) votable(_proposalId) returns(bool) {
-
         if (! parameters[proposals[_proposalId].paramsHash].allowOwner) {
             return false;
         }
