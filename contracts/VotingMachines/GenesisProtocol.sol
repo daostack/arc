@@ -4,7 +4,6 @@ import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
 import "../universalSchemes/UniversalScheme.sol";
 import { RealMath } from "../libs/RealMath.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 
 /**
  * @title GenesisProtocol implementation -an organization's voting machine scheme.
