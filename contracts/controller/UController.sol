@@ -282,9 +282,9 @@ contract UController is ControllerInterface {
 
     function getGlobalConstraintParameters(address _globalConstraint, address _avatar) external view returns(bytes32) {
 
-        Organization organization = organizations[_avatar];
+        Organization storage organization = organizations[_avatar];
 
-        GlobalConstraintRegister register = organization.globalConstraintsRegisterPre[_globalConstraint];
+        GlobalConstraintRegister memory register = organization.globalConstraintsRegisterPre[_globalConstraint];
 
         if (register.isRegistered) {
             return organization.globalConstraintsPre[register.index].params;

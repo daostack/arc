@@ -258,7 +258,8 @@ contract Controller is ControllerInterface {
     }
 
     function getGlobalConstraintParameters(address _globalConstraint,address) external view returns(bytes32) {
-        GlobalConstraintRegister register = globalConstraintsRegisterPre[_globalConstraint];
+        
+        GlobalConstraintRegister memory register = globalConstraintsRegisterPre[_globalConstraint];
 
         if (register.isRegistered) {
             return globalConstraintsPre[register.index].params;
