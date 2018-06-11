@@ -24,7 +24,7 @@ const setupSimpleICOParams = async function(accounts,
 };
 var daoCreator;
 const setupOrganization = async function (daoCreatorOwner,founderToken,founderReputation) {
-  var controllerCreator = await ControllerCreator.new();
+  var controllerCreator = await ControllerCreator.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
   daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
   var org = await helpers.setupOrganization(daoCreator,daoCreatorOwner,founderToken,founderReputation);
   return org;
