@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./UniversalScheme.sol";
 
@@ -54,7 +54,7 @@ contract OrganizationRegister is UniversalScheme {
     function getParametersHash(StandardToken _token, uint _fee, address _beneficiary)
     public pure returns(bytes32)
     {
-        return (keccak256(_token, _fee, _beneficiary));
+        return (keccak256(abi.encodePacked(_token, _fee, _beneficiary)));
     }
 
     /**
