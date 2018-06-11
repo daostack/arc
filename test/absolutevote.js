@@ -173,7 +173,7 @@ contract('AbsoluteVote', function (accounts) {
     assert.equal(newtx.logs[0].args._avatar, avatar.address);
   });
 
-  it("should log the VoteProposal and CancelVoting events on voting and canceling the vote", async function() {
+  it("should log the VoteProposal event on voting", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
@@ -184,14 +184,34 @@ contract('AbsoluteVote', function (accounts) {
 
     let voteTX = await absoluteVote.vote(proposalId, 1);
 
-    assert.equal(voteTX.logs.length, 1);
+    assert.equal(voteTX.logs.length, 2);
     assert.equal(voteTX.logs[0].event, "VoteProposal");
     assert.equal(voteTX.logs[0].args._proposalId, proposalId);
     assert.equal(voteTX.logs[0].args._avatar, avatar.address);
     assert.equal(voteTX.logs[0].args._voter, accounts[0]);
     assert.equal(voteTX.logs[0].args._vote, 1);
     assert.equal(voteTX.logs[0].args._reputation, reputationArray[0]);
-    assert.equal(voteTX.logs[0].args._isOwnerVote, false);
+  });
+
+ it("should log the AVVoteProposal and CancelVoting events on voting and canceling the vote", async function() {
+    absoluteVote = await setupAbsoluteVote(true, 50);
+
+    // propose a vote
+    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
+    let tx = await absoluteVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
+    const proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+
+    let voteTX = await absoluteVote.vote(proposalId, 1);
+
+    assert.equal(voteTX.logs.length, 2);
+    assert.equal(voteTX.logs[1].event, "AVVoteProposal");
+    assert.equal(voteTX.logs[1].args._proposalId, proposalId);
+    assert.equal(voteTX.logs[1].args._avatar, avatar.address);
+    assert.equal(voteTX.logs[1].args._voter, accounts[0]);
+    assert.equal(voteTX.logs[1].args._vote, 1);
+    assert.equal(voteTX.logs[1].args._reputation, reputationArray[0]);
+    assert.equal(voteTX.logs[1].args._isOwnerVote, false);
 
     let cancelVoteTX = await absoluteVote.cancelVote(proposalId);
     assert.equal(cancelVoteTX.logs.length, 1);
@@ -219,11 +239,11 @@ contract('AbsoluteVote', function (accounts) {
     // the decisive vote is cast now and the proposal will be executed
     tx = await absoluteVote.ownerVote(proposalId, 4, accounts[2]);
 
-    assert.equal(tx.logs.length, 2);
-    assert.equal(tx.logs[1].event, "ExecuteProposal");
-    assert.equal(tx.logs[1].args._proposalId, proposalId);
-    assert.equal(tx.logs[1].args._avatar, avatar.address);
-    assert.equal(tx.logs[1].args._decision, 4);
+    assert.equal(tx.logs.length, 3);
+    assert.equal(tx.logs[2].event, "ExecuteProposal");
+    assert.equal(tx.logs[2].args._proposalId, proposalId);
+    assert.equal(tx.logs[2].args._avatar, avatar.address);
+    assert.equal(tx.logs[2].args._decision, 4);
   });
 
   it("refreshReputation reputation positive update ", async function() {

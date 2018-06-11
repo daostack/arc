@@ -31,7 +31,7 @@ contract AbsoluteVote is IntVoteInterface {
         bool open; // voting open flag
     }
 
-    event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
+    event AVVoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation, bool _isOwnerVote);
     event RefreshReputation(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _reputation);
 
 
@@ -333,7 +333,8 @@ contract AbsoluteVote is IntVoteInterface {
             vote: _vote
         });
         // Event:
-        emit VoteProposal(_proposalId, proposal.avatar, _voter, _vote, reputation, (_voter != msg.sender));
+        emit VoteProposal(_proposalId, proposal.avatar, _voter, _vote, reputation);
+        emit AVVoteProposal(_proposalId, proposal.avatar, _voter, _vote, reputation, (_voter != msg.sender));
         // execute the proposal if this vote was decisive:
         return execute(_proposalId);
     }
