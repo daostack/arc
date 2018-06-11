@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "./GlobalConstraintInterface.sol";
@@ -40,7 +40,7 @@ contract TokenCapGC {
      * @return the calculated parameters hash
      */
     function getParametersHash(StandardToken _token, uint _cap) public pure returns(bytes32) {
-        return (keccak256(_token, _cap));
+        return (keccak256(abi.encodePacked(_token, _cap)));
     }
 
     /**

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -69,7 +69,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        return keccak256(_voteParams, _intVote);
+        return keccak256(abi.encodePacked(_voteParams, _intVote));
     }
 
     /**

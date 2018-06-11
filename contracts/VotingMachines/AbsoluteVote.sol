@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
@@ -78,7 +78,7 @@ contract AbsoluteVote is IntVoteInterface {
         require(parameters[_paramsHash].reputationSystem != address(0));
         require(_numOfChoices > 0 && _numOfChoices <= MAX_NUM_OF_CHOICES);
         // Generate a unique ID:
-        bytes32 proposalId = keccak256(this, proposalsCnt);
+        bytes32 proposalId = keccak256(abi.encodePacked(this, proposalsCnt));
         proposalsCnt++;
         // Open proposal:
         Proposal memory proposal;
@@ -283,7 +283,7 @@ contract AbsoluteVote is IntVoteInterface {
      * @dev hashParameters returns a hash of the given parameters
      */
     function getParametersHash(Reputation _reputationSystem, uint _precReq, bool _allowOwner) public pure returns(bytes32) {
-        return keccak256(_reputationSystem, _precReq, _allowOwner);
+        return keccak256(abi.encodePacked(_reputationSystem, _precReq, _allowOwner));
     }
 
     function cancelVoteInternal(bytes32 _proposalId, address _voter) internal {

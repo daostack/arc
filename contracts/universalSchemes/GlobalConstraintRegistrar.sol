@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./UniversalScheme.sol";
 import "../VotingMachines/IntVoteInterface.sol";
@@ -114,7 +114,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        return (keccak256(_voteRegisterParams, _intVote));
+        return (keccak256(abi.encodePacked(_voteRegisterParams, _intVote)));
     }
 
     /**

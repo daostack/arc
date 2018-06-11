@@ -1,13 +1,15 @@
 pragma solidity ^0.4.24;
 
-import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
+
+// mock class using ERC827 Token
 
 
-// mock class using StandardToken
-contract StandardTokenMock is StandardToken {
+contract ERC827TokenMock is ERC827Token {
 
     constructor(address initialAccount, uint256 initialBalance) public {
         balances[initialAccount] = initialBalance;
         totalSupply_ = initialBalance;
     }
+
 }

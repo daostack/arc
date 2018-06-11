@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "./UniversalScheme.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -135,13 +135,14 @@ contract SimpleICO is UniversalScheme {
         returns(bytes32)
    {
         return (keccak256(
+            abi.encodePacked(
             _cap,
             _price,
             _startBlock,
             _endBlock,
             _beneficiary,
             _admin
-        ));
+        )));
     }
 
     /**
