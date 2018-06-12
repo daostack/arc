@@ -168,7 +168,7 @@ const checkVoteInfo = async function(proposalId, voterAddress, _voteInfo, genesi
 const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
   const extraData = await _testSetup.genesisProtocol.stake.request(_proposalId,_vote,_amount);
   const transaction = await _testSetup.stakingToken.approveAndCall(
-    _testSetup.genesisProtocol.address, _amount, extraData.params[0].data
+    _testSetup.genesisProtocol.address, _amount, extraData.params[0].data ,{from : _staker}
   );
   const stakeLog = await new Promise((resolve) => {
               _testSetup.genesisProtocol.Stake({_proposalId: _proposalId}, {fromBlock: transaction.blockNumber})
