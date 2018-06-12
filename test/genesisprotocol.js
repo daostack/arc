@@ -868,7 +868,7 @@ contract('GenesisProtocol', function (accounts) {
     assert.isOk(proposalId);
 
       try {
-        await testSetup.genesisProtocol.stake(proposalId,2,10,accounts[0]);
+        await testSetup.genesisProtocol.stake(proposalId,2,10);
         assert(false, 'stake without approval should revert');
       } catch (ex) {
         helpers.assertVMException(ex);
