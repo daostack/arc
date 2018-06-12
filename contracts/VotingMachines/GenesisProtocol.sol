@@ -5,10 +5,11 @@ import "./IntVoteInterface.sol";
 import "../universalSchemes/UniversalScheme.sol";
 import { RealMath } from "../libs/RealMath.sol";
 
-
 /**
  * @title GenesisProtocol implementation -an organization's voting machine scheme.
  */
+
+
 contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     using SafeMath for uint;
     using RealMath for int216;
@@ -88,7 +89,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                           ExecutionState _executionState
     );
     event VoteProposal(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter, uint _vote, uint _reputation);
-    event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _vote,uint _amount);
+    event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _staker,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
     event RedeemDaoBounty(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
     event RedeemReputation(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
@@ -174,8 +175,15 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return bool true - the proposal has been executed
      *              false - otherwise.
      */
-    function stake(bytes32 _proposalId, uint _vote, uint _amount) external returns(bool) {
+    function stake(bytes32 _proposalId, uint _vote, uint _amount) public returns(bool) {
         // 0 is not a valid vote.
+        address stakerAddress;
+        if (msg.sender == address(stakingToken)) {
+             stakerAddress = tx.origin;
+        } else {
+             stakerAddress =  msg.sender;
+        }
+
         require(_vote <= NUM_OF_CHOICES && _vote > 0);
         require(_amount > 0);
         if (execute(_proposalId)) {
@@ -189,7 +197,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         }
 
         // enable to increase stake only on the previous stake vote
-        Staker storage staker = proposal.stakers[msg.sender];
+        Staker storage staker = proposal.stakers[stakerAddress];
         if ((staker.amount > 0) && (staker.vote != _vote)) {
             return false;
         }
@@ -197,7 +205,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         uint amount = _amount;
         Parameters memory params = parameters[proposal.paramsHash];
         require(amount >= params.minimumStakingFee);
-        require(stakingToken.transferFrom(msg.sender, address(this), amount));
+        require(stakingToken.transferFrom(stakerAddress, address(this), amount));
         proposal.totalStakes[1] = proposal.totalStakes[1].add(amount); //update totalRedeemableStakes
         staker.amount += amount;
         staker.amountForBounty = staker.amount;
@@ -208,7 +216,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         amount = amount - ((params.stakerFeeRatioForVoters*amount)/100);
         proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
       // Event:
-        emit Stake(_proposalId, proposal.avatar, msg.sender, _vote, _amount);
+        emit Stake(_proposalId, proposal.avatar, stakerAddress, _vote, _amount);
       // execute the proposal if this vote was decisive:
         return execute(_proposalId);
     }
