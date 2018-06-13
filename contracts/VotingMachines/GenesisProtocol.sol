@@ -181,6 +181,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @param _proposalId id of the proposal
      * @param _vote  NO(2) or YES(1).
      * @param _amount the betting amount
+     * @param _nonce nonce value ,it is part of the signature to ensure that
+              a signature can be received only once.
+     * @param _signature  - signed data by the staker
      * @return bool true - the proposal has been executed
      *              false - otherwise.
      */
@@ -198,8 +201,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         bytes32 prefixedHash = prefixed(keccak256(address(this),_proposalId,_vote,_amount,_nonce));
         address staker = prefixedHash.recover(_signature);
         require(staker!=address(0));
-         //ensure only one vote per signature.
-         //user will need to increase nonce...
         stakeSignatures[_signature] = true;
         return _stake(_proposalId,_vote,_amount,staker);
     }
@@ -839,6 +840,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @param _proposalId id of the proposal
      * @param _vote  NO(2) or YES(1).
      * @param _amount the betting amount
+     * @param _staker the staker address
      * @return bool true - the proposal has been executed
      *              false - otherwise.
      */
