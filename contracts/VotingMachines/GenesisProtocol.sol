@@ -198,8 +198,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         returns(bool)
         {
         require(stakeSignatures[_signature] == false);
-        bytes32 prefixedHash = prefixed(keccak256(address(this),_proposalId,_vote,_amount,_nonce));
+        // Builds a prefixed hash to mimic the behavior of eth_sign.
+        bytes32 prefixedHash = keccak256("\x19Ethereum Signed Message:\n32",keccak256(address(this),_proposalId,_vote,_amount,_nonce));
         address staker = prefixedHash.recover(_signature);
+        //a garbage staker address due to wrong signature will revert due to lack of approval and funds.
         require(staker!=address(0));
         stakeSignatures[_signature] = true;
         return _stake(_proposalId,_vote,_amount,staker);
@@ -828,11 +830,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function _isVotable(bytes32 _proposalId) private view returns(bool) {
         ProposalState pState = proposals[_proposalId].state;
         return ((pState == ProposalState.PreBoosted)||(pState == ProposalState.Boosted)||(pState == ProposalState.QuietEndingPeriod));
-    }
-
-    // Builds a prefixed hash to mimic the behavior of eth_sign.
-    function prefixed(bytes32 hash) private pure returns (bytes32) {
-        return keccak256("\x19Ethereum Signed Message:\n32", hash);
     }
 
     /**
