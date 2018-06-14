@@ -837,7 +837,7 @@ contract('GenesisProtocol', function (accounts) {
   });
 
 
-  it("stake log", async () => {
+  it("stake with approveAndCall log", async () => {
 
     var testSetup = await setup(accounts);
     let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
@@ -850,6 +850,23 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx[0].args._staker, accounts[0]);
     assert.equal(tx[0].args._vote, 1);
     assert.equal(tx[0].args._amount, 10);
+  });
+
+  it("stake log", async () => {
+
+    var testSetup = await setup(accounts);
+    let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
+    var proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+
+    await testSetup.stakingToken.approve(testSetup.genesisProtocol.address,10);
+
+    tx = await testSetup.genesisProtocol.stake(proposalId,1,10);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "Stake");
+    assert.equal(tx.logs[0].args._staker, accounts[0]);
+    assert.equal(tx.logs[0].args._vote, 1);
+    assert.equal(tx.logs[0].args._amount, 10);
   });
 
   it("check nonce ", async () => {
@@ -884,6 +901,33 @@ contract('GenesisProtocol', function (accounts) {
         testSetup.genesisProtocol.address, 10, extraData.params[0].data ,{from : accounts[0]}
       );
       assert(false, 'stake should fail with the same nonce');
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
+  });
+
+  it("check stake with wrong signature ", async () => {
+
+    var testSetup = await setup(accounts,50,60,60,100,100);
+    let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
+    var proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+    let staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    assert.equal(staker[0],0);
+    assert.equal(staker[1],0);
+    var textMsg = "0x"+ethereumjs.soliditySHA3(
+        ["address","bytes32","uint", "uint","uint"],
+        [testSetup.genesisProtocol.address, proposalId,1,10, nonce]
+      ).toString("hex");
+    const signature = web3.eth.sign(accounts[0], textMsg);
+    proposalId = 123; //change proposalId
+    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,signature);
+
+    try {
+     await testSetup.stakingToken.approveAndCall(
+        testSetup.genesisProtocol.address, 10, extraData.params[0].data ,{from : accounts[0]}
+      );
+      assert(false, 'stake should fail due to wrong signature');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
