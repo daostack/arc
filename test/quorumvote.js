@@ -477,7 +477,7 @@ contract('QuorumVote', function (accounts) {
     assert.equal(newtx.logs[0].args._proposalId, proposalId);
   });
 
-  it("Should log the VoteProposal and CancelVoting events on voting and canceling the vote", async () => {
+  it("Should log the VoteProposal event on voting", async () => {
     quorumVote = await setupQuorumVote();
 
     // propose a vote
@@ -488,13 +488,29 @@ contract('QuorumVote', function (accounts) {
 
     let voteTX = await quorumVote.vote(proposalId, 1);
 
-    assert.equal(voteTX.logs.length, 1);
+    assert.equal(voteTX.logs.length, 2);
     assert.equal(voteTX.logs[0].event, "VoteProposal");
     assert.equal(voteTX.logs[0].args._proposalId, proposalId);
     assert.equal(voteTX.logs[0].args._voter, accounts[0]);
     assert.equal(voteTX.logs[0].args._vote, 1);
     assert.equal(voteTX.logs[0].args._reputation, reputationArray[0]);
-    assert.equal(voteTX.logs[0].args._isOwnerVote, false);
+  });
+
+  it("Should log the AVVoteProposal and CancelVoting events on voting and canceling the vote", async () => {
+    quorumVote = await setupQuorumVote();
+
+    // propose a vote
+    const paramsHash = await quorumVote.getParametersHash(reputation.address, 50, true);
+    let tx = await quorumVote.propose(6, paramsHash, avatar.address, executable.address,accounts[0]);
+    const proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+
+    let voteTX = await quorumVote.vote(proposalId, 1);
+
+    assert.equal(voteTX.logs.length, 2);
+    assert.equal(voteTX.logs[1].event, "AVVoteProposal");
+    assert.equal(voteTX.logs[1].args._proposalId, proposalId);
+    assert.equal(voteTX.logs[1].args._isOwnerVote, false);
 
     let cancelVoteTX = await quorumVote.cancelVote(proposalId);
     assert.equal(cancelVoteTX.logs.length, 1);
@@ -515,10 +531,11 @@ contract('QuorumVote', function (accounts) {
 
     let voteTX = await quorumVote.vote(proposalId, 0);
 
-    assert.equal(voteTX.logs.length, 2);
-    assert.equal(voteTX.logs[1].event, "ExecuteProposal");
-    assert.equal(voteTX.logs[1].args._proposalId, proposalId);
-    assert.equal(voteTX.logs[1].args._decision, 0);
+    assert.equal(voteTX.logs.length, 3);
+    assert.equal(voteTX.logs[2].event, "ExecuteProposal");
+    assert.equal(voteTX.logs[2].args._proposalId, proposalId);
+    assert.equal(voteTX.logs[2].args._avatar, avatar.address);
+    assert.equal(voteTX.logs[2].args._decision, 0);
   });
 
   it('cannot vote for another user', async function () {

@@ -502,14 +502,32 @@ contract('GenesisProtocol', function (accounts) {
     // // the decisive vote is cast now and the proposal will be executed
     tx = await testSetup.genesisProtocol.vote(proposalId, 2, { from: accounts[2] });
 
-    assert.equal(tx.logs.length, 2);
+    assert.equal(tx.logs.length, 3);
     assert.equal(tx.logs[1].event, "ExecuteProposal");
     assert.equal(tx.logs[1].args._proposalId, proposalId);
     assert.equal(tx.logs[1].args._decision, 2);
-    assert.equal(tx.logs[1].args._executionState, 2);
   });
 
-  it("should log the ExecuteProposal event after time pass for preBoostedVotePeriodLimit (decision == 2 )", async function() {
+  it("should log the GPExecuteProposal event", async function() {
+    var testSetup = await setup(accounts);
+    let numberOfChoices = 2;
+    let tx = await testSetup.genesisProtocol.propose(numberOfChoices, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
+    const proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+
+    // now lets vote with a minority reputation
+    await testSetup.genesisProtocol.vote(proposalId, 1);
+
+    // // the decisive vote is cast now and the proposal will be executed
+    tx = await testSetup.genesisProtocol.vote(proposalId, 2, { from: accounts[2] });
+
+    assert.equal(tx.logs.length, 3);
+    assert.equal(tx.logs[2].event, "GPExecuteProposal");
+    assert.equal(tx.logs[2].args._proposalId, proposalId);
+    assert.equal(tx.logs[2].args._executionState, 2);
+  });
+
+  it("should log the GPExecuteProposal event after time pass for preBoostedVotePeriodLimit (decision == 2 )", async function() {
     var testSetup = await setup(accounts,50,2);
     let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -520,11 +538,10 @@ contract('GenesisProtocol', function (accounts) {
     await helpers.increaseTime(3);
     // the decisive vote is cast now and the proposal will be executed
     tx = await testSetup.genesisProtocol.vote(proposalId, 1, { from: accounts[2] });
-    assert.equal(tx.logs.length, 1);
-    assert.equal(tx.logs[0].event, "ExecuteProposal");
-    assert.equal(tx.logs[0].args._proposalId, proposalId);
-    assert.equal(tx.logs[0].args._decision, 2);
-    assert.equal(tx.logs[0].args._executionState, 1);
+    assert.equal(tx.logs.length, 2);
+    assert.equal(tx.logs[1].event, "GPExecuteProposal");
+    assert.equal(tx.logs[1].args._proposalId, proposalId);
+    assert.equal(tx.logs[1].args._executionState, 1);
   });
 
   it("All options can be voted (1-2)", async function() {
