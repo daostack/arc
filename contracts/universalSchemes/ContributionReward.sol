@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "../VotingMachines/IntVoteInterface.sol";
 import "./UniversalScheme.sol";
@@ -91,7 +91,7 @@ contract ContributionReward is UniversalScheme {
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        return (keccak256(_voteApproveParams, _orgNativeTokenFee, _intVote));
+        return (keccak256(abi.encodePacked(_voteApproveParams, _orgNativeTokenFee, _intVote)));
     }
 
     /**

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
@@ -9,6 +9,8 @@ import { RealMath } from "../libs/RealMath.sol";
 /**
  * @title GenesisProtocol implementation -an organization's voting machine scheme.
  */
+
+
 contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     using SafeMath for uint;
     using RealMath for int216;
@@ -139,7 +141,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
 
         require(parameters[paramsHash].preBoostedVoteRequiredPercentage > 0);
         // Generate a unique ID:
-        bytes32 proposalId = keccak256(this, proposalsCnt);
+        bytes32 proposalId = keccak256(abi.encodePacked(this, proposalsCnt));
         proposalsCnt++;
         // Open proposal:
         Proposal memory proposal;
@@ -734,6 +736,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         returns(bytes32)
         {
         return keccak256(
+            abi.encodePacked(
             _params[0],
             _params[1],
             _params[2],
@@ -747,7 +750,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             _params[10],
             _params[11],
             _params[12],
-            _params[13]);
+            _params[13]));
     }
 
     /**

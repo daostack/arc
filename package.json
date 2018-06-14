@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.0-alpha.42",
+  "version": "0.0.0-alpha.43",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -12,7 +12,7 @@
     "tsconfig.json"
   ],
   "config": {
-    "gasLimit": "5650000"
+    "gasLimit": "5660000"
   },
   "scripts": {
     "test": "cross-conf-env run-with-ganache --ganache-cmd 'npm run ganache' 'npm run truffle compile && npm run truffle migrate && npm run truffle test'",
@@ -53,10 +53,10 @@
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
-    "solc": "^0.4.23",
+    "solc": "^0.4.24",
     "solc-cli": "^0.3.0",
     "solium": "^1.1.7",
-    "truffle": "^4.1.8",
+    "truffle": "^4.1.11",
     "truffle-contract": "^3.0.5",
     "uint32": "^0.2.1",
     "web3-utils": "^1.0.0-beta.34"
@@ -84,6 +84,6 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "openzeppelin-solidity": "1.9.0"
+    "openzeppelin-solidity": "1.10.0"
   }
 }
