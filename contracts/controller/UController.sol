@@ -33,7 +33,7 @@ contract UController is ControllerInterface {
     }
 
     struct GlobalConstraintRegister {
-        bool register; //is register
+        bool isRegistered; //is registered
         uint index;    //index at globalConstraints
     }
 
@@ -241,7 +241,7 @@ contract UController is ControllerInterface {
     returns(bool)
     {
         bytes4 schemePermission = organizations[_avatar].schemes[_scheme].permissions;
-    //check if the scheme is register
+    //check if the scheme is registered
         if (schemePermission&bytes4(1) == bytes4(0)) {
             return false;
           }
@@ -280,6 +280,23 @@ contract UController is ControllerInterface {
         return organizations[_avatar].schemes[_scheme].permissions;
     }
 
+    function getGlobalConstraintParameters(address _globalConstraint, address _avatar) external view returns(bytes32) {
+
+        Organization storage organization = organizations[_avatar];
+
+        GlobalConstraintRegister memory register = organization.globalConstraintsRegisterPre[_globalConstraint];
+
+        if (register.isRegistered) {
+            return organization.globalConstraintsPre[register.index].params;
+        }
+
+        register = organization.globalConstraintsRegisterPost[_globalConstraint];
+
+        if (register.isRegistered) {
+            return organization.globalConstraintsPost[register.index].params;
+        }
+    }
+
    /**
    * @dev globalConstraintsCount return the global constraint pre and post count
    * @return uint globalConstraintsPre count.
@@ -290,8 +307,8 @@ contract UController is ControllerInterface {
     }
 
     function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) external view returns(bool) {
-        return (organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint].register ||
-        organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint].register) ;
+        return (organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint].isRegistered ||
+        organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint].isRegistered) ;
     }
 
     /**
@@ -307,7 +324,7 @@ contract UController is ControllerInterface {
         Organization storage organization = organizations[_avatar];
         GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
         if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            if (!organization.globalConstraintsRegisterPre[_globalConstraint].register) {
+            if (!organization.globalConstraintsRegisterPre[_globalConstraint].isRegistered) {
                 organization.globalConstraintsPre.push(GlobalConstraint(_globalConstraint,_params));
                 organization.globalConstraintsRegisterPre[_globalConstraint] = GlobalConstraintRegister(true,organization.globalConstraintsPre.length-1);
             }else {
@@ -316,7 +333,7 @@ contract UController is ControllerInterface {
         }
 
         if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            if (!organization.globalConstraintsRegisterPost[_globalConstraint].register) {
+            if (!organization.globalConstraintsRegisterPost[_globalConstraint].isRegistered) {
                 organization.globalConstraintsPost.push(GlobalConstraint(_globalConstraint,_params));
                 organization.globalConstraintsRegisterPost[_globalConstraint] = GlobalConstraintRegister(true,organization.globalConstraintsPost.length-1);
            }else {
@@ -506,7 +523,7 @@ contract UController is ControllerInterface {
         GlobalConstraintRegister memory globalConstraintRegister = organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint];
         GlobalConstraint[] storage globalConstraints = organizations[_avatar].globalConstraintsPre;
 
-        if (globalConstraintRegister.register) {
+        if (globalConstraintRegister.isRegistered) {
             if (globalConstraintRegister.index < globalConstraints.length-1) {
                 GlobalConstraint memory globalConstraint = globalConstraints[globalConstraints.length-1];
                 globalConstraints[globalConstraintRegister.index] = globalConstraint;
@@ -532,7 +549,7 @@ contract UController is ControllerInterface {
         GlobalConstraintRegister memory globalConstraintRegister = organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint];
         GlobalConstraint[] storage globalConstraints = organizations[_avatar].globalConstraintsPost;
 
-        if (globalConstraintRegister.register) {
+        if (globalConstraintRegister.isRegistered) {
             if (globalConstraintRegister.index < globalConstraints.length-1) {
                 GlobalConstraint memory globalConstraint = globalConstraints[globalConstraints.length-1];
                 globalConstraints[globalConstraintRegister.index] = globalConstraint;

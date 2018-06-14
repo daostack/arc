@@ -31,20 +31,36 @@ const setup = async function (permission='0x00000000') {
   return uController;
 };
 
-const constraint = async function (method) {
+const constraint = async function (method, pre=false, post=false) {
   var globalConstraints = await GlobalConstraintMock.new();
-  let globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
-  assert.equal(globalConstraintsCount[0],0);
-  assert.equal(globalConstraintsCount[1],0);
-  await globalConstraints.setConstraint(method,false,false);
+  let globalConstraintsCountOrig = await controller.globalConstraintsCount(avatar.address);
+  await globalConstraints.setConstraint(method,pre,post);
   await controller.addGlobalConstraint(globalConstraints.address,0,avatar.address);
-  globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
-  assert.equal(globalConstraintsCount[0],1);
-  assert.equal(globalConstraintsCount[1],1);
+  let globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
+  assert.equal(globalConstraintsCount[0].toNumber(),globalConstraintsCountOrig[0].toNumber() + (pre ? 0 : 1));
+  assert.equal(globalConstraintsCount[1].toNumber(),globalConstraintsCountOrig[1].toNumber() + (post ? 0 : 1));
   return globalConstraints;
 };
 
 contract('UController', function (accounts)  {
+
+   it("getGlobalConstraintParameters", async function() {
+        controller = await setup();
+        // separate cases for pre and post
+        var globalConstraints = await constraint("gcParams1", true);
+        await controller.addGlobalConstraint(globalConstraints.address,"0x1235",avatar.address);
+
+        var paramsHash = await controller.getGlobalConstraintParameters(globalConstraints.address, avatar.address);
+        
+        assert.equal(paramsHash,"0x1235000000000000000000000000000000000000000000000000000000000000");
+
+        globalConstraints = await constraint("gcParams2", false, true);
+        await controller.addGlobalConstraint(globalConstraints.address,"0x1236",avatar.address);
+
+        paramsHash = await controller.getGlobalConstraintParameters(globalConstraints.address, avatar.address);
+        
+        assert.equal(paramsHash,"0x1236000000000000000000000000000000000000000000000000000000000000");
+    });
 
   it("newOrganization without controller owner of the avatar", async () => {
     var uController = await UController.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});

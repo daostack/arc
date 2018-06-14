@@ -31,7 +31,7 @@ const votePrec = 50;
 //Deploy test organization with the following schemes:
 //schemeRegistrar, upgradeScheme,globalConstraintRegistrar,simpleICO,contributionReward.
 module.exports = async function(deployer) {
-    deployer.deploy(ControllerCreator).then(async function(){
+    deployer.deploy(ControllerCreator, {gas: constants.GENESIS_SCHEME_GAS_LIMIT}).then(async function(){
       var controllerCreator = await ControllerCreator.deployed();
       await deployer.deploy(DaoCreator,controllerCreator.address);
       var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address);

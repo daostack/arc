@@ -15,7 +15,7 @@ const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
 var avatar,token,reputation,daoCreator,uController,controllerCreator;
 const setup = async function (accounts,founderToken,founderReputation,useUController=false,cap=0) {
-  controllerCreator = await ControllerCreator.new();
+  controllerCreator = await ControllerCreator.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
   daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
   var uControllerAddress = 0;
   if (useUController){
@@ -292,7 +292,7 @@ contract('DaoCreator', function(accounts) {
 
     it("forgeOrg with different params length should revert", async function() {
        var amountToMint = 10;
-       var controllerCreator = await ControllerCreator.new();
+       var controllerCreator = await ControllerCreator.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
        daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
        var uControllerAddress = 0;
        try {

@@ -39,7 +39,7 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
    testSetup.voteInOrganization = await VoteInOrganizationScheme.new();
-   var controllerCreator = await ControllerCreator.new();
+   var controllerCreator = await ControllerCreator.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    if (reputationAccount === 0) {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],[20,10,70]);

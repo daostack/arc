@@ -32,7 +32,7 @@ contract Controller is ControllerInterface {
     }
 
     struct GlobalConstraintRegister {
-        bool register; //is register
+        bool isRegistered; //is registered
         uint index;    //index at globalConstraints
     }
 
@@ -219,7 +219,7 @@ contract Controller is ControllerInterface {
     isAvatarValid(_avatar)
     returns(bool)
     {
-    //check if the scheme is register
+    //check if the scheme is registered
         if (schemes[_scheme].permissions&bytes4(1) == bytes4(0)) {
             return false;
           }
@@ -257,6 +257,21 @@ contract Controller is ControllerInterface {
         return schemes[_scheme].permissions;
     }
 
+    function getGlobalConstraintParameters(address _globalConstraint,address) external view returns(bytes32) {
+        
+        GlobalConstraintRegister memory register = globalConstraintsRegisterPre[_globalConstraint];
+
+        if (register.isRegistered) {
+            return globalConstraintsPre[register.index].params;
+        }
+
+        register = globalConstraintsRegisterPost[_globalConstraint];
+
+        if (register.isRegistered) {
+            return globalConstraintsPost[register.index].params;
+        }
+    }
+
    /**
     * @dev globalConstraintsCount return the global constraint pre and post count
     * @return uint globalConstraintsPre count.
@@ -277,7 +292,7 @@ contract Controller is ControllerInterface {
         view
         returns(bool)
         {
-        return (globalConstraintsRegisterPre[_globalConstraint].register || globalConstraintsRegisterPost[_globalConstraint].register);
+        return (globalConstraintsRegisterPre[_globalConstraint].isRegistered || globalConstraintsRegisterPost[_globalConstraint].isRegistered);
     }
 
     /**
@@ -294,7 +309,7 @@ contract Controller is ControllerInterface {
     {
         GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
         if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            if (!globalConstraintsRegisterPre[_globalConstraint].register) {
+            if (!globalConstraintsRegisterPre[_globalConstraint].isRegistered) {
                 globalConstraintsPre.push(GlobalConstraint(_globalConstraint,_params));
                 globalConstraintsRegisterPre[_globalConstraint] = GlobalConstraintRegister(true,globalConstraintsPre.length-1);
             }else {
@@ -302,7 +317,7 @@ contract Controller is ControllerInterface {
             }
         }
         if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            if (!globalConstraintsRegisterPost[_globalConstraint].register) {
+            if (!globalConstraintsRegisterPost[_globalConstraint].isRegistered) {
                 globalConstraintsPost.push(GlobalConstraint(_globalConstraint,_params));
                 globalConstraintsRegisterPost[_globalConstraint] = GlobalConstraintRegister(true,globalConstraintsPost.length-1);
             }else {
@@ -331,7 +346,7 @@ contract Controller is ControllerInterface {
 
         if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
             globalConstraintRegister = globalConstraintsRegisterPre[_globalConstraint];
-            if (globalConstraintRegister.register) {
+            if (globalConstraintRegister.isRegistered) {
                 if (globalConstraintRegister.index < globalConstraintsPre.length-1) {
                     globalConstraint = globalConstraintsPre[globalConstraintsPre.length-1];
                     globalConstraintsPre[globalConstraintRegister.index] = globalConstraint;
@@ -344,7 +359,7 @@ contract Controller is ControllerInterface {
         }
         if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
             globalConstraintRegister = globalConstraintsRegisterPost[_globalConstraint];
-            if (globalConstraintRegister.register) {
+            if (globalConstraintRegister.isRegistered) {
                 if (globalConstraintRegister.index < globalConstraintsPost.length-1) {
                     globalConstraint = globalConstraintsPost[globalConstraintsPost.length-1];
                     globalConstraintsPost[globalConstraintRegister.index] = globalConstraint;

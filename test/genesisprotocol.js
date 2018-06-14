@@ -87,7 +87,7 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.standardTokenMock.address);
 
-   var controllerCreator = await ControllerCreator.new();
+   var controllerCreator = await ControllerCreator.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.reputationArray = [20, 10, 70 ];
    testSetup.org = await setupOrganization(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
