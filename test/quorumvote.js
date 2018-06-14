@@ -510,7 +510,6 @@ contract('QuorumVote', function (accounts) {
     assert.equal(voteTX.logs.length, 2);
     assert.equal(voteTX.logs[1].event, "AVVoteProposal");
     assert.equal(voteTX.logs[1].args._proposalId, proposalId);
-    assert.equal(voteTX.logs[1].args._voter, accounts[0]);
     assert.equal(voteTX.logs[1].args._isOwnerVote, false);
 
     let cancelVoteTX = await quorumVote.cancelVote(proposalId);
