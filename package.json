@@ -75,7 +75,7 @@
     "arc"
   ],
   "engines": {
-    "node": ">=9.3.0"
+    "node": ">=9.10.0"
   },
   "author": "DAOstack (https://www.daostack.io)",
   "license": "GPL-3.0",
@@ -84,6 +84,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
+    "ethereumjs-abi": "^0.6.5",
     "openzeppelin-solidity": "1.10.0"
   }
 }

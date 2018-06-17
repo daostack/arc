@@ -4,7 +4,7 @@ import "../controller/Reputation.sol";
 import "./IntVoteInterface.sol";
 import "../universalSchemes/UniversalScheme.sol";
 import { RealMath } from "../libs/RealMath.sol";
-
+import "openzeppelin-solidity/contracts/ECRecovery.sol";
 
 /**
  * @title GenesisProtocol implementation -an organization's voting machine scheme.
@@ -15,6 +15,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     using SafeMath for uint;
     using RealMath for int216;
     using RealMath for int256;
+    using ECRecovery for bytes32;
 
     enum ProposalState { None ,Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
     enum ExecutionState { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
@@ -83,13 +84,15 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     }
 
     event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
-    event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _voter,uint _vote,uint _amount);
+    event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _staker,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
     event RedeemDaoBounty(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
     event RedeemReputation(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
+
+    mapping(bytes=>bool) stakeSignatures; //stake signatures
 
     uint constant public NUM_OF_CHOICES = 2;
     uint constant public NO = 2;
@@ -170,42 +173,47 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      *              false - otherwise.
      */
     function stake(bytes32 _proposalId, uint _vote, uint _amount) external returns(bool) {
-        // 0 is not a valid vote.
-        require(_vote <= NUM_OF_CHOICES && _vote > 0);
-        require(_amount > 0);
-        if (execute(_proposalId)) {
-            return true;
-        }
+        return _stake(_proposalId,_vote,_amount,msg.sender);
+    }
 
-        Proposal storage proposal = proposals[_proposalId];
-
-        if (proposal.state != ProposalState.PreBoosted) {
-            return false;
-        }
-
-        // enable to increase stake only on the previous stake vote
-        Staker storage staker = proposal.stakers[msg.sender];
-        if ((staker.amount > 0) && (staker.vote != _vote)) {
-            return false;
-        }
-
-        uint amount = _amount;
-        Parameters memory params = parameters[proposal.paramsHash];
-        require(amount >= params.minimumStakingFee);
-        require(stakingToken.transferFrom(msg.sender, address(this), amount));
-        proposal.totalStakes[1] = proposal.totalStakes[1].add(amount); //update totalRedeemableStakes
-        staker.amount += amount;
-        staker.amountForBounty = staker.amount;
-        staker.vote = _vote;
-
-        proposal.votersStakes += (params.stakerFeeRatioForVoters * amount)/100;
-        proposal.stakes[_vote] = amount.add(proposal.stakes[_vote]);
-        amount = amount - ((params.stakerFeeRatioForVoters*amount)/100);
-        proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
-      // Event:
-        emit Stake(_proposalId, proposal.avatar, msg.sender, _vote, _amount);
-      // execute the proposal if this vote was decisive:
-        return execute(_proposalId);
+    /**
+     * @dev staking function
+     * @param _proposalId id of the proposal
+     * @param _vote  NO(2) or YES(1).
+     * @param _amount the betting amount
+     * @param _nonce nonce value ,it is part of the signature to ensure that
+              a signature can be received only once.
+     * @param _signature  - signed data by the staker
+     * @return bool true - the proposal has been executed
+     *              false - otherwise.
+     */
+    function stakeWithSignature(
+        bytes32 _proposalId,
+        uint _vote,
+        uint _amount,
+        uint _nonce,
+        bytes _signature
+        )
+        external
+        returns(bool)
+        {
+        require(stakeSignatures[_signature] == false);
+        // Builds a prefixed hash to mimic the behavior of eth_sign.
+        bytes32 prefixedHash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32",
+               keccak256(
+                 abi.encodePacked(
+                     address(this),
+                     _proposalId,
+                     _vote,
+                     _amount,
+                    _nonce)))
+        );
+        address staker = prefixedHash.recover(_signature);
+        //a garbage staker address due to wrong signature will revert due to lack of approval and funds.
+        require(staker!=address(0));
+        stakeSignatures[_signature] = true;
+        return _stake(_proposalId,_vote,_amount,staker);
     }
 
   /**
@@ -748,6 +756,55 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     }
 
     /**
+     * @dev staking function
+     * @param _proposalId id of the proposal
+     * @param _vote  NO(2) or YES(1).
+     * @param _amount the betting amount
+     * @param _staker the staker address
+     * @return bool true - the proposal has been executed
+     *              false - otherwise.
+     */
+    function _stake(bytes32 _proposalId, uint _vote, uint _amount,address _staker) internal returns(bool) {
+        // 0 is not a valid vote.
+
+        require(_vote <= NUM_OF_CHOICES && _vote > 0);
+        require(_amount > 0);
+        if (execute(_proposalId)) {
+            return true;
+        }
+
+        Proposal storage proposal = proposals[_proposalId];
+
+        if (proposal.state != ProposalState.PreBoosted) {
+            return false;
+        }
+
+        // enable to increase stake only on the previous stake vote
+        Staker storage lstaker = proposal.stakers[_staker];
+        if ((lstaker.amount > 0) && (lstaker.vote != _vote)) {
+            return false;
+        }
+
+        uint amount = _amount;
+        Parameters memory params = parameters[proposal.paramsHash];
+        require(amount >= params.minimumStakingFee);
+        require(stakingToken.transferFrom(_staker, address(this), amount));
+        proposal.totalStakes[1] = proposal.totalStakes[1].add(amount); //update totalRedeemableStakes
+        lstaker.amount += amount;
+        lstaker.amountForBounty = lstaker.amount;
+        lstaker.vote = _vote;
+
+        proposal.votersStakes += (params.stakerFeeRatioForVoters * amount)/100;
+        proposal.stakes[_vote] = amount.add(proposal.stakes[_vote]);
+        amount = amount - ((params.stakerFeeRatioForVoters*amount)/100);
+        proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
+      // Event:
+        emit Stake(_proposalId, proposal.avatar, _staker, _vote, _amount);
+      // execute the proposal if this vote was decisive:
+        return execute(_proposalId);
+    }
+
+    /**
      * @dev Vote for a proposal, if the voter already voted, cancel the last vote and set a new one instead
      * @param _proposalId id of the proposal
      * @param _voter used in case the vote is cast for someone else
@@ -758,7 +815,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * throws if proposal is not open or if it has been executed
      * NB: executes the proposal if a decision has been reached
      */
-    function internalVote(bytes32 _proposalId, address _voter, uint _vote, uint _rep) private returns(bool) {
+    function internalVote(bytes32 _proposalId, address _voter, uint _vote, uint _rep) internal returns(bool) {
         // 0 is not a valid vote.
         require(_vote <= NUM_OF_CHOICES && _vote > 0);
         if (execute(_proposalId)) {
