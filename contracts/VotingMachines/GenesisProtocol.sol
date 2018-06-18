@@ -100,6 +100,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     uint public proposalsCnt; // Total number of proposals
     mapping(address=>uint) public orgBoostedProposalsCnt;
     StandardToken public stakingToken;
+    mapping(address=>uint[]) public proposalsExpiredTimes; //proposals expired times
+    mapping(address=>uint) public quiteWindowProposals;
     /**
      * @dev Constructor
      */
@@ -415,6 +417,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                 proposal.state = ProposalState.Boosted;
                 // solium-disable-next-line security/no-block-members
                 proposal.boostedPhaseTime = now;
+                proposalsExpiredTimes[proposal.avatar].push(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 orgBoostedProposalsCnt[proposal.avatar]++;
               }
            }
@@ -424,7 +427,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= proposal.currentBoostedVotePeriodLimit) {
                 proposal.state = ProposalState.Executed;
-                orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
+                //orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
                 executionState = ExecutionState.BoostedTimeOut;
              } else if (proposal.votes[proposal.winningVote] > executionBar) {
                // someone crossed the absolute vote execution bar.
@@ -545,9 +548,25 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return int organization's score threshold.
      */
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
+        uint expieredProposals;
+        if (proposalsExpiredTimes[_avatar].length != 0) {
+            uint min;
+            uint mid;
+            uint max = proposalsExpiredTimes[_avatar].length - 1;
+            while (max > min) {
+                mid = (max + min + 1) / 2;
+                // solium-disable-next-line security/no-block-members
+                if (proposalsExpiredTimes[_avatar][mid]<=now) {
+                    min = mid;
+                } else {
+                    max = mid-1;
+                }
+            }
+            expieredProposals = mid;
+        }
         int216 e = 2;
         Parameters memory params = parameters[proposals[_proposalId].paramsHash];
-        int256 power = int216(orgBoostedProposalsCnt[_avatar]).toReal().div(int216(params.thresholdConstB).toReal());
+        int256 power = int216(orgBoostedProposalsCnt[_avatar] - expieredProposals).toReal().div(int216(params.thresholdConstB).toReal());
 
         if (power.fromReal() > 100 ) {
             power = int216(100).toReal();
@@ -846,6 +865,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                 //quietEndingPeriod
                 proposal.boostedPhaseTime = _now;
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
+                    quiteWindowProposals[proposal.avatar]++;
+                    proposalsExpiredTimes[proposal.avatar].push(_now + proposal.currentBoostedVotePeriodLimit);
                     proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
                     proposal.state = ProposalState.QuietEndingPeriod;
                 }
