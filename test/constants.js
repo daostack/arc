@@ -1,3 +1,3 @@
 const GENESIS_SCHEME_GAS_LIMIT = 5660000;
 
-module.exports = { GENESIS_SCHEME_GAS_LIMIT }
+module.exports = { GENESIS_SCHEME_GAS_LIMIT };
