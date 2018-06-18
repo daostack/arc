@@ -550,23 +550,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
         uint expieredProposals;
         if (proposalsExpiredTimes[_avatar].length != 0) {
-            uint min;
-            uint mid;
-            uint max = proposalsExpiredTimes[_avatar].length - 1;
-            while (max > min) {
-                mid = (max + min + 1) / 2;
-                // solium-disable-next-line security/no-block-members
-                if (proposalsExpiredTimes[_avatar][mid]<=now) {
-                    min = mid;
-                } else {
-                    max = mid-1;
-                }
-            }
-            expieredProposals = mid;
+          // solium-disable-next-line security/no-block-members
+            expieredProposals = binarySearch(proposalsExpiredTimes[_avatar],0,proposalsExpiredTimes[_avatar].length-1,now);
         }
+        uint boostedProposals = orgBoostedProposalsCnt[_avatar].sub(expieredProposals).sub(quiteWindowProposals[_avatar]);
         int216 e = 2;
+
         Parameters memory params = parameters[proposals[_proposalId].paramsHash];
-        int256 power = int216(orgBoostedProposalsCnt[_avatar] - expieredProposals).toReal().div(int216(params.thresholdConstB).toReal());
+        int256 power = int216(boostedProposals).toReal().div(int216(params.thresholdConstB).toReal());
 
         if (power.fromReal() > 100 ) {
             power = int216(100).toReal();
@@ -909,5 +900,22 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function _isVotable(bytes32 _proposalId) private view returns(bool) {
         ProposalState pState = proposals[_proposalId].state;
         return ((pState == ProposalState.PreBoosted)||(pState == ProposalState.Boosted)||(pState == ProposalState.QuietEndingPeriod));
+    }
+
+    function binarySearch(uint[] _data,uint _start,uint _end,uint _value) private view returns(uint) {
+        if (_start <= _end) {
+            uint mid = (_start + _end)/2;
+            if (_data[mid] == _value) {
+                return mid;
+            } else if (_data[mid] > _value) {
+                if (mid == 0) {
+                    return _start;
+                }
+                return binarySearch(_data,_start,mid-1,_value);
+            } else {
+                return binarySearch(_data,mid+1,_end,_value);
+            }
+        }
+        return _start;
     }
 }

@@ -1240,10 +1240,18 @@ contract('GenesisProtocol', function (accounts) {
       assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address),0);
       await testSetup.genesisProtocol.vote(proposalId,1);
       await stake(testSetup,proposalId,1,100,accounts[0]);
+
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),true);
       assert.equal(await testSetup.genesisProtocol.state(proposalId),4);
       assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address),1);
-      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),2);
+      var currentTime = await  web3.eth.getBlock("latest").timestamp;
+      var numberOfExpiredProposals = 0;
+      if (currentTime > await testSetup.genesisProtocol.proposalsExpiredTimes(testSetup.org.avatar.address,0)) {
+          numberOfExpiredProposals++;
+      }
+
+      var  threshold = Math.pow(2,((1-numberOfExpiredProposals)/1));
+      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),threshold);
       //set up another proposal
       tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
       proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -1251,16 +1259,37 @@ contract('GenesisProtocol', function (accounts) {
       await testSetup.genesisProtocol.vote(proposalId,1);
       await stake(testSetup,proposalId,1,100,accounts[0]);
       assert.equal(await testSetup.genesisProtocol.state(proposalId),4);
-      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address),2);
-      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),2);
+       var numberOfBoostedProposals = await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address);
+      assert.equal(numberOfBoostedProposals,2);
+       currentTime = await  web3.eth.getBlock("latest").timestamp;
+       numberOfExpiredProposals = 0;
+      if (currentTime > await testSetup.genesisProtocol.proposalsExpiredTimes(testSetup.org.avatar.address,0)) {
+        numberOfExpiredProposals++;
+      }
+      if (currentTime > await testSetup.genesisProtocol.proposalsExpiredTimes(testSetup.org.avatar.address,1)) {
+        numberOfExpiredProposals++;
+      }
+
+        threshold = Math.pow(2,((numberOfBoostedProposals-numberOfExpiredProposals)/1));
+      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),threshold);
 
       //execute
       await helpers.increaseTime(61);
       await testSetup.genesisProtocol.execute(proposalId);
-      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address),2);
-      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),2);
-      assert.equal(await testSetup.genesisProtocol.quiteWindowProposals(testSetup.org.avatar.address),0);
+      numberOfBoostedProposals = await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address);
+      assert.equal(numberOfBoostedProposals,2);
+      currentTime = await  web3.eth.getBlock("latest").timestamp;
+      numberOfExpiredProposals = 0;
 
+      if (currentTime > await testSetup.genesisProtocol.proposalsExpiredTimes(testSetup.org.avatar.address,0)) {
+        numberOfExpiredProposals++;
+      }
+      if (currentTime > await testSetup.genesisProtocol.proposalsExpiredTimes(testSetup.org.avatar.address,1)) {
+        numberOfExpiredProposals++;
+      }
+      threshold = Math.pow(2,((numberOfBoostedProposals-numberOfExpiredProposals)/1));
+      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),threshold);
+      assert.equal(await testSetup.genesisProtocol.quiteWindowProposals(testSetup.org.avatar.address),0);
     });
 
     it("reputation flow ", async () => {
