@@ -86,7 +86,7 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
                                       _daoBountyLimt =10 ) {
    var testSetup = new helpers.TestSetup();
    testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],1000);
-   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address);
+   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
 
    var controllerCreator = await ControllerCreator.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
@@ -1252,13 +1252,15 @@ contract('GenesisProtocol', function (accounts) {
       await stake(testSetup,proposalId,1,100,accounts[0]);
       assert.equal(await testSetup.genesisProtocol.state(proposalId),4);
       assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address),2);
-      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),4);
+      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),2);
 
       //execute
       await helpers.increaseTime(61);
       await testSetup.genesisProtocol.execute(proposalId);
-      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address),1);
+      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address),2);
       assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),2);
+      assert.equal(await testSetup.genesisProtocol.quiteWindowProposals(testSetup.org.avatar.address),0);
+
     });
 
     it("reputation flow ", async () => {
@@ -1354,15 +1356,23 @@ contract('GenesisProtocol', function (accounts) {
       assert.equal(proposalInfo[8],4);//boosted
 
       await helpers.increaseTime(50); //get into the quite period
+      assert.equal(await testSetup.genesisProtocol.quiteWindowProposals(testSetup.org.avatar.address),0);
+
       await testSetup.genesisProtocol.vote(proposalId,2,{from:accounts[0]}); //change winning vote
+      assert.equal(await testSetup.genesisProtocol.quiteWindowProposals(testSetup.org.avatar.address),1);
       proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
       assert.equal(proposalInfo[8],5);//quietEndingPeriod -still not execute
       await helpers.increaseTime(15); //increase time
+      assert.equal(await testSetup.genesisProtocol.quiteWindowProposals(testSetup.org.avatar.address),1);
+
       await testSetup.genesisProtocol.execute(proposalId);
+      assert.equal(await testSetup.genesisProtocol.quiteWindowProposals(testSetup.org.avatar.address),1);
+
       proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
       assert.equal(proposalInfo[8],5);//boosted -still not execute
       await helpers.increaseTime(10); //increase time
       await testSetup.genesisProtocol.execute(proposalId);
+      assert.equal(await testSetup.genesisProtocol.quiteWindowProposals(testSetup.org.avatar.address),1);
       proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
       assert.equal(proposalInfo[8],2);//boosted -still not execute
     });
