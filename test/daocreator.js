@@ -15,14 +15,14 @@ const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
 var avatar,token,reputation,daoCreator,uController,controllerCreator;
 const setup = async function (accounts,founderToken,founderReputation,useUController=false,cap=0) {
-  controllerCreator = await ControllerCreator.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
-  daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+  controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
+  daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
   var uControllerAddress = 0;
   if (useUController){
-    uController = await UController.new({gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+    uController = await UController.new({gas:constants.ARC_GAS_LIMIT});
     uControllerAddress = uController.address;
   }
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[founderToken],[founderReputation],uControllerAddress,cap,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[founderToken],[founderReputation],uControllerAddress,cap,{gas:constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -292,11 +292,11 @@ contract('DaoCreator', function(accounts) {
 
     it("forgeOrg with different params length should revert", async function() {
        var amountToMint = 10;
-       var controllerCreator = await ControllerCreator.new({gas: constants.GENESIS_SCHEME_GAS_LIMIT});
-       daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+       var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
+       daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
        var uControllerAddress = 0;
        try {
-        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[amountToMint],[],uControllerAddress,0,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[amountToMint],[],uControllerAddress,0,{gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert  because reputation array size is 0");
        }
        catch(ex){
@@ -304,7 +304,7 @@ contract('DaoCreator', function(accounts) {
        }
 
        try {
-        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0],0],[amountToMint,amountToMint],[amountToMint,amountToMint],uControllerAddress,0,{gas:constants.GENESIS_SCHEME_GAS_LIMIT});
+        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0],0],[amountToMint,amountToMint],[amountToMint,amountToMint],uControllerAddress,0,{gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert  because account is 0");
        }
        catch(ex){
