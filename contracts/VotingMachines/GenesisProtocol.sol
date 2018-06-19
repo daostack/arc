@@ -555,12 +555,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return int organization's score threshold.
      */
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
-        uint expieredProposals;
+        uint expiredProposals;
         if (proposalsExpiredTimes[_avatar].count() != 0) {
           // solium-disable-next-line security/no-block-members
-            expieredProposals = proposalsExpiredTimes[_avatar].rank(now);
+            expiredProposals = proposalsExpiredTimes[_avatar].rank(now);
         }
-        uint boostedProposals = orgBoostedProposalsCnt[_avatar].sub(expieredProposals);
+        uint boostedProposals = orgBoostedProposalsCnt[_avatar].sub(expiredProposals);
         int216 e = 2;
 
         Parameters memory params = parameters[proposals[_proposalId].paramsHash];
