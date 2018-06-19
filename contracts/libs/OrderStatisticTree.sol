@@ -285,9 +285,9 @@ library OrderStatisticTree {
                 n.count--;
             }
             fixParents(_tree,n.parent,n.side);
-        }
-        else
+        } else {
             removeHelper(_tree,_value);
+        }
     }
 
 }
