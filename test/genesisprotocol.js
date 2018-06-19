@@ -1259,9 +1259,7 @@ contract('GenesisProtocol', function (accounts) {
 
       //execute
       await helpers.increaseTime(61);
-      await testSetup.genesisProtocol.execute(proposalId);
       assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.org.avatar.address),1);
-      assert.equal(await testSetup.genesisProtocol.quietWindowProposals(testSetup.org.avatar.address),0);
     });
 
     it("reputation flow ", async () => {
@@ -1357,23 +1355,18 @@ contract('GenesisProtocol', function (accounts) {
       assert.equal(proposalInfo[8],4);//boosted
 
       await helpers.increaseTime(50); //get into the quite period
-      assert.equal(await testSetup.genesisProtocol.quietWindowProposals(testSetup.org.avatar.address),0);
 
       await testSetup.genesisProtocol.vote(proposalId,2,{from:accounts[0]}); //change winning vote
-      assert.equal(await testSetup.genesisProtocol.quietWindowProposals(testSetup.org.avatar.address),1);
       proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
       assert.equal(proposalInfo[8],5);//quietEndingPeriod -still not execute
       await helpers.increaseTime(15); //increase time
-      assert.equal(await testSetup.genesisProtocol.quietWindowProposals(testSetup.org.avatar.address),1);
 
       await testSetup.genesisProtocol.execute(proposalId);
-      assert.equal(await testSetup.genesisProtocol.quietWindowProposals(testSetup.org.avatar.address),1);
 
       proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
       assert.equal(proposalInfo[8],5);//boosted -still not execute
       await helpers.increaseTime(10); //increase time
       await testSetup.genesisProtocol.execute(proposalId);
-      assert.equal(await testSetup.genesisProtocol.quietWindowProposals(testSetup.org.avatar.address),1);
       proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
       assert.equal(proposalInfo[8],2);//boosted -still not execute
     });

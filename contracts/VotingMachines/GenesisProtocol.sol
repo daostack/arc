@@ -108,7 +108,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     mapping(address=>uint) public orgBoostedProposalsCnt;
     StandardToken public stakingToken;
     mapping(address=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
-    mapping(address=>uint) public quietWindowProposals;
 
     /**
      * @dev Constructor
@@ -561,7 +560,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
           // solium-disable-next-line security/no-block-members
             expieredProposals = proposalsExpiredTimes[_avatar].rank(now);
         }
-        uint boostedProposals = orgBoostedProposalsCnt[_avatar].sub(expieredProposals).sub(quietWindowProposals[_avatar]);
+        uint boostedProposals = orgBoostedProposalsCnt[_avatar].sub(expieredProposals);
         int216 e = 2;
 
         Parameters memory params = parameters[proposals[_proposalId].paramsHash];
@@ -863,7 +862,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                ((proposal.state == ProposalState.Boosted) && ((_now - proposal.boostedPhaseTime) >= (params.boostedVotePeriodLimit - params.quietEndingPeriod)))) {
                 //quietEndingPeriod
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
-                    quietWindowProposals[proposal.avatar]++;
                     proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                     proposalsExpiredTimes[proposal.avatar].insert(_now + proposal.currentBoostedVotePeriodLimit);
                     proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
