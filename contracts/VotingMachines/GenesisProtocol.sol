@@ -433,12 +433,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             (proposal.state == ProposalState.QuietEndingPeriod)) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= proposal.currentBoostedVotePeriodLimit) {
+                proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
                 proposal.state = ProposalState.Executed;
-                //orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
                 executionState = ExecutionState.BoostedTimeOut;
              } else if (proposal.votes[proposal.winningVote] > executionBar) {
                // someone crossed the absolute vote execution bar.
                 orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
+                proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 proposal.state = ProposalState.Executed;
                 executionState = ExecutionState.BoostedBarCrossed;
             }
@@ -863,8 +865,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                 //quietEndingPeriod
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
                     proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
-                    proposalsExpiredTimes[proposal.avatar].insert(_now + proposal.currentBoostedVotePeriodLimit);
                     proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
+                    proposalsExpiredTimes[proposal.avatar].insert(_now + proposal.currentBoostedVotePeriodLimit);
                     proposal.state = ProposalState.QuietEndingPeriod;
                 }
                 proposal.boostedPhaseTime = _now;

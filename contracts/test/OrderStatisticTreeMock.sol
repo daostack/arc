@@ -19,4 +19,8 @@ contract OrderStatisticTreeMock {
     function count() public view returns (uint) {
         return tree.count();
     }
+
+    function remove(uint _value) public {
+        return tree.remove(_value);
+    }
 }

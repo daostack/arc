@@ -2,7 +2,7 @@ const OrderStatisticTreeMock = artifacts.require("./OrderStatisticTreeMock.sol")
 
 const getRandomInt = async function (max) {
   return Math.floor(Math.random() * Math.floor(max));
-};
+}
 
 
 contract('OrderStatisticTree', function () {
@@ -31,16 +31,22 @@ contract('OrderStatisticTree', function () {
       assert.equal(ranksInBetween[i],rank);
     }
 
+    for (i = values.length-1 ;i>=0 ;i--) {
+      await orderStatisticTree.remove(values[i]);
+      assert.equal(await orderStatisticTree.count(),i);
+    }
+
   });
 
   it("gas usage ", async function () {
 
     var orderStatisticTree = await OrderStatisticTreeMock.new();
-    var val,tx;
+    var tx,val;
     var maxGasUsed = 0;
+    var values = {};
     for (var i = 0;i<100;i++) {
-      val = await getRandomInt(500);
-      tx = await orderStatisticTree.insert(val);
+      values[i] = await getRandomInt(500);
+      tx = await orderStatisticTree.insert(values[i]);
       if (tx.receipt.gasUsed > maxGasUsed) {
         maxGasUsed = tx.receipt.gasUsed;
       }
@@ -56,6 +62,14 @@ contract('OrderStatisticTree', function () {
       }
     }
     assert.isBelow(maxGasUsed,35000);
+    maxGasUsed = 0;
+    for (i = 0;i<100;i++) {
+      tx = await orderStatisticTree.remove(values[i]);
+      if (tx.receipt.gasUsed > maxGasUsed) {
+        maxGasUsed = tx.receipt.gasUsed;
+      }
+    }
+    assert.isBelow(maxGasUsed,400000);
   });
 
 });
