@@ -5,6 +5,7 @@ import "./IntVoteInterface.sol";
 import "../universalSchemes/UniversalScheme.sol";
 import { RealMath } from "../libs/RealMath.sol";
 import "openzeppelin-solidity/contracts/ECRecovery.sol";
+import { OrderStatisticTree } from "../libs/OrderStatisticTree.sol";
 
 /**
  * @title GenesisProtocol implementation -an organization's voting machine scheme.
@@ -16,6 +17,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     using RealMath for int216;
     using RealMath for int256;
     using ECRecovery for bytes32;
+    using OrderStatisticTree for OrderStatisticTree.Tree;
 
     enum ProposalState { None ,Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
     enum ExecutionState { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
@@ -83,6 +85,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         mapping(address=>Staker) stakers;
     }
 
+    struct ExpieredProposal {
+        uint value;
+        uint numberOflessOrEqualNodes; // amount of staker's stake
+    }
+
     event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
     event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _staker,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
@@ -100,8 +107,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     uint public proposalsCnt; // Total number of proposals
     mapping(address=>uint) public orgBoostedProposalsCnt;
     StandardToken public stakingToken;
-    mapping(address=>uint[]) public proposalsExpiredTimes; //proposals expired times
+    mapping(address=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
     mapping(address=>uint) public quietWindowProposals;
+
     /**
      * @dev Constructor
      */
@@ -417,7 +425,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                 proposal.state = ProposalState.Boosted;
                 // solium-disable-next-line security/no-block-members
                 proposal.boostedPhaseTime = now;
-                proposalsExpiredTimes[proposal.avatar].push(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                proposalsExpiredTimes[proposal.avatar].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 orgBoostedProposalsCnt[proposal.avatar]++;
               }
            }
@@ -549,9 +557,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      */
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
         uint expieredProposals;
-        if (proposalsExpiredTimes[_avatar].length != 0) {
+        if (proposalsExpiredTimes[_avatar].count() != 0) {
           // solium-disable-next-line security/no-block-members
-            expieredProposals = binarySearch(proposalsExpiredTimes[_avatar],0,proposalsExpiredTimes[_avatar].length-1,now);
+            expieredProposals = proposalsExpiredTimes[_avatar].rank(now);
         }
         uint boostedProposals = orgBoostedProposalsCnt[_avatar].sub(expieredProposals).sub(quietWindowProposals[_avatar]);
         int216 e = 2;
@@ -854,13 +862,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             if ((proposal.state == ProposalState.QuietEndingPeriod) ||
                ((proposal.state == ProposalState.Boosted) && ((_now - proposal.boostedPhaseTime) >= (params.boostedVotePeriodLimit - params.quietEndingPeriod)))) {
                 //quietEndingPeriod
-                proposal.boostedPhaseTime = _now;
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
                     quietWindowProposals[proposal.avatar]++;
-                    proposalsExpiredTimes[proposal.avatar].push(_now + proposal.currentBoostedVotePeriodLimit);
+                    proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                    proposalsExpiredTimes[proposal.avatar].insert(_now + proposal.currentBoostedVotePeriodLimit);
                     proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
                     proposal.state = ProposalState.QuietEndingPeriod;
                 }
+                proposal.boostedPhaseTime = _now;
             }
             proposal.winningVote = _vote;
         }
@@ -900,22 +909,5 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function _isVotable(bytes32 _proposalId) private view returns(bool) {
         ProposalState pState = proposals[_proposalId].state;
         return ((pState == ProposalState.PreBoosted)||(pState == ProposalState.Boosted)||(pState == ProposalState.QuietEndingPeriod));
-    }
-
-    function binarySearch(uint[] _data,uint _start,uint _end,uint _value) private view returns(uint) {
-        if (_start <= _end) {
-            uint mid = (_start + _end)/2;
-            if (_data[mid] == _value) {
-                return mid;
-            } else if (_data[mid] > _value) {
-                if (mid == 0) {
-                    return _start;
-                }
-                return binarySearch(_data,_start,mid-1,_value);
-            } else {
-                return binarySearch(_data,mid+1,_end,_value);
-            }
-        }
-        return _start;
     }
 }
