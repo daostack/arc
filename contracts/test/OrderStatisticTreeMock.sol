@@ -2,7 +2,8 @@ pragma solidity ^0.4.24;
 
 import "../libs/OrderStatisticTree.sol";
 
-contract TestOrderStatisticTree {
+
+contract OrderStatisticTreeMock {
     using OrderStatisticTree for OrderStatisticTree.Tree;
 
     OrderStatisticTree.Tree tree;
@@ -11,7 +12,7 @@ contract TestOrderStatisticTree {
         tree.insert(value);
     }
 
-    function rank(uint value) public constant returns (uint) {
+    function rank(uint value) public view returns (uint) {
         return tree.rank(value);
     }
 
