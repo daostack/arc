@@ -31,13 +31,13 @@ const votePrec = 50;
 //Deploy test organization with the following schemes:
 //schemeRegistrar, upgradeScheme,globalConstraintRegistrar,simpleICO,contributionReward.
 module.exports = async function(deployer) {
-    deployer.deploy(ControllerCreator, {gas: constants.GENESIS_SCHEME_GAS_LIMIT}).then(async function(){
+    deployer.deploy(ControllerCreator, {gas: constants.ARC_GAS_LIMIT}).then(async function(){
       var controllerCreator = await ControllerCreator.deployed();
       await deployer.deploy(DaoCreator,controllerCreator.address);
       var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address);
       // Create DAOstack:
       var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,0,cap,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
+          initTokenInWei, initRepInWei,0,cap,{gas: constants.ARC_GAS_LIMIT});
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       var ControllerInst = await Controller.at(await AvatarInst.owner());
       var reputationAddress = await ControllerInst.nativeReputation();
@@ -93,10 +93,10 @@ module.exports = async function(deployer) {
         paramsArray,
         permissionArray);
       //now deploy with universal controller
-      await deployer.deploy(UController, {gas: constants.GENESIS_SCHEME_GAS_LIMIT});
+      await deployer.deploy(UController, {gas: constants.ARC_GAS_LIMIT});
       var uController = await UController.deployed();
       returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,uController.address,cap,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
+          initTokenInWei, initRepInWei,uController.address,cap,{gas: constants.ARC_GAS_LIMIT});
       AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       await daoCreatorInst.setSchemes(
           AvatarInst.address,
