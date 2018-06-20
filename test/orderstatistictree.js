@@ -2,7 +2,7 @@ const OrderStatisticTreeMock = artifacts.require("./OrderStatisticTreeMock.sol")
 
 const getRandomInt = async function (max) {
   return Math.floor(Math.random() * Math.floor(max));
-}
+};
 
 
 contract('OrderStatisticTree', function () {
@@ -44,7 +44,8 @@ contract('OrderStatisticTree', function () {
     var tx,val;
     var maxGasUsed = 0;
     var values = {};
-    for (var i = 0;i<100;i++) {
+    var elementNumber = 100;
+    for (var i = 0;i<elementNumber;i++) {
       values[i] = await getRandomInt(500);
       tx = await orderStatisticTree.insert(values[i]);
       if (tx.receipt.gasUsed > maxGasUsed) {
@@ -53,7 +54,7 @@ contract('OrderStatisticTree', function () {
     }
     assert.isBelow(maxGasUsed,380000);
     maxGasUsed = 0;
-    for (i = 0;i<100;i++) {
+    for (i = 0;i<elementNumber;i++) {
       val = await getRandomInt(500);
       var txhash = await orderStatisticTree.rank.sendTransaction(val);
       var receipt = await web3.eth.getTransactionReceipt(txhash);
@@ -63,13 +64,13 @@ contract('OrderStatisticTree', function () {
     }
     assert.isBelow(maxGasUsed,35000);
     maxGasUsed = 0;
-    for (i = 0;i<100;i++) {
+    for (i = 0;i<elementNumber;i++) {
       tx = await orderStatisticTree.remove(values[i]);
       if (tx.receipt.gasUsed > maxGasUsed) {
         maxGasUsed = tx.receipt.gasUsed;
       }
     }
-    assert.isBelow(maxGasUsed,400000);
+    assert.isBelow(maxGasUsed,450000);
   });
 
 });

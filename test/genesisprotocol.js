@@ -86,7 +86,7 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
                                       _daoBountyLimt =10 ) {
    var testSetup = new helpers.TestSetup();
    testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],1000);
-   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas: constants.GENESIS_SCHEME_GAS_LIMIT});
+   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas: constants.ARC_GAS_LIMIT});
 
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
