@@ -5,16 +5,19 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken   = artifacts.require("./DAOToken.sol");
 const StandardTokenMock = artifacts.require('./StandardTokenMock.sol');
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
+const ActionMock = artifacts.require('./test/ActionMock.sol');
+const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 var constants = require('./constants');
 var uint32 = require('uint32');
 
 
-let reputation, avatar, accounts,token,controller;
+let reputation, avatar,token,controller;
 var amountToMint = 10;
+let accounts = web3.eth.accounts;
 
-const setup = async function (permission='0x00000000') {
+
+const setup = async function (permission='0x00000000',registerScheme = accounts[0]) {
   var uController = await UController.new({gas: constants.ARC_GAS_LIMIT});
-  accounts = web3.eth.accounts;
   token  = await DAOToken.new("TEST","TST",0);
   // set up a reputation system
   reputation = await Reputation.new();
@@ -22,7 +25,7 @@ const setup = async function (permission='0x00000000') {
   await avatar.transferOwnership(uController.address);
   if (permission !== '0x00000000'){
     await uController.newOrganization(avatar.address,{from:accounts[1]});
-    await uController.registerScheme(accounts[0],0,permission,avatar.address,{from:accounts[1]});
+    await uController.registerScheme(registerScheme,0,permission,avatar.address,{from:accounts[1]});
     await uController.unregisterSelf(0,{from:accounts[1]});
   }
   else {
@@ -51,14 +54,14 @@ contract('UController', function (accounts)  {
         await controller.addGlobalConstraint(globalConstraints.address,"0x1235",avatar.address);
 
         var paramsHash = await controller.getGlobalConstraintParameters(globalConstraints.address, avatar.address);
-        
+
         assert.equal(paramsHash,"0x1235000000000000000000000000000000000000000000000000000000000000");
 
         globalConstraints = await constraint("gcParams2", false, true);
         await controller.addGlobalConstraint(globalConstraints.address,"0x1236",avatar.address);
 
         paramsHash = await controller.getGlobalConstraintParameters(globalConstraints.address, avatar.address);
-        
+
         assert.equal(paramsHash,"0x1236000000000000000000000000000000000000000000000000000000000000");
     });
 
@@ -314,11 +317,41 @@ contract('UController', function (accounts)  {
     }
   });
 
+  it("generic call log", async () => {
+    controller = await setup('0x00000010');
+    let actionMock =  await ActionMock.new();
+    let a = 7;
+    let b = actionMock.address;
+    let c = 0x1234;
+    const extraData = await actionMock.test.request(a,b,c);
+    var tx = await controller.genericCall(actionMock.address,extraData.params[0].data,avatar.address);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "GenericCall");
+
+  });
+
   it("generic call", async () => {
-    controller = await  setup('0x00000010');
-    var tx = await controller.genericAction([0],avatar.address);
-    assert.equal(tx.logs.length, 2);
-    assert.equal(tx.logs[0].event, "GenericAction");
+    controller = await setup('0x00000010');
+    let actionMock =  await ActionMock.new();
+    let a = 7;
+    let b = actionMock.address;
+    let c = 0x1234;
+    const extraData = await actionMock.test.request(a,b,c);
+    var result = await controller.genericCall.call(actionMock.address,extraData.params[0].data,avatar.address);
+    assert.equal(result, 14);
+
+  });
+
+  it("generic call via contract scheme", async () => {
+    var scheme = await UniversalSchemeMock.new();
+    controller = await setup('0x00000010',scheme.address);
+    let actionMock =  await ActionMock.new();
+    let a = 7;
+    let b = actionMock.address;
+    let c = 0x1234;
+    let result = await scheme.genericCall.call(avatar.address,actionMock.address, a,b,c);
+    assert.equal(result, 14);
+
   });
 
   it("sendEther", async () => {
@@ -481,11 +514,15 @@ contract('UController', function (accounts)  {
 
                  it("globalConstraints generic call  add & remove", async () => {
                     controller = await  setup('0x00000014');
-                    var globalConstraints = await constraint("genericAction");
-
+                    var globalConstraints = await constraint("genericCall");
+                    let actionMock =  await ActionMock.new();
+                    let a = 7;
+                    let b = actionMock.address;
+                    let c = 0x1234;
+                    const extraData = await actionMock.test.request(a,b,c);
                     try {
-                    await controller.genericAction([0],avatar.address);
-                    assert(false,"genericAction should fail due to the global constraint ");
+                      await controller.genericCall.call(actionMock.address,extraData.params[0].data,avatar.address);
+                      assert(false,"genericAction should fail due to the global constraint ");
                     }
                     catch(ex){
                       helpers.assertVMException(ex);
@@ -494,9 +531,9 @@ contract('UController', function (accounts)  {
                     var globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
                     assert.equal(globalConstraintsCount[0],0);
                     assert.equal(globalConstraintsCount[1],0);
-                    var tx =  await controller.genericAction([0],avatar.address);
-                    assert.equal(tx.logs.length, 2);
-                    assert.equal(tx.logs[0].event, "GenericAction");
+                    var tx =  await controller.genericCall(actionMock.address,extraData.params[0].data,avatar.address);
+                    assert.equal(tx.logs.length, 1);
+                    assert.equal(tx.logs[0].event, "GenericCall");
                     });
 
                     it("globalConstraints sendEther  add & remove", async () => {
