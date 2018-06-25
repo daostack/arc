@@ -85,11 +85,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         mapping(address=>Staker) stakers;
     }
 
-    struct ExpieredProposal {
-        uint value;
-        uint numberOflessOrEqualNodes; // amount of staker's stake
-    }
-
     event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
     event Stake(bytes32 indexed _proposalId, address indexed _avatar, address indexed _staker,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _avatar, address indexed _beneficiary,uint _amount);
