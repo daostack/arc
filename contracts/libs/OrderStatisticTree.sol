@@ -202,17 +202,6 @@ library OrderStatisticTree {
         }
     }
 
-    function zeroOut(Tree storage _tree,uint _value) private {
-        Node storage n = _tree.nodes[_value];
-        n.parent = 0;
-        n.side = false;
-        n.children[false] = 0;
-        n.children[true] = 0;
-        n.count = 0;
-        n.height = 0;
-        n.dupes = 0;
-    }
-
     function removeBranch(Tree storage _tree,uint _value,uint _left) private {
         uint ipn = rightmostLeaf(_tree,_left);
         Node storage i = _tree.nodes[ipn];
@@ -240,7 +229,7 @@ library OrderStatisticTree {
             i.children[true] = right;
             _tree.nodes[right].parent = ipn;
         }
-        zeroOut(_tree,_value);
+        delete _tree.nodes[_value];
         updateCounts(_tree,ipn);
     }
 
@@ -253,7 +242,7 @@ library OrderStatisticTree {
         uint right = n.children[true];
         if ((left == 0) && (right == 0)) {
             p.children[side] = 0;
-            zeroOut(_tree,_value);
+            delete _tree.nodes[_value];
             fixParents(_tree,parent,side);
         } else if ((left != 0) && (right != 0)) {
             removeBranch(_tree,_value,left);
@@ -263,7 +252,7 @@ library OrderStatisticTree {
             p.children[side] = child;
             c.parent = parent;
             c.side = side;
-            zeroOut(_tree,_value);
+            delete _tree.nodes[_value];
             fixParents(_tree,parent,side);
         }
     }
