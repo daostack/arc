@@ -4,13 +4,13 @@ import "../universalSchemes/ContributionReward.sol";
 import "../VotingMachines/GenesisProtocol.sol";
 
 
-contract ARCUtils {
+contract Redeemer {
     using SafeMath for uint;
 
     ContributionReward public contributionReward;
     GenesisProtocol public genesisProtocol;
 
-    event ARCUtilsRedeem(bytes32 indexed _proposalId,
+    event RedeemerRedeem(bytes32 indexed _proposalId,
                  bool _execute,
                  bool _genesisProtocolRedeem,
                  bool _genesisProtocolDaoBounty,
@@ -64,7 +64,7 @@ contract ARCUtils {
             }
             (result[3],result[4],result[5],result[6]) = contributionRewardRedeem(_proposalId,_avatar);
         }
-        emit ARCUtilsRedeem(
+        emit RedeemerRedeem(
             _proposalId,
             result[0],
             result[1],

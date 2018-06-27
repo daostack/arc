@@ -5,7 +5,7 @@ const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const Avatar = artifacts.require("./Avatar.sol");
-const ARCUtils = artifacts.require("./ARCUtils.sol");
+const Redeemer = artifacts.require("./Redeemer.sol");
 
 
 
@@ -488,7 +488,7 @@ contract('ContributionReward', function(accounts) {
 
                    });
 
-                   it("execute proposeContributionReward via genesisProtocol and redeem using ARCUtils", async function() {
+                   it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer", async function() {
                      var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
                      var testSetup = await setup(accounts,0,true,standardTokenMock.address);
                      var reputationReward = 12;
@@ -510,7 +510,7 @@ contract('ContributionReward', function(accounts) {
                      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
                      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[0]});
                      await helpers.increaseTime(periodLength+1);
-                     var arcUtils = await ARCUtils.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
+                     var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
                      await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
                      var eth = web3.eth.getBalance(otherAvatar.address);
                      assert.equal(eth.toNumber(),ethReward);
