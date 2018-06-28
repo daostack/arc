@@ -46,7 +46,6 @@ contract Avatar is Ownable {
     * @return the return bytes of the called contract's function.
     */
     function genericCall(address _contract,bytes _data) public onlyOwner {
-        require(_contract != address(this));
         // solium-disable-next-line security/no-low-level-calls
         bool result = _contract.call(_data);
         // solium-disable-next-line security/no-inline-assembly
