@@ -5,6 +5,8 @@ const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const Avatar = artifacts.require("./Avatar.sol");
+const Redeemer = artifacts.require("./Redeemer.sol");
+
 
 
 export class ContributionRewardParams {
@@ -43,20 +45,33 @@ const checkRedeemedPeriodsLeft = async function(
 const setupContributionRewardParams = async function(
                                             contributionReward,
                                             orgNativeTokenFee=0,
+                                            accounts,
+                                            genesisProtocol,
+                                            token
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
-  contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote();
   contributionRewardParams.orgNativeTokenFee =  orgNativeTokenFee;
+  if (genesisProtocol === true) {
+    contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token);
+    await contributionReward.setParameters(contributionRewardParams.orgNativeTokenFee,
+                                                 contributionRewardParams.votingMachine.params,
+                                                  contributionRewardParams.votingMachine.genesisProtocol.address);
+    contributionRewardParams.paramsHash = await contributionReward.getParametersHash(contributionRewardParams.orgNativeTokenFee,
+                                                                                     contributionRewardParams.votingMachine.params,
+                                                                                     contributionRewardParams.votingMachine.genesisProtocol.address);
+    } else {
+  contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote();
   await contributionReward.setParameters(contributionRewardParams.orgNativeTokenFee,
                                          contributionRewardParams.votingMachine.params,
                                          contributionRewardParams.votingMachine.absoluteVote.address);
   contributionRewardParams.paramsHash = await contributionReward.getParametersHash(contributionRewardParams.orgNativeTokenFee,
                                                                                    contributionRewardParams.votingMachine.params,
                                                                                    contributionRewardParams.votingMachine.absoluteVote.address);
+  }
   return contributionRewardParams;
 };
 
-const setup = async function (accounts,orgNativeTokenFee=0) {
+const setup = async function (accounts,orgNativeTokenFee=0,genesisProtocol = false,tokenAddress=0) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
@@ -64,9 +79,15 @@ const setup = async function (accounts,orgNativeTokenFee=0) {
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   testSetup.contributionRewardParams= await setupContributionRewardParams(testSetup.contributionReward,orgNativeTokenFee);
+   testSetup.contributionRewardParams= await setupContributionRewardParams(testSetup.contributionReward,orgNativeTokenFee,accounts,genesisProtocol,tokenAddress);
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.contributionReward.address],[testSetup.contributionRewardParams.paramsHash],[permissions]);
+   if (genesisProtocol) {
+     await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
+                                          [testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address],
+                                          [testSetup.contributionRewardParams.paramsHash,testSetup.contributionRewardParams.votingMachine.params],[permissions,permissions]);
+   } else {
+     await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.contributionReward.address],[testSetup.contributionRewardParams.paramsHash],[permissions]);
+   }
    return testSetup;
 };
 contract('ContributionReward', function(accounts) {
@@ -319,7 +340,6 @@ contract('ContributionReward', function(accounts) {
              await checkRedeemedPeriods(testSetup,proposalId,0,0,0,0);
              await checkRedeemedPeriodsLeft(testSetup,proposalId,1,1,1,1);
 
-
              tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
 
              assert.equal(tx.logs.length, 1);
@@ -467,6 +487,38 @@ contract('ContributionReward', function(accounts) {
                     await checkRedeemedPeriodsLeft(testSetup,proposalId,0,0,0,0);
 
                    });
+
+                   it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer", async function() {
+                     var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
+                     var testSetup = await setup(accounts,0,true,standardTokenMock.address);
+                     var reputationReward = 12;
+                     var nativeTokenReward = 12;
+                     var ethReward = 12;
+                     var periodLength = 50;
+                     var numberOfPeriods = 1;
+                     //send some ether to the org avatar
+                     var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
+                     web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+                     var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                                    "description",
+                                                                                    reputationReward,
+                                                                                    [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
+                                                                                    testSetup.standardTokenMock.address,
+                                                                                    otherAvatar.address
+                                                                                  );
+                     //Vote with reputation to trigger execution
+                     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+                     await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[0]});
+                     await helpers.increaseTime(periodLength+1);
+                     var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
+                     await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
+                     var eth = web3.eth.getBalance(otherAvatar.address);
+                     assert.equal(eth.toNumber(),ethReward);
+                     assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),reputationReward);
+                     assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
+                     var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
+                     assert.equal(reputation,1141);
+                    });
 
 
 });

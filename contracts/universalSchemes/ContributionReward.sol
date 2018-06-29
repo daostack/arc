@@ -386,4 +386,16 @@ contract ContributionReward is UniversalScheme {
         return organizationsProposals[_avatar][_proposalId].redeemedPeriods[_redeemType];
     }
 
+    function getProposalEthReward(bytes32 _proposalId, address _avatar) public view returns (uint) {
+        return organizationsProposals[_avatar][_proposalId].ethReward;
+    }
+
+    function getProposalExternalTokenReward(bytes32 _proposalId, address _avatar) public view returns (uint) {
+        return organizationsProposals[_avatar][_proposalId].externalTokenReward;
+    }
+
+    function getProposalExternalToken(bytes32 _proposalId, address _avatar) public view returns (address) {
+        return organizationsProposals[_avatar][_proposalId].externalToken;
+    }
+
 }
