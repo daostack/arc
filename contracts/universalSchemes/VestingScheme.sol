@@ -103,6 +103,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
         require(_signaturesReqToCancel <= _signersArray.length);
         require(_periodLength > 0);
+        require(_numOfAgreedPeriods > 0);
         // Write the signers mapping:
         for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
             organizationsProposals[_avatar][proposalId].signers[_signersArray[cnt]] = true;
@@ -156,6 +157,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     {
         require(_signaturesReqToCancel <= _signersArray.length);
         require(_periodLength > 0);
+        require(_numOfAgreedPeriods > 0);
         // Collect funds:
         uint totalAmount = _amountPerPeriod.mul(_numOfAgreedPeriods);
         require(_token.transferFrom(msg.sender, this, totalAmount));
