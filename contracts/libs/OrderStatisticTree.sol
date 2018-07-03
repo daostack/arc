@@ -24,7 +24,7 @@ library OrderStatisticTree {
      *      i.e. its index in the sorted list of elements of the tree
      * @param _tree the tree
      * @param _value the input value to find its rank.
-     * @return smaller - the number of elements in the tree which its number is
+     * @return smaller - the number of elements in the tree which their value is
      * less than the input value.
      */
     function rank(Tree storage _tree,uint _value) internal view returns (uint smaller) {
