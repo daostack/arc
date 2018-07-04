@@ -117,12 +117,6 @@ contract('VestingScheme', function(accounts) {
   
         it("proposeVestingAgreement check assert _numOfAgreedPeriods > 0", async function() {
           var testSetup = await setup(accounts);
-          var _signaturesReqToCancel = 5;
-          var _signersArray = [];
-          for (var i = 0; i < _signaturesReqToCancel - 1; i++) {
-            _signersArray[i] = accounts[i];
-          }
-
 
           try {
             var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
@@ -389,9 +383,6 @@ contract('VestingScheme', function(accounts) {
                     var numberOfAgreedPeriods = 0;
                     var periodLength = 2;
 
-                    await testSetup.standardTokenMock.approve(testSetup.vestingScheme.address, 100, {
-                      from: accounts[1]
-                    });
                     try {
                       await testSetup.vestingScheme.createVestedAgreement(testSetup.standardTokenMock.address,
                         accounts[0],
