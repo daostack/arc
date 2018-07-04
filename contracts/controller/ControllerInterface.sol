@@ -117,17 +117,18 @@ interface ControllerInterface {
     */
     function upgradeController(address _newController,address _avatar)
     external returns(bool);
+
     /**
-    * @dev do a generic delegate call to the contract which called us.
-    * This function use delegatecall and might expose the organization to security
-    * risk. Use this function only if you really knows what you are doing.
-    * @param _params the params for the call.
-    * @param _avatar address
-    * @return bool which represents success
+    * @dev perform a generic call to an arbitrary contract
+    * @param _contract  the contract's address to call
+    * @param _data ABI-encoded contract call to call `_contract` address.
+    * @param _avatar the controller's avatar address
+    * @return bytes32  - the return value of the called _contract's function.
     */
-    function genericAction(bytes32[] _params,address _avatar)
+    function genericCall(address _contract,bytes _data,address _avatar)
     external
-    returns(bool);
+    returns(bytes32);
+
   /**
    * @dev send some ether
    * @param _amountInWei the amount of ether (in Wei) to send

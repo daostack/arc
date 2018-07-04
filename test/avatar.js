@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const Avatar = artifacts.require("./Avatar.sol");
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const ActionMock = artifacts.require('./test/ActionMock.sol');
-
+const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 
 let avatar,accounts;
 
@@ -14,11 +14,15 @@ const setup = async function () {
 
 contract('Avatar', function (accounts)  {
 
-    it("genericAction no owner", async () => {
+    it("genericCall no owner", async () => {
         avatar = await setup();
-        let action = await ActionMock.new();
+        let actionMock = await ActionMock.new();
+        var scheme = await UniversalSchemeMock.new();
+        let a = 7;
+        let b = actionMock.address;
+        let c = 0x1234;
         try{
-         await avatar.genericAction(action.address,[0],{ from: accounts[1] });
+         await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c,{from :accounts[1]});
          assert(false, "genericAction should fail due to wrong owner");
          } catch (ex) {
              helpers.assertVMException(ex);
@@ -27,20 +31,26 @@ contract('Avatar', function (accounts)  {
 
     it("generic call", async () => {
         avatar = await setup();
-        let action = await ActionMock.new();
-        await avatar.transferOwnership(action.address);
-        var tx = await action.genericAction(avatar.address,[0x4567]);
-        assert.equal(tx.logs.length, 1);
-        assert.equal(tx.logs[0].event, "Action");
-        assert.equal(tx.logs[0].args._param, "0x4567000000000000000000000000000000000000000000000000000000000000");
+        let actionMock = await ActionMock.new();
+        var scheme = await UniversalSchemeMock.new();
+        await avatar.transferOwnership(scheme.address);
+        let a = 7;
+        let b = actionMock.address;
+        let c = 0x1234;
+        var result = await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c);
+        assert.equal(result,a*2);
     });
 
     it("generic call should revert if action revert", async () => {
         avatar = await setup();
-        let action = await ActionMock.new();
-        await avatar.transferOwnership(action.address);
+        let actionMock = await ActionMock.new();
+        var scheme = await UniversalSchemeMock.new();
+        await avatar.transferOwnership(scheme.address);
+        let a = 7;
+        let b = actionMock.address;
+        let c = 0x4567; //the action test function require 0x1234
         try{
-           await action.genericAction(avatar.address,[0x1234]);
+           await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c);
            assert(false,"generic call should revert if action revert ");
           }
           catch(ex){
