@@ -119,7 +119,7 @@ contract('VestingScheme', function(accounts) {
           var testSetup = await setup(accounts);
 
           try {
-            var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+            await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
               accounts[1],
               web3.eth.blockNumber,
               15,
