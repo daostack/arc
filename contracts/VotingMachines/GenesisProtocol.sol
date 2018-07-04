@@ -5,6 +5,7 @@ import "./IntVoteInterface.sol";
 import "../universalSchemes/UniversalScheme.sol";
 import { RealMath } from "../libs/RealMath.sol";
 import "openzeppelin-solidity/contracts/ECRecovery.sol";
+import { OrderStatisticTree } from "../libs/OrderStatisticTree.sol";
 
 /**
  * @title GenesisProtocol implementation -an organization's voting machine scheme.
@@ -16,6 +17,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     using RealMath for int216;
     using RealMath for int256;
     using ECRecovery for bytes32;
+    using OrderStatisticTree for OrderStatisticTree.Tree;
 
     enum ProposalState { None ,Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
     enum ExecutionState { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
@@ -100,6 +102,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     uint public proposalsCnt; // Total number of proposals
     mapping(address=>uint) public orgBoostedProposalsCnt;
     StandardToken public stakingToken;
+    mapping(address=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
+
     /**
      * @dev Constructor
      */
@@ -415,6 +419,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                 proposal.state = ProposalState.Boosted;
                 // solium-disable-next-line security/no-block-members
                 proposal.boostedPhaseTime = now;
+                proposalsExpiredTimes[proposal.avatar].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 orgBoostedProposalsCnt[proposal.avatar]++;
               }
            }
@@ -423,12 +428,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             (proposal.state == ProposalState.QuietEndingPeriod)) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= proposal.currentBoostedVotePeriodLimit) {
-                proposal.state = ProposalState.Executed;
+                proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
+                proposal.state = ProposalState.Executed;
                 executionState = ExecutionState.BoostedTimeOut;
              } else if (proposal.votes[proposal.winningVote] > executionBar) {
                // someone crossed the absolute vote execution bar.
                 orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
+                proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 proposal.state = ProposalState.Executed;
                 executionState = ExecutionState.BoostedBarCrossed;
             }
@@ -545,9 +552,16 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return int organization's score threshold.
      */
     function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
+        uint expiredProposals;
+        if (proposalsExpiredTimes[_avatar].count() != 0) {
+          // solium-disable-next-line security/no-block-members
+            expiredProposals = proposalsExpiredTimes[_avatar].rank(now);
+        }
+        uint boostedProposals = orgBoostedProposalsCnt[_avatar].sub(expiredProposals);
         int216 e = 2;
+
         Parameters memory params = parameters[proposals[_proposalId].paramsHash];
-        int256 power = int216(orgBoostedProposalsCnt[_avatar]).toReal().div(int216(params.thresholdConstB).toReal());
+        int256 power = int216(boostedProposals).toReal().div(int216(params.thresholdConstB).toReal());
 
         if (power.fromReal() > 100 ) {
             power = int216(100).toReal();
@@ -844,11 +858,13 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             if ((proposal.state == ProposalState.QuietEndingPeriod) ||
                ((proposal.state == ProposalState.Boosted) && ((_now - proposal.boostedPhaseTime) >= (params.boostedVotePeriodLimit - params.quietEndingPeriod)))) {
                 //quietEndingPeriod
-                proposal.boostedPhaseTime = _now;
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
+                    proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                     proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
+                    proposalsExpiredTimes[proposal.avatar].insert(_now + proposal.currentBoostedVotePeriodLimit);
                     proposal.state = ProposalState.QuietEndingPeriod;
                 }
+                proposal.boostedPhaseTime = _now;
             }
             proposal.winningVote = _vote;
         }
