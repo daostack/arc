@@ -161,7 +161,7 @@ export const setupGenesisProtocol = async function (accounts,token,
   _daoBountyLimt=10
   ) {
   var votingMachine = new VotingMachine();
-  votingMachine.genesisProtocol = await GenesisProtocol.new(token);
+  votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
 
   // set up a reputation system
   votingMachine.reputationArray = [20, 10 ,70];
