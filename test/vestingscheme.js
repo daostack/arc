@@ -114,6 +114,25 @@ contract('VestingScheme', function(accounts) {
            helpers.assertVMException(ex);
           }
          });
+  
+        it("proposeVestingAgreement check assert _numOfAgreedPeriods > 0", async function() {
+          var testSetup = await setup(accounts);
+
+          try {
+            await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+              accounts[1],
+              web3.eth.blockNumber,
+              15,
+              2,
+              0,
+              11,
+              3, [accounts[0], accounts[1], accounts[2]],
+              testSetup.org.avatar.address);
+            assert(false, "proposeVestingAgreement should fail - due to _numOfAgreedPeriods > 0 !");
+          } catch (ex) {
+            helpers.assertVMException(ex);
+          }
+        });
 
            it("execute proposeVestingAgreement- ProposedVestedAgreement supplies proposalId ", async function() {
              var testSetup = await setup(accounts);
@@ -357,6 +376,31 @@ contract('VestingScheme', function(accounts) {
                    helpers.assertVMException(ex);
                   }
                  });
+  
+                  it("createVestedAgreement check _numOfAgreedPeriods > 0 ", async function() {
+                    var testSetup = await setup(accounts);
+                    var amountPerPeriod = 3;
+                    var numberOfAgreedPeriods = 0;
+                    var periodLength = 2;
+
+                    try {
+                      await testSetup.vestingScheme.createVestedAgreement(testSetup.standardTokenMock.address,
+                        accounts[0],
+                        accounts[1],
+                        web3.eth.blockNumber,
+                        amountPerPeriod,
+                        periodLength,
+                        numberOfAgreedPeriods,
+                        11,
+                        0, [], {
+                          from: accounts[1]
+                        });
+
+                      assert(false, "createVestedAgreement should fail - due to _numOfAgreedPeriods > 0");
+                    } catch (ex) {
+                      helpers.assertVMException(ex);
+                    }
+                  });
 
                  it("signToCancelAgreement log", async function() {
                    var testSetup = await setup(accounts);
