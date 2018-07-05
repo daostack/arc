@@ -6,11 +6,6 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 
 
-contract ActionInterface {
-    function action(bytes32[] _params) public returns(bool);
-}
-
-
 /**
  * @title An Avatar holds tokens, reputation and ether for a controller
  */
@@ -45,26 +40,24 @@ contract Avatar is Ownable {
     }
 
     /**
-    * @dev call an action function on an ActionInterface.
-    * This function use delegatecall and might expose the organization to security
-    * risk. Use this function only if you really knows what you are doing.
-    * @param _action the address of the contract to call.
-    * @param _params the params for the call.
-    * @return bool which represents success
+    * @dev perform a generic call to an arbitrary contract
+    * @param _contract  the contract's address to call
+    * @param _data ABI-encoded contract call to call `_contract` address.
+    * @return the return bytes of the called contract's function.
     */
-    function genericAction(address _action, bytes32[] _params)
-    public onlyOwner returns(bool)
-    {
-        emit GenericAction(_action, _params);
-        require(
-          // solium-disable-next-line security/no-low-level-calls
-            _action.delegatecall(
-                bytes4(keccak256("action(bytes32[])")),
-                uint256(32),// pointer to the length of the array
-                uint256(_params.length), // length of the array
-                _params) // array itself
-        );
-        return true;
+    function genericCall(address _contract,bytes _data) public onlyOwner {
+        // solium-disable-next-line security/no-low-level-calls
+        bool result = _contract.call(_data);
+        // solium-disable-next-line security/no-inline-assembly
+        assembly {
+        // Copy the returned data.
+        returndatacopy(0, 0, returndatasize)
+
+        switch result
+        // call returns 0 on error.
+        case 0 { revert(0, returndatasize) }
+        default { return(0, returndatasize) }
+        }
     }
 
     /**

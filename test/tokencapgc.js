@@ -4,6 +4,7 @@ const TokenCapGC = artifacts.require('./globalConstraints/TokenCapGC.sol');
 const Controller = artifacts.require("./Controller.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
+var constants = require('../test/constants');
 
 
 let reputation, avatar,accounts,token,controller;
@@ -15,12 +16,12 @@ const setup = async function (permission='0') {
   reputation = await Reputation.new();
   avatar = await Avatar.new('name', token.address, reputation.address);
   if (permission !== '0'){
-    _controller = await Controller.new(avatar.address,{from:accounts[1]});
+    _controller = await Controller.new(avatar.address,{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
     await _controller.registerScheme(accounts[0],0,permission,0,{from:accounts[1]});
     await _controller.unregisterSelf(0,{from:accounts[1]});
   }
   else {
-    _controller = await Controller.new(avatar.address);
+    _controller = await Controller.new(avatar.address,{gas: constants.ARC_GAS_LIMIT});
   }
   controller = _controller;
   return _controller;

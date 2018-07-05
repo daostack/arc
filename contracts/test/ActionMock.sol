@@ -3,18 +3,13 @@ pragma solidity ^0.4.24;
 import "../controller/Avatar.sol";
 
 
-contract ActionMock is ActionInterface {
+contract ActionMock {
 
-    event Action(address _sender,bytes32 _param);
-
-    function action(bytes32[] params) public returns(bool) {
-        emit Action(msg.sender,params[0]);
-        require(params[0] != 0x1234000000000000000000000000000000000000000000000000000000000000);
-        return true;
-    }
-
-    function genericAction(Avatar avatar,bytes32[] params) public returns(bool) {
-        return avatar.genericAction(address(this),params);
+    function test(uint _a,address _b,bytes32 _c) public view returns(uint) {
+        require(_a == 7);
+        require(_b == address(this));
+        require(_c == 0x1234000000000000000000000000000000000000000000000000000000000000);
+        return _a*2;
     }
 
 }

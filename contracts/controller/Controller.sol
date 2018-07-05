@@ -23,7 +23,8 @@ contract Controller is ControllerInterface {
                              // 2nd bit: Scheme can register other schemes
                              // 3rd bit: Scheme can add/remove global constraints
                              // 4th bit: Scheme can upgrade the controller
-                             // 5th bit: Scheme can call delegatecall
+                             // 5th bit: Scheme can call genericCall on behalf of
+                             //          the organization avatar
     }
 
     struct GlobalConstraint {
@@ -67,6 +68,7 @@ contract Controller is ControllerInterface {
     event UpgradeController(address indexed _oldController,address _newController);
     event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when);
     event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre);
+    event GenericCall(address indexed _contract,bytes _data);
 
     constructor( Avatar _avatar) public
     {
@@ -102,7 +104,7 @@ contract Controller is ControllerInterface {
         _;
     }
 
-    modifier onlyDelegateScheme() {
+    modifier onlyGenericCallScheme() {
         require(schemes[msg.sender].permissions&bytes4(16) == bytes4(16));
         _;
     }
@@ -258,7 +260,7 @@ contract Controller is ControllerInterface {
     }
 
     function getGlobalConstraintParameters(address _globalConstraint,address) external view returns(bytes32) {
-        
+
         GlobalConstraintRegister memory register = globalConstraintsRegisterPre[_globalConstraint];
 
         if (register.isRegistered) {
@@ -406,21 +408,27 @@ contract Controller is ControllerInterface {
     }
 
     /**
-    * @dev do a generic delegate call to the contract which called us.
-    * This function use delegatecall and might expose the organization to security
-    * risk. Use this function only if you really knows what you are doing.
-    * @param _params the params for the call.
-    * @return bool which represents success
+    * @dev perform a generic call to an arbitrary contract
+    * @param _contract  the contract's address to call
+    * @param _data ABI-encoded contract call to call `_contract` address.
+    * @param _avatar the controller's avatar address
+    * @return bytes32  - the return value of the called _contract's function.
     */
-    function genericAction(bytes32[] _params,address _avatar)
+    function genericCall(address _contract,bytes _data,address _avatar)
     external
-    onlyDelegateScheme
-    onlySubjectToConstraint("genericAction")
+    onlyGenericCallScheme
+    onlySubjectToConstraint("genericCall")
     isAvatarValid(_avatar)
-    returns(bool)
+    returns (bytes32)
     {
-        emit GenericAction(msg.sender, _params);
-        return avatar.genericAction(msg.sender, _params);
+        emit GenericCall(_contract, _data);
+        avatar.genericCall(_contract, _data);
+        // solium-disable-next-line security/no-inline-assembly
+        assembly {
+        // Copy the returned data.
+        returndatacopy(0, 0, returndatasize)
+        return(0, returndatasize)
+        }
     }
 
   /**

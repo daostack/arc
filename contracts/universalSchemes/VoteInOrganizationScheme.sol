@@ -8,7 +8,7 @@ import "./UniversalScheme.sol";
  * @title VoteInOrganizationScheme.
  * @dev A scheme to allow an organization to vote in a proposal.
  */
-contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, ActionInterface {
+contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface {
     event NewVoteProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -141,27 +141,16 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface, Actio
             }
 
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            bytes32[] memory tmp = new bytes32[](3);
-            tmp[0] = bytes32(address(proposal.originalIntVote));
-            tmp[1] = proposal.originalProposalId;
-            tmp[2] = bytes32(param);
-            retVal = controller.genericAction(tmp,_avatar);
+            if (controller.genericCall(
+                     address(proposal.originalIntVote),
+                     abi.encodeWithSignature("vote(bytes32,uint256)",
+                     proposal.originalProposalId,
+                     uint(param)),
+                     _avatar) == bytes32(0)) {
+                retVal = false;
+            }
           }
         emit ProposalExecuted(_avatar, _proposalId,_param);
         return retVal;
-    }
-
-    /**
-    * @dev do the actual voting in the other organization in behalf of the organization's avatar.
-    * @param _params array represent the voting .
-    *        _params[0] - the address of the voting machine.
-    *        _params[1] - the proposalId.
-    *        _params[2] - the voting machine params.
-    * @return bool which indicate success.
-    */
-    function action(bytes32[] _params) public returns(bool) {
-        IntVoteInterface intVote = IntVoteInterface(address(_params[0]));
-        emit VoteOnBehalf(_params);
-        return intVote.vote(_params[1], uint(_params[2]));
     }
 }

@@ -76,6 +76,8 @@ contract UController is ControllerInterface {
     event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event UpgradeController(address indexed _oldController,address _newController,address _avatar);
+    event GenericCall(address indexed _contract,bytes _data,address indexed _avatar);
+
     event AddGlobalConstraint(
         address indexed _globalConstraint,
         bytes32 _params,
@@ -129,7 +131,7 @@ contract UController is ControllerInterface {
         _;
     }
 
-    modifier onlyDelegateScheme(address _avatar) {
+    modifier onlyGenericCallScheme(address _avatar) {
         require(organizations[_avatar].schemes[msg.sender].permissions&bytes4(16) == bytes4(16));
         _;
     }
@@ -391,21 +393,25 @@ contract UController is ControllerInterface {
     }
 
     /**
-    * @dev do a generic delegate call to the contract which called us.
-    * This function use delegatecall and might expose the organization to security
-    * risk. Use this function only if you really knows what you are doing.
-    * @param _params the params for the call.
-    * @param _avatar the organization avatar.
-    * @return bool which represents success
+    * @dev perform a generic call to an arbitrary contract
+    * @param _contract  the contract's address to call
+    * @param _data ABI-encoded contract call to call `_contract` address.
+    * @return bytes32  - the return value of the called _contract's function.
     */
-    function genericAction(bytes32[] _params,address _avatar)
+    function genericCall(address _contract,bytes _data,address _avatar)
     external
-    onlyDelegateScheme(_avatar)
-    onlySubjectToConstraint("genericAction",_avatar)
-    returns(bool)
+    onlyGenericCallScheme(_avatar)
+    onlySubjectToConstraint("genericCall",_avatar)
+    returns (bytes32)
     {
-        emit GenericAction(msg.sender, _params);
-        return (Avatar(_avatar)).genericAction(msg.sender, _params);
+        emit GenericCall(_contract, _data,_avatar);
+        (Avatar(_avatar)).genericCall(_contract, _data);
+        // solium-disable-next-line security/no-inline-assembly
+        assembly {
+        // Copy the returned data.
+        returndatacopy(0, 0, returndatasize)
+        return(0, returndatasize)
+        }
     }
 
   /**

@@ -44,7 +44,8 @@ contract('OrderStatisticTree', function () {
     var tx,val;
     var maxGasUsed = 0;
     var values = {};
-    var elementNumber = 100;
+    var elementNumber = 50;
+    
     for (var i = 0;i<elementNumber;i++) {
       values[i] = await getRandomInt(500);
       tx = await orderStatisticTree.insert(values[i]);
