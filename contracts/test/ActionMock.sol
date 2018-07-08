@@ -12,4 +12,9 @@ contract ActionMock {
         return _a*2;
     }
 
+    function test2(address _addr) public view returns(bool) {
+        require(msg.sender == _addr,"the caller must be equal to _addr");
+        return true;
+    }
+
 }

@@ -5,34 +5,34 @@ import "./UniversalScheme.sol";
 
 
 /**
- * @title VoteInOrganizationScheme.
- * @dev A scheme to allow an organization to vote in a proposal.
+ * @title GenericScheme.
+ * @dev  A scheme for proposing and executing calls to an arbitrary function
+ * on a specific contract on behalf of the organization avatar.
  */
 contract GenericScheme is UniversalScheme, ExecutableInterface {
-    event NewVoteProposal(
+    event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        bytes   callData,
-        address callAddress
+        bytes   callData
     );
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
     event VoteOnBehalf(bytes32[] _params);
 
     // Details of a voting proposal:
-    struct VoteProposal {
+    struct CallProposal {
         bytes callData;
-        address callAddress;
         bool exist;
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
-    mapping(address=>mapping(bytes32=>VoteProposal)) public organizationsProposals;
+    mapping(address=>mapping(bytes32=>CallProposal)) public organizationsProposals;
 
 
     struct Parameters {
         IntVoteInterface intVote;
         bytes32 voteParams;
+        address contractToCall;
     }
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
@@ -46,12 +46,14 @@ contract GenericScheme is UniversalScheme, ExecutableInterface {
     */
     function setParameters(
         bytes32 _voteParams,
-        IntVoteInterface _intVote
+        IntVoteInterface _intVote,
+        address _contractToCall
     ) public returns(bytes32)
     {
-        bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
+        bytes32 paramsHash = getParametersHash(_voteParams, _intVote,_contractToCall);
         parameters[paramsHash].voteParams = _voteParams;
         parameters[paramsHash].intVote = _intVote;
+        parameters[paramsHash].contractToCall = _contractToCall;
         return paramsHash;
     }
 
@@ -63,19 +65,21 @@ contract GenericScheme is UniversalScheme, ExecutableInterface {
     */
     function getParametersHash(
         bytes32 _voteParams,
-        IntVoteInterface _intVote
+        IntVoteInterface _intVote,
+        address _contractToCall
     ) public pure returns(bytes32)
     {
-        return keccak256(abi.encodePacked(_voteParams, _intVote));
+        return keccak256(abi.encodePacked(_voteParams, _intVote,_contractToCall));
     }
 
     /**
-    * @dev propose to vote in other organization
-    *      The function trigger NewVoteProposal event
+    * @dev propose to call on behalf of the _avatar
+    *      The function trigger NewCallProposal event
+    * @param _callData - The abi encode data for the call
     * @param _avatar avatar of the organization
     * @return an id which represents the proposal
     */
-    function proposeVote(Avatar _avatar, bytes _callData,address _callAddress)
+    function proposeCall(Avatar _avatar, bytes _callData)
     public
     returns(bytes32)
     {
@@ -84,17 +88,11 @@ contract GenericScheme is UniversalScheme, ExecutableInterface {
 
         bytes32 proposalId = intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
 
-        organizationsProposals[_avatar][proposalId] = VoteProposal({
+        organizationsProposals[_avatar][proposalId] = CallProposal({
             callData: _callData,
-            callAddress : _callAddress,
             exist: true
         });
-        emit NewVoteProposal(
-            _avatar,
-            proposalId,
-            _callData,
-            _callAddress
-        );
+        emit NewCallProposal(_avatar,proposalId,_callData);
         return proposalId;
     }
 
@@ -107,22 +105,21 @@ contract GenericScheme is UniversalScheme, ExecutableInterface {
     * @return bool which indicate success.
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
-        // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        Parameters memory params = parameters[getParametersFromController(Avatar(_avatar))];
+        require(params.intVote == msg.sender,"the caller must be the voting machine");
 
         // Save proposal to memory and delete from storage:
-        VoteProposal memory proposal = organizationsProposals[_avatar][_proposalId];
-        require(proposal.exist);
+        CallProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        require(proposal.exist,"must be a live proposal");
         delete organizationsProposals[_avatar][_proposalId];
         emit ProposalDeleted(_avatar, _proposalId);
         bool retVal = true;
         // If no decision do nothing:
         if (_param != 0) {
         // Define controller and get the params:
-
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             if (controller.genericCall(
-                     proposal.callAddress,
+                     params.contractToCall,
                      proposal.callData,
                      _avatar) == bytes32(0)) {
                 retVal = false;
@@ -131,4 +128,16 @@ contract GenericScheme is UniversalScheme, ExecutableInterface {
         emit ProposalExecuted(_avatar, _proposalId,_param);
         return retVal;
     }
+
+    /**
+    * @dev getContractToCall return the contract this scheme is calling
+    * @param _avatar address of the organization's avatar
+    * @return address the address of the contract this scheme is calling to
+    * on behalf of the avatar
+    */
+    function getContractToCall(address _avatar) public view returns(address) {
+        return parameters[getParametersFromController(Avatar(_avatar))].contractToCall;
+    }
+
+
 }
