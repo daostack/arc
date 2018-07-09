@@ -9,7 +9,7 @@ import { RealMath } from "../libs/RealMath.sol";
  * @title A scheme for locking ETH for reputation
  */
 
-contract LockingEthForReputation {
+contract LockingEth4Reputation {
     using SafeMath for uint;
     using RealMath for int216;
     using RealMath for int256;
