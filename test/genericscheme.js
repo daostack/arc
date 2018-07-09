@@ -72,18 +72,18 @@ contract('genericScheme', function(accounts) {
   before(function() {
     helpers.etherForEveryone();
   });
-   it("setParameters", async function() {
-     var genericScheme = await GenericScheme.new();
-     var absoluteVote = await AbsoluteVote.new();
-     await genericScheme.setParameters("0x1234",absoluteVote.address,accounts[0]);
-     var paramHash = await genericScheme.getParametersHash("0x1234",absoluteVote.address,accounts[0]);
-     var parameters = await genericScheme.parameters(paramHash);
-     assert.equal(parameters[0],absoluteVote.address);
-     assert.equal(parameters[2],accounts[0]);
-     });
+    it("setParameters", async function() {
+       var genericScheme = await GenericScheme.new();
+       var absoluteVote = await AbsoluteVote.new();
+       await genericScheme.setParameters("0x1234",absoluteVote.address,accounts[0]);
+       var paramHash = await genericScheme.getParametersHash("0x1234",absoluteVote.address,accounts[0]);
+       var parameters = await genericScheme.parameters(paramHash);
+       assert.equal(parameters[0],absoluteVote.address);
+       assert.equal(parameters[2],accounts[0]);
+    });
 
 
-     it("proposeCall log", async function() {
+    it("proposeCall log", async function() {
 
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,actionMock.address);
@@ -93,58 +93,58 @@ contract('genericScheme', function(accounts) {
                                                            callData);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "NewCallProposal");
-      });
+    });
 
-           it("execute proposeCall -no decision - proposal data delete", async function() {
-             var actionMock =await ActionMock.new();
-             var testSetup = await setup(accounts,actionMock.address);
-             var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-             var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
-             var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-             await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
-             //check organizationsProposals after execution
-             var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-             assert.equal(organizationProposal[0],"0x");
-            });
+    it("execute proposeCall -no decision - proposal data delete", async function() {
+       var actionMock =await ActionMock.new();
+       var testSetup = await setup(accounts,actionMock.address);
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
+       //check organizationsProposals after execution
+       var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
+       assert.equal(organizationProposal[0],"0x");
+    });
 
-            it("execute proposeVote -positive decision - proposal data delete", async function() {
-              var actionMock =await ActionMock.new();
-              var testSetup = await setup(accounts,actionMock.address);
-              var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-              var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
-              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-              var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-              assert.equal(organizationProposal[0],callData);
-              await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-              //check organizationsProposals after execution
-              organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-              assert.equal(organizationProposal[0],"0x");//new contract address
-             });
+    it("execute proposeVote -positive decision - proposal data delete", async function() {
+        var actionMock =await ActionMock.new();
+        var testSetup = await setup(accounts,actionMock.address);
+        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+        var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+        var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
+        assert.equal(organizationProposal[0],callData);
+        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+        //check organizationsProposals after execution
+        organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
+        assert.equal(organizationProposal[0],"0x");//new contract address
+     });
 
-             it("execute proposeVote -positive decision - check action", async function() {
-               var actionMock =await ActionMock.new();
-               var testSetup = await setup(accounts,actionMock.address);
-               var callData = await createCallToActionMock(0,actionMock);
-               var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
-               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-               try {
-                 await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-                 assert(false, "should revert in actionMock because msg.sender is not the _addr param at actionMock");
-               } catch(error) {
-                 helpers.assertVMException(error);
-               }
-             });
+    it("execute proposeVote -positive decision - check action", async function() {
+       var actionMock =await ActionMock.new();
+       var testSetup = await setup(accounts,actionMock.address);
+       var callData = await createCallToActionMock(0,actionMock);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       try {
+         await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+         assert(false, "should revert in actionMock because msg.sender is not the _addr param at actionMock");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
+    });
 
-             it("execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
-               var actionMock =await ActionMock.new();
-               var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
-               var testSetup = await setup(accounts,actionMock.address,0,true,standardTokenMock.address);
+    it("execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
+       var actionMock =await ActionMock.new();
+       var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,actionMock.address,0,true,standardTokenMock.address);
 
-               var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-               var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
-               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-               tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[2]});
-               assert.equal(tx.logs.length, 3);
-               assert.equal(tx.logs[1].event, "ExecuteProposal");
-             });
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[2]});
+       assert.equal(tx.logs.length, 3);
+       assert.equal(tx.logs[1].event, "ExecuteProposal");
+    });
 });

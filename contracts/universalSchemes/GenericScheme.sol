@@ -17,7 +17,6 @@ contract GenericScheme is UniversalScheme, ExecutableInterface {
     );
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
-    event VoteOnBehalf(bytes32[] _params);
 
     // Details of a voting proposal:
     struct CallProposal {
