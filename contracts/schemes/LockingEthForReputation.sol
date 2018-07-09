@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "../VotingMachines/IntVoteInterface.sol";
-import "./UniversalScheme.sol";
+import "../controller/ControllerInterface.sol";
 import { RealMath } from "../libs/RealMath.sol";
 
 
@@ -9,7 +9,7 @@ import { RealMath } from "../libs/RealMath.sol";
  * @title A scheme for locking ETH for reputation
  */
 
-contract LockingEthForReputation is UniversalScheme {
+contract LockingEthForReputation {
     using SafeMath for uint;
     using RealMath for int216;
     using RealMath for int256;
@@ -33,34 +33,29 @@ contract LockingEthForReputation is UniversalScheme {
     uint public totalLocked;
     uint public totalLockedLeft;
     uint public totalScore;
-    uint public lockingsCnt; // Total number of locking
-    uint public repAllocation;
-    uint public repAllocationLeft;
+    uint public lockingsCounter; // Total number of lockings
+    uint public reputationReward;
+    uint public reputationRewardLeft;
     uint public lockingEndTime;
     uint public maxLockingPeriod;
 
-    constructor(Avatar _avatar,uint _repAllocation,uint _lockingEndTime,uint _maxLockingPeriod) public
+    /**
+     * @dev constructor
+     * @param _avatar the avatar to mint reputation from
+     * @param _reputationReward the total reputation this contract will reward
+     *        for eth locking
+     * @param _lockingEndTime the locking end time.
+     *        redeem reputation can be done after this period.
+     *        locking is disable after this time.
+     * @param _maxLockingPeriod maximum locking period allowed.
+     */
+    constructor(Avatar _avatar,uint _reputationReward,uint _lockingEndTime,uint _maxLockingPeriod) public
     {
-        repAllocation = _repAllocation;
-        repAllocationLeft = repAllocation;
+        reputationReward = _reputationReward;
+        reputationRewardLeft = reputationReward;
         lockingEndTime = _lockingEndTime;
         maxLockingPeriod = _maxLockingPeriod;
         avatar = _avatar;
-    }
-
-    /**
-    * @dev enables an locking ethers
-    */
-    function() public payable {
-        _lock();
-    }
-
-    /**
-     * @dev locking function
-     * @return lockingId
-     */
-    function lock() external payable returns(bytes32) {
-        return _lock();
     }
 
     /**
@@ -70,12 +65,15 @@ contract LockingEthForReputation is UniversalScheme {
      * @return bool
      */
     function release(address _beneficiary,bytes32 _lockingId) public returns(bool) {
-        Locker memory locker = lockers[_beneficiary][_lockingId];
+        Locker storage locker = lockers[_beneficiary][_lockingId];
+        require(locker.amount > 0,"amount should be > 0");
+        uint amount = locker.amount;
+        locker.amount = 0;
         // solium-disable-next-line security/no-block-members
         require(block.timestamp >= locker.releaseTime,"check the lock period pass");
-        _beneficiary.transfer(locker.amount);
-        totalLockedLeft = totalLockedLeft.sub(locker.amount);
-        emit Release(_lockingId,_beneficiary,locker.amount);
+        _beneficiary.transfer(amount);
+        totalLockedLeft = totalLockedLeft.sub(amount);
+        emit Release(_lockingId,_beneficiary,amount);
         return true;
     }
 
@@ -88,11 +86,14 @@ contract LockingEthForReputation is UniversalScheme {
     function redeem(address _beneficiary,bytes32 _lockingId) public returns(bool) {
         // solium-disable-next-line security/no-block-members
         require(block.timestamp >= lockingEndTime,"check the lock period pass");
-        int216 repRelation = int216(scores[_beneficiary]).toReal().mul(int216(repAllocation).toReal());
+        require(scores[_beneficiary] > 0,"score should be > 0");
+        uint score = scores[_beneficiary];
+        scores[_beneficiary] = 0;
+        int256 repRelation = int216(score).toReal().mul(int216(reputationReward).toReal());
         uint reputation = uint256(repRelation.div(int216(totalScore).toReal()).fromReal());
         require(ControllerInterface(avatar.owner()).mintReputation(reputation,_beneficiary,avatar));
         //check that the reputation is sum zero
-        repAllocationLeft = repAllocationLeft.sub(reputation);
+        reputationRewardLeft = reputationRewardLeft.sub(reputation);
         emit Redeem(_lockingId,_beneficiary,reputation);
         return true;
     }
@@ -101,30 +102,26 @@ contract LockingEthForReputation is UniversalScheme {
      * @dev locking function
      * @return lockingId the unique Id
      */
-    function _lock() internal returns(bytes32 lockingId) {
-        uint256 period;
-        for (uint i = 0;i<msg.data.length;i++) {
-            period = period + uint(msg.data[i])*(2**(8*(msg.data.length-(i+1))));
-        }
+    function lock(uint _period) public payable returns(bytes32 lockingId) {
 
         require(msg.value > 0,"locking amount should be > 0");
-        require(period <= maxLockingPeriod,"locking period should be <= maxLockingPeriod");
+        require(_period <= maxLockingPeriod,"locking period should be <= maxLockingPeriod");
+        require(_period > 0,"locking period should be > 0");
         // solium-disable-next-line security/no-block-members
         require(now <= lockingEndTime,"lock should be within the allowed locking period");
 
-        lockingId = keccak256(abi.encodePacked(this, lockingsCnt));
-        lockingsCnt++;
+        lockingId = keccak256(abi.encodePacked(this, lockingsCounter));
+        lockingsCounter++;
 
         Locker storage locker = lockers[msg.sender][lockingId];
         locker.amount = msg.value;
         // solium-disable-next-line security/no-block-members
-        locker.releaseTime = now + period;
+        locker.releaseTime = now + _period;
         totalLocked += msg.value;
         totalLockedLeft = totalLocked;
-        scores[msg.sender] = scores[msg.sender].add(period.mul(msg.value));
+        scores[msg.sender] = scores[msg.sender].add(_period.mul(msg.value));
         totalScore = totalScore.add(scores[msg.sender]);
-      // Event:
-        emit Lock(lockingId,msg.value,period,msg.sender);
+        emit Lock(lockingId,msg.value,_period,msg.sender);
     }
 
 }
