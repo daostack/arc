@@ -5,15 +5,17 @@ const constants = require('./constants');
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 var LockingToken4Reputation = artifacts.require("./LockingToken4Reputation.sol");
 
-const setup = async function (accounts,_repAllocation = 100,_lockingEndTime = 3000,_maxLockingPeriod = 6000) {
+const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 0,_lockingEndTime = 3000,_maxLockingPeriod = 6000) {
    var testSetup = new helpers.TestSetup();
    testSetup.lockingToken = await StandardTokenMock.new(accounts[0], web3.toWei('100', "ether"));
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.lockingEndTime = await web3.eth.getBlock("latest").timestamp + _lockingEndTime;
+   testSetup.lockingStartTime = await web3.eth.getBlock("latest").timestamp + _lockingStartTime;
    testSetup.lockingToken4Reputation = await LockingToken4Reputation.new(testSetup.org.avatar.address,
                                                                        _repAllocation,
+                                                                      testSetup.lockingStartTime,
                                                                       testSetup.lockingEndTime,
                                                                       _maxLockingPeriod,
                                                                       testSetup.lockingToken.address);
@@ -61,6 +63,16 @@ contract('LockingToken4Reputation', accounts => {
       try {
         await testSetup.lockingToken4Reputation.lock(web3.toWei('1', "ether"),100);
         assert(false, "lock after _lockingEndTime should revert");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("lock before start should  revert", async () => {
+      let testSetup = await setup(accounts,100,100);
+      try {
+        await testSetup.lockingToken4Reputation.lock(web3.toWei('1', "ether"),0);
+        assert(false, "lock before start should  revert");
       } catch(error) {
         helpers.assertVMException(error);
       }

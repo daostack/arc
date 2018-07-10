@@ -5,13 +5,14 @@ const constants = require('./constants');
 
 var LockingEth4Reputation = artifacts.require("./LockingEth4Reputation.sol");
 
-const setup = async function (accounts,_repAllocation = 100,_lockingEndTime = 3000,_maxLockingPeriod = 6000) {
+const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 0,_lockingEndTime = 3000,_maxLockingPeriod = 6000) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.lockingEndTime = await web3.eth.getBlock("latest").timestamp + _lockingEndTime;
-   testSetup.lockingEth4Reputation = await LockingEth4Reputation.new(testSetup.org.avatar.address,_repAllocation,testSetup.lockingEndTime,_maxLockingPeriod);
+   testSetup.lockingStartTime = await web3.eth.getBlock("latest").timestamp + _lockingStartTime;
+   testSetup.lockingEth4Reputation = await LockingEth4Reputation.new(testSetup.org.avatar.address,_repAllocation,testSetup.lockingStartTime,testSetup.lockingEndTime,_maxLockingPeriod);
 
    var permissions = "0x00000010";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.lockingEth4Reputation.address],[0],[permissions]);
@@ -43,6 +44,16 @@ contract('LockingEth4Reputation', accounts => {
       try {
         await testSetup.lockingEth4Reputation.lock(100,{value:web3.toWei('0', "ether")});
         assert(false, "lock with value == 0 should revert");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("lock before start should revert", async () => {
+      let testSetup = await setup(accounts,100,1000);
+      try {
+        await testSetup.lockingEth4Reputation.lock(100,{value:web3.toWei('1', "ether")});
+        assert(false, "lock before start should  revert");
       } catch(error) {
         helpers.assertVMException(error);
       }

@@ -37,24 +37,32 @@ contract Locking4Reputation {
     uint public reputationRewardLeft;
     uint public lockingEndTime;
     uint public maxLockingPeriod;
+    uint public lockingStartTime;
 
     /**
      * @dev constructor
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for eth/token locking
+     * @param _lockingStartTime the locking start time.
      * @param _lockingEndTime the locking end time.
      *        redeem reputation can be done after this period.
      *        locking is disable after this time.
      * @param _maxLockingPeriod maximum locking period allowed.
      */
-    constructor(Avatar _avatar,uint _reputationReward,uint _lockingEndTime,uint _maxLockingPeriod) public
+    constructor(Avatar _avatar,
+                uint _reputationReward,
+                uint _lockingStartTime,
+                uint _lockingEndTime,
+                uint _maxLockingPeriod)
+    public
     {
         reputationReward = _reputationReward;
         reputationRewardLeft = reputationReward;
         lockingEndTime = _lockingEndTime;
         maxLockingPeriod = _maxLockingPeriod;
         avatar = _avatar;
+        lockingStartTime = _lockingStartTime;
     }
 
     /**
@@ -71,9 +79,9 @@ contract Locking4Reputation {
         scores[_beneficiary] = 0;
         int256 repRelation = int216(score).toReal().mul(int216(reputationReward).toReal());
         uint reputation = uint256(repRelation.div(int216(totalScore).toReal()).fromReal());
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation,_beneficiary,avatar));
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
+        require(ControllerInterface(avatar.owner()).mintReputation(reputation,_beneficiary,avatar));
         emit Redeem(_lockingId,_beneficiary,reputation);
         return true;
     }
@@ -96,7 +104,7 @@ contract Locking4Reputation {
     }
 
     /**
-     * @dev redeem reputation function
+     * @dev lock function
      * @param _amount the amount to lock
      * @param _period the locking period
      * @param _locker the locker
@@ -109,6 +117,8 @@ contract Locking4Reputation {
         require(_period > 0,"locking period should be > 0");
         // solium-disable-next-line security/no-block-members
         require(now <= lockingEndTime,"lock should be within the allowed locking period");
+        // solium-disable-next-line security/no-block-members
+        require(now >= lockingStartTime,"lock should start after lockingStartTime");
 
         lockingId = keccak256(abi.encodePacked(this, lockingsCounter));
         lockingsCounter++;
