@@ -57,6 +57,7 @@ contract Locking4Reputation {
                 uint _maxLockingPeriod)
     public
     {
+        require(_lockingEndTime > _lockingStartTime);
         reputationReward = _reputationReward;
         reputationRewardLeft = reputationReward;
         lockingEndTime = _lockingEndTime;
