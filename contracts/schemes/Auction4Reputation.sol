@@ -58,7 +58,7 @@ contract Auction4Reputation {
     public
     {
         require(_numberOfAuctions > 0,"number of auctions cannot be zero");
-        require(_auctionsEndTime > _auctionsStartTime);
+        require(_auctionsEndTime > _auctionsStartTime,"_auctionsEndTime should be greater than _auctionsStartTime");
         token = _token;
         avatar = _avatar;
         reputationReward = _reputationReward;
@@ -87,7 +87,7 @@ contract Auction4Reputation {
         uint reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar));
+        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar),"mint reputation should success");
         emit Redeem(_auctionId, _beneficiary, reputation);
         return true;
     }
