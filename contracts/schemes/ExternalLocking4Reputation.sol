@@ -53,27 +53,17 @@ contract ExternalLocking4Reputation is Locking4Reputation {
     function lock() public returns(bytes32) {
         require(externalLockers[msg.sender] == false,"locking twice is not allowed");
         externalLockers[msg.sender] = true;
-        uint lockedAmount = getLockedBalance();
-        return super._lock(lockedAmount,1,msg.sender);
-    }
-
-    /**
-     * @dev getLockedBalance for the msg.sender
-     * @return locked balance
-     */
-    function getLockedBalance() public returns(uint) {
         // solium-disable-next-line security/no-low-level-calls
         bool result = externalLockingContract.call(abi.encodeWithSignature(getBalanceFuncSignature,msg.sender));
+        uint lockedAmount;
         // solium-disable-next-line security/no-inline-assembly
         assembly {
-        // Copy the returned data.
-        returndatacopy(0, 0, returndatasize)
-
-        switch result
-        // call returns 0 on error.
-        case 0 { revert(0, returndatasize) }
-        default { return(0, returndatasize) }
+          returndatacopy(0, 0, returndatasize)
+          switch result
+          // call returns 0 on error.
+          case 0 { revert(0, returndatasize) }
+          default { lockedAmount := mload(0) }
         }
+        return super._lock(lockedAmount,1,msg.sender);
     }
-
 }
