@@ -20,7 +20,7 @@ const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 
                                                                       _maxLockingPeriod,
                                                                       testSetup.lockingToken.address);
 
-   var permissions = "0x00000010";
+   var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.lockingToken4Reputation.address],[0],[permissions]);
    await testSetup.lockingToken.approve(testSetup.lockingToken4Reputation.address,web3.toWei('100', "ether"));
    return testSetup;

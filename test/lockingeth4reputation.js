@@ -14,7 +14,7 @@ const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 
    testSetup.lockingStartTime = await web3.eth.getBlock("latest").timestamp + _lockingStartTime;
    testSetup.lockingEth4Reputation = await LockingEth4Reputation.new(testSetup.org.avatar.address,_repAllocation,testSetup.lockingStartTime,testSetup.lockingEndTime,_maxLockingPeriod);
 
-   var permissions = "0x00000010";
+   var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.lockingEth4Reputation.address],[0],[permissions]);
    return testSetup;
 };
