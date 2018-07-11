@@ -47,7 +47,6 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-react": "^7.6.1",
     "eslint-plugin-standard": "^3.0.1",
-    "ganache-cli": "^6.1.0",
     "pm2": "^2.9.3",
     "promisify": "^0.0.3",
     "pug": "^2.0.0-rc.4",
@@ -55,7 +54,7 @@
     "run-with-ganache": "^0.1.1",
     "solc": "^0.4.24",
     "solc-cli": "^0.3.0",
-    "solium": "^1.1.7",
+    "solium": "^1.1.8",
     "truffle": "^4.1.11",
     "truffle-contract": "^3.0.5",
     "uint32": "^0.2.1",
@@ -85,6 +84,7 @@
   "homepage": "https://daostack.io",
   "dependencies": {
     "ethereumjs-abi": "^0.6.5",
+    "ganache-cli": "^6.1.6",
     "openzeppelin-solidity": "1.10.0"
   }
 }

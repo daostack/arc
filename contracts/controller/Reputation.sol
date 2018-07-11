@@ -58,8 +58,8 @@ contract Reputation is Ownable {
     * @return True if the reputation are burned correctly
     */
     function burn(address _from, uint _amount)
-    onlyOwner
     public
+    onlyOwner
     returns (bool)
     {
         uint amountMinted = _amount;

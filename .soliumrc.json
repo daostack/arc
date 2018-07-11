@@ -15,6 +15,9 @@
     "arg-overflow": [
       "warning",
       5
+    ],
+    "error-reason": [
+      "off"
     ]
   }
 }
