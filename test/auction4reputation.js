@@ -36,6 +36,7 @@ contract('Auction4Reputation', accounts => {
       assert.equal(await testSetup.auction4Reputation.token(),testSetup.biddingToken.address);
       assert.equal(await testSetup.auction4Reputation.numberOfAuctions(),3);
       assert.equal(await testSetup.auction4Reputation.wallet(),testSetup.org.avatar.address);
+      assert.equal(await testSetup.auction4Reputation.auctionPeriod(),(testSetup.auctionsEndTime-testSetup.auctionsStartTime)/3);
     });
 
     it("bid", async () => {
@@ -138,6 +139,15 @@ contract('Auction4Reputation', accounts => {
         tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
         var id3 = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(3000);
+        var totalBid1 = await testSetup.auction4Reputation.auctions(id1);
+        var totalBid2 = await testSetup.auction4Reputation.auctions(id2);
+        var totalBid3 = await testSetup.auction4Reputation.auctions(id3);
+        assert.equal(totalBid1.toNumber(),totalBid2.toNumber());
+        assert.equal(totalBid1.toNumber(),totalBid3.toNumber());
+        assert.equal(totalBid1.toNumber(),web3.toWei('1', "ether"));
+        assert.equal(id1,0);
+        assert.equal(id2,1);
+        assert.equal(id3,2);
         await testSetup.auction4Reputation.redeem(accounts[0],id1);
         await testSetup.auction4Reputation.redeem(accounts[0],id2);
         await testSetup.auction4Reputation.redeem(accounts[0],id3);
@@ -153,6 +163,5 @@ contract('Auction4Reputation', accounts => {
         assert.equal(id1.toNumber(),id2.toNumber());
         var bid = await testSetup.auction4Reputation.getBid(accounts[0],id1);
         assert.equal(bid,web3.toWei('2', "ether"));
-
     });
 });
