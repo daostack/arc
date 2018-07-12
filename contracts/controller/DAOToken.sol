@@ -36,7 +36,7 @@ contract DAOToken is ERC827Token,MintableToken,BurnableToken {
      * @param _amount The amount of tokens to mint.
      * @return A boolean that indicates if the operation was successful.
      */
-    function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
+    function mint(address _to, uint256 _amount) public onlyOwner canMint returns (bool) {
         if (cap > 0)
             require(totalSupply_.add(_amount) <= cap);
         return super.mint(_to, _amount);

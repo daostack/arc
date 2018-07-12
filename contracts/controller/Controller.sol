@@ -238,7 +238,7 @@ contract Controller is ControllerInterface {
      * @dev unregister the caller's scheme
      * @return bool which represents a success
      */
-    function unregisterSelf(address _avatar) isAvatarValid(_avatar) external returns(bool) {
+    function unregisterSelf(address _avatar) external isAvatarValid(_avatar) returns(bool) {
         if (_isSchemeRegistered(msg.sender,_avatar) == false) {
             return false;
         }
@@ -247,15 +247,15 @@ contract Controller is ControllerInterface {
         return true;
     }
 
-    function isSchemeRegistered(address _scheme,address _avatar) isAvatarValid(_avatar) external view returns(bool) {
+    function isSchemeRegistered(address _scheme,address _avatar) external isAvatarValid(_avatar) view returns(bool) {
         return _isSchemeRegistered(_scheme,_avatar);
     }
 
-    function getSchemeParameters(address _scheme,address _avatar) isAvatarValid(_avatar) external view returns(bytes32) {
+    function getSchemeParameters(address _scheme,address _avatar) external isAvatarValid(_avatar) view returns(bytes32) {
         return schemes[_scheme].paramsHash;
     }
 
-    function getSchemePermissions(address _scheme,address _avatar) isAvatarValid(_avatar) external view returns(bytes4) {
+    function getSchemePermissions(address _scheme,address _avatar) external isAvatarValid(_avatar) view returns(bytes4) {
         return schemes[_scheme].permissions;
     }
 
@@ -280,8 +280,8 @@ contract Controller is ControllerInterface {
     * @return uint globalConstraintsPost count.
     */
     function globalConstraintsCount(address _avatar)
-        isAvatarValid(_avatar)
         external
+        isAvatarValid(_avatar)
         view
         returns(uint,uint)
         {
@@ -289,8 +289,8 @@ contract Controller is ControllerInterface {
     }
 
     function isGlobalConstraintRegistered(address _globalConstraint,address _avatar)
-        isAvatarValid(_avatar)
         external
+        isAvatarValid(_avatar)
         view
         returns(bool)
         {
@@ -530,11 +530,11 @@ contract Controller is ControllerInterface {
      * @param _avatar the organization avatar.
      * @return organization native reputation
      */
-    function getNativeReputation(address _avatar) isAvatarValid(_avatar) external view returns(address) {
+    function getNativeReputation(address _avatar) external isAvatarValid(_avatar) view returns(address) {
         return address(nativeReputation);
     }
 
-    function _isSchemeRegistered(address _scheme,address _avatar) isAvatarValid(_avatar) private view returns(bool) {
+    function _isSchemeRegistered(address _scheme,address _avatar) private isAvatarValid(_avatar) view returns(bool) {
         return (schemes[_scheme].permissions&bytes4(1) != bytes4(0));
     }
 }

@@ -85,7 +85,7 @@ library OrderStatisticTree {
             n.height = heightRight+1;
     }
 
-    function balanceFactor(Tree storage _tree,uint _value) view private returns (int bf) {
+    function balanceFactor(Tree storage _tree,uint _value) private view returns (int bf) {
         Node storage n = _tree.nodes[_value];
         return int(_tree.nodes[n.children[false]].height)-int(_tree.nodes[n.children[true]].height);
     }
@@ -204,7 +204,7 @@ library OrderStatisticTree {
         }
     }
 
-    function rightmostLeaf(Tree storage _tree,uint _value) view private returns (uint leaf) {
+    function rightmostLeaf(Tree storage _tree,uint _value) private view returns (uint leaf) {
         uint child = _tree.nodes[_value].children[true];
         if (child!=0) {
             return rightmostLeaf(_tree,child);
