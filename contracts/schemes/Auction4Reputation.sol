@@ -58,8 +58,10 @@ contract Auction4Reputation {
                  address _wallet)
     public
     {
-        require(_numberOfAuctions > 0,"number of auctions cannot be zero");
-        require(_auctionsEndTime > _auctionsStartTime,"_auctionsEndTime should be greater than _auctionsStartTime");
+        //number of auctions cannot be zero
+        //auctionsEndTime should be greater than auctionsStartTime
+        auctionPeriod = (_auctionsEndTime.sub(_auctionsStartTime)).div(_numberOfAuctions);
+        require(auctionPeriod > 0,"auctionPeriod should be > 0");
         token = _token;
         avatar = _avatar;
         reputationReward = _reputationReward;
@@ -68,7 +70,6 @@ contract Auction4Reputation {
         numberOfAuctions = _numberOfAuctions;
         wallet = _wallet;
         auctionReputationReward = reputationReward/numberOfAuctions;
-        auctionPeriod = (auctionsEndTime - auctionsStartTime)/numberOfAuctions;
         reputationRewardLeft = reputationReward;
     }
 
@@ -109,7 +110,7 @@ contract Auction4Reputation {
         // solium-disable-next-line security/no-block-members
         auctionId = (now - auctionsStartTime)/auctionPeriod;
         Auction storage auction = auctions[auctionId];
-        auction.totalBid += _amount;
+        auction.totalBid = auction.totalBid.add(_amount);
         auction.bids[msg.sender] = auction.bids[msg.sender].add(_amount);
         emit Bid(auctionId, _amount, msg.sender);
     }

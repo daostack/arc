@@ -39,6 +39,51 @@ contract('Auction4Reputation', accounts => {
       assert.equal(await testSetup.auction4Reputation.auctionPeriod(),(testSetup.auctionsEndTime-testSetup.auctionsStartTime)/3);
     });
 
+    it("constructor numberOfAuctions = 0  is not allowed", async () => {
+      try {
+        await Auction4Reputation.new(accounts[0],
+                                     300,
+                                     0,
+                                     3000,
+                                     0,
+                                    accounts[0],
+                                    accounts[0]);
+        assert(false, "numberOfAuctions = 0  is not allowed");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("constructor auctionsEndTime = auctionsStartTime is not allowed", async () => {
+      try {
+        await Auction4Reputation.new(accounts[0],
+                                     300,
+                                     300,
+                                     300,
+                                     1,
+                                    accounts[0],
+                                    accounts[0]);
+        assert(false, "auctionsEndTime = auctionsStartTime is not allowed");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("constructor auctionsEndTime < auctionsStartTime is not allowed", async () => {
+      try {
+        await Auction4Reputation.new(accounts[0],
+                                     300,
+                                     200,
+                                     100,
+                                     1,
+                                    accounts[0],
+                                    accounts[0]);
+        assert(false, "auctionsEndTime < auctionsStartTime is not allowed");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
     it("bid", async () => {
       let testSetup = await setup(accounts);
       var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
@@ -48,6 +93,8 @@ contract('Auction4Reputation', accounts => {
       assert.equal(tx.logs[0].args._auctionId,id);
       assert.equal(tx.logs[0].args._amount,web3.toWei('1', "ether"));
       assert.equal(tx.logs[0].args._bidder,accounts[0]);
+      //test the tokens moved to the wallet.
+      assert.equal(await testSetup.biddingToken.balanceOf(testSetup.org.avatar.address),web3.toWei('1', "ether"));
     });
 
     it("bid with value == 0 should revert", async () => {
