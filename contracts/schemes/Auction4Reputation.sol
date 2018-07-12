@@ -33,6 +33,7 @@ contract Auction4Reputation {
     uint public auctionsStartTime;
     uint public numberOfAuctions;
     uint public auctionReputationReward;
+    uint public auctionPeriod;
     StandardToken public token;
     address public wallet;
 
@@ -66,7 +67,8 @@ contract Auction4Reputation {
         auctionsEndTime = _auctionsEndTime;
         numberOfAuctions = _numberOfAuctions;
         wallet = _wallet;
-        auctionReputationReward = reputationReward/_numberOfAuctions;
+        auctionReputationReward = reputationReward/numberOfAuctions;
+        auctionPeriod = (auctionsEndTime - auctionsStartTime)/numberOfAuctions;
         reputationRewardLeft = reputationReward;
     }
 
@@ -105,7 +107,7 @@ contract Auction4Reputation {
         require(now >= auctionsStartTime,"bidding is enable only after bidding auctionsStartTime");
         require(token.transferFrom(msg.sender, wallet, _amount),"transferFrom should success");
         // solium-disable-next-line security/no-block-members
-        auctionId = ((now - auctionsStartTime)/numberOfAuctions);
+        auctionId = (now - auctionsStartTime)/auctionPeriod;
         Auction storage auction = auctions[auctionId];
         auction.totalBid += _amount;
         auction.bids[msg.sender] = auction.bids[msg.sender].add(_amount);

@@ -28,47 +28,47 @@ const setup = async function (accounts,_repAllocation = 300,_auctionsStartTime =
 };
 
 contract('Auction4Reputation', accounts => {
-    // it("constructor", async () => {
-    //   let testSetup = await setup(accounts);
-    //   assert.equal(await testSetup.auction4Reputation.reputationReward(),100);
-    //   assert.equal(await testSetup.auction4Reputation.auctionsEndTime(),testSetup.auctionsEndTime);
-    //   assert.equal(await testSetup.auction4Reputation.auctionsStartTime(),testSetup.auctionsStartTime);
-    //   assert.equal(await testSetup.auction4Reputation.token(),testSetup.biddingToken.address);
-    //   assert.equal(await testSetup.auction4Reputation.numberOfAuctions(),3);
-    //   assert.equal(await testSetup.auction4Reputation.wallet(),testSetup.org.avatar.address);
-    // });
-    //
-    // it("bid", async () => {
-    //   let testSetup = await setup(accounts);
-    //   var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
-    //   var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
-    //   assert.equal(tx.logs.length,1);
-    //   assert.equal(tx.logs[0].event,"Bid");
-    //   assert.equal(tx.logs[0].args._auctionId,id);
-    //   assert.equal(tx.logs[0].args._amount,web3.toWei('1', "ether"));
-    //   assert.equal(tx.logs[0].args._bidder,accounts[0]);
-    // });
-    //
-    // it("bid with value == 0 should revert", async () => {
-    //   let testSetup = await setup(accounts);
-    //   try {
-    //     await testSetup.auction4Reputation.bid(web3.toWei('0', "ether"));
-    //     assert(false, "bid with value == 0 should revert");
-    //   } catch(error) {
-    //     helpers.assertVMException(error);
-    //   }
-    // });
-    //
-    // it("bid after _auctionEndTime should revert", async () => {
-    //   let testSetup = await setup(accounts);
-    //   await helpers.increaseTime(3001);
-    //   try {
-    //     await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
-    //     assert(false, "bid after _auctionEndTime should revert");
-    //   } catch(error) {
-    //     helpers.assertVMException(error);
-    //   }
-    // });
+    it("constructor", async () => {
+      let testSetup = await setup(accounts);
+      assert.equal(await testSetup.auction4Reputation.reputationReward(),300);
+      assert.equal(await testSetup.auction4Reputation.auctionsEndTime(),testSetup.auctionsEndTime);
+      assert.equal(await testSetup.auction4Reputation.auctionsStartTime(),testSetup.auctionsStartTime);
+      assert.equal(await testSetup.auction4Reputation.token(),testSetup.biddingToken.address);
+      assert.equal(await testSetup.auction4Reputation.numberOfAuctions(),3);
+      assert.equal(await testSetup.auction4Reputation.wallet(),testSetup.org.avatar.address);
+    });
+
+    it("bid", async () => {
+      let testSetup = await setup(accounts);
+      var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+      var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
+      assert.equal(tx.logs.length,1);
+      assert.equal(tx.logs[0].event,"Bid");
+      assert.equal(tx.logs[0].args._auctionId,id);
+      assert.equal(tx.logs[0].args._amount,web3.toWei('1', "ether"));
+      assert.equal(tx.logs[0].args._bidder,accounts[0]);
+    });
+
+    it("bid with value == 0 should revert", async () => {
+      let testSetup = await setup(accounts);
+      try {
+        await testSetup.auction4Reputation.bid(web3.toWei('0', "ether"));
+        assert(false, "bid with value == 0 should revert");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("bid after _auctionEndTime should revert", async () => {
+      let testSetup = await setup(accounts);
+      await helpers.increaseTime(3001);
+      try {
+        await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        assert(false, "bid after _auctionEndTime should revert");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
 
     it("redeem", async () => {
         let testSetup = await setup(accounts);
