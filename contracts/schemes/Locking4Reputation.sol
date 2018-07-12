@@ -57,7 +57,7 @@ contract Locking4Reputation {
                 uint _maxLockingPeriod)
     public
     {
-        require(_lockingEndTime > _lockingStartTime);
+        require(_lockingEndTime > _lockingStartTime,"locking end time should be greater than locking start time");
         reputationReward = _reputationReward;
         reputationRewardLeft = reputationReward;
         lockingEndTime = _lockingEndTime;
@@ -82,7 +82,7 @@ contract Locking4Reputation {
         uint reputation = uint256(repRelation.div(int216(totalScore).toReal()).fromReal());
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation,_beneficiary,avatar));
+        require(ControllerInterface(avatar.owner()).mintReputation(reputation,_beneficiary,avatar),"mint reputation should success");
         emit Redeem(_lockingId,_beneficiary,reputation);
         return true;
     }
