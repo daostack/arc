@@ -118,7 +118,7 @@ contract ContributionReward is UniversalScheme {
     ) public
       returns(bytes32)
     {   
-        require(((rewards[3] > 0) || (rewards[4] == 1)),"if period length == 0 so number of period must be 1");
+        require(((_rewards[3] > 0) || (_rewards[4] == 1)),"if period length == 0 so number of period must be 1");
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
         // Pay fees for submitting the contribution:
         if (controllerParams.orgNativeTokenFee > 0) {
