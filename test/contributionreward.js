@@ -519,6 +519,29 @@ contract('ContributionReward', function(accounts) {
                      var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
                      assert.equal(reputation,1141);
                     });
+          it("execute proposeContributionReward  mint reputation with period 0 ", async function() {
+             var testSetup = await setup(accounts);
+             var reputationReward = 12;
+             var periodLength = 0;
+             var numberOfPeriods = 1;
+             var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                       "description",
+                                                                       reputationReward,
+                                                                       [0,0,0,periodLength,numberOfPeriods],
+                                                                       testSetup.standardTokenMock.address,
+                                                                       accounts[1]
+                                                                     );
+             //Vote with reputation to trigger execution
+             var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+             await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+             tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
+             assert.equal(tx.logs.length, 1);
+             assert.equal(tx.logs[0].event, "RedeemReputation");
+             assert.equal(tx.logs[0].args._amount, reputationReward);
+             var rep = await testSetup.org.reputation.reputationOf(accounts[1]);
+             assert.equal(rep.toNumber(),reputationReward);
+       });
+  
 
 
 });
