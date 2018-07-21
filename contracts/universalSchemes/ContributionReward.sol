@@ -117,8 +117,8 @@ contract ContributionReward is UniversalScheme {
         address _beneficiary
     ) public
       returns(bytes32)
-    {   
-        require(((_rewards[3] > 0) || (_rewards[4] == 1)),"if period length == 0 so number of period must be 1");
+    {
+        require(((_rewards[3] > 0) || (_rewards[4] == 1)),"periodLength equal 0 require numberOfPeriods to be 1");
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
         // Pay fees for submitting the contribution:
         if (controllerParams.orgNativeTokenFee > 0) {
@@ -360,9 +360,9 @@ contract ContributionReward is UniversalScheme {
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         if (_proposal.executionTime == 0)
             return 0;
-        // solium-disable-next-line security/no-block-members
         uint periodsFromExecution;
         if (_proposal.periodLength > 0) {
+          // solium-disable-next-line security/no-block-members
             periodsFromExecution = (now.sub(_proposal.executionTime))/(_proposal.periodLength);
         }
         uint periodsToPay;
