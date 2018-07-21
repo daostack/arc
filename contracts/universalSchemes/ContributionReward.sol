@@ -103,7 +103,7 @@ contract ContributionReward is UniversalScheme {
     *         rewards[0] - Amount of tokens requested per period
     *         rewards[1] - Amount of ETH requested per period
     *         rewards[2] - Amount of external tokens requested per period
-    *         rewards[3] - Period length
+    *         rewards[3] - Period length - if set to zero it allows immediate redeeming after execution.
     *         rewards[4] - Number of periods
     * @param _externalToken Address of external token, if reward is requested there
     * @param _beneficiary Who gets the rewards
@@ -118,7 +118,7 @@ contract ContributionReward is UniversalScheme {
     ) public
       returns(bytes32)
     {
-        require(_rewards[3] > 0); //proposal.periodLength > 0
+        require(((_rewards[3] > 0) || (_rewards[4] == 1)),"periodLength equal 0 require numberOfPeriods to be 1");
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
         // Pay fees for submitting the contribution:
         if (controllerParams.orgNativeTokenFee > 0) {
@@ -360,10 +360,13 @@ contract ContributionReward is UniversalScheme {
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         if (_proposal.executionTime == 0)
             return 0;
-        // solium-disable-next-line security/no-block-members
-        uint periodsFromExecution = (now.sub(_proposal.executionTime)).div(_proposal.periodLength);
+        uint periodsFromExecution;
+        if (_proposal.periodLength > 0) {
+          // solium-disable-next-line security/no-block-members
+            periodsFromExecution = (now.sub(_proposal.executionTime))/(_proposal.periodLength);
+        }
         uint periodsToPay;
-        if (periodsFromExecution >= _proposal.numberOfPeriods) {
+        if ((_proposal.periodLength == 0) || (periodsFromExecution >= _proposal.numberOfPeriods)) {
             periodsToPay = _proposal.numberOfPeriods.sub(_proposal.redeemedPeriods[_redeemType]);
         } else {
             periodsToPay = periodsFromExecution.sub(_proposal.redeemedPeriods[_redeemType]);
