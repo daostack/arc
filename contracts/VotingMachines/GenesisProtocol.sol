@@ -18,6 +18,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     using RealMath for int256;
     using ECRecovery for bytes32;
     using OrderStatisticTree for OrderStatisticTree.Tree;
+    using ECRecovery for address;
+    using ECRecovery for bytes32;
 
     enum ProposalState { None ,Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
     enum ExecutionState { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
@@ -202,24 +204,24 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         returns(bool)
         {
         require(stakeSignatures[_signature] == false);
-        // Builds a prefixed hash to mimic the behavior of eth_sign.
-        bytes32 prefixedHash = keccak256(
-            abi.encodePacked("\x19Ethereum Signed Message:\n32",
-               keccak256(
-                 abi.encodePacked(
-                     address(this),
-                     _proposalId,
-                     _vote,
-                     _amount,
-                    _nonce)))
-        );
-        address staker = prefixedHash.recover(_signature);
+        // Builds a prefixed hash to mimic the behavior of eth_signTypedData.
+        bytes32 prefixedHash = ECRecovery.toEthSignedMessageHash(
+            keccak256(
+                abi.encodePacked(
+                    address(this),
+                    _proposalId,
+                    _vote,
+                    _amount,
+                    _nonce)));
+        
+        address staker = ECRecovery.recover(prefixedHash, _signature);
+
         //a garbage staker address due to wrong signature will revert due to lack of approval and funds.
         require(staker!=address(0));
         stakeSignatures[_signature] = true;
         return _stake(_proposalId,_vote,_amount,staker);
     }
-
+    
   /**
    * @dev voting function
    * @param _proposalId id of the proposal
