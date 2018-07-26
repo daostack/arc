@@ -487,75 +487,107 @@ contract('ContributionReward', function(accounts) {
 
        });
 
-       it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer", async function() {
-         var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
-         var testSetup = await setup(accounts,0,true,standardTokenMock.address);
-         var reputationReward = 12;
-         var nativeTokenReward = 12;
-         var ethReward = 12;
-         var periodLength = 50;
-         var numberOfPeriods = 1;
-         //send some ether to the org avatar
-         var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-         web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-         var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                        "description",
-                                                                        reputationReward,
-                                                                        [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
-                                                                        testSetup.standardTokenMock.address,
-                                                                        otherAvatar.address
-                                                                      );
-         //Vote with reputation to trigger execution
-         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-         await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[0]});
-         await helpers.increaseTime(periodLength+1);
-         var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
-         await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
-         var eth = web3.eth.getBalance(otherAvatar.address);
-         assert.equal(eth.toNumber(),ethReward);
-         assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),reputationReward);
-         assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
-         var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
-         assert.equal(reputation,1141);
-        });
-      it("execute proposeContributionReward  mint reputation with period 0 ", async function() {
-         var testSetup = await setup(accounts);
-         var reputationReward = 12;
-         var periodLength = 0;
-         var numberOfPeriods = 1;
-         var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+   it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer", async function() {
+     var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
+     var testSetup = await setup(accounts,0,true,standardTokenMock.address);
+     var reputationReward = 12;
+     var nativeTokenReward = 12;
+     var ethReward = 12;
+     var periodLength = 50;
+     var numberOfPeriods = 1;
+     //send some ether to the org avatar
+     var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
+     web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+     var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                    "description",
+                                                                    reputationReward,
+                                                                    [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
+                                                                    testSetup.standardTokenMock.address,
+                                                                    otherAvatar.address
+                                                                  );
+     //Vote with reputation to trigger execution
+     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+     await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[0]});
+     await helpers.increaseTime(periodLength+1);
+     var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
+     await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
+     var eth = web3.eth.getBalance(otherAvatar.address);
+     assert.equal(eth.toNumber(),ethReward);
+     assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),reputationReward);
+     assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
+     var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
+     assert.equal(reputation,1141);
+    });
+    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer for negative proposal", async function() {
+      var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,0,true,standardTokenMock.address);
+      var reputationReward = 12;
+      var nativeTokenReward = 12;
+      var ethReward = 12;
+      var periodLength = 50;
+      var numberOfPeriods = 1;
+      //send some ether to the org avatar
+      var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
+      web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+      var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                     "description",
+                                                                     reputationReward,
+                                                                     [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
+                                                                     testSetup.standardTokenMock.address,
+                                                                     otherAvatar.address
+                                                                   );
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,2,{from:accounts[0]});
+      await helpers.increaseTime(periodLength+1);
+      var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
+      await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
+      var eth = web3.eth.getBalance(otherAvatar.address);
+      assert.equal(eth.toNumber(),0);
+      assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),0);
+      assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),0);
+      var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
+      assert.equal(reputation,1080);
+     });
+     
+    it("execute proposeContributionReward  mint reputation with period 0 ", async function() {
+       var testSetup = await setup(accounts);
+       var reputationReward = 12;
+       var periodLength = 0;
+       var numberOfPeriods = 1;
+       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                 "description",
+                                                                 reputationReward,
+                                                                 [0,0,0,periodLength,numberOfPeriods],
+                                                                 testSetup.standardTokenMock.address,
+                                                                 accounts[1]
+                                                               );
+       try {
+            await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                    "description",
                                                                    reputationReward,
-                                                                   [0,0,0,periodLength,numberOfPeriods],
+                                                                   [0,0,0,periodLength,2],
                                                                    testSetup.standardTokenMock.address,
                                                                    accounts[1]
                                                                  );
-         try {
-              await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                     "description",
-                                                                     reputationReward,
-                                                                     [0,0,0,periodLength,2],
-                                                                     testSetup.standardTokenMock.address,
-                                                                     accounts[1]
-                                                                   );
-              assert(false, 'if periodLength==0  so numberOfPeriods must be 1');
-              } catch (ex) {
-               helpers.assertVMException(ex);
-        }
+            assert(false, 'if periodLength==0  so numberOfPeriods must be 1');
+            } catch (ex) {
+             helpers.assertVMException(ex);
+       }
 
-         //Vote with reputation to trigger execution
-         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-         await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
-         tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
-         assert.equal(tx.logs.length, 1);
-         assert.equal(tx.logs[0].event, "RedeemReputation");
-         assert.equal(tx.logs[0].args._amount, reputationReward);
-         var rep = await testSetup.org.reputation.reputationOf(accounts[1]);
-         assert.equal(rep.toNumber(),reputationReward);
-         //try to redeem again.
-         tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
-         assert.equal(tx.logs.length, 0);
-         rep = await testSetup.org.reputation.reputationOf(accounts[1]);
-         assert.equal(rep.toNumber(),reputationReward);
+       //Vote with reputation to trigger execution
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+       tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
+       assert.equal(tx.logs.length, 1);
+       assert.equal(tx.logs[0].event, "RedeemReputation");
+       assert.equal(tx.logs[0].args._amount, reputationReward);
+       var rep = await testSetup.org.reputation.reputationOf(accounts[1]);
+       assert.equal(rep.toNumber(),reputationReward);
+       //try to redeem again.
+       tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
+       assert.equal(tx.logs.length, 0);
+       rep = await testSetup.org.reputation.reputationOf(accounts[1]);
+       assert.equal(rep.toNumber(),reputationReward);
     });
 });
