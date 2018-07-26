@@ -62,7 +62,10 @@ contract Redeemer {
             if ((daoBountyAmount > 0) && (genesisProtocol.stakingToken().balanceOf(_avatar) >= daoBountyAmount)) {
                 result[2] = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
             }
-            (result[3],result[4],result[5],result[6]) = contributionRewardRedeem(_proposalId,_avatar);
+            //redeem from contributionReward only if it is positive decision
+            if (genesisProtocol.winningVote(_proposalId) == genesisProtocol.YES()) {
+                (result[3],result[4],result[5],result[6]) = contributionRewardRedeem(_proposalId,_avatar);
+            }
         }
         emit RedeemerRedeem(
             _proposalId,
