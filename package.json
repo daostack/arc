@@ -85,6 +85,6 @@
   "dependencies": {
     "ethereumjs-abi": "^0.6.5",
     "ganache-cli": "^6.1.6",
-    "openzeppelin-solidity": "1.10.0"
+    "openzeppelin-solidity": "1.11.0"
   }
 }
