@@ -10,16 +10,6 @@ contract Redeemer {
     ContributionReward public contributionReward;
     GenesisProtocol public genesisProtocol;
 
-    event RedeemerRedeem(bytes32 indexed _proposalId,
-                 bool _execute,
-                 bool _genesisProtocolRedeem,
-                 bool _genesisProtocolDaoBounty,
-                 bool _contributionRewardReputation,
-                 bool _contributionRewardNativeToken,
-                 bool _contributionRewardEther,
-                 bool _contributionRewardExternalToken
-    );
-
     constructor(address _contributionReward,address _genesisProtocol) public {
         contributionReward = ContributionReward(_contributionReward);
         genesisProtocol = GenesisProtocol(_genesisProtocol);
@@ -30,6 +20,9 @@ contract Redeemer {
     * It calls execute on the proposal if it is not yet executed.
     * It tries to redeem reputation and stake from the GenesisProtocol.
     * It tries to redeem proposal rewards from the contribution rewards scheme.
+    * This function does not emit events.
+    * A client should listen to GenesisProtocol and ContributionReward redemption events
+    * to monitor redemption operations. 
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
     * @param _beneficiary beneficiary
@@ -67,16 +60,6 @@ contract Redeemer {
                 (result[3],result[4],result[5],result[6]) = contributionRewardRedeem(_proposalId,_avatar);
             }
         }
-        emit RedeemerRedeem(
-            _proposalId,
-            result[0],
-            result[1],
-            result[2],
-            result[3],
-            result[4],
-            result[5],
-            result[6]
-        );
     }
 
     function contributionRewardRedeem(bytes32 _proposalId,address _avatar)
