@@ -476,6 +476,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             emit ExecuteProposal(_proposalId, proposal.avatar, proposal.winningVote, totalReputation);
             emit GPExecuteProposal(_proposalId, executionState);
             (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
+            //clean proposal vars for gas refund
+            proposal.numOfChoices = 0;
+            proposal.executable = ExecutableInterface(0);
+            proposal.submittedTime = 0;
+            proposal.currentBoostedVotePeriodLimit = 0;
         }
         return (executionState != ExecutionState.None);
     }
