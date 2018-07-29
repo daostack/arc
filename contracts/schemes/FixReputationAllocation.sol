@@ -7,6 +7,8 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /**
  * @title A fixed reputation allocation contract
+ * This scheme can be used to allocate a pre define amount of reputation to whitelisted
+ * beneficiaries.
  */
 
 contract FixedReputationAllocation is Ownable {
