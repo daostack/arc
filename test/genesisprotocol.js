@@ -165,7 +165,7 @@ const checkVoteInfo = async function(proposalId, voterAddress, _voteInfo, genesi
   // uint reputation;
   assert.equal(voteInfo[1], _voteInfo[1]);
 };
-
+const signatureType = 1;
 var nonce = 0;
 const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
   var textMsg = "0x"+ethereumjs.soliditySHA3(
@@ -173,7 +173,7 @@ const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
     [_testSetup.genesisProtocol.address, _proposalId,_vote,_amount, nonce]
   ).toString("hex");
   const signature = web3.eth.sign(_staker, textMsg);
-  const extraData = await _testSetup.genesisProtocol.stakeWithSignature.request(_proposalId,_vote,_amount,nonce,signature);
+  const extraData = await _testSetup.genesisProtocol.stakeWithSignature.request(_proposalId,_vote,_amount,nonce,signatureType,signature);
 
   nonce++;
 
@@ -894,7 +894,7 @@ contract('GenesisProtocol', function (accounts) {
         [testSetup.genesisProtocol.address, proposalId,1,10, nonce]
       ).toString("hex");
     const signature = web3.eth.sign(accounts[0], textMsg);
-    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,signature);
+    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,signatureType,signature);
 
     try {
      await testSetup.stakingToken.approveAndCall(
@@ -921,13 +921,39 @@ contract('GenesisProtocol', function (accounts) {
       ).toString("hex");
     const signature = web3.eth.sign(accounts[0], textMsg);
     proposalId = 123; //change proposalId
-    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,signature);
+    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,signatureType,signature);
 
     try {
      await testSetup.stakingToken.approveAndCall(
         testSetup.genesisProtocol.address, 10, extraData.params[0].data ,{from : accounts[0]}
       );
       assert(false, 'stake should fail due to wrong signature');
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
+  });
+
+  it("check stake with wrong signature type ", async () => {
+
+    var testSetup = await setup(accounts,50,60,60,100,100);
+    let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
+    var proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+    let staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    assert.equal(staker[0],0);
+    assert.equal(staker[1],0);
+    var textMsg = "0x"+ethereumjs.soliditySHA3(
+        ["address","bytes32","uint", "uint","uint"],
+        [testSetup.genesisProtocol.address, proposalId,1,10, nonce]
+      ).toString("hex");
+    const signature = web3.eth.sign(accounts[0], textMsg);
+    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,2,signature);
+
+    try {
+     await testSetup.stakingToken.approveAndCall(
+        testSetup.genesisProtocol.address, 10, extraData.params[0].data ,{from : accounts[0]}
+      );
+      assert(false, 'stake should fail due to wrong signature type');
     } catch (ex) {
       helpers.assertVMException(ex);
     }

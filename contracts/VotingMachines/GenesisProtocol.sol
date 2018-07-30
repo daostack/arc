@@ -180,13 +180,23 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         return _stake(_proposalId,_vote,_amount,msg.sender);
     }
 
+    // Digest describing the data the user signs according EIP 712.
+    // Needs to match what is passed to Metamask.
+    bytes32 public constant DELEGATION_HASH_EIP712 =
+    keccak256(abi.encodePacked("address GenesisProtocolAddress","bytes32 ProposalId", "uint Vote","uint AmountToStake","uint Nonce"));
+    // web3.eth.sign prefix
+    string public constant ETH_SIGN_PREFIX= "\x19Ethereum Signed Message:\n32";
+
     /**
-     * @dev staking function
+     * @dev stakeWithSignature function
      * @param _proposalId id of the proposal
      * @param _vote  NO(2) or YES(1).
      * @param _amount the betting amount
      * @param _nonce nonce value ,it is part of the signature to ensure that
               a signature can be received only once.
+     * @param _signatureType signature type
+              1 - for web3.eth.sign
+              2 - for eth_signTypedData according to EIP #712.
      * @param _signature  - signed data by the staker
      * @return bool true - the proposal has been executed
      *              false - otherwise.
@@ -196,24 +206,39 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         uint _vote,
         uint _amount,
         uint _nonce,
+        uint _signatureType,
         bytes _signature
         )
         external
         returns(bool)
         {
         require(stakeSignatures[_signature] == false);
-        // Builds a prefixed hash to mimic the behavior of eth_sign.
-        bytes32 prefixedHash = keccak256(
-            abi.encodePacked("\x19Ethereum Signed Message:\n32",
-               keccak256(
-                 abi.encodePacked(
-                     address(this),
-                     _proposalId,
-                     _vote,
-                     _amount,
-                    _nonce)))
-        );
-        address staker = prefixedHash.recover(_signature);
+        // Recreate the digest the user signed
+        bytes32 delegationDigest;
+        if (_signatureType == 2) {
+            delegationDigest = keccak256(
+                abi.encodePacked(
+                    DELEGATION_HASH_EIP712, keccak256(
+                        abi.encodePacked(
+                           address(this),
+                          _proposalId,
+                          _vote,
+                          _amount,
+                          _nonce)))
+            );
+        } else {
+            delegationDigest = keccak256(
+                abi.encodePacked(
+                    ETH_SIGN_PREFIX, keccak256(
+                        abi.encodePacked(
+                            address(this),
+                           _proposalId,
+                           _vote,
+                           _amount,
+                           _nonce)))
+            );
+        }
+        address staker = delegationDigest.recover(_signature);
         //a garbage staker address due to wrong signature will revert due to lack of approval and funds.
         require(staker!=address(0));
         stakeSignatures[_signature] = true;
