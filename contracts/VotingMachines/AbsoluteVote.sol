@@ -243,23 +243,8 @@ contract AbsoluteVote is IntVoteInterface {
       * @return bool true - the proposal has been executed
       *              false - otherwise.
      */
-    function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool) {
-        Proposal storage proposal = proposals[_proposalId];
-        Reputation reputation = parameters[proposal.paramsHash].reputationSystem;
-        require(reputation != address(0));
-        uint totalReputation = reputation.totalSupply();
-        uint precReq = parameters[proposal.paramsHash].precReq;
-        // Check if someone crossed the bar:
-        for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
-            if (proposal.votes[cnt] > totalReputation*precReq/100) {
-                Proposal memory tmpProposal = proposal;
-                deleteProposal(_proposalId);
-                emit ExecuteProposal(_proposalId, tmpProposal.avatar, cnt, totalReputation);
-                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(cnt));
-                return true;
-            }
-        }
-        return false;
+    function execute(bytes32 _proposalId) external votable(_proposalId) returns(bool) {
+        return _execute(_proposalId);
     }
 
     /**
@@ -301,6 +286,31 @@ contract AbsoluteVote is IntVoteInterface {
     }
 
     /**
+      * @dev execute check if the proposal has been decided, and if so, execute the proposal
+      * @param _proposalId the id of the proposal
+      * @return bool true - the proposal has been executed
+      *              false - otherwise.
+     */
+    function _execute(bytes32 _proposalId) internal votable(_proposalId) returns(bool) {
+        Proposal storage proposal = proposals[_proposalId];
+        Reputation reputation = parameters[proposal.paramsHash].reputationSystem;
+        require(reputation != address(0));
+        uint totalReputation = reputation.totalSupply();
+        uint precReq = parameters[proposal.paramsHash].precReq;
+        // Check if someone crossed the bar:
+        for (uint cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
+            if (proposal.votes[cnt] > totalReputation*precReq/100) {
+                Proposal memory tmpProposal = proposal;
+                deleteProposal(_proposalId);
+                emit ExecuteProposal(_proposalId, tmpProposal.avatar, cnt, totalReputation);
+                (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(cnt));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @dev Vote for a proposal, if the voter already voted, cancel the last vote and set a new one instead
      * @param _proposalId id of the proposal
      * @param _voter used in case the vote is cast for someone else
@@ -336,6 +346,6 @@ contract AbsoluteVote is IntVoteInterface {
         emit VoteProposal(_proposalId, proposal.avatar, _voter, _vote, reputation);
         emit AVVoteProposal(_proposalId, (_voter != msg.sender));
         // execute the proposal if this vote was decisive:
-        return execute(_proposalId);
+        return _execute(_proposalId);
     }
 }
