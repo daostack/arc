@@ -414,75 +414,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         return (NUM_OF_CHOICES,NUM_OF_CHOICES);
     }
 
-  /**
+    /**
     * @dev execute check if the proposal has been decided, and if so, execute the proposal
     * @param _proposalId the id of the proposal
     * @return bool true - the proposal has been executed
     *              false - otherwise.
    */
-    function execute(bytes32 _proposalId) public votable(_proposalId) returns(bool) {
-        Proposal storage proposal = proposals[_proposalId];
-        Parameters memory params = parameters[proposal.paramsHash];
-        Proposal memory tmpProposal = proposal;
-        uint totalReputation = Avatar(proposal.avatar).nativeReputation().totalSupply();
-        uint executionBar = totalReputation * params.preBoostedVoteRequiredPercentage/100;
-        ExecutionState executionState = ExecutionState.None;
-
-        if (proposal.state == ProposalState.PreBoosted) {
-            // solium-disable-next-line security/no-block-members
-            if ((now - proposal.submittedTime) >= params.preBoostedVotePeriodLimit) {
-                proposal.state = ProposalState.Closed;
-                proposal.winningVote = NO;
-                executionState = ExecutionState.PreBoostedTimeOut;
-             } else if (proposal.votes[proposal.winningVote] > executionBar) {
-              // someone crossed the absolute vote execution bar.
-                proposal.state = ProposalState.Executed;
-                executionState = ExecutionState.PreBoostedBarCrossed;
-               } else if ( shouldBoost(_proposalId)) {
-                //the proposal crossed its absolutePhaseScoreLimit or preBoostedVotePeriodLimit
-                //change proposal mode to boosted mode.
-                proposal.state = ProposalState.Boosted;
-                // solium-disable-next-line security/no-block-members
-                proposal.boostedPhaseTime = now;
-                proposalsExpiredTimes[proposal.avatar].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
-                orgBoostedProposalsCnt[proposal.avatar]++;
-              }
-           }
-
-        if ((proposal.state == ProposalState.Boosted) ||
-            (proposal.state == ProposalState.QuietEndingPeriod)) {
-            // solium-disable-next-line security/no-block-members
-            if ((now - proposal.boostedPhaseTime) >= proposal.currentBoostedVotePeriodLimit) {
-                proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
-                orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
-                proposal.state = ProposalState.Executed;
-                executionState = ExecutionState.BoostedTimeOut;
-             } else if (proposal.votes[proposal.winningVote] > executionBar) {
-               // someone crossed the absolute vote execution bar.
-                orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
-                proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
-                proposal.state = ProposalState.Executed;
-                executionState = ExecutionState.BoostedBarCrossed;
-            }
-       }
-        if (executionState != ExecutionState.None) {
-            if (proposal.winningVote == YES) {
-                uint daoBountyRemain = (params.daoBountyConst.mul(proposal.stakes[proposal.winningVote]))/100;
-                if (daoBountyRemain > params.daoBountyLimit) {
-                    daoBountyRemain = params.daoBountyLimit;
-                }
-                proposal.daoBountyRemain = daoBountyRemain;
-            }
-            emit ExecuteProposal(_proposalId, proposal.avatar, proposal.winningVote, totalReputation);
-            emit GPExecuteProposal(_proposalId, executionState);
-            (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
-            //clean proposal vars for gas refund
-            proposal.numOfChoices = 0;
-            proposal.executable = ExecutableInterface(0);
-            proposal.submittedTime = 0;
-            proposal.currentBoostedVotePeriodLimit = 0;
-        }
-        return (executionState != ExecutionState.None);
+    function execute(bytes32 _proposalId) external votable(_proposalId) returns(bool) {
+        return _execute(_proposalId);
     }
 
     /**
@@ -561,8 +500,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return bool true or false.
      */
     function shouldBoost(bytes32 _proposalId) public view returns(bool) {
-        address avatar = proposals[_proposalId].avatar;
-        return (_score(_proposalId) >= threshold(_proposalId,avatar));
+        Proposal memory proposal = proposals[_proposalId];
+        return (_score(_proposalId) >= threshold(proposal.paramsHash,proposal.avatar));
     }
 
     /**
@@ -579,9 +518,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * a proposal to shift to boosted state.
      * This threshold is dynamically set and it depend on the number of boosted proposal.
      * @param _avatar the organization avatar
+     * @param _paramsHash the organization parameters hash
      * @return int organization's score threshold.
      */
-    function threshold(bytes32 _proposalId,address _avatar) public view returns(int) {
+    function threshold(bytes32 _paramsHash,address _avatar) public view returns(int) {
         uint expiredProposals;
         if (proposalsExpiredTimes[_avatar].count() != 0) {
           // solium-disable-next-line security/no-block-members
@@ -590,7 +530,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         uint boostedProposals = orgBoostedProposalsCnt[_avatar].sub(expiredProposals);
         int216 e = 2;
 
-        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
+        Parameters memory params = parameters[_paramsHash];
+        require(params.thresholdConstB > 0,"should be a valid parameter hash");
         int256 power = int216(boostedProposals).toReal().div(int216(params.thresholdConstB).toReal());
 
         if (power.fromReal() > 100 ) {
@@ -800,6 +741,71 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     }
 
     /**
+    * @dev execute check if the proposal has been decided, and if so, execute the proposal
+    * @param _proposalId the id of the proposal
+    * @return bool true - the proposal has been executed
+    *              false - otherwise.
+   */
+    function _execute(bytes32 _proposalId) internal votable(_proposalId) returns(bool) {
+        Proposal storage proposal = proposals[_proposalId];
+        Parameters memory params = parameters[proposal.paramsHash];
+        Proposal memory tmpProposal = proposal;
+        uint totalReputation = Avatar(proposal.avatar).nativeReputation().totalSupply();
+        uint executionBar = totalReputation * params.preBoostedVoteRequiredPercentage/100;
+        ExecutionState executionState = ExecutionState.None;
+
+        if (proposal.state == ProposalState.PreBoosted) {
+            // solium-disable-next-line security/no-block-members
+            if ((now - proposal.submittedTime) >= params.preBoostedVotePeriodLimit) {
+                proposal.state = ProposalState.Closed;
+                proposal.winningVote = NO;
+                executionState = ExecutionState.PreBoostedTimeOut;
+             } else if (proposal.votes[proposal.winningVote] > executionBar) {
+              // someone crossed the absolute vote execution bar.
+                proposal.state = ProposalState.Executed;
+                executionState = ExecutionState.PreBoostedBarCrossed;
+               } else if ( shouldBoost(_proposalId)) {
+                //change proposal mode to boosted mode.
+                proposal.state = ProposalState.Boosted;
+                // solium-disable-next-line security/no-block-members
+                proposal.boostedPhaseTime = now;
+                proposalsExpiredTimes[proposal.avatar].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                orgBoostedProposalsCnt[proposal.avatar]++;
+              }
+           }
+
+        if ((proposal.state == ProposalState.Boosted) ||
+            (proposal.state == ProposalState.QuietEndingPeriod)) {
+            // solium-disable-next-line security/no-block-members
+            if ((now - proposal.boostedPhaseTime) >= proposal.currentBoostedVotePeriodLimit) {
+                proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
+                proposal.state = ProposalState.Executed;
+                executionState = ExecutionState.BoostedTimeOut;
+             } else if (proposal.votes[proposal.winningVote] > executionBar) {
+               // someone crossed the absolute vote execution bar.
+                orgBoostedProposalsCnt[tmpProposal.avatar] = orgBoostedProposalsCnt[tmpProposal.avatar].sub(1);
+                proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                proposal.state = ProposalState.Executed;
+                executionState = ExecutionState.BoostedBarCrossed;
+            }
+       }
+        if (executionState != ExecutionState.None) {
+            if (proposal.winningVote == YES) {
+                uint daoBountyRemain = (params.daoBountyConst.mul(proposal.stakes[proposal.winningVote]))/100;
+                if (daoBountyRemain > params.daoBountyLimit) {
+                    daoBountyRemain = params.daoBountyLimit;
+                }
+                proposal.daoBountyRemain = daoBountyRemain;
+            }
+            emit ExecuteProposal(_proposalId, proposal.avatar, proposal.winningVote, totalReputation);
+            emit GPExecuteProposal(_proposalId, executionState);
+            (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(proposal.winningVote));
+        }
+        return (executionState != ExecutionState.None);
+    }
+
+    /**
      * @dev staking function
      * @param _proposalId id of the proposal
      * @param _vote  NO(2) or YES(1).
@@ -813,7 +819,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
 
         require(_vote <= NUM_OF_CHOICES && _vote > 0);
         require(_amount > 0);
-        if (execute(_proposalId)) {
+        if (_execute(_proposalId)) {
             return true;
         }
 
@@ -845,7 +851,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
       // Event:
         emit Stake(_proposalId, proposal.avatar, _staker, _vote, _amount);
       // execute the proposal if this vote was decisive:
-        return execute(_proposalId);
+        return _execute(_proposalId);
     }
 
     /**
@@ -862,7 +868,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function internalVote(bytes32 _proposalId, address _voter, uint _vote, uint _rep) internal returns(bool) {
         // 0 is not a valid vote.
         require(_vote <= NUM_OF_CHOICES && _vote > 0);
-        if (execute(_proposalId)) {
+        if (_execute(_proposalId)) {
             return true;
         }
 
@@ -912,7 +918,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         // Event:
         emit VoteProposal(_proposalId, proposal.avatar, _voter, _vote, rep);
         // execute the proposal if this vote was decisive:
-        return execute(_proposalId);
+        return _execute(_proposalId);
     }
 
     /**
