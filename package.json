@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.0-alpha.46",
+  "version": "0.0.0-alpha.47",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -12,7 +12,7 @@
     "tsconfig.json"
   ],
   "config": {
-    "gasLimit": "5670000"
+    "gasLimit": "5770000"
   },
   "scripts": {
     "test": "cross-conf-env run-with-ganache --ganache-cmd 'npm run ganache' 'npm run truffle compile && npm run truffle migrate && npm run truffle test'",
