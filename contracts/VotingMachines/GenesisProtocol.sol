@@ -867,7 +867,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      */
     function internalVote(bytes32 _proposalId, address _voter, uint _vote, uint _rep) internal returns(bool) {
         // 0 is not a valid vote.
-        require(_vote <= NUM_OF_CHOICES && _vote > 0);
+        require(_vote <= NUM_OF_CHOICES && _vote > 0,"0 < _vote <= 2");
         if (_execute(_proposalId)) {
             return true;
         }
@@ -888,7 +888,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         }
         // The voting itself:
         proposal.votes[_vote] = rep.add(proposal.votes[_vote]);
-        if (proposal.votes[_vote] > proposal.votes[proposal.winningVote]) {
+        //check if the current winningVote changed or there is a tie.
+        //for the case there is a tie the current winningVote set to NO.
+        if ((proposal.votes[_vote] > proposal.votes[proposal.winningVote]) ||
+           ((proposal.votes[NO] == proposal.votes[proposal.winningVote]) &&
+             proposal.winningVote == YES))
+        {
            // solium-disable-next-line security/no-block-members
             uint _now = now;
             if ((proposal.state == ProposalState.QuietEndingPeriod) ||
