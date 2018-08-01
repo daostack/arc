@@ -586,7 +586,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function getRedeemableReputationProposer(bytes32 _proposalId) public view returns(uint) {
         uint rep;
         Proposal storage proposal = proposals[_proposalId];
-        if (proposal.winningVote == NO) {
+        if ((proposal.winningVote == NO) || (proposal.proposer == address(0))) {
             rep = 0;
         } else {
             Parameters memory params = parameters[proposal.paramsHash];
