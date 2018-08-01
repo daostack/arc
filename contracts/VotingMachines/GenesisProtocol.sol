@@ -453,8 +453,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
 
         if ((proposal.proposer == _beneficiary)&&(proposal.winningVote == YES)) {
             //as proposer
-            proposal.proposer = 0;
             reputation += getRedeemableReputationProposer(_proposalId);
+            proposal.proposer = 0;
         }
         if (amount != 0) {
             proposal.totalStakes[1] = proposal.totalStakes[1].sub(amount);

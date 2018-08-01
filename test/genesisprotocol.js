@@ -1340,11 +1340,8 @@ contract('GenesisProtocol', function (accounts) {
       assert.equal(tx.logs[0].args._proposalId, proposalId);
       assert.equal(tx.logs[0].args._beneficiary, accounts[0]);
       assert.equal(tx.logs[0].args._amount, 100);
-
-      rep4Propose = await testSetup.genesisProtocol.getRedeemableReputationProposer(proposalId);
-      assert.equal(rep4Propose,0);
-
-
+      //getRedeemableReputationProposer should return 0 after redeeming 
+      assert.equal(await testSetup.genesisProtocol.getRedeemableReputationProposer(proposalId),0);
       assert.equal(tx.logs[1].event, "RedeemReputation");
       assert.equal(tx.logs[1].args._proposalId, proposalId);
       assert.equal(tx.logs[1].args._beneficiary, accounts[0]);
