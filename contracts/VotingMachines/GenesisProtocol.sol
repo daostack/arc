@@ -453,8 +453,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
 
         if ((proposal.proposer == _beneficiary)&&(proposal.winningVote == YES)) {
             //as proposer
-            proposal.proposer = 0;
             reputation += getRedeemableReputationProposer(_proposalId);
+            proposal.proposer = 0;
         }
         if (amount != 0) {
             proposal.totalStakes[1] = proposal.totalStakes[1].sub(amount);
@@ -586,7 +586,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     function getRedeemableReputationProposer(bytes32 _proposalId) public view returns(uint) {
         uint rep;
         Proposal storage proposal = proposals[_proposalId];
-        if (proposal.winningVote == NO) {
+        if ((proposal.winningVote == NO) || (proposal.proposer == address(0))) {
             rep = 0;
         } else {
             Parameters memory params = parameters[proposal.paramsHash];
