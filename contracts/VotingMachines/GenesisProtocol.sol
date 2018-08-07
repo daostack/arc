@@ -156,7 +156,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         proposal.winningVote = NO;
         proposal.paramsHash = paramsHash;
         proposals[proposalId] = proposal;
-        emit NewProposal(proposalId, _avatar, _numOfChoices, msg.sender, paramsHash);
+        emit NewProposal(proposalId, _avatar, _numOfChoices, _proposer, paramsHash);
         return proposalId;
     }
 
@@ -899,13 +899,13 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             if ((proposal.state == ProposalState.QuietEndingPeriod) ||
                ((proposal.state == ProposalState.Boosted) && ((_now - proposal.boostedPhaseTime) >= (params.boostedVotePeriodLimit - params.quietEndingPeriod)))) {
                 //quietEndingPeriod
+                proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
-                    proposalsExpiredTimes[proposal.avatar].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                     proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
-                    proposalsExpiredTimes[proposal.avatar].insert(_now + proposal.currentBoostedVotePeriodLimit);
                     proposal.state = ProposalState.QuietEndingPeriod;
                 }
                 proposal.boostedPhaseTime = _now;
+                proposalsExpiredTimes[proposal.avatar].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
             }
             proposal.winningVote = _vote;
         }
