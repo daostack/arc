@@ -1541,18 +1541,18 @@ contract('GenesisProtocol', function (accounts) {
     var proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
     //boost proposal
-    await stake(testSetup,proposalId,YES,100,accounts[0]);
+    await stake(testSetup,proposalId,1,100,accounts[0]);
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),true);
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
     assert.equal(proposalInfo[8],4);//boosted
     //vote YES to get in quite window period
-    await testSetup.genesisProtocol.vote(proposalId,YES,{from:accounts[0]}); //change winning vote
+    await testSetup.genesisProtocol.vote(proposalId,1,{from:accounts[0]}); //change winning vote
     proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
     assert.equal(proposalInfo[8],5);//quiteEndperiod
     await helpers.increaseTime(10); //increase time
     assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address),1);
     //vote NO to toggle direction again and extend the quite end period
-    await testSetup.genesisProtocol.vote(proposalId,NO,{from:accounts[2]}); //change winning vote and execute
+    await testSetup.genesisProtocol.vote(proposalId,2,{from:accounts[2]}); //change winning vote and execute
     assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.org.avatar.address),0);
     //increase time after the proposal expiration
     await helpers.increaseTime(61); //increase time
