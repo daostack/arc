@@ -66,7 +66,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         address avatar; // the organization's avatar the proposal is target to.
         uint numOfChoices;
         ExecutableInterface executable; // will be executed if the proposal will pass
-        uint totalVotes;
+        uint[2] votesCount; // votesCount[0] - total votes on a proposal
+                            // votesCount[1] - total pre boosted votes on a proposal
         uint votersStakes;
         uint lostReputation;
         uint submittedTime;
@@ -324,12 +325,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     * @dev proposalStatus return the total votes and stakes for a given proposal
     * @param _proposalId the ID of the proposal
     * @return uint totalVotes
+    * @return uint totalPreBoostedVotes
     * @return uint stakersStakes
     * @return uint totalRedeemableStakes
     * @return uint voterStakes
     */
-    function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint,uint) {
-        return (proposals[_proposalId].totalVotes,
+    function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint, uint ,uint) {
+        return (proposals[_proposalId].votesCount[0],
+                proposals[_proposalId].votesCount[1],
                 proposals[_proposalId].totalStakes[0],
                 proposals[_proposalId].totalStakes[1],
                 proposals[_proposalId].votersStakes
@@ -430,30 +433,47 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * users to redeem on behalf of someone else.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary - the beneficiary address
-     * @return bool true or false.
+     * @return amount - redeem token amount
+     * @return reputation - redeem reputation
      */
-    function redeem(bytes32 _proposalId,address _beneficiary) public returns(bool) {
+    function redeem(bytes32 _proposalId,address _beneficiary) public returns(uint amount, uint reputation) {
         Proposal storage proposal = proposals[_proposalId];
-        require((proposal.state == ProposalState.Executed) || (proposal.state == ProposalState.Closed));
-        uint amount;
-        uint reputation;
+        require((proposal.state == ProposalState.Executed) || (proposal.state == ProposalState.Closed),"wrong proposal state");
+        Parameters memory params = parameters[proposal.paramsHash];
+        //as staker
         if ((proposal.stakers[_beneficiary].amount>0) &&
              (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
-            //as staker
-            amount = getRedeemableTokensStaker(_proposalId,_beneficiary);
-            reputation = getRedeemableReputationStaker(_proposalId,_beneficiary);
+            uint totalWinningStakes = proposal.stakes[proposal.winningVote];
+            if (totalWinningStakes != 0) {
+                amount = (proposal.stakers[_beneficiary].amount * proposal.totalStakes[0]) / totalWinningStakes;
+            }
+            if (proposal.state != ProposalState.Closed) {
+                reputation = (proposal.stakers[_beneficiary].amount * ( proposal.lostReputation - ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote];
+            }
             proposal.stakers[_beneficiary].amount = 0;
         }
-        if (proposal.voters[_beneficiary].reputation != 0 ) {
-            //as voter
-            amount += getRedeemableTokensVoter(_proposalId,_beneficiary);
-            reputation += getRedeemableReputationVoter(_proposalId,_beneficiary);
+        //as voter
+        Voter storage voter = proposal.voters[_beneficiary];
+        if (voter.reputation != 0 ) {
+            if (proposal.votesCount[0] > 0) {
+                if ((voter.preBoosted)&&(proposal.votesCount[1]>0)) {
+                    amount += ((proposal.votersStakes * voter.reputation) / proposal.votesCount[1]);
+                }
+                if (proposal.state == ProposalState.Closed) {
+                    //no reputation flow occurs so give back reputation for the voter
+                    reputation += ((voter.reputation * params.votersReputationLossRatio)/100);
+                } else if (proposal.voters[_beneficiary].preBoosted && (proposal.winningVote == proposal.voters[_beneficiary].vote )) {
+                     //give back reputation for the voter
+                    reputation += (voter.reputation * params.votersReputationLossRatio)/100;
+                }
+                reputation += (voter.reputation * ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)/proposal.votesCount[0]);
+            }
             proposal.voters[_beneficiary].reputation = 0;
         }
+        //as proposer
+        if ((proposal.proposer == _beneficiary)&&(proposal.winningVote == YES)&&(proposal.proposer != address(0))) {
 
-        if ((proposal.proposer == _beneficiary)&&(proposal.winningVote == YES)) {
-            //as proposer
-            reputation += getRedeemableReputationProposer(_proposalId);
+            reputation += (params.proposingRepRewardConstA.mul(proposal.votesCount[0]) + params.proposingRepRewardConstB.mul(proposal.votes[YES]-proposal.votes[NO]))/1000;
             proposal.proposer = 0;
         }
         if (amount != 0) {
@@ -465,7 +485,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             ControllerInterface(Avatar(proposal.avatar).owner()).mintReputation(reputation,_beneficiary,proposal.avatar);
             emit RedeemReputation(_proposalId,proposal.avatar,_beneficiary,reputation);
         }
-        return true;
     }
 
     /**
@@ -474,24 +493,35 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * users to redeem on behalf of someone else.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary - the beneficiary address
-     * @return bool true or false.
+     * @return redeemedAmount - redeem token amount
+     * @return potentialAmount - potential redeem token amount(if there is enough tokens bounty at the avatar )
      */
-    function redeemDaoBounty(bytes32 _proposalId,address _beneficiary) public returns(bool) {
+    function redeemDaoBounty(bytes32 _proposalId,address _beneficiary) public returns(uint redeemedAmount,uint potentialAmount) {
         Proposal storage proposal = proposals[_proposalId];
         require((proposal.state == ProposalState.Executed) || (proposal.state == ProposalState.Closed));
-        uint amount;
-        if ((proposal.stakers[_beneficiary].amountForBounty>0) &&
-             (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
+        uint totalWinningStakes = proposal.stakes[proposal.winningVote];
+        if (
+          // solium-disable-next-line operator-whitespace
+            (proposal.stakers[_beneficiary].amountForBounty>0)&&
+            (proposal.stakers[_beneficiary].vote == proposal.winningVote)&&
+            (proposal.winningVote == YES)&&
+            (totalWinningStakes != 0))
+        {
             //as staker
-            amount = getRedeemableTokensStakerBounty(_proposalId,_beneficiary);
+            Parameters memory params = parameters[proposal.paramsHash];
+            uint beneficiaryLimit = (proposal.stakers[_beneficiary].amountForBounty.mul(params.daoBountyLimit)) / totalWinningStakes;
+            potentialAmount = (params.daoBountyConst.mul(proposal.stakers[_beneficiary].amountForBounty))/100;
+            if (potentialAmount > beneficiaryLimit) {
+                potentialAmount = beneficiaryLimit;
+            }
             proposal.stakers[_beneficiary].amountForBounty = 0;
         }
-        if (amount != 0) {
-            proposal.daoBountyRemain = proposal.daoBountyRemain.sub(amount);
-            require(ControllerInterface(Avatar(proposal.avatar).owner()).externalTokenTransfer(stakingToken,_beneficiary,amount,proposal.avatar));
-            emit RedeemDaoBounty(_proposalId,proposal.avatar,_beneficiary,amount);
+        if ((potentialAmount != 0)&&(stakingToken.balanceOf(proposal.avatar) >= potentialAmount)) {
+            proposal.daoBountyRemain = proposal.daoBountyRemain.sub(potentialAmount);
+            require(ControllerInterface(Avatar(proposal.avatar).owner()).externalTokenTransfer(stakingToken,_beneficiary,potentialAmount,proposal.avatar));
+            redeemedAmount = potentialAmount;
+            emit RedeemDaoBounty(_proposalId,proposal.avatar,_beneficiary,redeemedAmount);
         }
-        return true;
     }
 
     /**
@@ -539,121 +569,6 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         }
         int256 res = int216(params.thresholdConstA).toReal().mul(e.toReal().pow(power));
         return res.fromReal();
-    }
-
-    /**
-     * @dev getRedeemableTokensStakerBounty return the redeem bounty amount which a certain staker is entitle to.
-     * @param _proposalId the ID of the proposal
-     * @param _beneficiary the beneficiary .
-     * @return uint redeem amount .
-     */
-    function getRedeemableTokensStakerBounty(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
-        Proposal storage proposal = proposals[_proposalId];
-        Parameters memory params = parameters[proposal.paramsHash];
-        uint totalWinningStakes = proposal.stakes[proposal.winningVote];
-        if ((proposal.winningVote != YES)||(totalWinningStakes == 0)) {
-            return 0;
-        }
-        uint beneficiaryLimit = (proposal.stakers[_beneficiary].amountForBounty.mul(params.daoBountyLimit)) / totalWinningStakes;
-        uint bounty = (params.daoBountyConst.mul(proposal.stakers[_beneficiary].amountForBounty))/100;
-        if (bounty > beneficiaryLimit) {
-            bounty = beneficiaryLimit;
-        }
-        return bounty;
-    }
-
-    /**
-     * @dev getRedeemableTokensStaker return the redeem amount which a certain staker is entitle to.
-     * @param _proposalId the ID of the proposal
-     * @param _beneficiary the beneficiary .
-     * @return uint redeem amount .
-     */
-    function getRedeemableTokensStaker(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
-        Proposal storage proposal = proposals[_proposalId];
-        uint totalWinningStakes = proposal.stakes[proposal.winningVote];
-        if (totalWinningStakes == 0) {
-        //this can be reached if the winningVote is NO
-            return 0;
-        }
-        return (proposal.stakers[_beneficiary].amount * proposal.totalStakes[0]) / totalWinningStakes;
-    }
-
-    /**
-     * @dev getRedeemableReputationProposer return the redeemable reputation which a proposer is entitle to.
-     * @param _proposalId the ID of the proposal
-     * @return uint proposer redeem reputation.
-     */
-    function getRedeemableReputationProposer(bytes32 _proposalId) public view returns(uint) {
-        uint rep;
-        Proposal storage proposal = proposals[_proposalId];
-        if ((proposal.winningVote == NO) || (proposal.proposer == address(0))) {
-            rep = 0;
-        } else {
-            Parameters memory params = parameters[proposal.paramsHash];
-            rep = (params.proposingRepRewardConstA.mul(proposal.totalVotes) + params.proposingRepRewardConstB.mul(proposal.votes[YES]-proposal.votes[NO]))/1000;
-        }
-        return rep;
-    }
-
-    /**
-     * @dev getRedeemableTokensVoter return the redeemable amount which a voter is entitle to.
-     * @param _proposalId the ID of the proposal
-     * @param _beneficiary the beneficiary .
-     * @return uint voter redeem token amount.
-     */
-    function getRedeemableTokensVoter(bytes32 _proposalId, address _beneficiary) public view returns(uint) {
-        Proposal storage proposal = proposals[_proposalId];
-        if (proposal.totalVotes == 0)
-           return 0;
-        return ((proposal.votersStakes * proposal.voters[_beneficiary].reputation) / proposal.totalVotes);
-    }
-
-    /**
-     * @dev getRedeemableReputationVoter return the redeemable reputation which a voter is entitle to.
-     * @param _proposalId the ID of the proposal
-     * @param _beneficiary the beneficiary .
-     * @return uint voter redeem reputation amount.
-     */
-    function getRedeemableReputationVoter(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
-        Proposal storage proposal = proposals[_proposalId];
-        Parameters memory params = parameters[proposal.paramsHash];
-        uint returnReputation;
-        uint reputation = proposals[_proposalId].voters[_beneficiary].reputation;
-        if (proposal.state == ProposalState.Closed) {
-           //no reputation flow occurs so give back reputation for the voter
-            return ((reputation * params.votersReputationLossRatio)/100);
-        }
-        if (proposal.totalVotes == 0) {
-            return 0;
-        }
-
-        if (proposal.voters[_beneficiary].preBoosted && (proposal.winningVote == proposal.voters[_beneficiary].vote )) {
-        //give back reputation for the voter
-            returnReputation = (reputation * params.votersReputationLossRatio)/100;
-        }
-        return returnReputation + (reputation * ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)/proposal.totalVotes);
-    }
-
-    /**
-     * @dev getRedeemableReputationStaker return the redeemable reputation which a staker is entitle to.
-     * @param _proposalId the ID of the proposal
-     * @param _beneficiary the beneficiary .
-     * @return uint staker redeem reputation amount.
-     */
-    function getRedeemableReputationStaker(bytes32 _proposalId,address _beneficiary) public view returns(uint) {
-        Proposal storage proposal = proposals[_proposalId];
-        Parameters memory params = parameters[proposal.paramsHash];
-        uint rep;
-        if (proposal.state == ProposalState.Closed) {
-           //no reputation flow occurs so no reputation flow for staker
-            return 0;
-        }
-        uint amount = proposal.stakers[_beneficiary].amount;
-        if ((amount>0) &&
-            (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
-            rep = (amount * ( proposal.lostReputation - ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote];
-        }
-        return rep;
     }
 
     /**
@@ -914,8 +829,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             vote: _vote,
             preBoosted:(proposal.state == ProposalState.PreBoosted)
         });
-        proposal.totalVotes = rep.add(proposal.totalVotes);
+        proposal.votesCount[0] = rep.add(proposal.votesCount[0]);
         if (proposal.state != ProposalState.Boosted) {
+            proposal.votesCount[1] = rep.add(proposal.votesCount[1]);
             uint reputationDeposit = (params.votersReputationLossRatio * rep)/100;
             proposal.lostReputation += reputationDeposit;
             ControllerInterface(Avatar(proposal.avatar).owner()).burnReputation(reputationDeposit,_voter,proposal.avatar);

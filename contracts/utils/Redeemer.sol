@@ -22,7 +22,7 @@ contract Redeemer {
     * It tries to redeem proposal rewards from the contribution rewards scheme.
     * This function does not emit events.
     * A client should listen to GenesisProtocol and ContributionReward redemption events
-    * to monitor redemption operations. 
+    * to monitor redemption operations.
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
     * @param _beneficiary beneficiary
@@ -38,26 +38,30 @@ contract Redeemer {
     */
     function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
     external
-    returns(bool[7] result)
+    returns(uint gpTokenReward,
+            uint gpRepReward,
+            uint gpDaoBountyReward,
+            bool executed,
+            bool[4] crResult)
     {
         GenesisProtocol.ProposalState pState = genesisProtocol.state(_proposalId);
         // solium-disable-next-line operator-whitespace
         if ((pState == GenesisProtocol.ProposalState.PreBoosted)||
             (pState == GenesisProtocol.ProposalState.Boosted)||
             (pState == GenesisProtocol.ProposalState.QuietEndingPeriod)) {
-            result[0] = genesisProtocol.execute(_proposalId);
+            executed = genesisProtocol.execute(_proposalId);
         }
         pState = genesisProtocol.state(_proposalId);
         if ((pState == GenesisProtocol.ProposalState.Executed) ||
             (pState == GenesisProtocol.ProposalState.Closed)) {
-            result[1] = genesisProtocol.redeem(_proposalId,_beneficiary);
-            uint daoBountyAmount = genesisProtocol.getRedeemableTokensStakerBounty(_proposalId,_beneficiary);
-            if ((daoBountyAmount > 0) && (genesisProtocol.stakingToken().balanceOf(_avatar) >= daoBountyAmount)) {
-                result[2] = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
-            }
+            (gpTokenReward,gpRepReward) = genesisProtocol.redeem(_proposalId,_beneficiary);
+            /*uint daoBountyAmount = genesisProtocol.getRedeemableTokensStakerBounty(_proposalId,_beneficiary);
+            if ((daoBountyAmount > 0) && (genesisProtocol.stakingToken().balanceOf(_avatar) >= daoBountyAmount)) {*/
+            (gpDaoBountyReward,gpDaoBountyReward) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
+            //}
             //redeem from contributionReward only if it is positive decision
             if (genesisProtocol.winningVote(_proposalId) == genesisProtocol.YES()) {
-                (result[3],result[4],result[5],result[6]) = contributionRewardRedeem(_proposalId,_avatar);
+                (crResult[0],crResult[1],crResult[2],crResult[3]) = contributionRewardRedeem(_proposalId,_avatar);
             }
         }
     }
