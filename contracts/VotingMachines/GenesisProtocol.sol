@@ -455,19 +455,21 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         //as voter
         Voter storage voter = proposal.voters[_beneficiary];
         if (voter.reputation != 0 ) {
-            if (proposal.votesCount[0] > 0) {
-                if ((voter.preBoosted)&&(proposal.votesCount[1]>0)) {
-                    amount += ((proposal.votersStakes * voter.reputation) / proposal.votesCount[1]);
-                }
-                if (proposal.state == ProposalState.Closed) {
-                    //no reputation flow occurs so give back reputation for the voter
-                    reputation += ((voter.reputation * params.votersReputationLossRatio)/100);
-                } else if (proposal.voters[_beneficiary].preBoosted && (proposal.winningVote == proposal.voters[_beneficiary].vote )) {
-                     //give back reputation for the voter
+
+            if ((voter.preBoosted)&&(proposal.votesCount[1]>0)) {
+                amount += ((proposal.votersStakes * voter.reputation) / proposal.votesCount[1]);
+            }
+            if (proposal.state == ProposalState.Closed) {
+                //no reputation flow occurs so give back reputation for the voter
+                reputation += ((voter.reputation * params.votersReputationLossRatio)/100);
+            } else {
+                if (proposal.voters[_beneficiary].preBoosted && (proposal.winningVote == proposal.voters[_beneficiary].vote )) {
+                 //give back reputation for the voter
                     reputation += (voter.reputation * params.votersReputationLossRatio)/100;
-                }
+              }
                 reputation += (voter.reputation * ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)/proposal.votesCount[0]);
             }
+
             proposal.voters[_beneficiary].reputation = 0;
         }
         //as proposer
