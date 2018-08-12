@@ -66,24 +66,27 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         address avatar; // the organization's avatar the proposal is target to.
         uint numOfChoices;
         ExecutableInterface executable; // will be executed if the proposal will pass
-        uint[2] votesCount; // votesCount[0] - total votes on a proposal
-                            // votesCount[1] - total pre boosted votes on a proposal
         uint votersStakes;
-        uint lostReputation;
         uint submittedTime;
         uint boostedPhaseTime; //the time the proposal shift to relative mode.
-        uint[2] totalStakes;// totalStakes[0] - (amount staked minus fee) - Total number of tokens staked which can be redeemable by stakers.
-                            // totalStakes[1] - (amount staked) - Total number of redeemable tokens.
         ProposalState state;
         uint winningVote; //the winning vote.
         address proposer;
         uint currentBoostedVotePeriodLimit;
         bytes32 paramsHash;
         uint daoBountyRemain;
-        mapping(uint=>uint) votes;
-        mapping(address=>Voter) voters;
-        mapping(uint=>uint) stakes;
-        mapping(address=>Staker) stakers;
+        uint[2] totalStakes;// totalStakes[0] - (amount staked minus fee) - Total number of tokens staked which can be redeemable by stakers.
+                            // totalStakes[1] - (amount staked) - Total number of redeemable tokens.
+        //      vote      reputation
+        mapping(uint    =>  uint     ) votes;
+        //      vote      reputation
+        mapping(uint    =>  uint     ) preBoostedVotes;
+        //      address     voter
+        mapping(address =>  Voter    ) voters;
+        //      vote        stakes
+        mapping(uint    =>  uint     ) stakes;
+        //      address  staker
+        mapping(address  => Staker   ) stakers;
     }
 
     event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
@@ -323,19 +326,22 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
 
     /**
     * @dev proposalStatus return the total votes and stakes for a given proposal
-    * @param _proposalId the ID of the proposal
-    * @return uint totalVotes
-    * @return uint totalPreBoostedVotes
+    * @param _proposalId the ID of the proposalt
+    * @return uint preBoostedVotes YES
+    * @return uint preBoostedVotes NO
     * @return uint stakersStakes
     * @return uint totalRedeemableStakes
-    * @return uint voterStakes
+    * @return uint total stakes YES
+    * @return uint total stakes NO 
     */
-    function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint, uint ,uint) {
-        return (proposals[_proposalId].votesCount[0],
-                proposals[_proposalId].votesCount[1],
+    function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint ,uint, uint ,uint) {
+        return (
+                proposals[_proposalId].preBoostedVotes[YES],
+                proposals[_proposalId].preBoostedVotes[NO],
                 proposals[_proposalId].totalStakes[0],
                 proposals[_proposalId].totalStakes[1],
-                proposals[_proposalId].votersStakes
+                proposals[_proposalId].stakes[YES],
+                proposals[_proposalId].stakes[NO]
         );
     }
 
@@ -373,31 +379,21 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     }
 
     /**
-      * @dev voteStake return the amount stakes for a given proposal and vote
-      * @param _proposalId the ID of the proposal
-      * @param _vote vote number
-      * @return uint stake amount
-    */
-    function voteStake(bytes32 _proposalId,uint _vote) external view returns(uint) {
-        return proposals[_proposalId].stakes[_vote];
-    }
-
-  /**
-    * @dev voteStake return the winningVote for a given proposal
-    * @param _proposalId the ID of the proposal
-    * @return uint winningVote
-    */
-    function winningVote(bytes32 _proposalId) external view returns(uint) {
-        return proposals[_proposalId].winningVote;
-    }
-
-    /**
       * @dev voteStake return the state for a given proposal
       * @param _proposalId the ID of the proposal
       * @return ProposalState proposal state
     */
     function state(bytes32 _proposalId) external view returns(ProposalState) {
         return proposals[_proposalId].state;
+    }
+
+    /**
+    * @dev winningVote return the winningVote for a given proposal
+    * @param _proposalId the ID of the proposal
+    * @return uint winningVote
+    */
+    function winningVote(bytes32 _proposalId) external view returns(uint) {
+        return proposals[_proposalId].winningVote;
     }
 
    /**
@@ -440,6 +436,12 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         Proposal storage proposal = proposals[_proposalId];
         require((proposal.state == ProposalState.Executed) || (proposal.state == ProposalState.Closed),"wrong proposal state");
         Parameters memory params = parameters[proposal.paramsHash];
+        uint lostReputation;
+        if (proposal.winningVote == YES) {
+            lostReputation = proposal.preBoostedVotes[NO];
+        } else {
+            lostReputation = proposal.preBoostedVotes[YES];
+        }
         //as staker
         if ((proposal.stakers[_beneficiary].amount>0) &&
              (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
@@ -448,34 +450,31 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                 amount = (proposal.stakers[_beneficiary].amount * proposal.totalStakes[0]) / totalWinningStakes;
             }
             if (proposal.state != ProposalState.Closed) {
-                reputation = (proposal.stakers[_beneficiary].amount * ( proposal.lostReputation - ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote];
+                reputation = (proposal.stakers[_beneficiary].amount * ( lostReputation - ((lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote];
             }
             proposal.stakers[_beneficiary].amount = 0;
         }
         //as voter
         Voter storage voter = proposal.voters[_beneficiary];
         if (voter.reputation != 0 ) {
-
-            if ((voter.preBoosted)&&(proposal.votesCount[1]>0)) {
-                amount += ((proposal.votersStakes * voter.reputation) / proposal.votesCount[1]);
+            uint preBoostedVotes = proposal.preBoostedVotes[YES] + proposal.preBoostedVotes[NO];
+            if ((voter.preBoosted)&&(preBoostedVotes>0)) {
+                amount += ((proposal.votersStakes * voter.reputation) / preBoostedVotes);
             }
-            if (proposal.state == ProposalState.Closed) {
-                //no reputation flow occurs so give back reputation for the voter
-                reputation += ((voter.reputation * params.votersReputationLossRatio)/100);
-            } else {
-                if (proposal.voters[_beneficiary].preBoosted && (proposal.winningVote == proposal.voters[_beneficiary].vote )) {
-                 //give back reputation for the voter
-                    reputation += (voter.reputation * params.votersReputationLossRatio)/100;
-              }
-                reputation += (voter.reputation * ((proposal.lostReputation * params.votersGainRepRatioFromLostRep)/100)/proposal.votesCount[0]);
+            if (proposal.voters[_beneficiary].preBoosted) {
+                if (proposal.state == ProposalState.Closed) {
+                  //give back reputation for the voter
+                    reputation += ((voter.reputation * params.votersReputationLossRatio)/100);
+                } else if (proposal.winningVote == proposal.voters[_beneficiary].vote ) {
+                    reputation += (((voter.reputation * params.votersReputationLossRatio)/100) +
+                    (voter.reputation * ((lostReputation * params.votersGainRepRatioFromLostRep)/100)/preBoostedVotes));
+                }
             }
-
             proposal.voters[_beneficiary].reputation = 0;
         }
         //as proposer
         if ((proposal.proposer == _beneficiary)&&(proposal.winningVote == YES)&&(proposal.proposer != address(0))) {
-
-            reputation += (params.proposingRepRewardConstA.mul(proposal.votesCount[0]) + params.proposingRepRewardConstB.mul(proposal.votes[YES]-proposal.votes[NO]))/1000;
+            reputation += (params.proposingRepRewardConstA.mul(proposal.votes[YES]+proposal.votes[NO]) + params.proposingRepRewardConstB.mul(proposal.votes[YES]-proposal.votes[NO]))/1000;
             proposal.proposer = 0;
         }
         if (amount != 0) {
@@ -831,11 +830,9 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             vote: _vote,
             preBoosted:(proposal.state == ProposalState.PreBoosted)
         });
-        proposal.votesCount[0] = rep.add(proposal.votesCount[0]);
         if (proposal.state != ProposalState.Boosted) {
-            proposal.votesCount[1] = rep.add(proposal.votesCount[1]);
+            proposal.preBoostedVotes[_vote] = rep.add(proposal.preBoostedVotes[_vote]);
             uint reputationDeposit = (params.votersReputationLossRatio * rep)/100;
-            proposal.lostReputation += reputationDeposit;
             ControllerInterface(Avatar(proposal.avatar).owner()).burnReputation(reputationDeposit,_voter,proposal.avatar);
         }
         // Event:
