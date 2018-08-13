@@ -104,7 +104,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     uint constant public NO = 2;
     uint constant public YES = 1;
     uint public proposalsCnt; // Total number of proposals
-    mapping(address=>uint) public orgBoostedProposalsCnt;
+    mapping(address=>uint) orgBoostedProposalsCnt;
     StandardToken public stakingToken;
     mapping(address=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
 
@@ -429,13 +429,20 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * users to redeem on behalf of someone else.
      * @param _proposalId the ID of the proposal
      * @param _beneficiary - the beneficiary address
-     * @return amount - redeem token amount
+     * @return rewards -
+     *         rewards[0] - stakerTokenAmount
+     *         rewards[1] - stakerReputationAmount
+     *         rewards[2] - voterTokenAmount
+     *         rewards[3] - voterReputationAmount
+     *         rewards[4] - proposerReputationAmount
      * @return reputation - redeem reputation
      */
-    function redeem(bytes32 _proposalId,address _beneficiary) public returns(uint amount, uint reputation) {
+    function redeem(bytes32 _proposalId,address _beneficiary) public returns (uint[5] rewards) {
         Proposal storage proposal = proposals[_proposalId];
         require((proposal.state == ProposalState.Executed) || (proposal.state == ProposalState.Closed),"wrong proposal state");
         Parameters memory params = parameters[proposal.paramsHash];
+        uint amount;
+        uint reputation;
         uint lostReputation;
         if (proposal.winningVote == YES) {
             lostReputation = proposal.preBoostedVotes[NO];
@@ -448,10 +455,10 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
              (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
             uint totalWinningStakes = proposal.stakes[proposal.winningVote];
             if (totalWinningStakes != 0) {
-                amount = (proposal.stakers[_beneficiary].amount * proposal.totalStakes[0]) / totalWinningStakes;
+                rewards[0] = (proposal.stakers[_beneficiary].amount * proposal.totalStakes[0]) / totalWinningStakes;
             }
             if (proposal.state != ProposalState.Closed) {
-                reputation = (proposal.stakers[_beneficiary].amount * ( lostReputation - ((lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote];
+                rewards[1] = (proposal.stakers[_beneficiary].amount * ( lostReputation - ((lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote];
             }
             proposal.stakers[_beneficiary].amount = 0;
         }
@@ -460,14 +467,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         if (voter.reputation != 0 ) {
             uint preBoostedVotes = proposal.preBoostedVotes[YES] + proposal.preBoostedVotes[NO];
             if ((voter.preBoosted)&&(preBoostedVotes>0)) {
-                amount += ((proposal.votersStakes * voter.reputation) / preBoostedVotes);
+                rewards[2] = ((proposal.votersStakes * voter.reputation) / preBoostedVotes);
             }
             if (proposal.voters[_beneficiary].preBoosted) {
                 if (proposal.state == ProposalState.Closed) {
                   //give back reputation for the voter
-                    reputation += ((voter.reputation * params.votersReputationLossRatio)/100);
+                    rewards[3] = ((voter.reputation * params.votersReputationLossRatio)/100);
                 } else if (proposal.winningVote == proposal.voters[_beneficiary].vote ) {
-                    reputation += (((voter.reputation * params.votersReputationLossRatio)/100) +
+                    rewards[3] = (((voter.reputation * params.votersReputationLossRatio)/100) +
                     (((voter.reputation * lostReputation * params.votersGainRepRatioFromLostRep)/100)/preBoostedVotes));
                 }
             }
@@ -475,9 +482,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         }
         //as proposer
         if ((proposal.proposer == _beneficiary)&&(proposal.winningVote == YES)&&(proposal.proposer != address(0))) {
-            reputation += (params.proposingRepRewardConstA.mul(proposal.votes[YES]+proposal.votes[NO]) + params.proposingRepRewardConstB.mul(proposal.votes[YES]-proposal.votes[NO]))/1000;
+            rewards[4] = (params.proposingRepRewardConstA.mul(proposal.votes[YES]+proposal.votes[NO]) + params.proposingRepRewardConstB.mul(proposal.votes[YES]-proposal.votes[NO]))/1000;
             proposal.proposer = 0;
         }
+        amount = rewards[0] + rewards[2];
+        reputation = rewards[1] + rewards[3] + rewards[4];
         if (amount != 0) {
             proposal.totalStakes[1] = proposal.totalStakes[1].sub(amount);
             require(stakingToken.transfer(_beneficiary, amount));
@@ -546,6 +555,20 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     }
 
     /**
+     * @dev getBoostedProposalsCount return the number of boosted proposal for an organization
+     * @param _avatar the organization avatar
+     * @return uint number of boosted proposals
+     */
+    function getBoostedProposalsCount(address _avatar) public view returns(uint) {
+        uint expiredProposals;
+        if (proposalsExpiredTimes[_avatar].count() != 0) {
+          // solium-disable-next-line security/no-block-members
+            expiredProposals = proposalsExpiredTimes[_avatar].rank(now);
+        }
+        return orgBoostedProposalsCnt[_avatar].sub(expiredProposals);
+    }
+
+    /**
      * @dev threshold return the organization's score threshold which required by
      * a proposal to shift to boosted state.
      * This threshold is dynamically set and it depend on the number of boosted proposal.
@@ -554,12 +577,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
      * @return int organization's score threshold.
      */
     function threshold(bytes32 _paramsHash,address _avatar) public view returns(int) {
-        uint expiredProposals;
-        if (proposalsExpiredTimes[_avatar].count() != 0) {
-          // solium-disable-next-line security/no-block-members
-            expiredProposals = proposalsExpiredTimes[_avatar].rank(now);
-        }
-        uint boostedProposals = orgBoostedProposalsCnt[_avatar].sub(expiredProposals);
+        uint boostedProposals = getBoostedProposalsCount(_avatar);
         int216 e = 2;
 
         Parameters memory params = parameters[_paramsHash];

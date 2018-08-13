@@ -54,9 +54,9 @@ contract Redeemer {
         pState = genesisProtocol.state(_proposalId);
         if ((pState == GenesisProtocol.ProposalState.Executed) ||
             (pState == GenesisProtocol.ProposalState.Closed)) {
-            (gpTokenReward,gpRepReward) = genesisProtocol.redeem(_proposalId,_beneficiary);
-            /*uint daoBountyAmount = genesisProtocol.getRedeemableTokensStakerBounty(_proposalId,_beneficiary);
-            if ((daoBountyAmount > 0) && (genesisProtocol.stakingToken().balanceOf(_avatar) >= daoBountyAmount)) {*/
+            uint[5] memory rewards = genesisProtocol.redeem(_proposalId,_beneficiary);
+            gpTokenReward = rewards[0] + rewards[2];
+            gpRepReward = rewards[1] + rewards[3] + rewards[4];
             (gpDaoBountyReward,gpDaoBountyReward) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
             //}
             //redeem from contributionReward only if it is positive decision
