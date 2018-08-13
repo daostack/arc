@@ -326,7 +326,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
 
     /**
     * @dev proposalStatus return the total votes and stakes for a given proposal
-    * @param _proposalId the ID of the proposalt
+    * @param _proposalId the ID of the proposal
     * @return uint preBoostedVotes YES
     * @return uint preBoostedVotes NO
     * @return uint stakersStakes
