@@ -270,7 +270,6 @@ contract('GenesisProtocol', function (accounts) {
       await testSetup.genesisProtocol.vote(proposalId, 1);
 
       winningVote = 1;
-      lostReputation = (10 * testSetup.reputationArray[0])/100; //10 % of testSetup.reputationArray[0]
       var proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
       assert.equal(testSetup.reputationArray[0],proposalStatus[0]);
       assert.equal(0,proposalStatus[1]);
@@ -294,7 +293,6 @@ contract('GenesisProtocol', function (accounts) {
       // another minority reputation (Option 0):
       await testSetup.genesisProtocol.vote(proposalId, 2, { from: accounts[1] });
       await checkVoteInfo(proposalId, accounts[1], [2, testSetup.reputationArray[1]],testSetup.genesisProtocol);
-      lostReputation += (10 * testSetup.reputationArray[1])/100;
       proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
       assert.equal(testSetup.reputationArray[0],proposalStatus[0]);
       assert.equal(testSetup.reputationArray[1],proposalStatus[1]);

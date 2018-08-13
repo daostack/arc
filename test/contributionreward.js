@@ -516,7 +516,12 @@ contract('ContributionReward', function(accounts) {
      assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),reputationReward);
      assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
      var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
-     assert.equal(reputation,1141);
+
+     var reputationGainAsVoter =  0;
+     var proposingRepRewardConstA=60;
+     var proposingRepRewardConstB=1;
+     var reputationGainAsProposer = (proposingRepRewardConstA*1000 + proposingRepRewardConstB*1000)/1000;
+     assert.equal(reputation, 1000+reputationGainAsVoter + reputationGainAsProposer);
     });
     it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer for negative proposal", async function() {
       var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
@@ -547,9 +552,11 @@ contract('ContributionReward', function(accounts) {
       assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),0);
       assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),0);
       var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
-      assert.equal(reputation,1080);
+      //no reputation reward for proposer for negative proposal.
+      //reputation reward for a single voter = 0
+      assert.equal(reputation, 1000);
      });
-     
+
     it("execute proposeContributionReward  mint reputation with period 0 ", async function() {
        var testSetup = await setup(accounts);
        var reputationReward = 12;
