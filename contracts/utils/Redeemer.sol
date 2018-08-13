@@ -38,8 +38,7 @@ contract Redeemer {
     */
     function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
     external
-    returns(uint gpTokenReward,
-            uint gpRepReward,
+    returns(uint[5] gpRewards,
             uint gpDaoBountyReward,
             bool executed,
             bool[4] crResult)
@@ -54,9 +53,7 @@ contract Redeemer {
         pState = genesisProtocol.state(_proposalId);
         if ((pState == GenesisProtocol.ProposalState.Executed) ||
             (pState == GenesisProtocol.ProposalState.Closed)) {
-            uint[5] memory rewards = genesisProtocol.redeem(_proposalId,_beneficiary);
-            gpTokenReward = rewards[0] + rewards[2];
-            gpRepReward = rewards[1] + rewards[3] + rewards[4];
+            gpRewards = genesisProtocol.redeem(_proposalId,_beneficiary);
             (gpDaoBountyReward,gpDaoBountyReward) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
             //}
             //redeem from contributionReward only if it is positive decision
