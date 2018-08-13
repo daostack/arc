@@ -332,7 +332,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     * @return uint stakersStakes
     * @return uint totalRedeemableStakes
     * @return uint total stakes YES
-    * @return uint total stakes NO 
+    * @return uint total stakes NO
     */
     function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint ,uint, uint ,uint) {
         return (
@@ -442,6 +442,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         } else {
             lostReputation = proposal.preBoostedVotes[YES];
         }
+        lostReputation = (lostReputation * params.votersReputationLossRatio)/100;
         //as staker
         if ((proposal.stakers[_beneficiary].amount>0) &&
              (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
@@ -467,7 +468,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
                     reputation += ((voter.reputation * params.votersReputationLossRatio)/100);
                 } else if (proposal.winningVote == proposal.voters[_beneficiary].vote ) {
                     reputation += (((voter.reputation * params.votersReputationLossRatio)/100) +
-                    (voter.reputation * ((lostReputation * params.votersGainRepRatioFromLostRep)/100)/preBoostedVotes));
+                    (((voter.reputation * lostReputation * params.votersGainRepRatioFromLostRep)/100)/preBoostedVotes));
                 }
             }
             proposal.voters[_beneficiary].reputation = 0;

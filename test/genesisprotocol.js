@@ -1278,10 +1278,6 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),true);
     await helpers.increaseTime(61);
     await testSetup.genesisProtocol.execute(proposalId);
-    // var stakerRedeemAmount = await testSetup.genesisProtocol.getRedeemableTokensStaker(proposalId,accounts[0]);
-    // assert.equal(stakerRedeemAmount,90);
-    // var voterRedeemAmount = await testSetup.genesisProtocol.getRedeemableTokensVoter(proposalId,accounts[0]);
-    // assert.equal(voterRedeemAmount,10);
     var redeemRewards = await testSetup.genesisProtocol.redeem.call(proposalId,accounts[0]);
     var redeemToken = redeemRewards[0];
     assert.equal(redeemToken,10+90);
@@ -1372,34 +1368,48 @@ contract('GenesisProtocol', function (accounts) {
     });
 
     it("reputation flow ", async () => {
-      var testSetup = await setup(accounts);
-      let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
+      var voterY = accounts[0];
+      var voterN = accounts[1];
+      var proposer = accounts[2];
+      var staker = accounts[2];
+
+      var votersReputationLossRatio=20;
+      var votersGainRepRatioFromLostRep=80;
+      var testSetup = await setup(accounts,50,60,60,1,1,0,0,60,1,10,votersReputationLossRatio,votersGainRepRatioFromLostRep,15,10);
+      let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,proposer);
       var proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
 
-      await testSetup.genesisProtocol.vote(proposalId,YES);
+      await testSetup.genesisProtocol.vote(proposalId,YES,{from:voterY});
+      await testSetup.genesisProtocol.vote(proposalId,NO,{from:voterN});
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
-      await stake(testSetup,proposalId,YES,100,accounts[0]);
+      await testSetup.stakingToken.transfer(staker,500,{from:accounts[0]});
+      await stake(testSetup,proposalId,YES,100,staker);
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),true);
       await helpers.increaseTime(61);
       await testSetup.genesisProtocol.execute(proposalId);
-      var redeemRewards = await testSetup.genesisProtocol.redeem.call(proposalId,accounts[0]);
+      var redeemRewards = await testSetup.genesisProtocol.redeem.call(proposalId,voterY);
       var redeemToken = redeemRewards[0];
       var RedeemReputation = redeemRewards[1];
-      assert.equal(redeemToken,100);
-      tx = await testSetup.genesisProtocol.redeem(proposalId,accounts[0]);
+      var repVoterY = testSetup.reputationArray[0];
+      var repVoterN = testSetup.reputationArray[1];
+      var preBoostedVotes = repVoterY + repVoterN;
+      var lostReputation = (repVoterN * votersReputationLossRatio)/100;
+      var voterYRepDeposit = (repVoterY * votersReputationLossRatio)/100;
+      assert.equal(RedeemReputation,Math.round((voterYRepDeposit + (repVoterY *((lostReputation*votersGainRepRatioFromLostRep)/100)/ preBoostedVotes))));
+      assert.equal(redeemToken,6);
+      tx = await testSetup.genesisProtocol.redeem(proposalId,voterY);
       assert.equal(tx.logs.length, 2);
       assert.equal(tx.logs[0].event, "Redeem");
       assert.equal(tx.logs[0].args._proposalId, proposalId);
-      assert.equal(tx.logs[0].args._beneficiary, accounts[0]);
-      assert.equal(tx.logs[0].args._amount, 100);
+      assert.equal(tx.logs[0].args._beneficiary, voterY);
+      assert.equal(tx.logs[0].args._amount, redeemToken.toNumber());
       assert.equal(tx.logs[1].event, "RedeemReputation");
       assert.equal(tx.logs[1].args._proposalId, proposalId);
-      assert.equal(tx.logs[1].args._beneficiary, accounts[0]);
+      assert.equal(tx.logs[1].args._beneficiary, voterY);
       assert.equal(tx.logs[1].args._amount, RedeemReputation.toNumber());
-      assert.equal(await testSetup.stakingToken.balanceOf(accounts[0]),1000);
-      var loss = (10*testSetup.reputationArray[0])/100;  //votersReputationLossRatio
-      assert.equal(await testSetup.org.reputation.reputationOf(accounts[0]),testSetup.reputationArray[0] + RedeemReputation.toNumber() - loss);
+      assert.equal(await testSetup.stakingToken.balanceOf(voterY),500+redeemToken.toNumber());
+      assert.equal(await testSetup.org.reputation.reputationOf(voterY),Math.round(repVoterY+(repVoterY *((lostReputation*votersGainRepRatioFromLostRep)/100)/ preBoostedVotes)));
     });
 
     it("reputation flow for unsuccessful voting", async () => {
