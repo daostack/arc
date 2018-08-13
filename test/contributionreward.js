@@ -510,13 +510,18 @@ contract('ContributionReward', function(accounts) {
      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[0]});
      await helpers.increaseTime(periodLength+1);
      var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
+     var redeemRewards = await arcUtils.redeem.call(proposalId,testSetup.org.avatar.address,accounts[0]);
+     assert.equal(redeemRewards[0][3],100); //redeemRewards[0] gpRewards
+     assert.equal(redeemRewards[0][4],61);
+     assert.equal(redeemRewards[1],0); //daoBountyRewards
+     assert.equal(redeemRewards[2],false); //isExecuted
+     assert.equal(redeemRewards[3][0],true); //redeemRewards[3] crResultArray
      await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
      var eth = web3.eth.getBalance(otherAvatar.address);
      assert.equal(eth.toNumber(),ethReward);
      assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),reputationReward);
      assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
      var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
-
      var reputationGainAsVoter =  0;
      var proposingRepRewardConstA=60;
      var proposingRepRewardConstB=1;

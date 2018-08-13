@@ -26,14 +26,19 @@ contract Redeemer {
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
     * @param _beneficiary beneficiary
-    * @return result boolean array for the following redeem types:
-    *          result[0] -execute -true or false
-    *          result[1]- redeem reputation and stakingTokens(GEN) from GenesisProtocol
-    *          result[2] -redeem daoBounty(GEN) from GenesisProtocol
-    *          result[3]- reputation - from ContributionReward
-    *          result[4]- nativeTokenReward - from ContributionReward
-    *          result[5]- Ether - from ContributionReward
-    *          result[6]- ExternalToken - from ContributionReward
+    * @return gpRewards array
+    *          gpRewards[0] - stakerTokenAmount
+    *          gpRewards[1] - stakerReputationAmount
+    *          gpRewards[2] - voterTokenAmount
+    *          gpRewards[3] - voterReputationAmount
+    *          gpRewards[4] - proposerReputationAmount
+    * @return gpDaoBountyReward
+    * @return executed bool true or false
+    * @return crResult array
+    *          crResults[3]- reputation - from ContributionReward
+    *          crResults[4]- nativeTokenReward - from ContributionReward
+    *          crResults[5]- Ether - from ContributionReward
+    *          crResults[6]- ExternalToken - from ContributionReward
 
     */
     function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
@@ -41,7 +46,7 @@ contract Redeemer {
     returns(uint[5] gpRewards,
             uint gpDaoBountyReward,
             bool executed,
-            bool[4] crResult)
+            bool[4] crResults)
     {
         GenesisProtocol.ProposalState pState = genesisProtocol.state(_proposalId);
         // solium-disable-next-line operator-whitespace
@@ -58,7 +63,7 @@ contract Redeemer {
             //}
             //redeem from contributionReward only if it is positive decision
             if (genesisProtocol.winningVote(_proposalId) == genesisProtocol.YES()) {
-                (crResult[0],crResult[1],crResult[2],crResult[3]) = contributionRewardRedeem(_proposalId,_avatar);
+                (crResults[0],crResults[1],crResults[2],crResults[3]) = contributionRewardRedeem(_proposalId,_avatar);
             }
         }
     }
