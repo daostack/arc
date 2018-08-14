@@ -401,4 +401,8 @@ contract ContributionReward is UniversalScheme {
         return organizationsProposals[_avatar][_proposalId].externalToken;
     }
 
+    function getProposalExecutionTime(bytes32 _proposalId, address _avatar) public view returns (uint) {
+        return organizationsProposals[_avatar][_proposalId].executionTime;
+    }
+
 }

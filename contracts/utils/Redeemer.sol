@@ -63,9 +63,8 @@ contract Redeemer {
             (pState == GenesisProtocol.ProposalState.Closed)) {
             gpRewards = genesisProtocol.redeem(_proposalId,_beneficiary);
             (gpDaoBountyReward[0],gpDaoBountyReward[1]) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
-            //}
-            //redeem from contributionReward only if it is positive decision
-            if (genesisProtocol.winningVote(_proposalId) == genesisProtocol.YES()) {
+            //redeem from contributionReward only if it executed
+            if (contributionReward.getProposalExecutionTime(_proposalId,_avatar) > 0) {
                 (crResults[0],crResults[1],crResults[2],crResults[3]) = contributionRewardRedeem(_proposalId,_avatar);
             }
         }
@@ -78,7 +77,6 @@ contract Redeemer {
         bool[4] memory whatToRedeem;
         whatToRedeem[0] = true; //reputation
         whatToRedeem[1] = true; //nativeToken
-
         uint periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,2);
         uint ethReward = contributionReward.getProposalEthReward(_proposalId,_avatar);
         uint externalTokenReward = contributionReward.getProposalExternalTokenReward(_proposalId,_avatar);
