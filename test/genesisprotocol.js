@@ -1469,12 +1469,10 @@ contract('GenesisProtocol', function (accounts) {
       assert.equal(await testSetup.genesisProtocol.getBoostedProposalsCount(testSetup.org.avatar.address),0);
 
       await testSetup.genesisProtocol.execute(proposalId);
-      await helpers.increaseTime(100); //increase time
+
       assert.equal(await testSetup.genesisProtocol.threshold(testSetup.genesisProtocolParams.paramsHash,testSetup.org.avatar.address),1);
 
       assert.equal(await testSetup.genesisProtocol.getBoostedProposalsCount(testSetup.org.avatar.address),0);
-
-      assert.equal(await testSetup.genesisProtocol.threshold(testSetup.genesisProtocolParams.paramsHash,testSetup.org.avatar.address),1);
 
       proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
       assert.equal(proposalInfo[proposalStateIndex],2);//executed
