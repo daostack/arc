@@ -34,11 +34,11 @@ contract Redeemer {
     *          gpRewards[4] - proposerReputationAmount
     * @return gpDaoBountyReward
     * @return executed bool true or false
-    * @return crResult array
-    *          crResults[3]- reputation - from ContributionReward
-    *          crResults[4]- nativeTokenReward - from ContributionReward
-    *          crResults[5]- Ether - from ContributionReward
-    *          crResults[6]- ExternalToken - from ContributionReward
+    * @return crResults array
+    *          crResults[0]- reputation - from ContributionReward
+    *          crResults[1]- nativeTokenReward - from ContributionReward
+    *          crResults[2]- Ether - from ContributionReward
+    *          crResults[3]- ExternalToken - from ContributionReward
 
     */
     function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
