@@ -32,7 +32,10 @@ contract Redeemer {
     *          gpRewards[2] - voterTokenAmount
     *          gpRewards[3] - voterReputationAmount
     *          gpRewards[4] - proposerReputationAmount
-    * @return gpDaoBountyReward
+    * @return gpDaoBountyReward array
+    *         gpDaoBountyReward[0] - staker dao bounty reward -
+    *                                will be zero for the case there is not enough tokens in avatar for the reward.
+    *         gpDaoBountyReward[1] - staker potential dao bounty reward.
     * @return executed bool true or false
     * @return crResults array
     *          crResults[0]- reputation - from ContributionReward
@@ -44,7 +47,7 @@ contract Redeemer {
     function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
     external
     returns(uint[5] gpRewards,
-            uint gpDaoBountyReward,
+            uint[2] gpDaoBountyReward,
             bool executed,
             bool[4] crResults)
     {
@@ -59,7 +62,7 @@ contract Redeemer {
         if ((pState == GenesisProtocol.ProposalState.Executed) ||
             (pState == GenesisProtocol.ProposalState.Closed)) {
             gpRewards = genesisProtocol.redeem(_proposalId,_beneficiary);
-            (gpDaoBountyReward,gpDaoBountyReward) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
+            (gpDaoBountyReward[0],gpDaoBountyReward[1]) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
             //}
             //redeem from contributionReward only if it is positive decision
             if (genesisProtocol.winningVote(_proposalId) == genesisProtocol.YES()) {

@@ -513,7 +513,8 @@ contract('ContributionReward', function(accounts) {
      var redeemRewards = await arcUtils.redeem.call(proposalId,testSetup.org.avatar.address,accounts[0]);
      assert.equal(redeemRewards[0][3],100); //redeemRewards[0] gpRewards
      assert.equal(redeemRewards[0][4],61);
-     assert.equal(redeemRewards[1],0); //daoBountyRewards
+     assert.equal(redeemRewards[1][0],0); //daoBountyRewards
+     assert.equal(redeemRewards[1][1],0); //daoBountyRewards
      assert.equal(redeemRewards[2],false); //isExecuted
      assert.equal(redeemRewards[3][0],true); //redeemRewards[3] crResultArray
      await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
