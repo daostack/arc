@@ -22,42 +22,50 @@ contract Redeemer {
     * It tries to redeem proposal rewards from the contribution rewards scheme.
     * This function does not emit events.
     * A client should listen to GenesisProtocol and ContributionReward redemption events
-    * to monitor redemption operations. 
+    * to monitor redemption operations.
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
     * @param _beneficiary beneficiary
-    * @return result boolean array for the following redeem types:
-    *          result[0] -execute -true or false
-    *          result[1]- redeem reputation and stakingTokens(GEN) from GenesisProtocol
-    *          result[2] -redeem daoBounty(GEN) from GenesisProtocol
-    *          result[3]- reputation - from ContributionReward
-    *          result[4]- nativeTokenReward - from ContributionReward
-    *          result[5]- Ether - from ContributionReward
-    *          result[6]- ExternalToken - from ContributionReward
+    * @return gpRewards array
+    *          gpRewards[0] - stakerTokenAmount
+    *          gpRewards[1] - stakerReputationAmount
+    *          gpRewards[2] - voterTokenAmount
+    *          gpRewards[3] - voterReputationAmount
+    *          gpRewards[4] - proposerReputationAmount
+    * @return gpDaoBountyReward array
+    *         gpDaoBountyReward[0] - staker dao bounty reward -
+    *                                will be zero for the case there is not enough tokens in avatar for the reward.
+    *         gpDaoBountyReward[1] - staker potential dao bounty reward.
+    * @return executed bool true or false
+    * @return crResults array
+    *          crResults[0]- reputation - from ContributionReward
+    *          crResults[1]- nativeTokenReward - from ContributionReward
+    *          crResults[2]- Ether - from ContributionReward
+    *          crResults[3]- ExternalToken - from ContributionReward
 
     */
     function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
     external
-    returns(bool[7] result)
+    returns(uint[5] gpRewards,
+            uint[2] gpDaoBountyReward,
+            bool executed,
+            bool[4] crResults)
     {
         GenesisProtocol.ProposalState pState = genesisProtocol.state(_proposalId);
         // solium-disable-next-line operator-whitespace
         if ((pState == GenesisProtocol.ProposalState.PreBoosted)||
             (pState == GenesisProtocol.ProposalState.Boosted)||
             (pState == GenesisProtocol.ProposalState.QuietEndingPeriod)) {
-            result[0] = genesisProtocol.execute(_proposalId);
+            executed = genesisProtocol.execute(_proposalId);
         }
         pState = genesisProtocol.state(_proposalId);
         if ((pState == GenesisProtocol.ProposalState.Executed) ||
             (pState == GenesisProtocol.ProposalState.Closed)) {
-            result[1] = genesisProtocol.redeem(_proposalId,_beneficiary);
-            uint daoBountyAmount = genesisProtocol.getRedeemableTokensStakerBounty(_proposalId,_beneficiary);
-            if ((daoBountyAmount > 0) && (genesisProtocol.stakingToken().balanceOf(_avatar) >= daoBountyAmount)) {
-                result[2] = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
-            }
-            //redeem from contributionReward only if it is positive decision
-            if (genesisProtocol.winningVote(_proposalId) == genesisProtocol.YES()) {
-                (result[3],result[4],result[5],result[6]) = contributionRewardRedeem(_proposalId,_avatar);
+            gpRewards = genesisProtocol.redeem(_proposalId,_beneficiary);
+            (gpDaoBountyReward[0],gpDaoBountyReward[1]) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
+            //redeem from contributionReward only if it executed
+            if (contributionReward.getProposalExecutionTime(_proposalId,_avatar) > 0) {
+                (crResults[0],crResults[1],crResults[2],crResults[3]) = contributionRewardRedeem(_proposalId,_avatar);
             }
         }
     }
@@ -69,7 +77,6 @@ contract Redeemer {
         bool[4] memory whatToRedeem;
         whatToRedeem[0] = true; //reputation
         whatToRedeem[1] = true; //nativeToken
-
         uint periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,2);
         uint ethReward = contributionReward.getProposalEthReward(_proposalId,_avatar);
         uint externalTokenReward = contributionReward.getProposalExternalTokenReward(_proposalId,_avatar);

@@ -510,13 +510,24 @@ contract('ContributionReward', function(accounts) {
      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[0]});
      await helpers.increaseTime(periodLength+1);
      var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
+     var redeemRewards = await arcUtils.redeem.call(proposalId,testSetup.org.avatar.address,accounts[0]);
+     assert.equal(redeemRewards[0][3],100); //redeemRewards[0] gpRewards
+     assert.equal(redeemRewards[0][4],61);
+     assert.equal(redeemRewards[1][0],0); //daoBountyRewards
+     assert.equal(redeemRewards[1][1],0); //daoBountyRewards
+     assert.equal(redeemRewards[2],false); //isExecuted
+     assert.equal(redeemRewards[3][0],true); //redeemRewards[3] crResultArray
      await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
      var eth = web3.eth.getBalance(otherAvatar.address);
      assert.equal(eth.toNumber(),ethReward);
      assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),reputationReward);
      assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
      var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
-     assert.equal(reputation,1141);
+     var reputationGainAsVoter =  0;
+     var proposingRepRewardConstA=60;
+     var proposingRepRewardConstB=1;
+     var reputationGainAsProposer = (proposingRepRewardConstA*1000 + proposingRepRewardConstB*1000)/1000;
+     assert.equal(reputation, 1000+reputationGainAsVoter + reputationGainAsProposer);
     });
     it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer for negative proposal", async function() {
       var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
@@ -547,9 +558,11 @@ contract('ContributionReward', function(accounts) {
       assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),0);
       assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),0);
       var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
-      assert.equal(reputation,1080);
+      //no reputation reward for proposer for negative proposal.
+      //reputation reward for a single voter = 0
+      assert.equal(reputation, 1000);
      });
-     
+
     it("execute proposeContributionReward  mint reputation with period 0 ", async function() {
        var testSetup = await setup(accounts);
        var reputationReward = 12;
