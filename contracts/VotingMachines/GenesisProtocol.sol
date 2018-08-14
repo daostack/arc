@@ -368,13 +368,13 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
     }
 
     /**
-      * @dev staker return the vote and stake amount for a given proposal and staker
+      * @dev getStaker return the vote and stake amount for a given proposal and staker
       * @param _proposalId the ID of the proposal
       * @param _staker staker address
       * @return uint vote
       * @return uint amount
     */
-    function staker(bytes32 _proposalId,address _staker) external view returns(uint,uint) {
+    function getStaker(bytes32 _proposalId,address _staker) external view returns(uint,uint) {
         return (proposals[_proposalId].stakers[_staker].vote,proposals[_proposalId].stakers[_staker].amount);
     }
 
@@ -451,34 +451,33 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         }
         lostReputation = (lostReputation * params.votersReputationLossRatio)/100;
         //as staker
-        if ((proposal.stakers[_beneficiary].amount>0) &&
-             (proposal.stakers[_beneficiary].vote == proposal.winningVote)) {
+        Staker storage staker = proposal.stakers[_beneficiary];
+        if ((staker.amount>0) &&
+             (staker.vote == proposal.winningVote)) {
             uint totalWinningStakes = proposal.stakes[proposal.winningVote];
             if (totalWinningStakes != 0) {
-                rewards[0] = (proposal.stakers[_beneficiary].amount * proposal.totalStakes[0]) / totalWinningStakes;
+                rewards[0] = (staker.amount * proposal.totalStakes[0]) / totalWinningStakes;
             }
             if (proposal.state != ProposalState.Closed) {
-                rewards[1] = (proposal.stakers[_beneficiary].amount * ( lostReputation - ((lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote];
+                rewards[1] = (staker.amount * ( lostReputation - ((lostReputation * params.votersGainRepRatioFromLostRep)/100)))/proposal.stakes[proposal.winningVote];
             }
-            proposal.stakers[_beneficiary].amount = 0;
+            staker.amount = 0;
         }
         //as voter
         Voter storage voter = proposal.voters[_beneficiary];
-        if (voter.reputation != 0 ) {
+        if ((voter.reputation != 0 ) && (voter.preBoosted)) {
             uint preBoostedVotes = proposal.preBoostedVotes[YES] + proposal.preBoostedVotes[NO];
-            if ((voter.preBoosted)&&(preBoostedVotes>0)) {
+            if (preBoostedVotes>0) {
                 rewards[2] = ((proposal.votersStakes * voter.reputation) / preBoostedVotes);
             }
-            if (proposal.voters[_beneficiary].preBoosted) {
-                if (proposal.state == ProposalState.Closed) {
-                  //give back reputation for the voter
-                    rewards[3] = ((voter.reputation * params.votersReputationLossRatio)/100);
-                } else if (proposal.winningVote == proposal.voters[_beneficiary].vote ) {
-                    rewards[3] = (((voter.reputation * params.votersReputationLossRatio)/100) +
-                    (((voter.reputation * lostReputation * params.votersGainRepRatioFromLostRep)/100)/preBoostedVotes));
-                }
+            if (proposal.state == ProposalState.Closed) {
+              //give back reputation for the voter
+                rewards[3] = ((voter.reputation * params.votersReputationLossRatio)/100);
+            } else if (proposal.winningVote == voter.vote ) {
+                rewards[3] = (((voter.reputation * params.votersReputationLossRatio)/100) +
+                (((voter.reputation * lostReputation * params.votersGainRepRatioFromLostRep)/100)/preBoostedVotes));
             }
-            proposal.voters[_beneficiary].reputation = 0;
+            voter.reputation = 0;
         }
         //as proposer
         if ((proposal.proposer == _beneficiary)&&(proposal.winningVote == YES)&&(proposal.proposer != address(0))) {
@@ -765,8 +764,8 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         }
 
         // enable to increase stake only on the previous stake vote
-        Staker storage lstaker = proposal.stakers[_staker];
-        if ((lstaker.amount > 0) && (lstaker.vote != _vote)) {
+        Staker storage staker = proposal.stakers[_staker];
+        if ((staker.amount > 0) && (staker.vote != _vote)) {
             return false;
         }
 
@@ -775,13 +774,14 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
         require(amount >= params.minimumStakingFee);
         require(stakingToken.transferFrom(_staker, address(this), amount));
         proposal.totalStakes[1] = proposal.totalStakes[1].add(amount); //update totalRedeemableStakes
-        lstaker.amount += amount;
-        lstaker.amountForBounty = lstaker.amount;
-        lstaker.vote = _vote;
+        staker.amount += amount;
+        staker.amountForBounty = staker.amount;
+        staker.vote = _vote;
 
         proposal.votersStakes += (params.stakerFeeRatioForVoters * amount)/100;
         proposal.stakes[_vote] = amount.add(proposal.stakes[_vote]);
         amount = amount - ((params.stakerFeeRatioForVoters*amount)/100);
+
         proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
       // Event:
         emit Stake(_proposalId, proposal.avatar, _staker, _vote, _amount);

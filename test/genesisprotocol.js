@@ -934,7 +934,7 @@ contract('GenesisProtocol', function (accounts) {
     let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
     var proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
-    let staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    let staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],0);
     assert.equal(staker[1],0);
 
@@ -944,7 +944,7 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx[0].args._staker, accounts[0]);
     assert.equal(tx[0].args._vote, 1);
     assert.equal(tx[0].args._amount, 10);
-    staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],1);
     assert.equal(staker[1],10);
      nonce--;
@@ -971,7 +971,7 @@ contract('GenesisProtocol', function (accounts) {
     let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
     var proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
-    let staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    let staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],0);
     assert.equal(staker[1],0);
     var textMsg = "0x"+ethereumjs.soliditySHA3(
@@ -998,7 +998,7 @@ contract('GenesisProtocol', function (accounts) {
     let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
     var proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
-    let staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    let staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],0);
     assert.equal(staker[1],0);
     var textMsg = "0x"+ethereumjs.soliditySHA3(
@@ -1024,7 +1024,7 @@ contract('GenesisProtocol', function (accounts) {
     let tx = await testSetup.genesisProtocol.propose(2, 0, testSetup.org.avatar.address, testSetup.executable.address,accounts[0]);
     var proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
-    let staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    let staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],0);
     assert.equal(staker[1],0);
 
@@ -1034,7 +1034,7 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx[0].args._staker, accounts[0]);
     assert.equal(tx[0].args._vote, 1);
     assert.equal(tx[0].args._amount, 10);
-    staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],1);
     assert.equal(staker[1],10);
 
@@ -1045,7 +1045,7 @@ contract('GenesisProtocol', function (accounts) {
     assert.equal(tx[0].args._staker, accounts[0]);
     assert.equal(tx[0].args._vote, 1);
     assert.equal(tx[0].args._amount, 10);
-    staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],1);
     assert.equal(staker[1],20);
 
@@ -1053,7 +1053,7 @@ contract('GenesisProtocol', function (accounts) {
 
     tx = await stake(testSetup,proposalId,2,10,accounts[0]);
     assert.equal(tx.length, 0);
-    staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],1);
     assert.equal(staker[1],20);
 
