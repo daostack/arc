@@ -524,11 +524,11 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             if (potentialAmount > beneficiaryLimit) {
                 potentialAmount = beneficiaryLimit;
             }
-            proposal.stakers[_beneficiary].amountForBounty = 0;
         }
         if ((potentialAmount != 0)&&(stakingToken.balanceOf(proposal.avatar) >= potentialAmount)) {
             proposal.daoBountyRemain = proposal.daoBountyRemain.sub(potentialAmount);
             require(ControllerInterface(Avatar(proposal.avatar).owner()).externalTokenTransfer(stakingToken,_beneficiary,potentialAmount,proposal.avatar));
+            proposal.stakers[_beneficiary].amountForBounty = 0;
             redeemedAmount = potentialAmount;
             emit RedeemDaoBounty(_proposalId,proposal.avatar,_beneficiary,redeemedAmount);
         }

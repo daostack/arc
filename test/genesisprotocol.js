@@ -1545,6 +1545,8 @@ contract('GenesisProtocol', function (accounts) {
       //'there is no tokens on the dao for bounty'
       assert.equal(stakerRedeemAmountBaunty,0);
       //send tokens to org avatar
+      tx = await testSetup.genesisProtocol.redeemDaoBounty(proposalId,accounts[0]);
+      assert.equal(tx.logs.length,0); //not enough funds 
       await testSetup.stakingToken.transfer(testSetup.org.avatar.address,potentialAmount);
       tx = await testSetup.genesisProtocol.redeemDaoBounty(proposalId,accounts[0]);
       assert.equal(tx.logs.length,1);
@@ -1553,6 +1555,9 @@ contract('GenesisProtocol', function (accounts) {
       assert.equal(tx.logs[0].args._beneficiary, accounts[0]);
       assert.equal(tx.logs[0].args._amount, potentialAmount.toNumber());
       assert.equal(await testSetup.stakingToken.balanceOf(accounts[0]),900);
+
+      tx = await testSetup.genesisProtocol.redeemDaoBounty(proposalId,accounts[0]);
+      assert.equal(tx.logs.length,0);
 
     });
 
