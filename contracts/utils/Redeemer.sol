@@ -36,20 +36,25 @@ contract Redeemer {
     *         gpDaoBountyReward[0] - staker dao bounty reward -
     *                                will be zero for the case there is not enough tokens in avatar for the reward.
     *         gpDaoBountyReward[1] - staker potential dao bounty reward.
-    * @return executed bool true or false
-    * @return crResults array
-    *          crResults[0]- reputation - from ContributionReward
-    *          crResults[1]- nativeTokenReward - from ContributionReward
-    *          crResults[2]- Ether - from ContributionReward
-    *          crResults[3]- ExternalToken - from ContributionReward
-
+    * @return executed  bool true or false
+    * @return winningVote
+    *                   1 - executed or closed and the winning vote is YES
+    *                   2 - executed or closed and the winning vote is NO
+    * @return int crReputationReward Reputation - from ContributionReward
+    * @return int crNativeTokenReward NativeTokenReward - from ContributionReward
+    * @return int crEthReward Ether - from ContributionReward
+    * @return int crExternalTokenReward ExternalToken - from ContributionReward
     */
     function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
     external
     returns(uint[5] gpRewards,
             uint[2] gpDaoBountyReward,
             bool executed,
-            bool[4] crResults)
+            uint winningVote,
+            int crReputationReward,
+            uint crNativeTokenReward,
+            uint crEthReward,
+            uint crExternalTokenReward)
     {
         GenesisProtocol.ProposalState pState = genesisProtocol.state(_proposalId);
         // solium-disable-next-line operator-whitespace
@@ -63,16 +68,17 @@ contract Redeemer {
             (pState == GenesisProtocol.ProposalState.Closed)) {
             gpRewards = genesisProtocol.redeem(_proposalId,_beneficiary);
             (gpDaoBountyReward[0],gpDaoBountyReward[1]) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
+            winningVote = genesisProtocol.winningVote(_proposalId);
             //redeem from contributionReward only if it executed
             if (contributionReward.getProposalExecutionTime(_proposalId,_avatar) > 0) {
-                (crResults[0],crResults[1],crResults[2],crResults[3]) = contributionRewardRedeem(_proposalId,_avatar);
+                (crReputationReward,crNativeTokenReward,crEthReward,crExternalTokenReward) = contributionRewardRedeem(_proposalId,_avatar);
             }
         }
     }
 
     function contributionRewardRedeem(bytes32 _proposalId,address _avatar)
     private
-    returns (bool,bool,bool,bool)
+    returns (int reputation,uint nativeToken,uint eth,uint externalToken)
     {
         bool[4] memory whatToRedeem;
         whatToRedeem[0] = true; //reputation
@@ -80,7 +86,7 @@ contract Redeemer {
         uint periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,2);
         uint ethReward = contributionReward.getProposalEthReward(_proposalId,_avatar);
         uint externalTokenReward = contributionReward.getProposalExternalTokenReward(_proposalId,_avatar);
-        address externalToken = contributionReward.getProposalExternalToken(_proposalId,_avatar);
+        address externalTokenAddress = contributionReward.getProposalExternalToken(_proposalId,_avatar);
         ethReward = periodsToPay.mul(ethReward);
         if ((ethReward == 0) || (_avatar.balance < ethReward)) {
             whatToRedeem[2] = false;
@@ -89,12 +95,11 @@ contract Redeemer {
         }
         periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,3);
         externalTokenReward = periodsToPay.mul(externalTokenReward);
-        if ((externalTokenReward == 0) || (StandardToken(externalToken).balanceOf(_avatar) < externalTokenReward)) {
+        if ((externalTokenReward == 0) || (StandardToken(externalTokenAddress).balanceOf(_avatar) < externalTokenReward)) {
             whatToRedeem[3] = false;
         } else {
             whatToRedeem[3] = true;
         }
-        whatToRedeem = contributionReward.redeem(_proposalId,_avatar,whatToRedeem);
-        return (whatToRedeem[0],whatToRedeem[1],whatToRedeem[2],whatToRedeem[3]);
+        (reputation,nativeToken,eth,externalToken) = contributionReward.redeem(_proposalId,_avatar,whatToRedeem);
     }
 }
