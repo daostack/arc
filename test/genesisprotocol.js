@@ -1554,6 +1554,9 @@ contract('GenesisProtocol', function (accounts) {
       assert.equal(tx.logs[0].args._amount, potentialAmount.toNumber());
       assert.equal(await testSetup.stakingToken.balanceOf(accounts[0]),900);
 
+      tx = await testSetup.genesisProtocol.redeemDaoBounty(proposalId,accounts[0]);
+      assert.equal(tx.logs.length,0);
+
     });
 
     it("redeem dao bounty for unsuccessful proposal", async () => {
