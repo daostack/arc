@@ -402,15 +402,15 @@ contract UController is ControllerInterface {
     external
     onlyGenericCallScheme(_avatar)
     onlySubjectToConstraint("genericCall",_avatar)
-    returns (bytes32)
+    returns (bytes32 returnValue)
     {
         emit GenericCall(_contract, _data,_avatar);
         (Avatar(_avatar)).genericCall(_contract, _data);
         // solium-disable-next-line security/no-inline-assembly
         assembly {
         // Copy the returned data.
-        returndatacopy(0, 0, returndatasize)
-        return(0, returndatasize)
+        returndatacopy(returnValue, 0, returndatasize)
+        return(returnValue, 0x20)
         }
     }
 

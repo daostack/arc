@@ -341,6 +341,19 @@ contract('UController', function (accounts)  {
     assert.equal(result, 14);
 
   });
+    it("generic call withoutReturnValue", async () => {
+      controller = await setup('0x00000010');
+      let actionMock =  await ActionMock.new();
+      const extraData = await actionMock.withoutReturnValue.request(avatar.address);
+      var tx = await controller.genericCall(actionMock.address,extraData.params[0].data,avatar.address);
+      const log = await new Promise((resolve) => {
+                  actionMock.WithoutReturnValue({_addr: avatar.address}, {fromBlock: tx.blockNumber})
+                      .get((err,events) => {
+                              resolve(events);
+                      });
+                  });
+      assert.equal(log[0].event,"WithoutReturnValue");
+    });
 
   it("generic call via contract scheme", async () => {
     var scheme = await UniversalSchemeMock.new();
