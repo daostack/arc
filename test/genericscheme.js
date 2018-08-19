@@ -135,6 +135,17 @@ contract('genericScheme', function(accounts) {
        }
     });
 
+    it("execute proposeVote without return value-positive decision - check action", async function() {
+       var actionMock =await ActionMock.new();
+       var testSetup = await setup(accounts,actionMock.address);
+       const extraData = await actionMock.withoutReturnValue.request(testSetup.org.avatar.address);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,extraData.params[0].data);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+
+    });
+
     it("execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
        var actionMock =await ActionMock.new();
        var standardTokenMock = await StandardTokenMock.new(accounts[0],1000);
