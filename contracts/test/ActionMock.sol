@@ -18,9 +18,9 @@ contract ActionMock {
         return true;
     }
 
-    function withoutReturnValue(address[] _addr) public {
-        require(msg.sender == _addr[0],"the caller must be equal to _addr");
-        emit WithoutReturnValue(_addr[0]);
+    function withoutReturnValue(address _addr) public {
+        require(msg.sender == _addr,"the caller must be equal to _addr");
+        emit WithoutReturnValue(_addr);
     }
 
 }

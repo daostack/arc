@@ -334,7 +334,7 @@ contract('Controller', function (accounts)  {
           controller = await setup('0x00000010');
           await avatar.transferOwnership(controller.address);
           let actionMock =  await ActionMock.new();
-          const extraData = await actionMock.withoutReturnValue.request([avatar.address,accounts[0]]);
+          const extraData = await actionMock.withoutReturnValue.request(avatar.address);
           var tx = await controller.genericCall(actionMock.address,extraData.params[0].data,avatar.address);
           const log = await new Promise((resolve) => {
                       actionMock.WithoutReturnValue({_addr: avatar.address}, {fromBlock: tx.blockNumber})
