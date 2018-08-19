@@ -516,7 +516,12 @@ contract('ContributionReward', function(accounts) {
      assert.equal(redeemRewards[1][0],0); //daoBountyRewards
      assert.equal(redeemRewards[1][1],0); //daoBountyRewards
      assert.equal(redeemRewards[2],false); //isExecuted
-     assert.equal(redeemRewards[3][0],true); //redeemRewards[3] crResultArray
+     assert.equal(redeemRewards[3],1); //winningVote
+     assert.equal(redeemRewards[4],reputationReward); //crReputationReward
+     assert.equal(redeemRewards[5],nativeTokenReward); //crNativeTokenReward
+     assert.equal(redeemRewards[6],ethReward); //crEthReward
+     assert.equal(redeemRewards[7],0); //crExternalTokenReward
+
      await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
      var eth = web3.eth.getBalance(otherAvatar.address);
      assert.equal(eth.toNumber(),ethReward);

@@ -195,121 +195,108 @@ contract ContributionReward is UniversalScheme {
     * @dev RedeemReputation reward for proposal
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
-    * @return  result boolean for success indication.
+    * @return reputation the redeemed reputation.
     */
-    function redeemReputation(bytes32 _proposalId, address _avatar) public returns(bool) {
+    function redeemReputation(bytes32 _proposalId, address _avatar) public returns(int reputation) {
 
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,0);
-        bool result;
 
         //set proposal reward to zero to prevent reentrancy attack.
         proposal.reputationChange = 0;
-        int reputation = int(periodsToPay) * _proposal.reputationChange;
+        reputation = int(periodsToPay) * _proposal.reputationChange;
         if (reputation > 0 ) {
             require(ControllerInterface(Avatar(_avatar).owner()).mintReputation(uint(reputation), _proposal.beneficiary,_avatar));
-            result = true;
         } else if (reputation < 0 ) {
             require(ControllerInterface(Avatar(_avatar).owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary,_avatar));
-            result = true;
         }
-        if (result) {
+        if (reputation != 0) {
             proposal.redeemedPeriods[0] = proposal.redeemedPeriods[0].add(periodsToPay);
             emit RedeemReputation(_avatar,_proposalId,_proposal.beneficiary,reputation);
         }
         //restore proposal reward.
         proposal.reputationChange = _proposal.reputationChange;
-        return result;
     }
 
     /**
     * @dev RedeemNativeToken reward for proposal
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
-    * @return  result boolean for success indication.
+    * @return amount the redeemed nativeToken.
     */
-    function redeemNativeToken(bytes32 _proposalId, address _avatar) public returns(bool) {
+    function redeemNativeToken(bytes32 _proposalId, address _avatar) public returns(uint amount) {
 
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,1);
-        bool result;
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.nativeTokenReward = 0;
 
-        uint amount = periodsToPay.mul(_proposal.nativeTokenReward);
+        amount = periodsToPay.mul(_proposal.nativeTokenReward);
         if (amount > 0) {
             require(ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, _proposal.beneficiary,_avatar));
             proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
-            result = true;
             emit RedeemNativeToken(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
 
         //restore proposal reward.
         proposal.nativeTokenReward = _proposal.nativeTokenReward;
-        return result;
     }
 
     /**
     * @dev RedeemEther reward for proposal
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
-    * @return  result boolean for success indication.
+    * @return amount ether redeemed amount
     */
-    function redeemEther(bytes32 _proposalId, address _avatar) public returns(bool) {
+    function redeemEther(bytes32 _proposalId, address _avatar) public returns(uint amount) {
 
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,2);
-        bool result;
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.ethReward = 0;
-        uint amount = periodsToPay.mul(_proposal.ethReward);
+        amount = periodsToPay.mul(_proposal.ethReward);
 
         if (amount > 0) {
             require(ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, _proposal.beneficiary,_avatar));
             proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
-            result = true;
             emit RedeemEther(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
 
         //restore proposal reward.
         proposal.ethReward = _proposal.ethReward;
-        return result;
     }
 
     /**
     * @dev RedeemNativeToken reward for proposal
     * @param _proposalId the ID of the voting in the voting machine
     * @param _avatar address of the controller
-    * @return  result boolean for success indication.
+    * @return amount the external token redeemed amount
     */
-    function redeemExternalToken(bytes32 _proposalId, address _avatar) public returns(bool) {
+    function redeemExternalToken(bytes32 _proposalId, address _avatar) public returns(uint amount) {
 
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
         uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,3);
-        bool result;
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.externalTokenReward = 0;
 
         if (proposal.externalToken != address(0) && _proposal.externalTokenReward > 0) {
-            uint amount = periodsToPay.mul(_proposal.externalTokenReward);
+            amount = periodsToPay.mul(_proposal.externalTokenReward);
             if (amount > 0) {
                 require(ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar));
                 proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);
-                result = true;
                 emit RedeemExternalToken(_avatar,_proposalId,_proposal.beneficiary,amount);
             }
         }
         //restore proposal reward.
         proposal.externalTokenReward = _proposal.externalTokenReward;
-        return result;
     }
 
     /**
@@ -323,25 +310,26 @@ contract ContributionReward is UniversalScheme {
     *         whatToRedeem[3] - ExternalToken
     * @return  result boolean array for each redeem type.
     */
-    function redeem(bytes32 _proposalId, address _avatar,bool[4] _whatToRedeem) public returns(bool[4] result) {
+    function redeem(bytes32 _proposalId, address _avatar,bool[4] _whatToRedeem)
+    public
+    returns(int reputationReward,uint nativeTokenReward,uint etherReward,uint externalTokenReward)
+    {
 
         if (_whatToRedeem[0]) {
-            result[0] = redeemReputation(_proposalId,_avatar);
+            reputationReward = redeemReputation(_proposalId,_avatar);
         }
 
         if (_whatToRedeem[1]) {
-            result[1] = redeemNativeToken(_proposalId,_avatar);
+            nativeTokenReward = redeemNativeToken(_proposalId,_avatar);
         }
 
         if (_whatToRedeem[2]) {
-            result[2] = redeemEther(_proposalId,_avatar);
+            etherReward = redeemEther(_proposalId,_avatar);
         }
 
         if (_whatToRedeem[3]) {
-            result[3] = redeemExternalToken(_proposalId,_avatar);
+            externalTokenReward = redeemExternalToken(_proposalId,_avatar);
         }
-
-        return result;
     }
 
     /**
