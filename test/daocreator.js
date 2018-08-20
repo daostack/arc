@@ -318,7 +318,8 @@ contract('DaoCreator', function(accounts) {
         var founderReputation = [];
         var founderToken = [];
         var i;
-        for (i=0;i<60;i++) {
+        var numberOfFounders = 60;
+        for (i=0;i<numberOfFounders;i++) {
           foundersArray[i] = accounts[1];
           founderReputation[i] = 1;
           founderToken[i] = 1;
@@ -332,11 +333,12 @@ contract('DaoCreator', function(accounts) {
               helpers.assertVMException(ex);
             }
 
-        await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
+        var tx = await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
+        console.log(tx);
         var rep = await reputation.reputationOf(accounts[1]);
-        assert.equal(rep.toNumber(),60);
+        assert.equal(rep.toNumber(),numberOfFounders);
         var founderBalance = await token.balanceOf(accounts[1]);
-        assert.equal(founderBalance.toNumber(),60);
+        assert.equal(founderBalance.toNumber(),numberOfFounders);
         var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
