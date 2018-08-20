@@ -333,8 +333,7 @@ contract('DaoCreator', function(accounts) {
               helpers.assertVMException(ex);
             }
 
-        var tx = await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
-        console.log(tx);
+        await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
         var rep = await reputation.reputationOf(accounts[1]);
         assert.equal(rep.toNumber(),numberOfFounders);
         var founderBalance = await token.balanceOf(accounts[1]);
