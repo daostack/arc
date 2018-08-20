@@ -38,6 +38,40 @@ contract DaoCreator {
         controllerCreator = _controllerCreator;
     }
 
+    /**
+      * @dev addFounders add founders to the organization.
+      *      this function can be called only after forgeOrg and before setSchemes
+      * @param _avatar the organization avatar
+      * @param _founders An array with the addresses of the founders of the organization
+      * @param _foundersTokenAmount An array of amount of tokens that the founders
+      *  receive in the new organization
+      * @param _foundersReputationAmount An array of amount of reputation that the
+      *   founders receive in the new organization
+      * @return bool true or false
+      */
+    function addFounders (
+        Avatar _avatar,
+        address[] _founders,
+        uint[] _foundersTokenAmount,
+        uint[] _foundersReputationAmount
+      )
+      external
+      returns(bool)
+      {
+        require(_founders.length == _foundersTokenAmount.length);
+        require(_founders.length == _foundersReputationAmount.length);
+        require(_founders.length > 0);
+        require(locks[address(_avatar)] == msg.sender);
+        // Mint token and reputation for founders:
+        for (uint i = 0 ; i < _founders.length ; i++ ) {
+            require(_founders[i] != address(0));
+            ControllerInterface(_avatar.owner()).mintTokens(_foundersTokenAmount[i],_founders[i],address(_avatar));
+            ControllerInterface(_avatar.owner()).mintReputation(_foundersReputationAmount[i],_founders[i],address(_avatar));
+        }
+        return true;
+
+    }
+
   /**
     * @dev Create a new organization
     * @param _orgName The name of the new organization
