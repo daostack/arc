@@ -311,5 +311,36 @@ contract('DaoCreator', function(accounts) {
          helpers.assertVMException(ex);
        }
    });
+    it("setSchemes to none UniversalScheme and addFounders", async function() {
+        var amountToMint = 10;
+        await setup(accounts,amountToMint,amountToMint);
+        var foundersArray = [];
+        var founderReputation = [];
+        var founderToken = [];
+        var i;
+        for (i=0;i<60;i++) {
+          foundersArray[i] = accounts[1];
+          founderReputation[i] = 1;
+          founderToken[i] = 1;
+
+        }
+        try {
+              await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{from:accounts[1],gas:constants.ARC_GAS_LIMIT});
+              assert(false,"should revert  because account is lock for account 0");
+            }
+            catch(ex){
+              helpers.assertVMException(ex);
+            }
+
+        await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
+        var rep = await reputation.reputationOf(accounts[1]);
+        assert.equal(rep.toNumber(),60);
+        var founderBalance = await token.balanceOf(accounts[1]);
+        assert.equal(founderBalance.toNumber(),60);
+        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "InitialSchemesSet");
+        assert.equal(tx.logs[0].args._avatar, avatar.address);
+      });
 
 });
