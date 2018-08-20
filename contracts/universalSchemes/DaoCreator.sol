@@ -65,8 +65,12 @@ contract DaoCreator {
         // Mint token and reputation for founders:
         for (uint i = 0 ; i < _founders.length ; i++ ) {
             require(_founders[i] != address(0));
-            ControllerInterface(_avatar.owner()).mintTokens(_foundersTokenAmount[i],_founders[i],address(_avatar));
-            ControllerInterface(_avatar.owner()).mintReputation(_foundersReputationAmount[i],_founders[i],address(_avatar));
+            if (_foundersTokenAmount[i] > 0) {
+                ControllerInterface(_avatar.owner()).mintTokens(_foundersTokenAmount[i],_founders[i],address(_avatar));
+            }
+            if (_foundersReputationAmount[i] > 0) {
+                ControllerInterface(_avatar.owner()).mintReputation(_foundersReputationAmount[i],_founders[i],address(_avatar));
+            }
         }
         return true;
 
@@ -180,8 +184,12 @@ contract DaoCreator {
         // Mint token and reputation for founders:
         for (uint i = 0 ; i < _founders.length ; i++ ) {
             require(_founders[i] != address(0));
-            nativeToken.mint(_founders[i],_foundersTokenAmount[i]);
-            nativeReputation.mint(_founders[i],_foundersReputationAmount[i]);
+            if (_foundersTokenAmount[i] > 0) {
+                nativeToken.mint(_founders[i],_foundersTokenAmount[i]);
+            }
+            if (_foundersReputationAmount[i] > 0) {
+                nativeReputation.mint(_founders[i],_foundersReputationAmount[i]);
+            }
         }
 
         // Create Controller:
