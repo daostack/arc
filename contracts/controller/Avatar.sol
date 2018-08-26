@@ -4,6 +4,7 @@ import "./Reputation.sol";
 import "./DAOToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 
 
 /**
@@ -82,7 +83,7 @@ contract Avatar is Ownable {
     function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
     public onlyOwner returns(bool)
     {
-        _externalToken.transfer(_to, _value);
+        _externalToken.safeTransfer(_to, _value);
         emit ExternalTokenTransfer(_externalToken, _to, _value);
         return true;
     }
@@ -103,7 +104,7 @@ contract Avatar is Ownable {
     )
     public onlyOwner returns(bool)
     {
-        _externalToken.transferFrom(_from, _to, _value);
+        _externalToken.safeTransferFrom(_from, _to, _value);
         emit ExternalTokenTransferFrom(_externalToken, _from, _to, _value);
         return true;
     }
@@ -119,7 +120,7 @@ contract Avatar is Ownable {
     function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue)
     public onlyOwner returns(bool)
     {
-        _externalToken.increaseApproval(_spender, _addedValue);
+        require(_externalToken.increaseApproval(_spender, _addedValue),"increase approval must succeed");
         emit ExternalTokenIncreaseApproval(_externalToken, _spender, _addedValue);
         return true;
     }
@@ -135,7 +136,7 @@ contract Avatar is Ownable {
     function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue )
     public onlyOwner returns(bool)
     {
-        _externalToken.decreaseApproval(_spender, _subtractedValue);
+        require(_externalToken.decreaseApproval(_spender, _subtractedValue),"decrease approval must succeed");
         emit ExternalTokenDecreaseApproval(_externalToken,_spender, _subtractedValue);
         return true;
     }
