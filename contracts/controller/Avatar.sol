@@ -10,7 +10,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
  * @title An Avatar holds tokens, reputation and ether for a controller
  */
 contract Avatar is Ownable {
-    bytes32 public orgName;
+    string public orgName;
     DAOToken public nativeToken;
     Reputation public nativeReputation;
 
@@ -26,7 +26,7 @@ contract Avatar is Ownable {
     * @dev the constructor takes organization name, native token and reputation system
     and creates an avatar for a controller
     */
-    constructor(bytes32 _orgName, DAOToken _nativeToken, Reputation _nativeReputation) public {
+    constructor(string _orgName, DAOToken _nativeToken, Reputation _nativeReputation) public {
         orgName = _orgName;
         nativeToken = _nativeToken;
         nativeReputation = _nativeReputation;

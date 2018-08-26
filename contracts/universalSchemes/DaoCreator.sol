@@ -92,7 +92,7 @@ contract DaoCreator {
     * @return The address of the avatar of the controller
     */
     function forgeOrg (
-        bytes32 _orgName,
+        string _orgName,
         string _tokenName,
         string _tokenSymbol,
         address[] _founders,
@@ -162,7 +162,7 @@ contract DaoCreator {
      * @return The address of the avatar of the controller
      */
     function _forgeOrg (
-        bytes32 _orgName,
+        string _orgName,
         string _tokenName,
         string _tokenSymbol,
         address[] _founders,
