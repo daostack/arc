@@ -11,6 +11,8 @@ import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
  * @title An Avatar holds tokens, reputation and ether for a controller
  */
 contract Avatar is Ownable {
+    using SafeERC20 for StandardToken;
+
     bytes32 public orgName;
     DAOToken public nativeToken;
     Reputation public nativeReputation;
