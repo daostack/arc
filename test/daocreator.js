@@ -1,8 +1,5 @@
 const helpers = require('./helpers');
 const constants = require('./constants');
-
-var Web3Utils = require('web3-utils');
-
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const DaoCreator = artifacts.require("./DaoCreator.sol");
@@ -37,8 +34,7 @@ contract('DaoCreator', function(accounts) {
 
     it("forgeOrg check avatar", async function() {
         await setup(accounts,10,10);
-        var orgName = await avatar.orgName();
-        assert.equal(Web3Utils.hexToUtf8(orgName),"testOrg");
+        assert.equal(await avatar.orgName(),"testOrg");
     });
 
     it("forgeOrg check reputations and tokens to founders", async function() {
@@ -172,8 +168,7 @@ contract('DaoCreator', function(accounts) {
     // test with universal controller
     it("forgeOrg with universal controller check avatar", async function() {
         await setup(accounts,10,10,true);
-        var orgName = await avatar.orgName();
-        assert.equal(Web3Utils.hexToUtf8(orgName),"testOrg");
+        assert.equal(await avatar.orgName(),"testOrg");
     });
 
     it("forgeOrg with universal controller check reputations and tokens to founders", async function() {

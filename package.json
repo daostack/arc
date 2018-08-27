@@ -57,8 +57,7 @@
     "solium": "^1.1.8",
     "truffle": "^4.1.11",
     "truffle-contract": "^3.0.5",
-    "uint32": "^0.2.1",
-    "web3-utils": "^1.0.0-beta.34"
+    "uint32": "^0.2.1"
   },
   "repository": {
     "type": "git",
