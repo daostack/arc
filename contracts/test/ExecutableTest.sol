@@ -1,7 +1,6 @@
 pragma solidity ^0.4.24;
 
 import "./Debug.sol";
-import "../universalSchemes/ExecutableInterface.sol";
 
 
 contract ExecutableTest is ExecutableInterface, Debug {

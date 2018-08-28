@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./Reputation.sol";
+import "@daostack/infra/contracts/Reputation.sol";
 import "./DAOToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";

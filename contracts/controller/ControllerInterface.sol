@@ -1,8 +1,6 @@
 pragma solidity ^0.4.24;
 
 import "./Avatar.sol";
-import "./Reputation.sol";
-import "./DAOToken.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
 
 /**

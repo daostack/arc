@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./UniversalScheme.sol";
-import "../VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
 
 
 

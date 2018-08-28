@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "../universalSchemes/ContributionReward.sol";
-import "../VotingMachines/GenesisProtocol.sol";
+import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
 
 
 contract Redeemer {

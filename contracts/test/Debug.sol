@@ -1,4 +1,9 @@
 pragma solidity ^0.4.24;
+
+import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
+import "@daostack/infra/contracts/VotingMachines/AbsoluteVote.sol";
+import "@daostack/infra/contracts/VotingMachines/QuorumVote.sol";
+
 /*
     A contract you can inherit from that has some useful Events to print statements.
 */

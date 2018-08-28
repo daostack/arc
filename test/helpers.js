@@ -8,6 +8,7 @@ const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
+const GenesisProtocolCallbacks = artifacts.require("./GenesisProtocolCallbacks.sol");
 
 
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -144,7 +145,11 @@ export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50,re
   return votingMachine;
 };
 
-export const setupGenesisProtocol = async function (accounts,token,
+export const setupGenesisProtocol = async function (
+   accounts,
+   token,
+   avatar,
+   voteOnBehalf = 0,
   _preBoostedVoteRequiredPercentage=50,
   _preBoostedVotePeriodLimit=60,
   _boostedVotePeriodLimit=60,
@@ -161,12 +166,17 @@ export const setupGenesisProtocol = async function (accounts,token,
   _daoBountyLimt=10
   ) {
   var votingMachine = new VotingMachine();
+
+  console.log(voteOnBehalf);
+
   votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
+
+  votingMachine.genesisProtocolCallbacks = await GenesisProtocolCallbacks.new(avatar.address,token,votingMachine.genesisProtocol.address);
 
   // set up a reputation system
   votingMachine.reputationArray = [20, 10 ,70];
   // register some parameters
-  await votingMachine.genesisProtocol.setParameters([_preBoostedVoteRequiredPercentage,
+  await votingMachine.genesisProtocolCallbacks.setParameters([_preBoostedVoteRequiredPercentage,
                                                  _preBoostedVotePeriodLimit,
                                                  _boostedVotePeriodLimit,
                                                  _thresholdConstA,
@@ -179,7 +189,7 @@ export const setupGenesisProtocol = async function (accounts,token,
                                                  _votersReputationLossRatio,
                                                  _votersGainRepRatioFromLostRep,
                                                  _daoBountyConst,
-                                                 _daoBountyLimt]);
+                                                 _daoBountyLimt],voteOnBehalf);
   votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_preBoostedVoteRequiredPercentage,
                                                  _preBoostedVotePeriodLimit,
                                                  _boostedVotePeriodLimit,
@@ -193,7 +203,7 @@ export const setupGenesisProtocol = async function (accounts,token,
                                                  _votersReputationLossRatio,
                                                  _votersGainRepRatioFromLostRep,
                                                  _daoBountyConst,
-                                                 _daoBountyLimt]);
+                                                 _daoBountyLimt],[voteOnBehalf,votingMachine.genesisProtocolCallbacks.address]);
 
   return votingMachine;
 };
