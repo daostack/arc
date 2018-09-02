@@ -85,7 +85,7 @@ contract('SchemeRegistrar', function(accounts) {
       var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,0,false);
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+      await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
       var controller = await Controller.at(await testSetup.org.avatar.owner());
       assert.equal(await controller.isSchemeRegistered(universalScheme.address,testSetup.org.avatar.address),true);
      });
@@ -97,7 +97,7 @@ contract('SchemeRegistrar', function(accounts) {
        var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,permissions);
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-       await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+       await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
        var controller = await Controller.at(await testSetup.org.avatar.owner());
        assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
        assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000001");
@@ -110,7 +110,7 @@ contract('SchemeRegistrar', function(accounts) {
         var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,permissions);
         //Vote with reputation to trigger execution
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-        await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+        await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
         var controller = await Controller.at(await testSetup.org.avatar.owner());
         assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
         assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000003");
@@ -123,7 +123,7 @@ contract('SchemeRegistrar', function(accounts) {
          var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,permissions);
          //Vote with reputation to trigger execution
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-         await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+         await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
          var controller = await Controller.at(await testSetup.org.avatar.owner());
          assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
          assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000003");
@@ -136,7 +136,7 @@ contract('SchemeRegistrar', function(accounts) {
           var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,permissions);
           //Vote with reputation to trigger execution
           var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-          await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+          await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
           var controller = await Controller.at(await testSetup.org.avatar.owner());
           assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
           assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000009");
@@ -149,7 +149,7 @@ contract('SchemeRegistrar', function(accounts) {
            var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,permissions);
            //Vote with reputation to trigger execution
            var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-           await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+           await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
            var controller = await Controller.at(await testSetup.org.avatar.owner());
            assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
            assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000011");
@@ -162,7 +162,7 @@ contract('SchemeRegistrar', function(accounts) {
         var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],0,isRegistering);
         //Vote with reputation to trigger execution
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-        await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+        await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
         var controller = await Controller.at(await testSetup.org.avatar.owner());
         assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),true);
         assert.equal(await controller.getSchemePermissions(accounts[0],testSetup.org.avatar.address),"0x00000001");
@@ -181,7 +181,7 @@ contract('SchemeRegistrar', function(accounts) {
          assert.equal(organizationProposal[2].toNumber(),1);//proposalType
 
          //Vote with reputation to trigger execution
-         await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,2,{from:accounts[2]});
+         await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,2,0,{from:accounts[2]});
          var controller = await Controller.at(await testSetup.org.avatar.owner());
          //should not register because the decision is "no"
          assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),false);
@@ -198,7 +198,7 @@ contract('SchemeRegistrar', function(accounts) {
           var controller = await Controller.at(await testSetup.org.avatar.owner());
           assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,testSetup.org.avatar.address),true);
           //Vote with reputation to trigger execution
-          await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+          await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
           assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,testSetup.org.avatar.address),false);
           //check organizationsProposals after execution
           var organizationProposal = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
@@ -211,7 +211,7 @@ contract('SchemeRegistrar', function(accounts) {
      var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,0,false);
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-     await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+     await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
     });
 
     it("execute proposeScheme  and execute -yes - autoRegisterOrganization==FALSE arc scheme", async function() {
@@ -221,6 +221,6 @@ contract('SchemeRegistrar', function(accounts) {
       var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,0,false);
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+      await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
      });
 });

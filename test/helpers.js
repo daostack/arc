@@ -167,8 +167,6 @@ export const setupGenesisProtocol = async function (
   ) {
   var votingMachine = new VotingMachine();
 
-  console.log(voteOnBehalf);
-
   votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
 
   votingMachine.genesisProtocolCallbacks = await GenesisProtocolCallbacks.new(avatar.address,token,votingMachine.genesisProtocol.address);

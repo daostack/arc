@@ -10,6 +10,13 @@ contract GenesisProtocolCallbacks is GenesisProtocolCallbacksInterface {
     StandardToken public stakingToken;
     GenesisProtocol public genesisProtocol;
 
+    modifier onlyGenesisProtocol() {
+        require(msg.sender == address(genesisProtocol),"only GenesisProtocol");
+        _;
+    }
+            //proposalId ->  blockNumber
+    mapping(bytes32      =>     uint    ) proposalsBlockNumbers;
+
     /**
      * @dev Constructor
      */
@@ -20,23 +27,27 @@ contract GenesisProtocolCallbacks is GenesisProtocolCallbacksInterface {
         genesisProtocol = _genesisProtocol;
     }
 
-    function getTotalReputationSupply(bytes32) external returns(uint256) {
-        return avatar.nativeReputation().totalSupply();
+    function setProposal(bytes32 _proposalId) external onlyGenesisProtocol returns(bool) {
+        proposalsBlockNumbers[_proposalId] = block.number;
     }
 
-    function mintReputation(uint _amount,address _beneficiary,bytes32) external returns(bool) {
+    function getTotalReputationSupply(bytes32 _proposalId) external view returns(uint256) {
+        return avatar.nativeReputation().totalSupplyAt(proposalsBlockNumbers[_proposalId]);
+    }
+
+    function mintReputation(uint _amount,address _beneficiary,bytes32) external onlyGenesisProtocol returns(bool) {
         return ControllerInterface(avatar.owner()).mintReputation(_amount,_beneficiary,address(avatar));
     }
 
-    function burnReputation(uint _amount,address _beneficiary,bytes32) external returns(bool) {
+    function burnReputation(uint _amount,address _beneficiary,bytes32) external onlyGenesisProtocol returns(bool) {
         return ControllerInterface(avatar.owner()).burnReputation(_amount,_beneficiary,address(avatar));
     }
 
-    function reputationOf(address _owner,bytes32) external view returns(uint) {
-        return avatar.nativeReputation().reputationOf(_owner);
+    function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint) {
+        return avatar.nativeReputation().balanceOfAt(_owner,proposalsBlockNumbers[_proposalId]);
     }
 
-    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32) external returns(bool) {
+    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32) external onlyGenesisProtocol returns(bool) {
         return ControllerInterface(avatar.owner()).externalTokenTransfer(stakingToken,_beneficiary,_amount,address(avatar));
     }
 
@@ -44,7 +55,7 @@ contract GenesisProtocolCallbacks is GenesisProtocolCallbacksInterface {
         return genesisProtocol.setParameters(_params,_voteOnBehalf);
     }
 
-    function executeProposal(bytes32 _proposalId,int _decision,ExecutableInterface _executable) external returns(bool) {
+    function executeProposal(bytes32 _proposalId,int _decision,ExecutableInterface _executable) external onlyGenesisProtocol returns(bool) {
         return  _executable.execute(_proposalId, avatar, _decision);
     }
 }

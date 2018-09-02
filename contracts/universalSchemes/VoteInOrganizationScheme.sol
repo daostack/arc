@@ -36,6 +36,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface {
     struct Parameters {
         IntVoteInterface intVote;
         bytes32 voteParams;
+        address executer;
     }
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
@@ -49,12 +50,14 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface {
     */
     function setParameters(
         bytes32 _voteParams,
-        IntVoteInterface _intVote
+        IntVoteInterface _intVote,
+        address _executer
     ) public returns(bytes32)
     {
-        bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
+        bytes32 paramsHash = getParametersHash(_voteParams, _intVote,_executer);
         parameters[paramsHash].voteParams = _voteParams;
         parameters[paramsHash].intVote = _intVote;
+        parameters[paramsHash].executer = _executer;
         return paramsHash;
     }
 
@@ -62,14 +65,16 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface {
     * @dev Hash the parameters, and return the hash value
     * @param _voteParams -  voting parameters
     * @param _intVote  - voting machine contract.
+    * @param _executer address which allowed to can call execute
     * @return bytes32 -the parameters hash
     */
     function getParametersHash(
         bytes32 _voteParams,
-        IntVoteInterface _intVote
+        IntVoteInterface _intVote,
+        address _executer
     ) public pure returns(bytes32)
     {
-        return keccak256(abi.encodePacked(_voteParams, _intVote));
+        return keccak256(abi.encodePacked(_voteParams, _intVote,_executer));
     }
 
     /**
@@ -124,7 +129,7 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface {
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        require(parameters[getParametersFromController(Avatar(_avatar))].executer == msg.sender);
 
         // Save proposal to memory and delete from storage:
         VoteProposal memory proposal = organizationsProposals[_avatar][_proposalId];
@@ -143,9 +148,10 @@ contract VoteInOrganizationScheme is UniversalScheme, ExecutableInterface {
             ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
             if (controller.genericCall(
                      address(proposal.originalIntVote),
-                     abi.encodeWithSignature("vote(bytes32,uint256)",
+                     abi.encodeWithSignature("vote(bytes32,uint256,address)",
                      proposal.originalProposalId,
-                     uint(param)),
+                     uint(param),
+                     address(this)),
                      _avatar) == bytes32(0)) {
                 retVal = false;
             }

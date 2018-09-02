@@ -53,6 +53,7 @@ contract ContributionReward is UniversalScheme {
         uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
         bytes32 voteApproveParams;
         IntVoteInterface intVote;
+        address executer;
     }
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
@@ -63,17 +64,20 @@ contract ContributionReward is UniversalScheme {
     function setParameters(
         uint _orgNativeTokenFee,
         bytes32 _voteApproveParams,
-        IntVoteInterface _intVote
+        IntVoteInterface _intVote,
+        address _executer
     ) public returns(bytes32)
     {
         bytes32 paramsHash = getParametersHash(
             _orgNativeTokenFee,
             _voteApproveParams,
-            _intVote
+            _intVote,
+            _executer
         );
         parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
         parameters[paramsHash].voteApproveParams = _voteApproveParams;
         parameters[paramsHash].intVote = _intVote;
+        parameters[paramsHash].executer = _executer;
         return paramsHash;
     }
 
@@ -82,16 +86,18 @@ contract ContributionReward is UniversalScheme {
     * @param _orgNativeTokenFee the fee for submitting a contribution in organizations native token
     * @param _voteApproveParams parameters for the voting machine used to approve a contribution
     * @param _intVote the voting machine used to approve a contribution
+    * @param _executer address which allowed to can call execute
     * @return a hash of the parameters
     */
     // TODO: These fees are messy. Better to have a _fee and _feeToken pair, just as in some other contract (which one?) with some sane default
     function getParametersHash(
         uint _orgNativeTokenFee,
         bytes32 _voteApproveParams,
-        IntVoteInterface _intVote
+        IntVoteInterface _intVote,
+        address _executer
     ) public pure returns(bytes32)
     {
-        return (keccak256(abi.encodePacked(_voteApproveParams, _orgNativeTokenFee, _intVote)));
+        return (keccak256(abi.encodePacked(_voteApproveParams, _orgNativeTokenFee, _intVote,_executer)));
     }
 
     /**
@@ -127,8 +133,8 @@ contract ContributionReward is UniversalScheme {
 
         bytes32 contributionId = controllerParams.intVote.propose(
             2,
-            controllerParams.voteApproveParams,
-           _avatar,
+           controllerParams.voteApproveParams,
+           address(_avatar),
            ExecutableInterface(this),
            msg.sender
         );
@@ -179,7 +185,7 @@ contract ContributionReward is UniversalScheme {
     */
     function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
         // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+        require(parameters[getParametersFromController(Avatar(_avatar))].executer == msg.sender);
         require(organizationsProposals[_avatar][_proposalId].executionTime == 0);
         require(organizationsProposals[_avatar][_proposalId].beneficiary != address(0));
         // Check if vote was successful:

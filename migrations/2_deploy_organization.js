@@ -75,8 +75,8 @@ module.exports = async function(deployer) {
 
       await simpleICOInst.setParameters(1000, 1, 1, 2, web3.eth.accounts[0], web3.eth.accounts[0]);
       var simpleICOParams = await simpleICOInst.getParametersHash(1000, 1, 1, 2, web3.eth.accounts[0], web3.eth.accounts[0]);
-      await contributionRewardInst.setParameters(10,voteParametersHash, AbsoluteVoteInst.address);
-      var contributionRewardParams = await contributionRewardInst.getParametersHash(10,voteParametersHash, AbsoluteVoteInst.address);
+      await contributionRewardInst.setParameters(10,voteParametersHash, AbsoluteVoteInst.address,AbsoluteVoteInst.address);
+      var contributionRewardParams = await contributionRewardInst.getParametersHash(10,voteParametersHash, AbsoluteVoteInst.address,AbsoluteVoteInst.address);
 
       var schemesArray = [schemeRegistrarInst.address,
                           globalConstraintRegistrarInst.address,

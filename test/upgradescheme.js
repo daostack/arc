@@ -131,7 +131,7 @@ contract('UpgradeScheme', function(accounts) {
              var organizationProposal = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
              assert.equal(organizationProposal[0],newController.address);//new contract address
              assert.equal(organizationProposal[2].toNumber(),1);//proposalType
-             await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+             await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
              assert.equal(newController.address,await testSetup.org.avatar.owner());
              //check organizationsProposals after execution
              organizationProposal = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
@@ -151,7 +151,7 @@ contract('UpgradeScheme', function(accounts) {
               assert.equal(organizationProposal[2].toNumber(),1);//proposalType
 
               //Vote with reputation to trigger execution
-              await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
+              await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,{from:accounts[2]});
               //should not upgrade because the decision is "no"
               assert.notEqual(newController.address,await testSetup.org.avatar.owner());
               //check organizationsProposals after execution
@@ -178,7 +178,7 @@ contract('UpgradeScheme', function(accounts) {
                assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),false);
                assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address,testSetup.org.avatar.address),true);
 
-               await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+               await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
 
                //check organizationsProposals after execution
                organizationProposal = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
@@ -208,7 +208,7 @@ contract('UpgradeScheme', function(accounts) {
                 assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),false);
                 assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address,testSetup.org.avatar.address),true);
 
-                await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+                await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
 
                 //check organizationsProposals after execution
                 organizationProposal = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
@@ -232,7 +232,7 @@ contract('UpgradeScheme', function(accounts) {
                  var controller = await Controller.at(await testSetup.org.avatar.owner());
                  assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address,testSetup.org.avatar.address),true);
 
-                 await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+                 await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
 
                  //check organizationsProposals after execution
                  var organizationProposal = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
