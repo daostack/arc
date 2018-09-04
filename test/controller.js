@@ -313,8 +313,13 @@ contract('Controller', function (accounts)  {
           let c = 0x1234;
           const extraData = await actionMock.test.request(a,b,c);
           var tx = await controller.genericCall(actionMock.address,extraData.params[0].data,avatar.address);
-          assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "GenericCall");
+          var log = await new Promise((resolve) => {
+                      avatar.GenericCall({fromBlock: tx.blockNumber})
+                          .get((err,events) => {
+                                  resolve(events);
+                          });
+                      });
+          assert.equal(log[0].args._contract,actionMock.address);
 
         });
 
@@ -366,8 +371,13 @@ contract('Controller', function (accounts)  {
           web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.toWei('1', "ether")});
           //send some ether from an organization's avatar to the otherAvatar
           var tx = await controller.sendEther(web3.toWei('1', "ether"),otherAvatar.address,avatar.address);
-          assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "SendEther");
+          const log = await new Promise((resolve) => {
+                      avatar.SendEther({_addr: avatar.address}, {fromBlock: tx.blockNumber})
+                          .get((err,events) => {
+                                  resolve(events);
+                          });
+                      });
+          assert.equal(log[0].event,"SendEther");
           var avatarBalance = web3.eth.getBalance(avatar.address)/web3.toWei('1', "ether");
           assert.equal(avatarBalance, 0);
           var otherAvatarBalance = web3.eth.getBalance(otherAvatar.address)/web3.toWei('1', "ether");
@@ -382,8 +392,13 @@ contract('Controller', function (accounts)  {
           assert.equal(balanceAvatar, 100);
           await avatar.transferOwnership(controller.address);
           var tx = await controller.externalTokenTransfer(standardToken.address,accounts[1],50,avatar.address);
-          assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "ExternalTokenTransfer");
+          const log = await new Promise((resolve) => {
+                      avatar.ExternalTokenTransfer({_addr: avatar.address}, {fromBlock: tx.blockNumber})
+                          .get((err,events) => {
+                                  resolve(events);
+                          });
+                      });
+          assert.equal(log[0].event,"ExternalTokenTransfer");
           balanceAvatar = await standardToken.balanceOf(avatar.address);
           assert.equal(balanceAvatar, 50);
           let balance1 = await standardToken.balanceOf(accounts[1]);
@@ -397,11 +412,21 @@ contract('Controller', function (accounts)  {
           var standardToken = await StandardTokenMock.new(avatar.address, 100);
           await avatar.transferOwnership(controller.address);
           tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-          assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "ExternalTokenIncreaseApproval");
+          var log = await new Promise((resolve) => {
+                      avatar.ExternalTokenIncreaseApproval({_addr: avatar.address}, {fromBlock: tx.blockNumber})
+                          .get((err,events) => {
+                                  resolve(events);
+                          });
+                      });
+          assert.equal(log[0].event,"ExternalTokenIncreaseApproval");
           tx = await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
-          assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
+          log = await new Promise((resolve) => {
+                     avatar.ExternalTokenTransferFrom({_addr: avatar.address}, {fromBlock: tx.blockNumber})
+                         .get((err,events) => {
+                                 resolve(events);
+                         });
+                     });
+         assert.equal(log[0].event,"ExternalTokenTransferFrom");
           let balanceAvatar = await standardToken.balanceOf(avatar.address);
           assert.equal(balanceAvatar, 50);
           let balanceTo = await standardToken.balanceOf(to);
@@ -416,8 +441,13 @@ contract('Controller', function (accounts)  {
           await avatar.transferOwnership(controller.address);
           tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
           tx = await controller.externalTokenDecreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-          assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "ExternalTokenDecreaseApproval");
+          var log = await new Promise((resolve) => {
+                     avatar.ExternalTokenDecreaseApproval({_addr: avatar.address}, {fromBlock: tx.blockNumber})
+                         .get((err,events) => {
+                                 resolve(events);
+                         });
+                     });
+         assert.equal(log[0].event,"ExternalTokenDecreaseApproval");
           try{
              await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
              assert(false,"externalTokenTransferFrom should fail due to decrease approval ");
@@ -427,8 +457,13 @@ contract('Controller', function (accounts)  {
             }
           tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
           tx=  await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
-          assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
+          log = await new Promise((resolve) => {
+                     avatar.ExternalTokenTransferFrom({_addr: avatar.address}, {fromBlock: tx.blockNumber})
+                         .get((err,events) => {
+                                 resolve(events);
+                         });
+                     });
+          assert.equal(log[0].event,"ExternalTokenTransferFrom");
           let balanceAvatar = await standardToken.balanceOf(avatar.address);
           assert.equal(balanceAvatar, 50);
           let balanceTo = await standardToken.balanceOf(to);
@@ -542,8 +577,13 @@ contract('Controller', function (accounts)  {
     assert.equal(globalConstraintsCount[0],0);
     assert.equal(globalConstraintsCount[1],0);
     var tx =  await controller.genericCall(actionMock.address,extraData.params[0].data,avatar.address);
-    assert.equal(tx.logs.length, 1);
-    assert.equal(tx.logs[0].event, "GenericCall");
+    var log = await new Promise((resolve) => {
+                avatar.GenericCall({fromBlock: tx.blockNumber})
+                    .get((err,events) => {
+                            resolve(events);
+                    });
+                });
+    assert.equal(log[0].args._contract,actionMock.address);
     });
 
     it("globalConstraints sendEther  add & remove", async () => {
@@ -564,8 +604,13 @@ contract('Controller', function (accounts)  {
        var globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
        assert.equal(globalConstraintsCount[0],0);
        var tx = await controller.sendEther(web3.toWei('1', "ether"),otherAvatar.address,avatar.address);
-       assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "SendEther");
+       var log = await new Promise((resolve) => {
+                   avatar.SendEther({fromBlock: tx.blockNumber})
+                       .get((err,events) => {
+                               resolve(events);
+                       });
+                   });
+       assert.equal(log[0].event,"SendEther");
        var avatarBalance = web3.eth.getBalance(avatar.address)/web3.toWei('1', "ether");
        assert.equal(avatarBalance, 0);
        var otherAvatarBalance = web3.eth.getBalance(otherAvatar.address)/web3.toWei('1', "ether");
@@ -591,8 +636,14 @@ contract('Controller', function (accounts)  {
         var globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
         assert.equal(globalConstraintsCount[0],0);
         var tx = await controller.externalTokenTransfer(standardToken.address,accounts[1],50,avatar.address);
-        assert.equal(tx.logs.length, 1);
-        assert.equal(tx.logs[0].event, "ExternalTokenTransfer");
+        var log = await new Promise((resolve) => {
+                    avatar.ExternalTokenTransfer({fromBlock: tx.blockNumber})
+                        .get((err,events) => {
+                                resolve(events);
+                        });
+                    });
+        assert.equal(log[0].event,"ExternalTokenTransfer");
+
         balanceAvatar = await standardToken.balanceOf(avatar.address);
         assert.equal(balanceAvatar, 50);
         let balance1 = await standardToken.balanceOf(accounts[1]);
@@ -619,8 +670,15 @@ contract('Controller', function (accounts)  {
        assert.equal(globalConstraintsCount[0],0);
 
        tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-       assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "ExternalTokenIncreaseApproval");
+
+       var log = await new Promise((resolve) => {
+                   avatar.ExternalTokenIncreaseApproval({fromBlock: tx.blockNumber})
+                       .get((err,events) => {
+                               resolve(events);
+                       });
+                   });
+       assert.equal(log[0].event,"ExternalTokenIncreaseApproval");
+
        globalConstraints = await constraint("externalTokenTransferFrom");
        try {
         await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
@@ -655,40 +713,18 @@ contract('Controller', function (accounts)  {
 
        await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
        tx = await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
-       assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
+       log = await new Promise((resolve) => {
+                   avatar.ExternalTokenTransferFrom({fromBlock: tx.blockNumber})
+                       .get((err,events) => {
+                               resolve(events);
+                       });
+                   });
+       assert.equal(log[0].event,"ExternalTokenTransferFrom");
        let balanceAvatar = await standardToken.balanceOf(avatar.address);
        assert.equal(balanceAvatar, 50);
        let balanceTo = await standardToken.balanceOf(to);
        assert.equal(balanceTo, 50);
        });
-
-     it("globalConstraints externalTokenTransfer  add & remove", async () => {
-        controller = await setup();
-        var globalConstraints = await constraint("externalTokenTransfer");
-        var standardToken = await StandardTokenMock.new(avatar.address, 100);
-        let balanceAvatar = await standardToken.balanceOf(avatar.address);
-        assert.equal(balanceAvatar, 100);
-        await avatar.transferOwnership(controller.address);
-
-        try {
-         await controller.externalTokenTransfer(standardToken.address,accounts[1],50,avatar.address);
-         assert(false,"externalTokenTransfer should fail due to the global constraint ");
-        }
-        catch(ex){
-          helpers.assertVMException(ex);
-        }
-        await controller.removeGlobalConstraint(globalConstraints.address,avatar.address);
-        var globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
-        assert.equal(globalConstraintsCount[0],0);
-        var tx = await controller.externalTokenTransfer(standardToken.address,accounts[1],50,avatar.address);
-        assert.equal(tx.logs.length, 1);
-        assert.equal(tx.logs[0].event, "ExternalTokenTransfer");
-        balanceAvatar = await standardToken.balanceOf(avatar.address);
-        assert.equal(balanceAvatar, 50);
-        let balance1 = await standardToken.balanceOf(accounts[1]);
-        assert.equal(balance1, 50);
-    });
 
     it("getNativeReputation", async () => {
 
