@@ -31,7 +31,8 @@ const setup = async function (accounts) {
    testSetup.schemeRegistrar = await SchemeRegistrar.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
+   testSetup.reputationArray = [20,40,70];
+   testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
    testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(testSetup.schemeRegistrar);
    var permissions = "0x0000001F";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.schemeRegistrar.address],[testSetup.schemeRegistrarParams.paramsHash],[permissions]);
@@ -60,7 +61,7 @@ contract('SchemeRegistrar', function(accounts) {
 
         var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address,0,false);
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-        await helpers.checkVoteInfo(testSetup.schemeRegistrarParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.schemeRegistrarParams.votingMachine.reputationArray[0]]);
+        await helpers.checkVoteInfo(testSetup.schemeRegistrarParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
        });
 
        it("proposeToRemoveScheme log", async function() {
@@ -76,7 +77,7 @@ contract('SchemeRegistrar', function(accounts) {
 
       var tx = await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address);
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await helpers.checkVoteInfo(testSetup.schemeRegistrarParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.schemeRegistrarParams.votingMachine.reputationArray[0]]);
+      await helpers.checkVoteInfo(testSetup.schemeRegistrarParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
     });
 
     it("execute proposeScheme  and execute -yes - fee > 0 ", async function() {

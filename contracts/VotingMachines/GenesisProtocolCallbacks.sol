@@ -6,56 +6,65 @@ import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
 
 contract GenesisProtocolCallbacks is GenesisProtocolCallbacksInterface {
 
-    Avatar public avatar;
-    StandardToken public stakingToken;
-    GenesisProtocol public genesisProtocol;
+    struct ProposalInfo {
+        uint blockNumber; // the proposal's block number
+        Avatar avatar; // the proposal's avatar
+        address votingMachine;
+    }
 
-    modifier onlyGenesisProtocol() {
-        require(msg.sender == address(genesisProtocol),"only GenesisProtocol");
+    modifier onlyVotingMachine(bytes32 _proposalId) {
+        require(msg.sender == proposalsInfo[_proposalId].votingMachine,"only VotingMachine");
         _;
     }
-            //proposalId ->  blockNumber
-    mapping(bytes32      =>     uint    ) proposalsBlockNumbers;
-
-    /**
-     * @dev Constructor
-     */
-    constructor(Avatar _avatar,StandardToken _stakingToken,GenesisProtocol _genesisProtocol) public
-    {
-        avatar = _avatar;
-        stakingToken = _stakingToken;
-        genesisProtocol = _genesisProtocol;
-    }
-
-    function setProposal(bytes32 _proposalId) external onlyGenesisProtocol returns(bool) {
-        proposalsBlockNumbers[_proposalId] = block.number;
-    }
+            //proposalId ->     ProposalInfo
+    mapping(bytes32      =>     ProposalInfo    ) proposalsInfo;
 
     function getTotalReputationSupply(bytes32 _proposalId) external view returns(uint256) {
-        return avatar.nativeReputation().totalSupplyAt(proposalsBlockNumbers[_proposalId]);
+        ProposalInfo memory proposal = proposalsInfo[_proposalId];
+        if (proposal.avatar == Avatar(0)) {
+            return 0;
+        }
+        return proposal.avatar.nativeReputation().totalSupplyAt(proposal.blockNumber);
     }
 
-    function mintReputation(uint _amount,address _beneficiary,bytes32) external onlyGenesisProtocol returns(bool) {
+    function mintReputation(uint _amount,address _beneficiary,bytes32 _proposalId) external onlyVotingMachine(_proposalId) returns(bool) {
+        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        if (avatar == Avatar(0)) {
+            return false;
+        }
         return ControllerInterface(avatar.owner()).mintReputation(_amount,_beneficiary,address(avatar));
     }
 
-    function burnReputation(uint _amount,address _beneficiary,bytes32) external onlyGenesisProtocol returns(bool) {
+    function burnReputation(uint _amount,address _beneficiary,bytes32 _proposalId) external onlyVotingMachine(_proposalId) returns(bool) {
+        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        if (avatar == Avatar(0)) {
+            return false;
+        }
         return ControllerInterface(avatar.owner()).burnReputation(_amount,_beneficiary,address(avatar));
     }
 
     function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint) {
-        return avatar.nativeReputation().balanceOfAt(_owner,proposalsBlockNumbers[_proposalId]);
+        ProposalInfo memory proposal = proposalsInfo[_proposalId];
+        if (proposal.avatar == Avatar(0)) {
+            return 0;
+        }
+        return proposal.avatar.nativeReputation().balanceOfAt(_owner,proposal.blockNumber);
     }
 
-    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32) external onlyGenesisProtocol returns(bool) {
-        return ControllerInterface(avatar.owner()).externalTokenTransfer(stakingToken,_beneficiary,_amount,address(avatar));
+    function stakingTokenTransfer(
+        StandardToken _stakingToken,
+        address _beneficiary,
+        uint _amount,
+        bytes32 _proposalId)
+    external
+    onlyVotingMachine(_proposalId)
+    returns(bool)
+    {
+        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        if (avatar == Avatar(0)) {
+            return false;
+        }
+        return ControllerInterface(avatar.owner()).externalTokenTransfer(_stakingToken,_beneficiary,_amount,address(avatar));
     }
 
-    function setParameters(uint[14] _params,address _voteOnBehalf) external returns(bytes32) {
-        return genesisProtocol.setParameters(_params,_voteOnBehalf);
-    }
-
-    function executeProposal(bytes32 _proposalId,int _decision,ExecutableInterface _executable) external onlyGenesisProtocol returns(bool) {
-        return  _executable.execute(_proposalId, avatar, _decision);
-    }
 }

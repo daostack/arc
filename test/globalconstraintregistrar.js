@@ -44,18 +44,15 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    testSetup.globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],[20,10,70]);
+   testSetup.reputationArray = [20,10,70];
+   testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
    testSetup.globalConstraintRegistrarParams= await setupGlobalConstraintRegistrarParams(testSetup.globalConstraintRegistrar,accounts,genesisProtocol,tokenAddress);
    var permissions = "0x00000004";
    //await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.globalConstraintRegistrar.address],[testSetup.globalConstraintRegistrarParams.paramsHash],[permissions]);
-   if (genesisProtocol) {
      await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
-                                          [testSetup.globalConstraintRegistrar.address,testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.address],
-                                          [testSetup.globalConstraintRegistrarParams.paramsHash,testSetup.globalConstraintRegistrarParams.votingMachine.params],[permissions,permissions]);
-   } else
-   {
-     await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.globalConstraintRegistrar.address],[testSetup.globalConstraintRegistrarParams.paramsHash],[permissions]);
-    }
+                                          [testSetup.globalConstraintRegistrar.address],
+                                          [testSetup.globalConstraintRegistrarParams.paramsHash],
+                                          [permissions]);
 
    return testSetup;
 };
@@ -77,7 +74,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                      "0x1234",
                                                                      "0x1235");
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+      await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
       var voteToRemoveParams = await testSetup.globalConstraintRegistrar.voteToRemoveParams(testSetup.org.avatar.address, globalConstraintMock.address);
       assert.equal(voteToRemoveParams, "0x1235000000000000000000000000000000000000000000000000000000000000");
      });
@@ -116,7 +113,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                        0,
                                                                        0);
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-        await helpers.checkVoteInfo(testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.globalConstraintRegistrarParams.votingMachine.reputationArray[0]]);
+        await helpers.checkVoteInfo(testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
        });
 
        it("execute proposeGlobalConstraint ", async function() {
@@ -137,7 +134,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
          let gcCount =  await controller.globalConstraintsCount(testSetup.org.avatar.address);
          assert.equal(gcCount[0],0);
          assert.equal(gcCount[1],0);
-         tx = await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+         tx = await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
          gcCount =  await controller.globalConstraintsCount(testSetup.org.avatar.address);
          assert.equal(gcCount[0],1);
         });
@@ -152,7 +149,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                         0,
                                                                         testSetup.globalConstraintRegistrarParams.votingMachine.params);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-         await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+         await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
          tx = await testSetup.globalConstraintRegistrar.proposeToRemoveGC(testSetup.org.avatar.address,
                                                                         globalConstraintMock.address);
          assert.equal(tx.logs.length, 1);
@@ -183,12 +180,12 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                           0,
                                                                           testSetup.globalConstraintRegistrarParams.votingMachine.params);
            var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-           await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+           await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
            await testSetup.globalConstraintRegistrar.proposeToRemoveGC(testSetup.org.avatar.address,
                                                                           globalConstraintMock.address,
                                                                            );
            proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-           await helpers.checkVoteInfo(testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.globalConstraintRegistrarParams.votingMachine.reputationArray[0]]);
+           await helpers.checkVoteInfo(testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
           });
 
           it("execute proposeToRemoveGC ", async function() {
@@ -202,7 +199,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                            0,
                                                                            testSetup.globalConstraintRegistrarParams.votingMachine.params);
             var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-            await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+            await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
             assert.equal(await controller.isGlobalConstraintRegistered(globalConstraintMock.address,testSetup.org.avatar.address),true);
             tx = await testSetup.globalConstraintRegistrar.proposeToRemoveGC(testSetup.org.avatar.address,
                                                                            globalConstraintMock.address);
@@ -211,7 +208,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
             proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
             let count = await controller.globalConstraintsCount(testSetup.org.avatar.address);
             assert.equal(count[0],1);
-            await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+            await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
             count = await controller.globalConstraintsCount(testSetup.org.avatar.address);
             assert.equal(count[0],0);
            });
@@ -227,7 +224,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
                                                                             0,
                                                                             testSetup.globalConstraintRegistrarParams.votingMachine.params);
              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-             await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
+             await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,0,0,{from:accounts[2]});
              let count = await controller.globalConstraintsCount(testSetup.org.avatar.address);
              assert.equal(count[0],0);
         });
@@ -249,7 +246,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
 
 
           var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-          await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[2]});
+          await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,{from:accounts[2]});
 
           tx = await testSetup.globalConstraintRegistrar.proposeToRemoveGC(testSetup.org.avatar.address,
                                                                           globalConstraintMock.address,
@@ -257,7 +254,7 @@ contract('GlobalConstraintRegistrar', function(accounts) {
           proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
           var rep = await testSetup.org.reputation.reputationOf(accounts[2]);
 
-          await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[2]});
+          await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,{from:accounts[2]});
           await helpers.checkVoteInfo(testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol,proposalId,accounts[2],[1,rep.toNumber()]);
          });
 

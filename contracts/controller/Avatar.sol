@@ -17,7 +17,7 @@ contract Avatar is Ownable {
     DAOToken public nativeToken;
     Reputation public nativeReputation;
 
-    event GenericAction(address indexed _action, bytes32[] _params);
+    event GenericCall(address indexed _contract, bytes _params);
     event SendEther(uint _amountInWei, address indexed _to);
     event ExternalTokenTransfer(address indexed _externalToken, address indexed _to, uint _value);
     event ExternalTokenTransferFrom(address indexed _externalToken, address _from, address _to, uint _value);
@@ -49,6 +49,7 @@ contract Avatar is Ownable {
     * @return the return bytes of the called contract's function.
     */
     function genericCall(address _contract,bytes _data) public onlyOwner {
+        //emit GenericCall(_contract,_data);
         // solium-disable-next-line security/no-low-level-calls
         bool result = _contract.call(_data);
         // solium-disable-next-line security/no-inline-assembly

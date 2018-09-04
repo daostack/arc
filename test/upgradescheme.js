@@ -55,7 +55,8 @@ const setup = async function (accounts) {
    testSetup.upgradeScheme = await UpgradeScheme.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
+   testSetup.reputationArray = [20,40,70];
+   testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
    testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(testSetup.upgradeScheme);
 
    var permissions = "0x0000000a";
@@ -97,7 +98,7 @@ contract('UpgradeScheme', function(accounts) {
          var newController = await setupNewController();
          var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-         await helpers.checkVoteInfo(testSetup.upgradeSchemeParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.upgradeSchemeParams.votingMachine.reputationArray[0]]);
+         await helpers.checkVoteInfo(testSetup.upgradeSchemeParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
         });
 
         it("proposeChangeUpgradingScheme log", async function() {
@@ -116,7 +117,7 @@ contract('UpgradeScheme', function(accounts) {
 
             var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x2");
             var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-            await helpers.checkVoteInfo(testSetup.upgradeSchemeParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.upgradeSchemeParams.votingMachine.reputationArray[0]]);
+            await helpers.checkVoteInfo(testSetup.upgradeSchemeParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
            });
 
            it("execute proposal upgrade controller -yes - proposal data delete", async function() {

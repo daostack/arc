@@ -1,7 +1,9 @@
 pragma solidity ^0.4.24;
 
 import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "./UniversalScheme.sol";
+import "../VotingMachines/GenesisProtocolCallbacks.sol";
 
 
 /**
@@ -10,7 +12,7 @@ import "./UniversalScheme.sol";
  * him with token, reputation, ether or any combination.
  */
 
-contract ContributionReward is UniversalScheme {
+contract ContributionReward is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
     using SafeMath for uint;
 
     event NewContributionProposal(
@@ -53,10 +55,27 @@ contract ContributionReward is UniversalScheme {
         uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
         bytes32 voteApproveParams;
         IntVoteInterface intVote;
-        address executer;
     }
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
+
+    /**
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    */
+    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        ProposalInfo memory proposal = proposalsInfo[_proposalId];
+        require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
+        require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
+        // Check if vote was successful:
+        if (_param == 1) {
+          // solium-disable-next-line security/no-block-members
+            organizationsProposals[address(proposal.avatar)][_proposalId].executionTime = now;
+        }
+        emit ProposalExecuted(address(proposal.avatar), _proposalId,_param);
+        return true;
+    }
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value
@@ -64,20 +83,17 @@ contract ContributionReward is UniversalScheme {
     function setParameters(
         uint _orgNativeTokenFee,
         bytes32 _voteApproveParams,
-        IntVoteInterface _intVote,
-        address _executer
+        IntVoteInterface _intVote
     ) public returns(bytes32)
     {
         bytes32 paramsHash = getParametersHash(
             _orgNativeTokenFee,
             _voteApproveParams,
-            _intVote,
-            _executer
+            _intVote
         );
         parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
         parameters[paramsHash].voteApproveParams = _voteApproveParams;
         parameters[paramsHash].intVote = _intVote;
-        parameters[paramsHash].executer = _executer;
         return paramsHash;
     }
 
@@ -86,18 +102,16 @@ contract ContributionReward is UniversalScheme {
     * @param _orgNativeTokenFee the fee for submitting a contribution in organizations native token
     * @param _voteApproveParams parameters for the voting machine used to approve a contribution
     * @param _intVote the voting machine used to approve a contribution
-    * @param _executer address which allowed to can call execute
     * @return a hash of the parameters
     */
     // TODO: These fees are messy. Better to have a _fee and _feeToken pair, just as in some other contract (which one?) with some sane default
     function getParametersHash(
         uint _orgNativeTokenFee,
         bytes32 _voteApproveParams,
-        IntVoteInterface _intVote,
-        address _executer
+        IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        return (keccak256(abi.encodePacked(_voteApproveParams, _orgNativeTokenFee, _intVote,_executer)));
+        return (keccak256(abi.encodePacked(_voteApproveParams, _orgNativeTokenFee, _intVote)));
     }
 
     /**
@@ -134,8 +148,6 @@ contract ContributionReward is UniversalScheme {
         bytes32 contributionId = controllerParams.intVote.propose(
             2,
            controllerParams.voteApproveParams,
-           address(_avatar),
-           ExecutableInterface(this),
            msg.sender
         );
 
@@ -172,29 +184,14 @@ contract ContributionReward is UniversalScheme {
             beneficiary
         );
 
+        proposalsInfo[contributionId] = ProposalInfo(
+            {blockNumber:block.number,
+            avatar:_avatar,
+            votingMachine:controllerParams.intVote});
         // vote for this proposal
         controllerParams.intVote.ownerVote(contributionId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
-        return contributionId;
-    }
 
-    /**
-    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _avatar address of the controller
-    * @param _param a parameter of the voting result, 1 yes and 2 is no.
-    */
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
-        // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].executer == msg.sender);
-        require(organizationsProposals[_avatar][_proposalId].executionTime == 0);
-        require(organizationsProposals[_avatar][_proposalId].beneficiary != address(0));
-        // Check if vote was successful:
-        if (_param == 1) {
-          // solium-disable-next-line security/no-block-members
-            organizationsProposals[_avatar][_proposalId].executionTime = now;
-        }
-        emit ProposalExecuted(_avatar, _proposalId,_param);
-        return true;
+        return contributionId;
     }
 
     /**
