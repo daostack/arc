@@ -43,23 +43,21 @@ const setup = async function (accounts,contractToCall = 0,reputationAccount=0,ge
    testSetup.genericScheme = await GenericScheme.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   testSetup.reputationArray = [20,10,70];
+
    if (reputationAccount === 0) {
-     testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],[20,10,70]);
+     testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
    } else {
-     testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],[20,10,70]);
+     testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
    }
    testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.genericScheme,accounts,contractToCall,reputationAccount,genesisProtocol,tokenAddress);
    var permissions = "0x00000010";
-   if (genesisProtocol) {
-     await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
-                                          [testSetup.genericScheme.address,testSetup.genericSchemeParams.votingMachine.genesisProtocol.address],
-                                          [testSetup.genericSchemeParams.paramsHash,testSetup.genericSchemeParams.votingMachine.params],[permissions,permissions]);
-   } else
-   {
+
+
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                         [testSetup.genericScheme.address],
                                         [testSetup.genericSchemeParams.paramsHash],[permissions]);
-    }
+
    return testSetup;
 };
 
