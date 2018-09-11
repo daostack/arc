@@ -348,6 +348,7 @@ contract ContributionReward is UniversalScheme,GenesisProtocolCallbacks,GenesisP
     * @return  periods left to be paid.
     */
     function getPeriodsToPay(bytes32 _proposalId, address _avatar,uint _redeemType) public view returns (uint) {
+        require(_redeemType <= 3,"should be in the redeemedPeriods range");
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         if (_proposal.executionTime == 0)
             return 0;

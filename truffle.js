@@ -34,8 +34,12 @@ module.exports = {
       network_id: "*",
       host: "localhost",
       port: 8545,
-      gas: 4543760
+      gas: 5900000
     },
+  },
+  rpc: {
+    host: "localhost",
+    port: 8545
   },
   solc: {
     optimizer: {
@@ -43,8 +47,14 @@ module.exports = {
       runs: 200
     }
   },
-  rpc: {
-    host: "localhost",
-    port: 8545
+  compilers: {
+    solc: {
+         version: "0.4.24",    // Fetch exact version from solc-bin (default: truffle's version)
+      // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+      }
   }
 };

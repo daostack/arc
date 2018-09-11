@@ -4,23 +4,22 @@ const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const ActionMock = artifacts.require('./test/ActionMock.sol');
 const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 
-let avatar,accounts;
+let avatar;
 
-const setup = async function () {
-  accounts = web3.eth.accounts;
-  avatar = await Avatar.new(0x1234, accounts[0], accounts[1]);
+const setup = async function (accounts) {
+  avatar = await Avatar.new("0x1234", accounts[0], accounts[1]);
   return avatar;
 };
 
-contract('Avatar', function (accounts)  {
+contract('Avatar',  accounts =>  {
 
     it("genericCall no owner", async () => {
-        avatar = await setup();
+        avatar = await setup(accounts);
         let actionMock = await ActionMock.new();
         var scheme = await UniversalSchemeMock.new();
         let a = 7;
         let b = actionMock.address;
-        let c = 0x1234;
+        let c = "0x1234";
         try{
          await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c,{from :accounts[1]});
          assert(false, "genericAction should fail due to wrong owner");
@@ -30,25 +29,25 @@ contract('Avatar', function (accounts)  {
     });
 
     it("generic call", async () => {
-        avatar = await setup();
+        avatar = await setup(accounts);
         let actionMock = await ActionMock.new();
         var scheme = await UniversalSchemeMock.new();
         await avatar.transferOwnership(scheme.address);
         let a = 7;
         let b = actionMock.address;
-        let c = 0x1234;
+        let c = "0x1234";
         var result = await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c);
         assert.equal(result,a*2);
     });
 
     it("generic call should revert if action revert", async () => {
-        avatar = await setup();
+        avatar = await setup(accounts);
         let actionMock = await ActionMock.new();
         var scheme = await UniversalSchemeMock.new();
         await avatar.transferOwnership(scheme.address);
         let a = 7;
         let b = actionMock.address;
-        let c = 0x4567; //the action test function require 0x1234
+        let c = "0x4567"; //the action test function require 0x1234
         try{
            await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c);
            assert(false,"generic call should revert if action revert ");
@@ -59,29 +58,29 @@ contract('Avatar', function (accounts)  {
     });
 
     it("pay ether to avatar", async () => {
-        avatar = await setup();
-        web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.toWei('1', "ether")});
-        var avatarBalance =  web3.eth.getBalance(avatar.address)/web3.toWei('1', "ether");
+        avatar = await setup(accounts);
+        await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('1', "ether")});
+        var avatarBalance =  await web3.eth.getBalance(avatar.address)/web3.utils.toWei('1', "ether");
         assert.equal(avatarBalance,1);
     });
 
     it("sendEther from ", async () => {
-        avatar = await setup();
+        avatar = await setup(accounts);
         let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-         web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.toWei('1', "ether")});
-        var avatarBalance =  web3.eth.getBalance(avatar.address)/web3.toWei('1', "ether");
+        await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('1', "ether")});
+        var avatarBalance =  await web3.eth.getBalance(avatar.address)/web3.utils.toWei('1', "ether");
         assert.equal(avatarBalance,1);
-        var tx = await avatar.sendEther(web3.toWei('1', "ether"),otherAvatar.address);
+        var tx = await avatar.sendEther(web3.utils.toWei('1', "ether"),otherAvatar.address);
         assert.equal(tx.logs.length, 2);
         assert.equal(tx.logs[1].event, "SendEther");
-        avatarBalance = web3.eth.getBalance(avatar.address)/web3.toWei('1', "ether");
+        avatarBalance =await web3.eth.getBalance(avatar.address)/web3.utils.toWei('1', "ether");
         assert.equal(avatarBalance,0);
-        var otherAvatarBalance =  web3.eth.getBalance(otherAvatar.address)/web3.toWei('1', "ether");
+        var otherAvatarBalance = await web3.eth.getBalance(otherAvatar.address)/web3.utils.toWei('1', "ether");
         assert.equal(otherAvatarBalance,1);
     });
 
     it("externalTokenTransfer  ", async () => {
-      avatar = await setup();
+      avatar = await setup(accounts);
       var standardToken = await StandardTokenMock.new(avatar.address, 100);
       let balanceAvatar = await standardToken.balanceOf(avatar.address);
       assert.equal(balanceAvatar, 100);
@@ -97,7 +96,7 @@ contract('Avatar', function (accounts)  {
     it("externalTokenTransferFrom & externalTokenIncreaseApproval", async () => {
       var tx;
       var to   = accounts[1];
-      avatar = await setup();
+      avatar = await setup(accounts);
       var standardToken = await StandardTokenMock.new(avatar.address, 100);
       tx = await avatar.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
       assert.equal(tx.logs.length, 1);
@@ -114,7 +113,7 @@ contract('Avatar', function (accounts)  {
     it("externalTokenTransferFrom & externalTokenDecreaseApproval", async () => {
       var tx;
       var to   = accounts[1];
-      avatar = await setup();
+      avatar = await setup(accounts);
       var standardToken = await StandardTokenMock.new(avatar.address, 100);
       tx = await avatar.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
       tx = await avatar.externalTokenDecreaseApproval(standardToken.address,avatar.address,50);

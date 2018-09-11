@@ -74,11 +74,11 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
    return testSetup;
 };
 
-contract('VoteInOrganizationScheme', function(accounts) {
+contract('VoteInOrganizationScheme', accounts => {
   before(function() {
-    helpers.etherForEveryone();
+     helpers.etherForEveryone(accounts);
   });
-   it("setParameters", async function() {
+   it("setParameters", async() => {
      var voteInOrganization = await VoteInOrganizationScheme.new();
      var absoluteVote = await AbsoluteVote.new();
      await voteInOrganization.setParameters("0x1234",absoluteVote.address);

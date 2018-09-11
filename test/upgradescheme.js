@@ -29,8 +29,7 @@ const setupUpgradeSchemeParams = async function(
 };
 
 
-const setupNewController = async function (permission='0x00000000') {
-  var accounts = web3.eth.accounts;
+const setupNewController = async function (accounts,permission='0x00000000') {
   var token  = await DAOToken.new("TEST","TST",0);
   // set up a reputation system
   var reputation = await Reputation.new();
@@ -38,7 +37,7 @@ const setupNewController = async function (permission='0x00000000') {
   var _controller;
   if (permission !== '0'){
     _controller = await Controller.new(avatar.address,{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
-    await _controller.registerScheme(accounts[0],0,permission,avatar.address,{from:accounts[1]});
+    await _controller.registerScheme(accounts[0],helpers.NULL_HASH,permission,avatar.address,{from:accounts[1]});
     await _controller.unregisterSelf(avatar.address,{from:accounts[1]});
   }
   else {
@@ -66,12 +65,12 @@ const setup = async function (accounts) {
    return testSetup;
 };
 
-contract('UpgradeScheme', function(accounts) {
+contract('UpgradeScheme', accounts => {
   before(function() {
-    helpers.etherForEveryone();
+    helpers.etherForEveryone(accounts);
   });
 
-   it("setParameters", async function() {
+   it("setParameters", async() => {
      var upgradeScheme = await UpgradeScheme.new();
      var absoluteVote = await AbsoluteVote.new();
      await upgradeScheme.setParameters("0x1234",absoluteVote.address);
@@ -81,10 +80,10 @@ contract('UpgradeScheme', function(accounts) {
      });
 
 
-     it("proposeUpgrade log", async function() {
+     it("proposeUpgrade log", async() => {
        var testSetup = await setup(accounts);
 
-       var newController = await setupNewController();
+       var newController = await setupNewController(accounts);
        var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "NewUpgradeProposal");
@@ -95,7 +94,7 @@ contract('UpgradeScheme', function(accounts) {
        it("proposeUpgrade check owner vote", async function() {
          var testSetup = await setup(accounts);
 
-         var newController = await setupNewController();
+         var newController = await setupNewController(accounts);
          var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
          await helpers.checkVoteInfo(testSetup.upgradeSchemeParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
@@ -104,7 +103,7 @@ contract('UpgradeScheme', function(accounts) {
         it("proposeChangeUpgradingScheme log", async function() {
           var testSetup = await setup(accounts);
 
-          var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0");
+          var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000000");
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "ChangeUpgradeSchemeProposal");
           var votingMachine = await helpers.getValueFromLogs(tx, '_intVoteInterface',1);
@@ -115,7 +114,7 @@ contract('UpgradeScheme', function(accounts) {
           it("proposeChangeUpgradingScheme check owner vote", async function() {
             var testSetup = await setup(accounts);
 
-            var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x2");
+            var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000002");
             var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
             await helpers.checkVoteInfo(testSetup.upgradeSchemeParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
            });
@@ -123,7 +122,7 @@ contract('UpgradeScheme', function(accounts) {
            it("execute proposal upgrade controller -yes - proposal data delete", async function() {
              var testSetup = await setup(accounts);
 
-             var newController = await setupNewController();
+             var newController = await setupNewController(accounts);
              assert.notEqual(newController.address,await testSetup.org.avatar.owner());
              var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
              //Vote with reputation to trigger execution
@@ -143,7 +142,7 @@ contract('UpgradeScheme', function(accounts) {
             it("execute proposal upgrade controller - no decision (same for update scheme) - proposal data delete", async function() {
               var testSetup = await setup(accounts);
 
-              var newController = await setupNewController();
+              var newController = await setupNewController(accounts);
               var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
               //check organizationsProposals before execution
@@ -165,7 +164,7 @@ contract('UpgradeScheme', function(accounts) {
                var testSetup = await setup(accounts);
 
 
-               var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x2");
+               var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000002");
                //Vote with reputation to trigger execution
                var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
@@ -195,7 +194,7 @@ contract('UpgradeScheme', function(accounts) {
                 var testSetup = await setup(accounts);
 
 
-                var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x2");
+                var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000002");
                 //Vote with reputation to trigger execution
                 var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
@@ -225,7 +224,7 @@ contract('UpgradeScheme', function(accounts) {
                  var testSetup = await setup(accounts);
 
 
-                 var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,testSetup.upgradeScheme.address,"0x2");
+                 var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,testSetup.upgradeScheme.address,"0x00000002");
                  //Vote with reputation to trigger execution
                  var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 

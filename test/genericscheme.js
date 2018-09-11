@@ -62,13 +62,12 @@ const setup = async function (accounts,contractToCall = 0,reputationAccount=0,ge
 };
 
 const createCallToActionMock = async function(_avatar,_actionMock) {
-  const extraData = await _actionMock.test2.request(_avatar);
-  return extraData.params[0].data;
+  return await new web3.eth.Contract(_actionMock.abi).methods.test2(_avatar).encodeABI();
 };
 
 contract('genericScheme', function(accounts) {
   before(function() {
-    helpers.etherForEveryone();
+    helpers.etherForEveryone(accounts);
   });
     it("setParameters", async function() {
        var genericScheme = await GenericScheme.new();
@@ -102,7 +101,7 @@ contract('genericScheme', function(accounts) {
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,{from:accounts[2]});
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-       assert.equal(organizationProposal[0],"0x");
+       assert.equal(organizationProposal.callData,null);
     });
 
     it("execute proposeVote -positive decision - proposal data delete", async function() {
@@ -116,7 +115,7 @@ contract('genericScheme', function(accounts) {
         await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
         //check organizationsProposals after execution
         organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-        assert.equal(organizationProposal[0],"0x");//new contract address
+        assert.equal(organizationProposal.callData,null);//new contract address
      });
 
     it("execute proposeVote -positive decision - check action", async function() {
@@ -136,8 +135,8 @@ contract('genericScheme', function(accounts) {
     it("execute proposeVote without return value-positive decision - check action", async function() {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,actionMock.address);
-       const extraData = await actionMock.withoutReturnValue.request(testSetup.org.avatar.address);
-       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,extraData.params[0].data);
+       const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,encodeABI);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});

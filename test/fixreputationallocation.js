@@ -14,7 +14,7 @@ const setup = async function (accounts,_repAllocation = 300) {
                                                                             _repAllocation);
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.fixedReputationAllocation.address],[0],[permissions]);
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.fixedReputationAllocation.address],[helpers.NULL_HASH],[permissions]);
    return testSetup;
 };
 

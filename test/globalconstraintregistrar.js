@@ -56,9 +56,9 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
 
    return testSetup;
 };
-contract('GlobalConstraintRegistrar', function(accounts) {
+contract('GlobalConstraintRegistrar', accounts => {
 
-   it("setParameters", async function() {
+   it("setParameters", async ()=> {
      var globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
      var params = await setupGlobalConstraintRegistrarParams(globalConstraintRegistrar);
      var parameters = await globalConstraintRegistrar.parameters(params.paramsHash);
@@ -110,8 +110,8 @@ contract('GlobalConstraintRegistrar', function(accounts) {
 
         var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                        globalConstraintMock.address,
-                                                                       0,
-                                                                       0);
+                                                                       "0x1234",
+                                                                       "0x1234");
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         await helpers.checkVoteInfo(testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
        });
@@ -120,13 +120,13 @@ contract('GlobalConstraintRegistrar', function(accounts) {
          var testSetup = await setup(accounts);
          var controller = await Controller.at(await testSetup.org.avatar.owner());
          var globalConstraintMock = await GlobalConstraintMock.new();
-         await globalConstraintMock.setConstraint("method",false,false);
+         await globalConstraintMock.setConstraint(web3.utils.asciiToHex("method"),false,false);
 
 
 
          var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                         globalConstraintMock.address,
-                                                                        0,
+                                                                        "0x1234",
                                                                         testSetup.globalConstraintRegistrarParams.votingMachine.params);
          assert.equal(tx.logs.length, 1);
          assert.equal(tx.logs[0].event, "NewGlobalConstraintsProposal");
@@ -142,11 +142,11 @@ contract('GlobalConstraintRegistrar', function(accounts) {
        it("proposeToRemoveGC log", async function() {
          var testSetup = await setup(accounts);
          var globalConstraintMock =await GlobalConstraintMock.new();
-         await globalConstraintMock.setConstraint("method",false,false);
+         await globalConstraintMock.setConstraint(web3.utils.asciiToHex("method"),false,false);
 
          var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                         globalConstraintMock.address,
-                                                                        0,
+                                                                        "0x1234",
                                                                         testSetup.globalConstraintRegistrarParams.votingMachine.params);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
          await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
@@ -173,11 +173,11 @@ contract('GlobalConstraintRegistrar', function(accounts) {
          it("proposeToRemoveGC check owner vote", async function() {
            var testSetup = await setup(accounts);
            var globalConstraintMock =await GlobalConstraintMock.new();
-           await globalConstraintMock.setConstraint("method",false,false);
+           await globalConstraintMock.setConstraint(web3.utils.asciiToHex("method"),false,false);
 
            var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                           globalConstraintMock.address,
-                                                                          0,
+                                                                          "0x1234",
                                                                           testSetup.globalConstraintRegistrarParams.votingMachine.params);
            var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
            await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
@@ -192,11 +192,11 @@ contract('GlobalConstraintRegistrar', function(accounts) {
             var testSetup = await setup(accounts);
             var controller = await Controller.at(await testSetup.org.avatar.owner());
             var globalConstraintMock =await GlobalConstraintMock.new();
-            await globalConstraintMock.setConstraint("method",false,false);
+            await globalConstraintMock.setConstraint(web3.utils.asciiToHex("method"),false,false);
 
             var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                            globalConstraintMock.address,
-                                                                           0,
+                                                                           "0x1234",
                                                                            testSetup.globalConstraintRegistrarParams.votingMachine.params);
             var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
             await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
@@ -217,11 +217,11 @@ contract('GlobalConstraintRegistrar', function(accounts) {
              var testSetup = await setup(accounts);
              var controller = await Controller.at(await testSetup.org.avatar.owner());
              var globalConstraintMock =await GlobalConstraintMock.new();
-             await globalConstraintMock.setConstraint("method",false,false);
+             await globalConstraintMock.setConstraint(web3.utils.asciiToHex("method"),false,false);
 
              var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                             globalConstraintMock.address,
-                                                                            0,
+                                                                            "0x1234",
                                                                             testSetup.globalConstraintRegistrarParams.votingMachine.params);
              var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
              await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,0,0,{from:accounts[2]});
@@ -237,11 +237,11 @@ contract('GlobalConstraintRegistrar', function(accounts) {
           var testSetup = await setup(accounts,true,standardTokenMock.address);
           var globalConstraintMock =await GlobalConstraintMock.new();
           //genesisProtocol use burn reputation.
-          await globalConstraintMock.setConstraint("burnReputation",true,true);
+          await globalConstraintMock.setConstraint(web3.utils.asciiToHex("burnReputation"),true,true);
 
           var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(testSetup.org.avatar.address,
                                                                          globalConstraintMock.address,
-                                                                         0,
+                                                                         "0x1234",
                                                                          testSetup.globalConstraintRegistrarParams.votingMachine.params);
 
 
