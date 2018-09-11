@@ -112,7 +112,13 @@ contract('SimpleICO', accounts => {
         var standardTokenMock = await StandardTokenMock.new(accounts[1],100);
         var simpleICO = await SimpleICO.new();
         var org = await setupOrganization(accounts[0],1000,1000);
-        var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,1000,1,(await web3.eth.blockNumber),(await web3.eth.blockNumber));
+        var paramHash= await setupSimpleICOParams(accounts,
+                                                  simpleICO,
+                                                  org,
+                                                  1000,
+                                                  1,
+                                                  await web3.eth.getBlockNumber(),
+                                                  await web3.eth.getBlockNumber());
         //give some tokens to organization avatar so it could register the universal scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
         await daoCreator.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],["0x8000000F"]);
