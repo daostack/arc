@@ -1,13 +1,14 @@
 pragma solidity ^0.4.24;
 
 import "./Locking4Reputation.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 /**
  * @title A scheme for external locking Tokens for reputation
  */
 
-contract ExternalLocking4Reputation is Locking4Reputation {
+contract ExternalLocking4Reputation is Locking4Reputation,Ownable {
 
     address public externalLockingContract;
     string public getBalanceFuncSignature;
@@ -28,22 +29,25 @@ contract ExternalLocking4Reputation is Locking4Reputation {
      * @param _getBalanceFuncSignature get balance function signature
      *        e.g "lockedTokenBalances(address)"
      */
-    constructor(Avatar _avatar,
-                 uint _reputationReward,
-                 uint _lockingStartTime,
-                 uint _lockingEndTime,
-                 address _externalLockingContract,
-                 string _getBalanceFuncSignature)
-    Locking4Reputation(_avatar,
-                       _reputationReward,
-                       _lockingStartTime,
-                       _lockingEndTime,
-                       1)
-    public
+    function setParameters(
+        Avatar _avatar,
+        uint _reputationReward,
+        uint _lockingStartTime,
+        uint _lockingEndTime,
+        address _externalLockingContract,
+        string _getBalanceFuncSignature)
+    external
+    onlyOwner
     {
         require(_lockingEndTime > _lockingStartTime,"_lockingEndTime should be greater than _lockingStartTime");
         externalLockingContract = _externalLockingContract;
         getBalanceFuncSignature = _getBalanceFuncSignature;
+        super._setParameters(
+        _avatar,
+        _reputationReward,
+        _lockingStartTime,
+        _lockingEndTime,
+        1);
     }
 
     /**
@@ -51,6 +55,7 @@ contract ExternalLocking4Reputation is Locking4Reputation {
      * @return lockingId
      */
     function lock() public returns(bytes32) {
+        require(avatar != Avatar(0),"should setParameters first");
         require(externalLockers[msg.sender] == false,"locking twice is not allowed");
         externalLockers[msg.sender] = true;
         // solium-disable-next-line security/no-low-level-calls
