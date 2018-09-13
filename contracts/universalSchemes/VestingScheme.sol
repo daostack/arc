@@ -1,7 +1,9 @@
 pragma solidity ^0.4.24;
 
-import "../VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "./UniversalScheme.sol";
+import "../VotingMachines/GenesisProtocolCallbacks.sol";
 
 
 /**
@@ -9,7 +11,7 @@ import "./UniversalScheme.sol";
  * @dev Can be used without organization just as a vesting component.
  */
 
-contract VestingScheme is UniversalScheme, ExecutableInterface {
+contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
     using SafeMath for uint;
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
@@ -70,6 +72,34 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     }
 
     /**
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    * @return bool which represents a successful of the function
+    */
+    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        address avatar = proposalsInfo[_proposalId].avatar;
+        Agreement memory proposedAgreement = organizationsProposals[avatar][_proposalId];
+        require(proposedAgreement.periodLength > 0);
+        delete organizationsProposals[avatar][_proposalId];
+        emit ProposalDeleted(avatar,_proposalId);
+
+        // Check if vote was successful:
+        if (_param == 1) {
+        // Define controller and mint tokens, check minting actually took place:
+            ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
+            uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
+            controller.mintTokens(tokensToMint, this,avatar);
+            agreements[agreementsCounter] = proposedAgreement;
+            agreementsCounter++;
+        // Log the new agreement:
+            emit ProposedVestedAgreement(agreementsCounter-1, _proposalId);
+        }
+        emit ProposalExecuted(avatar,_proposalId,_param);
+        return true;
+    }
+
+    /**
     * @dev Proposing a vesting agreement in an organization.
     * @param _beneficiary the beneficiary of the agreement.
     * @param _returnOnCancelAddress where to send the tokens in case of stoping.
@@ -100,7 +130,7 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     {
         // Open voting:
         Parameters memory params = parameters[getParametersFromController(_avatar)];
-        bytes32 proposalId = params.intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
+        bytes32 proposalId = params.intVote.propose(2, params.voteParams,msg.sender);
         require(_signaturesReqToCancel <= _signersArray.length);
         require(_periodLength > 0);
         require(_numOfAgreedPeriods > 0, "Number of Agreed Periods must be greater than 0");
@@ -118,6 +148,11 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
         organizationsProposals[_avatar][proposalId].numOfAgreedPeriods = _numOfAgreedPeriods;
         organizationsProposals[_avatar][proposalId].cliffInPeriods = _cliffInPeriods;
         organizationsProposals[_avatar][proposalId].signaturesReqToCancel = _signaturesReqToCancel;
+
+        proposalsInfo[proposalId] = ProposalInfo(
+            {blockNumber:block.number,
+            avatar:_avatar,
+            votingMachine:params.intVote});
 
         params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
 
@@ -215,36 +250,6 @@ contract VestingScheme is UniversalScheme, ExecutableInterface {
     ) public pure returns(bytes32)
     {
         return  (keccak256(abi.encodePacked(_voteParams, _intVote)));
-    }
-
-    /**
-    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _avatar address of the controller
-    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
-    * @return bool which represents a successful of the function
-    */
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
-        // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-        Agreement memory proposedAgreement = organizationsProposals[_avatar][_proposalId];
-        require(proposedAgreement.periodLength > 0);
-        delete organizationsProposals[_avatar][_proposalId];
-        emit ProposalDeleted(_avatar,_proposalId);
-
-        // Check if vote was successful:
-        if (_param == 1) {
-        // Define controller and mint tokens, check minting actually took place:
-            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
-            controller.mintTokens(tokensToMint, this,_avatar);
-            agreements[agreementsCounter] = proposedAgreement;
-            agreementsCounter++;
-        // Log the new agreement:
-            emit ProposedVestedAgreement(agreementsCounter-1, _proposalId);
-        }
-        emit ProposalExecuted(_avatar,_proposalId,_param);
-        return true;
     }
 
     /**

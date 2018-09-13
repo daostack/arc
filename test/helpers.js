@@ -122,29 +122,20 @@ export function assertJump(error) {
   assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned' + error.message);
 }
 
-export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50,reputationAccount=0) {
+export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
   var votingMachine = new VotingMachine();
-  var accounts = web3.eth.accounts;
   votingMachine.absoluteVote = await AbsoluteVote.new();
-
-  // set up a reputation system
-  var reputation = await Reputation.new();
-  //var avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
-  votingMachine.reputationArray = [20, 40 ,70];
-  await reputation.mint(accounts[0], votingMachine.reputationArray[0]);
-  await reputation.mint(accounts[1], votingMachine.reputationArray[1]);
-  if (reputationAccount === 0){
-    await reputation.mint(accounts[2], votingMachine.reputationArray[2]);
-  }else {
-    await reputation.mint(reputationAccount, votingMachine.reputationArray[2]);
-  }
   // register some parameters
-  await votingMachine.absoluteVote.setParameters(reputation.address, precReq, isOwnedVote);
-  votingMachine.params = await votingMachine.absoluteVote.getParametersHash(reputation.address, precReq, isOwnedVote);
+  await votingMachine.absoluteVote.setParameters( precReq, isOwnedVote);
+  votingMachine.params = await votingMachine.absoluteVote.getParametersHash( precReq, isOwnedVote);
   return votingMachine;
 };
 
-export const setupGenesisProtocol = async function (accounts,token,
+export const setupGenesisProtocol = async function (
+   accounts,
+   token,
+   avatar,
+   voteOnBehalf = 0,
   _preBoostedVoteRequiredPercentage=50,
   _preBoostedVotePeriodLimit=60,
   _boostedVotePeriodLimit=60,
@@ -161,6 +152,7 @@ export const setupGenesisProtocol = async function (accounts,token,
   _daoBountyLimt=10
   ) {
   var votingMachine = new VotingMachine();
+
   votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
 
   // set up a reputation system
@@ -179,7 +171,7 @@ export const setupGenesisProtocol = async function (accounts,token,
                                                  _votersReputationLossRatio,
                                                  _votersGainRepRatioFromLostRep,
                                                  _daoBountyConst,
-                                                 _daoBountyLimt]);
+                                                 _daoBountyLimt],voteOnBehalf);
   votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_preBoostedVoteRequiredPercentage,
                                                  _preBoostedVotePeriodLimit,
                                                  _boostedVotePeriodLimit,
@@ -193,7 +185,7 @@ export const setupGenesisProtocol = async function (accounts,token,
                                                  _votersReputationLossRatio,
                                                  _votersGainRepRatioFromLostRep,
                                                  _daoBountyConst,
-                                                 _daoBountyLimt]);
+                                                 _daoBountyLimt],voteOnBehalf);
 
   return votingMachine;
 };

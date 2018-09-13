@@ -1,7 +1,9 @@
 pragma solidity ^0.4.24;
 
-import "../VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "./UniversalScheme.sol";
+import "../VotingMachines/GenesisProtocolCallbacks.sol";
 
 
 /**
@@ -9,7 +11,7 @@ import "./UniversalScheme.sol";
  * @dev The SchemeRegistrar is used for registering and unregistering schemes at organizations
  */
 
-contract SchemeRegistrar is UniversalScheme {
+contract SchemeRegistrar is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
     event NewSchemeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -45,37 +47,32 @@ contract SchemeRegistrar is UniversalScheme {
     }
     mapping(bytes32=>Parameters) public parameters;
 
-
     /**
-    * @dev execute a  proposal
-    * This method can only be called by the voting machine in which the vote is held.
-    * @param _proposalId the ID of the proposal in the voting machine
-    * @param _avatar address of the controller
-    * @param _param identifies the action to be taken
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
-    // TODO: this call can be simplified if we save the _avatar together with the proposal
-    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
-          // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-        SchemeProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        address avatar = proposalsInfo[_proposalId].avatar;
+        SchemeProposal memory proposal = organizationsProposals[avatar][_proposalId];
         require(proposal.scheme != address(0));
-        delete organizationsProposals[_avatar][_proposalId];
-        emit ProposalDeleted(_avatar,_proposalId);
+        delete organizationsProposals[avatar][_proposalId];
+        emit ProposalDeleted(avatar,_proposalId);
         if (_param == 1) {
 
           // Define controller and get the params:
-            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+            ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
 
           // Add a scheme:
             if (proposal.proposalType == 1) {
-                require(controller.registerScheme(proposal.scheme, proposal.parametersHash, proposal.permissions,_avatar));
+                require(controller.registerScheme(proposal.scheme, proposal.parametersHash, proposal.permissions,avatar));
             }
           // Remove a scheme:
             if ( proposal.proposalType == 2 ) {
-                require(controller.unregisterScheme(proposal.scheme,_avatar));
+                require(controller.unregisterScheme(proposal.scheme,avatar));
             }
           }
-        emit ProposalExecuted(_avatar, _proposalId,_param);
+        emit ProposalExecuted(avatar, _proposalId,_param);
         return true;
     }
 
@@ -129,8 +126,6 @@ contract SchemeRegistrar is UniversalScheme {
         bytes32 proposalId = controllerParams.intVote.propose(
             2,
             controllerParams.voteRegisterParams,
-            _avatar,
-            ExecutableInterface(this),
             msg.sender
         );
 
@@ -148,6 +143,10 @@ contract SchemeRegistrar is UniversalScheme {
             _permissions
         );
         organizationsProposals[_avatar][proposalId] = proposal;
+        proposalsInfo[proposalId] = ProposalInfo(
+            {blockNumber:block.number,
+            avatar:_avatar,
+            votingMachine:controllerParams.intVote});
 
         // vote for this proposal
         controllerParams.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
@@ -169,11 +168,15 @@ contract SchemeRegistrar is UniversalScheme {
         Parameters memory params = parameters[paramsHash];
 
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, _avatar, ExecutableInterface(this),msg.sender);
+        bytes32 proposalId = intVote.propose(2, params.voteRemoveParams,msg.sender);
 
         organizationsProposals[_avatar][proposalId].proposalType = 2;
         organizationsProposals[_avatar][proposalId].scheme = _scheme;
         emit RemoveSchemeProposal(_avatar, proposalId, intVote, _scheme);
+        proposalsInfo[proposalId] = ProposalInfo(
+            {blockNumber:block.number,
+            avatar:_avatar,
+            votingMachine:params.intVote});
         // vote for this proposal
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;

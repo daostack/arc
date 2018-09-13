@@ -1,8 +1,6 @@
 pragma solidity ^0.4.24;
 
 import "./Avatar.sol";
-import "./Reputation.sol";
-import "./DAOToken.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
 import "./ControllerInterface.sol";
 
@@ -59,16 +57,9 @@ contract Controller is ControllerInterface {
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
     event RegisterScheme (address indexed _sender, address indexed _scheme);
     event UnregisterScheme (address indexed _sender, address indexed _scheme);
-    event GenericAction (address indexed _sender, bytes32[] _params);
-    event SendEther (address indexed _sender, uint _amountInWei, address indexed _to);
-    event ExternalTokenTransfer (address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
-    event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
-    event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
-    event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event UpgradeController(address indexed _oldController,address _newController);
     event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when);
     event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre);
-    event GenericCall(address indexed _contract,bytes _data);
 
     constructor( Avatar _avatar) public
     {
@@ -421,7 +412,6 @@ contract Controller is ControllerInterface {
     isAvatarValid(_avatar)
     returns (bytes32 returnValue)
     {
-        emit GenericCall(_contract, _data);
         avatar.genericCall(_contract, _data);
         // solium-disable-next-line security/no-inline-assembly
         assembly {
@@ -444,7 +434,6 @@ contract Controller is ControllerInterface {
     isAvatarValid(_avatar)
     returns(bool)
     {
-        emit SendEther(msg.sender, _amountInWei, _to);
         return avatar.sendEther(_amountInWei, _to);
     }
 
@@ -462,7 +451,6 @@ contract Controller is ControllerInterface {
     isAvatarValid(_avatar)
     returns(bool)
     {
-        emit ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
         return avatar.externalTokenTransfer(_externalToken, _to, _value);
     }
 
@@ -483,7 +471,6 @@ contract Controller is ControllerInterface {
     isAvatarValid(_avatar)
     returns(bool)
     {
-        emit ExternalTokenTransferFrom(msg.sender, _externalToken, _from, _to, _value);
         return avatar.externalTokenTransferFrom(_externalToken, _from, _to, _value);
     }
 
@@ -502,7 +489,6 @@ contract Controller is ControllerInterface {
     isAvatarValid(_avatar)
     returns(bool)
     {
-        emit ExternalTokenIncreaseApproval(msg.sender,_externalToken,_spender,_addedValue);
         return avatar.externalTokenIncreaseApproval(_externalToken, _spender, _addedValue);
     }
 
@@ -521,7 +507,6 @@ contract Controller is ControllerInterface {
     isAvatarValid(_avatar)
     returns(bool)
     {
-        emit ExternalTokenDecreaseApproval(msg.sender,_externalToken,_spender,_subtractedValue);
         return avatar.externalTokenDecreaseApproval(_externalToken, _spender, _subtractedValue);
     }
 

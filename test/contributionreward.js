@@ -47,15 +47,17 @@ const setupContributionRewardParams = async function(
                                             orgNativeTokenFee=0,
                                             accounts,
                                             genesisProtocol,
-                                            token
+                                            token,
+                                            avatar
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
   contributionRewardParams.orgNativeTokenFee =  orgNativeTokenFee;
   if (genesisProtocol === true) {
-    contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token);
-    await contributionReward.setParameters(contributionRewardParams.orgNativeTokenFee,
-                                                 contributionRewardParams.votingMachine.params,
-                                                  contributionRewardParams.votingMachine.genesisProtocol.address);
+    contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,avatar);
+    await contributionReward.setParameters(
+                                           contributionRewardParams.orgNativeTokenFee,
+                                           contributionRewardParams.votingMachine.params,
+                                           contributionRewardParams.votingMachine.genesisProtocol.address);
     contributionRewardParams.paramsHash = await contributionReward.getParametersHash(contributionRewardParams.orgNativeTokenFee,
                                                                                      contributionRewardParams.votingMachine.params,
                                                                                      contributionRewardParams.votingMachine.genesisProtocol.address);
@@ -78,16 +80,22 @@ const setup = async function (accounts,orgNativeTokenFee=0,genesisProtocol = fal
    testSetup.contributionReward = await ContributionReward.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   testSetup.contributionRewardParams= await setupContributionRewardParams(testSetup.contributionReward,orgNativeTokenFee,accounts,genesisProtocol,tokenAddress);
-   var permissions = "0x00000000";
    if (genesisProtocol) {
-     await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
-                                          [testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address],
-                                          [testSetup.contributionRewardParams.paramsHash,testSetup.contributionRewardParams.votingMachine.params],[permissions,permissions]);
+      testSetup.reputationArray = [1000,0,0];
    } else {
-     await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.contributionReward.address],[testSetup.contributionRewardParams.paramsHash],[permissions]);
+      testSetup.reputationArray = [2000,4000,7000];
    }
+   testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
+   testSetup.contributionRewardParams= await setupContributionRewardParams(
+                      testSetup.contributionReward,
+                      orgNativeTokenFee,
+                      accounts,genesisProtocol,
+                      tokenAddress,
+                      testSetup.org.avatar);
+   var permissions = "0x00000000";
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
+                                        [testSetup.contributionReward.address],
+                                        [testSetup.contributionRewardParams.paramsHash],[permissions]);
    return testSetup;
 };
 contract('ContributionReward', function(accounts) {
@@ -146,7 +154,7 @@ contract('ContributionReward', function(accounts) {
                                                                      accounts[0]
                                                                    );
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await helpers.checkVoteInfo(testSetup.contributionRewardParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.contributionRewardParams.votingMachine.reputationArray[0]]);
+      await helpers.checkVoteInfo(testSetup.contributionRewardParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
     });
 
     it("proposeContributionReward check beneficiary==0", async function() {
@@ -175,7 +183,7 @@ contract('ContributionReward', function(accounts) {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
       var organizationProposal = await testSetup.contributionReward.organizationsProposals(testSetup.org.avatar.address,proposalId);
       assert.notEqual(organizationProposal[9],0);//executionTime
      });
@@ -194,14 +202,14 @@ contract('ContributionReward', function(accounts) {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
       await helpers.increaseTime(periodLength+1);
       tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, reputationReward);
       var rep = await testSetup.org.reputation.reputationOf(accounts[1]);
-      assert.equal(rep.toNumber(),reputationReward);
+      assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
      });
 
     it("execute proposeContributionReward  mint tokens ", async function() {
@@ -219,7 +227,7 @@ contract('ContributionReward', function(accounts) {
                                                                     );
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
        await helpers.increaseTime(periodLength+1);
        tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[false,true,false,false]);
        var tokens = await testSetup.org.token.balanceOf(accounts[1]);
@@ -245,7 +253,7 @@ contract('ContributionReward', function(accounts) {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
       await helpers.increaseTime(periodLength+1);
       await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
       var eth = web3.eth.getBalance(otherAvatar.address);
@@ -274,7 +282,7 @@ contract('ContributionReward', function(accounts) {
                                                                     );
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
        await helpers.increaseTime(periodLength+1);
        await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[false,false,false,true]);
        var tokens = await testSetup.standardTokenMock.balanceOf(otherAvatar.address);
@@ -303,7 +311,7 @@ contract('ContributionReward', function(accounts) {
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         var organizationProposal = await testSetup.contributionReward.organizationsProposals(testSetup.org.avatar.address,proposalId);
         assert.equal(organizationProposal[6],otherAvatar.address);//beneficiary
-        await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,0,{from:accounts[2]});
+        await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,0,0,{from:accounts[2]});
         await helpers.increaseTime(periodLength+1);
         try {
           await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,true,true,true]);
@@ -333,7 +341,7 @@ contract('ContributionReward', function(accounts) {
                                                                   );
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-     await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+     await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
      await helpers.increaseTime(periodLength+1);
 
      await checkRedeemedPeriods(testSetup,proposalId,0,0,0,0);
@@ -432,14 +440,14 @@ contract('ContributionReward', function(accounts) {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
+      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
       await helpers.increaseTime(periodLength+1);
       tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, reputationReward);
       var rep = await testSetup.org.reputation.reputationOf(accounts[0]);
-      assert.equal(rep.toNumber(),1000+reputationReward);
+      assert.equal(rep.toNumber(),testSetup.reputationArray[0]+reputationReward);
      });
 
 
@@ -458,7 +466,7 @@ contract('ContributionReward', function(accounts) {
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
        try {
-            await testSetup.contributionReward.execute(proposalId,testSetup.org.avatar.address,1);
+            await testSetup.contributionReward.executeProposal(proposalId,1);
             assert(false, 'only voting machine can call execute');
             } catch (ex) {
              helpers.assertVMException(ex);
@@ -505,11 +513,14 @@ contract('ContributionReward', function(accounts) {
                                                                     testSetup.standardTokenMock.address,
                                                                     otherAvatar.address
                                                                   );
+
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-     await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,{from:accounts[0]});
+     await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,{from:accounts[0]});
+
      await helpers.increaseTime(periodLength+1);
      var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
+
      var redeemRewards = await arcUtils.redeem.call(proposalId,testSetup.org.avatar.address,accounts[0]);
      assert.equal(redeemRewards[0][3],100); //redeemRewards[0] gpRewards
      assert.equal(redeemRewards[0][4],61);
@@ -523,6 +534,7 @@ contract('ContributionReward', function(accounts) {
      assert.equal(redeemRewards[7],0); //crExternalTokenReward
 
      await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
+
      var eth = web3.eth.getBalance(otherAvatar.address);
      assert.equal(eth.toNumber(),ethReward);
      assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),reputationReward);
@@ -554,7 +566,7 @@ contract('ContributionReward', function(accounts) {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,2,{from:accounts[0]});
+      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,2,0,{from:accounts[0]});
       await helpers.increaseTime(periodLength+1);
       var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
       await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
@@ -578,7 +590,8 @@ contract('ContributionReward', function(accounts) {
                                                                  reputationReward,
                                                                  [0,0,0,periodLength,numberOfPeriods],
                                                                  testSetup.standardTokenMock.address,
-                                                                 accounts[1]
+                                                                 accounts[1],
+                                                                 {from:accounts[2]}
                                                                );
        try {
             await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
@@ -586,7 +599,8 @@ contract('ContributionReward', function(accounts) {
                                                                    reputationReward,
                                                                    [0,0,0,periodLength,2],
                                                                    testSetup.standardTokenMock.address,
-                                                                   accounts[1]
+                                                                   accounts[1],
+                                                                   {from:accounts[2]}
                                                                  );
             assert(false, 'if periodLength==0  so numberOfPeriods must be 1');
             } catch (ex) {
@@ -595,17 +609,16 @@ contract('ContributionReward', function(accounts) {
 
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,{from:accounts[2]});
        tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "RedeemReputation");
        assert.equal(tx.logs[0].args._amount, reputationReward);
        var rep = await testSetup.org.reputation.reputationOf(accounts[1]);
-       assert.equal(rep.toNumber(),reputationReward);
+       assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
        //try to redeem again.
        tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
        assert.equal(tx.logs.length, 0);
        rep = await testSetup.org.reputation.reputationOf(accounts[1]);
-       assert.equal(rep.toNumber(),reputationReward);
+       assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
     });
 });

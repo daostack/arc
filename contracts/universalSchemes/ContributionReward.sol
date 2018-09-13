@@ -1,7 +1,9 @@
 pragma solidity ^0.4.24;
 
-import "../VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "./UniversalScheme.sol";
+import "../VotingMachines/GenesisProtocolCallbacks.sol";
 
 
 /**
@@ -10,7 +12,7 @@ import "./UniversalScheme.sol";
  * him with token, reputation, ether or any combination.
  */
 
-contract ContributionReward is UniversalScheme {
+contract ContributionReward is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
     using SafeMath for uint;
 
     event NewContributionProposal(
@@ -56,6 +58,24 @@ contract ContributionReward is UniversalScheme {
     }
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
+
+    /**
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    */
+    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        ProposalInfo memory proposal = proposalsInfo[_proposalId];
+        require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
+        require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
+        // Check if vote was successful:
+        if (_param == 1) {
+          // solium-disable-next-line security/no-block-members
+            organizationsProposals[address(proposal.avatar)][_proposalId].executionTime = now;
+        }
+        emit ProposalExecuted(address(proposal.avatar), _proposalId,_param);
+        return true;
+    }
 
     /**
     * @dev hash the parameters, save them if necessary, and return the hash value
@@ -127,9 +147,7 @@ contract ContributionReward is UniversalScheme {
 
         bytes32 contributionId = controllerParams.intVote.propose(
             2,
-            controllerParams.voteApproveParams,
-           _avatar,
-           ExecutableInterface(this),
+           controllerParams.voteApproveParams,
            msg.sender
         );
 
@@ -166,29 +184,14 @@ contract ContributionReward is UniversalScheme {
             beneficiary
         );
 
+        proposalsInfo[contributionId] = ProposalInfo(
+            {blockNumber:block.number,
+            avatar:_avatar,
+            votingMachine:controllerParams.intVote});
         // vote for this proposal
         controllerParams.intVote.ownerVote(contributionId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
-        return contributionId;
-    }
 
-    /**
-    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _avatar address of the controller
-    * @param _param a parameter of the voting result, 1 yes and 2 is no.
-    */
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
-        // Check the caller is indeed the voting machine:
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
-        require(organizationsProposals[_avatar][_proposalId].executionTime == 0);
-        require(organizationsProposals[_avatar][_proposalId].beneficiary != address(0));
-        // Check if vote was successful:
-        if (_param == 1) {
-          // solium-disable-next-line security/no-block-members
-            organizationsProposals[_avatar][_proposalId].executionTime = now;
-        }
-        emit ProposalExecuted(_avatar, _proposalId,_param);
-        return true;
+        return contributionId;
     }
 
     /**

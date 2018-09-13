@@ -61,7 +61,7 @@ module.exports = async function(deployer) {
       var contributionRewardInst = await ContributionReward.deployed();
 
       // Voting parameters and schemes params:
-      var voteParametersHash = await AbsoluteVoteInst.getParametersHash(reputationAddress, votePrec, true);
+      var voteParametersHash = await AbsoluteVoteInst.getParametersHash(votePrec, true);
 
       await schemeRegistrarInst.setParameters(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);
       var schemeRegisterParams = await schemeRegistrarInst.getParametersHash(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);

@@ -1,7 +1,9 @@
 pragma solidity ^0.4.24;
 
+import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "./UniversalScheme.sol";
-import "../VotingMachines/IntVoteInterface.sol";
+import "../VotingMachines/GenesisProtocolCallbacks.sol";
 
 
 
@@ -9,7 +11,7 @@ import "../VotingMachines/IntVoteInterface.sol";
  * @title A scheme to manage global constraint for organizations
  * @dev The scheme is used to register or remove new global constraints
  */
-contract GlobalConstraintRegistrar is UniversalScheme {
+contract GlobalConstraintRegistrar is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
     event NewGlobalConstraintsProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -52,37 +54,34 @@ contract GlobalConstraintRegistrar is UniversalScheme {
     /**
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
     * @param _proposalId the ID of the voting in the voting machine
-    * @param _avatar address of the controller
-    * @param _param a parameter of the voting result, 0 is no and 1 is yes.
+    * @param _param a parameter of the voting result, 1 yes and 2 is no.
     * @return bool which represents a successful of the function.
     */
-    function execute(bytes32 _proposalId, address _avatar, int _param) external returns(bool) {
-        // Check the caller is indeed the voting machine:
-
-        require(parameters[getParametersFromController(Avatar(_avatar))].intVote == msg.sender);
+    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        address avatar = proposalsInfo[_proposalId].avatar;
         bool retVal = true;
         // Check if vote was successful:
-        GCProposal memory proposal = organizationsProposals[_avatar][_proposalId];
+        GCProposal memory proposal = organizationsProposals[avatar][_proposalId];
         require(proposal.gc != address(0));
-        delete organizationsProposals[_avatar][_proposalId];
-        emit ProposalDeleted(_avatar,_proposalId);
+        delete organizationsProposals[avatar][_proposalId];
+        emit ProposalDeleted(avatar,_proposalId);
 
         if (_param == 1 ) {
 
         // Define controller and get the params:
-            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+            ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
 
         // Adding a GC
             if (proposal.proposalType == 1) {
-                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params,_avatar);
-                voteToRemoveParams[_avatar][proposal.gc] = proposal.voteToRemoveParams;
+                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params,avatar);
+                voteToRemoveParams[avatar][proposal.gc] = proposal.voteToRemoveParams;
               }
         // Removing a GC
             if (proposal.proposalType == 2) {
-                retVal = controller.removeGlobalConstraint(proposal.gc,_avatar);
+                retVal = controller.removeGlobalConstraint(proposal.gc,avatar);
               }
         }
-        emit ProposalExecuted(_avatar, _proposalId,_param);
+        emit ProposalExecuted(avatar, _proposalId,_param);
         return retVal;
     }
 
@@ -133,7 +132,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         Parameters memory votingParams = parameters[getParametersFromController(_avatar)];
 
         IntVoteInterface intVote = votingParams.intVote;
-        bytes32 proposalId = intVote.propose(2, votingParams.voteRegisterParams, _avatar, ExecutableInterface(this),msg.sender);
+        bytes32 proposalId = intVote.propose(2, votingParams.voteRegisterParams,msg.sender);
 
         GCProposal memory proposal = GCProposal({
             gc: _gc,
@@ -151,6 +150,10 @@ contract GlobalConstraintRegistrar is UniversalScheme {
             _params,
             _voteToRemoveParams
         );
+        proposalsInfo[proposalId] = ProposalInfo(
+            {blockNumber:block.number,
+            avatar:_avatar,
+            votingMachine:intVote});
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
     }
@@ -166,7 +169,7 @@ contract GlobalConstraintRegistrar is UniversalScheme {
         require(controller.isGlobalConstraintRegistered(_gc,address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(2, voteToRemoveParams[_avatar][_gc], _avatar, ExecutableInterface(this),msg.sender);
+        bytes32 proposalId = intVote.propose(2, voteToRemoveParams[_avatar][_gc],msg.sender);
 
         GCProposal memory proposal = GCProposal({
             gc: _gc,
@@ -177,6 +180,10 @@ contract GlobalConstraintRegistrar is UniversalScheme {
 
         organizationsProposals[_avatar][proposalId] = proposal;
         emit RemoveGlobalConstraintsProposal(_avatar, proposalId, intVote, _gc);
+        proposalsInfo[proposalId] = ProposalInfo(
+            {blockNumber:block.number,
+            avatar:_avatar,
+            votingMachine:intVote});
         intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
         return proposalId;
     }

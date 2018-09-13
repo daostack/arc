@@ -1,8 +1,6 @@
 pragma solidity ^0.4.24;
 
 import "./Avatar.sol";
-import "./Reputation.sol";
-import "./DAOToken.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
 import "./ControllerInterface.sol";
 
@@ -69,14 +67,7 @@ contract UController is ControllerInterface {
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount, address indexed _avatar);
     event RegisterScheme (address indexed _sender, address indexed _scheme,address indexed _avatar);
     event UnregisterScheme (address indexed _sender, address indexed _scheme, address indexed _avatar);
-    event GenericAction (address indexed _sender, bytes32[] _params);
-    event SendEther (address indexed _sender, uint _amountInWei, address indexed _to);
-    event ExternalTokenTransfer (address indexed _sender, address indexed _externalToken, address indexed _to, uint _value);
-    event ExternalTokenTransferFrom (address indexed _sender, address indexed _externalToken, address _from, address _to, uint _value);
-    event ExternalTokenIncreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
-    event ExternalTokenDecreaseApproval (address indexed _sender, StandardToken indexed _externalToken, address _spender, uint _value);
     event UpgradeController(address indexed _oldController,address _newController,address _avatar);
-    event GenericCall(address indexed _contract,bytes _data,address indexed _avatar);
 
     event AddGlobalConstraint(
         address indexed _globalConstraint,
@@ -404,7 +395,6 @@ contract UController is ControllerInterface {
     onlySubjectToConstraint("genericCall",_avatar)
     returns (bytes32 returnValue)
     {
-        emit GenericCall(_contract, _data,_avatar);
         (Avatar(_avatar)).genericCall(_contract, _data);
         // solium-disable-next-line security/no-inline-assembly
         assembly {
@@ -427,7 +417,6 @@ contract UController is ControllerInterface {
     onlySubjectToConstraint("sendEther",_avatar)
     returns(bool)
     {
-        emit SendEther(msg.sender, _amountInWei, _to);
         return (Avatar(_avatar)).sendEther(_amountInWei, _to);
     }
 
@@ -445,7 +434,6 @@ contract UController is ControllerInterface {
     onlySubjectToConstraint("externalTokenTransfer",_avatar)
     returns(bool)
     {
-        emit ExternalTokenTransfer(msg.sender, _externalToken, _to, _value);
         return (Avatar(_avatar)).externalTokenTransfer(_externalToken, _to, _value);
     }
 
@@ -466,7 +454,6 @@ contract UController is ControllerInterface {
     onlySubjectToConstraint("externalTokenTransferFrom",_avatar)
     returns(bool)
     {
-        emit ExternalTokenTransferFrom(msg.sender, _externalToken, _from, _to, _value);
         return (Avatar(_avatar)).externalTokenTransferFrom(_externalToken, _from, _to, _value);
     }
 
@@ -485,7 +472,6 @@ contract UController is ControllerInterface {
     onlySubjectToConstraint("externalTokenIncreaseApproval",_avatar)
     returns(bool)
     {
-        emit ExternalTokenIncreaseApproval(msg.sender,_externalToken,_spender,_addedValue);
         return (Avatar(_avatar)).externalTokenIncreaseApproval(_externalToken, _spender, _addedValue);
     }
 
@@ -504,7 +490,6 @@ contract UController is ControllerInterface {
     onlySubjectToConstraint("externalTokenDecreaseApproval",_avatar)
     returns(bool)
     {
-        emit ExternalTokenDecreaseApproval(msg.sender,_externalToken,_spender,_subtractedValue);
         return (Avatar(_avatar)).externalTokenDecreaseApproval(_externalToken, _spender, _subtractedValue);
     }
 

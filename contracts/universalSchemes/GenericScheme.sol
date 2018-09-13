@@ -1,7 +1,9 @@
 pragma solidity ^0.4.24;
 
-import "../VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "./UniversalScheme.sol";
+import "../VotingMachines/GenesisProtocolCallbacks.sol";
 
 
 /**
@@ -9,7 +11,7 @@ import "./UniversalScheme.sol";
  * @dev  A scheme for proposing and executing calls to an arbitrary function
  * on a specific contract on behalf of the organization avatar.
  */
-contract GenericScheme is UniversalScheme, ExecutableInterface {
+contract GenericScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
     event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -36,6 +38,35 @@ contract GenericScheme is UniversalScheme, ExecutableInterface {
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     mapping(bytes32=>Parameters) public parameters;
+
+    /**
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    */
+    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        address avatar = proposalsInfo[_proposalId].avatar;
+        Parameters memory params = parameters[getParametersFromController(Avatar(avatar))];
+        // Save proposal to memory and delete from storage:
+        CallProposal memory proposal = organizationsProposals[avatar][_proposalId];
+        require(proposal.exist,"must be a live proposal");
+        delete organizationsProposals[avatar][_proposalId];
+        emit ProposalDeleted(avatar, _proposalId);
+        bool retVal = true;
+        // If no decision do nothing:
+        if (_param != 0) {
+        // Define controller and get the params:
+            ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
+            if (controller.genericCall(
+                     params.contractToCall,
+                     proposal.callData,
+                     avatar) == bytes32(0)) {
+                retVal = false;
+            }
+          }
+        emit ProposalExecuted(avatar, _proposalId,_param);
+        return retVal;
+    }
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -85,47 +116,18 @@ contract GenericScheme is UniversalScheme, ExecutableInterface {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
 
-        bytes32 proposalId = intVote.propose(2, params.voteParams, _avatar, ExecutableInterface(this),msg.sender);
+        bytes32 proposalId = intVote.propose(2, params.voteParams,msg.sender);
 
         organizationsProposals[_avatar][proposalId] = CallProposal({
             callData: _callData,
             exist: true
         });
+        proposalsInfo[proposalId] = ProposalInfo(
+            {blockNumber:block.number,
+            avatar:_avatar,
+            votingMachine:params.intVote});
         emit NewCallProposal(_avatar,proposalId,_callData);
         return proposalId;
-    }
-
-    /**
-    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-    *      This function will trigger ProposalDeleted and ProposalExecuted events
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _avatar address of the organization's avatar
-    * @param _param a parameter of the voting result 0 to numOfChoices .
-    * @return bool which indicate success.
-    */
-    function execute(bytes32 _proposalId, address _avatar, int _param) public returns(bool) {
-        Parameters memory params = parameters[getParametersFromController(Avatar(_avatar))];
-        require(params.intVote == msg.sender,"the caller must be the voting machine");
-
-        // Save proposal to memory and delete from storage:
-        CallProposal memory proposal = organizationsProposals[_avatar][_proposalId];
-        require(proposal.exist,"must be a live proposal");
-        delete organizationsProposals[_avatar][_proposalId];
-        emit ProposalDeleted(_avatar, _proposalId);
-        bool retVal = true;
-        // If no decision do nothing:
-        if (_param != 0) {
-        // Define controller and get the params:
-            ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
-            if (controller.genericCall(
-                     params.contractToCall,
-                     proposal.callData,
-                     _avatar) == bytes32(0)) {
-                retVal = false;
-            }
-          }
-        emit ProposalExecuted(_avatar, _proposalId,_param);
-        return retVal;
     }
 
     /**
@@ -137,6 +139,5 @@ contract GenericScheme is UniversalScheme, ExecutableInterface {
     function getContractToCall(address _avatar) public view returns(address) {
         return parameters[getParametersFromController(Avatar(_avatar))].contractToCall;
     }
-
 
 }

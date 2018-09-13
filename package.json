@@ -12,7 +12,7 @@
     "tsconfig.json"
   ],
   "config": {
-    "gasLimit": "5900000"
+    "gasLimit": "6100000"
   },
   "scripts": {
     "test": "cross-conf-env run-with-ganache --ganache-cmd 'npm run ganache' 'npm run truffle compile && npm run truffle migrate && npm run truffle test'",
@@ -73,7 +73,7 @@
     "arc"
   ],
   "engines": {
-    "node": ">=8.11.3"
+    "node": ">=8.11.4"
   },
   "author": "DAOstack (https://www.daostack.io)",
   "license": "GPL-3.0",
@@ -82,8 +82,9 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
+    "@daostack/infra": "^0.0.0-alpha.05",
     "ethereumjs-abi": "^0.6.5",
     "ganache-cli": "^6.1.6",
-    "openzeppelin-solidity": "1.11.0"
+    "openzeppelin-solidity": "1.12.0"
   }
 }

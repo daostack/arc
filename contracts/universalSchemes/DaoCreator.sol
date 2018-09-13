@@ -1,7 +1,5 @@
 pragma solidity ^0.4.24;
 
-import "../controller/DAOToken.sol";
-import "../controller/Reputation.sol";
 import "./UniversalScheme.sol";
 import "../controller/UController.sol";
 import "../controller/Controller.sol";
