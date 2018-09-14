@@ -1,7 +1,6 @@
 //this migration file is used only for testing purpose
 var constants = require('../test/constants');
 var Avatar = artifacts.require('./Avatar.sol');
-var Controller = artifacts.require('./Controller.sol');
 var UController = artifacts.require('./UController.sol');
 var DaoCreator = artifacts.require('./DaoCreator.sol');
 var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.sol');
@@ -45,8 +44,6 @@ module.exports = async function(deployer) {
       var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
           initTokenInWei, initRepInWei,0,cap,{gas: constants.ARC_GAS_LIMIT});
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
-      var ControllerInst = await Controller.at(await AvatarInst.owner());
-      var reputationAddress = await ControllerInst.nativeReputation();
       await deployer.deploy(AbsoluteVote,{gas: constants.ARC_GAS_LIMIT});
       // Deploy AbsoluteVote:
       var AbsoluteVoteInst = await AbsoluteVote.deployed();
