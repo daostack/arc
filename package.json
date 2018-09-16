@@ -83,7 +83,9 @@
   "dependencies": {
     "@daostack/infra": "^0.0.0-alpha.05",
     "ethereumjs-abi": "^0.6.5",
-    "ganache-cli": "^6.1.8",
     "openzeppelin-solidity": "1.12.0"
+  },
+  "peerDependencies": {
+    "ganache-cli": "^6.1.8"
   }
 }
