@@ -15,8 +15,8 @@ const setup = async function (accounts,
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   testSetup.lockingEndTime = await web3.eth.getBlock("latest").timestamp + _lockingEndTime;
-   testSetup.lockingStartTime = await web3.eth.getBlock("latest").timestamp + _lockingStartTime;
+   testSetup.lockingEndTime = (await web3.eth.getBlock("latest")).timestamp + _lockingEndTime;
+   testSetup.lockingStartTime = (await web3.eth.getBlock("latest")).timestamp + _lockingStartTime;
    testSetup.lockingEth4Reputation = await LockingEth4Reputation.new();
    if (_initialize === true) {
       await testSetup.lockingEth4Reputation.initialize(testSetup.org.avatar.address,
@@ -55,7 +55,7 @@ contract('LockingEth4Reputation', accounts => {
     it("cannot lock without initialize", async () => {
       let testSetup = await setup(accounts,100,0,3000,6000,false);
       try {
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
         assert(false, "cannot lock without initialize");
       } catch(error) {
         helpers.assertVMException(error);

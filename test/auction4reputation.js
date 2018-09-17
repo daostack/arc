@@ -17,8 +17,8 @@ const setup = async function (accounts,
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   testSetup.auctionsEndTime = await web3.eth.getBlock("latest").timestamp + _auctionsEndTime;
-   testSetup.auctionsStartTime = await web3.eth.getBlock("latest").timestamp + _auctionsStartTime;
+   testSetup.auctionsEndTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsEndTime;
+   testSetup.auctionsStartTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsStartTime;
    testSetup.auction4Reputation = await Auction4Reputation.new();
    if (_initialize === true ) {
      await testSetup.auction4Reputation.initialize(testSetup.org.avatar.address,
@@ -140,7 +140,7 @@ contract('Auction4Reputation', accounts => {
     it("bid without initialize should fail", async () => {
       let testSetup = await setup(accounts,300,0,3000,3,false);
       try {
-        await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         assert(false, "bid without initialize should fail");
       } catch(error) {
         helpers.assertVMException(error);
