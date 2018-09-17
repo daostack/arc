@@ -10,7 +10,7 @@ const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
-const zeroBytes32 = helpres.NULL_HASH;
+const zeroBytes32 = helpers.NULL_HASH;
 var avatar,token,reputation,daoCreator,uController,controllerCreator;
 const setup = async function (accounts,founderToken,founderReputation,useUController=false,cap=0) {
   controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
