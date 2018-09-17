@@ -40,33 +40,6 @@ contract Locking4Reputation {
     uint public lockingStartTime;
 
     /**
-     * @dev constructor
-     * @param _avatar the avatar to mint reputation from
-     * @param _reputationReward the total reputation this contract will reward
-     *        for eth/token locking
-     * @param _lockingStartTime the locking start time.
-     * @param _lockingEndTime the locking end time.
-     *        redeem reputation can be done after this period.
-     *        locking is disable after this time.
-     * @param _maxLockingPeriod maximum locking period allowed.
-     */
-    constructor(Avatar _avatar,
-                uint _reputationReward,
-                uint _lockingStartTime,
-                uint _lockingEndTime,
-                uint _maxLockingPeriod)
-    public
-    {
-        require(_lockingEndTime > _lockingStartTime,"locking end time should be greater than locking start time");
-        reputationReward = _reputationReward;
-        reputationRewardLeft = reputationReward;
-        lockingEndTime = _lockingEndTime;
-        maxLockingPeriod = _maxLockingPeriod;
-        avatar = _avatar;
-        lockingStartTime = _lockingStartTime;
-    }
-
-    /**
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary for the release
      * @param _lockingId the locking id to release
@@ -133,6 +106,36 @@ contract Locking4Reputation {
         scores[_locker] = scores[_locker].add(_period.mul(_amount));
         totalScore = totalScore.add(scores[_locker]);
         emit Lock(lockingId,_amount,_period,_locker);
+    }
+
+    /**
+     * @dev _initialize
+     * @param _avatar the avatar to mint reputation from
+     * @param _reputationReward the total reputation this contract will reward
+     *        for eth/token locking
+     * @param _lockingStartTime the locking start time.
+     * @param _lockingEndTime the locking end time.
+     *        redeem reputation can be done after this period.
+     *        locking is disable after this time.
+     * @param _maxLockingPeriod maximum locking period allowed.
+     */
+    function _initialize(
+        Avatar _avatar,
+        uint _reputationReward,
+        uint _lockingStartTime,
+        uint _lockingEndTime,
+        uint _maxLockingPeriod)
+    internal
+    {
+        require(avatar == Avatar(0),"can be called only one time");
+        require(_avatar != Avatar(0),"avatar cannot be zero");
+        require(_lockingEndTime > _lockingStartTime,"locking end time should be greater than locking start time");
+        reputationReward = _reputationReward;
+        reputationRewardLeft = reputationReward;
+        lockingEndTime = _lockingEndTime;
+        maxLockingPeriod = _maxLockingPeriod;
+        avatar = _avatar;
+        lockingStartTime = _lockingStartTime;
     }
 
 }

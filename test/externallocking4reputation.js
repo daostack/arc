@@ -5,8 +5,7 @@ const constants = require('./constants');
 var ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
 var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
 
-
-const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 0,_lockingEndTime = 3000) {
+const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 0,_lockingEndTime = 3000,_initialize = true) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
@@ -19,12 +18,15 @@ const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 
    await testSetup.extetnalTokenLockerMock.lock(200,{from:accounts[1]});
    await testSetup.extetnalTokenLockerMock.lock(300,{from:accounts[2]});
 
-   testSetup.externalLocking4Reputation = await ExternalLocking4Reputation.new(testSetup.org.avatar.address,
-                                                                       _repAllocation,
-                                                                      testSetup.lockingStartTime,
-                                                                      testSetup.lockingEndTime,
-                                                                      testSetup.extetnalTokenLockerMock.address,
-                                                                      "lockedTokenBalances(address)");
+   testSetup.externalLocking4Reputation = await ExternalLocking4Reputation.new();
+   if (_initialize === true) {
+     await testSetup.externalLocking4Reputation.initialize(testSetup.org.avatar.address,
+                                                             _repAllocation,
+                                                             testSetup.lockingStartTime,
+                                                             testSetup.lockingEndTime,
+                                                             testSetup.extetnalTokenLockerMock.address,
+                                                             "lockedTokenBalances(address)");
+   }
 
    var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.externalLocking4Reputation.address],[helpers.NULL_HASH],[permissions]);
@@ -32,7 +34,7 @@ const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 
 };
 
 contract('ExternalLocking4Reputation', accounts => {
-    it("constructor", async () => {
+    it("initialize", async () => {
       let testSetup = await setup(accounts);
       assert.equal(await testSetup.externalLocking4Reputation.reputationReward(),100);
       assert.equal(await testSetup.externalLocking4Reputation.lockingEndTime(),testSetup.lockingEndTime);
@@ -51,6 +53,16 @@ contract('ExternalLocking4Reputation', accounts => {
       assert.equal(tx.logs[0].args._amount,100);
       assert.equal(tx.logs[0].args._period,1);
       assert.equal(tx.logs[0].args._locker,accounts[0]);
+    });
+
+    it("cannot lock before set parameters", async () => {
+      let testSetup = await setup(accounts,100,0,3000,false);
+      try {
+        await testSetup.externalLocking4Reputation.lock();
+        assert(false, "cannot lock before set parameters");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
     });
 
     it("lock with value == 0 should revert", async () => {
@@ -148,4 +160,43 @@ contract('ExternalLocking4Reputation', accounts => {
              helpers.assertVMException(error);
            }
     });
+
+    it("cannot initialize twice", async () => {
+        let testSetup = await setup(accounts);
+        try {
+             await testSetup.externalLocking4Reputation.initialize(testSetup.org.avatar.address,
+                                                                     100,
+                                                                     testSetup.lockingStartTime,
+                                                                     testSetup.lockingEndTime,
+                                                                     testSetup.extetnalTokenLockerMock.address,
+                                                                     "lockedTokenBalances(address)");
+             assert(false, "cannot initialize twice");
+           } catch(error) {
+             helpers.assertVMException(error);
+           }
+    });
+
+    it("initialize is onlyOwner", async () => {
+      var externalLocking4Reputation = await ExternalLocking4Reputation.new();
+      try {
+        await externalLocking4Reputation.initialize(accounts[0],
+                                                       100,
+                                                       0,
+                                                       3000,
+                                                       accounts[0],
+                                                       "lockedTokenBalances(address)",
+                                              {from:accounts[1]});
+        assert(false, "initialize is onlyOwner");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+      await externalLocking4Reputation.initialize(accounts[0],
+                                                     100,
+                                                     0,
+                                                     3000,
+                                                     accounts[0],
+                                                     "lockedTokenBalances(address)",
+                                                     {from:accounts[0]});
+    });
+
 });

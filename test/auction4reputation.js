@@ -5,22 +5,31 @@ const constants = require('./constants');
 const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 var Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
 
-const setup = async function (accounts,_repAllocation = 300,_auctionsStartTime = 0,_auctionsEndTime = 3000,_numberOfAuctions = 3) {
+
+const setup = async function (accounts,
+                             _repAllocation = 300,
+                             _auctionsStartTime = 0,
+                             _auctionsEndTime = 3000,
+                             _numberOfAuctions = 3,
+                             _initialize = true) {
    var testSetup = new helpers.TestSetup();
    testSetup.biddingToken = await StandardTokenMock.new(accounts[0], web3.utils.toWei('100', "ether"));
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   var latestBlock = await web3.eth.getBlock("latest");
-   testSetup.auctionsEndTime =   latestBlock.timestamp + _auctionsEndTime;
-   testSetup.auctionsStartTime = latestBlock.timestamp + _auctionsStartTime;
-   testSetup.auction4Reputation = await Auction4Reputation.new(testSetup.org.avatar.address,
-                                                                       _repAllocation,
-                                                                      testSetup.auctionsStartTime,
-                                                                      testSetup.auctionsEndTime,
-                                                                      _numberOfAuctions,
-                                                                      testSetup.biddingToken.address,
-                                                                      testSetup.org.avatar.address);
+   testSetup.auctionsEndTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsEndTime;
+   testSetup.auctionsStartTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsStartTime;
+   testSetup.auction4Reputation = await Auction4Reputation.new();
+   if (_initialize === true ) {
+     await testSetup.auction4Reputation.initialize(testSetup.org.avatar.address,
+                                                     _repAllocation,
+                                                     testSetup.auctionsStartTime,
+                                                     testSetup.auctionsEndTime,
+                                                     _numberOfAuctions,
+                                                     testSetup.biddingToken.address,
+                                                     testSetup.org.avatar.address,
+                                                     {gas : constants.ARC_GAS_LIMIT});
+   }
 
    var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.auction4Reputation.address],[web3.utils.asciiToHex("0")],[permissions]);
@@ -29,7 +38,7 @@ const setup = async function (accounts,_repAllocation = 300,_auctionsStartTime =
 };
 
 contract('Auction4Reputation', accounts => {
-    it("constructor", async () => {
+    it("initialize", async () => {
       let testSetup = await setup(accounts);
 
       assert.equal(await testSetup.auction4Reputation.reputationReward(),300);
@@ -41,45 +50,74 @@ contract('Auction4Reputation', accounts => {
       assert.equal(await testSetup.auction4Reputation.auctionPeriod(),(testSetup.auctionsEndTime-testSetup.auctionsStartTime)/3);
     });
 
-    it("constructor numberOfAuctions = 0  is not allowed", async () => {
+    it("initialize numberOfAuctions = 0  is not allowed", async () => {
+      var auction4Reputation = await Auction4Reputation.new();
       try {
-        await Auction4Reputation.new(accounts[0],
-                                     300,
-                                     0,
-                                     3000,
-                                     0,
-                                    accounts[0],
-                                    accounts[0]);
+        await auction4Reputation.initialize(accounts[0],
+                                               300,
+                                               0,
+                                               3000,
+                                               0,
+                                              accounts[0],
+                                              accounts[0],
+                                              {gas :constants.ARC_GAS_LIMIT});
         assert(false, "numberOfAuctions = 0  is not allowed");
       } catch(error) {
         helpers.assertVMException(error);
       }
     });
 
-    it("constructor auctionsEndTime = auctionsStartTime is not allowed", async () => {
+    it("initialize is onlyOwner", async () => {
+      var auction4Reputation = await Auction4Reputation.new();
       try {
-        await Auction4Reputation.new(accounts[0],
-                                     300,
-                                     300,
-                                     300,
-                                     1,
-                                    accounts[0],
-                                    accounts[0]);
+        await auction4Reputation.initialize(accounts[0],
+                                               300,
+                                               0,
+                                               3000,
+                                               1,
+                                              accounts[0],
+                                              accounts[0],
+                                              {gas :constants.ARC_GAS_LIMIT,from:accounts[1]});
+        assert(false, "initialize is onlyOwner");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+      await auction4Reputation.initialize(accounts[0],
+                                             300,
+                                             0,
+                                             3000,
+                                             1,
+                                            accounts[0],
+                                            accounts[0],
+                                          {gas :constants.ARC_GAS_LIMIT,from:accounts[0]});
+    });
+
+    it("initialize auctionsEndTime = auctionsStartTime is not allowed", async () => {
+      var auction4Reputation = await Auction4Reputation.new();
+      try {
+        await auction4Reputation.initialize(accounts[0],
+                                               300,
+                                               300,
+                                               300,
+                                               1,
+                                              accounts[0],
+                                              accounts[0]);
         assert(false, "auctionsEndTime = auctionsStartTime is not allowed");
       } catch(error) {
         helpers.assertVMException(error);
       }
     });
 
-    it("constructor auctionsEndTime < auctionsStartTime is not allowed", async () => {
+    it("initialize auctionsEndTime < auctionsStartTime is not allowed", async () => {
+      var auction4Reputation = await Auction4Reputation.new();
       try {
-        await Auction4Reputation.new(accounts[0],
-                                     300,
-                                     200,
-                                     100,
-                                     1,
-                                    accounts[0],
-                                    accounts[0]);
+        await auction4Reputation.initialize(accounts[0],
+                                               300,
+                                               200,
+                                               100,
+                                               1,
+                                              accounts[0],
+                                              accounts[0]);
         assert(false, "auctionsEndTime < auctionsStartTime is not allowed");
       } catch(error) {
         helpers.assertVMException(error);
@@ -97,6 +135,16 @@ contract('Auction4Reputation', accounts => {
       assert.equal(tx.logs[0].args._bidder,accounts[0]);
       //test the tokens moved to the wallet.
       assert.equal(await testSetup.biddingToken.balanceOf(testSetup.org.avatar.address),web3.utils.toWei('1', "ether"));
+    });
+
+    it("bid without initialize should fail", async () => {
+      let testSetup = await setup(accounts,300,0,3000,3,false);
+      try {
+        await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
+        assert(false, "bid without initialize should fail");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
     });
 
     it("bid with value == 0 should revert", async () => {
@@ -212,5 +260,21 @@ contract('Auction4Reputation', accounts => {
         assert.equal(id1.toNumber(),id2.toNumber());
         var bid = await testSetup.auction4Reputation.getBid(accounts[0],id1);
         assert.equal(bid,web3.utils.toWei('2', "ether"));
+    });
+
+    it("cannot initialize twice", async () => {
+        let testSetup = await setup(accounts);
+        try {
+             await testSetup.auction4Reputation.initialize(accounts[0],
+                                                              300,
+                                                              200,
+                                                              100,
+                                                              1,
+                                                              accounts[0],
+                                                              accounts[0]);
+             assert(false, "cannot initialize twice");
+           } catch(error) {
+             helpers.assertVMException(error);
+           }
     });
 });

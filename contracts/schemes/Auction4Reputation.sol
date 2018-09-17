@@ -3,13 +3,14 @@ pragma solidity ^0.4.24;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import { RealMath } from "../libs/RealMath.sol";
 import "../controller/ControllerInterface.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /**
  * @title A scheme for conduct ERC20 Tokens auction for reputation
  */
 
 
-contract Auction4Reputation {
+contract Auction4Reputation is Ownable {
     using SafeMath for uint;
     using RealMath for int216;
     using RealMath for int256;
@@ -38,7 +39,7 @@ contract Auction4Reputation {
     address public wallet;
 
     /**
-     * @dev constructor
+     * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
@@ -49,15 +50,19 @@ contract Auction4Reputation {
      * @param _numberOfAuctions number of auctions.
      * @param _token the bidding token
      */
-    constructor(Avatar _avatar,
-                 uint _reputationReward,
-                 uint _auctionsStartTime,
-                 uint _auctionsEndTime,
-                 uint _numberOfAuctions,
-                 StandardToken _token,
-                 address _wallet)
-    public
-    {
+    function initialize(
+        Avatar _avatar,
+        uint _reputationReward,
+        uint _auctionsStartTime,
+        uint _auctionsEndTime,
+        uint _numberOfAuctions,
+        StandardToken _token,
+        address _wallet)
+       external
+       onlyOwner
+       {
+        require(avatar == Avatar(0),"can be called only one time");
+        require(_avatar != Avatar(0),"avatar cannot be zero");
         //number of auctions cannot be zero
         //auctionsEndTime should be greater than auctionsStartTime
         auctionPeriod = (_auctionsEndTime.sub(_auctionsStartTime)).div(_numberOfAuctions);

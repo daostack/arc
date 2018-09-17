@@ -1,16 +1,17 @@
 pragma solidity ^0.4.24;
 
 import "./Locking4Reputation.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 /**
  * @title A scheme for locking ETH for reputation
  */
 
-contract LockingEth4Reputation is Locking4Reputation {
+contract LockingEth4Reputation is Locking4Reputation,Ownable {
 
     /**
-     * @dev constructor
+     * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for eth locking
@@ -20,18 +21,22 @@ contract LockingEth4Reputation is Locking4Reputation {
      *        locking is disable after this time.
      * @param _maxLockingPeriod maximum locking period allowed.
      */
-    constructor(Avatar _avatar,
-                uint _reputationReward,
-                uint _lockingStartTime,
-                uint _lockingEndTime,
-                uint _maxLockingPeriod)
-    Locking4Reputation(_avatar,
-                      _reputationReward,
-                      _lockingStartTime,
-                      _lockingEndTime,
-                      _maxLockingPeriod)
-    public
-    {}
+    function initialize(
+        Avatar _avatar,
+        uint _reputationReward,
+        uint _lockingStartTime,
+        uint _lockingEndTime,
+        uint _maxLockingPeriod)
+    external
+    onlyOwner
+    {
+        super._initialize(
+        _avatar,
+        _reputationReward,
+        _lockingStartTime,
+        _lockingEndTime,
+        _maxLockingPeriod);
+    }
 
     /**
      * @dev release locked eth
