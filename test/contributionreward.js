@@ -36,10 +36,10 @@ const checkRedeemedPeriodsLeft = async function(
                                             EtherPeriod,
                                             ExternalTokenPeriod
                                             ) {
-    assert.equal(await testSetup.contributionReward.getPeriodsToPay(proposalId,testSetup.org.avatar.address,0),ReputationPeriod);
-    assert.equal(await testSetup.contributionReward.getPeriodsToPay(proposalId,testSetup.org.avatar.address,1),nativeTokenPeriod);
-    assert.equal(await testSetup.contributionReward.getPeriodsToPay(proposalId,testSetup.org.avatar.address,2),EtherPeriod);
-    assert.equal(await testSetup.contributionReward.getPeriodsToPay(proposalId, testSetup.org.avatar.address,3),ExternalTokenPeriod);
+    assert.equal(await testSetup.contributionReward.getPeriodsToPay(proposalId,testSetup.org.avatar.address,web3.utils.toBN(0)),ReputationPeriod);
+    assert.equal(await testSetup.contributionReward.getPeriodsToPay(proposalId,testSetup.org.avatar.address,web3.utils.toBN(1)),nativeTokenPeriod);
+    assert.equal(await testSetup.contributionReward.getPeriodsToPay(proposalId,testSetup.org.avatar.address,web3.utils.toBN(2)),EtherPeriod);
+    assert.equal(await testSetup.contributionReward.getPeriodsToPay(proposalId, testSetup.org.avatar.address,web3.utils.toBN(3)),ExternalTokenPeriod);
 };
 
 const setupContributionRewardParams = async function(
@@ -98,7 +98,7 @@ const setup = async function (accounts,orgNativeTokenFee=0,genesisProtocol = fal
                                         [testSetup.contributionRewardParams.paramsHash],[permissions]);
    return testSetup;
 };
-contract('ContributionReward', function(accounts) {
+contract('ContributionReward', accounts => {
 
     it("setParameters", async function() {
        var contributionReward = await ContributionReward.new();
@@ -111,7 +111,7 @@ contract('ContributionReward', function(accounts) {
       var testSetup = await setup(accounts,0);
       var periodLength = 1;
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                     "description",
+                                                                     web3.utils.asciiToHex("description"),
                                                                      0,
                                                                      [0,0,0,periodLength,0],
                                                                      testSetup.standardTokenMock.address,
@@ -128,7 +128,7 @@ contract('ContributionReward', function(accounts) {
        //give approval to scheme to do the fees transfer
        await testSetup.org.token.approve(testSetup.contributionReward.address,100);
        var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                      "description",
+                                                                      web3.utils.asciiToHex("description"),
                                                                       0,
                                                                       [0,0,0,periodLength,0],
                                                                       testSetup.standardTokenMock.address,
@@ -143,26 +143,27 @@ contract('ContributionReward', function(accounts) {
        assert.equal(balance.toNumber(),balanceBefore.toNumber());
     });
 
-    it("proposeContributionReward check owner vote", async function() {
+    it("proposeContributionReward check owner vote", async() => {
       var testSetup = await setup(accounts);
       var periodLength = 1;
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                     "description",
+                                                                     web3.utils.asciiToHex("description"),
                                                                      0,
                                                                      [0,0,0,periodLength,0],
                                                                      testSetup.standardTokenMock.address,
-                                                                     accounts[0]
+                                                                     accounts[0],
+                                                                     {from: web3.utils.toChecksumAddress(accounts[0])}
                                                                    );
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await helpers.checkVoteInfo(testSetup.contributionRewardParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
     });
 
-    it("proposeContributionReward check beneficiary==0", async function() {
+    it("proposeContributionReward check beneficiary==0", async() => {
        var testSetup = await setup(accounts);
        var beneficiary = 0;
        var periodLength = 1;
        var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                      "description",
+                                                                      web3.utils.asciiToHex("description"),
                                                                       0,
                                                                       [0,0,0,periodLength,0],
                                                                       testSetup.standardTokenMock.address,
@@ -175,7 +176,7 @@ contract('ContributionReward', function(accounts) {
       var testSetup = await setup(accounts);
       var periodLength = 1;
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                     "description",
+                                                                     web3.utils.asciiToHex("description"),
                                                                      0,
                                                                     [0,0,0,periodLength,0],
                                                                      testSetup.standardTokenMock.address,
@@ -194,7 +195,7 @@ contract('ContributionReward', function(accounts) {
       var periodLength = 50;
       var numberOfPeriods = 1;
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                     "description",
+                                                                     web3.utils.asciiToHex("description"),
                                                                      reputationReward,
                                                                      [0,0,0,periodLength,numberOfPeriods],
                                                                      testSetup.standardTokenMock.address,
@@ -219,7 +220,7 @@ contract('ContributionReward', function(accounts) {
        var periodLength = 50;
        var numberOfPeriods = 1;
        var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                      "description",
+                                                                      web3.utils.asciiToHex("description"),
                                                                       reputationReward,
                                                                       [nativeTokenReward,0,0,periodLength,numberOfPeriods],
                                                                       testSetup.standardTokenMock.address,
@@ -243,9 +244,9 @@ contract('ContributionReward', function(accounts) {
       var numberOfPeriods = 1;
       //send some ether to the org avatar
       var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-      web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+      await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                     "description",
+                                                                     web3.utils.asciiToHex("description"),
                                                                      reputationReward,
                                                                      [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
                                                                      testSetup.standardTokenMock.address,
@@ -256,8 +257,8 @@ contract('ContributionReward', function(accounts) {
       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
       await helpers.increaseTime(periodLength+1);
       await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
-      var eth = web3.eth.getBalance(otherAvatar.address);
-      assert.equal(eth.toNumber(),ethReward);
+      var eth = await web3.eth.getBalance(otherAvatar.address);
+      assert.equal(eth,ethReward);
      });
 
      it("execute proposeContributionReward  send externalToken ", async function() {
@@ -272,9 +273,9 @@ contract('ContributionReward', function(accounts) {
        var numberOfPeriods = 1;
        //send some ether to the org avatar
        var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-       web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+       await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
        var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                      "description",
+                                                                      web3.utils.asciiToHex("description"),
                                                                       reputationReward,
                                                                       [nativeTokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
                                                                       testSetup.standardTokenMock.address,
@@ -299,9 +300,9 @@ contract('ContributionReward', function(accounts) {
         var numberOfPeriods = 1;
         //send some ether to the org avatar
         var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-        web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+        await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
         var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                       "description",
+                                                                       web3.utils.asciiToHex("description"),
                                                                        reputationReward,
                                                                        [nativeTokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
                                                                        testSetup.standardTokenMock.address,
@@ -331,9 +332,9 @@ contract('ContributionReward', function(accounts) {
      var numberOfPeriods = 5;
      //send some ether to the org avatar
      var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-     web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:12});
+     await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:12});
      var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                    "description",
+                                                                    web3.utils.asciiToHex("description"),
                                                                     reputationReward,
                                                                     [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
                                                                     testSetup.standardTokenMock.address,
@@ -346,22 +347,21 @@ contract('ContributionReward', function(accounts) {
 
      await checkRedeemedPeriods(testSetup,proposalId,0,0,0,0);
      await checkRedeemedPeriodsLeft(testSetup,proposalId,1,1,1,1);
-
      tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
 
      assert.equal(tx.logs.length, 1);
      assert.equal(tx.logs[0].event, "RedeemEther");
      assert.equal(tx.logs[0].args._amount, ethReward);
-     var eth = web3.eth.getBalance(otherAvatar.address);
-     assert.equal(eth.toNumber(),ethReward);
+     var eth = await web3.eth.getBalance(otherAvatar.address);
+     assert.equal(eth,ethReward);
 
      await checkRedeemedPeriods(testSetup,proposalId,0,0,1,0);
      await checkRedeemedPeriodsLeft(testSetup,proposalId,1,1,0,1);
      //now try again on the same period
      tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
      assert.equal(tx.logs.length, 0);
-     eth = web3.eth.getBalance(otherAvatar.address);
-     assert.equal(eth.toNumber(),ethReward);
+     eth = await web3.eth.getBalance(otherAvatar.address);
+     assert.equal(eth,ethReward);
 
      //now try again on 2nd period
      await helpers.increaseTime(periodLength+1);
@@ -374,7 +374,7 @@ contract('ContributionReward', function(accounts) {
      assert.equal(tx.logs[0].event, "RedeemEther");
      assert.equal(tx.logs[0].args._amount, ethReward);
      eth = await web3.eth.getBalance(otherAvatar.address);
-     assert.equal(eth.toNumber(),ethReward*2);
+     assert.equal(eth,ethReward*2);
 
      //now try again on 4th period
      await helpers.increaseTime((periodLength*2)+1);
@@ -387,7 +387,7 @@ contract('ContributionReward', function(accounts) {
      assert.equal(tx.logs[0].event, "RedeemEther");
      assert.equal(tx.logs[0].args._amount, ethReward*2);
      eth = await web3.eth.getBalance(otherAvatar.address);
-     assert.equal(eth.toNumber(),ethReward*4);
+     assert.equal(eth,ethReward*4);
 
      //now try again on 5th period - no ether on avatar should revert
      await helpers.increaseTime(periodLength+1);
@@ -399,7 +399,7 @@ contract('ContributionReward', function(accounts) {
           } catch (ex) {
            helpers.assertVMException(ex);
      }
-     web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:ethReward});
+     await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:ethReward});
 
      await checkRedeemedPeriods(testSetup,proposalId,0,0,4,0);
      await checkRedeemedPeriodsLeft(testSetup,proposalId,5,5,1,5);
@@ -409,7 +409,7 @@ contract('ContributionReward', function(accounts) {
      assert.equal(tx.logs[0].event, "RedeemEther");
      assert.equal(tx.logs[0].args._amount, ethReward);
      eth = await web3.eth.getBalance(otherAvatar.address);
-     assert.equal(eth.toNumber(),ethReward*5);
+     assert.equal(eth,ethReward*5);
 
      await checkRedeemedPeriods(testSetup,proposalId,0,0,5,0);
      await checkRedeemedPeriodsLeft(testSetup,proposalId,5,5,0,5);
@@ -420,7 +420,7 @@ contract('ContributionReward', function(accounts) {
      tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
      assert.equal(tx.logs.length, 0);
      eth = await web3.eth.getBalance(otherAvatar.address);
-     assert.equal(eth.toNumber(),ethReward*5);
+     assert.equal(eth,ethReward*5);
 
      await checkRedeemedPeriods(testSetup,proposalId,0,0,5,0);
      await checkRedeemedPeriodsLeft(testSetup,proposalId,5,5,0,5);
@@ -432,7 +432,7 @@ contract('ContributionReward', function(accounts) {
       var periodLength = 50;
       var numberOfPeriods = 1;
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                     "description",
+                                                                     web3.utils.asciiToHex("description"),
                                                                      reputationReward,
                                                                      [0,0,0,periodLength,numberOfPeriods],
                                                                      testSetup.standardTokenMock.address,
@@ -457,7 +457,7 @@ contract('ContributionReward', function(accounts) {
        var periodLength = 50;
        var numberOfPeriods = 1;
        var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                      "description",
+                                                                      web3.utils.asciiToHex("description"),
                                                                       reputationReward,
                                                                       [0,0,0,periodLength,numberOfPeriods],
                                                                       testSetup.standardTokenMock.address,
@@ -478,10 +478,13 @@ contract('ContributionReward', function(accounts) {
       it("get redeemed periods left ", async function() {
         var testSetup = await setup(accounts);
         var periodLength = 1;
-        await checkRedeemedPeriodsLeft(testSetup,0,0,0,0,0);
-        await checkRedeemedPeriods(testSetup,0,0,0,0,0);
+        var fakePId = "0x1234";
+        await checkRedeemedPeriodsLeft(testSetup,fakePId,0,0,0,0);
+
+        await checkRedeemedPeriods(testSetup,fakePId,0,0,0,0);
+
         var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                       "description",
+                                                                       web3.utils.asciiToHex("description"),
                                                                        0,
                                                                       [0,0,0,periodLength,0],
                                                                        testSetup.standardTokenMock.address,
@@ -490,7 +493,8 @@ contract('ContributionReward', function(accounts) {
         //Vote with reputation to trigger execution
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
-        await checkRedeemedPeriods(testSetup,0,0,0,0,0);
+        await checkRedeemedPeriods(testSetup,fakePId,0,0,0,0);
+
         await checkRedeemedPeriodsLeft(testSetup,proposalId,0,0,0,0);
 
        });
@@ -505,9 +509,9 @@ contract('ContributionReward', function(accounts) {
      var numberOfPeriods = 1;
      //send some ether to the org avatar
      var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-     web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+     await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
      var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                    "description",
+                                                                    web3.utils.asciiToHex("description"),
                                                                     reputationReward,
                                                                     [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
                                                                     testSetup.standardTokenMock.address,
@@ -535,8 +539,8 @@ contract('ContributionReward', function(accounts) {
 
      await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
 
-     var eth = web3.eth.getBalance(otherAvatar.address);
-     assert.equal(eth.toNumber(),ethReward);
+     var eth = await web3.eth.getBalance(otherAvatar.address);
+     assert.equal(eth,ethReward);
      assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),reputationReward);
      assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
      var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
@@ -556,9 +560,9 @@ contract('ContributionReward', function(accounts) {
       var numberOfPeriods = 1;
       //send some ether to the org avatar
       var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-      web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+      await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                     "description",
+                                                                     web3.utils.asciiToHex("description"),
                                                                      reputationReward,
                                                                      [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
                                                                      testSetup.standardTokenMock.address,
@@ -570,8 +574,8 @@ contract('ContributionReward', function(accounts) {
       await helpers.increaseTime(periodLength+1);
       var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
       await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
-      var eth = web3.eth.getBalance(otherAvatar.address);
-      assert.equal(eth.toNumber(),0);
+      var eth = await web3.eth.getBalance(otherAvatar.address);
+      assert.equal(eth,0);
       assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),0);
       assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),0);
       var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
@@ -586,7 +590,7 @@ contract('ContributionReward', function(accounts) {
        var periodLength = 0;
        var numberOfPeriods = 1;
        var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                 "description",
+                                                                 web3.utils.asciiToHex("description"),
                                                                  reputationReward,
                                                                  [0,0,0,periodLength,numberOfPeriods],
                                                                  testSetup.standardTokenMock.address,
@@ -595,7 +599,7 @@ contract('ContributionReward', function(accounts) {
                                                                );
        try {
             await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                   "description",
+                                                                   web3.utils.asciiToHex("description"),
                                                                    reputationReward,
                                                                    [0,0,0,periodLength,2],
                                                                    testSetup.standardTokenMock.address,

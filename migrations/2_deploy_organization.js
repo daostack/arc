@@ -1,7 +1,6 @@
 //this migration file is used only for testing purpose
 var constants = require('../test/constants');
 var Avatar = artifacts.require('./Avatar.sol');
-var Controller = artifacts.require('./Controller.sol');
 var UController = artifacts.require('./UController.sol');
 var DaoCreator = artifacts.require('./DaoCreator.sol');
 var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.sol');
@@ -16,17 +15,20 @@ var ControllerCreator = artifacts.require('./ControllerCreator.sol');
 const orgName = "TEST_ORGANIZATION";
 const tokenName = "TestToken";
 const tokenSymbol = "TST";
-const founders = [web3.eth.accounts[0]];
-const initRep = 10;
-const initRepInWei = [web3.toWei(initRep)];
-const initToken = 1000;
-const initTokenInWei = [web3.toWei(initToken)];
-const cap = web3.toWei(100000000);
+const founders = [];
+const initRep = web3.utils.toWei("10");
+const initRepInWei = [initRep];
+const initToken = web3.utils.toWei("1000");
+const initTokenInWei = [initToken];
+const cap = web3.utils.toWei("100000000","ether");
+
 
 
 // DAOstack parameters for universal schemes:
 
 const votePrec = 50;
+
+var accounts;
 
 //Deploy test organization with the following schemes:
 //schemeRegistrar, upgradeScheme,globalConstraintRegistrar,simpleICO,contributionReward.
@@ -34,14 +36,15 @@ module.exports = async function(deployer) {
     deployer.deploy(ControllerCreator, {gas: constants.ARC_GAS_LIMIT}).then(async function(){
       var controllerCreator = await ControllerCreator.deployed();
       await deployer.deploy(DaoCreator,controllerCreator.address);
-      var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address);
+      var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address,{gas: constants.ARC_GAS_LIMIT});
       // Create DAOstack:
+
+      await web3.eth.getAccounts(function(err,res) { accounts = res; });
+      founders[0] = accounts[0];
       var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
           initTokenInWei, initRepInWei,0,cap,{gas: constants.ARC_GAS_LIMIT});
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
-      var ControllerInst = await Controller.at(await AvatarInst.owner());
-      var reputationAddress = await ControllerInst.nativeReputation();
-      await deployer.deploy(AbsoluteVote);
+      await deployer.deploy(AbsoluteVote,{gas: constants.ARC_GAS_LIMIT});
       // Deploy AbsoluteVote:
       var AbsoluteVoteInst = await AbsoluteVote.deployed();
       // Deploy SchemeRegistrar:
@@ -65,13 +68,10 @@ module.exports = async function(deployer) {
 
       await schemeRegistrarInst.setParameters(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);
       var schemeRegisterParams = await schemeRegistrarInst.getParametersHash(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);
-
-      await globalConstraintRegistrarInst.setParameters(reputationAddress, votePrec);
-      var schemeGCRegisterParams = await globalConstraintRegistrarInst.getParametersHash(reputationAddress, votePrec);
-
+      await globalConstraintRegistrarInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
+      var schemeGCRegisterParams = await globalConstraintRegistrarInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
       await upgradeSchemeInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
       var schemeUpgradeParams = await upgradeSchemeInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
-
 
       await simpleICOInst.setParameters(1000, 1, 1, 2, web3.eth.accounts[0], web3.eth.accounts[0]);
       var simpleICOParams = await simpleICOInst.getParametersHash(1000, 1, 1, 2, web3.eth.accounts[0], web3.eth.accounts[0]);

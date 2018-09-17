@@ -7,12 +7,13 @@ var Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
 
 const setup = async function (accounts,_repAllocation = 300,_auctionsStartTime = 0,_auctionsEndTime = 3000,_numberOfAuctions = 3) {
    var testSetup = new helpers.TestSetup();
-   testSetup.biddingToken = await StandardTokenMock.new(accounts[0], web3.toWei('100', "ether"));
+   testSetup.biddingToken = await StandardTokenMock.new(accounts[0], web3.utils.toWei('100', "ether"));
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   testSetup.auctionsEndTime = await web3.eth.getBlock("latest").timestamp + _auctionsEndTime;
-   testSetup.auctionsStartTime = await web3.eth.getBlock("latest").timestamp + _auctionsStartTime;
+   var latestBlock = await web3.eth.getBlock("latest");
+   testSetup.auctionsEndTime =   latestBlock.timestamp + _auctionsEndTime;
+   testSetup.auctionsStartTime = latestBlock.timestamp + _auctionsStartTime;
    testSetup.auction4Reputation = await Auction4Reputation.new(testSetup.org.avatar.address,
                                                                        _repAllocation,
                                                                       testSetup.auctionsStartTime,
@@ -22,14 +23,15 @@ const setup = async function (accounts,_repAllocation = 300,_auctionsStartTime =
                                                                       testSetup.org.avatar.address);
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.auction4Reputation.address],[0],[permissions]);
-   await testSetup.biddingToken.approve(testSetup.auction4Reputation.address,web3.toWei('100', "ether"));
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.auction4Reputation.address],[web3.utils.asciiToHex("0")],[permissions]);
+   await testSetup.biddingToken.approve(testSetup.auction4Reputation.address,web3.utils.toWei('100', "ether"));
    return testSetup;
 };
 
 contract('Auction4Reputation', accounts => {
     it("constructor", async () => {
       let testSetup = await setup(accounts);
+
       assert.equal(await testSetup.auction4Reputation.reputationReward(),300);
       assert.equal(await testSetup.auction4Reputation.auctionsEndTime(),testSetup.auctionsEndTime);
       assert.equal(await testSetup.auction4Reputation.auctionsStartTime(),testSetup.auctionsStartTime);
@@ -86,21 +88,21 @@ contract('Auction4Reputation', accounts => {
 
     it("bid", async () => {
       let testSetup = await setup(accounts);
-      var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+      var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
       var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
       assert.equal(tx.logs.length,1);
       assert.equal(tx.logs[0].event,"Bid");
       assert.equal(tx.logs[0].args._auctionId,id);
-      assert.equal(tx.logs[0].args._amount,web3.toWei('1', "ether"));
+      assert.equal(tx.logs[0].args._amount,web3.utils.toWei('1', "ether"));
       assert.equal(tx.logs[0].args._bidder,accounts[0]);
       //test the tokens moved to the wallet.
-      assert.equal(await testSetup.biddingToken.balanceOf(testSetup.org.avatar.address),web3.toWei('1', "ether"));
+      assert.equal(await testSetup.biddingToken.balanceOf(testSetup.org.avatar.address),web3.utils.toWei('1', "ether"));
     });
 
     it("bid with value == 0 should revert", async () => {
       let testSetup = await setup(accounts);
       try {
-        await testSetup.auction4Reputation.bid(web3.toWei('0', "ether"));
+        await testSetup.auction4Reputation.bid(web3.utils.toWei('0', "ether"));
         assert(false, "bid with value == 0 should revert");
       } catch(error) {
         helpers.assertVMException(error);
@@ -111,7 +113,7 @@ contract('Auction4Reputation', accounts => {
       let testSetup = await setup(accounts);
       await helpers.increaseTime(3001);
       try {
-        await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         assert(false, "bid after _auctionEndTime should revert");
       } catch(error) {
         helpers.assertVMException(error);
@@ -120,11 +122,11 @@ contract('Auction4Reputation', accounts => {
 
     it("redeem", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(3001);
         var bid = await testSetup.auction4Reputation.getBid(accounts[0],id);
-        assert.equal(bid,web3.toWei('1', "ether"));
+        assert.equal(bid,web3.utils.toWei('1', "ether"));
         tx = await testSetup.auction4Reputation.redeem(accounts[0],id);
         assert.equal(tx.logs.length,1);
         assert.equal(tx.logs[0].event,"Redeem");
@@ -135,11 +137,11 @@ contract('Auction4Reputation', accounts => {
 
     it("redeem score ", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"),{from:accounts[0]});
+        var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"),{from:accounts[0]});
         var id1 = await helpers.getValueFromLogs(tx, '_auctionId',1);
-        await testSetup.biddingToken.transfer(accounts[1],web3.toWei('3', "ether"));
-        await testSetup.biddingToken.approve(testSetup.auction4Reputation.address,web3.toWei('100', "ether"),{from:accounts[1]});
-        tx = await testSetup.auction4Reputation.bid(web3.toWei('3', "ether"),{from:accounts[1]});
+        await testSetup.biddingToken.transfer(accounts[1],web3.utils.toWei('3', "ether"));
+        await testSetup.biddingToken.approve(testSetup.auction4Reputation.address,web3.utils.toWei('100', "ether"),{from:accounts[1]});
+        tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('3', "ether"),{from:accounts[1]});
         var id2 = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(3001);
         await testSetup.auction4Reputation.redeem(accounts[0],id1);
@@ -150,7 +152,7 @@ contract('Auction4Reputation', accounts => {
 
     it("redeem cannot redeem twice", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(3001);
         await testSetup.auction4Reputation.redeem(accounts[0],id);
@@ -164,7 +166,7 @@ contract('Auction4Reputation', accounts => {
 
     it("redeem before auctionEndTime should revert", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(50);
         try {
@@ -177,21 +179,21 @@ contract('Auction4Reputation', accounts => {
 
     it("bid and redeem from all acutions", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         var id1 = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(1001);
-        tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         var id2 = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(1001);
-        tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         var id3 = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(3000);
         var totalBid1 = await testSetup.auction4Reputation.auctions(id1);
         var totalBid2 = await testSetup.auction4Reputation.auctions(id2);
         var totalBid3 = await testSetup.auction4Reputation.auctions(id3);
-        assert.equal(totalBid1.toNumber(),totalBid2.toNumber());
-        assert.equal(totalBid1.toNumber(),totalBid3.toNumber());
-        assert.equal(totalBid1.toNumber(),web3.toWei('1', "ether"));
+        assert.equal(web3.utils.BN(totalBid1).eq(web3.utils.BN(totalBid2)),true);
+        assert.equal(web3.utils.BN(totalBid1).eq(web3.utils.BN(totalBid3)),true);
+        assert.equal(totalBid1,web3.utils.toWei('1', "ether"));
         assert.equal(id1,0);
         assert.equal(id2,1);
         assert.equal(id3,2);
@@ -203,12 +205,12 @@ contract('Auction4Reputation', accounts => {
 
     it("bid twice on the same auction", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         var id1 = await helpers.getValueFromLogs(tx, '_auctionId',1);
-        tx = await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
+        tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         var id2 = await helpers.getValueFromLogs(tx, '_auctionId',1);
         assert.equal(id1.toNumber(),id2.toNumber());
         var bid = await testSetup.auction4Reputation.getBid(accounts[0],id1);
-        assert.equal(bid,web3.toWei('2', "ether"));
+        assert.equal(bid,web3.utils.toWei('2', "ether"));
     });
 });

@@ -38,12 +38,12 @@ const setup = async function (accounts) {
    return testSetup;
 };
 
-contract('OrganizationRegister', function(accounts) {
+contract('OrganizationRegister',accounts => {
   before(function() {
-    helpers.etherForEveryone();
+     helpers.etherForEveryone(accounts);
   });
 
-   it("setParameters", async function() {
+   it("setParameters", async() => {
      var organizationRegister = await OrganizationRegister.new();
      await organizationRegister.setParameters(accounts[3],13,accounts[2]);
      var paramHash = await organizationRegister.getParametersHash(accounts[3],13,accounts[2]);

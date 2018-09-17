@@ -5,13 +5,15 @@ const constants = require('./constants');
 var ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
 var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
 
+
 const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 0,_lockingEndTime = 3000) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   testSetup.lockingEndTime = await web3.eth.getBlock("latest").timestamp + _lockingEndTime;
-   testSetup.lockingStartTime = await web3.eth.getBlock("latest").timestamp + _lockingStartTime;
+   var block = await web3.eth.getBlock("latest");
+   testSetup.lockingEndTime = block.timestamp + _lockingEndTime;
+   testSetup.lockingStartTime = block.timestamp + _lockingStartTime;
    testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
    await testSetup.extetnalTokenLockerMock.lock(100,{from:accounts[0]});
    await testSetup.extetnalTokenLockerMock.lock(200,{from:accounts[1]});
@@ -25,7 +27,7 @@ const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 
                                                                       "lockedTokenBalances(address)");
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.externalLocking4Reputation.address],[0],[permissions]);
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.externalLocking4Reputation.address],[helpers.NULL_HASH],[permissions]);
    return testSetup;
 };
 

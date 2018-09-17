@@ -10,6 +10,7 @@ const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
 const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
+const zeroBytes32 = helpers.NULL_HASH;
 var avatar,token,reputation,daoCreator,uController,controllerCreator;
 const setup = async function (accounts,founderToken,founderReputation,useUController=false,cap=0) {
   controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
@@ -75,7 +76,7 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes to none UniversalScheme", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);
@@ -85,7 +86,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         var universalSchemeMock = await UniversalSchemeMock.new();
-        var tx = await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[0],["0x8000000F"]);
+        var tx = await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[zeroBytes32],["0x8000000F"]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);
@@ -95,7 +96,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         try {
-         await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"],{ from: accounts[1]});
+         await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],{ from: accounts[1]});
          assert(false,"should fail because accounts[1] does not hold the lock");
         }
         catch(ex){
@@ -110,7 +111,7 @@ contract('DaoCreator', function(accounts) {
         var universalSchemeMock = await UniversalSchemeMock.new();
         var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
-        await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[0],["0x8000000F"]);
+        await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[zeroBytes32],["0x8000000F"]);
         allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
     });
@@ -122,7 +123,7 @@ contract('DaoCreator', function(accounts) {
         var allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
 
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
     });
@@ -131,7 +132,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         var controllerAddress,controller;
         await setup(accounts,amountToMint,amountToMint);
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
         var isSchemeRegistered = await controller.isSchemeRegistered(accounts[1],avatar.address);
@@ -146,7 +147,7 @@ contract('DaoCreator', function(accounts) {
         controller = await Controller.at(controllerAddress);
         var isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,avatar.address);
         assert.equal(isSchemeRegistered,true);
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
         isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,avatar.address);
@@ -156,9 +157,9 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes delete lock", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         try {
-         await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"],{ from: accounts[1]});
+         await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],{ from: accounts[1]});
          assert(false,"should fail because lock for account[0] suppose to be deleted by the first call");
         }
         catch(ex){
@@ -193,7 +194,7 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes with universal controller to none UniversalScheme", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint,true);
-        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);
@@ -203,7 +204,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint,true);
         var universalSchemeMock = await UniversalSchemeMock.new();
-        var tx = await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[0],["0x8000000F"]);
+        var tx = await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[zeroBytes32],["0x8000000F"]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);
@@ -213,7 +214,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint,true);
         try {
-         await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"],{ from: accounts[1]});
+         await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],{ from: accounts[1]});
          assert(false,"should fail because accounts[1] does not hold the lock");
         }
         catch(ex){
@@ -228,7 +229,7 @@ contract('DaoCreator', function(accounts) {
         var universalSchemeMock = await UniversalSchemeMock.new();
         var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
-        await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[0],["0x8000000F"]);
+        await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[zeroBytes32],["0x8000000F"]);
         allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
         //check org registered in scheme
@@ -241,7 +242,7 @@ contract('DaoCreator', function(accounts) {
         var allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
 
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
     });
@@ -250,7 +251,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         var controllerAddress,controller;
         await setup(accounts,amountToMint,amountToMint,true);
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
         var isSchemeRegistered = await controller.isSchemeRegistered(accounts[1],avatar.address);
@@ -265,7 +266,7 @@ contract('DaoCreator', function(accounts) {
         controller = await Controller.at(controllerAddress);
         var isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,avatar.address);
         assert.equal(isSchemeRegistered,true);
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
         isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address,avatar.address);
@@ -275,9 +276,9 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes with universal controller delete lock", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint,true);
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         try {
-         await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"],{ from: accounts[1]});
+         await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],{ from: accounts[1]});
          assert(false,"should fail because lock for account[0] suppose to be deleted by the first call");
         }
         catch(ex){
@@ -333,7 +334,7 @@ contract('DaoCreator', function(accounts) {
         assert.equal(rep.toNumber(),numberOfFounders);
         var founderBalance = await token.balanceOf(accounts[1]);
         assert.equal(founderBalance.toNumber(),numberOfFounders);
-        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[0],["0x0000000F"]);
+        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"]);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);

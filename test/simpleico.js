@@ -13,8 +13,8 @@ const setupSimpleICOParams = async function(accounts,
                                             org,
                                             cap=10000,
                                             price=1,
-                                            startBlock=web3.eth.blockNumber,
-                                            endBlock=web3.eth.blockNumber+500) {
+                                            startBlock=0,
+                                            endBlock=500) {
   // Register ICO parameters
   let beneficiary = org.avatar.address;
   let admin = accounts[0];
@@ -37,28 +37,29 @@ const setup = async function (accounts,cap =10000,price=1) {
   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
   testSetup.simpleICO = await SimpleICO.new();
   testSetup.org = await setupOrganization(accounts[0],1000,1000);
-  testSetup.paramHash= await setupSimpleICOParams(accounts,testSetup.simpleICO,testSetup.org,cap,price);
+  const blockNumber = await web3.eth.getBlockNumber();
+  testSetup.paramHash= await setupSimpleICOParams(accounts,testSetup.simpleICO,testSetup.org,cap,price,blockNumber,blockNumber+500);
   await daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.simpleICO.address],[testSetup.paramHash],["0x00000000"]);
   return testSetup;
 };
 
-contract('SimpleICO', function(accounts) {
+contract('SimpleICO', accounts => {
 
   before(function() {
-    helpers.etherForEveryone();
+    helpers.etherForEveryone(accounts);
   });
 
-  it("simpleICO send ether to contract - should revert", async function() {
+  it("simpleICO send ether to contract - should revert", async () => {
     var simpleICO = await SimpleICO.new();
-    var account1BalanceBefore = web3.eth.getBalance(accounts[1])/web3.toWei('1', "ether");
+    var account1BalanceBefore = await web3.eth.getBalance(accounts[1])/web3.utils.toWei('1', "ether");
     try{
-    await web3.eth.sendTransaction({from:accounts[1],to:simpleICO.address, value: web3.toWei('1', "ether")});
+    await web3.eth.sendTransaction({from:accounts[1],to:simpleICO.address, value: web3.utils.toWei('1', "ether")});
     assert(false,"should fail - contract simpleICO should not receive ethers and should revert in this case");
    }
    catch(ex){
      helpers.assertVMException(ex);
    }
-   var account1BalanceAfter = web3.eth.getBalance(accounts[1])/web3.toWei('1', "ether");
+   var account1BalanceAfter = await web3.eth.getBalance(accounts[1])/web3.utils.toWei('1', "ether");
    assert.equal(Math.round(account1BalanceAfter),Math.round(account1BalanceBefore));
   });
 
@@ -93,7 +94,13 @@ contract('SimpleICO', function(accounts) {
         var standardTokenMock = await StandardTokenMock.new(accounts[1],100);
         var simpleICO = await SimpleICO.new();
         var org = await setupOrganization(accounts[0],1000,1000);
-        var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,1000,1,web3.eth.blockNumber+100,web3.eth.blockNumber+100+500);
+        var paramHash= await setupSimpleICOParams(accounts,
+                                                  simpleICO,
+                                                  org,
+                                                  1000,
+                                                  1,
+                                                  (await web3.eth.getBlockNumber())+100,
+                                                  (await web3.eth.getBlockNumber())+100+500);
         //give some tokens to organization avatar so it could register the universal scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
         await daoCreator.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],["0x8000000F"]);
@@ -105,7 +112,13 @@ contract('SimpleICO', function(accounts) {
         var standardTokenMock = await StandardTokenMock.new(accounts[1],100);
         var simpleICO = await SimpleICO.new();
         var org = await setupOrganization(accounts[0],1000,1000);
-        var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,1000,1,web3.eth.blockNumber,web3.eth.blockNumber);
+        var paramHash= await setupSimpleICOParams(accounts,
+                                                  simpleICO,
+                                                  org,
+                                                  1000,
+                                                  1,
+                                                  await web3.eth.getBlockNumber(),
+                                                  await web3.eth.getBlockNumber());
         //give some tokens to organization avatar so it could register the universal scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
         await daoCreator.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],["0x8000000F"]);
@@ -120,7 +133,13 @@ contract('SimpleICO', function(accounts) {
         var standardTokenMock = await StandardTokenMock.new(accounts[1],100);
         var simpleICO = await SimpleICO.new();
         var org = await setupOrganization(accounts[0],1000,1000);
-        var paramHash= await setupSimpleICOParams(accounts,simpleICO,org,cap,price);
+        var paramHash= await setupSimpleICOParams(accounts,
+                                                  simpleICO,
+                                                  org,
+                                                  cap,
+                                                  price,
+                                                  await web3.eth.getBlockNumber(),
+                                                  await web3.eth.getBlockNumber()+500);
         //give some tokens to organization avatar so it could register the universal scheme.
         await standardTokenMock.transfer(org.avatar.address,30,{from:accounts[1]});
         await daoCreator.setSchemes(org.avatar.address,[simpleICO.address],[paramHash],["0x8000000F"]);
@@ -265,12 +284,12 @@ contract('SimpleICO', function(accounts) {
                   await testSetup.simpleICO.start(testSetup.org.avatar.address);
                   var donationEther = cap+10;
                   let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-                  var beneficiaryBalance = web3.eth.getBalance(otherAvatar.address);
+                  var beneficiaryBalance = await web3.eth.getBalance(otherAvatar.address);
                   assert.equal(beneficiaryBalance,0);
                   await testSetup.simpleICO.donate(testSetup.org.avatar.address,otherAvatar.address,{value:donationEther});
                   var balance = await testSetup.org.token.balanceOf(otherAvatar.address);
                   assert.equal(balance.toNumber(),price*cap);
-                  beneficiaryBalance = web3.eth.getBalance(otherAvatar.address);
+                  beneficiaryBalance = await web3.eth.getBalance(otherAvatar.address);
                   assert.equal(beneficiaryBalance,10);
                 });
 
@@ -280,7 +299,7 @@ contract('SimpleICO', function(accounts) {
               var testSetup = await setup(accounts,cap,price);
               await testSetup.simpleICO.start(testSetup.org.avatar.address);
               let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-              var beneficiaryBalance = web3.eth.getBalance(otherAvatar.address);
+              var beneficiaryBalance = await web3.eth.getBalance(otherAvatar.address);
               assert.equal(beneficiaryBalance,0);
               var organization = await testSetup.simpleICO.organizationsICOInfo(testSetup.org.avatar.address);
               var mirrorContractICO = organization[1];
@@ -298,7 +317,7 @@ contract('SimpleICO', function(accounts) {
                 var cap = 3;
                 var testSetup = await setup(accounts,cap,price);
                 let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-                var beneficiaryBalance = web3.eth.getBalance(otherAvatar.address);
+                var beneficiaryBalance =await web3.eth.getBalance(otherAvatar.address);
                 assert.equal(beneficiaryBalance,0);
                 var organization = await testSetup.simpleICO.organizationsICOInfo(testSetup.org.avatar.address);
                 var mirrorContractICO = organization[1];

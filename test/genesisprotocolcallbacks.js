@@ -5,7 +5,7 @@ const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const ARCGenesisProtocolCallbacksMock = artifacts.require("./ARCGenesisProtocolCallbacksMock.sol");
 
-const proposalId = 0x1234000000000000000000000000000000000000000000000000000000000000;
+const proposalId = "0x1234000000000000000000000000000000000000000000000000000000000000";
 const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
@@ -18,7 +18,7 @@ const setup = async function (accounts) {
    var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                           [testSetup.arcGenesisProtocolCallbacksMock.address],
-                                          [0],
+                                          [helpers.NULL_HASH],
                                           [permissions]);
    await testSetup.arcGenesisProtocolCallbacksMock.propose(proposalId,
                                                            testSetup.org.avatar.address,

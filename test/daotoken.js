@@ -18,7 +18,7 @@ contract('DAOToken', accounts => {
     });
 
     it("should mint tokens to owner account", async () => {
-        helpers.etherForEveryone();
+        await helpers.etherForEveryone(accounts);
 
         let owner, totalSupply, userSupply;
         const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
@@ -43,7 +43,7 @@ contract('DAOToken', accounts => {
     });
 
     it("should allow minting tokens only by owner", async () => {
-        helpers.etherForEveryone();
+        await helpers.etherForEveryone(accounts);
         const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
         let owner = await token.owner();
         let totalSupply = await token.totalSupply();
@@ -58,7 +58,7 @@ contract('DAOToken', accounts => {
 
         // and so the supply of tokens should remain unchanged
         let newSupply = await token.totalSupply();
-        assert.equal(totalSupply.valueOf(), newSupply.valueOf());
+        assert.equal(totalSupply.toNumber(), newSupply.toNumber());
     });
 
     it("log the Mint event on mint", async () => {

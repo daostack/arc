@@ -86,11 +86,10 @@ export async function getProposal(tx) {
     return await Proposal.at(getProposalAddress(tx));
 }
 
-export async function etherForEveryone() {
+export async function etherForEveryone(accounts) {
     // give all web3.eth.accounts some ether
-    let accounts = web3.eth.accounts;
     for (let i=0; i < 10; i++) {
-        await web3.eth.sendTransaction({to: accounts[i], from: accounts[0], value: web3.toWei(0.1, "ether")});
+        await web3.eth.sendTransaction({to: accounts[i], from: accounts[0], value: web3.utils.toWei("0.1", "ether")});
     }
 }
 
@@ -224,9 +223,9 @@ export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddres
   voteInfo = await absoluteVote.voteInfo(proposalId, voterAddress);
   // voteInfo has the following structure
   // int vote;
-  assert.equal(voteInfo[0], _voteInfo[0]);
+  assert.equal(voteInfo[0].toNumber(), _voteInfo[0]);
   // uint reputation;
-  assert.equal(voteInfo[1], _voteInfo[1]);
+  assert.equal(voteInfo[1].toNumber(), _voteInfo[1]);
 };
 
 
@@ -239,10 +238,28 @@ export const checkVotesStatus = async function(proposalId, _votesStatus,votingMa
   }
 };
 
-
+// export const increaseTime  = async function (addSeconds) {
+//     web3.currentProvider.sendAsync({
+//       jsonrpc: '2.0',
+//       method: 'evm_increaseTime',
+//       params: [addSeconds],
+//       id: new Date().getSeconds()
+//     }, (err) => {
+//       if (!err) {
+//         web3.currentProvider.send({
+//           jsonrpc: '2.0',
+//           method: 'evm_mine',
+//           params: [],
+//           id: new Date().getSeconds()
+//         });
+//       }
+//     });
+//   }
 // Increases testrpc time by the passed duration in seconds
 export const increaseTime = async function(duration) {
-  const id = Date.now();
+  const id = await Date.now();
+
+   web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send;
 
   return new Promise((resolve, reject) => {
     web3.currentProvider.sendAsync({
