@@ -4,15 +4,15 @@ const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const constants = require('./constants');
 var FixedReputationAllocation = artifacts.require("./FixedReputationAllocation.sol");
 
-const setup = async function (accounts,_repAllocation = 300,_setParameters = true) {
+const setup = async function (accounts,_repAllocation = 300,_initialize = true) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],0,0);
 
    testSetup.fixedReputationAllocation = await FixedReputationAllocation.new();
-   if (_setParameters ===  true) {
-    await testSetup.fixedReputationAllocation.setParameters(testSetup.org.avatar.address,
+   if (_initialize ===  true) {
+    await testSetup.fixedReputationAllocation.initialize(testSetup.org.avatar.address,
                                                             _repAllocation);
    }
 
@@ -22,7 +22,7 @@ const setup = async function (accounts,_repAllocation = 300,_setParameters = tru
 };
 
 contract('FixedReputationAllocation', accounts => {
-    it("setParameters", async () => {
+    it("initialize", async () => {
       let testSetup = await setup(accounts);
       assert.equal(await testSetup.fixedReputationAllocation.reputationReward(),300);
       assert.equal(await testSetup.fixedReputationAllocation.isEnable(),false);
@@ -72,7 +72,7 @@ contract('FixedReputationAllocation', accounts => {
       }
     });
 
-    it("cannot redeem if not setParameters", async () => {
+    it("cannot redeem if not initialize", async () => {
       let testSetup = await setup(accounts,300,false);
       await testSetup.fixedReputationAllocation.addBeneficiaries(accounts);
       assert.equal(await testSetup.fixedReputationAllocation.numberOfBeneficiaries(),accounts.length);
@@ -80,7 +80,7 @@ contract('FixedReputationAllocation', accounts => {
       await testSetup.fixedReputationAllocation.enable();
       try {
         await testSetup.fixedReputationAllocation.redeem(accounts[0]);
-        assert(false, "cannot redeem if not setParameters");
+        assert(false, "cannot redeem if not initialize");
       } catch(error) {
         helpers.assertVMException(error);
       }
@@ -121,28 +121,28 @@ contract('FixedReputationAllocation', accounts => {
       }
     });
 
-    it("cannot setParameters twice", async () => {
+    it("cannot initialize twice", async () => {
         let testSetup = await setup(accounts);
         try {
-             await testSetup.fixedReputationAllocation.setParameters(testSetup.org.avatar.address,
+             await testSetup.fixedReputationAllocation.initialize(testSetup.org.avatar.address,
                                                                      100);
-             assert(false, "cannot setParameters twice");
+             assert(false, "cannot initialize twice");
            } catch(error) {
              helpers.assertVMException(error);
            }
     });
 
-    it("setParameters is onlyOwner", async () => {
+    it("initialize is onlyOwner", async () => {
       var fixedReputationAllocation = await FixedReputationAllocation.new();
       try {
-        await fixedReputationAllocation.setParameters(accounts[0],
+        await fixedReputationAllocation.initialize(accounts[0],
                                                        100,
                                                        {from:accounts[1]});
-        assert(false, "setParameters is onlyOwner");
+        assert(false, "initialize is onlyOwner");
       } catch(error) {
         helpers.assertVMException(error);
       }
-      await fixedReputationAllocation.setParameters(accounts[0],
+      await fixedReputationAllocation.initialize(accounts[0],
                                                      100,
                                                      {from:accounts[0]});
     });

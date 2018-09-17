@@ -10,7 +10,7 @@ const setup = async function (accounts,
                              _lockingStartTime = 0,
                              _lockingEndTime = 3000,
                              _maxLockingPeriod = 6000,
-                             _setParameters = true) {
+                             _initialize = true) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
@@ -18,8 +18,8 @@ const setup = async function (accounts,
    testSetup.lockingEndTime = await web3.eth.getBlock("latest").timestamp + _lockingEndTime;
    testSetup.lockingStartTime = await web3.eth.getBlock("latest").timestamp + _lockingStartTime;
    testSetup.lockingEth4Reputation = await LockingEth4Reputation.new();
-   if (_setParameters === true) {
-      await testSetup.lockingEth4Reputation.setParameters(testSetup.org.avatar.address,
+   if (_initialize === true) {
+      await testSetup.lockingEth4Reputation.initialize(testSetup.org.avatar.address,
                                                           _repAllocation,
                                                           testSetup.lockingStartTime,
                                                           testSetup.lockingEndTime,
@@ -33,7 +33,7 @@ const setup = async function (accounts,
 };
 
 contract('LockingEth4Reputation', accounts => {
-    it("setParameters", async () => {
+    it("initialize", async () => {
       let testSetup = await setup(accounts);
       assert.equal(await testSetup.lockingEth4Reputation.reputationReward(),100);
       assert.equal(await testSetup.lockingEth4Reputation.maxLockingPeriod(),6000);
@@ -52,11 +52,11 @@ contract('LockingEth4Reputation', accounts => {
       assert.equal(tx.logs[0].args._locker,accounts[0]);
     });
 
-    it("cannot lock without setParameters", async () => {
+    it("cannot lock without initialize", async () => {
       let testSetup = await setup(accounts,100,0,3000,6000,false);
       try {
         await testSetup.lockingEth4Reputation.lock(100,{value:web3.toWei('1', "ether")});
-        assert(false, "cannot lock without setParameters");
+        assert(false, "cannot lock without initialize");
       } catch(error) {
         helpers.assertVMException(error);
       }
@@ -206,34 +206,34 @@ contract('LockingEth4Reputation', accounts => {
            }
     });
 
-    it("cannot setParameters twice", async () => {
+    it("cannot initialize twice", async () => {
         let testSetup = await setup(accounts);
         try {
-             await testSetup.lockingEth4Reputation.setParameters(testSetup.org.avatar.address,
+             await testSetup.lockingEth4Reputation.initialize(testSetup.org.avatar.address,
                                                                  100,
                                                                  testSetup.lockingStartTime,
                                                                  testSetup.lockingEndTime,
                                                                  6000);
-             assert(false, "cannot setParameters twice");
+             assert(false, "cannot initialize twice");
            } catch(error) {
              helpers.assertVMException(error);
            }
     });
 
-    it("setParameters is onlyOwner", async () => {
+    it("initialize is onlyOwner", async () => {
       var lockingEth4Reputation = await LockingEth4Reputation.new();
       try {
-        await lockingEth4Reputation.setParameters(accounts[1],
+        await lockingEth4Reputation.initialize(accounts[1],
                                                   100,
                                                   0,
                                                   100,
                                                   6000,
                                                 {from:accounts[1]});
-        assert(false, "setParameters is onlyOwner");
+        assert(false, "initialize is onlyOwner");
       } catch(error) {
         helpers.assertVMException(error);
       }
-      await lockingEth4Reputation.setParameters(accounts[1],
+      await lockingEth4Reputation.initialize(accounts[1],
                                                 100,
                                                 0,
                                                 100,

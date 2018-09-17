@@ -39,7 +39,7 @@ contract Auction4Reputation is Ownable {
     address public wallet;
 
     /**
-     * @dev setParameters
+     * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
@@ -50,7 +50,7 @@ contract Auction4Reputation is Ownable {
      * @param _numberOfAuctions number of auctions.
      * @param _token the bidding token
      */
-    function setParameters(
+    function initialize(
         Avatar _avatar,
         uint _reputationReward,
         uint _auctionsStartTime,

@@ -29,11 +29,11 @@ contract FixedReputationAllocation is Ownable {
     uint public beneficiaryReward;
 
     /**
-     * @dev setParameters
+     * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      */
-    function setParameters(
+    function initialize(
         Avatar _avatar,
         uint _reputationReward)
     external

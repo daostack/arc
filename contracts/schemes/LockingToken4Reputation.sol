@@ -13,7 +13,7 @@ contract LockingToken4Reputation is Locking4Reputation,Ownable {
     StandardToken public token;
 
     /**
-     * @dev constructor
+     * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
@@ -24,7 +24,7 @@ contract LockingToken4Reputation is Locking4Reputation,Ownable {
      * @param _maxLockingPeriod maximum locking period allowed.
      * @param _token the locking token
      */
-    function setParameters(
+    function initialize(
         Avatar _avatar,
         uint _reputationReward,
         uint _lockingStartTime,
@@ -35,7 +35,7 @@ contract LockingToken4Reputation is Locking4Reputation,Ownable {
     onlyOwner
     {
         token = _token;
-        super._setParameters(
+        super._initialize(
         _avatar,
         _reputationReward,
         _lockingStartTime,

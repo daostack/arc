@@ -11,7 +11,7 @@ const setup = async function (accounts,
                              _auctionsStartTime = 0,
                              _auctionsEndTime = 3000,
                              _numberOfAuctions = 3,
-                             _setParameters = true) {
+                             _initialize = true) {
    var testSetup = new helpers.TestSetup();
    testSetup.biddingToken = await StandardTokenMock.new(accounts[0], web3.utils.toWei('100', "ether"));
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
@@ -20,8 +20,8 @@ const setup = async function (accounts,
    testSetup.auctionsEndTime = await web3.eth.getBlock("latest").timestamp + _auctionsEndTime;
    testSetup.auctionsStartTime = await web3.eth.getBlock("latest").timestamp + _auctionsStartTime;
    testSetup.auction4Reputation = await Auction4Reputation.new();
-   if (_setParameters === true ) {
-     await testSetup.auction4Reputation.setParameters(testSetup.org.avatar.address,
+   if (_initialize === true ) {
+     await testSetup.auction4Reputation.initialize(testSetup.org.avatar.address,
                                                      _repAllocation,
                                                      testSetup.auctionsStartTime,
                                                      testSetup.auctionsEndTime,
@@ -38,7 +38,7 @@ const setup = async function (accounts,
 };
 
 contract('Auction4Reputation', accounts => {
-    it("setParameters", async () => {
+    it("initialize", async () => {
       let testSetup = await setup(accounts);
 
       assert.equal(await testSetup.auction4Reputation.reputationReward(),300);
@@ -50,10 +50,10 @@ contract('Auction4Reputation', accounts => {
       assert.equal(await testSetup.auction4Reputation.auctionPeriod(),(testSetup.auctionsEndTime-testSetup.auctionsStartTime)/3);
     });
 
-    it("setParameters numberOfAuctions = 0  is not allowed", async () => {
+    it("initialize numberOfAuctions = 0  is not allowed", async () => {
       var auction4Reputation = await Auction4Reputation.new();
       try {
-        await auction4Reputation.setParameters(accounts[0],
+        await auction4Reputation.initialize(accounts[0],
                                                300,
                                                0,
                                                3000,
@@ -67,10 +67,10 @@ contract('Auction4Reputation', accounts => {
       }
     });
 
-    it("setParameters is onlyOwner", async () => {
+    it("initialize is onlyOwner", async () => {
       var auction4Reputation = await Auction4Reputation.new();
       try {
-        await auction4Reputation.setParameters(accounts[0],
+        await auction4Reputation.initialize(accounts[0],
                                                300,
                                                0,
                                                3000,
@@ -78,11 +78,11 @@ contract('Auction4Reputation', accounts => {
                                               accounts[0],
                                               accounts[0],
                                               {gas :constants.ARC_GAS_LIMIT,from:accounts[1]});
-        assert(false, "setParameters is onlyOwner");
+        assert(false, "initialize is onlyOwner");
       } catch(error) {
         helpers.assertVMException(error);
       }
-      await auction4Reputation.setParameters(accounts[0],
+      await auction4Reputation.initialize(accounts[0],
                                              300,
                                              0,
                                              3000,
@@ -92,10 +92,10 @@ contract('Auction4Reputation', accounts => {
                                           {gas :constants.ARC_GAS_LIMIT,from:accounts[0]});
     });
 
-    it("setParameters auctionsEndTime = auctionsStartTime is not allowed", async () => {
+    it("initialize auctionsEndTime = auctionsStartTime is not allowed", async () => {
       var auction4Reputation = await Auction4Reputation.new();
       try {
-        await auction4Reputation.setParameters(accounts[0],
+        await auction4Reputation.initialize(accounts[0],
                                                300,
                                                300,
                                                300,
@@ -108,10 +108,10 @@ contract('Auction4Reputation', accounts => {
       }
     });
 
-    it("setParameters auctionsEndTime < auctionsStartTime is not allowed", async () => {
+    it("initialize auctionsEndTime < auctionsStartTime is not allowed", async () => {
       var auction4Reputation = await Auction4Reputation.new();
       try {
-        await auction4Reputation.setParameters(accounts[0],
+        await auction4Reputation.initialize(accounts[0],
                                                300,
                                                200,
                                                100,
@@ -137,11 +137,11 @@ contract('Auction4Reputation', accounts => {
       assert.equal(await testSetup.biddingToken.balanceOf(testSetup.org.avatar.address),web3.utils.toWei('1', "ether"));
     });
 
-    it("bid without setParameters should fail", async () => {
+    it("bid without initialize should fail", async () => {
       let testSetup = await setup(accounts,300,0,3000,3,false);
       try {
         await testSetup.auction4Reputation.bid(web3.toWei('1', "ether"));
-        assert(false, "bid without setParameters should fail");
+        assert(false, "bid without initialize should fail");
       } catch(error) {
         helpers.assertVMException(error);
       }
@@ -262,17 +262,17 @@ contract('Auction4Reputation', accounts => {
         assert.equal(bid,web3.utils.toWei('2', "ether"));
     });
 
-    it("cannot setParameters twice", async () => {
+    it("cannot initialize twice", async () => {
         let testSetup = await setup(accounts);
         try {
-             await testSetup.auction4Reputation.setParameters(accounts[0],
+             await testSetup.auction4Reputation.initialize(accounts[0],
                                                               300,
                                                               200,
                                                               100,
                                                               1,
                                                               accounts[0],
                                                               accounts[0]);
-             assert(false, "cannot setParameters twice");
+             assert(false, "cannot initialize twice");
            } catch(error) {
              helpers.assertVMException(error);
            }

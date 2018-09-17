@@ -17,7 +17,7 @@ contract ExternalLocking4Reputation is Locking4Reputation,Ownable {
     mapping(address=>bool) public externalLockers;
 
     /**
-     * @dev constructor
+     * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
@@ -29,7 +29,7 @@ contract ExternalLocking4Reputation is Locking4Reputation,Ownable {
      * @param _getBalanceFuncSignature get balance function signature
      *        e.g "lockedTokenBalances(address)"
      */
-    function setParameters(
+    function initialize(
         Avatar _avatar,
         uint _reputationReward,
         uint _lockingStartTime,
@@ -42,7 +42,7 @@ contract ExternalLocking4Reputation is Locking4Reputation,Ownable {
         require(_lockingEndTime > _lockingStartTime,"_lockingEndTime should be greater than _lockingStartTime");
         externalLockingContract = _externalLockingContract;
         getBalanceFuncSignature = _getBalanceFuncSignature;
-        super._setParameters(
+        super._initialize(
         _avatar,
         _reputationReward,
         _lockingStartTime,
@@ -55,7 +55,7 @@ contract ExternalLocking4Reputation is Locking4Reputation,Ownable {
      * @return lockingId
      */
     function lock() public returns(bytes32) {
-        require(avatar != Avatar(0),"should setParameters first");
+        require(avatar != Avatar(0),"should initialize first");
         require(externalLockers[msg.sender] == false,"locking twice is not allowed");
         externalLockers[msg.sender] = true;
         // solium-disable-next-line security/no-low-level-calls

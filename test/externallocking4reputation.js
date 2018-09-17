@@ -5,7 +5,7 @@ const constants = require('./constants');
 var ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
 var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
 
-const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 0,_lockingEndTime = 3000,_setParameters = true) {
+const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 0,_lockingEndTime = 3000,_initialize = true) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
@@ -19,8 +19,8 @@ const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 
    await testSetup.extetnalTokenLockerMock.lock(300,{from:accounts[2]});
 
    testSetup.externalLocking4Reputation = await ExternalLocking4Reputation.new();
-   if (_setParameters === true) {
-     await testSetup.externalLocking4Reputation.setParameters(testSetup.org.avatar.address,
+   if (_initialize === true) {
+     await testSetup.externalLocking4Reputation.initialize(testSetup.org.avatar.address,
                                                              _repAllocation,
                                                              testSetup.lockingStartTime,
                                                              testSetup.lockingEndTime,
@@ -34,7 +34,7 @@ const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 
 };
 
 contract('ExternalLocking4Reputation', accounts => {
-    it("setParameters", async () => {
+    it("initialize", async () => {
       let testSetup = await setup(accounts);
       assert.equal(await testSetup.externalLocking4Reputation.reputationReward(),100);
       assert.equal(await testSetup.externalLocking4Reputation.lockingEndTime(),testSetup.lockingEndTime);
@@ -161,36 +161,36 @@ contract('ExternalLocking4Reputation', accounts => {
            }
     });
 
-    it("cannot setParameters twice", async () => {
+    it("cannot initialize twice", async () => {
         let testSetup = await setup(accounts);
         try {
-             await testSetup.externalLocking4Reputation.setParameters(testSetup.org.avatar.address,
+             await testSetup.externalLocking4Reputation.initialize(testSetup.org.avatar.address,
                                                                      100,
                                                                      testSetup.lockingStartTime,
                                                                      testSetup.lockingEndTime,
                                                                      testSetup.extetnalTokenLockerMock.address,
                                                                      "lockedTokenBalances(address)");
-             assert(false, "cannot setParameters twice");
+             assert(false, "cannot initialize twice");
            } catch(error) {
              helpers.assertVMException(error);
            }
     });
 
-    it("setParameters is onlyOwner", async () => {
+    it("initialize is onlyOwner", async () => {
       var externalLocking4Reputation = await ExternalLocking4Reputation.new();
       try {
-        await externalLocking4Reputation.setParameters(accounts[0],
+        await externalLocking4Reputation.initialize(accounts[0],
                                                        100,
                                                        0,
                                                        3000,
                                                        accounts[0],
                                                        "lockedTokenBalances(address)",
                                               {from:accounts[1]});
-        assert(false, "setParameters is onlyOwner");
+        assert(false, "initialize is onlyOwner");
       } catch(error) {
         helpers.assertVMException(error);
       }
-      await externalLocking4Reputation.setParameters(accounts[0],
+      await externalLocking4Reputation.initialize(accounts[0],
                                                      100,
                                                      0,
                                                      3000,

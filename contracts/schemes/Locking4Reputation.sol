@@ -109,7 +109,7 @@ contract Locking4Reputation {
     }
 
     /**
-     * @dev setParameters
+     * @dev _initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for eth/token locking
@@ -119,7 +119,7 @@ contract Locking4Reputation {
      *        locking is disable after this time.
      * @param _maxLockingPeriod maximum locking period allowed.
      */
-    function _setParameters(
+    function _initialize(
         Avatar _avatar,
         uint _reputationReward,
         uint _lockingStartTime,
