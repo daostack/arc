@@ -42,7 +42,7 @@ contract('DaoCreator', function(accounts) {
         await setup(accounts,10,10);
         var founderBalance = await token.balanceOf(accounts[0]);
         assert.equal(founderBalance,10);
-        var founderReputation = await reputation.reputationOf(accounts[0]);
+        var founderReputation = await reputation.balanceOf(accounts[0]);
         assert.equal(founderReputation,10);
     });
 
@@ -176,7 +176,7 @@ contract('DaoCreator', function(accounts) {
         await setup(accounts,10,10,true);
         var founderBalance = await token.balanceOf(accounts[0]);
         assert.equal(founderBalance,10);
-        var founderReputation = await reputation.reputationOf(accounts[0]);
+        var founderReputation = await reputation.balanceOf(accounts[0]);
         assert.equal(founderReputation,10);
     });
 
@@ -330,7 +330,7 @@ contract('DaoCreator', function(accounts) {
             }
 
         await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
-        var rep = await reputation.reputationOf(accounts[1]);
+        var rep = await reputation.balanceOf(accounts[1]);
         assert.equal(rep.toNumber(),numberOfFounders);
         var founderBalance = await token.balanceOf(accounts[1]);
         assert.equal(founderBalance.toNumber(),numberOfFounders);

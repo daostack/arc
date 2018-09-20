@@ -72,7 +72,7 @@ contract('Controller', accounts =>  {
           assert.equal(tx.logs[0].event, "MintReputation");
           assert.equal(tx.logs[0].args._amount, amountToMint);
           assert.equal(tx.logs[0].args._to, accounts[0]);
-          let rep = await reputation.reputationOf(accounts[0]);
+          let rep = await reputation.balanceOf(accounts[0]);
           assert.equal(rep,amountToMint);
       });
 
@@ -85,7 +85,7 @@ contract('Controller', accounts =>  {
         assert.equal(tx.logs[0].event, "BurnReputation");
         assert.equal(tx.logs[0].args._amount, amountToMint-1);
         assert.equal(tx.logs[0].args._from, accounts[0]);
-        let rep = await reputation.reputationOf(accounts[0]);
+        let rep = await reputation.balanceOf(accounts[0]);
         assert.equal(rep,1);
     });
 
@@ -487,7 +487,7 @@ contract('Controller', accounts =>  {
       assert.equal(tx.logs[0].event, "MintReputation");
       assert.equal(tx.logs[0].args._amount, amountToMint);
       assert.equal(tx.logs[0].args._to, accounts[0]);
-      let rep = await reputation.reputationOf(accounts[0]);
+      let rep = await reputation.balanceOf(accounts[0]);
       assert.equal(rep,amountToMint);
       });
       it("globalConstraints register schemes add & remove", async () => {

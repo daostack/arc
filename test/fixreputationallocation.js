@@ -67,7 +67,7 @@ contract('FixedReputationAllocation', accounts => {
           assert.equal(tx.logs[0].event,"Redeem");
           beneficiaryReward = await testSetup.fixedReputationAllocation.beneficiaryReward();
           assert.equal(tx.logs[0].args._amount,beneficiaryReward.toNumber());
-          reputation = await testSetup.org.reputation.reputationOf(accounts[i]);
+          reputation = await testSetup.org.reputation.balanceOf(accounts[i]);
           assert.equal(reputation.toNumber(),tx.logs[0].args._amount);
       }
     });
