@@ -252,7 +252,7 @@ contract('GlobalConstraintRegistrar', accounts => {
                                                                           globalConstraintMock.address,
                                                                           );
           proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-          var rep = await testSetup.org.reputation.reputationOf(accounts[2]);
+          var rep = await testSetup.org.reputation.balanceOf(accounts[2]);
 
           await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,{from:accounts[2]});
           await helpers.checkVoteInfo(testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol,proposalId,accounts[2],[1,rep.toNumber()]);

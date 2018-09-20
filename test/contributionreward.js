@@ -209,7 +209,7 @@ contract('ContributionReward', accounts => {
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, reputationReward);
-      var rep = await testSetup.org.reputation.reputationOf(accounts[1]);
+      var rep = await testSetup.org.reputation.balanceOf(accounts[1]);
       assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
      });
 
@@ -446,7 +446,7 @@ contract('ContributionReward', accounts => {
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, reputationReward);
-      var rep = await testSetup.org.reputation.reputationOf(accounts[0]);
+      var rep = await testSetup.org.reputation.balanceOf(accounts[0]);
       assert.equal(rep.toNumber(),testSetup.reputationArray[0]+reputationReward);
      });
 
@@ -541,9 +541,9 @@ contract('ContributionReward', accounts => {
 
      var eth = await web3.eth.getBalance(otherAvatar.address);
      assert.equal(eth,ethReward);
-     assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),reputationReward);
+     assert.equal(await testSetup.org.reputation.balanceOf(otherAvatar.address),reputationReward);
      assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
-     var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
+     var reputation = await testSetup.org.reputation.balanceOf(accounts[0]);
      var reputationGainAsVoter =  0;
      var proposingRepRewardConstA=60;
      var proposingRepRewardConstB=1;
@@ -576,9 +576,9 @@ contract('ContributionReward', accounts => {
       await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[0]);
       var eth = await web3.eth.getBalance(otherAvatar.address);
       assert.equal(eth,0);
-      assert.equal(await testSetup.org.reputation.reputationOf(otherAvatar.address),0);
+      assert.equal(await testSetup.org.reputation.balanceOf(otherAvatar.address),0);
       assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),0);
-      var reputation = await testSetup.org.reputation.reputationOf(accounts[0]);
+      var reputation = await testSetup.org.reputation.balanceOf(accounts[0]);
       //no reputation reward for proposer for negative proposal.
       //reputation reward for a single voter = 0
       assert.equal(reputation, 1000);
@@ -617,12 +617,12 @@ contract('ContributionReward', accounts => {
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "RedeemReputation");
        assert.equal(tx.logs[0].args._amount, reputationReward);
-       var rep = await testSetup.org.reputation.reputationOf(accounts[1]);
+       var rep = await testSetup.org.reputation.balanceOf(accounts[1]);
        assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
        //try to redeem again.
        tx = await testSetup.contributionReward.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
        assert.equal(tx.logs.length, 0);
-       rep = await testSetup.org.reputation.reputationOf(accounts[1]);
+       rep = await testSetup.org.reputation.balanceOf(accounts[1]);
        assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
     });
 });

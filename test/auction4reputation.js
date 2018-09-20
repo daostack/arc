@@ -180,7 +180,7 @@ contract('Auction4Reputation', accounts => {
         assert.equal(tx.logs[0].event,"Redeem");
         assert.equal(tx.logs[0].args._amount,100);
         assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
-        assert.equal(await testSetup.org.reputation.reputationOf(accounts[0]),1000+100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+100);
     });
 
     it("redeem score ", async () => {
@@ -194,8 +194,8 @@ contract('Auction4Reputation', accounts => {
         await helpers.increaseTime(3001);
         await testSetup.auction4Reputation.redeem(accounts[0],id1);
         await testSetup.auction4Reputation.redeem(accounts[1],id2);
-        assert.equal(await testSetup.org.reputation.reputationOf(accounts[0]),1000+25);
-        assert.equal(await testSetup.org.reputation.reputationOf(accounts[1]),75);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+25);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),75);
     });
 
     it("redeem cannot redeem twice", async () => {
@@ -248,7 +248,7 @@ contract('Auction4Reputation', accounts => {
         await testSetup.auction4Reputation.redeem(accounts[0],id1);
         await testSetup.auction4Reputation.redeem(accounts[0],id2);
         await testSetup.auction4Reputation.redeem(accounts[0],id3);
-        assert.equal(await testSetup.org.reputation.reputationOf(accounts[0]),1000+300);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+300);
     });
 
     it("bid twice on the same auction", async () => {

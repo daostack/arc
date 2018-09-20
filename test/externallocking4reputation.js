@@ -118,7 +118,7 @@ contract('ExternalLocking4Reputation', accounts => {
         assert.equal(tx.logs[0].args._lockingId,lockingId);
         assert.equal(tx.logs[0].args._amount,100);
         assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
-        assert.equal(await testSetup.org.reputation.reputationOf(accounts[0]),1000+100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+100);
     });
 
     it("redeem score ", async () => {
@@ -130,8 +130,8 @@ contract('ExternalLocking4Reputation', accounts => {
         await helpers.increaseTime(3001);
         await testSetup.externalLocking4Reputation.redeem(accounts[0],lockingId1);
         await testSetup.externalLocking4Reputation.redeem(accounts[2],lockingId2);
-        assert.equal(await testSetup.org.reputation.reputationOf(accounts[0]),1000+25);
-        assert.equal(await testSetup.org.reputation.reputationOf(accounts[2]),75);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+25);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]),75);
     });
 
     it("redeem cannot redeem twice", async () => {
