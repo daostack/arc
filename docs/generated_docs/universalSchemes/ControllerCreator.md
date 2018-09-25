@@ -1,5 +1,5 @@
 # ControllerCreator
-[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/DaoCreator.sol)
+[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/DAOFactory.sol)
 > ControllerCreator for creating a single controller.
 
 

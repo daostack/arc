@@ -52,7 +52,7 @@
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
-    "solc": "^0.4.24",
+    "solc": "^0.4.25",
     "solc-cli": "^0.3.0",
     "solium": "^1.1.8",
     "truffle": "beta",
@@ -81,7 +81,8 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra": "^0.0.0-alpha.06",
+    "@daostack/infra": "^0.0.0-alpha.6",
+    "@optionality.io/clone-factory": "^0.1.6",
     "ethereumjs-abi": "^0.6.5",
     "openzeppelin-solidity": "1.12.0"
   },

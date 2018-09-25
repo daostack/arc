@@ -1,9 +1,9 @@
 pragma solidity ^0.4.24;
 
-import "./UniversalScheme.sol";
+import "../universalSchemes/UniversalScheme.sol";
 import "../controller/UController.sol";
 import "../controller/Controller.sol";
-
+import "./ActorsFactory.sol";
 
 /**
  * @title ControllerCreator for creating a single controller.
@@ -17,23 +17,26 @@ contract ControllerCreator {
         controller.unregisterScheme(this,address(_avatar));
         return address(controller);
     }
+    
 }
 
 /**
- * @title Genesis Scheme that creates organizations
+ * @title DAO factory that creates new DAOs
  */
 
+contract DAOFactory {
 
-contract DaoCreator {
+    mapping(address => address) public locks;
 
-    mapping(address=>address) public locks;
+    event NewOrg(address _avatar);
+    event InitialSchemesSet(address _avatar);
 
-    event NewOrg (address _avatar);
-    event InitialSchemesSet (address _avatar);
     ControllerCreator controllerCreator;
+    ActorsFactory actorsFactory;
 
-    constructor(ControllerCreator _controllerCreator) public {
+    constructor(ControllerCreator _controllerCreator, ActorsFactory _actorsFactory) public {
         controllerCreator = _controllerCreator;
+        actorsFactory = _actorsFactory;
     }
 
     /**
@@ -46,7 +49,7 @@ contract DaoCreator {
       * @param _foundersReputationAmount An array of amount of reputation that the
       *   founders receive in the new organization
       * @return bool true or false
-      */
+    */
     function addFounders (
         Avatar _avatar,
         address[] _founders,
@@ -60,6 +63,7 @@ contract DaoCreator {
         require(_founders.length == _foundersReputationAmount.length);
         require(_founders.length > 0);
         require(locks[address(_avatar)] == msg.sender);
+
         // Mint token and reputation for founders:
         for (uint i = 0 ; i < _founders.length ; i++ ) {
             require(_founders[i] != address(0));
@@ -174,10 +178,11 @@ contract DaoCreator {
         require(_founders.length == _foundersTokenAmount.length);
         require(_founders.length == _foundersReputationAmount.length);
         require(_founders.length > 0);
-        DAOToken  nativeToken = new DAOToken(_tokenName, _tokenSymbol,_cap);
-        Reputation  nativeReputation = new Reputation();
-        Avatar  avatar = new Avatar(_orgName, nativeToken, nativeReputation);
-        ControllerInterface  controller;
+        
+        Reputation nativeReputation = new Reputation();
+        DAOToken nativeToken = DAOToken(actorsFactory.createDAOToken(_tokenName, _tokenSymbol, _cap));
+        Avatar avatar = Avatar(actorsFactory.createAvatar(_orgName, nativeToken, nativeReputation));
+        ControllerInterface controller;
 
         // Mint token and reputation for founders:
         for (uint i = 0 ; i < _founders.length ; i++ ) {
