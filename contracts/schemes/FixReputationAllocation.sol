@@ -10,17 +10,16 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * This scheme can be used to allocate a pre define amount of reputation to whitelisted
  * beneficiaries.
  */
-
 contract FixedReputationAllocation is Ownable {
     using SafeMath for uint;
     using RealMath for int216;
     using RealMath for int256;
 
-    event Redeem(address indexed _beneficiary,uint _amount);
+    event Redeem(address indexed _beneficiary, uint _amount);
     event BeneficiaryAddressAdded(address _beneficiary);
 
     // beneficiary -> exist
-    mapping(address=>bool) public beneficiaries;
+    mapping(address => bool) public beneficiaries;
 
     Avatar public avatar;
     uint public reputationReward;
@@ -33,13 +32,9 @@ contract FixedReputationAllocation is Ownable {
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      */
-    function initialize(
-        Avatar _avatar,
-        uint _reputationReward)
-    external
-    onlyOwner
-    {
-        require(avatar == Avatar(0),"can be called only one time");
+    function initialize(Avatar _avatar, uint _reputationReward) external onlyOwner {
+        require(avatar == Avatar(0), "can be called only one time");
+        require(_avatar != Avatar(0), "avatar cannot be zero");
         reputationReward = _reputationReward;
         avatar = _avatar;
     }
@@ -50,10 +45,12 @@ contract FixedReputationAllocation is Ownable {
      * @return bool
      */
     function redeem(address _beneficiary) public returns(bool) {
-        require(isEnable,"require to be enable");
-        require(beneficiaries[_beneficiary],"require _beneficiary to exist in the beneficiaries map");
-        require(ControllerInterface(avatar.owner()).mintReputation(beneficiaryReward,_beneficiary,avatar),"mint reputation should success");
-        emit Redeem(_beneficiary,beneficiaryReward);
+        require(isEnable, "require to be enable");
+        require(beneficiaries[_beneficiary], "require _beneficiary to exist in the beneficiaries map");
+        require(ControllerInterface(avatar.owner()).mintReputation(beneficiaryReward, _beneficiary, avatar), "mint reputation should success");
+        
+        emit Redeem(_beneficiary, beneficiaryReward);
+        
         return true;
     }
 
@@ -61,14 +58,13 @@ contract FixedReputationAllocation is Ownable {
      * @dev addBeneficiary function
      * @param _beneficiary to be whitelisted
      */
-    function addBeneficiary(address _beneficiary)
-    public
-    onlyOwner
-    {
-        require(!isEnable,"can add beneficiary only if not already enable");
+    function addBeneficiary(address _beneficiary) public onlyOwner {
+        require(!isEnable, "can add beneficiary only if not already enable");
+        
         if (!beneficiaries[_beneficiary]) {
             beneficiaries[_beneficiary] = true;
             numberOfBeneficiaries++;
+            
             emit BeneficiaryAddressAdded(_beneficiary);
         }
     }
@@ -77,10 +73,7 @@ contract FixedReputationAllocation is Ownable {
      * @dev add addBeneficiaries function
      * @param _beneficiaries addresses
      */
-    function addBeneficiaries(address[] _beneficiaries)
-    public
-    onlyOwner
-    {
+    function addBeneficiaries(address[] _beneficiaries) public onlyOwner {
         for (uint256 i = 0; i < _beneficiaries.length; i++) {
             addBeneficiary(_beneficiaries[i]);
         }
@@ -89,12 +82,9 @@ contract FixedReputationAllocation is Ownable {
     /**
      * @dev enable function
      */
-    function enable()
-    public
-    onlyOwner
-    {
+    function enable() public onlyOwner {
         isEnable = true;
-        //Calculate beneficiary reward
+        // Calculate beneficiary reward
         beneficiaryReward = uint256(int216(reputationReward).div(int256(numberOfBeneficiaries)).fromReal());
     }
 }

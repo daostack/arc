@@ -13,9 +13,9 @@ contract Locking4Reputation {
     using RealMath for int216;
     using RealMath for int256;
 
-    event Redeem(bytes32 indexed _lockingId, address indexed _beneficiary,uint _amount);
-    event Release(bytes32 indexed _lockingId, address indexed _beneficiary,uint _amount);
-    event Lock(bytes32 indexed _lockingId,uint _amount,uint _period,address _locker);
+    event Redeem(bytes32 indexed _lockingId, address indexed _beneficiary, uint _amount);
+    event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint _amount);
+    event Lock(bytes32 indexed _lockingId, uint _amount, uint _period, address _locker);
 
     struct Locker {
         uint amount;
@@ -25,9 +25,9 @@ contract Locking4Reputation {
     Avatar public avatar;
 
     // A mapping from lockers addresses their lock balances.
-    mapping(address=>mapping(bytes32=>Locker)) public lockers;
+    mapping(address => mapping(bytes32=>Locker)) public lockers;
     // A mapping from lockers addresses to their scores.
-    mapping(address=>uint) public scores;
+    mapping(address => uint) public scores;
 
     uint public totalLocked;
     uint public totalLockedLeft;
@@ -45,18 +45,21 @@ contract Locking4Reputation {
      * @param _lockingId the locking id to release
      * @return bool
      */
-    function redeem(address _beneficiary,bytes32 _lockingId) public returns(bool) {
+    function redeem(address _beneficiary, bytes32 _lockingId) public returns(bool) {
         // solium-disable-next-line security/no-block-members
-        require(block.timestamp >= lockingEndTime,"check the lock period pass");
-        require(scores[_beneficiary] > 0,"score should be > 0");
+        require(block.timestamp >= lockingEndTime, "check the lock period pass");
+        require(scores[_beneficiary] > 0, "score should be > 0");
         uint score = scores[_beneficiary];
         scores[_beneficiary] = 0;
         int256 repRelation = int216(score).toReal().mul(int216(reputationReward).toReal());
         uint reputation = uint256(repRelation.div(int216(totalScore).toReal()).fromReal());
+        
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation,_beneficiary,avatar),"mint reputation should success");
-        emit Redeem(_lockingId,_beneficiary,reputation);
+        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
+        
+        emit Redeem(_lockingId, _beneficiary, reputation);
+        
         return true;
     }
 
@@ -66,15 +69,16 @@ contract Locking4Reputation {
      * @param _lockingId the locking id to release
      * @return bool
      */
-    function _release(address _beneficiary,bytes32 _lockingId) internal returns(uint amount) {
+    function _release(address _beneficiary, bytes32 _lockingId) internal returns(uint amount) {
         Locker storage locker = lockers[_beneficiary][_lockingId];
-        require(locker.amount > 0,"amount should be > 0");
+        require(locker.amount > 0, "amount should be > 0");
         amount = locker.amount;
         locker.amount = 0;
         // solium-disable-next-line security/no-block-members
-        require(block.timestamp >= locker.releaseTime,"check the lock period pass");
+        require(block.timestamp >= locker.releaseTime, "check the lock period pass");
         totalLockedLeft = totalLockedLeft.sub(amount);
-        emit Release(_lockingId,_beneficiary,amount);
+
+        emit Release(_lockingId, _beneficiary, amount);
     }
 
     /**
@@ -85,14 +89,13 @@ contract Locking4Reputation {
      * @return lockingId
      */
     function _lock(uint _amount, uint _period, address _locker) internal returns(bytes32 lockingId) {
-
-        require(_amount > 0,"locking amount should be > 0");
-        require(_period <= maxLockingPeriod,"locking period should be <= maxLockingPeriod");
-        require(_period > 0,"locking period should be > 0");
+        require(_amount > 0, "locking amount should be > 0");
+        require(_period <= maxLockingPeriod, "locking period should be <= maxLockingPeriod");
+        require(_period > 0, "locking period should be > 0");
         // solium-disable-next-line security/no-block-members
-        require(now <= lockingEndTime,"lock should be within the allowed locking period");
+        require(now <= lockingEndTime, "lock should be within the allowed locking period");
         // solium-disable-next-line security/no-block-members
-        require(now >= lockingStartTime,"lock should start after lockingStartTime");
+        require(now >= lockingStartTime, "lock should start after lockingStartTime");
 
         lockingId = keccak256(abi.encodePacked(this, lockingsCounter));
         lockingsCounter++;
@@ -105,7 +108,8 @@ contract Locking4Reputation {
         totalLockedLeft = totalLocked;
         scores[_locker] = scores[_locker].add(_period.mul(_amount));
         totalScore = totalScore.add(scores[_locker]);
-        emit Lock(lockingId,_amount,_period,_locker);
+
+        emit Lock(lockingId, _amount, _period, _locker);
     }
 
     /**
@@ -127,11 +131,12 @@ contract Locking4Reputation {
         uint _maxLockingPeriod)
     internal
     {
-        require(avatar == Avatar(0),"can be called only one time");
-        require(_avatar != Avatar(0),"avatar cannot be zero");
-        require(_lockingEndTime > _lockingStartTime,"locking end time should be greater than locking start time");
+        require(avatar == Avatar(0), "can be called only one time");
+        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_lockingEndTime > _lockingStartTime, "locking end time should be greater than locking start time");
+        
         reputationReward = _reputationReward;
-        reputationRewardLeft = reputationReward;
+        reputationRewardLeft = _reputationReward;
         lockingEndTime = _lockingEndTime;
         maxLockingPeriod = _maxLockingPeriod;
         avatar = _avatar;
