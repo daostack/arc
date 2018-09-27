@@ -8,8 +8,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * @title A scheme for locking ERC20 Tokens for reputation
  */
 
-contract LockingToken4Reputation is Locking4Reputation,Ownable {
-
+contract LockingToken4Reputation is Locking4Reputation, Ownable {
     StandardToken public token;
 
     /**
@@ -50,8 +49,9 @@ contract LockingToken4Reputation is Locking4Reputation,Ownable {
      * @return bool
      */
     function release(address _beneficiary,bytes32 _lockingId) public returns(bool) {
-        uint amount = super._release(_beneficiary,_lockingId);
-        require(token.transfer(_beneficiary,amount),"transfer should success");
+        uint amount = super._release(_beneficiary, _lockingId);
+        require(token.transfer(_beneficiary, amount), "transfer should success");
+        
         return true;
     }
 
@@ -62,8 +62,9 @@ contract LockingToken4Reputation is Locking4Reputation,Ownable {
      * @return lockingId
      */
     function lock(uint _amount, uint _period) public returns(bytes32) {
-        require(token.transferFrom(msg.sender,address(this),_amount),"transferFrom should success");
-        return super._lock(_amount,_period,msg.sender);
+        require(token.transferFrom(msg.sender, address(this), _amount), "transferFrom should success");
+        
+        return super._lock(_amount, _period, msg.sender);
     }
 
 }

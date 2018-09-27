@@ -8,7 +8,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * @title A scheme for locking ETH for reputation
  */
 
-contract LockingEth4Reputation is Locking4Reputation,Ownable {
+contract LockingEth4Reputation is Locking4Reputation, Ownable {
 
     /**
      * @dev initialize
@@ -45,8 +45,9 @@ contract LockingEth4Reputation is Locking4Reputation,Ownable {
      * @return bool
      */
     function release(address _beneficiary, bytes32 _lockingId) public returns(bool) {
-        uint amount = super._release(_beneficiary,_lockingId);
+        uint amount = super._release(_beneficiary, _lockingId);
         _beneficiary.transfer(amount);
+        
         return true;
     }
 

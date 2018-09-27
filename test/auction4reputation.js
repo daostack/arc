@@ -41,7 +41,7 @@ contract('Auction4Reputation', accounts => {
     it("initialize", async () => {
       let testSetup = await setup(accounts);
 
-      assert.equal(await testSetup.auction4Reputation.reputationReward(),300);
+      assert.equal(await testSetup.auction4Reputation.reputationRewardLeft(),300);
       assert.equal(await testSetup.auction4Reputation.auctionsEndTime(),testSetup.auctionsEndTime);
       assert.equal(await testSetup.auction4Reputation.auctionsStartTime(),testSetup.auctionsStartTime);
       assert.equal(await testSetup.auction4Reputation.token(),testSetup.biddingToken.address);

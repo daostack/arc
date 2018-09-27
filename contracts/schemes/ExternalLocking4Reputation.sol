@@ -8,13 +8,13 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * @title A scheme for external locking Tokens for reputation
  */
 
-contract ExternalLocking4Reputation is Locking4Reputation,Ownable {
+contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
 
     address public externalLockingContract;
     string public getBalanceFuncSignature;
 
-    // locker->bool
-    mapping(address=>bool) public externalLockers;
+    // locker -> bool
+    mapping(address => bool) public externalLockers;
 
     /**
      * @dev initialize
@@ -39,7 +39,7 @@ contract ExternalLocking4Reputation is Locking4Reputation,Ownable {
     external
     onlyOwner
     {
-        require(_lockingEndTime > _lockingStartTime,"_lockingEndTime should be greater than _lockingStartTime");
+        require(_lockingEndTime > _lockingStartTime, "_lockingEndTime should be greater than _lockingStartTime");
         externalLockingContract = _externalLockingContract;
         getBalanceFuncSignature = _getBalanceFuncSignature;
         super._initialize(
@@ -55,11 +55,11 @@ contract ExternalLocking4Reputation is Locking4Reputation,Ownable {
      * @return lockingId
      */
     function lock() public returns(bytes32) {
-        require(avatar != Avatar(0),"should initialize first");
-        require(externalLockers[msg.sender] == false,"locking twice is not allowed");
+        require(avatar != Avatar(0), "should initialize first");
+        require(externalLockers[msg.sender] == false, "locking twice is not allowed");
         externalLockers[msg.sender] = true;
         // solium-disable-next-line security/no-low-level-calls
-        bool result = externalLockingContract.call(abi.encodeWithSignature(getBalanceFuncSignature,msg.sender));
+        bool result = externalLockingContract.call(abi.encodeWithSignature(getBalanceFuncSignature, msg.sender));
         uint lockedAmount;
         // solium-disable-next-line security/no-inline-assembly
         assembly {
@@ -69,6 +69,7 @@ contract ExternalLocking4Reputation is Locking4Reputation,Ownable {
           case 0 { revert(0, returndatasize) }
           default { lockedAmount := mload(0) }
         }
-        return super._lock(lockedAmount,1,msg.sender);
+        
+        return super._lock(lockedAmount, 1, msg.sender);
     }
 }

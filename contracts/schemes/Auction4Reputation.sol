@@ -28,7 +28,6 @@ contract Auction4Reputation is Ownable {
     mapping(uint=>Auction) public auctions;
 
     Avatar public avatar;
-    uint public reputationReward;
     uint public reputationRewardLeft;
     uint public auctionsEndTime;
     uint public auctionsStartTime;
@@ -61,21 +60,20 @@ contract Auction4Reputation is Ownable {
        external
        onlyOwner
        {
-        require(avatar == Avatar(0),"can be called only one time");
-        require(_avatar != Avatar(0),"avatar cannot be zero");
-        //number of auctions cannot be zero
-        //auctionsEndTime should be greater than auctionsStartTime
+        require(avatar == Avatar(0), "can be called only one time");
+        require(_avatar != Avatar(0), "avatar cannot be zero");
+        // number of auctions cannot be zero
+        // auctionsEndTime should be greater than auctionsStartTime
         auctionPeriod = (_auctionsEndTime.sub(_auctionsStartTime)).div(_numberOfAuctions);
-        require(auctionPeriod > 0,"auctionPeriod should be > 0");
+        require(auctionPeriod > 0, "auctionPeriod should be > 0");
         token = _token;
         avatar = _avatar;
-        reputationReward = _reputationReward;
         auctionsStartTime = _auctionsStartTime;
         auctionsEndTime = _auctionsEndTime;
         numberOfAuctions = _numberOfAuctions;
         wallet = _wallet;
-        auctionReputationReward = reputationReward/numberOfAuctions;
-        reputationRewardLeft = reputationReward;
+        auctionReputationReward = _reputationReward / _numberOfAuctions;
+        reputationRewardLeft = _reputationReward;
     }
 
     /**
@@ -84,18 +82,18 @@ contract Auction4Reputation is Ownable {
      * @param _auctionId the auction id to redeem from.
      * @return bool
      */
-    function redeem(address _beneficiary,uint _auctionId) public returns(bool) {
+    function redeem(address _beneficiary, uint _auctionId) public returns(bool) {
         // solium-disable-next-line security/no-block-members
-        require(now >= auctionsEndTime,"check the auctions period pass");
+        require(now >= auctionsEndTime, "check the auctions period pass");
         Auction storage auction = auctions[_auctionId];
         uint bid = auction.bids[_beneficiary];
-        require(bid > 0,"bidding amount should be > 0");
+        require(bid > 0, "bidding amount should be > 0");
         auction.bids[_beneficiary] = 0;
         int256 repRelation = int216(bid).toReal().mul(int216(auctionReputationReward).toReal());
         uint reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
-        //check that the reputation is sum zero
+        // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar),"mint reputation should success");
+        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
         emit Redeem(_auctionId, _beneficiary, reputation);
         return true;
     }
@@ -106,14 +104,14 @@ contract Auction4Reputation is Ownable {
      * @return auctionId
      */
     function bid(uint _amount) public returns(uint auctionId) {
-        require(_amount > 0,"bidding amount should be > 0");
+        require(_amount > 0, "bidding amount should be > 0");
         // solium-disable-next-line security/no-block-members
-        require(now <= auctionsEndTime,"bidding should be within the allowed bidding period");
+        require(now <= auctionsEndTime, "bidding should be within the allowed bidding period");
         // solium-disable-next-line security/no-block-members
-        require(now >= auctionsStartTime,"bidding is enable only after bidding auctionsStartTime");
-        require(token.transferFrom(msg.sender, wallet, _amount),"transferFrom should success");
+        require(now >= auctionsStartTime, "bidding is enable only after bidding auctionsStartTime");
+        require(token.transferFrom(msg.sender, wallet, _amount), "transferFrom should success");
         // solium-disable-next-line security/no-block-members
-        auctionId = (now - auctionsStartTime)/auctionPeriod;
+        auctionId = (now - auctionsStartTime) / auctionPeriod;
         Auction storage auction = auctions[auctionId];
         auction.totalBid = auction.totalBid.add(_amount);
         auction.bids[msg.sender] = auction.bids[msg.sender].add(_amount);
