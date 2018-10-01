@@ -849,7 +849,7 @@ contract GenesisProtocol is IntVoteInterface,UniversalScheme {
             vote: _vote,
             preBoosted:(proposal.state == ProposalState.PreBoosted)
         });
-        if (proposal.state != ProposalState.Boosted) {
+        if (proposal.state == ProposalState.PreBoosted) {
             proposal.preBoostedVotes[_vote] = rep.add(proposal.preBoostedVotes[_vote]);
             uint reputationDeposit = (params.votersReputationLossRatio * rep)/100;
             ControllerInterface(Avatar(proposal.avatar).owner()).burnReputation(reputationDeposit,_voter,proposal.avatar);
