@@ -5,10 +5,10 @@ import "../controller/Controller.sol";
 import "./ActorsFactory.sol";
 import "./ControllerFactory.sol";
 
+
 /**
  * @title DAO factory that creates new DAOs
  */
-
 contract DAOFactory {
 
     mapping(address => address) public locks;

@@ -31,6 +31,13 @@ contract Avatar is Ownable {
     }
 
     /**
+    * @dev enables an avatar to receive ethers
+    */
+    function() public payable {
+        emit ReceiveEther(msg.sender, msg.value);
+    }
+
+    /**
     * @dev the init function takes organization name, native token and reputation system
     and creates an avatar for a controller
     */
@@ -42,13 +49,6 @@ contract Avatar is Ownable {
         orgName = _orgName;
         nativeToken = _nativeToken;
         nativeReputation = _nativeReputation;
-    }
-
-    /**
-    * @dev enables an avatar to receive ethers
-    */
-    function() public payable {
-        emit ReceiveEther(msg.sender, msg.value);
     }
 
     /**

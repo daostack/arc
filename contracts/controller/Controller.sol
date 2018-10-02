@@ -65,6 +65,11 @@ contract Controller is ControllerInterface {
         avatar = Avatar(0x000000000000000000000000000000000000dead);
     }
 
+    // Do not allow mistaken calls:
+    function() external {
+        revert();
+    }
+
     function init(address creator, Avatar _avatar) external {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
@@ -73,11 +78,6 @@ contract Controller is ControllerInterface {
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
         schemes[creator] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x1F)});
-    }
-
-  // Do not allow mistaken calls:
-    function() external {
-        revert();
     }
 
   // Modifiers:

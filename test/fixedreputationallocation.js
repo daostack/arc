@@ -11,11 +11,7 @@ var FixedReputationAllocation = artifacts.require(
   "./FixedReputationAllocation.sol"
 );
 
-const setup = async function(
-  accounts,
-  _repAllocation = 300,
-  _initialize = true
-) {
+const setup = async function(accounts, _repAllocation = 300) {
   var testSetup = new helpers.TestSetup();
 
   var controller = await Controller.new({
