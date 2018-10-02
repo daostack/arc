@@ -1,24 +1,9 @@
 pragma solidity ^0.4.24;
 
 import "../universalSchemes/UniversalScheme.sol";
-import "../controller/UController.sol";
 import "../controller/Controller.sol";
 import "./ActorsFactory.sol";
-
-/**
- * @title ControllerCreator for creating a single controller.
- */
-
-contract ControllerCreator {
-
-    function create(Avatar _avatar) public returns(address) {
-        Controller controller = new Controller(_avatar);
-        controller.registerScheme(msg.sender,bytes32(0),bytes4(0x1F),address(_avatar));
-        controller.unregisterScheme(this,address(_avatar));
-        return address(controller);
-    }
-    
-}
+import "./ControllerFactory.sol";
 
 /**
  * @title DAO factory that creates new DAOs
@@ -31,11 +16,11 @@ contract DAOFactory {
     event NewOrg(address _avatar);
     event InitialSchemesSet(address _avatar);
 
-    ControllerCreator controllerCreator;
+    ControllerFactory controllerFactory;
     ActorsFactory actorsFactory;
 
-    constructor(ControllerCreator _controllerCreator, ActorsFactory _actorsFactory) public {
-        controllerCreator = _controllerCreator;
+    constructor(ControllerFactory _controllerFactory, ActorsFactory _actorsFactory) public {
+        controllerFactory = _controllerFactory;
         actorsFactory = _actorsFactory;
     }
 
@@ -88,8 +73,6 @@ contract DAOFactory {
     *  receive in the new organization
     * @param _foundersReputationAmount An array of amount of reputation that the
     *   founders receive in the new organization
-    * @param  _uController universal controller instance
-    *         if _uController address equal to zero the organization will use none universal controller.
     * @param  _cap token cap - 0 for no cap.
     * @return The address of the avatar of the controller
     */
@@ -100,7 +83,6 @@ contract DAOFactory {
         address[] _founders,
         uint[] _foundersTokenAmount,
         uint[] _foundersReputationAmount,
-        UController _uController,
         uint _cap
       )
       external
@@ -114,7 +96,6 @@ contract DAOFactory {
             _founders,
             _foundersTokenAmount,
             _foundersReputationAmount,
-            _uController,
             _cap);
     }
 
@@ -158,8 +139,6 @@ contract DAOFactory {
      *  receive in the new organization
      * @param _foundersReputationAmount An array of amount of reputation that the
      *   founders receive in the new organization
-     * @param  _uController universal controller instance
-     *         if _uController address equal to zero the organization will use none universal controller.
      * @param  _cap token cap - 0 for no cap.
      * @return The address of the avatar of the controller
      */
@@ -170,7 +149,6 @@ contract DAOFactory {
         address[] _founders,
         uint[] _foundersTokenAmount,
         uint[] _foundersReputationAmount,
-        UController _uController,
         uint _cap
     ) private returns(address)
     {
@@ -196,21 +174,18 @@ contract DAOFactory {
         }
 
         // Create Controller:
-        if (UController(0) == _uController) {
-            controller = ControllerInterface(controllerCreator.create(avatar));
-            avatar.transferOwnership(controller);
-        } else {
-            controller = _uController;
-            avatar.transferOwnership(controller);
-            _uController.newOrganization(avatar);
-        }
+        
+        controller = ControllerInterface(controllerFactory.createController(avatar));
+        avatar.transferOwnership(controller);
+        
+
         // Transfer ownership:
         nativeToken.transferOwnership(controller);
         nativeReputation.transferOwnership(controller);
 
         locks[address(avatar)] = msg.sender;
 
-        emit NewOrg (address(avatar));
-        return (address(avatar));
+        emit NewOrg(address(avatar));
+        return address(avatar);
     }
 }

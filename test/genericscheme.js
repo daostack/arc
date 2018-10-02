@@ -6,7 +6,8 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const Controller = artifacts.require("./Controller.sol");
+const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const StandardTokenMock = artifacts.require("./StandardTokenMock.sol");
 
 const ActionMock = artifacts.require("./ActionMock.sol");
@@ -70,7 +71,12 @@ const setup = async function(
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
   testSetup.genericScheme = await GenericScheme.new();
-  var controllerCreator = await ControllerCreator.new({
+
+  var controller = await Controller.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  var controllerFactory = await ControllerFactory.new(controller.address, {
     gas: constants.ARC_GAS_LIMIT
   });
 
@@ -84,7 +90,7 @@ const setup = async function(
   );
 
   testSetup.daoFactory = await DAOFactory.new(
-    controllerCreator.address,
+    controllerFactory.address,
     actorsFactory.address,
     {
       gas: constants.ARC_GAS_LIMIT

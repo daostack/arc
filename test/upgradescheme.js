@@ -9,7 +9,7 @@ const DAOToken = artifacts.require("./DAOToken.sol");
 const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const Reputation = artifacts.require("./Reputation.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 
 export class UpgradeSchemeParams {
   constructor() {}
@@ -28,6 +28,8 @@ const setupUpgradeSchemeParams = async function(upgradeScheme) {
   );
   return upgradeSchemeParams;
 };
+
+var controllerFactory;
 
 const setupNewController = async function(accounts, permission = "0x00000000") {
   var avatarLibrary = await Avatar.new({ gas: constants.ARC_GAS_LIMIT });
@@ -57,10 +59,12 @@ const setupNewController = async function(accounts, permission = "0x00000000") {
 
   var _controller;
   if (permission !== "0") {
-    _controller = await Controller.new(avatar.address, {
-      from: accounts[1],
-      gas: constants.ARC_GAS_LIMIT
-    });
+    _controller = await Controller.at(
+      (await controllerFactory.createController(avatar.address, {
+        from: accounts[1],
+        gas: constants.ARC_GAS_LIMIT
+      })).logs[0].args.newControllerAddress
+    );
     await _controller.registerScheme(
       accounts[0],
       helpers.NULL_HASH,
@@ -70,9 +74,11 @@ const setupNewController = async function(accounts, permission = "0x00000000") {
     );
     await _controller.unregisterSelf(avatar.address, { from: accounts[1] });
   } else {
-    _controller = await Controller.new(avatar.address, {
-      gas: constants.ARC_GAS_LIMIT
-    });
+    _controller = await Controller.at(
+      (await controllerFactory.createController(avatar.address, {
+        gas: constants.ARC_GAS_LIMIT
+      })).logs[0].args.newControllerAddress
+    );
   }
   return _controller;
 };
@@ -82,7 +88,12 @@ const setup = async function(accounts) {
   testSetup.fee = 10;
   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
   testSetup.upgradeScheme = await UpgradeScheme.new();
-  var controllerCreator = await ControllerCreator.new({
+
+  var controller = await Controller.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  controllerFactory = await ControllerFactory.new(controller.address, {
     gas: constants.ARC_GAS_LIMIT
   });
 
@@ -96,7 +107,7 @@ const setup = async function(accounts) {
   );
 
   testSetup.daoFactory = await DAOFactory.new(
-    controllerCreator.address,
+    controllerFactory.address,
     actorsFactory.address,
     {
       gas: constants.ARC_GAS_LIMIT

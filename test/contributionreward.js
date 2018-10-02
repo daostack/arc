@@ -6,7 +6,8 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const Controller = artifacts.require("./Controller.sol");
+const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const Redeemer = artifacts.require("./Redeemer.sol");
 
 export class ContributionRewardParams {
@@ -151,7 +152,10 @@ const setup = async function(
   testSetup.fee = 10;
   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
   testSetup.contributionReward = await ContributionReward.new();
-  var controllerCreator = await ControllerCreator.new({
+  var controller = await Controller.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+  var controllerFactory = await ControllerFactory.new(controller.address, {
     gas: constants.ARC_GAS_LIMIT
   });
   var avatarLibrary = await Avatar.new({ gas: constants.ARC_GAS_LIMIT });
@@ -164,7 +168,7 @@ const setup = async function(
   );
 
   testSetup.daoFactory = await DAOFactory.new(
-    controllerCreator.address,
+    controllerFactory.address,
     actorsFactory.address,
     {
       gas: constants.ARC_GAS_LIMIT

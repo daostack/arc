@@ -61,12 +61,18 @@ contract Controller is ControllerInterface {
     event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when);
     event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre);
 
-    constructor( Avatar _avatar) public
-    {
+    constructor() public {
+        avatar = Avatar(0x000000000000000000000000000000000000dead);
+    }
+
+    function init(address creator, Avatar _avatar) external {
+        require(avatar == Avatar(0), "can be called only one time");
+        require(_avatar != Avatar(0), "avatar cannot be zero");
+
         avatar = _avatar;
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
-        schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x1F)});
+        schemes[creator] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x1F)});
     }
 
   // Do not allow mistaken calls:

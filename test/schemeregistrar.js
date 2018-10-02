@@ -8,7 +8,7 @@ const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const UniversalScheme = artifacts.require("./UniversalScheme.sol");
 const Controller = artifacts.require("./Controller.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 
 export class SchemeRegistrarParams {
   constructor() {}
@@ -35,7 +35,12 @@ const setup = async function(accounts) {
   testSetup.fee = 10;
   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
   testSetup.schemeRegistrar = await SchemeRegistrar.new();
-  var controllerCreator = await ControllerCreator.new({
+
+  var controller = await Controller.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  var controllerFactory = await ControllerFactory.new(controller.address, {
     gas: constants.ARC_GAS_LIMIT
   });
 
@@ -49,7 +54,7 @@ const setup = async function(accounts) {
   );
 
   testSetup.daoFactory = await DAOFactory.new(
-    controllerCreator.address,
+    controllerFactory.address,
     actorsFactory.address,
     {
       gas: constants.ARC_GAS_LIMIT

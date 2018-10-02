@@ -6,7 +6,8 @@ const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const SimpleICO = artifacts.require("./SimpleICO.sol");
 const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const Controller = artifacts.require("./Controller.sol");
+const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 
 const setupSimpleICOParams = async function(
   accounts,
@@ -44,7 +45,11 @@ const setupOrganization = async function(
   founderToken,
   founderReputation
 ) {
-  var controllerCreator = await ControllerCreator.new({
+  var controller = await Controller.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  var controllerFactory = await ControllerFactory.new(controller.address, {
     gas: constants.ARC_GAS_LIMIT
   });
 
@@ -58,7 +63,7 @@ const setupOrganization = async function(
   );
 
   daoFactory = await DAOFactory.new(
-    controllerCreator.address,
+    controllerFactory.address,
     actorsFactory.address,
     {
       gas: constants.ARC_GAS_LIMIT

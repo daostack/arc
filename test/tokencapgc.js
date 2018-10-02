@@ -5,6 +5,7 @@ const Controller = artifacts.require("./Controller.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const ActorsFactory = artifacts.require("./ActorsFactory.sol");
+const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 var constants = require("../test/constants");
 
 let reputation, avatar, token, controller, actorsFactory;
@@ -27,19 +28,31 @@ const setup = async function(permission = "0") {
     )).logs[0].args.newAvatarAddress
   );
 
+  var controller = await Controller.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  var controllerFactory = await ControllerFactory.new(controller.address, {
+    gas: constants.ARC_GAS_LIMIT
+  });
+
   if (permission !== "0") {
-    _controller = await Controller.new(avatar.address, {
-      from: accounts[1],
-      gas: constants.ARC_GAS_LIMIT
-    });
+    _controller = await Controller.at(
+      (await controllerFactory.createController(avatar.address, {
+        from: accounts[1],
+        gas: constants.ARC_GAS_LIMIT
+      })).logs[0].args.newControllerAddress
+    );
     await _controller.registerScheme(accounts[0], 0, permission, 0, {
       from: accounts[1]
     });
     await _controller.unregisterSelf(0, { from: accounts[1] });
   } else {
-    _controller = await Controller.new(avatar.address, {
-      gas: constants.ARC_GAS_LIMIT
-    });
+    _controller = await Controller.at(
+      (await controllerFactory.createController(avatar.address, {
+        gas: constants.ARC_GAS_LIMIT
+      })).logs[0].args.newControllerAddress
+    );
   }
   controller = _controller;
   return _controller;

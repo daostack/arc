@@ -5,7 +5,8 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const Controller = artifacts.require("./Controller.sol");
+const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const ARCGenesisProtocolCallbacksMock = artifacts.require(
   "./ARCGenesisProtocolCallbacksMock.sol"
 );
@@ -14,7 +15,12 @@ const proposalId =
   "0x1234000000000000000000000000000000000000000000000000000000000000";
 const setup = async function(accounts) {
   var testSetup = new helpers.TestSetup();
-  var controllerCreator = await ControllerCreator.new({
+
+  var controller = await Controller.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  var controllerFactory = await ControllerFactory.new(controller.address, {
     gas: constants.ARC_GAS_LIMIT
   });
 
@@ -28,7 +34,7 @@ const setup = async function(accounts) {
   );
 
   testSetup.daoFactory = await DAOFactory.new(
-    controllerCreator.address,
+    controllerFactory.address,
     actorsFactory.address,
     {
       gas: constants.ARC_GAS_LIMIT

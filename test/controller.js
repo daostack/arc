@@ -7,6 +7,7 @@ const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const GlobalConstraintMock = artifacts.require(
   "./test/GlobalConstraintMock.sol"
 );
+const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const ActionMock = artifacts.require("./test/ActionMock.sol");
 const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
 var constants = require("../test/constants");
@@ -16,13 +17,9 @@ let reputation, avatar, token, controller;
 var amountToMint = 10;
 
 var actorsFactory;
-const setup = async function(
-  accounts,
-  permission = "0",
-  registerScheme = accounts[0]
-) {
-  var _controller;
+var controllerFactory;
 
+const setupFactories = async function() {
   var avatarLibrary = await Avatar.new({ gas: constants.ARC_GAS_LIMIT });
   var daoTokenLibrary = await DAOToken.new({ gas: constants.ARC_GAS_LIMIT });
 
@@ -31,6 +28,22 @@ const setup = async function(
     daoTokenLibrary.address,
     { gas: constants.ARC_GAS_LIMIT }
   );
+
+  var controller = await Controller.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  controllerFactory = await ControllerFactory.new(controller.address, {
+    gas: constants.ARC_GAS_LIMIT
+  });
+};
+
+const setup = async function(
+  accounts,
+  permission = "0",
+  registerScheme = accounts[0]
+) {
+  var _controller;
 
   // set up a reputation system
   reputation = await Reputation.new();
@@ -49,10 +62,12 @@ const setup = async function(
   );
 
   if (permission !== "0") {
-    _controller = await Controller.new(avatar.address, {
-      from: accounts[1],
-      gas: constants.ARC_GAS_LIMIT
-    });
+    _controller = await Controller.at(
+      (await controllerFactory.createController(avatar.address, {
+        from: accounts[1],
+        gas: constants.ARC_GAS_LIMIT
+      })).logs[0].args.newControllerAddress
+    );
     await _controller.registerScheme(
       registerScheme,
       "0x0000000000000000000000000000000000000000",
@@ -62,9 +77,11 @@ const setup = async function(
     );
     await _controller.unregisterSelf(avatar.address, { from: accounts[1] });
   } else {
-    _controller = await Controller.new(avatar.address, {
-      gas: constants.ARC_GAS_LIMIT
-    });
+    _controller = await Controller.at(
+      (await controllerFactory.createController(avatar.address, {
+        gas: constants.ARC_GAS_LIMIT
+      })).logs[0].args.newControllerAddress
+    );
   }
   controller = _controller;
   return _controller;
@@ -101,6 +118,9 @@ const constraint = async function(method, pre = false, post = false) {
 
 contract("Controller", accounts => {
   it("getGlobalConstraintParameters", async () => {
+    // Should be called once at start. Sets up the factories.
+    await setupFactories();
+
     controller = await setup(accounts);
     // separate cases for pre and post
     var globalConstraints = await constraint("gcParams1", true);
@@ -795,7 +815,7 @@ contract("Controller", accounts => {
   });
 
   it("globalConstraints mintReputation add & remove", async () => {
-    await setup(accounts);
+    controller = await setup(accounts);
     var globalConstraints = await constraint("mintReputation");
     await reputation.transferOwnership(controller.address);
     try {
@@ -832,6 +852,7 @@ contract("Controller", accounts => {
     let rep = await reputation.balanceOf(accounts[0]);
     assert.equal(rep, amountToMint);
   });
+
   it("globalConstraints register schemes add & remove", async () => {
     controller = await setup(accounts);
     var globalConstraints = await constraint("registerScheme");

@@ -2,7 +2,7 @@
 var constants = require("../test/constants");
 var Avatar = artifacts.require("./Avatar.sol");
 var DAOToken = artifacts.require("./DAOToken.sol");
-var UController = artifacts.require("./UController.sol");
+var Controller = artifacts.require("./Controller.sol");
 var ActorsFactory = artifacts.require("./ActorsFactory.sol");
 var DAOFactory = artifacts.require("./DAOFactory.sol");
 var GlobalConstraintRegistrar = artifacts.require(
@@ -13,7 +13,7 @@ var SimpleICO = artifacts.require("./SimpleICO.sol");
 var AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 var ContributionReward = artifacts.require("./ContributionReward.sol");
 var UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
-var ControllerCreator = artifacts.require("./ControllerCreator.sol");
+var ControllerFactory = artifacts.require("./ControllerFactory.sol");
 
 // TEST_ORGANIZATION ORG parameters:
 const orgName = "TEST_ORGANIZATION";
@@ -36,9 +36,13 @@ var accounts;
 //schemeRegistrar, upgradeScheme,globalConstraintRegistrar,simpleICO,contributionReward.
 module.exports = async function(deployer) {
   deployer
-    .deploy(ControllerCreator, { gas: constants.ARC_GAS_LIMIT })
+    .deploy(Controller, { gas: constants.ARC_GAS_LIMIT })
     .then(async function() {
-      var controllerCreator = await ControllerCreator.deployed();
+      var controller = await Controller.deployed();
+
+      await deployer.deploy(ControllerFactory, controller.address);
+
+      var controllerFactory = await ControllerFactory.deployed();
 
       await deployer.deploy(Avatar);
       await deployer.deploy(DAOToken);
@@ -56,7 +60,7 @@ module.exports = async function(deployer) {
 
       await deployer.deploy(
         DAOFactory,
-        controllerCreator.address,
+        controllerFactory.address,
         actorsFactory.address
       );
 
@@ -76,7 +80,6 @@ module.exports = async function(deployer) {
         founders,
         initTokenInWei,
         initRepInWei,
-        0,
         cap,
         { gas: constants.ARC_GAS_LIMIT }
       );
@@ -184,27 +187,6 @@ module.exports = async function(deployer) {
       ];
 
       // set DAOstack initial schmes:
-      await daoFactoryInst.setSchemes(
-        AvatarInst.address,
-        schemesArray,
-        paramsArray,
-        permissionArray
-      );
-      //now deploy with universal controller
-      await deployer.deploy(UController, { gas: constants.ARC_GAS_LIMIT });
-      var uController = await UController.deployed();
-      returnedParams = await daoFactoryInst.forgeOrg(
-        orgName,
-        tokenName,
-        tokenSymbol,
-        founders,
-        initTokenInWei,
-        initRepInWei,
-        uController.address,
-        cap,
-        { gas: constants.ARC_GAS_LIMIT }
-      );
-      AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       await daoFactoryInst.setSchemes(
         AvatarInst.address,
         schemesArray,
