@@ -15,7 +15,7 @@ contract Locking4Reputation {
 
     event Redeem(bytes32 indexed _lockingId, address indexed _beneficiary, uint _amount);
     event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint _amount);
-    event Lock(bytes32 indexed _lockingId, uint _amount, uint _period, address _locker);
+    event Lock(address indexed _locker, bytes32 indexed _lockingId, uint _amount, uint _period);
 
     struct Locker {
         uint amount;
@@ -109,7 +109,7 @@ contract Locking4Reputation {
         scores[_locker] = scores[_locker].add(_period.mul(_amount));
         totalScore = totalScore.add(scores[_locker]);
 
-        emit Lock(lockingId, _amount, _period, _locker);
+        emit Lock(_locker, lockingId, _amount, _period);
     }
 
     /**
