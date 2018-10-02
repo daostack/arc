@@ -27,14 +27,20 @@ contract FixedReputationAllocation is Ownable {
     uint public numberOfBeneficiaries;
     uint public beneficiaryReward;
 
+    constructor () public {
+        avatar = Avatar(0x000000000000000000000000000000000000dead);
+    }
+
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      */
-    function initialize(Avatar _avatar, uint _reputationReward) external onlyOwner {
+    function init(address _owner, Avatar _avatar, uint _reputationReward) external {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
+
+        owner = _owner;
         reputationReward = _reputationReward;
         avatar = _avatar;
     }

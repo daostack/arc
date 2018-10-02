@@ -5,6 +5,7 @@ const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const constants = require("./constants");
+const SchemesFactory = artifacts.require("./SchemesFactory.sol");
 var FixedReputationAllocation = artifacts.require(
   "./FixedReputationAllocation.sol"
 );
@@ -43,13 +44,21 @@ const setup = async function(
     0
   );
 
-  testSetup.fixedReputationAllocation = await FixedReputationAllocation.new();
-  if (_initialize === true) {
-    await testSetup.fixedReputationAllocation.initialize(
+  var fixedReputationAllocationLibrary = await FixedReputationAllocation.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  var schemesFactory = await SchemesFactory.new(
+    fixedReputationAllocationLibrary.address,
+    { gas: constants.ARC_GAS_LIMIT }
+  );
+
+  testSetup.fixedReputationAllocation = await FixedReputationAllocation.at(
+    (await schemesFactory.createFixedReputationAllocation(
       testSetup.org.avatar.address,
       _repAllocation
-    );
-  }
+    )).logs[0].args.newSchemeAddress
+  );
 
   var permissions = "0x00000000";
   await testSetup.daoFactory.setSchemes(
@@ -132,26 +141,6 @@ contract("FixedReputationAllocation", accounts => {
     }
   });
 
-  it("cannot redeem if not initialize", async () => {
-    let testSetup = await setup(accounts, 300, false);
-    await testSetup.fixedReputationAllocation.addBeneficiaries(accounts);
-    assert.equal(
-      await testSetup.fixedReputationAllocation.numberOfBeneficiaries(),
-      accounts.length
-    );
-    assert.equal(
-      await testSetup.fixedReputationAllocation.beneficiaryReward(),
-      0
-    );
-    await testSetup.fixedReputationAllocation.enable();
-    try {
-      await testSetup.fixedReputationAllocation.redeem(accounts[0]);
-      assert(false, "cannot redeem if not initialize");
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
-  });
-
   it("redeem without enable should revert", async () => {
     let testSetup = await setup(accounts);
     await testSetup.fixedReputationAllocation.addBeneficiaries(accounts);
@@ -189,7 +178,8 @@ contract("FixedReputationAllocation", accounts => {
   it("cannot initialize twice", async () => {
     let testSetup = await setup(accounts);
     try {
-      await testSetup.fixedReputationAllocation.initialize(
+      await testSetup.fixedReputationAllocation.init(
+        web3.eth.accounts[0],
         testSetup.org.avatar.address,
         100
       );
@@ -197,20 +187,5 @@ contract("FixedReputationAllocation", accounts => {
     } catch (error) {
       helpers.assertVMException(error);
     }
-  });
-
-  it("initialize is onlyOwner", async () => {
-    var fixedReputationAllocation = await FixedReputationAllocation.new();
-    try {
-      await fixedReputationAllocation.initialize(accounts[0], 100, {
-        from: accounts[1]
-      });
-      assert(false, "initialize is onlyOwner");
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
-    await fixedReputationAllocation.initialize(accounts[0], 100, {
-      from: accounts[0]
-    });
   });
 });

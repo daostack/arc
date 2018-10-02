@@ -34,7 +34,7 @@ contract Avatar is Ownable {
     * @dev the init function takes organization name, native token and reputation system
     and creates an avatar for a controller
     */
-    function init(address _owner, string _orgName, DAOToken _nativeToken, Reputation _nativeReputation) public {
+    function init(address _owner, string _orgName, DAOToken _nativeToken, Reputation _nativeReputation) external {
         require(bytes(orgName).length == 0, "Contract is already initialized");
         require(bytes(_orgName).length > 0, "Avatar organization name must not be empty");
 

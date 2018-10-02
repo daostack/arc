@@ -3,33 +3,28 @@ pragma solidity ^0.4.24;
 import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-import "../schemes/FixReputationAllocation.sol";
+import "../schemes/FixedReputationAllocation.sol";
+import "../controller/Avatar.sol";
 
 
-contract ActorsFactory is Ownable, CloneFactory {
+contract SchemesFactory is Ownable, CloneFactory {
 
-    address public avatarLibraryAddress;
-    address public tokenLibraryAddress;
+    address public fixedReputationAllocationLibraryAddress;
 
-    event AvatarCreated(address newAvatarAddress);
-    event DAOTokenCreated(address newTokenAddress);
+    event FixedReputationAllocationCreated(address newSchemeAddress);
 
-    constructor (address _avatarLibraryAddress, address _tokenLibraryAddress) public {
-        avatarLibraryAddress = _avatarLibraryAddress;
-        tokenLibraryAddress = _tokenLibraryAddress;
+    constructor (
+        address _fixedReputationAllocationLibraryAddress
+    ) public {
+        fixedReputationAllocationLibraryAddress = _fixedReputationAllocationLibraryAddress;
     }
 
-    function createAvatar(string _orgName, DAOToken _nativeToken, Reputation _nativeReputation) public returns (address) {
-        address clone = createClone(avatarLibraryAddress);
-        Avatar(clone).init(msg.sender, _orgName, _nativeToken, _nativeReputation);
-        emit AvatarCreated(clone);
-        return clone;
-    }
+    function createFixedReputationAllocation(Avatar _avatar, uint _reputationReward) public returns (address) {
+        address clone = createClone(fixedReputationAllocationLibraryAddress);
+        FixedReputationAllocation(clone).init(msg.sender, _avatar, _reputationReward);
+        
+        emit FixedReputationAllocationCreated(clone);
 
-    function createDAOToken(string _name, string _symbol, uint _cap) public returns (address) {
-        address clone = createClone(tokenLibraryAddress);
-        DAOToken(clone).init(msg.sender, _name, _symbol, _cap);
-        emit DAOTokenCreated(clone);
         return clone;
     }
 }

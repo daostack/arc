@@ -29,7 +29,7 @@ contract DAOToken is ERC827Token, MintableToken, BurnableToken {
     * @param _symbol - token symbol
     * @param _cap - token cap - 0 value means no cap
     */
-    function init(address _owner, string _name, string _symbol, uint _cap) public {
+    function init(address _owner, string _name, string _symbol, uint _cap) external {
         require(bytes(name).length == 0, "Contract is already initialized");
         require(bytes(_name).length > 0, "Token name must not be empty");
 
