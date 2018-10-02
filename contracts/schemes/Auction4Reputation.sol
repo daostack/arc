@@ -15,7 +15,7 @@ contract Auction4Reputation is Ownable {
     using RealMath for int216;
     using RealMath for int256;
 
-    event Bid(uint indexed _auctionId, uint _amount, address _bidder);
+    event Bid(address indexed _bidder, uint indexed _auctionId, uint _amount);
     event Redeem(uint indexed _auctionId, address indexed _beneficiary, uint _amount);
 
     struct Auction {
@@ -115,7 +115,7 @@ contract Auction4Reputation is Ownable {
         Auction storage auction = auctions[auctionId];
         auction.totalBid = auction.totalBid.add(_amount);
         auction.bids[msg.sender] = auction.bids[msg.sender].add(_amount);
-        emit Bid(auctionId, _amount, msg.sender);
+        emit Bid(msg.sender, auctionId, _amount);
     }
 
     /**
