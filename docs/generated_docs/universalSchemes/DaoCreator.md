@@ -1,5 +1,5 @@
-# DaoCreator
-[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/DaoCreator.sol)
+# DAOFactory
+[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/DAOFactory.sol)
 > Genesis Scheme that creates organizations
 
 

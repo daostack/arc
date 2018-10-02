@@ -473,7 +473,7 @@ Returns:
 --- 
 ### newOrganization(address)
 >
-> newOrganization set up a new organization with default daoCreator.
+> newOrganization set up a new organization with default daoFactory.
 
 
 **Execution cost**: No bound available

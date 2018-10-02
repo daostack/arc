@@ -10,7 +10,7 @@ import "../token/ERC827/ERC827Token.sol";
  * @dev ERC20 compatible token. It is a mintable, destructible, burnable token.
  */
 
-contract DAOToken is ERC827Token,MintableToken,BurnableToken {
+contract DAOToken is ERC827Token, MintableToken, BurnableToken {
 
     string public name;
     string public symbol;
@@ -18,13 +18,22 @@ contract DAOToken is ERC827Token,MintableToken,BurnableToken {
     uint8 public constant decimals = 18;
     uint public cap;
 
+    
+    constructor() public {
+        name = "DAOToken";
+    }
+
     /**
-    * @dev Constructor
+    * @dev Init function - initializes the instance of the contract
     * @param _name - token name
     * @param _symbol - token symbol
     * @param _cap - token cap - 0 value means no cap
     */
-    constructor(string _name, string _symbol,uint _cap) public {
+    function init(address _owner, string _name, string _symbol, uint _cap) public {
+        require(bytes(name).length == 0, "Contract is already initialized");
+        require(bytes(_name).length > 0, "Token name must not be empty");
+
+        owner = _owner;
         name = _name;
         symbol = _symbol;
         cap = _cap;

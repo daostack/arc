@@ -59,7 +59,7 @@ pages:
     - TokenCapGC: 'generated_docs/globalConstraints/TokenCapGC.md'
   - 'Universal Schemes':
     - ContributionReward: 'generated_docs/universalSchemes/ContributionReward.md'
-    - DaoCreator: 'generated_docs/universalSchemes/DaoCreator.md'
+    - DAOFactory: 'generated_docs/universalSchemes/DAOFactory.md'
     - ExecutableInterface: 'generated_docs/universalSchemes/ExecutableInterface.md'
     - GlobalConstraintRegistrar: 'generated_docs/universalSchemes/GlobalConstraintRegistrar.md'
     - OrganizationRegister: 'generated_docs/universalSchemes/OrganizationRegister.md'

@@ -79,7 +79,7 @@ contract UController is ControllerInterface {
 
 
    /**
-    * @dev newOrganization set up a new organization with default daoCreator.
+    * @dev newOrganization set up a new organization with default daoFactory.
     * @param _avatar the organization avatar
     */
     function newOrganization(
