@@ -33,6 +33,7 @@ contract FixedReputationAllocation is Ownable {
 
     /**
      * @dev init
+     * @param _owner the owner of the scheme
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      */

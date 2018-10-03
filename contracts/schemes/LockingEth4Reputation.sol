@@ -10,8 +10,13 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract LockingEth4Reputation is Locking4Reputation, Ownable {
 
+    constructor () public {
+        avatar = Avatar(0x000000000000000000000000000000000000dead);
+    }
+
     /**
-     * @dev initialize
+     * @dev init
+     * @param _owner the owner of the scheme
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for eth locking
@@ -21,14 +26,14 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
      *        locking is disable after this time.
      * @param _maxLockingPeriod maximum locking period allowed.
      */
-    function initialize(
+    function init(
+        address _owner,
         Avatar _avatar,
         uint _reputationReward,
         uint _lockingStartTime,
         uint _lockingEndTime,
         uint _maxLockingPeriod)
     external
-    onlyOwner
     {
         super._initialize(
         _avatar,
@@ -36,6 +41,8 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
         _lockingStartTime,
         _lockingEndTime,
         _maxLockingPeriod);
+
+        owner = _owner;
     }
 
     /**

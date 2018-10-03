@@ -5,6 +5,7 @@ const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
+const SchemesFactory = artifacts.require("./SchemesFactory.sol");
 const constants = require("./constants");
 
 var LockingEth4Reputation = artifacts.require("./LockingEth4Reputation.sol");
@@ -14,10 +15,22 @@ const setup = async function(
   _repAllocation = 100,
   _lockingStartTime = 0,
   _lockingEndTime = 3000,
-  _maxLockingPeriod = 6000,
-  _initialize = true
+  _maxLockingPeriod = 6000
 ) {
   var testSetup = new helpers.TestSetup();
+
+  var lockingEth4ReputationLibrary = await LockingEth4Reputation.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  var schemesFactory = await SchemesFactory.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  await schemesFactory.setLockingEth4ReputationLibraryAddress(
+    lockingEth4ReputationLibrary.address,
+    { gas: constants.ARC_GAS_LIMIT }
+  );
 
   var controller = await Controller.new({
     gas: constants.ARC_GAS_LIMIT
@@ -54,16 +67,16 @@ const setup = async function(
     (await web3.eth.getBlock("latest")).timestamp + _lockingEndTime;
   testSetup.lockingStartTime =
     (await web3.eth.getBlock("latest")).timestamp + _lockingStartTime;
-  testSetup.lockingEth4Reputation = await LockingEth4Reputation.new();
-  if (_initialize === true) {
-    await testSetup.lockingEth4Reputation.initialize(
+
+  testSetup.lockingEth4Reputation = await LockingEth4Reputation.at(
+    (await schemesFactory.createLockingEth4Reputation(
       testSetup.org.avatar.address,
       _repAllocation,
       testSetup.lockingStartTime,
       testSetup.lockingEndTime,
       _maxLockingPeriod
-    );
-  }
+    )).logs[0].args._newSchemeAddress
+  );
 
   var permissions = "0x00000000";
   await testSetup.daoFactory.setSchemes(
@@ -101,18 +114,6 @@ contract("LockingEth4Reputation", accounts => {
     assert.equal(tx.logs[0].args._amount, web3.utils.toWei("1", "ether"));
     assert.equal(tx.logs[0].args._period, 100);
     assert.equal(tx.logs[0].args._locker, accounts[0]);
-  });
-
-  it("cannot lock without initialize", async () => {
-    let testSetup = await setup(accounts, 100, 0, 3000, 6000, false);
-    try {
-      await testSetup.lockingEth4Reputation.lock(100, {
-        value: web3.utils.toWei("1", "ether")
-      });
-      assert(false, "cannot lock without initialize");
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
   });
 
   it("lock with value == 0 should revert", async () => {
@@ -296,7 +297,8 @@ contract("LockingEth4Reputation", accounts => {
   it("cannot initialize twice", async () => {
     let testSetup = await setup(accounts);
     try {
-      await testSetup.lockingEth4Reputation.initialize(
+      await testSetup.lockingEth4Reputation.init(
+        accounts[0],
         testSetup.org.avatar.address,
         100,
         testSetup.lockingStartTime,
@@ -307,20 +309,5 @@ contract("LockingEth4Reputation", accounts => {
     } catch (error) {
       helpers.assertVMException(error);
     }
-  });
-
-  it("initialize is onlyOwner", async () => {
-    var lockingEth4Reputation = await LockingEth4Reputation.new();
-    try {
-      await lockingEth4Reputation.initialize(accounts[1], 100, 0, 100, 6000, {
-        from: accounts[1]
-      });
-      assert(false, "initialize is onlyOwner");
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
-    await lockingEth4Reputation.initialize(accounts[1], 100, 0, 100, 6000, {
-      from: accounts[0]
-    });
   });
 });
