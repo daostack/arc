@@ -62,7 +62,8 @@ contract Auction4Reputation is Ownable {
         uint _numberOfAuctions,
         StandardToken _token,
         address _wallet
-    ) external {
+    ) external 
+    {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         // number of auctions cannot be zero

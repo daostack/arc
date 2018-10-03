@@ -39,7 +39,8 @@ contract SchemesFactory is Ownable, CloneFactory {
         uint _numberOfAuctions,
         StandardToken _token,
         address _wallet
-    ) public returns (address) {
+    ) public returns (address) 
+    {
         address clone = createClone(auction4ReputationLibraryAddress);
         Auction4Reputation(clone).init(
             msg.sender,
