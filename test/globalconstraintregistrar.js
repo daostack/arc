@@ -23,13 +23,13 @@ const setupGlobalConstraintRegistrarParams = async function(
                                             ) {
   var globalConstraintRegistrarParams = new GlobalConstraintRegistrarParams();
   if (genesisProtocol === true) {
-    globalConstraintRegistrarParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token);
+    globalConstraintRegistrarParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,0,0);
     await globalConstraintRegistrar.setParameters(globalConstraintRegistrarParams.votingMachine.params,
                                                   globalConstraintRegistrarParams.votingMachine.genesisProtocol.address);
     globalConstraintRegistrarParams.paramsHash = await globalConstraintRegistrar.getParametersHash(globalConstraintRegistrarParams.votingMachine.params,
                                                                                                    globalConstraintRegistrarParams.votingMachine.genesisProtocol.address);
     } else {
-  globalConstraintRegistrarParams.votingMachine = await helpers.setupAbsoluteVote();
+  globalConstraintRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(true,50,globalConstraintRegistrar.address);
   await globalConstraintRegistrar.setParameters(globalConstraintRegistrarParams.votingMachine.params,
                                                 globalConstraintRegistrarParams.votingMachine.absoluteVote.address);
   globalConstraintRegistrarParams.paramsHash = await globalConstraintRegistrar.getParametersHash(globalConstraintRegistrarParams.votingMachine.params,

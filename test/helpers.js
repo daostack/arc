@@ -121,7 +121,7 @@ export function assertJump(error) {
   assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned' + error.message);
 }
 
-export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
+export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50 ) {
   var votingMachine = new VotingMachine();
   votingMachine.absoluteVote = await AbsoluteVote.new();
   // register some parameters
@@ -237,6 +237,18 @@ export const checkVotesStatus = async function(proposalId, _votesStatus,votingMa
       assert.equal(voteStatus, _votesStatus[i]);
   }
 };
+
+export async function getProposalId(tx,contract,eventName) {
+  var proposalId;
+  await contract.getPastEvents(eventName, {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+      })
+        .then(function(events){
+            proposalId = events[0].args._proposalId;
+        });
+  return proposalId;
+}
 
 // export const increaseTime  = async function (addSeconds) {
 //     web3.currentProvider.sendAsync({
