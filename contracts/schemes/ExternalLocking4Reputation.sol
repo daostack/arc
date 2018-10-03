@@ -16,8 +16,12 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
     // locker -> bool
     mapping(address => bool) public externalLockers;
 
+    constructor () public {
+        avatar = Avatar(0x000000000000000000000000000000000000dead);
+    }
+    
     /**
-     * @dev initialize
+     * @dev init
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
@@ -29,7 +33,8 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
      * @param _getBalanceFuncSignature get balance function signature
      *        e.g "lockedTokenBalances(address)"
      */
-    function initialize(
+    function init(
+        address _owner,
         Avatar _avatar,
         uint _reputationReward,
         uint _lockingStartTime,
@@ -37,17 +42,17 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         address _externalLockingContract,
         string _getBalanceFuncSignature)
     external
-    onlyOwner
     {
-        require(_lockingEndTime > _lockingStartTime, "_lockingEndTime should be greater than _lockingStartTime");
-        externalLockingContract = _externalLockingContract;
-        getBalanceFuncSignature = _getBalanceFuncSignature;
         super._initialize(
         _avatar,
         _reputationReward,
         _lockingStartTime,
         _lockingEndTime,
         1);
+        
+        owner = _owner;
+        externalLockingContract = _externalLockingContract;
+        getBalanceFuncSignature = _getBalanceFuncSignature;
     }
 
     /**

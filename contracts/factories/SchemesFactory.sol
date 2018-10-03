@@ -4,25 +4,35 @@ import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 import "../schemes/Auction4Reputation.sol";
+import "../schemes/ExternalLocking4Reputation.sol";
 import "../schemes/FixedReputationAllocation.sol";
 import "../controller/Avatar.sol";
 
 
 contract SchemesFactory is Ownable, CloneFactory {
 
-    address public fixedReputationAllocationLibraryAddress;
     address public auction4ReputationLibraryAddress;
+    address public externalLocking4ReputationLibraryAddress;
+    address public fixedReputationAllocationLibraryAddress;
 
     event Auction4ReputationLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
+    event ExternalLocking4ReputationLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event FixedReputationAllocationLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
 
     event Auction4ReputationCreated(address _newSchemeAddress);
+    event ExternalLocking4ReputationCreated(address _newSchemeAddress);
     event FixedReputationAllocationCreated(address _newSchemeAddress);
 
     function setAuction4ReputationLibraryAddress (address _auction4ReputationLibraryAddress) external onlyOwner {
         emit Auction4ReputationLibraryChanged(_auction4ReputationLibraryAddress, auction4ReputationLibraryAddress);
 
         auction4ReputationLibraryAddress = _auction4ReputationLibraryAddress;
+    }
+
+    function setExternalLocking4ReputationLibraryAddress (address _externalLocking4ReputationLibraryAddress) external onlyOwner {
+        emit Auction4ReputationLibraryChanged(_externalLocking4ReputationLibraryAddress, externalLocking4ReputationLibraryAddress);
+
+        externalLocking4ReputationLibraryAddress = _externalLocking4ReputationLibraryAddress;
     }
 
     function setFixedReputationAllocationLibraryAddress(address _fixedReputationAllocationLibraryAddress) external onlyOwner {
@@ -54,6 +64,31 @@ contract SchemesFactory is Ownable, CloneFactory {
         );
         
         emit Auction4ReputationCreated(clone);
+
+        return clone;
+    }
+
+    function createExternalLocking4Reputation(
+        Avatar _avatar,
+        uint _reputationReward,
+        uint _lockingStartTime,
+        uint _lockingEndTime,
+        address _externalLockingContract,
+        string _getBalanceFuncSignature
+    ) public returns (address) 
+    {
+        address clone = createClone(externalLocking4ReputationLibraryAddress);
+        ExternalLocking4Reputation(clone).init(
+            msg.sender,
+            _avatar,
+            _reputationReward,
+            _lockingStartTime,
+            _lockingEndTime,
+            _externalLockingContract,
+            _getBalanceFuncSignature
+        );
+        
+        emit ExternalLocking4ReputationCreated(clone);
 
         return clone;
     }
