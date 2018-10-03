@@ -50,7 +50,11 @@ const setup = async function(accounts, _repAllocation = 300) {
     gas: constants.ARC_GAS_LIMIT
   });
 
-  var schemesFactory = await SchemesFactory.new(
+  var schemesFactory = await SchemesFactory.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  await schemesFactory.setFixedReputationAllocationLibraryAddress(
     fixedReputationAllocationLibrary.address,
     { gas: constants.ARC_GAS_LIMIT }
   );
@@ -59,7 +63,7 @@ const setup = async function(accounts, _repAllocation = 300) {
     (await schemesFactory.createFixedReputationAllocation(
       testSetup.org.avatar.address,
       _repAllocation
-    )).logs[0].args.newSchemeAddress
+    )).logs[0].args._newSchemeAddress
   );
 
   var permissions = "0x00000000";

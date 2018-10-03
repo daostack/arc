@@ -37,8 +37,12 @@ contract Auction4Reputation is Ownable {
     StandardToken public token;
     address public wallet;
 
+    constructor () public {
+        avatar = Avatar(0x000000000000000000000000000000000000dead);
+    }
+
     /**
-     * @dev initialize
+     * @dev init
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
@@ -49,23 +53,24 @@ contract Auction4Reputation is Ownable {
      * @param _numberOfAuctions number of auctions.
      * @param _token the bidding token
      */
-    function initialize(
+    function init(
+        address _owner,
         Avatar _avatar,
         uint _reputationReward,
         uint _auctionsStartTime,
         uint _auctionsEndTime,
         uint _numberOfAuctions,
         StandardToken _token,
-        address _wallet)
-       external
-       onlyOwner
-       {
+        address _wallet
+    ) external {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         // number of auctions cannot be zero
         // auctionsEndTime should be greater than auctionsStartTime
         auctionPeriod = (_auctionsEndTime.sub(_auctionsStartTime)).div(_numberOfAuctions);
         require(auctionPeriod > 0, "auctionPeriod should be > 0");
+        
+        owner = _owner;
         token = _token;
         avatar = _avatar;
         auctionsStartTime = _auctionsStartTime;

@@ -32,7 +32,7 @@ contract FixedReputationAllocation is Ownable {
     }
 
     /**
-     * @dev initialize
+     * @dev init
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      */

@@ -8,16 +8,32 @@ const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const constants = require("./constants");
 const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
 var Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
+const SchemesFactory = artifacts.require("./SchemesFactory.sol");
+
+var schemesFactory;
 
 const setup = async function(
   accounts,
   _repAllocation = 300,
   _auctionsStartTime = 0,
   _auctionsEndTime = 3000,
-  _numberOfAuctions = 3,
-  _initialize = true
+  _numberOfAuctions = 3
 ) {
   var testSetup = new helpers.TestSetup();
+
+  var auction4ReputationLibrary = await Auction4Reputation.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  schemesFactory = await SchemesFactory.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  await schemesFactory.setAuction4ReputationLibraryAddress(
+    auction4ReputationLibrary.address,
+    { gas: constants.ARC_GAS_LIMIT }
+  );
+
   testSetup.biddingToken = await StandardTokenMock.new(
     accounts[0],
     web3.utils.toWei("100", "ether")
@@ -58,9 +74,9 @@ const setup = async function(
     (await web3.eth.getBlock("latest")).timestamp + _auctionsEndTime;
   testSetup.auctionsStartTime =
     (await web3.eth.getBlock("latest")).timestamp + _auctionsStartTime;
-  testSetup.auction4Reputation = await Auction4Reputation.new();
-  if (_initialize === true) {
-    await testSetup.auction4Reputation.initialize(
+
+  testSetup.auction4Reputation = await Auction4Reputation.at(
+    (await schemesFactory.createAuction4Reputation(
       testSetup.org.avatar.address,
       _repAllocation,
       testSetup.auctionsStartTime,
@@ -69,8 +85,8 @@ const setup = async function(
       testSetup.biddingToken.address,
       testSetup.org.avatar.address,
       { gas: constants.ARC_GAS_LIMIT }
-    );
-  }
+    )).logs[0].args._newSchemeAddress
+  );
 
   var permissions = "0x00000000";
   await testSetup.daoFactory.setSchemes(
@@ -118,9 +134,8 @@ contract("Auction4Reputation", accounts => {
   });
 
   it("initialize numberOfAuctions = 0  is not allowed", async () => {
-    var auction4Reputation = await Auction4Reputation.new();
     try {
-      await auction4Reputation.initialize(
+      await schemesFactory.createAuction4Reputation(
         accounts[0],
         300,
         0,
@@ -130,45 +145,16 @@ contract("Auction4Reputation", accounts => {
         accounts[0],
         { gas: constants.ARC_GAS_LIMIT }
       );
+
       assert(false, "numberOfAuctions = 0  is not allowed");
     } catch (error) {
       helpers.assertVMException(error);
     }
   });
 
-  it("initialize is onlyOwner", async () => {
-    var auction4Reputation = await Auction4Reputation.new();
-    try {
-      await auction4Reputation.initialize(
-        accounts[0],
-        300,
-        0,
-        3000,
-        1,
-        accounts[0],
-        accounts[0],
-        { gas: constants.ARC_GAS_LIMIT, from: accounts[1] }
-      );
-      assert(false, "initialize is onlyOwner");
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
-    await auction4Reputation.initialize(
-      accounts[0],
-      300,
-      0,
-      3000,
-      1,
-      accounts[0],
-      accounts[0],
-      { gas: constants.ARC_GAS_LIMIT, from: accounts[0] }
-    );
-  });
-
   it("initialize auctionsEndTime = auctionsStartTime is not allowed", async () => {
-    var auction4Reputation = await Auction4Reputation.new();
     try {
-      await auction4Reputation.initialize(
+      await schemesFactory.createAuction4Reputation(
         accounts[0],
         300,
         300,
@@ -177,6 +163,7 @@ contract("Auction4Reputation", accounts => {
         accounts[0],
         accounts[0]
       );
+
       assert(false, "auctionsEndTime = auctionsStartTime is not allowed");
     } catch (error) {
       helpers.assertVMException(error);
@@ -184,9 +171,8 @@ contract("Auction4Reputation", accounts => {
   });
 
   it("initialize auctionsEndTime < auctionsStartTime is not allowed", async () => {
-    var auction4Reputation = await Auction4Reputation.new();
     try {
-      await auction4Reputation.initialize(
+      await schemesFactory.createAuction4Reputation(
         accounts[0],
         300,
         200,
@@ -195,6 +181,7 @@ contract("Auction4Reputation", accounts => {
         accounts[0],
         accounts[0]
       );
+
       assert(false, "auctionsEndTime < auctionsStartTime is not allowed");
     } catch (error) {
       helpers.assertVMException(error);
@@ -217,16 +204,6 @@ contract("Auction4Reputation", accounts => {
       await testSetup.biddingToken.balanceOf(testSetup.org.avatar.address),
       web3.utils.toWei("1", "ether")
     );
-  });
-
-  it("bid without initialize should fail", async () => {
-    let testSetup = await setup(accounts, 300, 0, 3000, 3, false);
-    try {
-      await testSetup.auction4Reputation.bid(web3.utils.toWei("1", "ether"));
-      assert(false, "bid without initialize should fail");
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
   });
 
   it("bid with value == 0 should revert", async () => {
@@ -379,7 +356,8 @@ contract("Auction4Reputation", accounts => {
   it("cannot initialize twice", async () => {
     let testSetup = await setup(accounts);
     try {
-      await testSetup.auction4Reputation.initialize(
+      await testSetup.auction4Reputation.init(
+        accounts[0],
         accounts[0],
         300,
         200,
