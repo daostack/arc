@@ -6,6 +6,7 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/Avatar.sol";
 import "../controller/ControllerInterface.sol";
 
+
 /**
  * @title SimpleICO scheme.
  * @dev A universal scheme to allow organizations to open a simple ICO and get donations.
@@ -26,6 +27,10 @@ contract SimpleICO is Pausable {
 
     event DonationReceived(address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
 
+    constructor () public {
+        avatar = Avatar(0x000000000000000000000000000000000000dead);
+    }
+    
     /**
     * @dev Fallback function, when ether is sent it will donate to the ICO.
     * The ether will be returned if the donation is failed.
@@ -33,11 +38,7 @@ contract SimpleICO is Pausable {
     function () public payable {
         // Return ether if couldn't donate.
         require(donate(msg.sender) != 0);
-    }
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }    
+    } 
 
     function init(
         address _owner,

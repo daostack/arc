@@ -78,11 +78,11 @@ const setup = async function(
 
   testSetup.org = await setupOrganization(accounts[0], 1000, 1000);
 
-  if (startBlock == 0) {
+  if (startBlock === 0) {
     startBlock = await web3.eth.getBlockNumber();
   }
 
-  if (endBlock == 0) {
+  if (endBlock === 0) {
     endBlock = (await web3.eth.getBlockNumber()) + 500;
   }
 
