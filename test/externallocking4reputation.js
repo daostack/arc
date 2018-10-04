@@ -6,7 +6,9 @@ const DAOFactory = artifacts.require("./DAOFactory.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const constants = require("./constants");
-const SchemesFactory = artifacts.require("./SchemesFactory.sol");
+const BootstrapSchemesFactory = artifacts.require(
+  "./BootstrapSchemesFactory.sol"
+);
 var ExternalLocking4Reputation = artifacts.require(
   "./ExternalLocking4Reputation.sol"
 );
@@ -26,11 +28,11 @@ const setup = async function(
     gas: constants.ARC_GAS_LIMIT
   });
 
-  var schemesFactory = await SchemesFactory.new({
+  var bootstrapSchemesFactory = await BootstrapSchemesFactory.new({
     gas: constants.ARC_GAS_LIMIT
   });
 
-  await schemesFactory.setExternalLocking4ReputationLibraryAddress(
+  await bootstrapSchemesFactory.setExternalLocking4ReputationLibraryAddress(
     externalLocking4ReputationLibrary.address,
     { gas: constants.ARC_GAS_LIMIT }
   );
@@ -74,7 +76,7 @@ const setup = async function(
   await testSetup.extetnalTokenLockerMock.lock(300, { from: accounts[2] });
 
   testSetup.externalLocking4Reputation = await ExternalLocking4Reputation.at(
-    (await schemesFactory.createExternalLocking4Reputation(
+    (await bootstrapSchemesFactory.createExternalLocking4Reputation(
       testSetup.org.avatar.address,
       _repAllocation,
       testSetup.lockingStartTime,

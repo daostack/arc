@@ -4,47 +4,15 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
+const SchemesFactory = artifacts.require("./SchemesFactory.sol");
 const SimpleICO = artifacts.require("./SimpleICO.sol");
 const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 
-const setupSimpleICOParams = async function(
-  accounts,
-  simpleICO,
-  org,
-  cap = 10000,
-  price = 1,
-  startBlock = 0,
-  endBlock = 500
-) {
-  // Register ICO parameters
-  let beneficiary = org.avatar.address;
-  let admin = accounts[0];
-  await simpleICO.setParameters(
-    cap,
-    price,
-    startBlock,
-    endBlock,
-    beneficiary,
-    admin
-  );
-  const paramsHash = await simpleICO.getParametersHash(
-    cap,
-    price,
-    startBlock,
-    endBlock,
-    beneficiary,
-    admin
-  );
-  return paramsHash;
-};
-var daoFactory, actorsFactory;
-const setupOrganization = async function(
-  daoFactoryOwner,
-  founderToken,
-  founderReputation
-) {
+var daoFactory, actorsFactory, schemesFactory;
+
+const setupFactories = async function() {
   var controller = await Controller.new({
     gas: constants.ARC_GAS_LIMIT
   });
@@ -70,6 +38,22 @@ const setupOrganization = async function(
     }
   );
 
+  var simpleICOLibrary = await SimpleICO.new({ gas: constants.ARC_GAS_LIMIT });
+
+  schemesFactory = await SchemesFactory.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  await schemesFactory.setSimpleICOLibraryAddress(simpleICOLibrary.address, {
+    gas: constants.ARC_GAS_LIMIT
+  });
+};
+
+const setupOrganization = async function(
+  daoFactoryOwner,
+  founderToken,
+  founderReputation
+) {
   var org = await helpers.setupOrganization(
     daoFactory,
     daoFactoryOwner,
@@ -79,363 +63,244 @@ const setupOrganization = async function(
   return org;
 };
 
-const setup = async function(accounts, cap = 10000, price = 1) {
+const setup = async function(
+  accounts,
+  cap = 10000,
+  price = 1,
+  startBlock = 0,
+  endBlock = 0
+) {
   var testSetup = new helpers.TestSetup();
+
   testSetup.beneficiary = accounts[0];
   testSetup.fee = 10;
   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
-  testSetup.simpleICO = await SimpleICO.new();
+
   testSetup.org = await setupOrganization(accounts[0], 1000, 1000);
-  const blockNumber = await web3.eth.getBlockNumber();
-  testSetup.paramHash = await setupSimpleICOParams(
-    accounts,
-    testSetup.simpleICO,
-    testSetup.org,
-    cap,
-    price,
-    blockNumber,
-    blockNumber + 500
+
+  if (startBlock == 0) {
+    startBlock = await web3.eth.getBlockNumber();
+  }
+
+  if (endBlock == 0) {
+    endBlock = (await web3.eth.getBlockNumber()) + 500;
+  }
+
+  testSetup.simpleICO = await SimpleICO.at(
+    (await schemesFactory.createSimpleICO(
+      testSetup.org.avatar.address,
+      cap,
+      price,
+      startBlock,
+      endBlock,
+      testSetup.org.avatar.address
+    )).logs[0].args._newSchemeAddress
   );
+
   await daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.simpleICO.address],
-    [testSetup.paramHash],
-    ["0x00000000"]
+    [helpers.NULL_HASH],
+    ["0x8000000F"]
   );
   return testSetup;
 };
 
 contract("SimpleICO", accounts => {
-  before(function() {
+  before(async function() {
     helpers.etherForEveryone(accounts);
+    await setupFactories();
   });
 
-  it("simpleICO send ether to contract - should revert", async () => {
-    var simpleICO = await SimpleICO.new();
-    var account1BalanceBefore =
-      (await web3.eth.getBalance(accounts[1])) / web3.utils.toWei("1", "ether");
+  it("simpleICO init", async function() {
+    var testSetup = await setup(accounts, 1000);
+
+    var cap = await testSetup.simpleICO.cap.call();
+    assert.equal(cap.toNumber(), 1000);
+  });
+
+  it("simpleICO with cap zero should revert", async function() {
     try {
-      await web3.eth.sendTransaction({
-        from: accounts[1],
-        to: simpleICO.address,
-        value: web3.utils.toWei("1", "ether")
-      });
-      assert(
-        false,
-        "should fail - contract simpleICO should not receive ethers and should revert in this case"
-      );
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
-    var account1BalanceAfter =
-      (await web3.eth.getBalance(accounts[1])) / web3.utils.toWei("1", "ether");
-    assert.equal(
-      Math.round(account1BalanceAfter),
-      Math.round(account1BalanceBefore)
-    );
-  });
-
-  it("simpleICO setParameters", async function() {
-    var simpleICO = await SimpleICO.new();
-    await simpleICO.setParameters(1000, 2, 0, 0, accounts[1], accounts[1]);
-    var paramHash = await simpleICO.getParametersHash(
-      1000,
-      2,
-      0,
-      0,
-      accounts[1],
-      accounts[1]
-    );
-    var parameters = await simpleICO.parameters(paramHash);
-    assert.equal(parameters[0].toNumber(), 1000);
-  });
-
-  it("simpleICO setParameters with cap zero should revert", async function() {
-    var simpleICO = await SimpleICO.new();
-
-    try {
-      await simpleICO.setParameters(0, 2, 0, 0, accounts[1], accounts[1]);
-      assert(false, "setParameters with cap zero should revert");
+      await setup(accounts, 0);
+      assert(false, "simpleICO with cap zero should revert");
     } catch (ex) {
       helpers.assertVMException(ex);
     }
   });
 
-  it("simpleICO isActive ", async function() {
+  it("simpleICO isActive", async function() {
     var testSetup = await setup(accounts);
-    assert.equal(
-      await testSetup.simpleICO.isActive(testSetup.org.avatar.address),
-      false
-    );
-    await testSetup.simpleICO.start(testSetup.org.avatar.address);
-    assert.equal(
-      await testSetup.simpleICO.isActive(testSetup.org.avatar.address),
-      true
-    );
+
+    assert.equal(await testSetup.simpleICO.isActive(), true);
   });
 
-  it("simpleICO isActive test start block  ", async function() {
-    var standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
-    var simpleICO = await SimpleICO.new();
-    var org = await setupOrganization(accounts[0], 1000, 1000);
-    var paramHash = await setupSimpleICOParams(
+  it("simpleICO isActive test start block", async function() {
+    var testSetup = await setup(
       accounts,
-      simpleICO,
-      org,
       1000,
       1,
       (await web3.eth.getBlockNumber()) + 100,
       (await web3.eth.getBlockNumber()) + 100 + 500
     );
-    //give some tokens to organization avatar so it could register the universal scheme.
-    await standardTokenMock.transfer(org.avatar.address, 30, {
-      from: accounts[1]
-    });
-    await daoFactory.setSchemes(
-      org.avatar.address,
-      [simpleICO.address],
-      [paramHash],
-      ["0x8000000F"]
-    );
-    await simpleICO.start(org.avatar.address);
-    assert.equal(await simpleICO.isActive(org.avatar.address), false);
+
+    assert.equal(await testSetup.simpleICO.isActive(), false);
   });
 
-  it("simpleICO isActive test end block  ", async function() {
-    var standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
-    var simpleICO = await SimpleICO.new();
-    var org = await setupOrganization(accounts[0], 1000, 1000);
-    var paramHash = await setupSimpleICOParams(
+  it("simpleICO isActive test end block", async function() {
+    var testSetup = await setup(
       accounts,
-      simpleICO,
-      org,
       1000,
       1,
       await web3.eth.getBlockNumber(),
       await web3.eth.getBlockNumber()
     );
-    //give some tokens to organization avatar so it could register the universal scheme.
-    await standardTokenMock.transfer(org.avatar.address, 30, {
-      from: accounts[1]
-    });
-    await daoFactory.setSchemes(
-      org.avatar.address,
-      [simpleICO.address],
-      [paramHash],
-      ["0x8000000F"]
-    );
-    await simpleICO.start(org.avatar.address);
-    var isActive = await simpleICO.isActive(org.avatar.address);
-    assert.equal(isActive, false);
+
+    assert.equal(await testSetup.simpleICO.isActive(), false);
   });
 
-  it("simpleICO isActive test cap  ", async function() {
+  it("simpleICO isActive test cap", async function() {
     var cap = 2;
     var price = 1;
-    var standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
-    var simpleICO = await SimpleICO.new();
-    var org = await setupOrganization(accounts[0], 1000, 1000);
-    var paramHash = await setupSimpleICOParams(
-      accounts,
-      simpleICO,
-      org,
-      cap,
-      price,
-      await web3.eth.getBlockNumber(),
-      (await web3.eth.getBlockNumber()) + 500
-    );
-    //give some tokens to organization avatar so it could register the universal scheme.
-    await standardTokenMock.transfer(org.avatar.address, 30, {
-      from: accounts[1]
-    });
-    await daoFactory.setSchemes(
-      org.avatar.address,
-      [simpleICO.address],
-      [paramHash],
-      ["0x8000000F"]
-    );
-    await simpleICO.start(org.avatar.address);
+
+    var testSetup = await setup(accounts, cap, price);
+
     var donationEther = cap;
-    await simpleICO.donate(org.avatar.address, accounts[3], {
+    await testSetup.simpleICO.donate(accounts[3], {
       value: donationEther
     });
-    var isActive = await simpleICO.isActive(org.avatar.address);
+
+    var isActive = await testSetup.simpleICO.isActive();
+
     assert.equal(isActive, false);
   });
 
-  it("simpleICO haltICO ", async function() {
-    var organization;
-    var standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
-    var simpleICO = await SimpleICO.new();
-    try {
-      await simpleICO.haltICO(accounts[0]);
-      assert(
-        false,
-        "haltICO should  fail - accounts[0] is not avatar and not registered yet"
-      );
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
-    var org = await setupOrganization(accounts[0], 1000, 1000);
-    try {
-      await simpleICO.haltICO(org.avatar.address);
-      assert(false, "haltICO should  fail - org is not registered yet");
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
-    var paramHash = await setupSimpleICOParams(accounts, simpleICO, org);
-    //give some tokens to organization avatar so it could register the universal scheme.
-    await standardTokenMock.transfer(org.avatar.address, 30, {
-      from: accounts[1]
-    });
-    await daoFactory.setSchemes(
-      org.avatar.address,
-      [simpleICO.address],
-      [paramHash],
-      ["0x8000000F"]
-    );
-    organization = await simpleICO.organizationsICOInfo(org.avatar.address);
-    assert.equal(organization[3], false);
-    await simpleICO.start(org.avatar.address);
-    organization = await simpleICO.organizationsICOInfo(org.avatar.address);
-    assert.equal(organization[3], false);
-    await simpleICO.haltICO(org.avatar.address);
-    organization = await simpleICO.organizationsICOInfo(org.avatar.address);
-    assert.equal(organization[3], true);
-    try {
-      await simpleICO.haltICO(org.avatar.address, { from: accounts[1] });
-      assert(false, "haltICO should  fail - accounts[1] is not admin");
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
-  });
-  it("simpleICO resumeICO ", async function() {
+  it("simpleICO pause/ unpause ICO", async function() {
     var testSetup = await setup(accounts);
-    await testSetup.simpleICO.start(testSetup.org.avatar.address);
-    await testSetup.simpleICO.haltICO(testSetup.org.avatar.address);
-    var organization = await testSetup.simpleICO.organizationsICOInfo(
-      testSetup.org.avatar.address
-    );
-    assert.equal(organization[3], true);
-    await testSetup.simpleICO.resumeICO(testSetup.org.avatar.address);
-    organization = await testSetup.simpleICO.organizationsICOInfo(
-      testSetup.org.avatar.address
-    );
-    assert.equal(organization[3], false);
+
+    assert.equal(await testSetup.simpleICO.paused.call(), false);
+
+    await testSetup.simpleICO.pause();
+
+    assert.equal(await testSetup.simpleICO.paused.call(), true);
+
+    await testSetup.simpleICO.unpause();
+
+    assert.equal(await testSetup.simpleICO.paused.call(), false);
+
     try {
-      await testSetup.simpleICO.resumeICO(testSetup.org.avatar.address, {
+      await testSetup.simpleICO.pause({
         from: accounts[1]
       });
-      assert(false, "resumeICO should  fail - accounts[1] is not admin");
+      assert(false, "pause ICO should fail - accounts[1] is not owner");
     } catch (ex) {
       helpers.assertVMException(ex);
     }
   });
+
   it("simpleICO donate log", async function() {
     var price = 2;
+
     var testSetup = await setup(accounts, 1000, price);
-    await testSetup.simpleICO.start(testSetup.org.avatar.address);
-    //do not send ether ..just call donate.
-    var tx = await testSetup.simpleICO.donate(
-      testSetup.org.avatar.address,
-      accounts[3]
-    );
-    assert.equal(tx.logs.length, 1);
-    assert.equal(tx.logs[0].event, "DonationReceived");
-    var avatar = await helpers.getValueFromLogs(tx, "organization", 1);
-    assert.equal(avatar, testSetup.org.avatar.address);
-    var _beneficiary = await helpers.getValueFromLogs(tx, "_beneficiary", 1);
-    assert.equal(_beneficiary, accounts[3]);
-    var _incomingEther = await helpers.getValueFromLogs(tx, "_incomingEther");
-    assert.equal(_incomingEther, 0);
-    var _tokensAmount = await helpers.getValueFromLogs(tx, "_tokensAmount", 1);
-    assert.equal(_tokensAmount, 0);
+
     var donationEther = 3;
 
-    tx = await testSetup.simpleICO.donate(
-      testSetup.org.avatar.address,
-      accounts[3],
-      { value: donationEther }
-    );
+    var tx = await testSetup.simpleICO.donate(accounts[3], {
+      value: donationEther
+    });
+
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "DonationReceived");
-    avatar = await helpers.getValueFromLogs(tx, "organization", 1);
-    assert.equal(avatar, testSetup.org.avatar.address);
-    _beneficiary = await helpers.getValueFromLogs(tx, "_beneficiary", 1);
+
+    var _beneficiary = await helpers.getValueFromLogs(tx, "_beneficiary", 1);
     assert.equal(_beneficiary, accounts[3]);
-    _incomingEther = await helpers.getValueFromLogs(tx, "_incomingEther");
+
+    var _incomingEther = await helpers.getValueFromLogs(tx, "_incomingEther");
     assert.equal(_incomingEther, donationEther);
-    _tokensAmount = await helpers.getValueFromLogs(tx, "_tokensAmount", 1);
+
+    var _tokensAmount = await helpers.getValueFromLogs(tx, "_tokensAmount", 1);
     assert.equal(_tokensAmount.toNumber(), price * donationEther);
+  });
+
+  it("simpleICO donate zero eth should fail", async function() {
+    var testSetup = await setup(accounts, 1000);
+
+    try {
+      //do not send ether ..just call donate.
+      await testSetup.simpleICO.donate(accounts[3]);
+      assert(false, "donating zero eth should fail");
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
   });
 
   it("simpleICO donate check transfer", async function() {
     var price = 2;
     var testSetup = await setup(accounts, 1000, price);
-    await testSetup.simpleICO.start(testSetup.org.avatar.address);
+
     var donationEther = 3;
-    await testSetup.simpleICO.donate(
-      testSetup.org.avatar.address,
-      accounts[3],
-      { value: donationEther }
-    );
+
+    await testSetup.simpleICO.donate(accounts[3], { value: donationEther });
+
     var balance = await testSetup.org.token.balanceOf(accounts[3]);
     assert.equal(balance.toNumber(), price * donationEther);
   });
+
   it("simpleICO donate check update totalEthRaised", async function() {
     var price = 2;
     var testSetup = await setup(accounts, 1000, price);
-    await testSetup.simpleICO.start(testSetup.org.avatar.address);
+
     var donationEther = 3;
-    await testSetup.simpleICO.donate(
-      testSetup.org.avatar.address,
-      accounts[3],
-      { value: donationEther }
-    );
-    var organization = await testSetup.simpleICO.organizationsICOInfo(
-      testSetup.org.avatar.address
-    );
-    assert.equal(organization[2].toNumber(), donationEther);
+    await testSetup.simpleICO.donate(accounts[3], { value: donationEther });
+
+    var totalEthRaised = await testSetup.simpleICO.totalEthRaised.call();
+
+    assert.equal(totalEthRaised.toNumber(), donationEther);
   });
 
   it("simpleICO donate check isActive", async function() {
     var price = 2;
-    var testSetup = await setup(accounts, 1000, price);
+    var testSetup = await setup(
+      accounts,
+      1000,
+      price,
+      (await web3.eth.getBlockNumber()) + 100,
+      (await web3.eth.getBlockNumber()) + 100 + 500
+    );
+
     var donationEther = 3;
+
     try {
-      await testSetup.simpleICO.donate(
-        testSetup.org.avatar.address,
-        accounts[3],
-        { value: donationEther }
-      );
-      assert(false, "donate should  fail - ico not started yet");
+      await testSetup.simpleICO.donate(accounts[3], { value: donationEther });
+
+      assert(false, "donate should  fail - ico is not active");
     } catch (ex) {
       helpers.assertVMException(ex);
     }
   });
-  it("simpleICO donate check isHalted", async function() {
+
+  it("simpleICO donate check if paused", async function() {
     var price = 2;
     var testSetup = await setup(accounts, 1000, price);
-    await testSetup.simpleICO.start(testSetup.org.avatar.address);
-    await testSetup.simpleICO.haltICO(testSetup.org.avatar.address);
+
+    await testSetup.simpleICO.pause();
+
     var donationEther = 3;
+
     try {
-      await testSetup.simpleICO.donate(
-        testSetup.org.avatar.address,
-        accounts[3],
-        { value: donationEther }
-      );
-      assert(false, "donate should  fail - halted !");
+      await testSetup.simpleICO.donate(accounts[3], { value: donationEther });
+      assert(false, "donate should fail when ICO is paused");
     } catch (ex) {
       helpers.assertVMException(ex);
     }
   });
+
   it("simpleICO donate check change back", async function() {
     var price = 2;
     var cap = 3;
     var testSetup = await setup(accounts, cap, price);
-    await testSetup.simpleICO.start(testSetup.org.avatar.address);
+
     var donationEther = cap + 10;
+
     let otherAvatar = await Avatar.at(
       (await actorsFactory.createAvatar(
         "otheravatar",
@@ -443,24 +308,28 @@ contract("SimpleICO", accounts => {
         helpers.NULL_ADDRESS
       )).logs[0].args.newAvatarAddress
     );
+
     var beneficiaryBalance = await web3.eth.getBalance(otherAvatar.address);
+
     assert.equal(beneficiaryBalance, 0);
-    await testSetup.simpleICO.donate(
-      testSetup.org.avatar.address,
-      otherAvatar.address,
-      { value: donationEther }
-    );
+
+    await testSetup.simpleICO.donate(otherAvatar.address, {
+      value: donationEther
+    });
+
     var balance = await testSetup.org.token.balanceOf(otherAvatar.address);
     assert.equal(balance.toNumber(), price * cap);
+
     beneficiaryBalance = await web3.eth.getBalance(otherAvatar.address);
     assert.equal(beneficiaryBalance, 10);
   });
 
-  it("simpleICO MirrorContractICO", async function() {
+  it("simpleICO donate from fallback function", async function() {
     var price = 2;
     var cap = 3;
+
     var testSetup = await setup(accounts, cap, price);
-    await testSetup.simpleICO.start(testSetup.org.avatar.address);
+
     let otherAvatar = await Avatar.at(
       (await actorsFactory.createAvatar(
         "otheravatar",
@@ -468,50 +337,43 @@ contract("SimpleICO", accounts => {
         helpers.NULL_ADDRESS
       )).logs[0].args.newAvatarAddress
     );
+
     var beneficiaryBalance = await web3.eth.getBalance(otherAvatar.address);
     assert.equal(beneficiaryBalance, 0);
-    var organization = await testSetup.simpleICO.organizationsICOInfo(
-      testSetup.org.avatar.address
-    );
-    var mirrorContractICO = organization[1];
-    //need more gas for this ...
+
     await web3.eth.sendTransaction({
       from: accounts[3],
-      to: mirrorContractICO,
+      to: testSetup.simpleICO.address,
       value: 2,
       gas: 900000
     });
-    //await simpleICO.donate(org.avatar.address,otherAvatar.address,{value:13});
+
     var balance = await testSetup.org.token.balanceOf(accounts[3]);
     assert.equal(balance.toNumber(), price * 2);
   });
 
-  it("simpleICO MirrorContractICO without start should fail", async function() {
+  it("simpleICO should not accept donation from fallback when paused", async function() {
     var price = 2;
     var cap = 3;
+
     var testSetup = await setup(accounts, cap, price);
-    let otherAvatar = await Avatar.at(
-      (await actorsFactory.createAvatar(
-        "otheravatar",
-        helpers.NULL_ADDRESS,
-        helpers.NULL_ADDRESS
-      )).logs[0].args.newAvatarAddress
-    );
-    var beneficiaryBalance = await web3.eth.getBalance(otherAvatar.address);
-    assert.equal(beneficiaryBalance, 0);
-    var organization = await testSetup.simpleICO.organizationsICOInfo(
-      testSetup.org.avatar.address
-    );
-    var mirrorContractICO = organization[1];
-    //need more gas for this ...
-    await web3.eth.sendTransaction({
-      from: accounts[3],
-      to: mirrorContractICO,
-      value: 2,
-      gas: 900000
-    });
-    //await simpleICO.donate(org.avatar.address,otherAvatar.address,{value:13});
-    var balance = await testSetup.org.token.balanceOf(accounts[3]);
-    assert.equal(balance.toNumber(), 0);
+
+    await testSetup.simpleICO.pause();
+
+    try {
+      await web3.eth.sendTransaction({
+        from: accounts[3],
+        to: testSetup.simpleICO.address,
+        value: 2,
+        gas: 900000
+      });
+
+      assert(
+        false,
+        "simpleICO failed - should not accept donation from fallback when paused"
+      );
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
   });
 });

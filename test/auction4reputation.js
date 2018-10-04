@@ -8,9 +8,11 @@ const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const constants = require("./constants");
 const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
 var Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
-const SchemesFactory = artifacts.require("./SchemesFactory.sol");
+const BootstrapSchemesFactory = artifacts.require(
+  "./BootstrapSchemesFactory.sol"
+);
 
-var schemesFactory;
+var bootstrapSchemesFactory;
 
 const setup = async function(
   accounts,
@@ -25,11 +27,11 @@ const setup = async function(
     gas: constants.ARC_GAS_LIMIT
   });
 
-  schemesFactory = await SchemesFactory.new({
+  bootstrapSchemesFactory = await BootstrapSchemesFactory.new({
     gas: constants.ARC_GAS_LIMIT
   });
 
-  await schemesFactory.setAuction4ReputationLibraryAddress(
+  await bootstrapSchemesFactory.setAuction4ReputationLibraryAddress(
     auction4ReputationLibrary.address,
     { gas: constants.ARC_GAS_LIMIT }
   );
@@ -76,7 +78,7 @@ const setup = async function(
     (await web3.eth.getBlock("latest")).timestamp + _auctionsStartTime;
 
   testSetup.auction4Reputation = await Auction4Reputation.at(
-    (await schemesFactory.createAuction4Reputation(
+    (await bootstrapSchemesFactory.createAuction4Reputation(
       testSetup.org.avatar.address,
       _repAllocation,
       testSetup.auctionsStartTime,
@@ -135,7 +137,7 @@ contract("Auction4Reputation", accounts => {
 
   it("initialize numberOfAuctions = 0  is not allowed", async () => {
     try {
-      await schemesFactory.createAuction4Reputation(
+      await bootstrapSchemesFactory.createAuction4Reputation(
         accounts[0],
         300,
         0,
@@ -154,7 +156,7 @@ contract("Auction4Reputation", accounts => {
 
   it("initialize auctionsEndTime = auctionsStartTime is not allowed", async () => {
     try {
-      await schemesFactory.createAuction4Reputation(
+      await bootstrapSchemesFactory.createAuction4Reputation(
         accounts[0],
         300,
         300,
@@ -172,7 +174,7 @@ contract("Auction4Reputation", accounts => {
 
   it("initialize auctionsEndTime < auctionsStartTime is not allowed", async () => {
     try {
-      await schemesFactory.createAuction4Reputation(
+      await bootstrapSchemesFactory.createAuction4Reputation(
         accounts[0],
         300,
         200,

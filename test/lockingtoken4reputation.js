@@ -7,7 +7,9 @@ const Controller = artifacts.require("./Controller.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const constants = require("./constants");
 const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
-const SchemesFactory = artifacts.require("./SchemesFactory.sol");
+const BootstrapSchemesFactory = artifacts.require(
+  "./BootstrapSchemesFactory.sol"
+);
 var LockingToken4Reputation = artifacts.require(
   "./LockingToken4Reputation.sol"
 );
@@ -25,11 +27,11 @@ const setup = async function(
     gas: constants.ARC_GAS_LIMIT
   });
 
-  var schemesFactory = await SchemesFactory.new({
+  var bootstrapSchemesFactory = await BootstrapSchemesFactory.new({
     gas: constants.ARC_GAS_LIMIT
   });
 
-  await schemesFactory.setLockingToken4ReputationLibraryAddress(
+  await bootstrapSchemesFactory.setLockingToken4ReputationLibraryAddress(
     lockingToken4ReputationLibrary.address,
     { gas: constants.ARC_GAS_LIMIT }
   );
@@ -78,7 +80,7 @@ const setup = async function(
   testSetup.lockingToken4Reputation = await LockingToken4Reputation.new();
 
   testSetup.lockingToken4Reputation = await LockingToken4Reputation.at(
-    (await schemesFactory.createLockingToken4Reputation(
+    (await bootstrapSchemesFactory.createLockingToken4Reputation(
       testSetup.org.avatar.address,
       _repAllocation,
       testSetup.lockingStartTime,

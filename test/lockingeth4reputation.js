@@ -5,7 +5,9 @@ const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
-const SchemesFactory = artifacts.require("./SchemesFactory.sol");
+const BootstrapSchemesFactory = artifacts.require(
+  "./BootstrapSchemesFactory.sol"
+);
 const constants = require("./constants");
 
 var LockingEth4Reputation = artifacts.require("./LockingEth4Reputation.sol");
@@ -23,11 +25,11 @@ const setup = async function(
     gas: constants.ARC_GAS_LIMIT
   });
 
-  var schemesFactory = await SchemesFactory.new({
+  var bootstrapSchemesFactory = await BootstrapSchemesFactory.new({
     gas: constants.ARC_GAS_LIMIT
   });
 
-  await schemesFactory.setLockingEth4ReputationLibraryAddress(
+  await bootstrapSchemesFactory.setLockingEth4ReputationLibraryAddress(
     lockingEth4ReputationLibrary.address,
     { gas: constants.ARC_GAS_LIMIT }
   );
@@ -69,7 +71,7 @@ const setup = async function(
     (await web3.eth.getBlock("latest")).timestamp + _lockingStartTime;
 
   testSetup.lockingEth4Reputation = await LockingEth4Reputation.at(
-    (await schemesFactory.createLockingEth4Reputation(
+    (await bootstrapSchemesFactory.createLockingEth4Reputation(
       testSetup.org.avatar.address,
       _repAllocation,
       testSetup.lockingStartTime,

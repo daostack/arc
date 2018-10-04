@@ -9,6 +9,7 @@ var GlobalConstraintRegistrar = artifacts.require(
   "./GlobalConstraintRegistrar.sol"
 );
 var SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
+var SchemesFactory = artifacts.require("./SchemesFactory.sol");
 var SimpleICO = artifacts.require("./SimpleICO.sol");
 var AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 var ContributionReward = artifacts.require("./ContributionReward.sol");
@@ -26,6 +27,8 @@ const initToken = web3.utils.toWei("1000");
 const initTokenInWei = [initToken];
 const cap = web3.utils.toWei("100000000", "ether");
 
+const NULL_HASH =
+  "0x0000000000000000000000000000000000000000000000000000000000000000";
 // DAOstack parameters for universal schemes:
 
 const votePrec = 50;
@@ -66,6 +69,10 @@ module.exports = async function(deployer) {
 
       var daoFactoryInst = await DAOFactory.deployed();
 
+      await deployer.deploy(SchemesFactory);
+
+      var schemesFactoryInst = await SchemesFactory.deployed();
+
       // Create DAOstack:
       await web3.eth.getAccounts(function(err, res) {
         accounts = res;
@@ -99,7 +106,10 @@ module.exports = async function(deployer) {
       var globalConstraintRegistrarInst = await GlobalConstraintRegistrar.deployed();
 
       await deployer.deploy(SimpleICO);
-      var simpleICOInst = await SimpleICO.deployed();
+
+      var simpleICOLibrary = await SimpleICO.deployed();
+
+      schemesFactoryInst.setSimpleICOLibraryAddress(simpleICOLibrary.address);
 
       await deployer.deploy(ContributionReward);
       var contributionRewardInst = await ContributionReward.deployed();
@@ -137,22 +147,19 @@ module.exports = async function(deployer) {
         AbsoluteVoteInst.address
       );
 
-      await simpleICOInst.setParameters(
+      var simpleICOInstTx = await schemesFactoryInst.createSimpleICO(
+        AvatarInst.address,
         1000,
         1,
         1,
         2,
-        web3.eth.accounts[0],
         web3.eth.accounts[0]
       );
-      var simpleICOParams = await simpleICOInst.getParametersHash(
-        1000,
-        1,
-        1,
-        2,
-        web3.eth.accounts[0],
-        web3.eth.accounts[0]
+
+      var simpleICOInst = await SimpleICO.at(
+        simpleICOInstTx.logs[0].args._newSchemeAddress
       );
+
       await contributionRewardInst.setParameters(
         10,
         voteParametersHash,
@@ -175,7 +182,7 @@ module.exports = async function(deployer) {
         schemeRegisterParams,
         schemeGCRegisterParams,
         schemeUpgradeParams,
-        simpleICOParams,
+        NULL_HASH,
         contributionRewardParams
       ];
       const permissionArray = [

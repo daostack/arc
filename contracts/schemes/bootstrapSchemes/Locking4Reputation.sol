@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "../controller/ControllerInterface.sol";
-import { RealMath } from "../libs/RealMath.sol";
+import "../../controller/ControllerInterface.sol";
+import { RealMath } from "../../libs/RealMath.sol";
 
 
 /**

@@ -6,7 +6,9 @@ const DAOFactory = artifacts.require("./DAOFactory.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const constants = require("./constants");
-const SchemesFactory = artifacts.require("./SchemesFactory.sol");
+const BootstrapSchemesFactory = artifacts.require(
+  "./BootstrapSchemesFactory.sol"
+);
 var FixedReputationAllocation = artifacts.require(
   "./FixedReputationAllocation.sol"
 );
@@ -50,17 +52,17 @@ const setup = async function(accounts, _repAllocation = 300) {
     gas: constants.ARC_GAS_LIMIT
   });
 
-  var schemesFactory = await SchemesFactory.new({
+  var bootstrapSchemesFactory = await BootstrapSchemesFactory.new({
     gas: constants.ARC_GAS_LIMIT
   });
 
-  await schemesFactory.setFixedReputationAllocationLibraryAddress(
+  await bootstrapSchemesFactory.setFixedReputationAllocationLibraryAddress(
     fixedReputationAllocationLibrary.address,
     { gas: constants.ARC_GAS_LIMIT }
   );
 
   testSetup.fixedReputationAllocation = await FixedReputationAllocation.at(
-    (await schemesFactory.createFixedReputationAllocation(
+    (await bootstrapSchemesFactory.createFixedReputationAllocation(
       testSetup.org.avatar.address,
       _repAllocation
     )).logs[0].args._newSchemeAddress
