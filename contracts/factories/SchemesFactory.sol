@@ -7,6 +7,7 @@ import "../schemes/Auction4Reputation.sol";
 import "../schemes/ExternalLocking4Reputation.sol";
 import "../schemes/FixedReputationAllocation.sol";
 import "../schemes/LockingEth4Reputation.sol";
+import "../schemes/LockingToken4Reputation.sol";
 import "../controller/Avatar.sol";
 
 
@@ -16,16 +17,19 @@ contract SchemesFactory is Ownable, CloneFactory {
     address public externalLocking4ReputationLibraryAddress;
     address public fixedReputationAllocationLibraryAddress;
     address public lockingEth4ReputationLibraryAddress;
+    address public lockingToken4ReputationLibraryAddress;
 
     event Auction4ReputationLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event ExternalLocking4ReputationLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event FixedReputationAllocationLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event LockingEth4ReputationLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
+    event LockingToken4ReputationLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
 
     event Auction4ReputationCreated(address _newSchemeAddress);
     event ExternalLocking4ReputationCreated(address _newSchemeAddress);
     event FixedReputationAllocationCreated(address _newSchemeAddress);
     event LockingEth4ReputationCreated(address _newSchemeAddress);
+    event LockingToken4ReputationCreated(address _newSchemeAddress);
 
     function setAuction4ReputationLibraryAddress (address _auction4ReputationLibraryAddress) external onlyOwner {
         emit Auction4ReputationLibraryChanged(_auction4ReputationLibraryAddress, auction4ReputationLibraryAddress);
@@ -49,6 +53,12 @@ contract SchemesFactory is Ownable, CloneFactory {
         emit LockingEth4ReputationLibraryChanged(_lockingEth4ReputationLibraryAddress, lockingEth4ReputationLibraryAddress);
         
         lockingEth4ReputationLibraryAddress = _lockingEth4ReputationLibraryAddress;
+    }
+
+    function setLockingToken4ReputationLibraryAddress(address _lockingToken4ReputationLibraryAddress) external onlyOwner {
+        emit LockingToken4ReputationLibraryChanged(_lockingToken4ReputationLibraryAddress, lockingToken4ReputationLibraryAddress);
+        
+        lockingToken4ReputationLibraryAddress = _lockingToken4ReputationLibraryAddress;
     }
 
     function createAuction4Reputation(
@@ -131,6 +141,31 @@ contract SchemesFactory is Ownable, CloneFactory {
         );
         
         emit LockingEth4ReputationCreated(clone);
+
+        return clone;
+    }
+
+    function createLockingToken4Reputation(
+        Avatar _avatar,
+        uint _reputationReward,
+        uint _lockingStartTime,
+        uint _lockingEndTime,
+        uint _maxLockingPeriod,
+        StandardToken _token
+    ) public returns (address) 
+    {
+        address clone = createClone(lockingToken4ReputationLibraryAddress);
+        LockingToken4Reputation(clone).init(
+            msg.sender,
+            _avatar,
+            _reputationReward,
+            _lockingStartTime,
+            _lockingEndTime,
+            _maxLockingPeriod,
+            _token
+        );
+        
+        emit LockingToken4ReputationCreated(clone);
 
         return clone;
     }
