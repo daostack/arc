@@ -22,7 +22,7 @@ const setupUpgradeSchemeParams = async function(
                                             upgradeScheme,
                                             ) {
   var upgradeSchemeParams = new UpgradeSchemeParams();
-  upgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote();
+  upgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote(true,50,upgradeScheme.address);
   await upgradeScheme.setParameters(upgradeSchemeParams.votingMachine.params,upgradeSchemeParams.votingMachine.absoluteVote.address);
   upgradeSchemeParams.paramsHash = await upgradeScheme.getParametersHash(upgradeSchemeParams.votingMachine.params,upgradeSchemeParams.votingMachine.absoluteVote.address);
   return upgradeSchemeParams;
