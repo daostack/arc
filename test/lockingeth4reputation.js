@@ -154,13 +154,11 @@ contract('LockingEth4Reputation', accounts => {
 
     it("redeem", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
-        var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
+        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(3001);
-        tx = await testSetup.lockingEth4Reputation.redeem(accounts[0],lockingId);
+        var tx = await testSetup.lockingEth4Reputation.redeem(accounts[0]);
         assert.equal(tx.logs.length,1);
         assert.equal(tx.logs[0].event,"Redeem");
-        assert.equal(tx.logs[0].args._lockingId,lockingId);
         assert.equal(tx.logs[0].args._amount,100);
         assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+100);
@@ -168,25 +166,22 @@ contract('LockingEth4Reputation', accounts => {
 
     it("redeem score ", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.lockingEth4Reputation.lock(100,{from:accounts[0],value:web3.utils.toWei('1', "ether")});
-        var lockingId1 = await helpers.getValueFromLogs(tx, '_lockingId',1);
-        tx = await testSetup.lockingEth4Reputation.lock(300,{from:accounts[1],value:web3.utils.toWei('1', "ether")});
-        var lockingId2 = await helpers.getValueFromLogs(tx, '_lockingId',1);
+        await testSetup.lockingEth4Reputation.lock(100,{from:accounts[0],value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(300,{from:accounts[1],value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(3001);
-        await testSetup.lockingEth4Reputation.redeem(accounts[0],lockingId1);
-        await testSetup.lockingEth4Reputation.redeem(accounts[1],lockingId2);
+        await testSetup.lockingEth4Reputation.redeem(accounts[0]);
+        await testSetup.lockingEth4Reputation.redeem(accounts[1]);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+25);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),75);
     });
 
     it("redeem cannot redeem twice", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
-        var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
+        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(3001);
-        await testSetup.lockingEth4Reputation.redeem(accounts[0],lockingId);
+        await testSetup.lockingEth4Reputation.redeem(accounts[0]);
         try {
-          await testSetup.lockingEth4Reputation.redeem(accounts[0],lockingId);
+          await testSetup.lockingEth4Reputation.redeem(accounts[0]);
           assert(false, "cannot redeem twice");
         } catch(error) {
           helpers.assertVMException(error);
@@ -195,11 +190,10 @@ contract('LockingEth4Reputation', accounts => {
 
     it("redeem before lockingEndTime should revert", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
-        var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
+        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(50);
         try {
-             await testSetup.lockingEth4Reputation.redeem(accounts[0],lockingId);
+             await testSetup.lockingEth4Reputation.redeem(accounts[0]);
              assert(false, "redeem before lockingEndTime should revert");
            } catch(error) {
              helpers.assertVMException(error);

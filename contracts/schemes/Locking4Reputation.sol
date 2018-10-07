@@ -13,7 +13,7 @@ contract Locking4Reputation {
     using RealMath for int216;
     using RealMath for int256;
 
-    event Redeem(bytes32 indexed _lockingId, address indexed _beneficiary, uint _amount);
+    event Redeem(address indexed _beneficiary, uint _amount);
     event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint _amount);
     event Lock(address indexed _locker, bytes32 indexed _lockingId, uint _amount, uint _period);
 
@@ -42,10 +42,9 @@ contract Locking4Reputation {
     /**
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary for the release
-     * @param _lockingId the locking id to release
      * @return bool
      */
-    function redeem(address _beneficiary, bytes32 _lockingId) public returns(bool) {
+    function redeem(address _beneficiary) public returns(bool) {
         // solium-disable-next-line security/no-block-members
         require(block.timestamp >= lockingEndTime, "check the lock period pass");
         require(scores[_beneficiary] > 0, "score should be > 0");
@@ -53,13 +52,13 @@ contract Locking4Reputation {
         scores[_beneficiary] = 0;
         int256 repRelation = int216(score).toReal().mul(int216(reputationReward).toReal());
         uint reputation = uint256(repRelation.div(int216(totalScore).toReal()).fromReal());
-        
+
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
-        
-        emit Redeem(_lockingId, _beneficiary, reputation);
-        
+
+        emit Redeem(_beneficiary, reputation);
+
         return true;
     }
 
@@ -134,7 +133,7 @@ contract Locking4Reputation {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         require(_lockingEndTime > _lockingStartTime, "locking end time should be greater than locking start time");
-        
+
         reputationReward = _reputationReward;
         reputationRewardLeft = _reputationReward;
         lockingEndTime = _lockingEndTime;
