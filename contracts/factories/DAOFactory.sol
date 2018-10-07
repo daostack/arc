@@ -120,10 +120,10 @@ contract DAOFactory {
         // register initial schemes:
         ControllerInterface controller = ControllerInterface(_avatar.owner());
         for ( uint i = 0 ; i < _schemes.length ; i++ ) {
-            controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
+            controller.registerScheme(_schemes[i], _params[i], _permissions[i], address(_avatar));
         }
         // Unregister self:
-        controller.unregisterScheme(this,address(_avatar));
+        controller.unregisterScheme(this, address(_avatar));
         // Remove lock:
         delete locks[address(_avatar)];
         emit InitialSchemesSet(address(_avatar));

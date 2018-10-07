@@ -1,6 +1,5 @@
 import * as helpers from "./helpers";
 const constants = require("./constants");
-const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const GenericScheme = artifacts.require("./GenericScheme.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
@@ -9,69 +8,13 @@ const DAOFactory = artifacts.require("./DAOFactory.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const StandardTokenMock = artifacts.require("./StandardTokenMock.sol");
+const SchemesFactory = artifacts.require("./SchemesFactory.sol");
 
 const ActionMock = artifacts.require("./ActionMock.sol");
 
-export class GenericSchemeParams {
-  constructor() {}
-}
+var daoFactory, schemesFactory;
 
-const setupGenericSchemeParams = async function(
-  genericScheme,
-  accounts,
-  contractToCall,
-  reputationAccount = 0,
-  genesisProtocol = false,
-  tokenAddress = 0
-) {
-  var genericSchemeParams = new GenericSchemeParams();
-  if (genesisProtocol === true) {
-    genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(
-      accounts,
-      tokenAddress
-    );
-    await genericScheme.setParameters(
-      genericSchemeParams.votingMachine.params,
-      genericSchemeParams.votingMachine.genesisProtocol.address,
-      contractToCall
-    );
-    genericSchemeParams.paramsHash = await genericScheme.getParametersHash(
-      genericSchemeParams.votingMachine.params,
-      genericSchemeParams.votingMachine.genesisProtocol.address,
-      contractToCall
-    );
-  } else {
-    genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(
-      true,
-      50,
-      reputationAccount
-    );
-    await genericScheme.setParameters(
-      genericSchemeParams.votingMachine.params,
-      genericSchemeParams.votingMachine.absoluteVote.address,
-      contractToCall
-    );
-    genericSchemeParams.paramsHash = await genericScheme.getParametersHash(
-      genericSchemeParams.votingMachine.params,
-      genericSchemeParams.votingMachine.absoluteVote.address,
-      contractToCall
-    );
-  }
-
-  return genericSchemeParams;
-};
-
-const setup = async function(
-  accounts,
-  contractToCall = 0,
-  reputationAccount = 0,
-  genesisProtocol = false,
-  tokenAddress = 0
-) {
-  var testSetup = new helpers.TestSetup();
-  testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
-  testSetup.genericScheme = await GenericScheme.new();
-
+const setupFactories = async function() {
   var controller = await Controller.new({
     gas: constants.ARC_GAS_LIMIT
   });
@@ -89,13 +32,41 @@ const setup = async function(
     { gas: constants.ARC_GAS_LIMIT }
   );
 
-  testSetup.daoFactory = await DAOFactory.new(
+  daoFactory = await DAOFactory.new(
     controllerFactory.address,
     actorsFactory.address,
     {
       gas: constants.ARC_GAS_LIMIT
     }
   );
+
+  var genericSchemeLibrary = await GenericScheme.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  schemesFactory = await SchemesFactory.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  await schemesFactory.setGenericSchemeLibraryAddress(
+    genericSchemeLibrary.address,
+    {
+      gas: constants.ARC_GAS_LIMIT
+    }
+  );
+};
+
+const setup = async function(
+  accounts,
+  contractToCall = 0,
+  reputationAccount = 0,
+  genesisProtocol = false,
+  tokenAddress = 0
+) {
+  var testSetup = new helpers.TestSetup();
+  testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
+
+  testSetup.daoFactory = daoFactory;
 
   testSetup.reputationArray = [20, 10, 70];
 
@@ -114,20 +85,54 @@ const setup = async function(
       testSetup.reputationArray
     );
   }
-  testSetup.genericSchemeParams = await setupGenericSchemeParams(
-    testSetup.genericScheme,
-    accounts,
-    contractToCall,
-    reputationAccount,
-    genesisProtocol,
-    tokenAddress
-  );
+
+  var paramsHash;
+
+  if (genesisProtocol === true) {
+    testSetup.votingMachine = await helpers.setupGenesisProtocol(
+      accounts,
+      tokenAddress
+    );
+
+    testSetup.genericScheme = await GenericScheme.at(
+      (await schemesFactory.createGenericScheme(
+        testSetup.org.avatar.address,
+        testSetup.votingMachine.genesisProtocol.address,
+        testSetup.votingMachine.params,
+        contractToCall
+      )).logs[0].args._newSchemeAddress
+    );
+
+    paramsHash = await testSetup.genericScheme.getParametersHash(
+      testSetup.votingMachine.params,
+      testSetup.votingMachine.genesisProtocol.address,
+      contractToCall
+    );
+  } else {
+    testSetup.votingMachine = await helpers.setupAbsoluteVote();
+
+    testSetup.genericScheme = await GenericScheme.at(
+      (await schemesFactory.createGenericScheme(
+        testSetup.org.avatar.address,
+        testSetup.votingMachine.absoluteVote.address,
+        testSetup.votingMachine.params,
+        contractToCall
+      )).logs[0].args._newSchemeAddress
+    );
+
+    paramsHash = await testSetup.genericScheme.getParametersHash(
+      testSetup.votingMachine.params,
+      testSetup.votingMachine.absoluteVote.address,
+      contractToCall
+    );
+  }
+
   var permissions = "0x00000010";
 
   await testSetup.daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.genericScheme.address],
-    [testSetup.genericSchemeParams.paramsHash],
+    [paramsHash],
     [permissions]
   );
 
@@ -141,25 +146,9 @@ const createCallToActionMock = async function(_avatar, _actionMock) {
 };
 
 contract("genericScheme", function(accounts) {
-  before(function() {
+  before(async function() {
     helpers.etherForEveryone(accounts);
-  });
-  it("setParameters", async function() {
-    var genericScheme = await GenericScheme.new();
-    var absoluteVote = await AbsoluteVote.new();
-    await genericScheme.setParameters(
-      "0x1234",
-      absoluteVote.address,
-      accounts[0]
-    );
-    var paramHash = await genericScheme.getParametersHash(
-      "0x1234",
-      absoluteVote.address,
-      accounts[0]
-    );
-    var parameters = await genericScheme.parameters(paramHash);
-    assert.equal(parameters[0], absoluteVote.address);
-    assert.equal(parameters[2], accounts[0]);
+    await setupFactories();
   });
 
   it("proposeCall log", async function() {
@@ -170,10 +159,8 @@ contract("genericScheme", function(accounts) {
       actionMock
     );
 
-    var tx = await testSetup.genericScheme.proposeCall(
-      testSetup.org.avatar.address,
-      callData
-    );
+    var tx = await testSetup.genericScheme.proposeCall(callData);
+
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "NewCallProposal");
   });
@@ -185,23 +172,15 @@ contract("genericScheme", function(accounts) {
       testSetup.org.avatar.address,
       actionMock
     );
-    var tx = await testSetup.genericScheme.proposeCall(
-      testSetup.org.avatar.address,
-      callData
-    );
+    var tx = await testSetup.genericScheme.proposeCall(callData);
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(
-      proposalId,
-      0,
-      0,
-      { from: accounts[2] }
-    );
+    await testSetup.votingMachine.absoluteVote.vote(proposalId, 0, 0, {
+      from: accounts[2]
+    });
+
     //check organizationsProposals after execution
-    var organizationProposal = await testSetup.genericScheme.organizationsProposals(
-      testSetup.org.avatar.address,
-      proposalId
-    );
-    assert.equal(organizationProposal.callData, null);
+    callData = await testSetup.genericScheme.proposals(proposalId);
+    assert.equal(callData, null);
   });
 
   it("execute proposeVote -positive decision - proposal data delete", async function() {
@@ -211,46 +190,31 @@ contract("genericScheme", function(accounts) {
       testSetup.org.avatar.address,
       actionMock
     );
-    var tx = await testSetup.genericScheme.proposeCall(
-      testSetup.org.avatar.address,
-      callData
-    );
+    var tx = await testSetup.genericScheme.proposeCall(callData);
+
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    var organizationProposal = await testSetup.genericScheme.organizationsProposals(
-      testSetup.org.avatar.address,
-      proposalId
-    );
-    assert.equal(organizationProposal[0], callData);
-    await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(
-      proposalId,
-      1,
-      0,
-      { from: accounts[2] }
-    );
+    var proposal = await testSetup.genericScheme.proposals(proposalId);
+
+    assert.equal(proposal, callData);
+
+    await testSetup.votingMachine.absoluteVote.vote(proposalId, 1, 0, {
+      from: accounts[2]
+    });
     //check organizationsProposals after execution
-    organizationProposal = await testSetup.genericScheme.organizationsProposals(
-      testSetup.org.avatar.address,
-      proposalId
-    );
-    assert.equal(organizationProposal.callData, null); //new contract address
+    proposal = await testSetup.genericScheme.proposals(proposalId);
+    assert.equal(proposal, null); //new contract address
   });
 
   it("execute proposeVote -positive decision - check action", async function() {
     var actionMock = await ActionMock.new();
     var testSetup = await setup(accounts, actionMock.address);
     var callData = await createCallToActionMock(0, actionMock);
-    var tx = await testSetup.genericScheme.proposeCall(
-      testSetup.org.avatar.address,
-      callData
-    );
+    var tx = await testSetup.genericScheme.proposeCall(callData);
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
     try {
-      await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(
-        proposalId,
-        1,
-        0,
-        { from: accounts[2] }
-      );
+      await testSetup.votingMachine.absoluteVote.vote(proposalId, 1, 0, {
+        from: accounts[2]
+      });
       assert(
         false,
         "should revert in actionMock because msg.sender is not the _addr param at actionMock"
@@ -266,18 +230,12 @@ contract("genericScheme", function(accounts) {
     const encodeABI = await new web3.eth.Contract(actionMock.abi).methods
       .withoutReturnValue(testSetup.org.avatar.address)
       .encodeABI();
-    var tx = await testSetup.genericScheme.proposeCall(
-      testSetup.org.avatar.address,
-      encodeABI
-    );
+    var tx = await testSetup.genericScheme.proposeCall(encodeABI);
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
 
-    await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(
-      proposalId,
-      1,
-      0,
-      { from: accounts[2] }
-    );
+    await testSetup.votingMachine.absoluteVote.vote(proposalId, 1, 0, {
+      from: accounts[2]
+    });
   });
 
   it("execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
@@ -295,17 +253,11 @@ contract("genericScheme", function(accounts) {
       testSetup.org.avatar.address,
       actionMock
     );
-    var tx = await testSetup.genericScheme.proposeCall(
-      testSetup.org.avatar.address,
-      callData
-    );
+    var tx = await testSetup.genericScheme.proposeCall(callData);
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    tx = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(
-      proposalId,
-      1,
-      0,
-      { from: accounts[2] }
-    );
+    tx = await testSetup.votingMachine.genesisProtocol.vote(proposalId, 1, 0, {
+      from: accounts[2]
+    });
     assert.equal(tx.logs.length, 3);
     assert.equal(tx.logs[1].event, "ExecuteProposal");
   });

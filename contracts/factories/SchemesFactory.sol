@@ -3,23 +3,53 @@ pragma solidity ^0.4.24;
 import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
+import "../schemes/GenericScheme.sol";
 import "../schemes/SimpleICO.sol";
 import "../controller/Avatar.sol";
 
 
 contract SchemesFactory is Ownable, CloneFactory {
 
+    address public genericSchemeLibraryAddress;
     address public simpleICOLibraryAddress;
-    
 
+
+    event GenericSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event SimpleICOLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
 
+    event GenericSchemeCreated(address _newSchemeAddress);
     event SimpleICOCreated(address _newSchemeAddress);
+
+    function setGenericSchemeLibraryAddress(address _genericSchemeLibraryAddress) external onlyOwner {
+        emit GenericSchemeLibraryChanged(_genericSchemeLibraryAddress, genericSchemeLibraryAddress);
+
+        genericSchemeLibraryAddress = _genericSchemeLibraryAddress;
+    }
 
     function setSimpleICOLibraryAddress(address _simpleICOLibraryAddress) external onlyOwner {
         emit SimpleICOLibraryChanged(_simpleICOLibraryAddress, simpleICOLibraryAddress);
 
         simpleICOLibraryAddress = _simpleICOLibraryAddress;
+    }
+
+    function createGenericScheme(
+        Avatar _avatar,
+        IntVoteInterface _intVote,
+        bytes32 _voteParams,
+        address _contractToCall
+    ) public returns (address) 
+    {
+        address clone = createClone(genericSchemeLibraryAddress);
+        GenericScheme(clone).init(
+            _avatar,
+            _intVote,
+            _voteParams,
+            _contractToCall
+        );
+        
+        emit GenericSchemeCreated(clone);
+
+        return clone;
     }
 
     function createSimpleICO(
