@@ -110,12 +110,10 @@ contract('ExternalLocking4Reputation', accounts => {
     it("redeem", async () => {
         let testSetup = await setup(accounts);
         var tx = await testSetup.externalLocking4Reputation.lock();
-        var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
         await helpers.increaseTime(3001);
-        tx = await testSetup.externalLocking4Reputation.redeem(accounts[0],lockingId);
+        tx = await testSetup.externalLocking4Reputation.redeem(accounts[0]);
         assert.equal(tx.logs.length,1);
         assert.equal(tx.logs[0].event,"Redeem");
-        assert.equal(tx.logs[0].args._lockingId,lockingId);
         assert.equal(tx.logs[0].args._amount,100);
         assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+100);
@@ -123,25 +121,22 @@ contract('ExternalLocking4Reputation', accounts => {
 
     it("redeem score ", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.externalLocking4Reputation.lock({from:accounts[0]});
-        var lockingId1 = await helpers.getValueFromLogs(tx, '_lockingId',1);
-        tx = await testSetup.externalLocking4Reputation.lock({from:accounts[2]});
-        var lockingId2 = await helpers.getValueFromLogs(tx, '_lockingId',1);
+        await testSetup.externalLocking4Reputation.lock({from:accounts[0]});
+        await testSetup.externalLocking4Reputation.lock({from:accounts[2]});
         await helpers.increaseTime(3001);
-        await testSetup.externalLocking4Reputation.redeem(accounts[0],lockingId1);
-        await testSetup.externalLocking4Reputation.redeem(accounts[2],lockingId2);
+        await testSetup.externalLocking4Reputation.redeem(accounts[0]);
+        await testSetup.externalLocking4Reputation.redeem(accounts[2]);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+25);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]),75);
     });
 
     it("redeem cannot redeem twice", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.externalLocking4Reputation.lock();
-        var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
+        await testSetup.externalLocking4Reputation.lock();
         await helpers.increaseTime(3001);
-        await testSetup.externalLocking4Reputation.redeem(accounts[0],lockingId);
+        await testSetup.externalLocking4Reputation.redeem(accounts[0]);
         try {
-          await testSetup.externalLocking4Reputation.redeem(accounts[0],lockingId);
+          await testSetup.externalLocking4Reputation.redeem(accounts[0]);
           assert(false, "cannot redeem twice");
         } catch(error) {
           helpers.assertVMException(error);
@@ -150,11 +145,10 @@ contract('ExternalLocking4Reputation', accounts => {
 
     it("redeem before lockingEndTime should revert", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.externalLocking4Reputation.lock();
-        var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
+        await testSetup.externalLocking4Reputation.lock();
         await helpers.increaseTime(50);
         try {
-             await testSetup.externalLocking4Reputation.redeem(accounts[0],lockingId);
+             await testSetup.externalLocking4Reputation.redeem(accounts[0]);
              assert(false, "redeem before lockingEndTime should revert");
            } catch(error) {
              helpers.assertVMException(error);

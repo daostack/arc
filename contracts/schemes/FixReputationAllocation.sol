@@ -26,16 +26,19 @@ contract FixedReputationAllocation is Ownable {
     bool public isEnable;
     uint public numberOfBeneficiaries;
     uint public beneficiaryReward;
+    uint public redeemEnableTime;
 
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
+     * @param _redeemEnableTime time to enable redeem
      */
-    function initialize(Avatar _avatar, uint _reputationReward) external onlyOwner {
+    function initialize(Avatar _avatar, uint _reputationReward, uint _redeemEnableTime) external onlyOwner {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         reputationReward = _reputationReward;
+        redeemEnableTime = _redeemEnableTime;
         avatar = _avatar;
     }
 
@@ -47,10 +50,12 @@ contract FixedReputationAllocation is Ownable {
     function redeem(address _beneficiary) public returns(bool) {
         require(isEnable, "require to be enable");
         require(beneficiaries[_beneficiary], "require _beneficiary to exist in the beneficiaries map");
+        // solium-disable-next-line security/no-block-members
+        require(now > redeemEnableTime, "require now > redeemEnableTime");
         require(ControllerInterface(avatar.owner()).mintReputation(beneficiaryReward, _beneficiary, avatar), "mint reputation should success");
-        
+
         emit Redeem(_beneficiary, beneficiaryReward);
-        
+
         return true;
     }
 
@@ -60,11 +65,11 @@ contract FixedReputationAllocation is Ownable {
      */
     function addBeneficiary(address _beneficiary) public onlyOwner {
         require(!isEnable, "can add beneficiary only if not already enable");
-        
+
         if (!beneficiaries[_beneficiary]) {
             beneficiaries[_beneficiary] = true;
             numberOfBeneficiaries++;
-            
+
             emit BeneficiaryAddressAdded(_beneficiary);
         }
     }
