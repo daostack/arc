@@ -5,6 +5,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 import "../schemes/GenericScheme.sol";
 import "../schemes/SimpleICO.sol";
+import "../schemes/VoteInOrganizationScheme.sol";
 import "../controller/Avatar.sol";
 
 
@@ -12,13 +13,16 @@ contract SchemesFactory is Ownable, CloneFactory {
 
     address public genericSchemeLibraryAddress;
     address public simpleICOLibraryAddress;
+    address public voteInOrganizationSchemeLibraryAddress;
 
 
     event GenericSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event SimpleICOLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
+    event VoteInOrganizationSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
 
     event GenericSchemeCreated(address _newSchemeAddress);
     event SimpleICOCreated(address _newSchemeAddress);
+    event VoteInOrganizationSchemeCreated(address _newSchemeAddress);
 
     function setGenericSchemeLibraryAddress(address _genericSchemeLibraryAddress) external onlyOwner {
         emit GenericSchemeLibraryChanged(_genericSchemeLibraryAddress, genericSchemeLibraryAddress);
@@ -30,6 +34,12 @@ contract SchemesFactory is Ownable, CloneFactory {
         emit SimpleICOLibraryChanged(_simpleICOLibraryAddress, simpleICOLibraryAddress);
 
         simpleICOLibraryAddress = _simpleICOLibraryAddress;
+    }
+
+    function setVoteInOrganizationSchemeLibraryAddress(address _voteInOrganizationSchemeLibraryAddress) external onlyOwner {
+        emit VoteInOrganizationSchemeLibraryChanged(_voteInOrganizationSchemeLibraryAddress, voteInOrganizationSchemeLibraryAddress);
+
+        voteInOrganizationSchemeLibraryAddress = _voteInOrganizationSchemeLibraryAddress;
     }
 
     function createGenericScheme(
@@ -73,6 +83,24 @@ contract SchemesFactory is Ownable, CloneFactory {
         );
         
         emit SimpleICOCreated(clone);
+
+        return clone;
+    }
+
+    function createVoteInOrganizationScheme(
+        Avatar _avatar,
+        IntVoteInterface _intVote,
+        bytes32 _voteParams
+    ) public returns (address) 
+    {
+        address clone = createClone(voteInOrganizationSchemeLibraryAddress);
+        VoteInOrganizationScheme(clone).init(
+            _avatar,
+            _intVote,
+            _voteParams
+        );
+        
+        emit VoteInOrganizationSchemeCreated(clone);
 
         return clone;
     }

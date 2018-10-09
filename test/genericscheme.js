@@ -145,7 +145,7 @@ const createCallToActionMock = async function(_avatar, _actionMock) {
     .encodeABI();
 };
 
-contract("genericScheme", function(accounts) {
+contract("GenericScheme", function(accounts) {
   before(async function() {
     helpers.etherForEveryone(accounts);
     await setupFactories();

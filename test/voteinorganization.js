@@ -1,6 +1,5 @@
 import * as helpers from "./helpers";
 const constants = require("./constants");
-const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const VoteInOrganizationScheme = artifacts.require(
   "./VoteInOrganizationScheme.sol"
 );
@@ -18,65 +17,11 @@ const GenesisProtocolCallbacksMock = artifacts.require(
   "./GenesisProtocolCallbacksMock.sol"
 );
 const Reputation = artifacts.require("./Reputation.sol");
+const SchemesFactory = artifacts.require("./SchemesFactory.sol");
 
-export class VoteInOrganizationParams {
-  constructor() {}
-}
+var daoFactory, schemesFactory;
 
-const setupVoteInOrganizationParams = async function(
-  voteInOrganization,
-  accounts,
-  reputationAccount = 0,
-  genesisProtocol = false,
-  tokenAddress = 0,
-  avatar
-) {
-  var voteInOrganizationParams = new VoteInOrganizationParams();
-  if (genesisProtocol === true) {
-    voteInOrganizationParams.votingMachine = await helpers.setupGenesisProtocol(
-      accounts,
-      tokenAddress,
-      avatar
-    );
-
-    await voteInOrganization.setParameters(
-      voteInOrganizationParams.votingMachine.params,
-      voteInOrganizationParams.votingMachine.genesisProtocol.address
-    );
-    voteInOrganizationParams.paramsHash = await voteInOrganization.getParametersHash(
-      voteInOrganizationParams.votingMachine.params,
-      voteInOrganizationParams.votingMachine.genesisProtocol.address
-    );
-  } else {
-    voteInOrganizationParams.votingMachine = await helpers.setupAbsoluteVote(
-      true,
-      50,
-      reputationAccount
-    );
-    await voteInOrganization.setParameters(
-      voteInOrganizationParams.votingMachine.params,
-      voteInOrganizationParams.votingMachine.absoluteVote.address
-    );
-    voteInOrganizationParams.paramsHash = await voteInOrganization.getParametersHash(
-      voteInOrganizationParams.votingMachine.params,
-      voteInOrganizationParams.votingMachine.absoluteVote.address
-    );
-  }
-
-  return voteInOrganizationParams;
-};
-
-const setup = async function(
-  accounts,
-  reputationAccount = 0,
-  genesisProtocol = false,
-  tokenAddress = 0
-) {
-  var testSetup = new helpers.TestSetup();
-  testSetup.fee = 10;
-  testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
-  testSetup.voteInOrganization = await VoteInOrganizationScheme.new();
-
+const setupFactories = async function() {
   var controller = await Controller.new({
     gas: constants.ARC_GAS_LIMIT
   });
@@ -94,7 +39,7 @@ const setup = async function(
     { gas: constants.ARC_GAS_LIMIT }
   );
 
-  testSetup.daoFactory = await DAOFactory.new(
+  daoFactory = await DAOFactory.new(
     controllerFactory.address,
     actorsFactory.address,
     {
@@ -102,37 +47,85 @@ const setup = async function(
     }
   );
 
+  var voteInOrganizationSchemeLibrary = await VoteInOrganizationScheme.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  schemesFactory = await SchemesFactory.new({
+    gas: constants.ARC_GAS_LIMIT
+  });
+
+  await schemesFactory.setVoteInOrganizationSchemeLibraryAddress(
+    voteInOrganizationSchemeLibrary.address,
+    {
+      gas: constants.ARC_GAS_LIMIT
+    }
+  );
+};
+
+const setup = async function(
+  accounts,
+  reputationAccount = 0,
+  genesisProtocol = false,
+  tokenAddress = 0
+) {
+  var testSetup = new helpers.TestSetup();
+  testSetup.fee = 10;
+  testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1], 100);
+
   testSetup.reputationArray = [20, 10, 70];
   if (reputationAccount === 0) {
     testSetup.org = await helpers.setupOrganizationWithArrays(
-      testSetup.daoFactory,
+      daoFactory,
       [accounts[0], accounts[1], accounts[2]],
       [1000, 1000, 1000],
       testSetup.reputationArray
     );
   } else {
     testSetup.org = await helpers.setupOrganizationWithArrays(
-      testSetup.daoFactory,
+      daoFactory,
       [accounts[0], accounts[1], reputationAccount],
       [1000, 1000, 1000],
       testSetup.reputationArray
     );
   }
 
-  testSetup.voteInOrganizationParams = await setupVoteInOrganizationParams(
-    testSetup.voteInOrganization,
-    accounts,
-    reputationAccount,
-    genesisProtocol,
-    tokenAddress,
-    testSetup.org.avatar
-  );
+  if (genesisProtocol === true) {
+    testSetup.votingMachine = await helpers.setupGenesisProtocol(
+      accounts,
+      tokenAddress,
+      testSetup.org.avatar
+    );
+
+    testSetup.voteInOrganizationScheme = await VoteInOrganizationScheme.at(
+      (await schemesFactory.createVoteInOrganizationScheme(
+        testSetup.org.avatar.address,
+        testSetup.votingMachine.genesisProtocol.address,
+        testSetup.votingMachine.params
+      )).logs[0].args._newSchemeAddress
+    );
+  } else {
+    testSetup.votingMachine = await helpers.setupAbsoluteVote(
+      true,
+      50,
+      reputationAccount
+    );
+
+    testSetup.voteInOrganizationScheme = await VoteInOrganizationScheme.at(
+      (await schemesFactory.createVoteInOrganizationScheme(
+        testSetup.org.avatar.address,
+        testSetup.votingMachine.absoluteVote.address,
+        testSetup.votingMachine.params
+      )).logs[0].args._newSchemeAddress
+    );
+  }
+
   var permissions = "0x00000010";
 
-  await testSetup.daoFactory.setSchemes(
+  await daoFactory.setSchemes(
     testSetup.org.avatar.address,
-    [testSetup.voteInOrganization.address],
-    [testSetup.voteInOrganizationParams.paramsHash],
+    [testSetup.voteInOrganizationScheme.address],
+    [helpers.NULL_HASH],
     [permissions]
   );
 
@@ -140,19 +133,9 @@ const setup = async function(
 };
 
 contract("VoteInOrganizationScheme", accounts => {
-  before(function() {
+  before(async function() {
     helpers.etherForEveryone(accounts);
-  });
-  it("setParameters", async () => {
-    var voteInOrganization = await VoteInOrganizationScheme.new();
-    var absoluteVote = await AbsoluteVote.new();
-    await voteInOrganization.setParameters("0x1234", absoluteVote.address);
-    var paramHash = await voteInOrganization.getParametersHash(
-      "0x1234",
-      absoluteVote.address
-    );
-    var parameters = await voteInOrganization.parameters(paramHash);
-    assert.equal(parameters[0], absoluteVote.address);
+    await setupFactories();
   });
 
   it("proposeVote log", async function() {
@@ -161,23 +144,22 @@ contract("VoteInOrganizationScheme", accounts => {
     var anotherTestSetup = await setup(accounts);
     var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(
       testSetup.org.reputation.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address
+      anotherTestSetup.votingMachine.absoluteVote.address
     );
 
     var tx = await absoluteVoteExecuteMock.propose(
       5,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.params,
+      anotherTestSetup.votingMachine.params,
       anotherTestSetup.org.avatar.address,
       accounts[0]
     );
+
     const proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    tx = await testSetup.voteInOrganization.proposeVote(
-      testSetup.org.avatar.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address,
+    tx = await testSetup.voteInOrganizationScheme.proposeVote(
+      anotherTestSetup.votingMachine.absoluteVote.address,
       proposalId
     );
+
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "NewVoteProposal");
   });
@@ -188,34 +170,29 @@ contract("VoteInOrganizationScheme", accounts => {
     var anotherTestSetup = await setup(accounts);
     var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(
       testSetup.org.reputation.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address
+      anotherTestSetup.votingMachine.absoluteVote.address
     );
     var tx = await absoluteVoteExecuteMock.propose(
       2,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.params,
+      anotherTestSetup.votingMachine.params,
       anotherTestSetup.org.avatar.address,
       accounts[0]
     );
     var originalProposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    tx = await testSetup.voteInOrganization.proposeVote(
-      testSetup.org.avatar.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address,
+    tx = await testSetup.voteInOrganizationScheme.proposeVote(
+      anotherTestSetup.votingMachine.absoluteVote.address,
       originalProposalId
     );
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(
-      proposalId,
-      0,
-      0,
-      { from: accounts[2] }
-    );
-    //check organizationsProposals after execution
-    var organizationProposal = await testSetup.voteInOrganization.organizationsProposals(
-      testSetup.org.avatar.address,
+    await testSetup.votingMachine.absoluteVote.vote(proposalId, 0, 0, {
+      from: accounts[2]
+    });
+
+    // check organizationProposals after execution
+    var organizationProposal = await testSetup.voteInOrganizationScheme.organizationProposals(
       proposalId
     );
+
     assert.equal(
       organizationProposal[0],
       0x0000000000000000000000000000000000000000
@@ -228,43 +205,41 @@ contract("VoteInOrganizationScheme", accounts => {
     var anotherTestSetup = await setup(accounts);
     var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(
       testSetup.org.reputation.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address
+      anotherTestSetup.votingMachine.absoluteVote.address
     );
+
     var tx = await absoluteVoteExecuteMock.propose(
       2,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.params,
+      anotherTestSetup.votingMachine.params,
       anotherTestSetup.org.avatar.address,
       accounts[0]
     );
+
     var originalProposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    tx = await testSetup.voteInOrganization.proposeVote(
-      testSetup.org.avatar.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address,
+    tx = await testSetup.voteInOrganizationScheme.proposeVote(
+      anotherTestSetup.votingMachine.absoluteVote.address,
       originalProposalId
     );
+
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    var organizationProposal = await testSetup.voteInOrganization.organizationsProposals(
-      testSetup.org.avatar.address,
+    var organizationProposal = await testSetup.voteInOrganizationScheme.organizationProposals(
       proposalId
     );
+
     assert.equal(
       organizationProposal[0],
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address
-    ); //new contract address
-    await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(
-      proposalId,
-      1,
-      0,
-      { from: accounts[2] }
-    );
-    //check organizationsProposals after execution
-    organizationProposal = await testSetup.voteInOrganization.organizationsProposals(
-      testSetup.org.avatar.address,
+      anotherTestSetup.votingMachine.absoluteVote.address
+    ); // new contract address
+
+    await testSetup.votingMachine.absoluteVote.vote(proposalId, 1, 0, {
+      from: accounts[2]
+    });
+
+    // check organizationProposals after execution
+    organizationProposal = await testSetup.voteInOrganizationScheme.organizationProposals(
       proposalId
     );
+
     assert.equal(
       organizationProposal[0],
       0x0000000000000000000000000000000000000000
@@ -277,32 +252,29 @@ contract("VoteInOrganizationScheme", accounts => {
     var anotherTestSetup = await setup(accounts, testSetup.org.avatar.address);
     var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(
       anotherTestSetup.org.reputation.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address
+      anotherTestSetup.votingMachine.absoluteVote.address
     );
+
     var tx = await absoluteVoteExecuteMock.propose(
       2,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.params,
+      anotherTestSetup.votingMachine.params,
       anotherTestSetup.org.avatar.address,
       accounts[0]
     );
 
     var originalProposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    tx = await testSetup.voteInOrganization.proposeVote(
-      testSetup.org.avatar.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address,
+    tx = await testSetup.voteInOrganizationScheme.proposeVote(
+      anotherTestSetup.votingMachine.absoluteVote.address,
       originalProposalId
     );
+
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(
-      proposalId,
-      1,
-      0,
-      { from: accounts[2] }
-    );
+    await testSetup.votingMachine.absoluteVote.vote(proposalId, 1, 0, {
+      from: accounts[2]
+    });
+
     await helpers.checkVoteInfo(
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote,
+      anotherTestSetup.votingMachine.absoluteVote,
       originalProposalId,
       testSetup.org.avatar.address,
       [1, anotherTestSetup.reputationArray[2]]
@@ -315,31 +287,25 @@ contract("VoteInOrganizationScheme", accounts => {
     var anotherTestSetup = await setup(accounts, testSetup.org.avatar.address);
     var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(
       anotherTestSetup.org.reputation.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address
+      anotherTestSetup.votingMachine.absoluteVote.address
     );
     var tx = await absoluteVoteExecuteMock.propose(
       2,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.params,
+      anotherTestSetup.votingMachine.params,
       anotherTestSetup.org.avatar.address,
       accounts[0]
     );
     var originalProposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    tx = await testSetup.voteInOrganization.proposeVote(
-      testSetup.org.avatar.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote
-        .address,
+    tx = await testSetup.voteInOrganizationScheme.proposeVote(
+      anotherTestSetup.votingMachine.absoluteVote.address,
       originalProposalId
     );
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    await testSetup.voteInOrganizationParams.votingMachine.absoluteVote.vote(
-      proposalId,
-      3,
-      0,
-      { from: accounts[2] }
-    );
+    await testSetup.votingMachine.absoluteVote.vote(proposalId, 3, 0, {
+      from: accounts[2]
+    });
     await helpers.checkVoteInfo(
-      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote,
+      anotherTestSetup.votingMachine.absoluteVote,
       originalProposalId,
       testSetup.org.avatar.address,
       [0, anotherTestSetup.reputationArray[2]]
@@ -356,38 +322,37 @@ contract("VoteInOrganizationScheme", accounts => {
       true,
       standardTokenMock.address
     );
+
     var reputation = await Reputation.new();
     await reputation.mint(testSetup.org.avatar.address, 100);
 
     var genesisProtocolCallbacksMock = await GenesisProtocolCallbacksMock.new(
       reputation.address,
       standardTokenMock.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.genesisProtocol
-        .address
+      anotherTestSetup.votingMachine.genesisProtocol.address
     );
+
     await reputation.transferOwnership(genesisProtocolCallbacksMock.address);
     var tx = await genesisProtocolCallbacksMock.propose(
       2,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.params,
+      anotherTestSetup.votingMachine.params,
       anotherTestSetup.org.avatar.address,
       accounts[0]
     );
+
     var originalProposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    tx = await testSetup.voteInOrganization.proposeVote(
-      testSetup.org.avatar.address,
-      anotherTestSetup.voteInOrganizationParams.votingMachine.genesisProtocol
-        .address,
+    tx = await testSetup.voteInOrganizationScheme.proposeVote(
+      anotherTestSetup.votingMachine.genesisProtocol.address,
       originalProposalId
     );
+
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId");
-    await testSetup.voteInOrganizationParams.votingMachine.genesisProtocol.vote(
-      proposalId,
-      1,
-      0,
-      { from: accounts[2] }
-    );
+    await testSetup.votingMachine.genesisProtocol.vote(proposalId, 1, 0, {
+      from: accounts[2]
+    });
+
     await helpers.checkVoteInfo(
-      anotherTestSetup.voteInOrganizationParams.votingMachine.genesisProtocol,
+      anotherTestSetup.votingMachine.genesisProtocol,
       originalProposalId,
       testSetup.org.avatar.address,
       [1, 100]
