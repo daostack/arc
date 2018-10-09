@@ -91,4 +91,9 @@ contract('VotingMachineCallbacks', function(accounts) {
                                                                              {from:accounts[0]});
        assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]),100);
     });
+
+    it("balanceOfStakingToken", async function() {
+       var testSetup = await setup(accounts);
+       assert.equal(await testSetup.arcVotingMachineCallbacksMock.balanceOfStakingToken(testSetup.standardTokenMock.address,proposalId),100);
+    });
 });

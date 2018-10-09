@@ -69,11 +69,6 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
 
     function balanceOfStakingToken(StandardToken _stakingToken,bytes32 _proposalId) external view returns(uint) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
-        if (avatar == Avatar(0)) {
-            return 0;
-        }
-        _stakingToken.balanceOf(address(avatar));
+        return _stakingToken.balanceOf(address(avatar));
     }
-
-
 }
