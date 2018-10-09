@@ -1,9 +1,9 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
-import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "../VotingMachines/VotingMachineCallbacks.sol";
 
 
-contract ARCGenesisProtocolCallbacksMock is GenesisProtocolCallbacks {
+contract ARCVotingMachineCallbacksMock is VotingMachineCallbacks {
 
     function propose(bytes32 _proposalId,Avatar _avatar,address _votingMachine) public {
         proposalsInfo[_proposalId] = ProposalInfo(

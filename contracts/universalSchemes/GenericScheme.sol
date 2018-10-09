@@ -1,9 +1,9 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/VotingMachineCallbacksInterface.sol";
 import "./UniversalScheme.sol";
-import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "../VotingMachines/VotingMachineCallbacks.sol";
 
 
 /**
@@ -11,7 +11,7 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * @dev  A scheme for proposing and executing calls to an arbitrary function
  * on a specific contract on behalf of the organization avatar.
  */
-contract GenericScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
+contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
     event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -116,7 +116,7 @@ contract GenericScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
 
-        bytes32 proposalId = intVote.propose(2, params.voteParams,msg.sender);
+        bytes32 proposalId = intVote.propose(2, params.voteParams,msg.sender,_avatar);
 
         organizationsProposals[_avatar][proposalId] = CallProposal({
             callData: _callData,

@@ -1,9 +1,9 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/VotingMachineCallbacksInterface.sol";
 import "./UniversalScheme.sol";
-import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "../VotingMachines/VotingMachineCallbacks.sol";
 
 
 /**
@@ -11,7 +11,7 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * @dev Can be used without organization just as a vesting component.
  */
 
-contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
+contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
     using SafeMath for uint;
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
@@ -130,7 +130,7 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
     {
         // Open voting:
         Parameters memory params = parameters[getParametersFromController(_avatar)];
-        bytes32 proposalId = params.intVote.propose(2, params.voteParams,msg.sender);
+        bytes32 proposalId = params.intVote.propose(2, params.voteParams,msg.sender,_avatar);
         require(_signaturesReqToCancel <= _signersArray.length);
         require(_periodLength > 0);
         require(_numOfAgreedPeriods > 0, "Number of Agreed Periods must be greater than 0");

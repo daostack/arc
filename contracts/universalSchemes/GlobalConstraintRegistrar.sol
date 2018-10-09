@@ -1,9 +1,9 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/VotingMachineCallbacksInterface.sol";
 import "./UniversalScheme.sol";
-import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "../VotingMachines/VotingMachineCallbacks.sol";
 
 
 
@@ -11,7 +11,7 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * @title A scheme to manage global constraint for organizations
  * @dev The scheme is used to register or remove new global constraints
  */
-contract GlobalConstraintRegistrar is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
+contract GlobalConstraintRegistrar is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
     event NewGlobalConstraintsProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -132,7 +132,7 @@ contract GlobalConstraintRegistrar is UniversalScheme,GenesisProtocolCallbacks,G
         Parameters memory votingParams = parameters[getParametersFromController(_avatar)];
 
         IntVoteInterface intVote = votingParams.intVote;
-        bytes32 proposalId = intVote.propose(2, votingParams.voteRegisterParams,msg.sender);
+        bytes32 proposalId = intVote.propose(2, votingParams.voteRegisterParams,msg.sender,_avatar);
 
         GCProposal memory proposal = GCProposal({
             gc: _gc,
@@ -169,7 +169,7 @@ contract GlobalConstraintRegistrar is UniversalScheme,GenesisProtocolCallbacks,G
         require(controller.isGlobalConstraintRegistered(_gc,address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(2, voteToRemoveParams[_avatar][_gc],msg.sender);
+        bytes32 proposalId = intVote.propose(2, voteToRemoveParams[_avatar][_gc],msg.sender,_avatar);
 
         GCProposal memory proposal = GCProposal({
             gc: _gc,

@@ -1,9 +1,9 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolExecuteInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/ProposalExecuteInterface.sol";
 import "./UniversalScheme.sol";
-import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "../VotingMachines/VotingMachineCallbacks.sol";
 
 
 /**
@@ -11,7 +11,7 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * @dev The scheme is used to upgrade the controller of an organization to a new controller.
  */
 
-contract UpgradeScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
+contract UpgradeScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
     event NewUpgradeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -117,7 +117,7 @@ contract UpgradeScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         returns(bytes32)
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
-        bytes32 proposalId = params.intVote.propose(2, params.voteParams,msg.sender);
+        bytes32 proposalId = params.intVote.propose(2, params.voteParams,msg.sender,_avatar);
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 1,
             upgradeContract: _newController,
@@ -150,7 +150,7 @@ contract UpgradeScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(2, params.voteParams,msg.sender);
+        bytes32 proposalId = intVote.propose(2, params.voteParams,msg.sender,_avatar);
         require(organizationsProposals[_avatar][proposalId].proposalType == 0);
 
         UpgradeProposal memory proposal = UpgradeProposal({

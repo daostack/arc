@@ -18,7 +18,7 @@ const setupSchemeRegistrarParams = async function(
                                             schemeRegistrar,
                                             ) {
   var schemeRegistrarParams = new SchemeRegistrarParams();
-  schemeRegistrarParams.votingMachine = await helpers.setupAbsoluteVote();
+  schemeRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(true,50,schemeRegistrar.address);
   await schemeRegistrar.setParameters(schemeRegistrarParams.votingMachine.params,schemeRegistrarParams.votingMachine.params,schemeRegistrarParams.votingMachine.absoluteVote.address);
   schemeRegistrarParams.paramsHash = await schemeRegistrar.getParametersHash(schemeRegistrarParams.votingMachine.params,schemeRegistrarParams.votingMachine.params,schemeRegistrarParams.votingMachine.absoluteVote.address);
   return schemeRegistrarParams;

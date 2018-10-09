@@ -16,7 +16,7 @@ const setupVestingSchemeParams = async function(
                                             vestingScheme,
                                             ) {
   var vestingSchemeParams = new VestingSchemeParams();
-  vestingSchemeParams.votingMachine = await helpers.setupAbsoluteVote();
+  vestingSchemeParams.votingMachine = await helpers.setupAbsoluteVote(true,50,vestingScheme.address);
   await vestingScheme.setParameters(vestingSchemeParams.votingMachine.params,vestingSchemeParams.votingMachine.absoluteVote.address);
   vestingSchemeParams.paramsHash = await vestingScheme.getParametersHash(vestingSchemeParams.votingMachine.params,vestingSchemeParams.votingMachine.absoluteVote.address);
   return vestingSchemeParams;

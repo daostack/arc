@@ -1,10 +1,10 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "../universalSchemes/UniversalScheme.sol";
 import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
 
 
-contract GenesisProtocolCallbacks is GenesisProtocolCallbacksInterface {
+contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
 
     struct ProposalInfo {
         uint blockNumber; // the proposal's block number
@@ -67,4 +67,8 @@ contract GenesisProtocolCallbacks is GenesisProtocolCallbacksInterface {
         return ControllerInterface(avatar.owner()).externalTokenTransfer(_stakingToken,_beneficiary,_amount,address(avatar));
     }
 
+    function balanceOfStakingToken(StandardToken _stakingToken,bytes32 _proposalId) external view returns(uint) {
+        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        return _stakingToken.balanceOf(address(avatar));
+    }
 }

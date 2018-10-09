@@ -1,16 +1,16 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/VotingMachineCallbacksInterface.sol";
 import "./UniversalScheme.sol";
-import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "../VotingMachines/VotingMachineCallbacks.sol";
 
 
 /**
  * @title VoteInOrganizationScheme.
  * @dev A scheme to allow an organization to vote in a proposal.
  */
-contract VoteInOrganizationScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
+contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
     event NewVoteProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -134,7 +134,7 @@ contract VoteInOrganizationScheme is UniversalScheme,GenesisProtocolCallbacks,Ge
             //vote originalNumOfChoices+1 to vote 0 in the other organization.
             proposalNumberOfChoices += 1;
         }
-        bytes32 proposalId = intVote.propose(proposalNumberOfChoices, params.voteParams,msg.sender);
+        bytes32 proposalId = intVote.propose(proposalNumberOfChoices, params.voteParams,msg.sender,_avatar);
 
         organizationsProposals[_avatar][proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,

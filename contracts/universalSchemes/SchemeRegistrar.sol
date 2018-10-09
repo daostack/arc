@@ -1,9 +1,9 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
+import "@daostack/infra/contracts/VotingMachines/VotingMachineCallbacksInterface.sol";
 import "./UniversalScheme.sol";
-import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "../VotingMachines/VotingMachineCallbacks.sol";
 
 
 /**
@@ -11,7 +11,7 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * @dev The SchemeRegistrar is used for registering and unregistering schemes at organizations
  */
 
-contract SchemeRegistrar is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
+contract SchemeRegistrar is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
     event NewSchemeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -126,7 +126,8 @@ contract SchemeRegistrar is UniversalScheme,GenesisProtocolCallbacks,GenesisProt
         bytes32 proposalId = controllerParams.intVote.propose(
             2,
             controllerParams.voteRegisterParams,
-            msg.sender
+            msg.sender,
+            _avatar
         );
 
         SchemeProposal memory proposal = SchemeProposal({
@@ -168,7 +169,7 @@ contract SchemeRegistrar is UniversalScheme,GenesisProtocolCallbacks,GenesisProt
         Parameters memory params = parameters[paramsHash];
 
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(2, params.voteRemoveParams,msg.sender);
+        bytes32 proposalId = intVote.propose(2, params.voteRemoveParams,msg.sender,_avatar);
 
         organizationsProposals[_avatar][proposalId].proposalType = 2;
         organizationsProposals[_avatar][proposalId].scheme = _scheme;
