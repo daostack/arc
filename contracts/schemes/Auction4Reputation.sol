@@ -84,7 +84,7 @@ contract Auction4Reputation is Ownable {
      */
     function redeem(address _beneficiary, uint _auctionId) public returns(bool) {
         // solium-disable-next-line security/no-block-members
-        require(now >= auctionsEndTime, "check the auctions period pass");
+        require(now > auctionsEndTime, "check the auctions period pass");
         Auction storage auction = auctions[_auctionId];
         uint bid = auction.bids[_beneficiary];
         require(bid > 0, "bidding amount should be > 0");
