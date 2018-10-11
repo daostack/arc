@@ -9,6 +9,7 @@ const setup = async function (accounts,
                              _repAllocation = 100,
                              _lockingStartTime = 0,
                              _lockingEndTime = 3000,
+                             _redeemEnableTime = 3000,
                              _maxLockingPeriod = 6000,
                              _initialize = true) {
    var testSetup = new helpers.TestSetup();
@@ -17,12 +18,14 @@ const setup = async function (accounts,
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.lockingEndTime = (await web3.eth.getBlock("latest")).timestamp + _lockingEndTime;
    testSetup.lockingStartTime = (await web3.eth.getBlock("latest")).timestamp + _lockingStartTime;
+   testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
    testSetup.lockingEth4Reputation = await LockingEth4Reputation.new();
    if (_initialize === true) {
       await testSetup.lockingEth4Reputation.initialize(testSetup.org.avatar.address,
                                                           _repAllocation,
                                                           testSetup.lockingStartTime,
                                                           testSetup.lockingEndTime,
+                                                          testSetup.redeemEnableTime,
                                                           _maxLockingPeriod);
    }
 
@@ -37,6 +40,7 @@ contract('LockingEth4Reputation', accounts => {
       let testSetup = await setup(accounts);
       assert.equal(await testSetup.lockingEth4Reputation.reputationReward(),100);
       assert.equal(await testSetup.lockingEth4Reputation.maxLockingPeriod(),6000);
+      assert.equal(await testSetup.lockingEth4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.lockingEth4Reputation.lockingEndTime(),testSetup.lockingEndTime);
     });
 
@@ -53,7 +57,7 @@ contract('LockingEth4Reputation', accounts => {
     });
 
     it("cannot lock without initialize", async () => {
-      let testSetup = await setup(accounts,100,0,3000,6000,false);
+      let testSetup = await setup(accounts,100,0,3000,3000,6000,false);
       try {
         await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
         assert(false, "cannot lock without initialize");
@@ -200,6 +204,20 @@ contract('LockingEth4Reputation', accounts => {
            }
     });
 
+    it("redeem before redeemEnableTime should revert", async () => {
+        let testSetup = await setup(accounts,100,0,3000,4000,6000,true);
+        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        await helpers.increaseTime(3500);
+        try {
+             await testSetup.lockingEth4Reputation.redeem(accounts[0]);
+             assert(false, "redeem before redeemEnableTime should revert");
+           } catch(error) {
+             helpers.assertVMException(error);
+           }
+        await helpers.increaseTime(501);
+        await testSetup.lockingEth4Reputation.redeem(accounts[0]);
+    });
+
     it("cannot initialize twice", async () => {
         let testSetup = await setup(accounts);
         try {
@@ -207,6 +225,7 @@ contract('LockingEth4Reputation', accounts => {
                                                                  100,
                                                                  testSetup.lockingStartTime,
                                                                  testSetup.lockingEndTime,
+                                                                 testSetup.redeemEnableTime,
                                                                  6000);
              assert(false, "cannot initialize twice");
            } catch(error) {
@@ -221,6 +240,7 @@ contract('LockingEth4Reputation', accounts => {
                                                   100,
                                                   0,
                                                   100,
+                                                  100,
                                                   6000,
                                                 {from:accounts[1]});
         assert(false, "initialize is onlyOwner");
@@ -231,7 +251,29 @@ contract('LockingEth4Reputation', accounts => {
                                                 100,
                                                 0,
                                                 100,
+                                                100,
                                                 6000,
                                               {from:accounts[0]});
+    });
+
+    it("redeemEnableTime >= lockingEndTime", async () => {
+      var lockingEth4Reputation = await LockingEth4Reputation.new();
+      try {
+        await lockingEth4Reputation.initialize(accounts[1],
+                                                  100,
+                                                  0,
+                                                  100,
+                                                  100-1,
+                                                  6000);
+        assert(false, "redeemEnableTime >= lockingEndTime");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+      await lockingEth4Reputation.initialize(accounts[1],
+                                                100,
+                                                0,
+                                                100,
+                                                100,
+                                                6000);
     });
 });

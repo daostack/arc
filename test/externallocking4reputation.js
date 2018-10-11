@@ -5,7 +5,7 @@ const constants = require('./constants');
 var ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
 var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
 
-const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 0,_lockingEndTime = 3000,_initialize = true) {
+const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 0,_lockingEndTime = 3000,_redeemEnableTime = 3000,_initialize = true) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
@@ -13,6 +13,7 @@ const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 
    var block = await web3.eth.getBlock("latest");
    testSetup.lockingEndTime = block.timestamp + _lockingEndTime;
    testSetup.lockingStartTime = block.timestamp + _lockingStartTime;
+   testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
    testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
    await testSetup.extetnalTokenLockerMock.lock(100,{from:accounts[0]});
    await testSetup.extetnalTokenLockerMock.lock(200,{from:accounts[1]});
@@ -24,6 +25,7 @@ const setup = async function (accounts,_repAllocation = 100,_lockingStartTime = 
                                                              _repAllocation,
                                                              testSetup.lockingStartTime,
                                                              testSetup.lockingEndTime,
+                                                             testSetup.redeemEnableTime,
                                                              testSetup.extetnalTokenLockerMock.address,
                                                              "lockedTokenBalances(address)");
    }
@@ -39,6 +41,7 @@ contract('ExternalLocking4Reputation', accounts => {
       assert.equal(await testSetup.externalLocking4Reputation.reputationReward(),100);
       assert.equal(await testSetup.externalLocking4Reputation.lockingEndTime(),testSetup.lockingEndTime);
       assert.equal(await testSetup.externalLocking4Reputation.lockingStartTime(),testSetup.lockingStartTime);
+      assert.equal(await testSetup.externalLocking4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.externalLocking4Reputation.externalLockingContract(),testSetup.extetnalTokenLockerMock.address);
       assert.equal(await testSetup.externalLocking4Reputation.getBalanceFuncSignature(),"lockedTokenBalances(address)");
     });
@@ -56,7 +59,7 @@ contract('ExternalLocking4Reputation', accounts => {
     });
 
     it("cannot lock before set parameters", async () => {
-      let testSetup = await setup(accounts,100,0,3000,false);
+      let testSetup = await setup(accounts,100,0,3000,3000,false);
       try {
         await testSetup.externalLocking4Reputation.lock();
         assert(false, "cannot lock before set parameters");
@@ -155,6 +158,21 @@ contract('ExternalLocking4Reputation', accounts => {
            }
     });
 
+    it("redeem before redeemEnableTime should revert", async () => {
+        let testSetup = await setup(accounts,100,0,3000,4000,true);
+        await testSetup.externalLocking4Reputation.lock();
+        await helpers.increaseTime(3500);
+        try {
+             await testSetup.externalLocking4Reputation.redeem(accounts[0]);
+             assert(false, "redeem before lockingEndTime should revert");
+           } catch(error) {
+             helpers.assertVMException(error);
+           }
+        await helpers.increaseTime(501);
+        await testSetup.externalLocking4Reputation.redeem(accounts[0]);
+
+    });
+
     it("cannot initialize twice", async () => {
         let testSetup = await setup(accounts);
         try {
@@ -162,6 +180,7 @@ contract('ExternalLocking4Reputation', accounts => {
                                                                      100,
                                                                      testSetup.lockingStartTime,
                                                                      testSetup.lockingEndTime,
+                                                                     testSetup.redeemEnableTime,
                                                                      testSetup.extetnalTokenLockerMock.address,
                                                                      "lockedTokenBalances(address)");
              assert(false, "cannot initialize twice");
@@ -177,6 +196,7 @@ contract('ExternalLocking4Reputation', accounts => {
                                                        100,
                                                        0,
                                                        3000,
+                                                       3000,
                                                        accounts[0],
                                                        "lockedTokenBalances(address)",
                                               {from:accounts[1]});
@@ -187,6 +207,32 @@ contract('ExternalLocking4Reputation', accounts => {
       await externalLocking4Reputation.initialize(accounts[0],
                                                      100,
                                                      0,
+                                                     3000,
+                                                     3000,
+                                                     accounts[0],
+                                                     "lockedTokenBalances(address)",
+                                                     {from:accounts[0]});
+    });
+
+    it("redeemEnableTime >= lockingEndTime ", async () => {
+      var externalLocking4Reputation = await ExternalLocking4Reputation.new();
+      try {
+        await externalLocking4Reputation.initialize(accounts[0],
+                                                       100,
+                                                       0,
+                                                       3000,
+                                                       3000-1,
+                                                       accounts[0],
+                                                       "lockedTokenBalances(address)",
+                                              {from:accounts[0]});
+        assert(false, "redeemEnableTime >= lockingEndTime");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+      await externalLocking4Reputation.initialize(accounts[0],
+                                                     100,
+                                                     0,
+                                                     3000,
                                                      3000,
                                                      accounts[0],
                                                      "lockedTokenBalances(address)",

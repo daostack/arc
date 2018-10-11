@@ -38,6 +38,7 @@ contract Locking4Reputation {
     uint public lockingEndTime;
     uint public maxLockingPeriod;
     uint public lockingStartTime;
+    uint public redeemEnableTime;
 
     /**
      * @dev redeem reputation function
@@ -46,7 +47,7 @@ contract Locking4Reputation {
      */
     function redeem(address _beneficiary) public returns(bool) {
         // solium-disable-next-line security/no-block-members
-        require(block.timestamp > lockingEndTime, "check the lock period pass");
+        require(block.timestamp > redeemEnableTime, "now > redeemEnableTime");
         require(scores[_beneficiary] > 0, "score should be > 0");
         uint score = scores[_beneficiary];
         scores[_beneficiary] = 0;
@@ -118,8 +119,9 @@ contract Locking4Reputation {
      *        for eth/token locking
      * @param _lockingStartTime the locking start time.
      * @param _lockingEndTime the locking end time.
-     *        redeem reputation can be done after this period.
      *        locking is disable after this time.
+     * @param _redeemEnableTime redeem enable time .
+     *        redeem reputation can be done after this time.
      * @param _maxLockingPeriod maximum locking period allowed.
      */
     function _initialize(
@@ -127,12 +129,14 @@ contract Locking4Reputation {
         uint _reputationReward,
         uint _lockingStartTime,
         uint _lockingEndTime,
+        uint _redeemEnableTime,
         uint _maxLockingPeriod)
     internal
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         require(_lockingEndTime > _lockingStartTime, "locking end time should be greater than locking start time");
+        require(_redeemEnableTime >= _lockingEndTime, "redeemEnableTime >= lockingEndTime");
 
         reputationReward = _reputationReward;
         reputationRewardLeft = _reputationReward;
@@ -140,6 +144,7 @@ contract Locking4Reputation {
         maxLockingPeriod = _maxLockingPeriod;
         avatar = _avatar;
         lockingStartTime = _lockingStartTime;
+        redeemEnableTime = _redeemEnableTime;
     }
 
 }
