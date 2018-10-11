@@ -1,8 +1,8 @@
 pragma solidity ^0.4.25;
 
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
-import "@daostack/infra/contracts/VotingMachines/AbsoluteVote.sol";
-import "@daostack/infra/contracts/VotingMachines/QuorumVote.sol";
+import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
+import "@daostack/infra/contracts/votingMachines/AbsoluteVote.sol";
+import "@daostack/infra/contracts/votingMachines/QuorumVote.sol";
 import "@daostack/infra/contracts/test/AbsoluteVoteExecuteMock.sol";
 import "@daostack/infra/contracts/test/GenesisProtocolCallbacksMock.sol";
 
