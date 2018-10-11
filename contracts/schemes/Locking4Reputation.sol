@@ -46,7 +46,7 @@ contract Locking4Reputation {
      */
     function redeem(address _beneficiary) public returns(bool) {
         // solium-disable-next-line security/no-block-members
-        require(block.timestamp >= lockingEndTime, "check the lock period pass");
+        require(block.timestamp > lockingEndTime, "check the lock period pass");
         require(scores[_beneficiary] > 0, "score should be > 0");
         uint score = scores[_beneficiary];
         scores[_beneficiary] = 0;
@@ -74,7 +74,7 @@ contract Locking4Reputation {
         amount = locker.amount;
         locker.amount = 0;
         // solium-disable-next-line security/no-block-members
-        require(block.timestamp >= locker.releaseTime, "check the lock period pass");
+        require(block.timestamp > locker.releaseTime, "check the lock period pass");
         totalLockedLeft = totalLockedLeft.sub(amount);
 
         emit Release(_lockingId, _beneficiary, amount);
