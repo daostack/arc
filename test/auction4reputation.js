@@ -161,7 +161,24 @@ contract('Auction4Reputation', accounts => {
       assert.equal(tx.logs[0].args._amount,web3.utils.toWei('1', "ether"));
       assert.equal(tx.logs[0].args._bidder,accounts[0]);
       //test the tokens moved to the wallet.
+      assert.equal(await testSetup.biddingToken.balanceOf(testSetup.auction4Reputation.address),web3.utils.toWei('1', "ether"));
+    });
+
+    it("transferToWallet ", async () => {
+      let testSetup = await setup(accounts);
+      await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
+      assert.equal(await testSetup.biddingToken.balanceOf(testSetup.auction4Reputation.address),web3.utils.toWei('1', "ether"));
+      try {
+        await testSetup.auction4Reputation.transferToWallet();
+        assert(false, "cannot transferToWallet before auction end time");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+      await helpers.increaseTime(3001);
+      await testSetup.auction4Reputation.transferToWallet();
+      assert.equal(await testSetup.biddingToken.balanceOf(testSetup.auction4Reputation.address),web3.utils.toWei('0', "ether"));
       assert.equal(await testSetup.biddingToken.balanceOf(testSetup.org.avatar.address),web3.utils.toWei('1', "ether"));
+
     });
 
     it("bid without initialize should fail", async () => {

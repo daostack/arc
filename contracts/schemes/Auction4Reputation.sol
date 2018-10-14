@@ -115,7 +115,7 @@ contract Auction4Reputation is Ownable {
         require(now <= auctionsEndTime, "bidding should be within the allowed bidding period");
         // solium-disable-next-line security/no-block-members
         require(now >= auctionsStartTime, "bidding is enable only after bidding auctionsStartTime");
-        require(token.transferFrom(msg.sender, wallet, _amount), "transferFrom should success");
+        require(token.transferFrom(msg.sender, this, _amount), "transferFrom should success");
         // solium-disable-next-line security/no-block-members
         auctionId = (now - auctionsStartTime) / auctionPeriod;
         Auction storage auction = auctions[auctionId];
@@ -132,6 +132,17 @@ contract Auction4Reputation is Ownable {
      */
     function getBid(address _bidder,uint _auctionId) public view returns(uint) {
         return auctions[_auctionId].bids[_bidder];
+    }
+
+    /**
+     * @dev transferToWallet transfer the tokens to the wallet.
+     *      can be called only after auctionsEndTime
+     */
+    function transferToWallet() public {
+      // solium-disable-next-line security/no-block-members
+        require(now > auctionsEndTime, "now > redeemEnableTime");
+        uint tokenBalance = token.balanceOf(this);
+        require(token.transfer(wallet,tokenBalance), "transfer should success");
     }
 
 }
