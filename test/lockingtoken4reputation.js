@@ -9,6 +9,7 @@ const setup = async function (accounts,
                              _repAllocation = 100,
                              _lockingStartTime = 0,
                              _lockingEndTime = 3000,
+                             _redeemEnableTime = 3000,
                              _maxLockingPeriod = 6000,
                              _initialize = true) {
    var testSetup = new helpers.TestSetup();
@@ -18,12 +19,15 @@ const setup = async function (accounts,
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.lockingEndTime = (await web3.eth.getBlock("latest")).timestamp + _lockingEndTime;
    testSetup.lockingStartTime = (await web3.eth.getBlock("latest")).timestamp + _lockingStartTime;
+   testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
+
    testSetup.lockingToken4Reputation = await LockingToken4Reputation.new();
    if (_initialize === true) {
       await testSetup.lockingToken4Reputation.initialize(testSetup.org.avatar.address,
                                                            _repAllocation,
                                                            testSetup.lockingStartTime,
                                                            testSetup.lockingEndTime,
+                                                           testSetup.redeemEnableTime,
                                                            _maxLockingPeriod,
                                                            testSetup.lockingToken.address);
   }
@@ -40,6 +44,7 @@ contract('LockingToken4Reputation', accounts => {
       assert.equal(await testSetup.lockingToken4Reputation.reputationReward(),100);
       assert.equal(await testSetup.lockingToken4Reputation.maxLockingPeriod(),6000);
       assert.equal(await testSetup.lockingToken4Reputation.lockingEndTime(),testSetup.lockingEndTime);
+      assert.equal(await testSetup.lockingToken4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.lockingToken4Reputation.token(),testSetup.lockingToken.address);
     });
 
@@ -56,7 +61,7 @@ contract('LockingToken4Reputation', accounts => {
     });
 
     it("cannot lock without initialize", async () => {
-      let testSetup = await setup(accounts,100,0,3000,6000,false);
+      let testSetup = await setup(accounts,100,0,3000,3000,6000,false);
       try {
         await testSetup.lockingToken4Reputation.lock(web3.utils.toWei('1', "ether"),100);
         assert(false, "cannot lock without initialize");
@@ -205,6 +210,20 @@ contract('LockingToken4Reputation', accounts => {
            }
     });
 
+    it("redeem before redeemEnableTime should revert", async () => {
+        let testSetup = await setup(accounts,100,0,3000,4000,6000,true);
+        await testSetup.lockingToken4Reputation.lock(web3.utils.toWei('1', "ether"),100);
+        await helpers.increaseTime(3500);
+        try {
+             await testSetup.lockingToken4Reputation.redeem(accounts[0]);
+             assert(false, "redeem before lockingEndTime should revert");
+           } catch(error) {
+             helpers.assertVMException(error);
+           }
+        await helpers.increaseTime(501);
+        await testSetup.lockingToken4Reputation.redeem(accounts[0]);
+    });
+
     it("cannot initialize twice", async () => {
         let testSetup = await setup(accounts);
         try {
@@ -212,6 +231,7 @@ contract('LockingToken4Reputation', accounts => {
                                                                   100,
                                                                   testSetup.lockingStartTime,
                                                                   testSetup.lockingEndTime,
+                                                                  testSetup.redeemEnableTime,
                                                                   6000,
                                                                   testSetup.lockingToken.address);
              assert(false, "cannot initialize twice");
@@ -227,6 +247,7 @@ contract('LockingToken4Reputation', accounts => {
                                                   100,
                                                   0,
                                                   100,
+                                                  100,
                                                   6000,
                                                   accounts[1],
                                                 {from:accounts[1]});
@@ -238,8 +259,32 @@ contract('LockingToken4Reputation', accounts => {
                                                 100,
                                                 0,
                                                 100,
+                                                100,
                                                 6000,
                                                 accounts[1],
                                                 {from:accounts[0]});
+    });
+
+    it("redeemEnableTime >= lockingEndTime", async () => {
+      var lockingToken4Reputation = await LockingToken4Reputation.new();
+      try {
+        await lockingToken4Reputation.initialize(accounts[1],
+                                                  100,
+                                                  0,
+                                                  100,
+                                                  100-1,
+                                                  6000,
+                                                  accounts[1]);
+        assert(false, "redeemEnableTime >= lockingEndTime");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+      await lockingToken4Reputation.initialize(accounts[1],
+                                                100,
+                                                0,
+                                                100,
+                                                100,
+                                                6000,
+                                                accounts[1]);
     });
 });

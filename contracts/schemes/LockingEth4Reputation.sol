@@ -17,8 +17,9 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
      *        for eth locking
      * @param _lockingStartTime locking starting period time.
      * @param _lockingEndTime the locking end time.
-     *        redeem reputation can be done after this period.
      *        locking is disable after this time.
+     * @param _redeemEnableTime redeem enable time .
+     *        redeem reputation can be done after this time.
      * @param _maxLockingPeriod maximum locking period allowed.
      */
     function initialize(
@@ -26,6 +27,7 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
         uint _reputationReward,
         uint _lockingStartTime,
         uint _lockingEndTime,
+        uint _redeemEnableTime,
         uint _maxLockingPeriod)
     external
     onlyOwner
@@ -35,6 +37,7 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
         _reputationReward,
         _lockingStartTime,
         _lockingEndTime,
+        _redeemEnableTime,
         _maxLockingPeriod);
     }
 
@@ -47,7 +50,7 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
     function release(address _beneficiary, bytes32 _lockingId) public returns(bool) {
         uint amount = super._release(_beneficiary, _lockingId);
         _beneficiary.transfer(amount);
-        
+
         return true;
     }
 

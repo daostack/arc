@@ -11,6 +11,7 @@ const setup = async function (accounts,
                              _auctionsStartTime = 0,
                              _auctionsEndTime = 3000,
                              _numberOfAuctions = 3,
+                             _redeemEnableTime = 3000,
                              _initialize = true) {
    var testSetup = new helpers.TestSetup();
    testSetup.biddingToken = await StandardTokenMock.new(accounts[0], web3.utils.toWei('100', "ether"));
@@ -19,6 +20,7 @@ const setup = async function (accounts,
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.auctionsEndTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsEndTime;
    testSetup.auctionsStartTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsStartTime;
+   testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
    testSetup.auction4Reputation = await Auction4Reputation.new();
    if (_initialize === true ) {
      await testSetup.auction4Reputation.initialize(testSetup.org.avatar.address,
@@ -26,6 +28,7 @@ const setup = async function (accounts,
                                                      testSetup.auctionsStartTime,
                                                      testSetup.auctionsEndTime,
                                                      _numberOfAuctions,
+                                                     testSetup.redeemEnableTime,
                                                      testSetup.biddingToken.address,
                                                      testSetup.org.avatar.address,
                                                      {gas : constants.ARC_GAS_LIMIT});
@@ -44,6 +47,7 @@ contract('Auction4Reputation', accounts => {
       assert.equal(await testSetup.auction4Reputation.reputationRewardLeft(),300);
       assert.equal(await testSetup.auction4Reputation.auctionsEndTime(),testSetup.auctionsEndTime);
       assert.equal(await testSetup.auction4Reputation.auctionsStartTime(),testSetup.auctionsStartTime);
+      assert.equal(await testSetup.auction4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.auction4Reputation.token(),testSetup.biddingToken.address);
       assert.equal(await testSetup.auction4Reputation.numberOfAuctions(),3);
       assert.equal(await testSetup.auction4Reputation.wallet(),testSetup.org.avatar.address);
@@ -58,6 +62,25 @@ contract('Auction4Reputation', accounts => {
                                                0,
                                                3000,
                                                0,
+                                               3000,
+                                              accounts[0],
+                                              accounts[0],
+                                              {gas :constants.ARC_GAS_LIMIT});
+        assert(false, "numberOfAuctions = 0  is not allowed");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("initialize _redeemEnableTime < _auctionsEndTime is not allowed", async () => {
+      var auction4Reputation = await Auction4Reputation.new();
+      try {
+        await auction4Reputation.initialize(accounts[0],
+                                               300,
+                                               0,
+                                               3000,
+                                               1,
+                                               3000-1,
                                               accounts[0],
                                               accounts[0],
                                               {gas :constants.ARC_GAS_LIMIT});
@@ -75,6 +98,7 @@ contract('Auction4Reputation', accounts => {
                                                0,
                                                3000,
                                                1,
+                                               3000,
                                               accounts[0],
                                               accounts[0],
                                               {gas :constants.ARC_GAS_LIMIT,from:accounts[1]});
@@ -87,6 +111,7 @@ contract('Auction4Reputation', accounts => {
                                              0,
                                              3000,
                                              1,
+                                             3000,
                                             accounts[0],
                                             accounts[0],
                                           {gas :constants.ARC_GAS_LIMIT,from:accounts[0]});
@@ -100,6 +125,7 @@ contract('Auction4Reputation', accounts => {
                                                300,
                                                300,
                                                1,
+                                               300,
                                               accounts[0],
                                               accounts[0]);
         assert(false, "auctionsEndTime = auctionsStartTime is not allowed");
@@ -116,6 +142,7 @@ contract('Auction4Reputation', accounts => {
                                                200,
                                                100,
                                                1,
+                                               100,
                                               accounts[0],
                                               accounts[0]);
         assert(false, "auctionsEndTime < auctionsStartTime is not allowed");
@@ -134,11 +161,28 @@ contract('Auction4Reputation', accounts => {
       assert.equal(tx.logs[0].args._amount,web3.utils.toWei('1', "ether"));
       assert.equal(tx.logs[0].args._bidder,accounts[0]);
       //test the tokens moved to the wallet.
+      assert.equal(await testSetup.biddingToken.balanceOf(testSetup.auction4Reputation.address),web3.utils.toWei('1', "ether"));
+    });
+
+    it("transferToWallet ", async () => {
+      let testSetup = await setup(accounts);
+      await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
+      assert.equal(await testSetup.biddingToken.balanceOf(testSetup.auction4Reputation.address),web3.utils.toWei('1', "ether"));
+      try {
+        await testSetup.auction4Reputation.transferToWallet();
+        assert(false, "cannot transferToWallet before auction end time");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+      await helpers.increaseTime(3001);
+      await testSetup.auction4Reputation.transferToWallet();
+      assert.equal(await testSetup.biddingToken.balanceOf(testSetup.auction4Reputation.address),web3.utils.toWei('0', "ether"));
       assert.equal(await testSetup.biddingToken.balanceOf(testSetup.org.avatar.address),web3.utils.toWei('1', "ether"));
+
     });
 
     it("bid without initialize should fail", async () => {
-      let testSetup = await setup(accounts,300,0,3000,3,false);
+      let testSetup = await setup(accounts,300,0,3000,3,3000,false);
       try {
         await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         assert(false, "bid without initialize should fail");
@@ -225,6 +269,21 @@ contract('Auction4Reputation', accounts => {
            }
     });
 
+    it("redeem before redeemEnableTime should revert", async () => {
+        let testSetup = await setup(accounts,300,0,3000,3,4000,true);
+        var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
+        var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
+        await helpers.increaseTime(3500);
+        try {
+             await testSetup.auction4Reputation.redeem(accounts[0],id);
+             assert(false, "redeem before auctionEndTime should revert");
+           } catch(error) {
+             helpers.assertVMException(error);
+           }
+        await helpers.increaseTime(501);
+        await testSetup.auction4Reputation.redeem(accounts[0],id);
+    });
+
     it("bid and redeem from all acutions", async () => {
         let testSetup = await setup(accounts);
         var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
@@ -270,6 +329,7 @@ contract('Auction4Reputation', accounts => {
                                                               200,
                                                               100,
                                                               1,
+                                                              100,
                                                               accounts[0],
                                                               accounts[0]);
              assert(false, "cannot initialize twice");

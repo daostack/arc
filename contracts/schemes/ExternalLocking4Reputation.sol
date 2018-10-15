@@ -23,8 +23,9 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
      *        for the token locking
      * @param _lockingStartTime locking starting period time.
      * @param _lockingEndTime the locking end time.
-     *        redeem reputation can be done after this period.
      *        locking is disable after this time.
+     * @param _redeemEnableTime redeem enable time .
+     *        redeem reputation can be done after this time.
      * @param _externalLockingContract the contract which lock the token.
      * @param _getBalanceFuncSignature get balance function signature
      *        e.g "lockedTokenBalances(address)"
@@ -34,6 +35,7 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         uint _reputationReward,
         uint _lockingStartTime,
         uint _lockingEndTime,
+        uint _redeemEnableTime,
         address _externalLockingContract,
         string _getBalanceFuncSignature)
     external
@@ -47,6 +49,7 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         _reputationReward,
         _lockingStartTime,
         _lockingEndTime,
+        _redeemEnableTime,
         1);
     }
 
@@ -69,7 +72,7 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
           case 0 { revert(0, returndatasize) }
           default { lockedAmount := mload(0) }
         }
-        
+
         return super._lock(lockedAmount, 1, msg.sender);
     }
 }
