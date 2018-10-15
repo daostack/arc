@@ -140,7 +140,7 @@ contract Auction4Reputation is Ownable {
      */
     function transferToWallet() public {
       // solium-disable-next-line security/no-block-members
-        require(now > auctionsEndTime, "now > redeemEnableTime");
+        require(now > auctionsEndTime, "now > auctionsEndTime");
         uint tokenBalance = token.balanceOf(this);
         require(token.transfer(wallet,tokenBalance), "transfer should success");
     }
