@@ -9,23 +9,23 @@ import { Approval, Transfer, ERC20 } from './types/GEN/ERC20';
 
 // Handler for Transfer events
 export function transfer(event: Transfer): void {
-  const erc20 = ERC20.bind(event.address);
+  let erc20 = ERC20.bind(event.address);
 
-  const from = new Entity();
-  const fromId = concat(event.address, event.params.from).toHex();
+  let from = new Entity();
+  let fromId = concat(event.address, event.params.from).toHex();
   from.setString('id', fromId)
   from.setAddress('contract', event.address);
   from.setAddress('owner', event.params.from);
   from.setU256('balance', erc20.balanceOf(event.params.from));
-  store.set('ERC20_balance', fromId, from);
+  store.set('ERC20_Balance', fromId, from);
 
-  const to = new Entity();
-  const toId = concat(event.address, event.params.to).toHex();
+  let to = new Entity();
+  let toId = concat(event.address, event.params.to).toHex();
   to.setString('id', toId);
   to.setAddress('contract', event.address);
   to.setAddress('owner', event.params.to);
   to.setU256('balance', erc20.balanceOf(event.params.to));
-  store.set('ERC20_balance', toId, to);
+  store.set('ERC20_Balance', toId, to);
 }
 
 // Handler for Approval events
