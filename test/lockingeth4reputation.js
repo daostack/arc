@@ -54,6 +54,11 @@ contract('LockingEth4Reputation', accounts => {
       assert.equal(tx.logs[0].args._amount,web3.utils.toWei('1', "ether"));
       assert.equal(tx.logs[0].args._period,100);
       assert.equal(tx.logs[0].args._locker,accounts[0]);
+
+      assert.equal(await testSetup.lockingEth4Reputation.totalScore(),100*web3.utils.toWei('1', "ether"));
+      await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+      assert.equal(await testSetup.lockingEth4Reputation.totalScore(),2*100*web3.utils.toWei('1', "ether"));
+
     });
 
     it("cannot lock without initialize", async () => {
