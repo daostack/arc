@@ -1,0 +1,6 @@
+type ERC20_Balance @entity {
+  id: ID!
+  contract: Bytes!
+  owner: Bytes!
+  balance: Int!
+}
