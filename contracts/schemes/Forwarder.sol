@@ -40,6 +40,8 @@ contract Forwarder is Ownable {
      * @param _expirationTime the expirationTime to forwardCall
      */
     function initialize(Avatar _avatar, uint _expirationTime) external onlyOwner {
+        require(avatar == Avatar(0), "can be called only one time");
+        require(_avatar != Avatar(0), "avatar cannot be zero");
         avatar = _avatar;
         expirationTime = _expirationTime;
     }

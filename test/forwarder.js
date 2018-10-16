@@ -37,6 +37,17 @@ contract('Forwarder', accounts => {
       assert.equal(await testSetup.forwarder.expirationTime(),testSetup.expirationTime);
     });
 
+    it("cannot initialize twice", async () => {
+        let testSetup = await setup(accounts);
+        try {
+             await testSetup.forwarder.initialize(testSetup.org.avatar.address,
+                                                  testSetup.expirationTime);
+             assert(false, "cannot initialize twice");
+           } catch(error) {
+             helpers.assertVMException(error);
+           }
+    });
+
     it("forwardCall (fallback)", async () => {
       let testSetupA = await setup(accounts);
       let testSetupB = await setup(accounts);
