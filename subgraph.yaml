@@ -16,7 +16,7 @@ dataSources:
         - ERC20_Balance
       abis:
         - name: ERC20
-          file: ./node_modules/@daostack/arc/build/contracts/ERC20.json
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: Transfer(address,address,uint256)
           handler: transfer
