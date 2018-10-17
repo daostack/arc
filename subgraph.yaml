@@ -3,22 +3,20 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: GEN
+    name: GP
     source:
-      address: '0x543ff227f64aa17ea132bf9886cab5db55dcaddf' # GEN Token address
-      abi: ERC20
+      address: '0x8940442e7f54e875c8c1c80213a4aee7eee4781c' # GenesisProtocol address
+      abi: GenesisProtocol
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.1
       language: wasm/assemblyscript
-      file: ./src/erc20.ts
+      file: ./src/genesisProtocol.ts
       entities:
-        - ERC20_Balance
+        - Proposal
       abis:
-        - name: ERC20
-          file: ./abis/ERC20.json
+        - name: GenesisProtocol
+          file: ./abis/GenesisProtocol.json
       eventHandlers:
-        - event: Transfer(address,address,uint256)
-          handler: transfer
-        - event: Approval(address,address,uint256)
-          handler: approval
+        - event: NewProposal(bytes32,address,uint256,address,bytes32)
+          handler: newProposal

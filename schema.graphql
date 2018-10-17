@@ -1,6 +1,8 @@
-type ERC20_Balance @entity {
+type Proposal @entity {
   id: ID!
-  contract: Bytes!
-  owner: Bytes!
-  balance: Int!
+  address: Bytes!
+  nChoices: Int!
+  organization: Bytes!
+  paramsHash: Bytes!
+  proposer: Bytes!
 }
