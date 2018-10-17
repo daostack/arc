@@ -106,8 +106,9 @@ contract Locking4Reputation {
         locker.releaseTime = now + _period;
         totalLocked += _amount;
         totalLockedLeft = totalLocked;
-        scores[_locker] = scores[_locker].add(_period.mul(_amount));
-        totalScore = totalScore.add(scores[_locker]);
+        uint score = _period.mul(_amount);
+        scores[_locker] = scores[_locker].add(score);
+        totalScore = totalScore.add(score);
 
         emit Lock(_locker, lockingId, _amount, _period);
     }
