@@ -11,7 +11,7 @@ import { GenesisProtocol, NewProposal } from './types/GP/GenesisProtocol';
 export function newProposal(event: NewProposal): void {
   let ent = new Entity();
   ent.setAddress('address', event.address);
-  ent.setU256('nChoices', event.params._numOfChoices);
+  ent.setU256('numOfChoices', event.params._numOfChoices);
   ent.setAddress('organization', event.params._organization);
   ent.setBytes('paramsHash', event.params._paramsHash);
   ent.setAddress('proposer', event.params._proposer);

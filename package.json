@@ -5,11 +5,16 @@
     "build": "graph build subgraph.yaml",
     "build-ipfs": "graph build --ipfs /ip4/127.0.0.1/tcp/5001 subgraph.yaml",
     "build-wast": "graph build -t wast subgraph.yaml",
-    "deploy": "graph deploy --ipfs /ip4/127.0.0.1/tcp/5001 --node http://127.0.0.1:8020/ -n daostack subgraph.yaml"
+    "authorize": "./authorize.js",
+    "deploy": "sh deploy.sh",
+    "deploy:watch": "sh deploy.sh -w"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.3.1",
-    "@graphprotocol/graph-ts": "^0.0.1"
+    "@graphprotocol/graph-ts": "^0.0.1",
+    "axios": "^0.18.0",
+    "dotenv": "^6.1.0",
+    "yargs": "^12.0.2"
   },
   "dependencies": {
     "eth-ens-namehash": "^2.0.8",
