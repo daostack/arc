@@ -1,7 +1,6 @@
 import * as helpers from "./helpers";
 const constants = require("./constants");
 const Controller = artifacts.require("./Controller.sol");
-const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
 const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
 const Avatar = artifacts.require("./Avatar.sol");
