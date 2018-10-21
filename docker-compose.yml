@@ -2,7 +2,7 @@
 version: '3'
 services:
   graph-node:
-    build: .
+    image: graphprotocol/graph-node
     ports:
       - 8000:8000
       - 8001:8001
