@@ -17,7 +17,6 @@ services:
       postgres_db: postgres
       ipfs: ipfs:5001
       ethereum: ${ETHEREUM}
-      GRAPH_MASTER_TOKEN: ${GRAPH_MASTER_TOKEN}
   ipfs:
     image: ipfs/go-ipfs
     ports:
