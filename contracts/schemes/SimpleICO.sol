@@ -9,7 +9,7 @@ import "../controller/ControllerInterface.sol";
 
 /**
  * @title SimpleICO scheme.
- * @dev A universal scheme to allow organizations to open a simple ICO and get donations.
+ * @dev A scheme to allow organizations to open a simple ICO and get donations.
  */
 contract SimpleICO is Pausable {
     using SafeMath for uint;

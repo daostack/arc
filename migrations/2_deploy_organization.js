@@ -98,18 +98,22 @@ module.exports = async function(deployer) {
       // Deploy SchemeRegistrar:
       await deployer.deploy(SchemeRegistrar);
       var schemeRegistrarInst = await SchemeRegistrar.deployed();
-      // Deploy UniversalUpgrade:
-      await deployer.deploy(UpgradeScheme);
-      var upgradeSchemeInst = await UpgradeScheme.deployed();
       // Deploy UniversalGCScheme register:
       await deployer.deploy(GlobalConstraintRegistrar);
       var globalConstraintRegistrarInst = await GlobalConstraintRegistrar.deployed();
 
       await deployer.deploy(SimpleICO);
 
+      await deployer.deploy(UpgradeScheme);
+
       var simpleICOLibrary = await SimpleICO.deployed();
 
+      var upgradeSchemeLibrary = await UpgradeScheme.deployed();
+
       schemesFactoryInst.setSimpleICOLibraryAddress(simpleICOLibrary.address);
+      schemesFactoryInst.setUpgradeSchemeLibraryAddress(
+        upgradeSchemeLibrary.address
+      );
 
       await deployer.deploy(ContributionReward);
       var contributionRewardInst = await ContributionReward.deployed();
@@ -138,13 +142,15 @@ module.exports = async function(deployer) {
         voteParametersHash,
         AbsoluteVoteInst.address
       );
-      await upgradeSchemeInst.setParameters(
-        voteParametersHash,
-        AbsoluteVoteInst.address
+
+      var upgradeSchemeInstTx = await schemesFactoryInst.createUpgradeScheme(
+        AvatarInst.address,
+        AbsoluteVoteInst.address,
+        voteParametersHash
       );
-      var schemeUpgradeParams = await upgradeSchemeInst.getParametersHash(
-        voteParametersHash,
-        AbsoluteVoteInst.address
+
+      var upgradeSchemeInst = await UpgradeScheme.at(
+        upgradeSchemeInstTx.logs[0].args._newSchemeAddress
       );
 
       var simpleICOInstTx = await schemesFactoryInst.createSimpleICO(
@@ -181,7 +187,7 @@ module.exports = async function(deployer) {
       const paramsArray = [
         schemeRegisterParams,
         schemeGCRegisterParams,
-        schemeUpgradeParams,
+        NULL_HASH,
         NULL_HASH,
         contributionRewardParams
       ];
