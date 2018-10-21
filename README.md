@@ -10,9 +10,7 @@ Develop locally:
 3. create a `.env` file with the following environment variables (**should be kept secret**):
   - `POSTGRES_PASSWORD` - a secret string used as the PostgreSQL password for the created DB.
   - `ETHEREUM` - url to an rpc ethereum node prefixed with the network name (e.g. `mainnet:http://localhost:8545`)
-  - `GRAPH_MASTER_TOKEN` - a secret string used as the master token for the graph-node.
 4. (in a seperate terminal) `docker-compose up` ([install](https://docs.docker.com/compose/install/)) - run a local graph-node with the above config.
-5. `npm run authorize` - authorize with the graph-node in order to be able to deploy subgraphs.
 6. `npm run deploy`/`npm run deploy:watch` - deploy the subgraph.
 
 Note: All persistent data for the node will be stored in the `./data` directory, remove this directory in order to reset the node.
