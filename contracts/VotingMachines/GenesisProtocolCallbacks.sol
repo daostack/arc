@@ -33,7 +33,7 @@ contract GenesisProtocolCallbacks is GenesisProtocolCallbacksInterface {
         if (avatar == Avatar(0)) {
             return false;
         }
-        return ControllerInterface(avatar.owner()).mintReputation(_amount,_beneficiary,address(avatar));
+        return ControllerInterface(avatar.owner()).mintReputation(_amount,_beneficiary);
     }
 
     function burnReputation(uint _amount,address _beneficiary,bytes32 _proposalId) external onlyVotingMachine(_proposalId) returns(bool) {
@@ -41,7 +41,7 @@ contract GenesisProtocolCallbacks is GenesisProtocolCallbacksInterface {
         if (avatar == Avatar(0)) {
             return false;
         }
-        return ControllerInterface(avatar.owner()).burnReputation(_amount,_beneficiary,address(avatar));
+        return ControllerInterface(avatar.owner()).burnReputation(_amount,_beneficiary);
     }
 
     function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint) {
@@ -65,7 +65,7 @@ contract GenesisProtocolCallbacks is GenesisProtocolCallbacksInterface {
         if (avatar == Avatar(0)) {
             return false;
         }
-        return ControllerInterface(avatar.owner()).externalTokenTransfer(_stakingToken,_beneficiary,_amount,address(avatar));
+        return ControllerInterface(avatar.owner()).externalTokenTransfer(_stakingToken,_beneficiary,_amount);
     }
 
 }

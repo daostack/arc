@@ -89,7 +89,7 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         // Define controller and mint tokens, check minting actually took place:
             ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
             uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
-            controller.mintTokens(tokensToMint, this,avatar);
+            controller.mintTokens(tokensToMint, this);
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:

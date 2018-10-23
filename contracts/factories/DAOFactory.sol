@@ -53,10 +53,10 @@ contract DAOFactory {
         for (uint i = 0 ; i < _founders.length ; i++ ) {
             require(_founders[i] != address(0));
             if (_foundersTokenAmount[i] > 0) {
-                ControllerInterface(_avatar.owner()).mintTokens(_foundersTokenAmount[i],_founders[i],address(_avatar));
+                ControllerInterface(_avatar.owner()).mintTokens(_foundersTokenAmount[i],_founders[i]);
             }
             if (_foundersReputationAmount[i] > 0) {
-                ControllerInterface(_avatar.owner()).mintReputation(_foundersReputationAmount[i],_founders[i],address(_avatar));
+                ControllerInterface(_avatar.owner()).mintReputation(_foundersReputationAmount[i],_founders[i]);
             }
         }
         return true;
@@ -120,10 +120,10 @@ contract DAOFactory {
         // register initial schemes:
         ControllerInterface controller = ControllerInterface(_avatar.owner());
         for ( uint i = 0 ; i < _schemes.length ; i++ ) {
-            controller.registerScheme(_schemes[i], _params[i], _permissions[i], address(_avatar));
+            controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
         }
         // Unregister self:
-        controller.unregisterScheme(this, address(_avatar));
+        controller.unregisterScheme(this);
         // Remove lock:
         delete locks[address(_avatar)];
         emit InitialSchemesSet(address(_avatar));

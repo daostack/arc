@@ -166,10 +166,7 @@ contract("SchemeRegistrar", accounts => {
     );
     var controller = await Controller.at(await testSetup.org.avatar.owner());
     assert.equal(
-      await controller.isSchemeRegistered(
-        universalScheme.address,
-        testSetup.org.avatar.address
-      ),
+      await controller.isSchemeRegistered(universalScheme.address),
       true
     );
   });
@@ -193,18 +190,9 @@ contract("SchemeRegistrar", accounts => {
       { from: accounts[2] }
     );
     var controller = await Controller.at(await testSetup.org.avatar.owner());
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), true);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      true
-    );
-    assert.equal(
-      await controller.getSchemePermissions(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
+      await controller.getSchemePermissions(accounts[0]),
       "0x00000001"
     );
   });
@@ -228,18 +216,9 @@ contract("SchemeRegistrar", accounts => {
       { from: accounts[2] }
     );
     var controller = await Controller.at(await testSetup.org.avatar.owner());
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), true);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      true
-    );
-    assert.equal(
-      await controller.getSchemePermissions(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
+      await controller.getSchemePermissions(accounts[0]),
       "0x00000003"
     );
   });
@@ -263,18 +242,9 @@ contract("SchemeRegistrar", accounts => {
       { from: accounts[2] }
     );
     var controller = await Controller.at(await testSetup.org.avatar.owner());
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), true);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      true
-    );
-    assert.equal(
-      await controller.getSchemePermissions(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
+      await controller.getSchemePermissions(accounts[0]),
       "0x00000003"
     );
   });
@@ -298,18 +268,9 @@ contract("SchemeRegistrar", accounts => {
       { from: accounts[2] }
     );
     var controller = await Controller.at(await testSetup.org.avatar.owner());
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), true);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      true
-    );
-    assert.equal(
-      await controller.getSchemePermissions(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
+      await controller.getSchemePermissions(accounts[0]),
       "0x00000009"
     );
   });
@@ -333,18 +294,9 @@ contract("SchemeRegistrar", accounts => {
       { from: accounts[2] }
     );
     var controller = await Controller.at(await testSetup.org.avatar.owner());
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), true);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      true
-    );
-    assert.equal(
-      await controller.getSchemePermissions(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
+      await controller.getSchemePermissions(accounts[0]),
       "0x00000011"
     );
   });
@@ -367,18 +319,9 @@ contract("SchemeRegistrar", accounts => {
       { from: accounts[2] }
     );
     var controller = await Controller.at(await testSetup.org.avatar.owner());
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), true);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      true
-    );
-    assert.equal(
-      await controller.getSchemePermissions(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
+      await controller.getSchemePermissions(accounts[0]),
       "0x00000001"
     );
   });
@@ -409,13 +352,7 @@ contract("SchemeRegistrar", accounts => {
     );
     var controller = await Controller.at(await testSetup.org.avatar.owner());
     //should not register because the decision is "no"
-    assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      false
-    );
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), false);
     //check organizationsProposals after execution
     organizationProposal = await testSetup.schemeRegistrar.organizationsProposals(
       testSetup.org.avatar.address,
@@ -434,10 +371,7 @@ contract("SchemeRegistrar", accounts => {
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId", 1);
     var controller = await Controller.at(await testSetup.org.avatar.owner());
     assert.equal(
-      await controller.isSchemeRegistered(
-        testSetup.schemeRegistrar.address,
-        testSetup.org.avatar.address
-      ),
+      await controller.isSchemeRegistered(testSetup.schemeRegistrar.address),
       true
     );
     //Vote with reputation to trigger execution
@@ -448,10 +382,7 @@ contract("SchemeRegistrar", accounts => {
       { from: accounts[2] }
     );
     assert.equal(
-      await controller.isSchemeRegistered(
-        testSetup.schemeRegistrar.address,
-        testSetup.org.avatar.address
-      ),
+      await controller.isSchemeRegistered(testSetup.schemeRegistrar.address),
       false
     );
     //check organizationsProposals after execution

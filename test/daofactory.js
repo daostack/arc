@@ -211,10 +211,7 @@ contract("DAOFactory", function(accounts) {
     );
     controllerAddress = await avatar.owner();
     controller = await Controller.at(controllerAddress);
-    var isSchemeRegistered = await controller.isSchemeRegistered(
-      accounts[1],
-      avatar.address
-    );
+    var isSchemeRegistered = await controller.isSchemeRegistered(accounts[1]);
     assert.equal(isSchemeRegistered, true);
   });
 
@@ -225,8 +222,7 @@ contract("DAOFactory", function(accounts) {
     controllerAddress = await avatar.owner();
     controller = await Controller.at(controllerAddress);
     var isSchemeRegistered = await controller.isSchemeRegistered(
-      daoFactory.address,
-      avatar.address
+      daoFactory.address
     );
     assert.equal(isSchemeRegistered, true);
     await daoFactory.setSchemes(
@@ -238,8 +234,7 @@ contract("DAOFactory", function(accounts) {
     controllerAddress = await avatar.owner();
     controller = await Controller.at(controllerAddress);
     isSchemeRegistered = await controller.isSchemeRegistered(
-      daoFactory.address,
-      avatar.address
+      daoFactory.address
     );
     assert.equal(isSchemeRegistered, false);
   });

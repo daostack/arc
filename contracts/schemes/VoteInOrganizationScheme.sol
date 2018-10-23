@@ -87,8 +87,7 @@ contract VoteInOrganizationScheme is GenesisProtocolCallbacks, GenesisProtocolEx
                         proposal.originalProposalId,
                         uint(param),
                         address(this)
-                    ),
-                    avatar) == bytes32(0)) {
+                    )) == bytes32(0)) {
                 retVal = false;
             }
           }

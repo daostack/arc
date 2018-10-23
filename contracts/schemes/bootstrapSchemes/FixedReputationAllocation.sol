@@ -54,7 +54,7 @@ contract FixedReputationAllocation is Ownable {
     function redeem(address _beneficiary) public returns(bool) {
         require(isEnable, "require to be enable");
         require(beneficiaries[_beneficiary], "require _beneficiary to exist in the beneficiaries map");
-        require(ControllerInterface(avatar.owner()).mintReputation(beneficiaryReward, _beneficiary, avatar), "mint reputation should success");
+        require(ControllerInterface(avatar.owner()).mintReputation(beneficiaryReward, _beneficiary), "mint reputation should success");
         
         emit Redeem(_beneficiary, beneficiaryReward);
         

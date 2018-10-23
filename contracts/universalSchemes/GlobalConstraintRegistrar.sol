@@ -73,12 +73,12 @@ contract GlobalConstraintRegistrar is UniversalScheme,GenesisProtocolCallbacks,G
 
         // Adding a GC
             if (proposal.proposalType == 1) {
-                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params,avatar);
+                retVal = controller.addGlobalConstraint(proposal.gc, proposal.params);
                 voteToRemoveParams[avatar][proposal.gc] = proposal.voteToRemoveParams;
               }
         // Removing a GC
             if (proposal.proposalType == 2) {
-                retVal = controller.removeGlobalConstraint(proposal.gc,avatar);
+                retVal = controller.removeGlobalConstraint(proposal.gc);
               }
         }
         emit ProposalExecuted(avatar, _proposalId,_param);
@@ -165,8 +165,8 @@ contract GlobalConstraintRegistrar is UniversalScheme,GenesisProtocolCallbacks,G
     * @return bytes32 -the proposal id
     */
     function proposeToRemoveGC(Avatar _avatar, address _gc) public returns(bytes32) {
-        Controller controller = Controller(Avatar(_avatar).owner());
-        require(controller.isGlobalConstraintRegistered(_gc,address(_avatar)));
+        ControllerInterface controller = ControllerInterface(Avatar(_avatar).owner());
+        require(controller.isGlobalConstraintRegistered(_gc));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, voteToRemoveParams[_avatar][_gc],msg.sender);

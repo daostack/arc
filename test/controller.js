@@ -72,10 +72,9 @@ const setup = async function(
       registerScheme,
       "0x0000000000000000000000000000000000000000",
       permission,
-      avatar.address,
       { from: accounts[1] }
     );
-    await _controller.unregisterSelf(avatar.address, { from: accounts[1] });
+    await _controller.unregisterSelf({ from: accounts[1] });
   } else {
     _controller = await Controller.at(
       (await controllerFactory.createController(avatar.address, {
@@ -89,9 +88,7 @@ const setup = async function(
 
 const constraint = async function(method, pre = false, post = false) {
   var globalConstraints = await GlobalConstraintMock.new();
-  let globalConstraintsCountOrig = await controller.globalConstraintsCount(
-    avatar.address
-  );
+  let globalConstraintsCountOrig = await controller.globalConstraintsCount();
   await globalConstraints.setConstraint(
     web3.utils.asciiToHex(method),
     pre,
@@ -99,12 +96,9 @@ const constraint = async function(method, pre = false, post = false) {
   );
   await controller.addGlobalConstraint(
     globalConstraints.address,
-    web3.utils.asciiToHex("0"),
-    avatar.address
+    web3.utils.asciiToHex("0")
   );
-  let globalConstraintsCount = await controller.globalConstraintsCount(
-    avatar.address
-  );
+  let globalConstraintsCount = await controller.globalConstraintsCount();
   assert.equal(
     globalConstraintsCount[0].toNumber(),
     globalConstraintsCountOrig[0].toNumber() + (pre ? 0 : 1)
@@ -124,14 +118,9 @@ contract("Controller", accounts => {
     controller = await setup(accounts);
     // separate cases for pre and post
     var globalConstraints = await constraint("gcParams1", true);
-    await controller.addGlobalConstraint(
-      globalConstraints.address,
-      "0x1235",
-      avatar.address
-    );
+    await controller.addGlobalConstraint(globalConstraints.address, "0x1235");
     var paramsHash = await controller.getGlobalConstraintParameters(
-      globalConstraints.address,
-      avatar.address
+      globalConstraints.address
     );
 
     assert.equal(
@@ -140,15 +129,10 @@ contract("Controller", accounts => {
     );
     globalConstraints = await constraint("gcParams2", false, true);
 
-    await controller.addGlobalConstraint(
-      globalConstraints.address,
-      "0x1236",
-      avatar.address
-    );
+    await controller.addGlobalConstraint(globalConstraints.address, "0x1236");
 
     paramsHash = await controller.getGlobalConstraintParameters(
-      globalConstraints.address,
-      avatar.address
+      globalConstraints.address
     );
 
     assert.equal(
@@ -160,11 +144,7 @@ contract("Controller", accounts => {
   it("mint reputation via controller", async () => {
     controller = await setup(accounts);
     await reputation.transferOwnership(controller.address);
-    let tx = await controller.mintReputation(
-      amountToMint,
-      accounts[0],
-      avatar.address
-    );
+    let tx = await controller.mintReputation(amountToMint, accounts[0]);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "MintReputation");
     assert.equal(tx.logs[0].args._amount, amountToMint);
@@ -176,12 +156,8 @@ contract("Controller", accounts => {
   it("burn reputation via controller", async () => {
     controller = await setup(accounts);
     await reputation.transferOwnership(controller.address);
-    await controller.mintReputation(amountToMint, accounts[0], avatar.address);
-    let tx = await controller.burnReputation(
-      amountToMint - 1,
-      accounts[0],
-      avatar.address
-    );
+    await controller.mintReputation(amountToMint, accounts[0]);
+    let tx = await controller.burnReputation(amountToMint - 1, accounts[0]);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "BurnReputation");
     assert.equal(tx.logs[0].args._amount, amountToMint - 1);
@@ -193,11 +169,7 @@ contract("Controller", accounts => {
   it("mint tokens via controller", async () => {
     controller = await setup(accounts);
     await token.transferOwnership(controller.address);
-    let tx = await controller.mintTokens(
-      amountToMint,
-      accounts[0],
-      avatar.address
-    );
+    let tx = await controller.mintTokens(amountToMint, accounts[0]);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "MintTokens");
     assert.equal(tx.logs[0].args._amount, amountToMint);
@@ -210,8 +182,7 @@ contract("Controller", accounts => {
     let tx = await controller.registerScheme(
       accounts[1],
       web3.utils.asciiToHex("0"),
-      "0x00000000",
-      avatar.address
+      "0x00000000"
     );
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RegisterScheme");
@@ -231,8 +202,7 @@ contract("Controller", accounts => {
           await controller.registerScheme(
             accounts[1],
             0,
-            "0x" + uint32.toHex(i),
-            avatar.address
+            "0x" + uint32.toHex(i)
           );
         } catch (ex) {
           //registered scheme has already permission to register(2) and is register(1).
@@ -240,7 +210,7 @@ contract("Controller", accounts => {
           register = false;
         }
         if (register) {
-          await controller.unregisterScheme(accounts[1], avatar.address);
+          await controller.unregisterScheme(accounts[1]);
           register = false;
         }
       }
@@ -254,8 +224,7 @@ contract("Controller", accounts => {
     let tx = await controller.registerScheme(
       accounts[0],
       "0x0000000000000000000000000000000000000000",
-      "0x00000001",
-      avatar.address
+      "0x00000001"
     );
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RegisterScheme");
@@ -265,8 +234,7 @@ contract("Controller", accounts => {
       await controller.registerScheme(
         accounts[0],
         "0x0000000000000000000000000000000000000000",
-        "0x00000002",
-        avatar.address
+        "0x00000002"
       );
       assert(
         false,
@@ -279,13 +247,13 @@ contract("Controller", accounts => {
 
   it("unregister schemes", async () => {
     controller = await setup(accounts);
-    let tx = await controller.unregisterScheme(accounts[0], avatar.address);
+    let tx = await controller.unregisterScheme(accounts[0]);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "UnregisterScheme");
   });
   it("unregister none registered scheme", async () => {
     controller = await setup(accounts);
-    let tx = await controller.unregisterScheme(accounts[1], avatar.address);
+    let tx = await controller.unregisterScheme(accounts[1]);
     assert.equal(tx.logs.length, 0);
   });
 
@@ -303,8 +271,7 @@ contract("Controller", accounts => {
       tx = await controller.registerScheme(
         registeredScheme,
         "0x0000000000000000000000000000000000000000",
-        "0x" + uint32.toHex(i | 3),
-        avatar.address
+        "0x" + uint32.toHex(i | 3)
       );
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "RegisterScheme");
@@ -312,8 +279,7 @@ contract("Controller", accounts => {
         tx = await controller.registerScheme(
           unregisteredScheme,
           "0x0000000000000000000000000000000000000000",
-          "0x" + uint32.toHex(j),
-          avatar.address
+          "0x" + uint32.toHex(j)
         );
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "RegisterScheme");
@@ -321,11 +287,9 @@ contract("Controller", accounts => {
         if (j & ~(i | 3)) {
           //unregister should fail
           try {
-            await controller.unregisterScheme(
-              unregisteredScheme,
-              avatar.address,
-              { from: registeredScheme }
-            );
+            await controller.unregisterScheme(unregisteredScheme, {
+              from: registeredScheme
+            });
             assert(
               false,
               "scheme with permission " +
@@ -338,11 +302,9 @@ contract("Controller", accounts => {
           }
         } else {
           //unregister should success
-          tx = await controller.unregisterScheme(
-            unregisteredScheme,
-            avatar.address,
-            { from: registeredScheme }
-          );
+          tx = await controller.unregisterScheme(unregisteredScheme, {
+            from: registeredScheme
+          });
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "UnregisterScheme");
         }
@@ -350,29 +312,13 @@ contract("Controller", accounts => {
     }
   });
 
-  it("call with none valid avatar should revert", async () => {
-    controller = await setup(accounts);
-    var registeredScheme = accounts[1];
-    try {
-      await controller.registerScheme(
-        registeredScheme,
-        "0x0000000000000000000000000000000000000000",
-        "0x" + uint32.toHex(1 | 3),
-        "0x0000000000000000000000000000000000000000"
-      );
-      assert(false, "call with none valid avatar should revert");
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
-  });
-
   it("unregister self", async () => {
     var tx;
     controller = await setup(accounts, "0x00000000");
-    tx = await controller.unregisterSelf(avatar.address, { from: accounts[1] });
+    tx = await controller.unregisterSelf({ from: accounts[1] });
     assert.equal(tx.logs.length, 0); // scheme was not registered
 
-    tx = await controller.unregisterSelf(avatar.address);
+    tx = await controller.unregisterSelf();
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "UnregisterScheme");
   });
@@ -380,15 +326,9 @@ contract("Controller", accounts => {
   it("isSchemeRegistered ", async () => {
     var isSchemeRegistered;
     controller = await setup(accounts, "0x00000000");
-    isSchemeRegistered = await controller.isSchemeRegistered(
-      accounts[1],
-      avatar.address
-    );
+    isSchemeRegistered = await controller.isSchemeRegistered(accounts[1]);
     assert.equal(isSchemeRegistered, false);
-    isSchemeRegistered = await controller.isSchemeRegistered(
-      accounts[0],
-      avatar.address
-    );
+    isSchemeRegistered = await controller.isSchemeRegistered(accounts[0]);
     assert.equal(isSchemeRegistered, true);
   });
 
@@ -397,22 +337,19 @@ contract("Controller", accounts => {
     var globalConstraints = await constraint(0);
     var tx = await controller.addGlobalConstraint(
       globalConstraints.address,
-      "0x0000000000000000000000000000000000000000",
-      avatar.address
+      "0x0000000000000000000000000000000000000000"
     );
     assert.equal(
-      await controller.isGlobalConstraintRegistered(
-        globalConstraints.address,
-        avatar.address
-      ),
+      await controller.isGlobalConstraintRegistered(globalConstraints.address),
       true
     );
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "AddGlobalConstraint");
-    var count = await controller.globalConstraintsCount(avatar.address);
+    var count = await controller.globalConstraintsCount();
     assert.equal(count[0], 1); //pre
     assert.equal(count[1], 1); //post
   });
+
   it("removeGlobalConstraint ", async () => {
     const zeroBytes32 = "0x0000000000000000000000000000000000000000";
     controller = await setup(accounts);
@@ -444,96 +381,66 @@ contract("Controller", accounts => {
     );
 
     assert.equal(
-      await controller.isGlobalConstraintRegistered(
-        globalConstraints.address,
-        avatar.address
-      ),
+      await controller.isGlobalConstraintRegistered(globalConstraints.address),
       false
     );
     await controller.addGlobalConstraint(
       globalConstraints.address,
-      zeroBytes32,
-      avatar.address
+      zeroBytes32
     );
     await controller.addGlobalConstraint(
       globalConstraints1.address,
-      zeroBytes32,
-      avatar.address
+      zeroBytes32
     );
     await controller.addGlobalConstraint(
       globalConstraints2.address,
-      zeroBytes32,
-      avatar.address
+      zeroBytes32
     );
     await controller.addGlobalConstraint(
       globalConstraints3.address,
-      zeroBytes32,
-      avatar.address
+      zeroBytes32
     );
     await controller.addGlobalConstraint(
       globalConstraints4.address,
-      zeroBytes32,
-      avatar.address
+      zeroBytes32
     );
     var tx = await controller.removeGlobalConstraint(
-      globalConstraints2.address,
-      avatar.address
+      globalConstraints2.address
     );
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RemoveGlobalConstraint");
     assert.equal(
-      await controller.isGlobalConstraintRegistered(
-        globalConstraints.address,
-        avatar.address
-      ),
+      await controller.isGlobalConstraintRegistered(globalConstraints.address),
       true
     );
     assert.equal(
-      await controller.isGlobalConstraintRegistered(
-        globalConstraints1.address,
-        avatar.address
-      ),
+      await controller.isGlobalConstraintRegistered(globalConstraints1.address),
       true
     );
     assert.equal(
-      await controller.isGlobalConstraintRegistered(
-        globalConstraints2.address,
-        avatar.address
-      ),
+      await controller.isGlobalConstraintRegistered(globalConstraints2.address),
       false
     );
     assert.equal(
-      await controller.isGlobalConstraintRegistered(
-        globalConstraints3.address,
-        avatar.address
-      ),
+      await controller.isGlobalConstraintRegistered(globalConstraints3.address),
       true
     );
     assert.equal(
-      await controller.isGlobalConstraintRegistered(
-        globalConstraints4.address,
-        avatar.address
-      ),
+      await controller.isGlobalConstraintRegistered(globalConstraints4.address),
       true
     );
 
-    let gcCount = await controller.globalConstraintsCount(avatar.address);
+    let gcCount = await controller.globalConstraintsCount();
 
     assert.equal(gcCount[0], 4);
     assert.equal(gcCount[1], 4);
 
-    await controller.removeGlobalConstraint(
-      globalConstraints4.address,
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints4.address);
     assert.equal(
-      await controller.isGlobalConstraintRegistered(
-        globalConstraints4.address,
-        avatar.address
-      ),
+      await controller.isGlobalConstraintRegistered(globalConstraints4.address),
       false
     );
-    gcCount = await controller.globalConstraintsCount(avatar.address);
+    gcCount = await controller.globalConstraintsCount();
     assert.equal(gcCount[0], 3);
     assert.equal(gcCount[1], 3);
   });
@@ -543,7 +450,7 @@ contract("Controller", accounts => {
     await reputation.transferOwnership(controller.address);
     await token.transferOwnership(controller.address);
     await avatar.transferOwnership(controller.address);
-    var tx = await controller.upgradeController(accounts[1], avatar.address);
+    var tx = await controller.upgradeController(accounts[1]);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "UpgradeController");
   });
@@ -554,7 +461,7 @@ contract("Controller", accounts => {
     await token.transferOwnership(controller.address);
     await avatar.transferOwnership(controller.address);
     try {
-      await controller.upgradeController(accounts[1], avatar.address);
+      await controller.upgradeController(accounts[1]);
       assert(
         false,
         "scheme with permission 0x00000007 is not allowed to upgrade "
@@ -574,11 +481,7 @@ contract("Controller", accounts => {
     const encodeABI = await new web3.eth.Contract(actionMock.abi).methods
       .test(a, b, c)
       .encodeABI();
-    var tx = await controller.genericCall(
-      actionMock.address,
-      encodeABI,
-      avatar.address
-    );
+    var tx = await controller.genericCall(actionMock.address, encodeABI);
     await avatar
       .getPastEvents("GenericCall", {
         fromBlock: tx.blockNumber,
@@ -602,8 +505,7 @@ contract("Controller", accounts => {
       .encodeABI();
     var result = await controller.genericCall.call(
       actionMock.address,
-      encodeABI,
-      avatar.address
+      encodeABI
     );
     assert.equal(result, 14);
   });
@@ -617,11 +519,7 @@ contract("Controller", accounts => {
     const encodeABI = actionMockContract.methods
       .withoutReturnValue(avatar.address)
       .encodeABI();
-    var tx = await controller.genericCall(
-      actionMock.address,
-      encodeABI,
-      avatar.address
-    );
+    var tx = await controller.genericCall(actionMock.address, encodeABI);
     await actionMock
       .getPastEvents("WithoutReturnValue", {
         filter: { _addr: avatar.address }, // Using an array means OR: e.g. 20 or 23
@@ -651,8 +549,7 @@ contract("Controller", accounts => {
     //send some ether from an organization's avatar to the otherAvatar
     var tx = await controller.sendEther(
       web3.utils.toWei("1", "ether"),
-      otherAvatar.address,
-      avatar.address
+      otherAvatar.address
     );
     await avatar
       .getPastEvents("SendEther", {
@@ -683,8 +580,7 @@ contract("Controller", accounts => {
     var tx = await controller.externalTokenTransfer(
       standardToken.address,
       accounts[1],
-      50,
-      avatar.address
+      50
     );
     await avatar
       .getPastEvents("ExternalTokenTransfer", {
@@ -710,8 +606,7 @@ contract("Controller", accounts => {
     tx = await controller.externalTokenIncreaseApproval(
       standardToken.address,
       avatar.address,
-      50,
-      avatar.address
+      50
     );
     await avatar
       .getPastEvents("ExternalTokenIncreaseApproval", {
@@ -726,8 +621,7 @@ contract("Controller", accounts => {
       standardToken.address,
       avatar.address,
       to,
-      50,
-      avatar.address
+      50
     );
     await avatar
       .getPastEvents("ExternalTokenTransferFrom", {
@@ -753,14 +647,12 @@ contract("Controller", accounts => {
     await controller.externalTokenIncreaseApproval(
       standardToken.address,
       avatar.address,
-      50,
-      avatar.address
+      50
     );
     tx = await controller.externalTokenDecreaseApproval(
       standardToken.address,
       avatar.address,
-      50,
-      avatar.address
+      50
     );
     await avatar
       .getPastEvents("ExternalTokenDecreaseApproval", {
@@ -776,8 +668,7 @@ contract("Controller", accounts => {
         standardToken.address,
         avatar.address,
         to,
-        50,
-        avatar.address
+        50
       );
       assert(
         false,
@@ -789,15 +680,13 @@ contract("Controller", accounts => {
     await controller.externalTokenIncreaseApproval(
       standardToken.address,
       avatar.address,
-      50,
-      avatar.address
+      50
     );
     tx = await controller.externalTokenTransferFrom(
       standardToken.address,
       avatar.address,
       to,
-      50,
-      avatar.address
+      50
     );
     await avatar
       .getPastEvents("ExternalTokenTransferFrom", {
@@ -819,11 +708,7 @@ contract("Controller", accounts => {
     var globalConstraints = await constraint("mintReputation");
     await reputation.transferOwnership(controller.address);
     try {
-      await controller.mintReputation(
-        amountToMint,
-        accounts[0],
-        avatar.address
-      );
+      await controller.mintReputation(amountToMint, accounts[0]);
       assert(
         false,
         "mint reputation should fail due to the global constraint "
@@ -831,20 +716,11 @@ contract("Controller", accounts => {
     } catch (ex) {
       helpers.assertVMException(ex);
     }
-    await controller.removeGlobalConstraint(
-      globalConstraints.address,
-      avatar.address
-    );
-    var globalConstraintsCount = await controller.globalConstraintsCount(
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints.address);
+    var globalConstraintsCount = await controller.globalConstraintsCount();
     assert.equal(globalConstraintsCount[0], 0);
     assert.equal(globalConstraintsCount[1], 0);
-    let tx = await controller.mintReputation(
-      amountToMint,
-      accounts[0],
-      avatar.address
-    );
+    let tx = await controller.mintReputation(amountToMint, accounts[0]);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "MintReputation");
     assert.equal(tx.logs[0].args._amount, amountToMint);
@@ -860,27 +736,20 @@ contract("Controller", accounts => {
       await controller.registerScheme(
         accounts[1],
         helpers.NULL_HASH,
-        "0x00000000",
-        avatar.address
+        "0x00000000"
       );
       assert(false, "registerScheme should fail due to the global constraint ");
     } catch (ex) {
       helpers.assertVMException(ex);
     }
-    await controller.removeGlobalConstraint(
-      globalConstraints.address,
-      avatar.address
-    );
-    var globalConstraintsCount = await controller.globalConstraintsCount(
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints.address);
+    var globalConstraintsCount = await controller.globalConstraintsCount();
     assert.equal(globalConstraintsCount[0], 0);
     assert.equal(globalConstraintsCount[1], 0);
     let tx = await controller.registerScheme(
       accounts[1],
       helpers.NULL_HASH,
-      "0x00000000",
-      avatar.address
+      "0x00000000"
     );
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RegisterScheme");
@@ -890,7 +759,7 @@ contract("Controller", accounts => {
     controller = await setup(accounts);
     var globalConstraints = await constraint("registerScheme");
     try {
-      await controller.unregisterScheme(accounts[0], avatar.address);
+      await controller.unregisterScheme(accounts[0]);
       assert(
         false,
         "unregisterScheme should fail due to the global constraint "
@@ -898,16 +767,11 @@ contract("Controller", accounts => {
     } catch (ex) {
       helpers.assertVMException(ex);
     }
-    await controller.removeGlobalConstraint(
-      globalConstraints.address,
-      avatar.address
-    );
-    var globalConstraintsCount = await controller.globalConstraintsCount(
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints.address);
+    var globalConstraintsCount = await controller.globalConstraintsCount();
     assert.equal(globalConstraintsCount[0], 0);
     assert.equal(globalConstraintsCount[1], 0);
-    let tx = await controller.unregisterScheme(accounts[0], avatar.address);
+    let tx = await controller.unregisterScheme(accounts[0]);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "UnregisterScheme");
   });
@@ -923,29 +787,16 @@ contract("Controller", accounts => {
       .test(a, b, c)
       .encodeABI();
     try {
-      await controller.genericCall.call(
-        actionMock.address,
-        encodeABI,
-        avatar.address
-      );
+      await controller.genericCall.call(actionMock.address, encodeABI);
       assert(false, "genericCall should fail due to the global constraint ");
     } catch (ex) {
       helpers.assertVMException(ex);
     }
-    await controller.removeGlobalConstraint(
-      globalConstraints.address,
-      avatar.address
-    );
-    var globalConstraintsCount = await controller.globalConstraintsCount(
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints.address);
+    var globalConstraintsCount = await controller.globalConstraintsCount();
     assert.equal(globalConstraintsCount[0], 0);
     assert.equal(globalConstraintsCount[1], 0);
-    var tx = await controller.genericCall(
-      actionMock.address,
-      encodeABI,
-      avatar.address
-    );
+    var tx = await controller.genericCall(actionMock.address, encodeABI);
     await avatar
       .getPastEvents("GenericCall", {
         filter: { _addr: avatar.address }, // Using an array means OR: e.g. 20 or 23
@@ -977,25 +828,18 @@ contract("Controller", accounts => {
     try {
       await controller.sendEther(
         web3.utils.toWei("1", "ether"),
-        otherAvatar.address,
-        avatar.address
+        otherAvatar.address
       );
       assert(false, "sendEther should fail due to the global constraint ");
     } catch (ex) {
       helpers.assertVMException(ex);
     }
-    await controller.removeGlobalConstraint(
-      globalConstraints.address,
-      avatar.address
-    );
-    var globalConstraintsCount = await controller.globalConstraintsCount(
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints.address);
+    var globalConstraintsCount = await controller.globalConstraintsCount();
     assert.equal(globalConstraintsCount[0], 0);
     var tx = await controller.sendEther(
       web3.utils.toWei("1", "ether"),
-      otherAvatar.address,
-      avatar.address
+      otherAvatar.address
     );
     await avatar
       .getPastEvents("SendEther", {
@@ -1028,8 +872,7 @@ contract("Controller", accounts => {
       await controller.externalTokenTransfer(
         standardToken.address,
         accounts[1],
-        50,
-        avatar.address
+        50
       );
       assert(
         false,
@@ -1038,19 +881,13 @@ contract("Controller", accounts => {
     } catch (ex) {
       helpers.assertVMException(ex);
     }
-    await controller.removeGlobalConstraint(
-      globalConstraints.address,
-      avatar.address
-    );
-    var globalConstraintsCount = await controller.globalConstraintsCount(
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints.address);
+    var globalConstraintsCount = await controller.globalConstraintsCount();
     assert.equal(globalConstraintsCount[0], 0);
     var tx = await controller.externalTokenTransfer(
       standardToken.address,
       accounts[1],
-      50,
-      avatar.address
+      50
     );
     await avatar
       .getPastEvents("ExternalTokenTransfer", {
@@ -1069,7 +906,7 @@ contract("Controller", accounts => {
 
   it("getNativeReputation", async () => {
     controller = await setup(accounts);
-    var nativeReputation = await controller.getNativeReputation(avatar.address);
+    var nativeReputation = await controller.getNativeReputation();
     assert.equal(nativeReputation, reputation.address);
   });
 
@@ -1085,8 +922,7 @@ contract("Controller", accounts => {
       await controller.externalTokenIncreaseApproval(
         standardToken.address,
         avatar.address,
-        50,
-        avatar.address
+        50
       );
       assert(
         false,
@@ -1095,20 +931,14 @@ contract("Controller", accounts => {
     } catch (ex) {
       helpers.assertVMException(ex);
     }
-    await controller.removeGlobalConstraint(
-      globalConstraints.address,
-      avatar.address
-    );
-    var globalConstraintsCount = await controller.globalConstraintsCount(
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints.address);
+    var globalConstraintsCount = await controller.globalConstraintsCount();
     assert.equal(globalConstraintsCount[0], 0);
 
     tx = await controller.externalTokenIncreaseApproval(
       standardToken.address,
       avatar.address,
-      50,
-      avatar.address
+      50
     );
     await avatar
       .getPastEvents("ExternalTokenIncreaseApproval", {
@@ -1125,8 +955,7 @@ contract("Controller", accounts => {
         standardToken.address,
         avatar.address,
         to,
-        50,
-        avatar.address
+        50
       );
       assert(
         false,
@@ -1135,13 +964,8 @@ contract("Controller", accounts => {
     } catch (ex) {
       helpers.assertVMException(ex);
     }
-    await controller.removeGlobalConstraint(
-      globalConstraints.address,
-      avatar.address
-    );
-    globalConstraintsCount = await controller.globalConstraintsCount(
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints.address);
+    globalConstraintsCount = await controller.globalConstraintsCount();
     assert.equal(globalConstraintsCount[0], 0);
 
     globalConstraints = await constraint("externalTokenDecreaseApproval");
@@ -1149,8 +973,7 @@ contract("Controller", accounts => {
       await controller.externalTokenDecreaseApproval(
         standardToken.address,
         avatar.address,
-        50,
-        avatar.address
+        50
       );
       assert(
         false,
@@ -1159,23 +982,18 @@ contract("Controller", accounts => {
     } catch (ex) {
       helpers.assertVMException(ex);
     }
-    await controller.removeGlobalConstraint(
-      globalConstraints.address,
-      avatar.address
-    );
+    await controller.removeGlobalConstraint(globalConstraints.address);
     await controller.externalTokenDecreaseApproval(
       standardToken.address,
       avatar.address,
-      50,
-      avatar.address
+      50
     );
     try {
       await await controller.externalTokenTransferFrom(
         standardToken.address,
         avatar.address,
         to,
-        50,
-        avatar.address
+        50
       );
       assert(
         false,
@@ -1188,15 +1006,13 @@ contract("Controller", accounts => {
     await controller.externalTokenIncreaseApproval(
       standardToken.address,
       avatar.address,
-      50,
-      avatar.address
+      50
     );
     tx = await controller.externalTokenTransferFrom(
       standardToken.address,
       avatar.address,
       to,
-      50,
-      avatar.address
+      50
     );
     await avatar
       .getPastEvents("ExternalTokenTransferFrom", {

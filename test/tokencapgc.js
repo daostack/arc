@@ -131,14 +131,13 @@ contract("TokenCapGC", accounts => {
     );
     await controller.addGlobalConstraint(
       tokenCapGC.address,
-      tokenCapGCParamsHash,
-      avatar.address
+      tokenCapGCParamsHash
     );
     //var globalConstraints = await constraint("mintTokens");
     await token.transferOwnership(controller.address);
-    await controller.mintTokens(50, accounts[0], avatar.address);
+    await controller.mintTokens(50, accounts[0]);
     try {
-      await controller.mintTokens(51, accounts[0], avatar.address);
+      await controller.mintTokens(51, accounts[0]);
       assert(
         false,
         "mint tokens should fail due to the tokenCapGC global constraint "

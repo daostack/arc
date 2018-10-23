@@ -25,7 +25,7 @@ contract GenericScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
     Avatar public avatar;
 
     modifier onlyApprovedParams() {
-        bytes32 controllerParamsHash = ControllerInterface(avatar.owner()).getSchemeParameters(this, address(avatar));
+        bytes32 controllerParamsHash = ControllerInterface(avatar.owner()).getSchemeParameters(this);
         bytes32 paramsHash = getParametersHash(voteParams, intVote, contractToCall);
 
         require(controllerParamsHash == paramsHash, "Parameters entered were not authorized by the controller");
@@ -76,8 +76,7 @@ contract GenericScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
             
             if (controller.genericCall(
                      contractToCall,
-                     proposal,
-                     avatar) == bytes32(0)) {
+                     proposal) == bytes32(0)) {
                 retVal = false;
             }
         }

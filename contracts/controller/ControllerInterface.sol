@@ -1,7 +1,8 @@
 pragma solidity ^0.4.24;
 
 import "./Avatar.sol";
-import "../globalConstraints/GlobalConstraintInterface.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+
 
 /**
  * @title Controller contract
@@ -17,7 +18,7 @@ interface ControllerInterface {
      * @param _to beneficiary address
      * @return bool which represents a success
     */
-    function mintReputation(uint256 _amount, address _to,address _avatar)
+    function mintReputation(uint256 _amount, address _to)
     external
     returns(bool);
 
@@ -27,7 +28,7 @@ interface ControllerInterface {
      * @param _from The address that will lose the reputation
      * @return bool which represents a success
      */
-    function burnReputation(uint256 _amount, address _from,address _avatar)
+    function burnReputation(uint256 _amount, address _from)
     external
     returns(bool);
 
@@ -35,10 +36,9 @@ interface ControllerInterface {
      * @dev mint tokens .
      * @param  _amount amount of token to mint
      * @param _beneficiary beneficiary address
-     * @param _avatar address
      * @return bool which represents a success
      */
-    function mintTokens(uint256 _amount, address _beneficiary,address _avatar)
+    function mintTokens(uint256 _amount, address _beneficiary)
     external
     returns(bool);
 
@@ -47,83 +47,75 @@ interface ControllerInterface {
    * @param _scheme the address of the scheme
    * @param _paramsHash a hashed configuration of the usage of the scheme
    * @param _permissions the permissions the new scheme will have
-   * @param _avatar address
    * @return bool which represents a success
    */
-    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions,address _avatar)
+    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions)
     external
     returns(bool);
 
     /**
      * @dev unregister a scheme
-     * @param _avatar address
      * @param _scheme the address of the scheme
      * @return bool which represents a success
      */
-    function unregisterScheme(address _scheme,address _avatar)
-    external
-    returns(bool);
+    function unregisterScheme(address _scheme) external returns(bool);
+
     /**
      * @dev unregister the caller's scheme
-     * @param _avatar address
      * @return bool which represents a success
      */
-    function unregisterSelf(address _avatar) external returns(bool);
+    function unregisterSelf() external returns(bool);
 
-    function isSchemeRegistered( address _scheme,address _avatar) external view returns(bool);
+    function isSchemeRegistered( address _scheme) external view returns(bool);
 
-    function getSchemeParameters(address _scheme,address _avatar) external view returns(bytes32);
+    function getSchemeParameters(address _scheme) external view returns(bytes32);
 
-    function getGlobalConstraintParameters(address _globalConstraint,address _avatar) external view returns(bytes32);
+    function getGlobalConstraintParameters(address _globalConstraint) external view returns(bytes32);
 
-    function getSchemePermissions(address _scheme,address _avatar) external view returns(bytes4);
+    function getSchemePermissions(address _scheme) external view returns(bytes4);
 
     /**
      * @dev globalConstraintsCount return the global constraint pre and post count
      * @return uint globalConstraintsPre count.
      * @return uint globalConstraintsPost count.
      */
-    function globalConstraintsCount(address _avatar) external view returns(uint,uint);
+    function globalConstraintsCount() external view returns(uint,uint);
 
-    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) external view returns(bool);
+    function isGlobalConstraintRegistered(address _globalConstraint) external view returns(bool);
 
     /**
      * @dev add or update Global Constraint
      * @param _globalConstraint the address of the global constraint to be added.
      * @param _params the constraint parameters hash.
-     * @param _avatar the avatar of the organization
      * @return bool which represents a success
      */
-    function addGlobalConstraint(address _globalConstraint, bytes32 _params,address _avatar)
+    function addGlobalConstraint(address _globalConstraint, bytes32 _params)
     external returns(bool);
 
     /**
      * @dev remove Global Constraint
      * @param _globalConstraint the address of the global constraint to be remove.
-     * @param _avatar the organization avatar.
      * @return bool which represents a success
      */
-    function removeGlobalConstraint (address _globalConstraint,address _avatar)
+    function removeGlobalConstraint (address _globalConstraint)
     external  returns(bool);
 
   /**
     * @dev upgrade the Controller
     *      The function will trigger an event 'UpgradeController'.
     * @param  _newController the address of the new controller.
-    * @param _avatar address
     * @return bool which represents a success
     */
-    function upgradeController(address _newController,address _avatar)
+    function upgradeController(address _newController)
     external returns(bool);
 
     /**
     * @dev perform a generic call to an arbitrary contract
     * @param _contract  the contract's address to call
     * @param _data ABI-encoded contract call to call `_contract` address.
-    * @param _avatar the controller's avatar address
     * @return bytes32  - the return value of the called _contract's function.
     */
-    function genericCall(address _contract,bytes _data,address _avatar)
+    function genericCall(address _contract,bytes _data)
     external
     returns(bytes32);
 
@@ -131,10 +123,9 @@ interface ControllerInterface {
    * @dev send some ether
    * @param _amountInWei the amount of ether (in Wei) to send
    * @param _to address of the beneficiary
-   * @param _avatar address
    * @return bool which represents a success
    */
-    function sendEther(uint _amountInWei, address _to,address _avatar)
+    function sendEther(uint _amountInWei, address _to)
     external returns(bool);
 
     /**
@@ -142,10 +133,9 @@ interface ControllerInterface {
     * @param _externalToken the address of the Token Contract
     * @param _to address of the beneficiary
     * @param _value the amount of ether (in Wei) to send
-    * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value,address _avatar)
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
     external
     returns(bool);
 
@@ -157,10 +147,9 @@ interface ControllerInterface {
     * @param _from address of the account to send from
     * @param _to address of the beneficiary
     * @param _value the amount of ether (in Wei) to send
-    * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value,address _avatar)
+    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value)
     external
     returns(bool);
 
@@ -170,10 +159,9 @@ interface ControllerInterface {
     * @param _externalToken the address of the Token Contract
     * @param _spender address
     * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
-    * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue,address _avatar)
+    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue)
     external
     returns(bool);
 
@@ -183,19 +171,17 @@ interface ControllerInterface {
     * @param _externalToken the address of the Token Contract
     * @param _spender address
     * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
-    * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address _avatar)
+    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue)
     external
     returns(bool);
 
     /**
      * @dev getNativeReputation
-     * @param _avatar the organization avatar.
      * @return organization native reputation
      */
-    function getNativeReputation(address _avatar)
+    function getNativeReputation()
     external
     view
     returns(address);

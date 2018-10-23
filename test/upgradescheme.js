@@ -84,10 +84,9 @@ const setupNewController = async function(accounts, permission = "0x00000000") {
       accounts[0],
       helpers.NULL_HASH,
       permission,
-      avatar.address,
       { from: accounts[1] }
     );
-    await _controller.unregisterSelf(avatar.address, { from: accounts[1] });
+    await _controller.unregisterSelf({ from: accounts[1] });
   } else {
     _controller = await Controller.at(
       (await controllerFactory.createController(avatar.address, {
@@ -289,18 +288,9 @@ contract("UpgradeScheme", accounts => {
 
     //check schemes registration before execution
     var controller = await Controller.at(await testSetup.org.avatar.owner());
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), false);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      false
-    );
-    assert.equal(
-      await controller.isSchemeRegistered(
-        testSetup.upgradeScheme.address,
-        testSetup.org.avatar.address
-      ),
+      await controller.isSchemeRegistered(testSetup.upgradeScheme.address),
       true
     );
 
@@ -319,18 +309,9 @@ contract("UpgradeScheme", accounts => {
     assert.equal(organizationProposal[2], 0); //proposalType
 
     //check if scheme upgraded
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), true);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      true
-    );
-    assert.equal(
-      await controller.isSchemeRegistered(
-        testSetup.upgradeScheme.address,
-        testSetup.org.avatar.address
-      ),
+      await controller.isSchemeRegistered(testSetup.upgradeScheme.address),
       false
     );
   });
@@ -354,18 +335,9 @@ contract("UpgradeScheme", accounts => {
 
     //check schemes registration before execution
     var controller = await Controller.at(await testSetup.org.avatar.owner());
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), false);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      false
-    );
-    assert.equal(
-      await controller.isSchemeRegistered(
-        testSetup.upgradeScheme.address,
-        testSetup.org.avatar.address
-      ),
+      await controller.isSchemeRegistered(testSetup.upgradeScheme.address),
       true
     );
 
@@ -384,18 +356,9 @@ contract("UpgradeScheme", accounts => {
     assert.equal(organizationProposal[2], 0); //proposalType
 
     //check if scheme upgraded
+    assert.equal(await controller.isSchemeRegistered(accounts[0]), true);
     assert.equal(
-      await controller.isSchemeRegistered(
-        accounts[0],
-        testSetup.org.avatar.address
-      ),
-      true
-    );
-    assert.equal(
-      await controller.isSchemeRegistered(
-        testSetup.upgradeScheme.address,
-        testSetup.org.avatar.address
-      ),
+      await controller.isSchemeRegistered(testSetup.upgradeScheme.address),
       false
     );
   });
@@ -413,10 +376,7 @@ contract("UpgradeScheme", accounts => {
     //check schemes registration before execution
     var controller = await Controller.at(await testSetup.org.avatar.owner());
     assert.equal(
-      await controller.isSchemeRegistered(
-        testSetup.upgradeScheme.address,
-        testSetup.org.avatar.address
-      ),
+      await controller.isSchemeRegistered(testSetup.upgradeScheme.address),
       true
     );
 
@@ -436,10 +396,7 @@ contract("UpgradeScheme", accounts => {
 
     //schemes should still be registered
     assert.equal(
-      await controller.isSchemeRegistered(
-        testSetup.upgradeScheme.address,
-        testSetup.org.avatar.address
-      ),
+      await controller.isSchemeRegistered(testSetup.upgradeScheme.address),
       true
     );
   });

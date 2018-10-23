@@ -14,7 +14,7 @@ contract UniversalSchemeMock is UniversalScheme {
     {
 
         address controller = Avatar(_avatar).owner();
-        return ControllerInterface(controller).genericCall(_contract,abi.encodeWithSignature("test(uint256,address,bytes32)",_a,_b,_c),_avatar);
+        return ControllerInterface(controller).genericCall(_contract,abi.encodeWithSignature("test(uint256,address,bytes32)",_a,_b,_c));
     }
 
     function genericCallDirect(address _avatar,address _contract,uint _a,address _b,bytes32 _c)

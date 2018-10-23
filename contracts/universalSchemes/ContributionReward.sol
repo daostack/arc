@@ -211,9 +211,9 @@ contract ContributionReward is UniversalScheme,GenesisProtocolCallbacks,GenesisP
         proposal.reputationChange = 0;
         reputation = int(periodsToPay) * _proposal.reputationChange;
         if (reputation > 0 ) {
-            require(ControllerInterface(Avatar(_avatar).owner()).mintReputation(uint(reputation), _proposal.beneficiary,_avatar));
+            require(ControllerInterface(Avatar(_avatar).owner()).mintReputation(uint(reputation), _proposal.beneficiary));
         } else if (reputation < 0 ) {
-            require(ControllerInterface(Avatar(_avatar).owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary,_avatar));
+            require(ControllerInterface(Avatar(_avatar).owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary));
         }
         if (reputation != 0) {
             proposal.redeemedPeriods[0] = proposal.redeemedPeriods[0].add(periodsToPay);
@@ -240,7 +240,7 @@ contract ContributionReward is UniversalScheme,GenesisProtocolCallbacks,GenesisP
 
         amount = periodsToPay.mul(_proposal.nativeTokenReward);
         if (amount > 0) {
-            require(ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, _proposal.beneficiary,_avatar));
+            require(ControllerInterface(Avatar(_avatar).owner()).mintTokens(amount, _proposal.beneficiary));
             proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
             emit RedeemNativeToken(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
@@ -266,7 +266,7 @@ contract ContributionReward is UniversalScheme,GenesisProtocolCallbacks,GenesisP
         amount = periodsToPay.mul(_proposal.ethReward);
 
         if (amount > 0) {
-            require(ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, _proposal.beneficiary,_avatar));
+            require(ControllerInterface(Avatar(_avatar).owner()).sendEther(amount, _proposal.beneficiary));
             proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
             emit RedeemEther(_avatar,_proposalId,_proposal.beneficiary,amount);
         }
@@ -293,7 +293,7 @@ contract ContributionReward is UniversalScheme,GenesisProtocolCallbacks,GenesisP
         if (proposal.externalToken != address(0) && _proposal.externalTokenReward > 0) {
             amount = periodsToPay.mul(_proposal.externalTokenReward);
             if (amount > 0) {
-                require(ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount,_avatar));
+                require(ControllerInterface(Avatar(_avatar).owner()).externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount));
                 proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);
                 emit RedeemExternalToken(_avatar,_proposalId,_proposal.beneficiary,amount);
             }

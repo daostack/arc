@@ -100,7 +100,7 @@ contract Auction4Reputation is Ownable {
         uint reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
+        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary), "mint reputation should success");
         emit Redeem(_auctionId, _beneficiary, reputation);
         return true;
     }

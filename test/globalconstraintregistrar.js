@@ -219,9 +219,7 @@ contract("GlobalConstraintRegistrar", accounts => {
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "NewGlobalConstraintsProposal");
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId", 1);
-    let gcCount = await controller.globalConstraintsCount(
-      testSetup.org.avatar.address
-    );
+    let gcCount = await controller.globalConstraintsCount();
     assert.equal(gcCount[0], 0);
     assert.equal(gcCount[1], 0);
     tx = await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(
@@ -230,9 +228,7 @@ contract("GlobalConstraintRegistrar", accounts => {
       0,
       { from: accounts[2] }
     );
-    gcCount = await controller.globalConstraintsCount(
-      testSetup.org.avatar.address
-    );
+    gcCount = await controller.globalConstraintsCount();
     assert.equal(gcCount[0], 1);
   });
 
@@ -343,8 +339,7 @@ contract("GlobalConstraintRegistrar", accounts => {
     );
     assert.equal(
       await controller.isGlobalConstraintRegistered(
-        globalConstraintMock.address,
-        testSetup.org.avatar.address
+        globalConstraintMock.address
       ),
       true
     );
@@ -355,9 +350,7 @@ contract("GlobalConstraintRegistrar", accounts => {
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RemoveGlobalConstraintsProposal");
     proposalId = await helpers.getValueFromLogs(tx, "_proposalId", 1);
-    let count = await controller.globalConstraintsCount(
-      testSetup.org.avatar.address
-    );
+    let count = await controller.globalConstraintsCount();
     assert.equal(count[0], 1);
     await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(
       proposalId,
@@ -365,9 +358,7 @@ contract("GlobalConstraintRegistrar", accounts => {
       0,
       { from: accounts[2] }
     );
-    count = await controller.globalConstraintsCount(
-      testSetup.org.avatar.address
-    );
+    count = await controller.globalConstraintsCount();
     assert.equal(count[0], 0);
   });
 
@@ -394,9 +385,7 @@ contract("GlobalConstraintRegistrar", accounts => {
       0,
       { from: accounts[2] }
     );
-    let count = await controller.globalConstraintsCount(
-      testSetup.org.avatar.address
-    );
+    let count = await controller.globalConstraintsCount();
     assert.equal(count[0], 0);
   });
 

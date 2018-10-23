@@ -115,7 +115,7 @@ contract SimpleICO is Pausable {
         // Send ether to the defined address, mint, and send change to beneficiary:
         beneficiary.transfer(incomingEther);
 
-        require(ControllerInterface(avatar.owner()).mintTokens(tokens, _beneficiary, address(avatar)));
+        require(ControllerInterface(avatar.owner()).mintTokens(tokens, _beneficiary));
         
         if (change != 0) {
             _beneficiary.transfer(change);

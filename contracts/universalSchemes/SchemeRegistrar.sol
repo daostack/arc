@@ -65,11 +65,11 @@ contract SchemeRegistrar is UniversalScheme,GenesisProtocolCallbacks,GenesisProt
 
           // Add a scheme:
             if (proposal.proposalType == 1) {
-                require(controller.registerScheme(proposal.scheme, proposal.parametersHash, proposal.permissions,avatar));
+                require(controller.registerScheme(proposal.scheme, proposal.parametersHash, proposal.permissions));
             }
           // Remove a scheme:
             if ( proposal.proposalType == 2 ) {
-                require(controller.unregisterScheme(proposal.scheme,avatar));
+                require(controller.unregisterScheme(proposal.scheme));
             }
           }
         emit ProposalExecuted(avatar, _proposalId,_param);

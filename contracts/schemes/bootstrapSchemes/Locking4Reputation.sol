@@ -56,7 +56,7 @@ contract Locking4Reputation {
         
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
+        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary), "mint reputation should success");
         
         emit Redeem(_lockingId, _beneficiary, reputation);
         
