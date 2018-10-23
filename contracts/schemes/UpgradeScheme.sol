@@ -33,9 +33,10 @@ contract UpgradeScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
 
     mapping(bytes32 => UpgradeProposal) public organizationProposals;
 
+    Avatar public avatar;
     IntVoteInterface public intVote;
     bytes32 public voteParams;
-    Avatar public avatar;
+    
 
     constructor () public {
         avatar = Avatar(0x000000000000000000000000000000000000dead);

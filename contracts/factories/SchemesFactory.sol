@@ -3,11 +3,12 @@ pragma solidity ^0.4.24;
 import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
+import "../controller/Avatar.sol";
 import "../schemes/GenericScheme.sol";
 import "../schemes/SimpleICO.sol";
 import "../schemes/UpgradeScheme.sol";
+import "../schemes/VestingScheme.sol";
 import "../schemes/VoteInOrganizationScheme.sol";
-import "../controller/Avatar.sol";
 
 
 contract SchemesFactory is Ownable, CloneFactory {
@@ -15,17 +16,20 @@ contract SchemesFactory is Ownable, CloneFactory {
     address public genericSchemeLibraryAddress;
     address public simpleICOLibraryAddress;
     address public upgradeSchemeLibraryAddress;
+    address public vestingSchemeLibraryAddress;
     address public voteInOrganizationSchemeLibraryAddress;
 
 
     event GenericSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event SimpleICOLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event UpgradeSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);    
+    event VestingSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event VoteInOrganizationSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
 
     event GenericSchemeCreated(address _newSchemeAddress);
     event SimpleICOCreated(address _newSchemeAddress);
     event UpgradeSchemeCreated(address _newSchemeAddress);
+    event VestingSchemeCreated(address _newSchemeAddress);
     event VoteInOrganizationSchemeCreated(address _newSchemeAddress);
 
     function setGenericSchemeLibraryAddress(address _genericSchemeLibraryAddress) external onlyOwner {
@@ -44,6 +48,12 @@ contract SchemesFactory is Ownable, CloneFactory {
         emit VoteInOrganizationSchemeLibraryChanged(_upgradeSchemeLibraryAddress, upgradeSchemeLibraryAddress);
 
         upgradeSchemeLibraryAddress = _upgradeSchemeLibraryAddress;
+    }
+
+    function setVestingSchemeLibraryAddress(address _vestingSchemeLibraryAddress) external onlyOwner {
+        emit VestingSchemeLibraryChanged(_vestingSchemeLibraryAddress, vestingSchemeLibraryAddress);
+
+        vestingSchemeLibraryAddress = _vestingSchemeLibraryAddress;
     }
 
     function setVoteInOrganizationSchemeLibraryAddress(address _voteInOrganizationSchemeLibraryAddress) external onlyOwner {
@@ -111,6 +121,24 @@ contract SchemesFactory is Ownable, CloneFactory {
         );
         
         emit UpgradeSchemeCreated(clone);
+
+        return clone;
+    }
+
+    function createVestingScheme(
+        Avatar _avatar,
+        IntVoteInterface _intVote,
+        bytes32 _voteParams
+    ) public returns (address) 
+    {
+        address clone = createClone(vestingSchemeLibraryAddress);
+        VestingScheme(clone).init(
+            _avatar,
+            _intVote,
+            _voteParams
+        );
+        
+        emit VestingSchemeCreated(clone);
 
         return clone;
     }

@@ -31,9 +31,10 @@ contract VoteInOrganizationScheme is GenesisProtocolCallbacks, GenesisProtocolEx
 
     mapping(bytes32 => VoteProposal) public organizationProposals;
     
+    Avatar public avatar;
     IntVoteInterface public intVote;
     bytes32 public voteParams;
-    Avatar public avatar;
+    
 
     constructor () public {
         avatar = Avatar(0x000000000000000000000000000000000000dead);

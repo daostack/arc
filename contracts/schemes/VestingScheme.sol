@@ -1,8 +1,5 @@
 pragma solidity ^0.4.24;
 
-import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
-import "./UniversalScheme.sol";
 import "../VotingMachines/GenesisProtocolCallbacks.sol";
 
 
@@ -10,13 +7,12 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * @title A scheme for vesting.
  * @dev Can be used without organization just as a vesting component.
  */
-
-contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
+contract VestingScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
     using SafeMath for uint;
 
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
-    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
-    event AgreementProposal(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(bytes32 indexed _proposalId, int _param);
+    event ProposalDeleted(bytes32 indexed _proposalId);
+    event AgreementProposal(bytes32 indexed _proposalId);
     event NewVestedAgreement(uint indexed _agreementId);
     event ProposedVestedAgreement(uint indexed _agreementId, bytes32 indexed _proposalId);
     event SignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
@@ -38,36 +34,48 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         uint signaturesReqToCancel;
         uint collectedPeriods;
         uint signaturesReceivedCounter;
-        mapping(address=>bool) signers;
-        mapping(address=>bool) signaturesReceived;
+        mapping(address => bool) signers;
+        mapping(address => bool) signaturesReceived;
+    }
+    
+    Avatar avatar;
+    IntVoteInterface intVote;
+    bytes32 voteParams;
+    
+    constructor () public {
+        avatar = Avatar(0x000000000000000000000000000000000000dead);
     }
 
+    function init(
+        Avatar _avatar,
+        IntVoteInterface _intVote,
+        bytes32 _voteParams
+    ) external
+    {
+        require(avatar == Avatar(0), "can be called only one time");
+        require(_avatar != Avatar(0), "avatar cannot be zero");
 
-    struct Parameters {
-        bytes32 voteParams;
-        IntVoteInterface intVote;
+        avatar = _avatar;
+        intVote = _intVote;
+        voteParams = _voteParams;
     }
 
-    // A mapping from the organization (Avatar) address to the saved data of the organization:
-    mapping(address=>mapping(bytes32=>Agreement)) public organizationsProposals;
-
-    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
-    mapping(bytes32=>Parameters) public parameters;
+    mapping(bytes32 => Agreement) public organizationProposals;
 
     // A mapping from index to Agreement
-    mapping(uint=>Agreement) public agreements;
+    mapping(uint => Agreement) public agreements;
 
     uint public agreementsCounter;
 
     // Modifier, only the signers on an agreement:
     modifier onlySigner(uint _agreementId) {
-        require(agreements[_agreementId].signers[msg.sender]);
+        require(agreements[_agreementId].signers[msg.sender], "Restricted to the signer only");
         _;
     }
 
     // Modifier, only the beneficiary on an agreement:
     modifier onlyBeneficiary(uint _agreementId) {
-        require(agreements[_agreementId].beneficiary == msg.sender);
+        require(agreements[_agreementId].beneficiary == msg.sender, "Restricted to the beneficiary only");
         _;
     }
 
@@ -77,25 +85,32 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     * @return bool which represents a successful of the function
     */
-    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        address avatar = proposalsInfo[_proposalId].avatar;
-        Agreement memory proposedAgreement = organizationsProposals[avatar][_proposalId];
-        require(proposedAgreement.periodLength > 0);
-        delete organizationsProposals[avatar][_proposalId];
-        emit ProposalDeleted(avatar,_proposalId);
+    function executeProposal(bytes32 _proposalId, int _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        Agreement memory proposedAgreement = organizationProposals[_proposalId];
+        
+        require(proposedAgreement.periodLength > 0, "Proposal specified doesn't exisits");
+        
+        delete organizationProposals[_proposalId];
+        
+        emit ProposalDeleted(_proposalId);
 
         // Check if vote was successful:
         if (_param == 1) {
-        // Define controller and mint tokens, check minting actually took place:
+            // Define controller and mint tokens, check minting actually took place:
             ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
+            
             uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
             controller.mintTokens(tokensToMint, this);
+            
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
-        // Log the new agreement:
-            emit ProposedVestedAgreement(agreementsCounter-1, _proposalId);
+            
+            // Log the new agreement:
+            emit ProposedVestedAgreement(agreementsCounter - 1, _proposalId);
         }
-        emit ProposalExecuted(avatar,_proposalId,_param);
+
+        emit ProposalExecuted(_proposalId, _param);
+        
         return true;
     }
 
@@ -110,7 +125,6 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
     * @param _cliffInPeriods the length of the cliff in periods.
     * @param _signaturesReqToCancel number of signatures required to cancel agreement.
     * @param _signersArray avatar array of addresses that can sign to cancel agreement.
-    * @param _avatar avatar of the organization.
     * @return bytes32 the proposalId
     */
     function proposeVestingAgreement(
@@ -122,42 +136,45 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         uint _numOfAgreedPeriods,
         uint _cliffInPeriods,
         uint _signaturesReqToCancel,
-        address[] _signersArray,
-        Avatar _avatar
+        address[] _signersArray
     )
     external
     returns(bytes32)
     {
         // Open voting:
-        Parameters memory params = parameters[getParametersFromController(_avatar)];
-        bytes32 proposalId = params.intVote.propose(2, params.voteParams,msg.sender);
-        require(_signaturesReqToCancel <= _signersArray.length);
-        require(_periodLength > 0);
+        bytes32 proposalId = intVote.propose(2, voteParams, msg.sender);
+
+        require(_signaturesReqToCancel <= _signersArray.length, "Invalid _signaturesReqToCancel size");
+        require(_periodLength > 0, "Period length is greater than 0");
         require(_numOfAgreedPeriods > 0, "Number of Agreed Periods must be greater than 0");
+
         // Write the signers mapping:
-        for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
-            organizationsProposals[_avatar][proposalId].signers[_signersArray[cnt]] = true;
+        for (uint cnt = 0; cnt < _signersArray.length; cnt++) {
+            organizationProposals[proposalId].signers[_signersArray[cnt]] = true;
         }
+
         // Write parameters:
-        organizationsProposals[_avatar][proposalId].token = Avatar(_avatar).nativeToken();
-        organizationsProposals[_avatar][proposalId].beneficiary = _beneficiary;
-        organizationsProposals[_avatar][proposalId].returnOnCancelAddress = _returnOnCancelAddress;
-        organizationsProposals[_avatar][proposalId].startingBlock = _startingBlock;
-        organizationsProposals[_avatar][proposalId].amountPerPeriod = _amountPerPeriod;
-        organizationsProposals[_avatar][proposalId].periodLength = _periodLength;
-        organizationsProposals[_avatar][proposalId].numOfAgreedPeriods = _numOfAgreedPeriods;
-        organizationsProposals[_avatar][proposalId].cliffInPeriods = _cliffInPeriods;
-        organizationsProposals[_avatar][proposalId].signaturesReqToCancel = _signaturesReqToCancel;
+        organizationProposals[proposalId].token = Avatar(avatar).nativeToken();
+        organizationProposals[proposalId].beneficiary = _beneficiary;
+        organizationProposals[proposalId].returnOnCancelAddress = _returnOnCancelAddress;
+        organizationProposals[proposalId].startingBlock = _startingBlock;
+        organizationProposals[proposalId].amountPerPeriod = _amountPerPeriod;
+        organizationProposals[proposalId].periodLength = _periodLength;
+        organizationProposals[proposalId].numOfAgreedPeriods = _numOfAgreedPeriods;
+        organizationProposals[proposalId].cliffInPeriods = _cliffInPeriods;
+        organizationProposals[proposalId].signaturesReqToCancel = _signaturesReqToCancel;
 
-        proposalsInfo[proposalId] = ProposalInfo(
-            {blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:params.intVote});
+        proposalsInfo[proposalId] = ProposalInfo({
+            blockNumber: block.number,
+            avatar: avatar,
+            votingMachine: intVote
+        });
 
-        params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
+        intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
 
         // Log:
-        emit AgreementProposal(_avatar, proposalId);
+        emit AgreementProposal(proposalId);
+
         return proposalId;
     }
 
@@ -190,12 +207,13 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         external
         returns(uint)
     {
-        require(_signaturesReqToCancel <= _signersArray.length);
-        require(_periodLength > 0);
+        require(_signaturesReqToCancel <= _signersArray.length, "Invalid _signaturesReqToCancel size");
+        require(_periodLength > 0, "Period length is greater than 0");
         require(_numOfAgreedPeriods > 0, "Number of Agreed Periods must be greater than 0");
+
         // Collect funds:
         uint totalAmount = _amountPerPeriod.mul(_numOfAgreedPeriods);
-        require(_token.transferFrom(msg.sender, this, totalAmount));
+        require(_token.transferFrom(msg.sender, this, totalAmount), "Failed to transfer tokens");
 
         // Write parameters:
         agreements[agreementsCounter].token = _token;
@@ -209,7 +227,7 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         agreements[agreementsCounter].signaturesReqToCancel = _signaturesReqToCancel;
 
         // Write the signers mapping:
-        for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
+        for (uint cnt = 0; cnt < _signersArray.length; cnt++) {
             agreements[agreementsCounter].signers[_signersArray[cnt]] = true;
         }
 
@@ -217,39 +235,8 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         agreementsCounter++;
 
         // Log new agreement and return id:
-        emit NewVestedAgreement(agreementsCounter-1);
-        return(agreementsCounter-1);
-    }
-
-    /**
-    * @dev Hash the parameters, save them if necessary, and return the hash value
-    * @param _voteParams -  voting parameters
-    * @param _intVote  - voting machine contract.
-    * @return bytes32 -the parameters hash
-    */
-    function setParameters(
-        bytes32 _voteParams,
-        IntVoteInterface _intVote
-    ) public returns(bytes32)
-    {
-        bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
-        parameters[paramsHash].voteParams = _voteParams;
-        parameters[paramsHash].intVote = _intVote;
-        return paramsHash;
-    }
-
-    /**
-    * @dev Hash the parameters, and return the hash value
-    * @param _voteParams -  voting parameters
-    * @param _intVote  - voting machine contract.
-    * @return bytes32 -the parameters hash
-    */
-    function getParametersHash(
-        bytes32 _voteParams,
-        IntVoteInterface _intVote
-    ) public pure returns(bytes32)
-    {
-        return  (keccak256(abi.encodePacked(_voteParams, _intVote)));
+        emit NewVestedAgreement(agreementsCounter - 1);
+        return (agreementsCounter - 1);
     }
 
     /**
@@ -260,13 +247,13 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         Agreement storage agreement = agreements[_agreementId];
 
         // Check attempt to double sign:
-        require(! agreement.signaturesReceived[msg.sender]);
+        require(!agreement.signaturesReceived[msg.sender], "Signer signature already received");
 
         // Sign:
         agreement.signaturesReceived[msg.sender] = true;
         agreement.signaturesReceivedCounter++;
 
-        emit SignToCancelAgreement(_agreementId,msg.sender);
+        emit SignToCancelAgreement(_agreementId, msg.sender);
 
         // Check if threshold crossed:
         if (agreement.signaturesReceivedCounter == agreement.signaturesReqToCancel) {
@@ -282,13 +269,13 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
         Agreement storage agreement = agreements[_agreementId];
 
         // Check signer did sign:
-        require(agreement.signaturesReceived[msg.sender]);
+        require(agreement.signaturesReceived[msg.sender], "Sender did not sign");
 
         // Revoke signature:
         agreement.signaturesReceived[msg.sender] = false;
         agreement.signaturesReceivedCounter--;
 
-        emit RevokeSignToCancelAgreement(_agreementId,msg.sender);
+        emit RevokeSignToCancelAgreement(_agreementId, msg.sender);
     }
 
     /**
@@ -298,7 +285,7 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
     function collect(uint _agreementId) public onlyBeneficiary(_agreementId) {
         Agreement memory agreement = agreements[_agreementId];
         uint periodsFromStartingBlock = (block.number.sub(agreement.startingBlock)).div(agreement.periodLength);
-        require(periodsFromStartingBlock >= agreement.cliffInPeriods);
+        require(periodsFromStartingBlock >= agreement.cliffInPeriods, "Tokens are not available for withrawal yet");
 
         // Compute periods to pay:
         uint periodsToPay;
@@ -312,7 +299,7 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
 
         // Transfer:
         uint tokensToTransfer = periodsToPay.mul(agreement.amountPerPeriod);
-        require(agreement.token.transfer(agreement.beneficiary, tokensToTransfer));
+        require(agreement.token.transfer(agreement.beneficiary, tokensToTransfer), "Token transfer failed");
 
         // Log collecting:
         emit Collect(_agreementId);
@@ -324,10 +311,13 @@ contract VestingScheme is UniversalScheme,GenesisProtocolCallbacks,GenesisProtoc
     */
     function cancelAgreement(uint _agreementId) internal {
         Agreement memory agreement = agreements[_agreementId];
-        delete  agreements[_agreementId];
+        delete agreements[_agreementId];
+        
         uint periodsLeft = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
         uint tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
-        require(agreement.token.transfer(agreement.returnOnCancelAddress, tokensLeft));
+        
+        require(agreement.token.transfer(agreement.returnOnCancelAddress, tokensLeft), "Token transfer failed");
+        
         // Log canceling agreement:
         emit AgreementCancel(_agreementId);
     }
