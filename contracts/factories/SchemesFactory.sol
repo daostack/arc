@@ -5,6 +5,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 import "../controller/Avatar.sol";
 import "../schemes/GenericScheme.sol";
+import "../schemes/SchemeRegistrar.sol";
 import "../schemes/SimpleICO.sol";
 import "../schemes/UpgradeScheme.sol";
 import "../schemes/VestingScheme.sol";
@@ -14,6 +15,7 @@ import "../schemes/VoteInOrganizationScheme.sol";
 contract SchemesFactory is Ownable, CloneFactory {
 
     address public genericSchemeLibraryAddress;
+    address public schemeRegistrarLibraryAddress;
     address public simpleICOLibraryAddress;
     address public upgradeSchemeLibraryAddress;
     address public vestingSchemeLibraryAddress;
@@ -21,12 +23,14 @@ contract SchemesFactory is Ownable, CloneFactory {
 
 
     event GenericSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
+    event SchemeRegistrarLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event SimpleICOLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event UpgradeSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);    
     event VestingSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event VoteInOrganizationSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
 
     event GenericSchemeCreated(address _newSchemeAddress);
+    event SchemeRegistrarCreated(address _newSchemeAddress);
     event SimpleICOCreated(address _newSchemeAddress);
     event UpgradeSchemeCreated(address _newSchemeAddress);
     event VestingSchemeCreated(address _newSchemeAddress);
@@ -36,6 +40,12 @@ contract SchemesFactory is Ownable, CloneFactory {
         emit GenericSchemeLibraryChanged(_genericSchemeLibraryAddress, genericSchemeLibraryAddress);
 
         genericSchemeLibraryAddress = _genericSchemeLibraryAddress;
+    }
+
+    function setSchemeRegistrarLibraryAddress(address _schemeRegistrarLibraryAddress) external onlyOwner {
+        emit GenericSchemeLibraryChanged(_schemeRegistrarLibraryAddress, schemeRegistrarLibraryAddress);
+
+        schemeRegistrarLibraryAddress = _schemeRegistrarLibraryAddress;
     }
 
     function setSimpleICOLibraryAddress(address _simpleICOLibraryAddress) external onlyOwner {
@@ -78,6 +88,26 @@ contract SchemesFactory is Ownable, CloneFactory {
         );
         
         emit GenericSchemeCreated(clone);
+
+        return clone;
+    }
+
+    function createSchemeRegistrar(
+        Avatar _avatar,
+        IntVoteInterface _intVote,
+        bytes32 _voteRegisterParams,
+        bytes32 _voteRemoveParams
+    ) public returns (address) 
+    {
+        address clone = createClone(schemeRegistrarLibraryAddress);
+        SchemeRegistrar(clone).init(
+            _avatar,
+            _intVote,
+            _voteRegisterParams,
+            _voteRemoveParams
+        );
+        
+        emit SchemeRegistrarCreated(clone);
 
         return clone;
     }

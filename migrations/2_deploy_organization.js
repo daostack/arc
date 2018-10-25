@@ -95,22 +95,29 @@ module.exports = async function(deployer) {
       await deployer.deploy(AbsoluteVote, { gas: constants.ARC_GAS_LIMIT });
       // Deploy AbsoluteVote:
       var AbsoluteVoteInst = await AbsoluteVote.deployed();
-      // Deploy SchemeRegistrar:
-      await deployer.deploy(SchemeRegistrar);
-      var schemeRegistrarInst = await SchemeRegistrar.deployed();
+
       // Deploy UniversalGCScheme register:
       await deployer.deploy(GlobalConstraintRegistrar);
       var globalConstraintRegistrarInst = await GlobalConstraintRegistrar.deployed();
+
+      await deployer.deploy(SchemeRegistrar);
 
       await deployer.deploy(SimpleICO);
 
       await deployer.deploy(UpgradeScheme);
 
+      var schemeRegistrarLibrary = await SchemeRegistrar.deployed();
+
       var simpleICOLibrary = await SimpleICO.deployed();
 
       var upgradeSchemeLibrary = await UpgradeScheme.deployed();
 
+      schemesFactoryInst.setSchemeRegistrarLibraryAddress(
+        schemeRegistrarLibrary.address
+      );
+
       schemesFactoryInst.setSimpleICOLibraryAddress(simpleICOLibrary.address);
+
       schemesFactoryInst.setUpgradeSchemeLibraryAddress(
         upgradeSchemeLibrary.address
       );
@@ -124,16 +131,17 @@ module.exports = async function(deployer) {
         true
       );
 
-      await schemeRegistrarInst.setParameters(
+      var SchemeRegistrarInstTx = await schemesFactoryInst.createSchemeRegistrar(
+        AvatarInst.address,
+        AbsoluteVoteInst.address,
         voteParametersHash,
-        voteParametersHash,
-        AbsoluteVoteInst.address
+        voteParametersHash
       );
-      var schemeRegisterParams = await schemeRegistrarInst.getParametersHash(
-        voteParametersHash,
-        voteParametersHash,
-        AbsoluteVoteInst.address
+
+      var schemeRegistrarInst = await SchemeRegistrar.at(
+        SchemeRegistrarInstTx.logs[0].args._newSchemeAddress
       );
+
       await globalConstraintRegistrarInst.setParameters(
         voteParametersHash,
         AbsoluteVoteInst.address
@@ -185,7 +193,7 @@ module.exports = async function(deployer) {
         contributionRewardInst.address
       ];
       const paramsArray = [
-        schemeRegisterParams,
+        NULL_HASH,
         schemeGCRegisterParams,
         NULL_HASH,
         NULL_HASH,
