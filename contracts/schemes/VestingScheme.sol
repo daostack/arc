@@ -38,9 +38,9 @@ contract VestingScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
         mapping(address => bool) signaturesReceived;
     }
     
-    Avatar avatar;
-    IntVoteInterface intVote;
-    bytes32 voteParams;
+    Avatar public avatar;
+    IntVoteInterface public intVote;
+    bytes32 public voteParams;
     
     constructor () public {
         avatar = Avatar(0x000000000000000000000000000000000000dead);

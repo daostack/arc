@@ -1,17 +1,15 @@
 pragma solidity ^0.4.24;
 
-import "../universalSchemes/ContributionReward.sol";
+import "../schemes/ContributionReward.sol";
 import "@daostack/infra/contracts/VotingMachines/GenesisProtocol.sol";
 
 
 contract Redeemer {
     using SafeMath for uint;
 
-    ContributionReward public contributionReward;
     GenesisProtocol public genesisProtocol;
 
-    constructor(address _contributionReward,address _genesisProtocol) public {
-        contributionReward = ContributionReward(_contributionReward);
+    constructor(address _genesisProtocol) public {
         genesisProtocol = GenesisProtocol(_genesisProtocol);
     }
 
@@ -23,8 +21,9 @@ contract Redeemer {
     * This function does not emit events.
     * A client should listen to GenesisProtocol and ContributionReward redemption events
     * to monitor redemption operations.
-    * @param _proposalId the ID of the voting in the voting machine
+    * @param _contributionReward ContributionReward of the ContributionReward scheme
     * @param _avatar address of the controller
+    * @param _proposalId the ID of the voting in the voting machine
     * @param _beneficiary beneficiary
     * @return gpRewards array
     *          gpRewards[0] - stakerTokenAmount
@@ -45,17 +44,18 @@ contract Redeemer {
     * @return int crEthReward Ether - from ContributionReward
     * @return int crExternalTokenReward ExternalToken - from ContributionReward
     */
-    function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
+    function redeem(ContributionReward _contributionReward, address _avatar, bytes32 _proposalId, address _beneficiary)
     external
-    returns(uint[5] gpRewards,
-            uint[2] gpDaoBountyReward,
-            bool executed,
-            uint winningVote,
-            int crReputationReward,
-            uint crNativeTokenReward,
-            uint crEthReward,
-            uint crExternalTokenReward)
-    {
+    returns(
+        uint[5] gpRewards,
+        uint[2] gpDaoBountyReward,
+        bool executed,
+        uint winningVote,
+        int crReputationReward,
+        uint crNativeTokenReward,
+        uint crEthReward,
+        uint crExternalTokenReward
+    ) {
         GenesisProtocol.ProposalState pState = genesisProtocol.state(_proposalId);
         // solium-disable-next-line operator-whitespace
         if ((pState == GenesisProtocol.ProposalState.PreBoosted)||
@@ -70,36 +70,44 @@ contract Redeemer {
             (gpDaoBountyReward[0],gpDaoBountyReward[1]) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
             winningVote = genesisProtocol.winningVote(_proposalId);
             //redeem from contributionReward only if it executed
-            if (contributionReward.getProposalExecutionTime(_proposalId,_avatar) > 0) {
-                (crReputationReward,crNativeTokenReward,crEthReward,crExternalTokenReward) = contributionRewardRedeem(_proposalId,_avatar);
+            if (_contributionReward.getProposalExecutionTime(_proposalId) > 0) {
+                (crReputationReward,crNativeTokenReward,crEthReward,crExternalTokenReward) = contributionRewardRedeem(_contributionReward, _avatar, _proposalId);
             }
         }
     }
 
-    function contributionRewardRedeem(bytes32 _proposalId,address _avatar)
+    function contributionRewardRedeem(
+        ContributionReward _contributionReward,
+        address _avatar,
+        bytes32 _proposalId
+    )
     private
-    returns (int reputation,uint nativeToken,uint eth,uint externalToken)
-    {
+    returns (
+        int reputation,
+        uint nativeToken,
+        uint eth,
+        uint externalToken
+    ) {
         bool[4] memory whatToRedeem;
-        whatToRedeem[0] = true; //reputation
-        whatToRedeem[1] = true; //nativeToken
-        uint periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,2);
-        uint ethReward = contributionReward.getProposalEthReward(_proposalId,_avatar);
-        uint externalTokenReward = contributionReward.getProposalExternalTokenReward(_proposalId,_avatar);
-        address externalTokenAddress = contributionReward.getProposalExternalToken(_proposalId,_avatar);
+        whatToRedeem[0] = true; // reputation
+        whatToRedeem[1] = true; // nativeToken
+        uint periodsToPay = _contributionReward.getPeriodsToPay(_proposalId, 2);
+        uint ethReward = _contributionReward.getProposalEthReward(_proposalId);
+        uint externalTokenReward = _contributionReward.getProposalExternalTokenReward(_proposalId);
+        address externalTokenAddress = _contributionReward.getProposalExternalToken(_proposalId);
         ethReward = periodsToPay.mul(ethReward);
         if ((ethReward == 0) || (_avatar.balance < ethReward)) {
             whatToRedeem[2] = false;
         } else {
             whatToRedeem[2] = true;
         }
-        periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,3);
+        periodsToPay = _contributionReward.getPeriodsToPay(_proposalId, 3);
         externalTokenReward = periodsToPay.mul(externalTokenReward);
         if ((externalTokenReward == 0) || (StandardToken(externalTokenAddress).balanceOf(_avatar) < externalTokenReward)) {
             whatToRedeem[3] = false;
         } else {
             whatToRedeem[3] = true;
         }
-        (reputation,nativeToken,eth,externalToken) = contributionReward.redeem(_proposalId,_avatar,whatToRedeem);
+        (reputation,nativeToken,eth,externalToken) = _contributionReward.redeem(_proposalId, whatToRedeem);
     }
 }

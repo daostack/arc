@@ -28,10 +28,10 @@ contract SchemeRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInte
 
     mapping(bytes32 => SchemeProposal) public organizationProposals;
 
-    Avatar avatar;
-    IntVoteInterface intVote;
-    bytes32 voteRegisterParams;
-    bytes32 voteRemoveParams;
+    Avatar public avatar;
+    IntVoteInterface public intVote;
+    bytes32 public voteRegisterParams;
+    bytes32 public voteRemoveParams;
 
     constructor () public {
         avatar = Avatar(0x000000000000000000000000000000000000dead);

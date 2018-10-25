@@ -104,7 +104,11 @@ module.exports = async function(deployer) {
 
       await deployer.deploy(SimpleICO);
 
+      await deployer.deploy(ContributionReward);
+
       await deployer.deploy(UpgradeScheme);
+
+      var contributionRewardLibrary = await ContributionReward.deployed();
 
       var schemeRegistrarLibrary = await SchemeRegistrar.deployed();
 
@@ -118,12 +122,13 @@ module.exports = async function(deployer) {
 
       schemesFactoryInst.setSimpleICOLibraryAddress(simpleICOLibrary.address);
 
+      schemesFactoryInst.setContributionRewardLibraryAddress(
+        contributionRewardLibrary.address
+      );
+
       schemesFactoryInst.setUpgradeSchemeLibraryAddress(
         upgradeSchemeLibrary.address
       );
-
-      await deployer.deploy(ContributionReward);
-      var contributionRewardInst = await ContributionReward.deployed();
 
       // Voting parameters and schemes params:
       var voteParametersHash = await AbsoluteVoteInst.getParametersHash(
@@ -174,15 +179,15 @@ module.exports = async function(deployer) {
         simpleICOInstTx.logs[0].args._newSchemeAddress
       );
 
-      await contributionRewardInst.setParameters(
-        10,
+      var contributionRewardInstTx = await schemesFactoryInst.createContributionReward(
+        AvatarInst.address,
+        AbsoluteVoteInst.address,
         voteParametersHash,
-        AbsoluteVoteInst.address
+        10
       );
-      var contributionRewardParams = await contributionRewardInst.getParametersHash(
-        10,
-        voteParametersHash,
-        AbsoluteVoteInst.address
+
+      var contributionRewardInst = await ContributionReward.at(
+        contributionRewardInstTx.logs[0].args._newSchemeAddress
       );
 
       var schemesArray = [
@@ -197,7 +202,7 @@ module.exports = async function(deployer) {
         schemeGCRegisterParams,
         NULL_HASH,
         NULL_HASH,
-        contributionRewardParams
+        NULL_HASH
       ];
       const permissionArray = [
         "0x0000001F",
