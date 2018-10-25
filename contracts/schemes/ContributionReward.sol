@@ -328,7 +328,8 @@ contract ContributionReward is GenesisProtocolCallbacks, GenesisProtocolExecuteI
         uint nativeTokenReward,
         uint etherReward,
         uint externalTokenReward
-    ) {
+    )
+    {
         if (_whatToRedeem[0]) {
             reputationReward = redeemReputation(_proposalId);
         }

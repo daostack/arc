@@ -55,7 +55,8 @@ contract Redeemer {
         uint crNativeTokenReward,
         uint crEthReward,
         uint crExternalTokenReward
-    ) {
+    )
+    {
         GenesisProtocol.ProposalState pState = genesisProtocol.state(_proposalId);
         // solium-disable-next-line operator-whitespace
         if ((pState == GenesisProtocol.ProposalState.PreBoosted)||
@@ -87,7 +88,8 @@ contract Redeemer {
         uint nativeToken,
         uint eth,
         uint externalToken
-    ) {
+    )
+    {
         bool[4] memory whatToRedeem;
         whatToRedeem[0] = true; // reputation
         whatToRedeem[1] = true; // nativeToken
