@@ -1,5 +1,8 @@
 node_modules
 dist
-data
-.env
-.api_key
+*.log
+subgraph.yaml
+docker-compose.yml
+config.json
+abis
+src/types

@@ -1,7 +1,7 @@
 type Proposal @entity {
   id: ID!
   address: Bytes!
-  nChoices: Int!
+  numOfChoices: BigInt!
   organization: Bytes!
   paramsHash: Bytes!
   proposer: Bytes!

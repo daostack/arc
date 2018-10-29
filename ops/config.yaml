@@ -1,0 +1,9 @@
+common: &common
+  test_mnemonic: behave pipe turkey animal voyage dial relief menu blush match jeans general
+mainnet:
+  <<: *common
+  addresses:
+    GenesisProtocol: "0x8940442e7f54e875c8c1c80213a4aee7eee4781c"
+development:
+  <<: *common
+  postgresPassword: "letmein"

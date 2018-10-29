@@ -1,0 +1,59 @@
+# template file for generating docker-compose.yml based on configuration
+
+version: "3"
+services:
+  subgraph:
+    build: .
+    links:
+      - ipfs
+      - graph-node
+      {{#if development}}- ganache{{/if}}
+    environment:
+      ethereum: {{#if development}}http://ganache:8545{{else}}{{ethereumProvider}}{{/if}}
+      test_mnemonic: {{test_mnemonic}}
+      node_http: http://graph-node:8000/daostack/graphql
+      node_ws: http://graph-node:8001/
+      node_rpc: http://graph-node:8020/
+      ipfs_host: ipfs
+      ipfs_port: 5001
+      WAIT_HOSTS: ipfs:5001, graph-node:8020
+  graph-node:
+    image: graphprotocol/graph-node
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8020:8020
+    links:
+      - ipfs
+      - postgres
+      {{#if development}}- ganache{{/if}}
+    environment:
+      postgres_host: postgres:5432
+      postgres_user: postgres
+      postgres_pass: '{{postgresPassword}}'
+      postgres_db: postgres
+      ipfs: ipfs:5001
+      ethereum: {{#if development}}development:http://ganache:8545{{else}}{{env}}:{{ethereumProvider}}{{/if}}
+  ipfs:
+    image: ipfs/go-ipfs
+    ports:
+      - 5001:5001
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: '{{postgresPassword}}'
+  {{#if development}}
+  ganache:
+    # image: trufflesuite/ganache-cli
+    build: 
+      dockerfile: ganache.dockerfile
+      context: .
+    ports:
+      - 8545:8545
+    command: >
+      --deterministic
+      --mnemonic "{{test_mnemonic}}"
+      --gasLimit 8000000
+  {{/if}}

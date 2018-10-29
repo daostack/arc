@@ -1,0 +1,38 @@
+language: node_js
+node_js:
+  - "8"
+
+sudo: required
+
+services:
+  - docker
+cache:
+  directories:
+    - node_modules
+    - $HOME/docker
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+before_cache:
+  - mkdir -p $HOME/docker && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}' | xargs -n 2 -t sh -c 'test -e $HOME/docker/$1.tar.gz || docker save $0 | gzip -2 > $HOME/docker/$1.tar.gz'
+
+before_install:
+  - if [[ -d $HOME/docker ]]; then ls $HOME/docker/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
+
+install:
+  - docker --version
+  - docker-compose --version
+  - sudo service postgresql stop
+  - while sudo lsof -Pi :5432 -sTCP:LISTEN -t; do sleep 1; done
+  - npm install
+  - npm run configure:development
+  - npm run codegen
+
+script:
+  - sudo docker-compose run subgraph test
+
+after_script:
+  - docker-compose down

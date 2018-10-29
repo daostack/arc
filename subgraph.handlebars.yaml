@@ -1,3 +1,5 @@
+# template file for generating subgraph.yaml based on configuration
+
 specVersion: 0.0.1
 schema:
   file: ./schema.graphql
@@ -5,7 +7,7 @@ dataSources:
   - kind: ethereum/contract
     name: GP
     source:
-      address: '0x8940442e7f54e875c8c1c80213a4aee7eee4781c' # GenesisProtocol address
+      address: "{{addresses.GenesisProtocol}}"
       abi: GenesisProtocol
     mapping:
       kind: ethereum/events
