@@ -11,7 +11,6 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * on a specific contract on behalf of the organization avatar.
  */
 contract GenericScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
-    
     event NewCallProposal(bytes32 indexed _proposalId, bytes callData);
     event ProposalExecuted(bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(bytes32 indexed _proposalId);
@@ -23,14 +22,6 @@ contract GenericScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
     bytes32 public voteParams;
     address public contractToCall;
     Avatar public avatar;
-
-    modifier onlyApprovedParams() {
-        bytes32 controllerParamsHash = ControllerInterface(avatar.owner()).getSchemeParameters(this);
-        bytes32 paramsHash = getParametersHash(voteParams, intVote, contractToCall);
-
-        require(controllerParamsHash == paramsHash, "Parameters entered were not authorized by the controller");
-        _;
-    }
 
     constructor () public {
         avatar = Avatar(0x000000000000000000000000000000000000dead);
@@ -57,7 +48,7 @@ contract GenericScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
     * @param _proposalId the ID of the voting in the voting machine
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
-    function executeProposal(bytes32 _proposalId, int _param) external onlyApprovedParams onlyVotingMachine(_proposalId) returns(bool) {
+    function executeProposal(bytes32 _proposalId, int _param) external onlyVotingMachine(_proposalId) returns(bool) {
         // Save proposal to memory and delete from storage:
         bytes memory proposal = proposals[_proposalId];
 
@@ -92,11 +83,7 @@ contract GenericScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
     * @param _callData - The abi encode data for the call
     * @return an id which represents the proposal
     */
-    function proposeCall(bytes _callData)
-    public
-    onlyApprovedParams
-    returns(bytes32)
-    {
+    function proposeCall(bytes _callData) public returns(bytes32) {
         bytes32 proposalId = intVote.propose(2, voteParams, msg.sender);
 
         require(_callData.length != 0, "call data can't be empty");
@@ -113,20 +100,4 @@ contract GenericScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
 
         return proposalId;
     }
-
-    /**
-    * @dev Hash the parameters, and return the hash value
-    * @param _voteParams -  voting parameters
-    * @param _intVote  - voting machine contract.
-    * @return bytes32 -the parameters hash
-    */
-    function getParametersHash(
-        bytes32 _voteParams,
-        IntVoteInterface _intVote,
-        address _contractToCall
-    ) public pure returns(bytes32)
-    {
-        return keccak256(abi.encodePacked(_voteParams, _intVote, _contractToCall));
-    }
-
 }

@@ -84,7 +84,7 @@ contract UpgradeScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
             if (proposal.proposalType == 2) {
                 bytes4 permissions = controller.getSchemePermissions(this);
 
-                require(controller.registerScheme(proposal.upgradeContract, proposal.params, permissions), "Failed to change upgrade scheme");
+                require(controller.registerScheme(proposal.upgradeContract, permissions), "Failed to change upgrade scheme");
                 
                 if (proposal.upgradeContract != address(this) ) {
                     require(controller.unregisterSelf(), "Failed to remove old upgrade scheme");

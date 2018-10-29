@@ -7,7 +7,7 @@ const DAOFactory = artifacts.require("./DAOFactory.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const Controller = artifacts.require("./Controller.sol");
 const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
-const UniversalSchemeMock = artifacts.require("./test/UniversalSchemeMock.sol");
+const SchemeMock = artifacts.require("./test/SchemeMock.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 
 const zeroBytes32 = helpers.NULL_HASH;
@@ -110,13 +110,12 @@ contract("DAOFactory", function(accounts) {
     assert.equal(controllerReputationAddress, reputationAddress);
   });
 
-  it("setSchemes to none UniversalScheme", async function() {
+  it("setSchemes to none Scheme", async function() {
     var amountToMint = 10;
     await setup(accounts, amountToMint, amountToMint);
     var tx = await daoFactory.setSchemes(
       avatar.address,
       [accounts[1]],
-      [zeroBytes32],
       ["0x0000000F"]
     );
     assert.equal(tx.logs.length, 1);
@@ -124,14 +123,13 @@ contract("DAOFactory", function(accounts) {
     assert.equal(tx.logs[0].args._avatar, avatar.address);
   });
 
-  it("setSchemes to UniversalScheme", async function() {
+  it("setSchemes to Scheme", async function() {
     var amountToMint = 10;
     await setup(accounts, amountToMint, amountToMint);
-    var universalSchemeMock = await UniversalSchemeMock.new();
+    var schemeMock = await SchemeMock.new();
     var tx = await daoFactory.setSchemes(
       avatar.address,
-      [universalSchemeMock.address],
-      [zeroBytes32],
+      [schemeMock.address],
       ["0x8000000F"]
     );
     assert.equal(tx.logs.length, 1);
@@ -146,7 +144,6 @@ contract("DAOFactory", function(accounts) {
       await daoFactory.setSchemes(
         avatar.address,
         [accounts[1]],
-        [zeroBytes32],
         ["0x0000000F"],
         { from: accounts[1] }
       );
@@ -160,21 +157,20 @@ contract("DAOFactory", function(accounts) {
     var amountToMint = 10;
     await setup(accounts, amountToMint, amountToMint);
     var standardTokenMock = await StandardTokenMock.new(avatar.address, 100);
-    var universalSchemeMock = await UniversalSchemeMock.new();
+    var schemeMock = await SchemeMock.new();
     var allowance = await standardTokenMock.allowance(
       avatar.address,
-      universalSchemeMock.address
+      schemeMock.address
     );
     assert.equal(allowance, 0);
     await daoFactory.setSchemes(
       avatar.address,
-      [universalSchemeMock.address],
-      [zeroBytes32],
+      [schemeMock.address],
       ["0x8000000F"]
     );
     allowance = await standardTokenMock.allowance(
       avatar.address,
-      universalSchemeMock.address
+      schemeMock.address
     );
     assert.equal(allowance, 0);
   });
@@ -189,12 +185,7 @@ contract("DAOFactory", function(accounts) {
     );
     assert.equal(allowance, 0);
 
-    await daoFactory.setSchemes(
-      avatar.address,
-      [accounts[1]],
-      [zeroBytes32],
-      ["0x0000000F"]
-    );
+    await daoFactory.setSchemes(avatar.address, [accounts[1]], ["0x0000000F"]);
     allowance = await standardTokenMock.allowance(avatar.address, accounts[1]);
     assert.equal(allowance, 0);
   });
@@ -203,12 +194,7 @@ contract("DAOFactory", function(accounts) {
     var amountToMint = 10;
     var controllerAddress, controller;
     await setup(accounts, amountToMint, amountToMint);
-    await daoFactory.setSchemes(
-      avatar.address,
-      [accounts[1]],
-      [zeroBytes32],
-      ["0x0000000F"]
-    );
+    await daoFactory.setSchemes(avatar.address, [accounts[1]], ["0x0000000F"]);
     controllerAddress = await avatar.owner();
     controller = await Controller.at(controllerAddress);
     var isSchemeRegistered = await controller.isSchemeRegistered(accounts[1]);
@@ -225,12 +211,7 @@ contract("DAOFactory", function(accounts) {
       daoFactory.address
     );
     assert.equal(isSchemeRegistered, true);
-    await daoFactory.setSchemes(
-      avatar.address,
-      [accounts[1]],
-      [zeroBytes32],
-      ["0x0000000F"]
-    );
+    await daoFactory.setSchemes(avatar.address, [accounts[1]], ["0x0000000F"]);
     controllerAddress = await avatar.owner();
     controller = await Controller.at(controllerAddress);
     isSchemeRegistered = await controller.isSchemeRegistered(
@@ -242,17 +223,11 @@ contract("DAOFactory", function(accounts) {
   it("setSchemes delete lock", async function() {
     var amountToMint = 10;
     await setup(accounts, amountToMint, amountToMint);
-    await daoFactory.setSchemes(
-      avatar.address,
-      [accounts[1]],
-      [zeroBytes32],
-      ["0x0000000F"]
-    );
+    await daoFactory.setSchemes(avatar.address, [accounts[1]], ["0x0000000F"]);
     try {
       await daoFactory.setSchemes(
         avatar.address,
         [accounts[1]],
-        [zeroBytes32],
         ["0x0000000F"],
         { from: accounts[1] }
       );
@@ -317,7 +292,7 @@ contract("DAOFactory", function(accounts) {
       helpers.assertVMException(ex);
     }
   });
-  it("setSchemes to none UniversalScheme and addFounders", async function() {
+  it("setSchemes to none Scheme and addFounders", async function() {
     var amountToMint = 10;
     await setup(accounts, amountToMint, amountToMint);
     var foundersArray = [];
@@ -357,7 +332,6 @@ contract("DAOFactory", function(accounts) {
     var tx = await daoFactory.setSchemes(
       avatar.address,
       [accounts[1]],
-      [zeroBytes32],
       ["0x0000000F"]
     );
     assert.equal(tx.logs.length, 1);

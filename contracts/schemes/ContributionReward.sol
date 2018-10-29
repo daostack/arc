@@ -74,7 +74,6 @@ contract ContributionReward is GenesisProtocolCallbacks, GenesisProtocolExecuteI
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
     function executeProposal(bytes32 _proposalId, int _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        ProposalInfo memory proposal = proposalsInfo[_proposalId];
         require(organizationProposals[_proposalId].executionTime == 0, "Proposal already executed");
         require(organizationProposals[_proposalId].beneficiary != address(0), "Proposal doesn't exist");
         

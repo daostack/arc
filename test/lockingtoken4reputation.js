@@ -94,7 +94,6 @@ const setup = async function(
   await testSetup.daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.lockingToken4Reputation.address],
-    [helpers.NULL_HASH],
     [permissions]
   );
   await testSetup.lockingToken.approve(

@@ -76,7 +76,7 @@ const setup = async function(accounts) {
     )).logs[0].args._newSchemeAddress
   );
 
-  //give some tokens to organization avatar so it could register the universal scheme.
+  //give some tokens to organization avatar so it could register the scheme.
   await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address, 30, {
     from: accounts[1]
   });
@@ -85,7 +85,6 @@ const setup = async function(accounts) {
   await daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.vestingScheme.address],
-    [helpers.NULL_HASH],
     [permissions]
   );
 

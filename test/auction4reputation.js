@@ -94,7 +94,6 @@ const setup = async function(
   await testSetup.daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.auction4Reputation.address],
-    [web3.utils.asciiToHex("0")],
     [permissions]
   );
   await testSetup.biddingToken.approve(

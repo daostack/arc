@@ -5,7 +5,7 @@ const DAOToken = artifacts.require("./DAOToken.sol");
 const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
 const ActionMock = artifacts.require("./test/ActionMock.sol");
-const UniversalSchemeMock = artifacts.require("./test/UniversalSchemeMock.sol");
+const SchemeMock = artifacts.require("./test/SchemeMock.sol");
 
 let avatar;
 var avatarLibrary, daoTokenLibrary, actorsFactory;
@@ -32,7 +32,7 @@ contract("Avatar", accounts => {
   it("genericCall no owner", async () => {
     avatar = await setup(accounts);
     let actionMock = await ActionMock.new();
-    var scheme = await UniversalSchemeMock.new();
+    var scheme = await SchemeMock.new();
     let a = 7;
     let b = actionMock.address;
     let c = "0x1234";
@@ -54,7 +54,7 @@ contract("Avatar", accounts => {
   it("generic call", async () => {
     avatar = await setup(accounts);
     let actionMock = await ActionMock.new();
-    var scheme = await UniversalSchemeMock.new();
+    var scheme = await SchemeMock.new();
     await avatar.transferOwnership(scheme.address);
     let a = 7;
     let b = actionMock.address;
@@ -72,7 +72,7 @@ contract("Avatar", accounts => {
   it("generic call should revert if action revert", async () => {
     avatar = await setup(accounts);
     let actionMock = await ActionMock.new();
-    var scheme = await UniversalSchemeMock.new();
+    var scheme = await SchemeMock.new();
     await avatar.transferOwnership(scheme.address);
     let a = 7;
     let b = actionMock.address;

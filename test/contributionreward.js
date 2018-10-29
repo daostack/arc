@@ -176,7 +176,6 @@ const setup = async function(
   await daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.contributionReward.address],
-    [helpers.NULL_HASH],
     [permissions]
   );
 

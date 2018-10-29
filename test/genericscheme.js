@@ -86,8 +86,6 @@ const setup = async function(
     );
   }
 
-  var paramsHash;
-
   if (genesisProtocol === true) {
     testSetup.votingMachine = await helpers.setupGenesisProtocol(
       accounts,
@@ -102,12 +100,6 @@ const setup = async function(
         contractToCall
       )).logs[0].args._newSchemeAddress
     );
-
-    paramsHash = await testSetup.genericScheme.getParametersHash(
-      testSetup.votingMachine.params,
-      testSetup.votingMachine.genesisProtocol.address,
-      contractToCall
-    );
   } else {
     testSetup.votingMachine = await helpers.setupAbsoluteVote();
 
@@ -119,12 +111,6 @@ const setup = async function(
         contractToCall
       )).logs[0].args._newSchemeAddress
     );
-
-    paramsHash = await testSetup.genericScheme.getParametersHash(
-      testSetup.votingMachine.params,
-      testSetup.votingMachine.absoluteVote.address,
-      contractToCall
-    );
   }
 
   var permissions = "0x00000010";
@@ -132,7 +118,6 @@ const setup = async function(
   await testSetup.daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.genericScheme.address],
-    [paramsHash],
     [permissions]
   );
 

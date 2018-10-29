@@ -3,21 +3,16 @@
 > An Avatar holds tokens, reputation and ether for a controller
 
 
-**Execution cost**: less than 81472 gas
+**Execution cost**: No bound available
 
-**Deployment cost**: less than 467400 gas
+**Deployment cost**: less than 733400 gas
 
-**Combined cost**: less than 548872 gas
+**Combined cost**: No bound available
 
 ## Constructor
 
 
 
-Params:
-
-1. **_orgName** *of type `bytes32`*
-2. **_nativeToken** *of type `address`*
-3. **_nativeReputation** *of type `address`*
 
 ## Events
 ### ExternalTokenDecreaseApproval(address,address,uint256)
@@ -73,7 +68,7 @@ Params:
 4. **_value** *of type `uint256`*
 
 --- 
-### GenericAction(address,bytes32[])
+### GenericCall(address,bytes)
 
 
 **Execution cost**: No bound available
@@ -81,8 +76,19 @@ Params:
 
 Params:
 
-1. **_action** *of type `address`*
-2. **_params** *of type `bytes32[]`*
+1. **_contract** *of type `address`*
+2. **_params** *of type `bytes`*
+
+--- 
+### OwnershipRenounced(address)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **previousOwner** *of type `address`*
 
 --- 
 ### OwnershipTransferred(address,address)
@@ -123,51 +129,17 @@ Params:
 ## Fallback
 
 
-**Execution cost**: less than 1870 gas
+**Execution cost**: less than 1851 gas
 
 **Attributes**: payable
 
 
 
 ## Methods
-### externalTokenTransferFrom(address,address,address,uint256)
->
-> external token transfer from a specific account
+### owner()
 
 
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_externalToken** *of type `address`*
-
-    > the token contract
-
-2. **_from** *of type `address`*
-
-    > the account to spend token from
-
-3. **_to** *of type `address`*
-
-    > the destination address
-
-4. **_value** *of type `uint256`*
-
-    > the amount of tokens to transfer
-
-
-Returns:
-
-> bool which represents success
-
-1. **output_0** *of type `bool`*
-
---- 
-### orgName()
-
-
-**Execution cost**: less than 1545 gas
+**Execution cost**: less than 732 gas
 
 **Attributes**: constant
 
@@ -176,13 +148,64 @@ Returns:
 Returns:
 
 
-1. **output_0** *of type `bytes32`*
+1. **output_0** *of type `address`*
+
+--- 
+### orgName()
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `string`*
+
+--- 
+### genericCall(address,bytes)
+>
+> perform a generic call to an arbitrary contract
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_contract** *of type `address`*
+
+    > the contract's address to call
+
+2. **_data** *of type `bytes`*
+
+    > ABI-encoded contract call to call `_contract` address.
+
+
+
+--- 
+### nativeToken()
+
+
+**Execution cost**: less than 842 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
 
 --- 
 ### nativeReputation()
 
 
-**Execution cost**: less than 1545 gas
+**Execution cost**: less than 688 gas
 
 **Attributes**: constant
 
@@ -224,24 +247,9 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### nativeToken()
-
-
-**Execution cost**: less than 1545 gas
-
-**Attributes**: constant
-
-
-
-Returns:
-
-
-1. **output_0** *of type `address`*
-
---- 
-### genericAction(address,bytes32[])
+### init(address,string,address,address)
 >
-> call an action function on an ActionInterface. This function use delegatecall and might expose the organization to security risk. Use this function only if you really knows what you are doing.
+> the init function takes organization name, native token and reputation system and creates an avatar for a controller
 
 
 **Execution cost**: No bound available
@@ -249,13 +257,38 @@ Returns:
 
 Params:
 
-1. **_action** *of type `address`*
+1. **_owner** *of type `address`*
+2. **_orgName** *of type `string`*
+3. **_nativeToken** *of type `address`*
+4. **_nativeReputation** *of type `address`*
 
-    > the address of the contract to call.
 
-2. **_params** *of type `bytes32[]`*
+--- 
+### externalTokenTransferFrom(address,address,address,uint256)
+>
+> external token transfer from a specific account
 
-    > the params for the call.
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_externalToken** *of type `address`*
+
+    > the token contract
+
+2. **_from** *of type `address`*
+
+    > the account to spend token from
+
+3. **_to** *of type `address`*
+
+    > the destination address
+
+4. **_value** *of type `uint256`*
+
+    > the amount of tokens to transfer
 
 
 Returns:
@@ -325,19 +358,17 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### owner()
+### renounceOwnership()
+>
+>Renouncing to ownership will leave the contract without an owner. It will not be possible to call the functions with the `onlyOwner` modifier anymore.
+>
+> Allows the current owner to relinquish control of the contract.
 
 
-**Execution cost**: less than 1545 gas
-
-**Attributes**: constant
+**Execution cost**: less than 22201 gas
 
 
 
-Returns:
-
-
-1. **output_0** *of type `address`*
 
 --- 
 ### sendEther(uint256,address)
@@ -371,12 +402,12 @@ Returns:
 > Allows the current owner to transfer control of the contract to a newOwner.
 
 
-**Execution cost**: less than 23027 gas
+**Execution cost**: less than 23087 gas
 
 
 Params:
 
-1. **newOwner** *of type `address`*
+1. **_newOwner** *of type `address`*
 
     > The address to transfer ownership to.
 

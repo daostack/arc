@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./Avatar.sol";
-import "../globalConstraints/GlobalConstraintInterface.sol";
+import "../constraints/ConstraintInterface.sol";
 import "./ControllerInterface.sol";
 
 
@@ -9,47 +9,38 @@ import "./ControllerInterface.sol";
  * @title Controller contract
  * @dev A controller controls the organizations tokens, reputation and avatar.
  * It is subject to a set of schemes and constraints that determine its behavior.
- * Each scheme has it own parameters and operation permissions.
+ * Each scheme has defined operation permissions.
  */
 contract Controller is ControllerInterface {
 
-    struct Scheme {
-        bytes32 paramsHash;  // a hash "configuration" of the scheme
-        bytes4  permissions; // A bitwise flags of permissions,
-                             // All 0: Not registered,
-                             // 1st bit: Flag if the scheme is registered,
-                             // 2nd bit: Scheme can register other schemes
-                             // 3rd bit: Scheme can add/remove global constraints
-                             // 4th bit: Scheme can upgrade the controller
-                             // 5th bit: Scheme can call genericCall on behalf of
-                             //          the organization avatar
+    struct ConstraintData {
+        bool isRegistered;
+        ConstraintInterface.CallPhase when;
+        uint idx;
     }
 
-    struct GlobalConstraint {
-        address gcAddress;
-        bytes32 params;
-    }
-
-    struct GlobalConstraintRegister {
-        bool isRegistered; //is registered
-        uint index;    //index at globalConstraints
-    }
-
-    mapping(address => Scheme) public schemes;
+    mapping(address => bytes4) schemes; // A bitwise flags of permissions,
+                                        // All 0: Not registered,
+                                        // 1st bit: Flag if the scheme is registered,
+                                        // 2nd bit: Scheme can register other schemes
+                                        // 3rd bit: Scheme can add/remove constraints
+                                        // 4th bit: Scheme can upgrade the controller
+                                        // 5th bit: Scheme can call genericCall on behalf of
+                                        //          the organization avatar
 
     Avatar public avatar;
     DAOToken public nativeToken;
     Reputation public nativeReputation;
     // newController will point to the new controller after the present controller is upgraded
     address public newController;
-    // globalConstraintsPre that determine pre conditions for all actions on the controller
-    GlobalConstraint[] public globalConstraintsPre;
-    // globalConstraintsPost that determine post conditions for all actions on the controller
-    GlobalConstraint[] public globalConstraintsPost;
-    // globalConstraintsRegisterPre indicate if a globalConstraints is registered as a pre global constraint
-    mapping(address => GlobalConstraintRegister) public globalConstraintsRegisterPre;
-    // globalConstraintsRegisterPost indicate if a globalConstraints is registered as a post global constraint
-    mapping(address => GlobalConstraintRegister) public globalConstraintsRegisterPost;
+    // constraints that determine pre conditions for all actions on the controller
+    address[] public constraintsPre;
+    // constraints that determine post conditions for all actions on the controller
+    address[] public constraintsPost;
+    // is an address registered as a constraint
+    mapping(address => ConstraintData) registeredConstraints;
+    address[] constraints;
+    uint removedConstraintsCount;
 
     event MintReputation(address indexed _sender, address indexed _to, uint256 _amount);
     event BurnReputation(address indexed _sender, address indexed _from, uint256 _amount);
@@ -57,8 +48,8 @@ contract Controller is ControllerInterface {
     event RegisterScheme(address indexed _sender, address indexed _scheme);
     event UnregisterScheme(address indexed _sender, address indexed _scheme);
     event UpgradeController(address indexed _oldController,address _newController);
-    event AddGlobalConstraint(address indexed _globalConstraint, bytes32 _params,GlobalConstraintInterface.CallPhase _when);
-    event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre);
+    event AddConstraint(address indexed _constraint, ConstraintInterface.CallPhase _when);
+    event RemoveConstraint(address indexed _constraint, uint _idx, bool _isPre); // TODO: is `_isPre` necessary?
 
     constructor() public {
         avatar = Avatar(0x000000000000000000000000000000000000dead);
@@ -66,7 +57,7 @@ contract Controller is ControllerInterface {
 
     // Do not allow mistaken calls:
     function() external {
-        revert();
+        revert("Fallback function blocked");
     }
 
     function init(address creator, Avatar _avatar) external {
@@ -76,43 +67,68 @@ contract Controller is ControllerInterface {
         avatar = _avatar;
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
-        schemes[creator] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x1F)});
+        schemes[creator] = bytes4(0x1F);
     }
 
   // Modifiers:
     modifier onlyRegisteredScheme() {
-        require(schemes[msg.sender].permissions&bytes4(1) == bytes4(1));
+        require(
+            schemes[msg.sender]&bytes4(1) == bytes4(1),
+            "Scheme don't have the premission to trigger this action"
+        );
         _;
     }
 
     modifier onlyRegisteringSchemes() {
-        require(schemes[msg.sender].permissions&bytes4(2) == bytes4(2));
+        require(
+            schemes[msg.sender]&bytes4(2) == bytes4(2),
+            "Scheme don't have the premission to trigger this action"
+        );
         _;
     }
 
-    modifier onlyGlobalConstraintsScheme() {
-        require(schemes[msg.sender].permissions&bytes4(4) == bytes4(4));
+    modifier onlyConstraintsScheme() {
+        require(
+            schemes[msg.sender]&bytes4(4) == bytes4(4),
+            "Scheme don't have the premission to trigger this action"
+        );
         _;
     }
 
     modifier onlyUpgradingScheme() {
-        require(schemes[msg.sender].permissions&bytes4(8) == bytes4(8));
+        require(
+            schemes[msg.sender]&bytes4(8) == bytes4(8),
+            "Scheme don't have the premission to trigger this action"
+        );
         _;
     }
 
     modifier onlyGenericCallScheme() {
-        require(schemes[msg.sender].permissions&bytes4(16) == bytes4(16));
+        require(
+            schemes[msg.sender]&bytes4(16) == bytes4(16),
+            "Scheme don't have the premission to trigger this action"
+        );
         _;
     }
 
     modifier onlySubjectToConstraint(bytes32 func) {
         uint idx;
-        for (idx = 0;idx<globalConstraintsPre.length;idx++) {
-            require((GlobalConstraintInterface(globalConstraintsPre[idx].gcAddress)).pre(msg.sender,globalConstraintsPre[idx].params,func));
+        for (idx = 0; idx < constraints.length; idx++) {
+            if (registeredConstraints[constraints[idx]].when != ConstraintInterface.CallPhase.Post) 
+                require(
+                    ConstraintInterface(constraints[idx]).pre(msg.sender, func),
+                    "Failed to satisfy constraint (pre)"
+                );
         }
+        
         _;
-        for (idx = 0;idx<globalConstraintsPost.length;idx++) {
-            require((GlobalConstraintInterface(globalConstraintsPost[idx].gcAddress)).post(msg.sender,globalConstraintsPost[idx].params,func));
+
+        for (idx = 0; idx < constraints.length; idx++) {
+            if (registeredConstraints[constraints[idx]].when != ConstraintInterface.CallPhase.Pre) 
+                require(
+                    ConstraintInterface(constraints[idx]).post(msg.sender, func),
+                    "Failed to satisfy constraint (pre)"
+                );
         }
     }
 
@@ -167,31 +183,35 @@ contract Controller is ControllerInterface {
   /**
    * @dev register a scheme
    * @param _scheme the address of the scheme
-   * @param _paramsHash a hashed configuration of the usage of the scheme
    * @param _permissions the permissions the new scheme will have
    * @return bool which represents a success
    */
-    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions)
+    function registerScheme(address _scheme, bytes4 _permissions)
     external
     onlyRegisteringSchemes
     onlySubjectToConstraint("registerScheme")
     returns(bool)
     {
 
-        Scheme memory scheme = schemes[_scheme];
+        bytes4 permissions = schemes[_scheme];
 
-    // Check scheme has at least the permissions it is changing, and at least the current permissions:
-    // Implementation is a bit messy. One must recall logic-circuits ^^
+        // Check scheme has at least the permissions it is changing, and at least the current permissions:
+        // Implementation is a bit messy. One must recall logic-circuits ^^
 
-    // produces non-zero if sender does not have all of the perms that are changing between old and new
-        require(bytes4(0x1F)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
+        // produces non-zero if sender does not have all of the perms that are changing between old and new
+        require(
+            bytes4(0x1F) & (_permissions ^ permissions) & (~schemes[msg.sender]) == bytes4(0),
+            "Registering scheme doesn't have enough permissions"
+        );
 
-    // produces non-zero if sender does not have all of the perms in the old scheme
-        require(bytes4(0x1F)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
+        // produces non-zero if sender does not have all of the perms in the old scheme
+        require(
+            bytes4(0x1F) & (permissions & (~schemes[msg.sender])) == bytes4(0),
+            "Caller scheme doesn't have have permissions in registering scheme"
+        );
 
-    // Add or change the scheme:
-        schemes[_scheme].paramsHash = _paramsHash;
-        schemes[_scheme].permissions = _permissions|bytes4(1);
+        // Add or change the scheme:
+        schemes[_scheme] = _permissions | bytes4(1);
         emit RegisterScheme(msg.sender, _scheme);
         return true;
     }
@@ -207,16 +227,22 @@ contract Controller is ControllerInterface {
     onlySubjectToConstraint("unregisterScheme")
     returns(bool)
     {
-    //check if the scheme is registered
-        if (schemes[_scheme].permissions&bytes4(1) == bytes4(0)) {
+        // Check if the scheme is registered
+        if (schemes[_scheme] & bytes4(1) == bytes4(0)) {
             return false;
-          }
-    // Check the unregistering scheme has enough permissions:
-        require(bytes4(0x1F)&(schemes[_scheme].permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
+        }
+        
+        // Check the unregistering scheme has enough permissions:
+        require(
+            bytes4(0x1F) & (schemes[_scheme] & (~schemes[msg.sender])) == bytes4(0),
+            "Unregistering scheme doesn't have enough permissions"
+        );
 
-    // Unregister:
+        // Unregister:
         emit UnregisterScheme(msg.sender, _scheme);
+        
         delete schemes[_scheme];
+        
         return true;
     }
 
@@ -228,8 +254,11 @@ contract Controller is ControllerInterface {
         if (_isSchemeRegistered(msg.sender) == false) {
             return false;
         }
+
         delete schemes[msg.sender];
+
         emit UnregisterScheme(msg.sender, msg.sender);
+
         return true;
     }
 
@@ -237,129 +266,64 @@ contract Controller is ControllerInterface {
         return _isSchemeRegistered(_scheme);
     }
 
-    function getSchemeParameters(address _scheme) external view returns(bytes32) {
-        return schemes[_scheme].paramsHash;
-    }
-
     function getSchemePermissions(address _scheme) external view returns(bytes4) {
-        return schemes[_scheme].permissions;
-    }
-
-    function getGlobalConstraintParameters(address _globalConstraint) external view returns(bytes32) {
-
-        GlobalConstraintRegister memory register = globalConstraintsRegisterPre[_globalConstraint];
-
-        if (register.isRegistered) {
-            return globalConstraintsPre[register.index].params;
-        }
-
-        register = globalConstraintsRegisterPost[_globalConstraint];
-
-        if (register.isRegistered) {
-            return globalConstraintsPost[register.index].params;
-        }
-    }
-
-   /**
-    * @dev globalConstraintsCount return the global constraint pre and post count
-    * @return uint globalConstraintsPre count.
-    * @return uint globalConstraintsPost count.
-    */
-    function globalConstraintsCount()
-        external
-    
-        view
-        returns(uint,uint)
-        {
-        return (globalConstraintsPre.length,globalConstraintsPost.length);
-    }
-
-    function isGlobalConstraintRegistered(address _globalConstraint)
-        external
-    
-        view
-        returns(bool)
-        {
-        return (globalConstraintsRegisterPre[_globalConstraint].isRegistered || globalConstraintsRegisterPost[_globalConstraint].isRegistered);
+        return schemes[_scheme];
     }
 
     /**
-     * @dev add or update Global Constraint
-     * @param _globalConstraint the address of the global constraint to be added.
-     * @param _params the constraint parameters hash.
+     * @dev constraintsCount return the constraints pre and post count
+     * @return uint constraints count.
+     */
+    function constraintsCount() external view returns(uint) {
+        return constraints.length - removedConstraintsCount;
+    }
+
+    function isConstraintRegistered(address _constraint) external view returns(bool) {
+        return registeredConstraints[_constraint].isRegistered;
+    }
+
+    /**
+     * @dev add or update constraint
+     * @param _constraint the address of the constraint to be added.
      * @return bool which represents a success
      */
-    function addGlobalConstraint(address _globalConstraint, bytes32 _params)
-    external
-    onlyGlobalConstraintsScheme
-    returns(bool)
-    {
-        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
-        if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            if (!globalConstraintsRegisterPre[_globalConstraint].isRegistered) {
-                globalConstraintsPre.push(GlobalConstraint(_globalConstraint,_params));
-                globalConstraintsRegisterPre[_globalConstraint] = GlobalConstraintRegister(true,globalConstraintsPre.length-1);
-            }else {
-                globalConstraintsPre[globalConstraintsRegisterPre[_globalConstraint].index].params = _params;
-            }
-        }
-        if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            if (!globalConstraintsRegisterPost[_globalConstraint].isRegistered) {
-                globalConstraintsPost.push(GlobalConstraint(_globalConstraint,_params));
-                globalConstraintsRegisterPost[_globalConstraint] = GlobalConstraintRegister(true,globalConstraintsPost.length-1);
-            }else {
-                globalConstraintsPost[globalConstraintsRegisterPost[_globalConstraint].index].params = _params;
-            }
-        }
-        emit AddGlobalConstraint(_globalConstraint, _params,when);
+    function addConstraint(address _constraint) external onlyConstraintsScheme returns(bool) {
+        require(!registeredConstraints[_constraint].isRegistered, "Constraint already registered");
+
+        ConstraintInterface.CallPhase when = ConstraintInterface(_constraint).when();
+
+        registeredConstraints[_constraint] = ConstraintData(true, when, constraints.length);
+
+        constraints.push(_constraint); 
+
+        emit AddConstraint(_constraint, when);
+
         return true;
     }
 
     /**
-     * @dev remove Global Constraint
-     * @param _globalConstraint the address of the global constraint to be remove.
+     * @dev remove constraint
+     * @param _constraint the address of the constraint to be remove.
      * @return bool which represents a success
      */
-    function removeGlobalConstraint(address _globalConstraint)
+    function removeConstraint(address _constraint)
     external
-    onlyGlobalConstraintsScheme
+    onlyConstraintsScheme
     returns(bool)
     {
-        GlobalConstraintRegister memory globalConstraintRegister;
-        GlobalConstraint memory globalConstraint;
-        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
-        bool retVal = false;
+        ConstraintInterface.CallPhase when = ConstraintInterface(_constraint).when();
+        
+        require(registeredConstraints[_constraint].isRegistered, "Constraint is not registered");
 
-        if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            globalConstraintRegister = globalConstraintsRegisterPre[_globalConstraint];
-            if (globalConstraintRegister.isRegistered) {
-                if (globalConstraintRegister.index < globalConstraintsPre.length-1) {
-                    globalConstraint = globalConstraintsPre[globalConstraintsPre.length-1];
-                    globalConstraintsPre[globalConstraintRegister.index] = globalConstraint;
-                    globalConstraintsRegisterPre[globalConstraint.gcAddress].index = globalConstraintRegister.index;
-                }
-                globalConstraintsPre.length--;
-                delete globalConstraintsRegisterPre[_globalConstraint];
-                retVal = true;
-            }
-        }
-        if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            globalConstraintRegister = globalConstraintsRegisterPost[_globalConstraint];
-            if (globalConstraintRegister.isRegistered) {
-                if (globalConstraintRegister.index < globalConstraintsPost.length-1) {
-                    globalConstraint = globalConstraintsPost[globalConstraintsPost.length-1];
-                    globalConstraintsPost[globalConstraintRegister.index] = globalConstraint;
-                    globalConstraintsRegisterPost[globalConstraint.gcAddress].index = globalConstraintRegister.index;
-                }
-                globalConstraintsPost.length--;
-                delete globalConstraintsRegisterPost[_globalConstraint];
-                retVal = true;
-            }
-        }
-        if (retVal) {
-            emit RemoveGlobalConstraint(_globalConstraint,globalConstraintRegister.index,when == GlobalConstraintInterface.CallPhase.Pre);
-        }
-        return retVal;
+        constraints[registeredConstraints[_constraint].idx] = address(0);
+        
+        emit RemoveConstraint(_constraint, registeredConstraints[_constraint].idx, when == ConstraintInterface.CallPhase.Pre);
+
+        delete registeredConstraints[_constraint];
+
+        removedConstraintsCount++;
+
+        return true;
     }
 
   /**
@@ -504,6 +468,6 @@ contract Controller is ControllerInterface {
     }
 
     function _isSchemeRegistered(address _scheme) private view returns(bool) {
-        return (schemes[_scheme].permissions&bytes4(1) != bytes4(0));
+        return (schemes[_scheme] & bytes4(1) != bytes4(0));
     }
 }

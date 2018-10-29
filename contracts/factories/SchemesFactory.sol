@@ -4,6 +4,7 @@ import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 import "../controller/Avatar.sol";
+import "../schemes/ConstraintRegistrar.sol";
 import "../schemes/ContributionReward.sol";
 import "../schemes/GenericScheme.sol";
 import "../schemes/SchemeRegistrar.sol";
@@ -15,6 +16,7 @@ import "../schemes/VoteInOrganizationScheme.sol";
 
 contract SchemesFactory is Ownable, CloneFactory {
 
+    address public constraintRegistrarLibraryAddress;
     address public contributionRewardLibraryAddress;
     address public genericSchemeLibraryAddress;
     address public schemeRegistrarLibraryAddress;
@@ -24,6 +26,7 @@ contract SchemesFactory is Ownable, CloneFactory {
     address public voteInOrganizationSchemeLibraryAddress;
 
 
+    event ConstraintRegistrarLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event ContributionRewardLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event GenericSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event SchemeRegistrarLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
@@ -32,6 +35,7 @@ contract SchemesFactory is Ownable, CloneFactory {
     event VestingSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
     event VoteInOrganizationSchemeLibraryChanged(address indexed _newLibraryAddress, address indexed _previousLibraryAddress);
 
+    event ConstraintRegistrarCreated(address _newSchemeAddress);
     event ContributionRewardCreated(address _newSchemeAddress);
     event GenericSchemeCreated(address _newSchemeAddress);
     event SchemeRegistrarCreated(address _newSchemeAddress);
@@ -39,6 +43,12 @@ contract SchemesFactory is Ownable, CloneFactory {
     event UpgradeSchemeCreated(address _newSchemeAddress);
     event VestingSchemeCreated(address _newSchemeAddress);
     event VoteInOrganizationSchemeCreated(address _newSchemeAddress);
+
+    function setConstraintRegistrarLibraryAddress(address _constraintRegistrarLibraryAddress) external onlyOwner {
+        emit ConstraintRegistrarLibraryChanged(_constraintRegistrarLibraryAddress, constraintRegistrarLibraryAddress);
+
+        constraintRegistrarLibraryAddress = _constraintRegistrarLibraryAddress;
+    }
 
     function setContributionRewardLibraryAddress(address _contributionRewardLibraryAddress) external onlyOwner {
         emit ContributionRewardLibraryChanged(_contributionRewardLibraryAddress, contributionRewardLibraryAddress);
@@ -80,6 +90,24 @@ contract SchemesFactory is Ownable, CloneFactory {
         emit VoteInOrganizationSchemeLibraryChanged(_voteInOrganizationSchemeLibraryAddress, voteInOrganizationSchemeLibraryAddress);
 
         voteInOrganizationSchemeLibraryAddress = _voteInOrganizationSchemeLibraryAddress;
+    }
+
+    function createConstraintRegistrar(
+        Avatar _avatar,
+        IntVoteInterface _intVote,
+        bytes32 _voteRegisterParams
+    ) public returns (address) 
+    {
+        address clone = createClone(constraintRegistrarLibraryAddress);
+        ConstraintRegistrar(clone).init(
+            _avatar,
+            _intVote,
+            _voteRegisterParams
+        );
+        
+        emit ConstraintRegistrarCreated(clone);
+
+        return clone;
     }
 
     function createContributionReward(

@@ -80,12 +80,9 @@ const setupNewController = async function(accounts, permission = "0x00000000") {
         gas: constants.ARC_GAS_LIMIT
       })).logs[0].args.newControllerAddress
     );
-    await _controller.registerScheme(
-      accounts[0],
-      helpers.NULL_HASH,
-      permission,
-      { from: accounts[1] }
-    );
+    await _controller.registerScheme(accounts[0], permission, {
+      from: accounts[1]
+    });
     await _controller.unregisterSelf({ from: accounts[1] });
   } else {
     _controller = await Controller.at(
@@ -125,7 +122,6 @@ const setup = async function(accounts) {
   await daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.upgradeScheme.address],
-    [helpers.NULL_HASH],
     [permissions]
   );
 

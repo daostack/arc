@@ -58,7 +58,6 @@ const setup = async function(accounts) {
   await testSetup.daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.arcGenesisProtocolCallbacksMock.address],
-    [helpers.NULL_HASH],
     [permissions]
   );
   await testSetup.arcGenesisProtocolCallbacksMock.propose(

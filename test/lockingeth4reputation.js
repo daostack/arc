@@ -84,7 +84,6 @@ const setup = async function(
   await testSetup.daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.lockingEth4Reputation.address],
-    [helpers.NULL_HASH],
     [permissions]
   );
   return testSetup;

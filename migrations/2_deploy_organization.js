@@ -5,9 +5,7 @@ var DAOToken = artifacts.require("./DAOToken.sol");
 var Controller = artifacts.require("./Controller.sol");
 var ActorsFactory = artifacts.require("./ActorsFactory.sol");
 var DAOFactory = artifacts.require("./DAOFactory.sol");
-var GlobalConstraintRegistrar = artifacts.require(
-  "./GlobalConstraintRegistrar.sol"
-);
+var ConstraintRegistrar = artifacts.require("./ConstraintRegistrar.sol");
 var SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 var SchemesFactory = artifacts.require("./SchemesFactory.sol");
 var SimpleICO = artifacts.require("./SimpleICO.sol");
@@ -29,14 +27,13 @@ const cap = web3.utils.toWei("100000000", "ether");
 
 const NULL_HASH =
   "0x0000000000000000000000000000000000000000000000000000000000000000";
-// DAOstack parameters for universal schemes:
 
 const votePrec = 50;
 
 var accounts;
 
 //Deploy test organization with the following schemes:
-//schemeRegistrar, upgradeScheme,globalConstraintRegistrar,simpleICO,contributionReward.
+//schemeRegistrar, upgradeScheme,constraintRegistrar,simpleICO,contributionReward.
 module.exports = async function(deployer) {
   deployer
     .deploy(Controller, { gas: constants.ARC_GAS_LIMIT })
@@ -96,9 +93,7 @@ module.exports = async function(deployer) {
       // Deploy AbsoluteVote:
       var AbsoluteVoteInst = await AbsoluteVote.deployed();
 
-      // Deploy UniversalGCScheme register:
-      await deployer.deploy(GlobalConstraintRegistrar);
-      var globalConstraintRegistrarInst = await GlobalConstraintRegistrar.deployed();
+      await deployer.deploy(ConstraintRegistrar);
 
       await deployer.deploy(SchemeRegistrar);
 
@@ -107,6 +102,8 @@ module.exports = async function(deployer) {
       await deployer.deploy(ContributionReward);
 
       await deployer.deploy(UpgradeScheme);
+
+      var constraintRegistrarLibrary = await ConstraintRegistrar.deployed();
 
       var contributionRewardLibrary = await ContributionReward.deployed();
 
@@ -121,6 +118,10 @@ module.exports = async function(deployer) {
       );
 
       schemesFactoryInst.setSimpleICOLibraryAddress(simpleICOLibrary.address);
+
+      schemesFactoryInst.setConstraintRegistrarLibraryAddress(
+        constraintRegistrarLibrary.address
+      );
 
       schemesFactoryInst.setContributionRewardLibraryAddress(
         contributionRewardLibrary.address
@@ -147,13 +148,14 @@ module.exports = async function(deployer) {
         SchemeRegistrarInstTx.logs[0].args._newSchemeAddress
       );
 
-      await globalConstraintRegistrarInst.setParameters(
-        voteParametersHash,
-        AbsoluteVoteInst.address
+      var ConstraintRegistrarInstTx = await schemesFactoryInst.createConstraintRegistrar(
+        AvatarInst.address,
+        AbsoluteVoteInst.address,
+        voteParametersHash
       );
-      var schemeGCRegisterParams = await globalConstraintRegistrarInst.getParametersHash(
-        voteParametersHash,
-        AbsoluteVoteInst.address
+
+      var constraintRegistrarInst = await ConstraintRegistrar.at(
+        ConstraintRegistrarInstTx.logs[0].args._newSchemeAddress
       );
 
       var upgradeSchemeInstTx = await schemesFactoryInst.createUpgradeScheme(
@@ -192,18 +194,12 @@ module.exports = async function(deployer) {
 
       var schemesArray = [
         schemeRegistrarInst.address,
-        globalConstraintRegistrarInst.address,
+        constraintRegistrarInst.address,
         upgradeSchemeInst.address,
         simpleICOInst.address,
         contributionRewardInst.address
       ];
-      const paramsArray = [
-        NULL_HASH,
-        schemeGCRegisterParams,
-        NULL_HASH,
-        NULL_HASH,
-        NULL_HASH
-      ];
+
       const permissionArray = [
         "0x0000001F",
         "0x00000005",
@@ -216,7 +212,6 @@ module.exports = async function(deployer) {
       await daoFactoryInst.setSchemes(
         AvatarInst.address,
         schemesArray,
-        paramsArray,
         permissionArray
       );
     });

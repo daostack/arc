@@ -6,7 +6,7 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const ActorsFactory = artifacts.require("./ActorsFactory.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
-const UniversalScheme = artifacts.require("./UniversalScheme.sol");
+const SchemeMock = artifacts.require("./SchemeMock.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 const SchemesFactory = artifacts.require("./SchemesFactory.sol");
@@ -82,7 +82,6 @@ const setup = async function(accounts) {
   await daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.schemeRegistrar.address],
-    [helpers.NULL_HASH],
     [permissions]
   );
 
@@ -99,7 +98,6 @@ contract("SchemeRegistrar", accounts => {
 
     var tx = await testSetup.schemeRegistrar.proposeScheme(
       testSetup.schemeRegistrar.address,
-      helpers.NULL_HASH,
       "0x00000000"
     );
     assert.equal(tx.logs.length, 1);
@@ -111,7 +109,6 @@ contract("SchemeRegistrar", accounts => {
 
     var tx = await testSetup.schemeRegistrar.proposeScheme(
       testSetup.schemeRegistrar.address,
-      helpers.NULL_HASH,
       "0x00000000"
     );
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId", 1);
@@ -150,10 +147,9 @@ contract("SchemeRegistrar", accounts => {
 
   it("execute proposeScheme  and execute -yes - fee > 0 ", async function() {
     var testSetup = await setup(accounts);
-    var universalScheme = await UniversalScheme.new();
+    var schemeMock = await SchemeMock.new();
     var tx = await testSetup.schemeRegistrar.proposeScheme(
-      universalScheme.address,
-      helpers.NULL_HASH,
+      schemeMock.address,
       "0x00000000"
     );
     //Vote with reputation to trigger execution
@@ -162,10 +158,7 @@ contract("SchemeRegistrar", accounts => {
       from: accounts[2]
     });
     var controller = await Controller.at(await testSetup.org.avatar.owner());
-    assert.equal(
-      await controller.isSchemeRegistered(universalScheme.address),
-      true
-    );
+    assert.equal(await controller.isSchemeRegistered(schemeMock.address), true);
   });
 
   it("execute proposeScheme  and execute -yes - permissions== 0x00000001", async function() {
@@ -174,7 +167,6 @@ contract("SchemeRegistrar", accounts => {
 
     var tx = await testSetup.schemeRegistrar.proposeScheme(
       accounts[0],
-      helpers.NULL_HASH,
       permissions
     );
     //Vote with reputation to trigger execution
@@ -196,7 +188,6 @@ contract("SchemeRegistrar", accounts => {
 
     var tx = await testSetup.schemeRegistrar.proposeScheme(
       accounts[0],
-      helpers.NULL_HASH,
       permissions
     );
     //Vote with reputation to trigger execution
@@ -218,7 +209,6 @@ contract("SchemeRegistrar", accounts => {
 
     var tx = await testSetup.schemeRegistrar.proposeScheme(
       accounts[0],
-      helpers.NULL_HASH,
       permissions
     );
     //Vote with reputation to trigger execution
@@ -240,7 +230,6 @@ contract("SchemeRegistrar", accounts => {
 
     var tx = await testSetup.schemeRegistrar.proposeScheme(
       accounts[0],
-      helpers.NULL_HASH,
       permissions
     );
     //Vote with reputation to trigger execution
@@ -262,7 +251,6 @@ contract("SchemeRegistrar", accounts => {
 
     var tx = await testSetup.schemeRegistrar.proposeScheme(
       accounts[0],
-      helpers.NULL_HASH,
       permissions
     );
     //Vote with reputation to trigger execution
@@ -283,7 +271,6 @@ contract("SchemeRegistrar", accounts => {
 
     var tx = await testSetup.schemeRegistrar.proposeScheme(
       accounts[0],
-      helpers.NULL_HASH,
       "0x00000000"
     );
     //Vote with reputation to trigger execution
@@ -304,7 +291,6 @@ contract("SchemeRegistrar", accounts => {
 
     var tx = await testSetup.schemeRegistrar.proposeScheme(
       accounts[0],
-      helpers.NULL_HASH,
       "0x00000000"
     );
     var proposalId = await helpers.getValueFromLogs(tx, "_proposalId", 1);
@@ -312,7 +298,7 @@ contract("SchemeRegistrar", accounts => {
     var organizationProposal = await testSetup.schemeRegistrar.organizationProposals(
       proposalId
     );
-    assert.equal(organizationProposal[2].toNumber(), 1); //proposalType
+    assert.equal(organizationProposal[1].toNumber(), 1); //proposalType
 
     //Vote with reputation to trigger execution
     await testSetup.votingMachine.absoluteVote.vote(proposalId, 2, 0, {
@@ -325,7 +311,7 @@ contract("SchemeRegistrar", accounts => {
     organizationProposal = await testSetup.schemeRegistrar.organizationProposals(
       proposalId
     );
-    assert.equal(organizationProposal[2], 0); //proposalType
+    assert.equal(organizationProposal[1], 0); //proposalType
   });
 
   it("execute proposeToRemoveScheme ", async function() {
@@ -352,15 +338,14 @@ contract("SchemeRegistrar", accounts => {
     var organizationProposal = await testSetup.schemeRegistrar.organizationProposals(
       proposalId
     );
-    assert.equal(organizationProposal[2], 0); //proposalType
+    assert.equal(organizationProposal[1], 0); //proposalType
   });
   it("execute proposeScheme  and execute -yes - autoRegisterOrganization==TRUE arc scheme", async function() {
     var testSetup = await setup(accounts);
 
-    var universalScheme = await UniversalScheme.new();
+    var schemeMock = await SchemeMock.new();
     var tx = await testSetup.schemeRegistrar.proposeScheme(
-      universalScheme.address,
-      helpers.NULL_HASH,
+      schemeMock.address,
       "0x00000000"
     );
     //Vote with reputation to trigger execution
@@ -373,10 +358,9 @@ contract("SchemeRegistrar", accounts => {
   it("execute proposeScheme  and execute -yes - autoRegisterOrganization==FALSE arc scheme", async function() {
     var testSetup = await setup(accounts);
 
-    var universalScheme = await UniversalScheme.new();
+    var schemeMock = await SchemeMock.new();
     var tx = await testSetup.schemeRegistrar.proposeScheme(
-      universalScheme.address,
-      helpers.NULL_HASH,
+      schemeMock.address,
       "0x00000000"
     );
     //Vote with reputation to trigger execution

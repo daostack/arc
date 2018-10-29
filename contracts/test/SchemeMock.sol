@@ -1,10 +1,9 @@
 pragma solidity ^0.4.24;
 
-import "../universalSchemes/UniversalScheme.sol";
 import "../controller/ControllerInterface.sol";
 
 
-contract UniversalSchemeMock is UniversalScheme {
+contract SchemeMock {
 
     constructor() public {
     }

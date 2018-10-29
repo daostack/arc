@@ -1,0 +1,285 @@
+# GenericScheme
+[see the source](https://github.com/daostack/arc/tree/master/contracts/schemes/GenericScheme.sol)
+> GenericScheme.
+
+
+**Execution cost**: less than 21334 gas
+
+**Deployment cost**: less than 1002200 gas
+
+**Combined cost**: less than 1023534 gas
+
+## Constructor
+
+
+
+
+## Events
+### NewCallProposal(bytes32,bytes)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+2. **callData** *of type `bytes`*
+
+--- 
+### ProposalDeleted(bytes32)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+--- 
+### ProposalExecuted(bytes32,int256)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+2. **_param** *of type `int256`*
+
+
+## Methods
+### init(address,address,bytes32,address)
+
+
+**Execution cost**: less than 81633 gas
+
+
+Params:
+
+1. **_avatar** *of type `address`*
+2. **_intVote** *of type `address`*
+3. **_voteParams** *of type `bytes32`*
+4. **_contractToCall** *of type `address`*
+
+
+--- 
+### burnReputation(uint256,address,bytes32)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amount** *of type `uint256`*
+2. **_beneficiary** *of type `address`*
+3. **_proposalId** *of type `bytes32`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### avatar()
+
+
+**Execution cost**: less than 622 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### contractToCall()
+
+
+**Execution cost**: less than 754 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### executeProposal(bytes32,int256)
+>
+> execution of proposals, can only be called by the voting machine in which the vote is held.
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+    > the ID of the voting in the voting machine
+
+2. **_param** *of type `int256`*
+
+    > a parameter of the voting result, 1 yes and 2 is no.
+
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### getTotalReputationSupply(bytes32)
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_proposalId** *of type `bytes32`*
+
+Returns:
+
+
+1. **output_0** *of type `uint256`*
+
+--- 
+### intVote()
+
+
+**Execution cost**: less than 710 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### mintReputation(uint256,address,bytes32)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_amount** *of type `uint256`*
+2. **_beneficiary** *of type `address`*
+3. **_proposalId** *of type `bytes32`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### proposals(bytes32)
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **param_0** *of type `bytes32`*
+
+Returns:
+
+
+1. **output_0** *of type `bytes`*
+
+--- 
+### proposeCall(bytes)
+>
+> propose to call on behalf of the _avatar     The function trigger NewCallProposal event
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_callData** *of type `bytes`*
+
+    > - The abi encode data for the call
+
+
+Returns:
+
+> an id which represents the proposal
+
+1. **output_0** *of type `bytes32`*
+
+--- 
+### reputationOf(address,bytes32)
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_owner** *of type `address`*
+2. **_proposalId** *of type `bytes32`*
+
+Returns:
+
+
+1. **output_0** *of type `uint256`*
+
+--- 
+### stakingTokenTransfer(address,address,uint256,bytes32)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_stakingToken** *of type `address`*
+2. **_beneficiary** *of type `address`*
+3. **_amount** *of type `uint256`*
+4. **_proposalId** *of type `bytes32`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### voteParams()
+
+
+**Execution cost**: less than 689 gas
+
+**Attributes**: constant
+
+
+
+Returns:
+
+
+1. **output_0** *of type `bytes32`*
+
+[Back to the top ↑](#genericscheme)

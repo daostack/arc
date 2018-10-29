@@ -12,7 +12,25 @@
 
 
 ## Methods
-### globalConstraintsCount(address)
+### externalTokenIncreaseApproval(address,address,uint256)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_externalToken** *of type `address`*
+2. **_spender** *of type `address`*
+3. **_addedValue** *of type `uint256`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### getNativeReputation()
 
 
 **Execution cost**: No bound available
@@ -20,18 +38,99 @@
 **Attributes**: constant
 
 
+
+Returns:
+
+
+1. **output_0** *of type `address`*
+
+--- 
+### burnReputation(uint256,address)
+
+
+**Execution cost**: No bound available
+
+
 Params:
 
-1. **_avatar** *of type `address`*
+1. **_amount** *of type `uint256`*
+2. **_from** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### constraintsCount()
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
 
 Returns:
 
 
 1. **output_0** *of type `uint256`*
-2. **output_1** *of type `uint256`*
 
 --- 
-### externalTokenTransferFrom(address,address,address,uint256,address)
+### genericCall(address,bytes)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_contract** *of type `address`*
+2. **_data** *of type `bytes`*
+
+Returns:
+
+
+1. **output_0** *of type `bytes32`*
+
+--- 
+### externalTokenTransfer(address,address,uint256)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_externalToken** *of type `address`*
+2. **_to** *of type `address`*
+3. **_value** *of type `uint256`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### externalTokenDecreaseApproval(address,address,uint256)
+
+
+**Execution cost**: No bound available
+
+
+Params:
+
+1. **_externalToken** *of type `address`*
+2. **_spender** *of type `address`*
+3. **_subtractedValue** *of type `uint256`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### externalTokenTransferFrom(address,address,address,uint256)
 
 
 **Execution cost**: No bound available
@@ -43,7 +142,6 @@ Params:
 2. **_from** *of type `address`*
 3. **_to** *of type `address`*
 4. **_value** *of type `uint256`*
-5. **_avatar** *of type `address`*
 
 Returns:
 
@@ -51,7 +149,7 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### addGlobalConstraint(address,bytes32,address)
+### addConstraint(address)
 
 
 **Execution cost**: No bound available
@@ -59,9 +157,7 @@ Returns:
 
 Params:
 
-1. **_globalConstraint** *of type `address`*
-2. **_params** *of type `bytes32`*
-3. **_avatar** *of type `address`*
+1. **_constraint** *of type `address`*
 
 Returns:
 
@@ -69,7 +165,7 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### externalTokenDecreaseApproval(address,address,uint256,address)
+### upgradeController(address)
 
 
 **Execution cost**: No bound available
@@ -77,10 +173,7 @@ Returns:
 
 Params:
 
-1. **_externalToken** *of type `address`*
-2. **_spender** *of type `address`*
-3. **_subtractedValue** *of type `uint256`*
-4. **_avatar** *of type `address`*
+1. **_newController** *of type `address`*
 
 Returns:
 
@@ -88,18 +181,17 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### externalTokenTransfer(address,address,uint256,address)
+### isSchemeRegistered(address)
 
 
 **Execution cost**: No bound available
 
+**Attributes**: constant
+
 
 Params:
 
-1. **_externalToken** *of type `address`*
-2. **_to** *of type `address`*
-3. **_value** *of type `uint256`*
-4. **_avatar** *of type `address`*
+1. **_scheme** *of type `address`*
 
 Returns:
 
@@ -107,7 +199,43 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### burnReputation(uint256,address,address)
+### getSchemePermissions(address)
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_scheme** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bytes4`*
+
+--- 
+### isConstraintRegistered(address)
+
+
+**Execution cost**: No bound available
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_constraint** *of type `address`*
+
+Returns:
+
+
+1. **output_0** *of type `bool`*
+
+--- 
+### mintReputation(uint256,address)
 
 
 **Execution cost**: No bound available
@@ -116,8 +244,7 @@ Returns:
 Params:
 
 1. **_amount** *of type `uint256`*
-2. **_from** *of type `address`*
-3. **_avatar** *of type `address`*
+2. **_to** *of type `address`*
 
 Returns:
 
@@ -125,43 +252,7 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### externalTokenIncreaseApproval(address,address,uint256,address)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_externalToken** *of type `address`*
-2. **_spender** *of type `address`*
-3. **_addedValue** *of type `uint256`*
-4. **_avatar** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `bool`*
-
---- 
-### genericAction(bytes32[],address)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_params** *of type `bytes32[]`*
-2. **_avatar** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `bool`*
-
---- 
-### mintTokens(uint256,address,address)
+### mintTokens(uint256,address)
 
 
 **Execution cost**: No bound available
@@ -171,7 +262,6 @@ Params:
 
 1. **_amount** *of type `uint256`*
 2. **_beneficiary** *of type `address`*
-3. **_avatar** *of type `address`*
 
 Returns:
 
@@ -179,119 +269,7 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### isGlobalConstraintRegistered(address,address)
-
-
-**Execution cost**: No bound available
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_globalConstraint** *of type `address`*
-2. **_avatar** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `bool`*
-
---- 
-### getSchemeParameters(address,address)
-
-
-**Execution cost**: No bound available
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_scheme** *of type `address`*
-2. **_avatar** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `bytes32`*
-
---- 
-### getNativeReputation(address)
-
-
-**Execution cost**: No bound available
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_avatar** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `address`*
-
---- 
-### getSchemePermissions(address,address)
-
-
-**Execution cost**: No bound available
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_scheme** *of type `address`*
-2. **_avatar** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `bytes4`*
-
---- 
-### isSchemeRegistered(address,address)
-
-
-**Execution cost**: No bound available
-
-**Attributes**: constant
-
-
-Params:
-
-1. **_scheme** *of type `address`*
-2. **_avatar** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `bool`*
-
---- 
-### mintReputation(uint256,address,address)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_amount** *of type `uint256`*
-2. **_to** *of type `address`*
-3. **_avatar** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `bool`*
-
---- 
-### registerScheme(address,bytes32,bytes4,address)
+### registerScheme(address,bytes4)
 
 
 **Execution cost**: No bound available
@@ -300,9 +278,7 @@ Returns:
 Params:
 
 1. **_scheme** *of type `address`*
-2. **_paramsHash** *of type `bytes32`*
-3. **_permissions** *of type `bytes4`*
-4. **_avatar** *of type `address`*
+2. **_permissions** *of type `bytes4`*
 
 Returns:
 
@@ -310,7 +286,7 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### removeGlobalConstraint(address,address)
+### removeConstraint(address)
 
 
 **Execution cost**: No bound available
@@ -318,8 +294,7 @@ Returns:
 
 Params:
 
-1. **_globalConstraint** *of type `address`*
-2. **_avatar** *of type `address`*
+1. **_constraint** *of type `address`*
 
 Returns:
 
@@ -327,7 +302,7 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### sendEther(uint256,address,address)
+### sendEther(uint256,address)
 
 
 **Execution cost**: No bound available
@@ -337,7 +312,6 @@ Params:
 
 1. **_amountInWei** *of type `uint256`*
 2. **_to** *of type `address`*
-3. **_avatar** *of type `address`*
 
 Returns:
 
@@ -345,7 +319,7 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### unregisterScheme(address,address)
+### unregisterScheme(address)
 
 
 **Execution cost**: No bound available
@@ -354,7 +328,6 @@ Returns:
 Params:
 
 1. **_scheme** *of type `address`*
-2. **_avatar** *of type `address`*
 
 Returns:
 
@@ -362,32 +335,12 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### unregisterSelf(address)
+### unregisterSelf()
 
 
 **Execution cost**: No bound available
 
 
-Params:
-
-1. **_avatar** *of type `address`*
-
-Returns:
-
-
-1. **output_0** *of type `bool`*
-
---- 
-### upgradeController(address,address)
-
-
-**Execution cost**: No bound available
-
-
-Params:
-
-1. **_newController** *of type `address`*
-2. **_avatar** *of type `address`*
 
 Returns:
 

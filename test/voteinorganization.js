@@ -125,7 +125,6 @@ const setup = async function(
   await daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.voteInOrganizationScheme.address],
-    [helpers.NULL_HASH],
     [permissions]
   );
 

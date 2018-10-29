@@ -100,7 +100,6 @@ const setup = async function(
   await daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.simpleICO.address],
-    [helpers.NULL_HASH],
     ["0x8000000F"]
   );
   return testSetup;

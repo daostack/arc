@@ -2,15 +2,15 @@
 [see the source](https://github.com/daostack/arc/tree/master/contracts/test/ActionMock.sol)
 
 
-**Execution cost**: less than 191 gas
+**Execution cost**: less than 196 gas
 
-**Deployment cost**: less than 152800 gas
+**Deployment cost**: less than 151200 gas
 
-**Combined cost**: less than 152991 gas
+**Combined cost**: less than 151396 gas
 
 
 ## Events
-### Action(address,bytes32)
+### WithoutReturnValue(address)
 
 
 **Execution cost**: No bound available
@@ -18,20 +18,41 @@
 
 Params:
 
-1. **_sender** *of type `address`*
-2. **_param** *of type `bytes32`*
+1. **_addr** *of type `address`*
 
 
 ## Methods
-### action(bytes32[])
+### test(uint256,address,bytes32)
 
 
-**Execution cost**: No bound available
+**Execution cost**: less than 478 gas
+
+**Attributes**: constant
 
 
 Params:
 
-1. **params** *of type `bytes32[]`*
+1. **_a** *of type `uint256`*
+2. **_b** *of type `address`*
+3. **_c** *of type `bytes32`*
+
+Returns:
+
+
+1. **output_0** *of type `uint256`*
+
+--- 
+### test2(address)
+
+
+**Execution cost**: less than 446 gas
+
+**Attributes**: constant
+
+
+Params:
+
+1. **_addr** *of type `address`*
 
 Returns:
 
@@ -39,20 +60,15 @@ Returns:
 1. **output_0** *of type `bool`*
 
 --- 
-### genericAction(address,bytes32[])
+### withoutReturnValue(address)
 
 
-**Execution cost**: No bound available
+**Execution cost**: less than 1445 gas
 
 
 Params:
 
-1. **avatar** *of type `address`*
-2. **params** *of type `bytes32[]`*
+1. **_addr** *of type `address`*
 
-Returns:
-
-
-1. **output_0** *of type `bool`*
 
 [Back to the top ↑](#actionmock)

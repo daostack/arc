@@ -1,6 +1,5 @@
 pragma solidity ^0.4.24;
 
-import "../universalSchemes/UniversalScheme.sol";
 import "../controller/Controller.sol";
 import "./ActorsFactory.sol";
 import "./ControllerFactory.sol";
@@ -35,7 +34,7 @@ contract DAOFactory {
       *   founders receive in the new organization
       * @return bool true or false
     */
-    function addFounders (
+    function addFounders(
         Avatar _avatar,
         address[] _founders,
         uint[] _foundersTokenAmount,
@@ -103,27 +102,29 @@ contract DAOFactory {
       * @dev Set initial schemes for the organization.
       * @param _avatar organization avatar (returns from forgeOrg)
       * @param _schemes the schemes to register for the organization
-      * @param _params the schemes's params
       * @param _permissions the schemes permissions.
       */
     function setSchemes (
         Avatar _avatar,
         address[] _schemes,
-        bytes32[] _params,
         bytes4[] _permissions
     )
         external
     {
         // this action can only be executed by the account that holds the lock
         // for this controller
-        require(locks[address(_avatar)] == msg.sender);
+        require(locks[address(_avatar)] == msg.sender, "caller don't have permission to call this function");
+
         // register initial schemes:
         ControllerInterface controller = ControllerInterface(_avatar.owner());
+
         for ( uint i = 0 ; i < _schemes.length ; i++ ) {
-            controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
+            controller.registerScheme(_schemes[i], _permissions[i]);
         }
+
         // Unregister self:
         controller.unregisterScheme(this);
+
         // Remove lock:
         delete locks[address(_avatar)];
         emit InitialSchemesSet(address(_avatar));

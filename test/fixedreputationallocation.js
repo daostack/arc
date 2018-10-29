@@ -72,7 +72,6 @@ const setup = async function(accounts, _repAllocation = 300) {
   await testSetup.daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.fixedReputationAllocation.address],
-    [helpers.NULL_HASH],
     [permissions]
   );
   return testSetup;

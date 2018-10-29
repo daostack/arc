@@ -11,7 +11,6 @@ contract SchemeRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInte
     event NewSchemeProposal(
         bytes32 indexed _proposalId,
         address _scheme,
-        bytes32 _parametersHash,
         bytes4 _permissions
     );
     event RemoveSchemeProposal(bytes32 indexed _proposalId, address _scheme);
@@ -21,7 +20,6 @@ contract SchemeRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInte
     // a SchemeProposal is a  proposal to add or remove a scheme to/from the an organization
     struct SchemeProposal {
         address scheme; //
-        bytes32 parametersHash;
         uint proposalType; // 1: add a scheme, 2: remove a scheme.
         bytes4 permissions;
     }
@@ -74,7 +72,7 @@ contract SchemeRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInte
             // Add a scheme:
             if (proposal.proposalType == 1) {
                 require(
-                    controller.registerScheme(proposal.scheme, proposal.parametersHash, proposal.permissions),
+                    controller.registerScheme(proposal.scheme, proposal.permissions),
                     "Failed to register scheme");
             }
             
@@ -92,14 +90,12 @@ contract SchemeRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInte
     /**
     * @dev create a proposal to register a scheme
     * @param _scheme the address of the scheme to be registered
-    * @param _parametersHash a hash of the configuration of the _scheme
     * @param _permissions the permission of the scheme to be registered
     * @return a proposal Id
     * @dev NB: not only proposes the vote, but also votes for it
     */
     function proposeScheme(
         address _scheme,
-        bytes32 _parametersHash,
         bytes4 _permissions
     )
     public
@@ -116,7 +112,6 @@ contract SchemeRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInte
 
         SchemeProposal memory proposal = SchemeProposal({
             scheme: _scheme,
-            parametersHash: _parametersHash,
             proposalType: 1,
             permissions: _permissions
         });
@@ -124,7 +119,6 @@ contract SchemeRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInte
         emit NewSchemeProposal(
             proposalId,
             _scheme,
-            _parametersHash,
             _permissions
         );
 
