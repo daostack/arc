@@ -186,7 +186,7 @@ contract('ContributionReward', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
       var organizationProposal = await testSetup.contributionReward.organizationsProposals(testSetup.org.avatar.address,proposalId);
-      assert.notEqual(organizationProposal[9],0);//executionTime
+      assert.notEqual(organizationProposal[8],0);//executionTime
      });
 
     it("execute proposeContributionReward  mint reputation ", async function() {
@@ -311,7 +311,7 @@ contract('ContributionReward', accounts => {
         //Vote with reputation to trigger execution
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         var organizationProposal = await testSetup.contributionReward.organizationsProposals(testSetup.org.avatar.address,proposalId);
-        assert.equal(organizationProposal[6],otherAvatar.address);//beneficiary
+        assert.equal(organizationProposal[5],otherAvatar.address);//beneficiary
         await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,0,0,{from:accounts[2]});
         await helpers.increaseTime(periodLength+1);
         try {
