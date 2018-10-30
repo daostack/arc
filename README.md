@@ -11,7 +11,7 @@ DAOstack subgraph for [TheGraph](https://thegraph.com/) project.
 
 All npm scripts can be called within a container using `docker-compose` with all dependencies and services set up:
 
-`docker-compose run subgraph -v $(pwd):/usr/app -v /usr/app/node_modules subgraph <command>`
+`docker-compose run -v $(pwd):/usr/app -v /usr/app/node_modules subgraph <command>`
 
 ## Commands
 
@@ -23,7 +23,7 @@ All npm scripts can be called within a container using `docker-compose` with all
 6. `deploy` - deploy subgraph.
 7. `deploy:watch` - redeploy on file change.
 
-Example: `docker-compose run subgraph -v $(pwd):/usr/app -v /usr/app/node_modules subgraph test` (run intergation tests)
+Example: `docker-compose run -v $(pwd):/usr/app -v /usr/app/node_modules subgraph test` (run intergation tests)
 
 To stop all services: `docker-compose down`
 
