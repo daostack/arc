@@ -1,9 +1,9 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
-import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
+import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "./UniversalScheme.sol";
-import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "../votingMachines/VotingMachineCallbacks.sol";
 
 
 /**
@@ -12,7 +12,7 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * him with token, reputation, ether or any combination.
  */
 
-contract ContributionReward is UniversalScheme,GenesisProtocolCallbacks,GenesisProtocolExecuteInterface {
+contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
     using SafeMath for uint;
 
     event NewContributionProposal(
@@ -147,7 +147,8 @@ contract ContributionReward is UniversalScheme,GenesisProtocolCallbacks,GenesisP
         bytes32 contributionId = controllerParams.intVote.propose(
             2,
            controllerParams.voteApproveParams,
-           msg.sender
+           msg.sender,
+           _avatar
         );
 
         // Check beneficiary is not null:

@@ -18,18 +18,17 @@ const setupGenericSchemeParams = async function(
                                             genericScheme,
                                             accounts,
                                             contractToCall,
-                                            reputationAccount=0,
                                             genesisProtocol = false,
                                             tokenAddress = 0
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
   if (genesisProtocol === true){
-      genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress);
+      genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress,0,0);
       await genericScheme.setParameters(genericSchemeParams.votingMachine.params,genericSchemeParams.votingMachine.genesisProtocol.address,contractToCall);
       genericSchemeParams.paramsHash = await genericScheme.getParametersHash(genericSchemeParams.votingMachine.params,genericSchemeParams.votingMachine.genesisProtocol.address,contractToCall);
     }
   else {
-      genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(true,50,reputationAccount);
+      genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(true,50,genericScheme.address);
       await genericScheme.setParameters(genericSchemeParams.votingMachine.params,genericSchemeParams.votingMachine.absoluteVote.address,contractToCall);
       genericSchemeParams.paramsHash = await genericScheme.getParametersHash(genericSchemeParams.votingMachine.params,genericSchemeParams.votingMachine.absoluteVote.address,contractToCall);
   }
@@ -50,7 +49,7 @@ const setup = async function (accounts,contractToCall = 0,reputationAccount=0,ge
    } else {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
    }
-   testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.genericScheme,accounts,contractToCall,reputationAccount,genesisProtocol,tokenAddress);
+   testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.genericScheme,accounts,contractToCall,genesisProtocol,tokenAddress);
    var permissions = "0x00000010";
 
 

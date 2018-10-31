@@ -53,7 +53,7 @@ const setupContributionRewardParams = async function(
   var contributionRewardParams = new ContributionRewardParams();
   contributionRewardParams.orgNativeTokenFee =  orgNativeTokenFee;
   if (genesisProtocol === true) {
-    contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,avatar);
+    contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,avatar,0);
     await contributionReward.setParameters(
                                            contributionRewardParams.orgNativeTokenFee,
                                            contributionRewardParams.votingMachine.params,
@@ -62,7 +62,7 @@ const setupContributionRewardParams = async function(
                                                                                      contributionRewardParams.votingMachine.params,
                                                                                      contributionRewardParams.votingMachine.genesisProtocol.address);
     } else {
-  contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote();
+  contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(true,50,contributionReward.address);
   await contributionReward.setParameters(contributionRewardParams.orgNativeTokenFee,
                                          contributionRewardParams.votingMachine.params,
                                          contributionRewardParams.votingMachine.absoluteVote.address);
