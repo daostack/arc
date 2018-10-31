@@ -33,7 +33,6 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
 
     // A struct holding the data for a contribution proposal
     struct ContributionProposal {
-        bytes32 contributionDescriptionHash; // Hash of contribution document.
         uint nativeTokenReward; // Reward asked in the native token of the organization.
         int reputationChange; // Organization reputation reward requested.
         uint ethReward;
@@ -160,7 +159,6 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
 
         // Set the struct:
         ContributionProposal memory proposal = ContributionProposal({
-            contributionDescriptionHash: _contributionDescriptionHash,
             nativeTokenReward: _rewards[0],
             reputationChange: _reputationChange,
             ethReward: _rewards[1],

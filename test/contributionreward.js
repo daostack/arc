@@ -112,12 +112,24 @@ contract('ContributionReward', accounts => {
       var periodLength = 1;
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                      web3.utils.asciiToHex("description"),
-                                                                     0,
-                                                                     [0,0,0,periodLength,0],
+                                                                     10,
+                                                                     [1,2,3,periodLength,5],
                                                                      testSetup.standardTokenMock.address,
                                                                      accounts[0]);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewContributionProposal");
+      assert.equal(await helpers.getValueFromLogs(tx, '_avatar',0), testSetup.org.avatar.address, "Wrong log: _avatar");
+      assert.equal(await helpers.getValueFromLogs(tx, '_intVoteInterface',0), testSetup.contributionRewardParams.votingMachine.absoluteVote.address, "Wrong log: _intVoteInterface");
+      assert.equal(await helpers.getValueFromLogs(tx, '_contributionDescription',10), web3.utils.padRight(web3.utils.asciiToHex("description"),64), "Wrong log: _contributionDescription");
+      assert.equal(await helpers.getValueFromLogs(tx, '_reputationChange',0), 10, "Wrong log: _reputationChange");
+      var arr = await helpers.getValueFromLogs(tx, '_rewards',0);
+      assert.equal(arr[0].words[0], 1, "Wrong log: _rewards");
+      assert.equal(arr[1].words[0], 2, "Wrong log: _rewards");
+      assert.equal(arr[2].words[0], 3, "Wrong log: _rewards");
+      assert.equal(arr[3].words[0], periodLength, "Wrong log: _rewards");
+      assert.equal(arr[4].words[0], 5, "Wrong log: _rewards");
+      assert.equal(await helpers.getValueFromLogs(tx, '_externalToken',0), testSetup.standardTokenMock.address, "Wrong log: _externalToken");
+      assert.equal(await helpers.getValueFromLogs(tx, '_beneficiary',0), accounts[0], "Wrong log: _beneficiary");
      });
 
     it("proposeContributionReward fees", async function() {
@@ -186,7 +198,7 @@ contract('ContributionReward', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
       var organizationProposal = await testSetup.contributionReward.organizationsProposals(testSetup.org.avatar.address,proposalId);
-      assert.notEqual(organizationProposal[9],0);//executionTime
+      assert.notEqual(organizationProposal[8],0);//executionTime
      });
 
     it("execute proposeContributionReward  mint reputation ", async function() {
@@ -311,7 +323,7 @@ contract('ContributionReward', accounts => {
         //Vote with reputation to trigger execution
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         var organizationProposal = await testSetup.contributionReward.organizationsProposals(testSetup.org.avatar.address,proposalId);
-        assert.equal(organizationProposal[6],otherAvatar.address);//beneficiary
+        assert.equal(organizationProposal[5],otherAvatar.address);//beneficiary
         await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,0,0,{from:accounts[2]});
         await helpers.increaseTime(periodLength+1);
         try {
