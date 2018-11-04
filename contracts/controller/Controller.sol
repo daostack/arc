@@ -114,21 +114,23 @@ contract Controller is ControllerInterface {
     modifier onlySubjectToConstraint(bytes32 func) {
         uint idx;
         for (idx = 0; idx < constraints.length; idx++) {
-            if (registeredConstraints[constraints[idx]].when != ConstraintInterface.CallPhase.Post) 
+            if (registeredConstraints[constraints[idx]].when != ConstraintInterface.CallPhase.Post) {
                 require(
                     ConstraintInterface(constraints[idx]).pre(msg.sender, func),
                     "Failed to satisfy constraint (pre)"
                 );
+            }
         }
         
         _;
 
         for (idx = 0; idx < constraints.length; idx++) {
-            if (registeredConstraints[constraints[idx]].when != ConstraintInterface.CallPhase.Pre) 
+            if (registeredConstraints[constraints[idx]].when != ConstraintInterface.CallPhase.Pre) {
                 require(
                     ConstraintInterface(constraints[idx]).post(msg.sender, func),
                     "Failed to satisfy constraint (pre)"
                 );
+            }
         }
     }
 

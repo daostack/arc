@@ -359,7 +359,6 @@ contract("Auction4Reputation", accounts => {
     try {
       await testSetup.auction4Reputation.init(
         accounts[0],
-        accounts[0],
         300,
         200,
         100,

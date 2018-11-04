@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "./ProxyScheme.sol";
 
 
 /**
@@ -9,7 +10,7 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * him with token, reputation, ether or any combination.
  */
 
-contract ContributionReward is GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
+contract ContributionReward is ProxyScheme, GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
     using SafeMath for uint;
 
     event NewContributionProposal(
@@ -43,14 +44,9 @@ contract ContributionReward is GenesisProtocolCallbacks, GenesisProtocolExecuteI
 
     mapping(bytes32 => ContributionProposal) public organizationProposals;
     
-    Avatar public avatar;
     IntVoteInterface public intVote;
     bytes32 public voteApproveParams;
     uint public orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
 
     function init(
         Avatar _avatar,

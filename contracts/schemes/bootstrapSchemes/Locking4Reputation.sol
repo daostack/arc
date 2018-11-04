@@ -2,13 +2,13 @@ pragma solidity ^0.4.24;
 
 import "../../controller/ControllerInterface.sol";
 import { RealMath } from "../../libs/RealMath.sol";
+import "../ProxyScheme.sol";
 
 
 /**
  * @title A locker contract
  */
-
-contract Locking4Reputation {
+contract Locking4Reputation is ProxyScheme {
     using SafeMath for uint;
     using RealMath for int216;
     using RealMath for int256;
@@ -21,8 +21,6 @@ contract Locking4Reputation {
         uint amount;
         uint releaseTime;
     }
-
-    Avatar public avatar;
 
     // A mapping from lockers addresses their lock balances.
     mapping(address => mapping(bytes32=>Locker)) public lockers;

@@ -3,14 +3,14 @@ pragma solidity ^0.4.24;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import { RealMath } from "../../libs/RealMath.sol";
 import "../../controller/ControllerInterface.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../ProxyScheme.sol";
 
 /**
  * @title A scheme for conduct ERC20 Tokens auction for reputation
  */
 
 
-contract Auction4Reputation is Ownable {
+contract Auction4Reputation is ProxyScheme {
     using SafeMath for uint;
     using RealMath for int216;
     using RealMath for int256;
@@ -21,13 +21,12 @@ contract Auction4Reputation is Ownable {
     struct Auction {
         uint totalBid;
         // A mapping from bidder addresses to their bids.
-        mapping(address=>uint) bids;
+        mapping(address => uint) bids;
     }
 
     // A mapping from auction index to auction.
-    mapping(uint=>Auction) public auctions;
+    mapping(uint => Auction) public auctions;
 
-    Avatar public avatar;
     uint public reputationRewardLeft;
     uint public auctionsEndTime;
     uint public auctionsStartTime;
@@ -37,13 +36,8 @@ contract Auction4Reputation is Ownable {
     StandardToken public token;
     address public wallet;
 
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
-
     /**
      * @dev init
-     * @param _owner the owner of the scheme
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
@@ -55,7 +49,6 @@ contract Auction4Reputation is Ownable {
      * @param _token the bidding token
      */
     function init(
-        address _owner,
         Avatar _avatar,
         uint _reputationReward,
         uint _auctionsStartTime,
@@ -72,7 +65,6 @@ contract Auction4Reputation is Ownable {
         auctionPeriod = (_auctionsEndTime.sub(_auctionsStartTime)).div(_numberOfAuctions);
         require(auctionPeriod > 0, "auctionPeriod should be > 0");
         
-        owner = _owner;
         token = _token;
         avatar = _avatar;
         auctionsStartTime = _auctionsStartTime;

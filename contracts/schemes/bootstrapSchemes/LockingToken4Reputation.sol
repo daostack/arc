@@ -1,23 +1,16 @@
 pragma solidity ^0.4.24;
 
 import "./Locking4Reputation.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 /**
  * @title A scheme for locking ERC20 Tokens for reputation
  */
-
-contract LockingToken4Reputation is Locking4Reputation, Ownable {
+contract LockingToken4Reputation is Locking4Reputation {
     StandardToken public token;
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
     
     /**
      * @dev init
-     * @param _owner the owner of the scheme
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
@@ -29,7 +22,6 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      * @param _token the locking token
      */
     function init(
-        address _owner,
         Avatar _avatar,
         uint _reputationReward,
         uint _lockingStartTime,
@@ -45,7 +37,6 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
         _lockingEndTime,
         _maxLockingPeriod);
 
-        owner = _owner;
         token = _token;
     }
 

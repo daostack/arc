@@ -1,13 +1,14 @@
 pragma solidity ^0.4.24;
 
 import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "./ProxyScheme.sol";
 
 
 /**
  * @title A scheme for vesting.
  * @dev Can be used without organization just as a vesting component.
  */
-contract VestingScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
+contract VestingScheme is ProxyScheme, GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
     using SafeMath for uint;
 
     event ProposalExecuted(bytes32 indexed _proposalId, int _param);
@@ -38,13 +39,8 @@ contract VestingScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
         mapping(address => bool) signaturesReceived;
     }
     
-    Avatar public avatar;
     IntVoteInterface public intVote;
     bytes32 public voteParams;
-    
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
 
     function init(
         Avatar _avatar,

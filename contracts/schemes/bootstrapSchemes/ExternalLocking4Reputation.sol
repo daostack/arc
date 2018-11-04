@@ -1,28 +1,21 @@
 pragma solidity ^0.4.24;
 
 import "./Locking4Reputation.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 /**
  * @title A scheme for external locking Tokens for reputation
  */
-
-contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
+contract ExternalLocking4Reputation is Locking4Reputation {
 
     address public externalLockingContract;
     string public getBalanceFuncSignature;
 
     // locker -> bool
     mapping(address => bool) public externalLockers;
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
     
     /**
      * @dev init
-     * @param _owner the owner of the scheme
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
@@ -35,7 +28,6 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
      *        e.g "lockedTokenBalances(address)"
      */
     function init(
-        address _owner,
         Avatar _avatar,
         uint _reputationReward,
         uint _lockingStartTime,
@@ -51,7 +43,6 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         _lockingEndTime,
         1);
         
-        owner = _owner;
         externalLockingContract = _externalLockingContract;
         getBalanceFuncSignature = _getBalanceFuncSignature;
     }

@@ -61,36 +61,10 @@ const setup = async function(
 ) {
   var testSetup = new helpers.TestSetup();
   testSetup.fee = 10;
-  testSetup.constraintRegistrar = await ConstraintRegistrar.new();
-
-  var controller = await Controller.new({
-    gas: constants.ARC_GAS_LIMIT
-  });
-
-  var controllerFactory = await ControllerFactory.new(controller.address, {
-    gas: constants.ARC_GAS_LIMIT
-  });
-
-  var avatarLibrary = await Avatar.new({ gas: constants.ARC_GAS_LIMIT });
-  var daoTokenLibrary = await DAOToken.new({ gas: constants.ARC_GAS_LIMIT });
-
-  var actorsFactory = await ActorsFactory.new(
-    avatarLibrary.address,
-    daoTokenLibrary.address,
-    { gas: constants.ARC_GAS_LIMIT }
-  );
-
-  testSetup.daoFactory = await DAOFactory.new(
-    controllerFactory.address,
-    actorsFactory.address,
-    {
-      gas: constants.ARC_GAS_LIMIT
-    }
-  );
 
   testSetup.reputationArray = [20, 10, 70];
   testSetup.org = await helpers.setupOrganizationWithArrays(
-    testSetup.daoFactory,
+    daoFactory,
     [accounts[0], accounts[1], accounts[2]],
     [1000, 1000, 1000],
     testSetup.reputationArray
@@ -123,7 +97,7 @@ const setup = async function(
 
   var permissions = "0x00000004";
 
-  await testSetup.daoFactory.setSchemes(
+  await daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [testSetup.constraintRegistrar.address],
     [permissions]

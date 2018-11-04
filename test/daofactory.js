@@ -10,7 +10,6 @@ const StandardTokenMock = artifacts.require("./test/StandardTokenMock.sol");
 const SchemeMock = artifacts.require("./test/SchemeMock.sol");
 const ControllerFactory = artifacts.require("./ControllerFactory.sol");
 
-const zeroBytes32 = helpers.NULL_HASH;
 var avatar,
   token,
   reputation,

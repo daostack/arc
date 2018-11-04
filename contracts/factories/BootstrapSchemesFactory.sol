@@ -8,7 +8,6 @@ import "../schemes/bootstrapSchemes/ExternalLocking4Reputation.sol";
 import "../schemes/bootstrapSchemes/FixedReputationAllocation.sol";
 import "../schemes/bootstrapSchemes/LockingEth4Reputation.sol";
 import "../schemes/bootstrapSchemes/LockingToken4Reputation.sol";
-import "../controller/Avatar.sol";
 
 
 contract BootstrapSchemesFactory is Ownable, CloneFactory {
@@ -73,7 +72,6 @@ contract BootstrapSchemesFactory is Ownable, CloneFactory {
     {
         address clone = createClone(auction4ReputationLibraryAddress);
         Auction4Reputation(clone).init(
-            msg.sender,
             _avatar,
             _reputationReward,
             _auctionsStartTime,
@@ -99,7 +97,6 @@ contract BootstrapSchemesFactory is Ownable, CloneFactory {
     {
         address clone = createClone(externalLocking4ReputationLibraryAddress);
         ExternalLocking4Reputation(clone).init(
-            msg.sender,
             _avatar,
             _reputationReward,
             _lockingStartTime,
@@ -132,7 +129,6 @@ contract BootstrapSchemesFactory is Ownable, CloneFactory {
     {
         address clone = createClone(lockingEth4ReputationLibraryAddress);
         LockingEth4Reputation(clone).init(
-            msg.sender,
             _avatar,
             _reputationReward,
             _lockingStartTime,
@@ -156,7 +152,6 @@ contract BootstrapSchemesFactory is Ownable, CloneFactory {
     {
         address clone = createClone(lockingToken4ReputationLibraryAddress);
         LockingToken4Reputation(clone).init(
-            msg.sender,
             _avatar,
             _reputationReward,
             _lockingStartTime,

@@ -3,6 +3,7 @@ pragma solidity ^0.4.24;
 import "../../controller/ControllerInterface.sol";
 import { RealMath } from "../../libs/RealMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../ProxyScheme.sol";
 
 
 /**
@@ -10,7 +11,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * This scheme can be used to allocate a pre define amount of reputation to whitelisted
  * beneficiaries.
  */
-contract FixedReputationAllocation is Ownable {
+contract FixedReputationAllocation is ProxyScheme, Ownable {
     using SafeMath for uint;
     using RealMath for int216;
     using RealMath for int256;
@@ -21,15 +22,10 @@ contract FixedReputationAllocation is Ownable {
     // beneficiary -> exist
     mapping(address => bool) public beneficiaries;
 
-    Avatar public avatar;
     uint public reputationReward;
     bool public isEnable;
     uint public numberOfBeneficiaries;
     uint public beneficiaryReward;
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
 
     /**
      * @dev init

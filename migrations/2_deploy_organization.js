@@ -25,9 +25,6 @@ const initToken = web3.utils.toWei("1000");
 const initTokenInWei = [initToken];
 const cap = web3.utils.toWei("100000000", "ether");
 
-const NULL_HASH =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
-
 const votePrec = 50;
 
 var accounts;

@@ -1,8 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "@daostack/infra/contracts/VotingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "./ProxyScheme.sol";
 
 
 /**
@@ -10,7 +9,7 @@ import "../VotingMachines/GenesisProtocolCallbacks.sol";
  * @dev  A scheme for proposing and executing calls to an arbitrary function
  * on a specific contract on behalf of the organization avatar.
  */
-contract GenericScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
+contract GenericScheme is ProxyScheme, GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
     event NewCallProposal(bytes32 indexed _proposalId, bytes callData);
     event ProposalExecuted(bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(bytes32 indexed _proposalId);
@@ -21,11 +20,6 @@ contract GenericScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
     IntVoteInterface public intVote;
     bytes32 public voteParams;
     address public contractToCall;
-    Avatar public avatar;
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
 
     function init(
         Avatar _avatar,

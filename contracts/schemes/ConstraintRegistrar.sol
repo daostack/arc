@@ -1,13 +1,14 @@
 pragma solidity ^0.4.24;
 
 import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "./ProxyScheme.sol";
 
 
 /**
  * @title A scheme to manage constraint for organizations
  * @dev The scheme is used to register or remove new constraints
  */
-contract ConstraintRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
+contract ConstraintRegistrar is ProxyScheme, GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
     event NewConstraintsProposal(bytes32 indexed _proposalId, address _constraint, bytes32 _voteToRemoveParams);
     event RemoveConstraintsProposal(bytes32 indexed _proposalId, address _constraint);
     event ProposalExecuted(bytes32 indexed _proposalId, int _param);
@@ -25,14 +26,9 @@ contract ConstraintRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecute
 
     mapping(address => bytes32) public voteToRemoveParams;
     
-    Avatar public avatar;
     IntVoteInterface public intVote;
     bytes32 public voteRegisterParams;
     
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
-
     function init(
         Avatar _avatar,
         IntVoteInterface _intVote,

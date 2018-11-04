@@ -3,13 +3,14 @@ pragma solidity ^0.4.24;
 import "../controller/ControllerInterface.sol";
 import "../controller/Avatar.sol";
 import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "./ProxyScheme.sol";
 
 
 /**
  * @title VoteInOrganizationScheme.
  * @dev A scheme to allow an organization to vote in a proposal.
  */
-contract VoteInOrganizationScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
+contract VoteInOrganizationScheme is ProxyScheme, GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
     
     event NewVoteProposal(
         bytes32 indexed _proposalId,
@@ -31,14 +32,8 @@ contract VoteInOrganizationScheme is GenesisProtocolCallbacks, GenesisProtocolEx
 
     mapping(bytes32 => VoteProposal) public organizationProposals;
     
-    Avatar public avatar;
     IntVoteInterface public intVote;
     bytes32 public voteParams;
-    
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
 
     function init(
         Avatar _avatar,

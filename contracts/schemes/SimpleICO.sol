@@ -5,17 +5,15 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 import "../controller/Avatar.sol";
 import "../controller/ControllerInterface.sol";
+import "./ProxyScheme.sol";
 
 
 /**
  * @title SimpleICO scheme.
  * @dev A scheme to allow organizations to open a simple ICO and get donations.
  */
-contract SimpleICO is Pausable {
+contract SimpleICO is ProxyScheme, Pausable {
     using SafeMath for uint;
-
-    
-    Avatar public avatar; // Avatar of the organization raising funds
 
     uint public cap; // Cap in Eth
     uint public price; // Price represents Tokens per 1 Eth
@@ -26,10 +24,6 @@ contract SimpleICO is Pausable {
     uint public totalEthRaised;
 
     event DonationReceived(address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
     
     /**
     * @dev Fallback function, when ether is sent it will donate to the ICO.

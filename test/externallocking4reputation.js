@@ -243,7 +243,6 @@ contract("ExternalLocking4Reputation", accounts => {
     let testSetup = await setup(accounts);
     try {
       await testSetup.externalLocking4Reputation.init(
-        accounts[0],
         testSetup.org.avatar.address,
         100,
         testSetup.lockingStartTime,

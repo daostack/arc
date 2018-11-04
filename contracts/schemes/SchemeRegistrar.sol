@@ -1,13 +1,14 @@
 pragma solidity ^0.4.24;
 
 import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "./ProxyScheme.sol";
 
 
 /**
  * @title A registrar for Schemes for an organization
  * @dev The SchemeRegistrar is used for registering and unregistering schemes at an organization
  */
-contract SchemeRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
+contract SchemeRegistrar is ProxyScheme, GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
     event NewSchemeProposal(
         bytes32 indexed _proposalId,
         address _scheme,
@@ -26,14 +27,9 @@ contract SchemeRegistrar is GenesisProtocolCallbacks, GenesisProtocolExecuteInte
 
     mapping(bytes32 => SchemeProposal) public organizationProposals;
 
-    Avatar public avatar;
     IntVoteInterface public intVote;
     bytes32 public voteRegisterParams;
     bytes32 public voteRemoveParams;
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
 
     function init(
         Avatar _avatar,

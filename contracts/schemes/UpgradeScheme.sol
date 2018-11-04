@@ -1,17 +1,16 @@
 pragma solidity ^0.4.24;
 
-import "@daostack/infra/contracts/VotingMachines/GenesisProtocolExecuteInterface.sol";
-
 import "../controller/ControllerInterface.sol";
 import "../controller/Avatar.sol";
 import "../VotingMachines/GenesisProtocolCallbacks.sol";
+import "./ProxyScheme.sol";
 
 
 /**
  * @title A scheme to manage the upgrade of an organization.
  * @dev The scheme is used to upgrade the controller of an organization to a new controller.
  */
-contract UpgradeScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
+contract UpgradeScheme is ProxyScheme, GenesisProtocolCallbacks, GenesisProtocolExecuteInterface {
     event NewUpgradeProposal(
         bytes32 indexed _proposalId,
         address _newController
@@ -33,14 +32,8 @@ contract UpgradeScheme is GenesisProtocolCallbacks, GenesisProtocolExecuteInterf
 
     mapping(bytes32 => UpgradeProposal) public organizationProposals;
 
-    Avatar public avatar;
     IntVoteInterface public intVote;
     bytes32 public voteParams;
-    
-
-    constructor () public {
-        avatar = Avatar(0x000000000000000000000000000000000000dead);
-    }
 
     function init(
         Avatar _avatar,
