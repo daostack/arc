@@ -1,0 +1,24 @@
+type Reputation @entity {
+    address: ID!
+    totalSupply: BigInt!
+}
+
+type ReputationHolder @entity {
+    contract: ID!
+    address: ID!
+    balance: BigInt!
+}
+
+type ReputationMint @entity {
+    txHash: Bytes!
+    contract: ID!
+    address: ID!
+    amount: BigInt!
+}
+
+type ReputationBurn @entity {
+    txHash: Bytes!
+    contract: ID!
+    address: ID!
+    amount: BigInt!
+}

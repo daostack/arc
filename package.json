@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/daostack/subgraph.git"
   },
+  "engines": {
+    "node": ">=10"
+  },
   "scripts": {
     "postinstall": "npm run codegen",
     "configure:mainnet": "node ops/index.js configure -e mainnet",
@@ -18,24 +21,25 @@
     "build-wast": "graph build -t wast subgraph.yaml",
     "deploy": "graph deploy --ipfs ${ipfs-/ip4/127.0.0.1/tcp/5001} --node ${node_rpc-http://127.0.0.1:8020/} -n daostack subgraph.yaml",
     "deploy:watch": "graph deploy -w --ipfs ${ipfs-/ip4/127.0.0.1/tcp/5001} --node ${node_rpc-http://127.0.0.1:8020/} -n daostack subgraph.yaml",
-    "test": "node ops/index.js migrate && npm run deploy && jest"
+    "test": "node ops/index.js migrate && npm run deploy && jest --runInBand"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0"
+    "@types/axios": "^0.14.0",
+    "@types/graphql": "^14.0.3",
+    "@types/jest": "^23.3.7",
+    "@types/mocha": "^5.2.5"
   },
   "dependencies": {
     "@daostack/arc": "0.0.0-alpha.56",
     "@graphprotocol/graph-cli": "^0.3.1",
-    "@graphprotocol/graph-ts": "^0.0.1",
-    "@types/graphql": "^14.0.3",
-    "@types/jest": "^23.3.7",
-    "@types/mocha": "^5.2.5",
+    "@graphprotocol/graph-ts": "^0.3.4",
     "axios": "^0.18.0",
     "chalk": "^2.4.1",
     "docker-compose": "^0.9.1",
     "dotenv": "^6.1.0",
     "ethereumjs-wallet": "^0.6.0",
     "ganache-cli": "^6.1.8",
+    "glob": "^7.1.3",
     "graphql": "^14.0.2",
     "graphql-request": "^1.8.2",
     "handlebars": "^4.0.12",
@@ -47,7 +51,7 @@
     "shell-exec": "^1.0.2",
     "ts-jest": "^23.10.4",
     "typescript": "^3.1.3",
-    "web3": "^1.0.0-beta.36",
+    "web3": "1.0.0-beta.36",
     "winston": "^3.1.0",
     "yargs": "^12.0.2"
   },

@@ -53,8 +53,9 @@ The following `.env` variables can be configured:
 
 In order to add support for a new contract follow these steps:
 
-1. Create a mapping file at `src/<contract name>.ts`.
+1. Create a mapping file at `src/mappings/<contract name>.ts`.
 2. Create a test file at `test/integration/<contract name>.spec.ts`.
 3. Configure the contract's mainnet address at `ops/config.yaml` under `addresses.<contract name>`.
 4. Add the contract to the migration script at the `migrate` function in `ops/index.js`.
 5. Add an additional datasource for the new contract at `subgraph.handlebars.yaml`, use `{{addresses.<contract name>}}` in place of the contract address.
+6. Add the appropriate grahpql schema for your mapping in `src/mappings/<contract name>.graphql` and register it at `schema.handlebars.graphql` by adding a `{{> <contract name>}}` line.

@@ -4,21 +4,25 @@ specVersion: 0.0.1
 schema:
   file: ./schema.graphql
 dataSources:
-  - kind: ethereum/contract
-    name: GP
-    source:
-      address: "{{addresses.GenesisProtocol}}"
-      abi: GenesisProtocol
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.1
-      language: wasm/assemblyscript
-      file: ./src/genesisProtocol.ts
-      entities:
-        - Proposal
-      abis:
-        - name: GenesisProtocol
-          file: ./abis/GenesisProtocol.json
-      eventHandlers:
-        - event: NewProposal(bytes32,address,uint256,address,bytes32)
-          handler: newProposal
+- kind: ethereum/contract
+  name: Reputation
+  source:
+    address: "{{addresses.Reputation}}"
+    abi: Reputation
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.1
+    language: wasm/assemblyscript
+    file: ./src/mappings/Reputation
+    entities:
+    - ReputationHolder
+    - ReputationMint
+    - ReputationBurn
+    abis:
+    - name: Reputation
+      file: ./abis/Reputation.json
+    eventHandlers:
+    - event: Mint(address, uint256)
+      handler: handleMint
+    - event: Burn(address, uint256)
+      handler: handleBurn

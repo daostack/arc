@@ -3,7 +3,7 @@ common: &common
 mainnet:
   <<: *common
   addresses:
-    GenesisProtocol: "0x8940442e7f54e875c8c1c80213a4aee7eee4781c"
+    Reputation: "0x13ad61aa8f695ce64711a51a6feccb48a275aaf8"
 development:
   <<: *common
   postgresPassword: "letmein"

@@ -1,8 +1,0 @@
-type Proposal @entity {
-  id: ID!
-  address: Bytes!
-  numOfChoices: BigInt!
-  organization: Bytes!
-  paramsHash: Bytes!
-  proposer: Bytes!
-}
