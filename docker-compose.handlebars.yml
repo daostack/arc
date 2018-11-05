@@ -11,14 +11,14 @@ services:
     environment:
       ethereum: {{#if development}}http://ganache:8545{{else}}{{ethereumProvider}}{{/if}}
       test_mnemonic: {{test_mnemonic}}
-      node_http: http://graph-node:8000/daostack/graphql
-      node_ws: http://graph-node:8001/
-      node_rpc: http://graph-node:8020/
+      node_http: http://graph-node:8000/by-name/daostack/graphql
+      node_ws: http://graph-node:8001/by-name/daostack
+      node_rpc: http://graph-node:8020
       ipfs_host: ipfs
       ipfs_port: 5001
       WAIT_HOSTS: ipfs:5001, graph-node:8020
   graph-node:
-    image: graphprotocol/graph-node
+    image: graphprotocol/graph-node:v0.4.0
     ports:
       - 8000:8000
       - 8001:8001
@@ -47,7 +47,7 @@ services:
   {{#if development}}
   ganache:
     # image: trufflesuite/ganache-cli
-    build: 
+    build:
       dockerfile: ganache.dockerfile
       context: .
     ports:

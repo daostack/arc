@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:10.13.0
 
 # install the 'host' command used to get ip of ipfs container
 RUN apt-get update -y && apt-get install dnsutils -y

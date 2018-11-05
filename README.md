@@ -8,6 +8,7 @@ DAOstack subgraph for [TheGraph](https://thegraph.com/) project.
 
 2. `npm install`
 3. `npm run configure:<development|mainnet>` - configure the project to use ganache or mainnet via infura.
+4. `docker-compose build` - to rebuild docker changes after adding/removing packages
 
 All npm scripts can be called within a container using `docker-compose` with all dependencies and services set up:
 
@@ -23,7 +24,7 @@ All npm scripts can be called within a container using `docker-compose` with all
 6. `deploy` - deploy subgraph.
 7. `deploy:watch` - redeploy on file change.
 
-Example: `docker-compose run -v $(pwd):/usr/app -v /usr/app/node_modules subgraph test` (run intergation tests)
+Example: `docker-compose run --rm -v $(pwd):/usr/app -v /usr/app/node_modules subgraph test` (run intergation tests)
 
 To stop all services: `docker-compose down`
 

@@ -13,7 +13,7 @@ dataSources:
     kind: ethereum/events
     apiVersion: 0.0.1
     language: wasm/assemblyscript
-    file: ./src/mappings/Reputation
+    file: ./src/mappings/reputation/Reputation.ts
     entities:
     - ReputationHolder
     - ReputationMint

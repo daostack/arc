@@ -1,4 +1,4 @@
-import { Address, U256, Bytes, Entity, ByteArray, crypto, store } from '@graphprotocol/graph-ts'
+import { Address, BigInt, Bytes, Entity, ByteArray, crypto, store } from '@graphprotocol/graph-ts'
 
 export function concat(a: ByteArray, b: ByteArray): ByteArray {
   let out = new Uint8Array(a.length + b.length)
@@ -11,7 +11,7 @@ export function concat(a: ByteArray, b: ByteArray): ByteArray {
   return out as ByteArray
 }
 
-export function updateRedemption(beneficiary: Address, avatar: Address, amount: U256, proposalId: Bytes, rewardType: ByteArray, rewardString: String): void {
+export function updateRedemption(beneficiary: Address, avatar: Address, amount: BigInt, proposalId: Bytes, rewardType: ByteArray, rewardString: String): void {
   let accountId = crypto.keccak256(concat(beneficiary, avatar))
   let rewardId = crypto.keccak256(concat(rewardType, amount as ByteArray))
 
@@ -31,7 +31,7 @@ export function updateRedemption(beneficiary: Address, avatar: Address, amount: 
     reward = new Entity()
     reward.setString('id', rewardId.toHex())
     reward.setString('type', rewardString)
-    reward.setU256('amount', amount)
+    reward.setBigInt('amount', amount)
 
     store.set('Reward', rewardId.toHex(), reward as Entity)
   }
@@ -39,6 +39,6 @@ export function updateRedemption(beneficiary: Address, avatar: Address, amount: 
 
 export const zero256 = "0x0000000000000000000000000000000000000000000000000000000000000000"
 
-export function isZero(num: U256): boolean {
+export function isZero(num: BigInt): boolean {
   return num[0] == 0 && num[1] == 0 && num[2] == 0 && num[3] == 0;
 }
