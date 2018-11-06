@@ -12,7 +12,7 @@ DAOstack subgraph for [TheGraph](https://thegraph.com/) project.
 
 All npm scripts can be called within a container using `docker-compose` with all dependencies and services set up:
 
-`npm run docker:start <command>`
+`npm run docker <command>`
 
 ## Commands
 
@@ -26,10 +26,10 @@ All npm scripts can be called within a container using `docker-compose` with all
 
 Docker commands (requires installing [`docker`](https://docs.docker.com/v17.12/install/) and [`docker-compose`](https://docs.docker.com/compose/install/)): 
 
-8. `docker:start <command>` - start a command running inside the docker container. Example: `npm run docker:start test` (run intergation tests).
-9. `docker:stop` - stop all running docker services.
-10. `docker:rebuild <command>` - rebuild the docker container after changes to `package.json`.
-11. `docker:logs <subgraph|graph-node|ganache|ipfs|postgres>` - display logs from a running docker service. 
+1. `docker <command>` - start a command running inside the docker container. Example: `npm run docker test` (run intergation tests).
+2. `docker:stop` - stop all running docker services.
+3.  `docker:rebuild <command>` - rebuild the docker container after changes to `package.json`.
+4.  `docker:logs <subgraph|graph-node|ganache|ipfs|postgres>` - display logs from a running docker service. 
 
 ## Exposed endpoints
 
