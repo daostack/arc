@@ -12,8 +12,8 @@
   },
   "scripts": {
     "postinstall": "npm run codegen",
-    "configure:mainnet": "node ops/index.js configure -e mainnet",
-    "configure:development": "node ops/index.js configure -e development",
+    "configure:mainnet": "node ops/index.js configure -e mainnet && npm run codegen",
+    "configure:development": "node ops/index.js configure -e development && npm run codegen",
     "migrate:development": "node ops/index.js migrate",
     "codegen": "node ops/index.js generate-abis && graph codegen --output-dir src/types/ subgraph.yaml",
     "build": "graph build subgraph.yaml",
