@@ -1,7 +1,7 @@
 import 'allocator/arena'
 export { allocate_memory }
 
-import { Entity, Address, Value, store, crypto, ByteArray, BigInt } from '@graphprotocol/graph-ts'
+import { Address,store, crypto, } from '@graphprotocol/graph-ts'
 
 // Import event types from the Reputation contract ABI
 import { Mint, Burn ,Reputation} from '../../types/Reputation/Reputation'

@@ -40,5 +40,10 @@ export function updateRedemption(beneficiary: Address, avatar: Address, amount: 
 export const zero256 = "0x0000000000000000000000000000000000000000000000000000000000000000"
 
 export function isZero(num: BigInt): boolean {
-  return num[0] == 0 && num[1] == 0 && num[2] == 0 && num[3] == 0;
+  for (let i = 0; i < num.length; i++) {
+      if (num[i] != 0) {
+        return false;
+      }
+    }
+    return true;
 }
