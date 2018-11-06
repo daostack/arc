@@ -25,6 +25,7 @@ All npm scripts can be called within a container using `docker-compose` with all
 7. `deploy:watch` - redeploy on file change.
 
 Docker commands (requires installing [`docker`](https://docs.docker.com/v17.12/install/) and [`docker-compose`](https://docs.docker.com/compose/install/)): 
+
 8. `docker:start <command>` - start a command running inside the docker container. Example: `npm run docker:start test` (run intergation tests).
 9. `docker:stop` - stop all running docker services.
 10. `docker:rebuild <command>` - rebuild the docker container after changes to `package.json`.
