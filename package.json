@@ -11,7 +11,7 @@
     "node": ">=10.13.0"
   },
   "scripts": {
-    "postinstall": "npm run codegen",
+    "postinstall": "npm run configure:mainnet",
     "configure:mainnet": "node ops/index.js configure -e mainnet && npm run codegen",
     "configure:development": "node ops/index.js configure -e development && npm run codegen",
     "migrate:development": "node ops/index.js migrate",
