@@ -14,6 +14,7 @@ const Web3 = require("web3");
 const HDWallet = require("hdwallet-accounts");
 const glob = require('glob')
 
+const UController = require("@daostack/arc/build/contracts/UController.json");
 const Reputation = require("@daostack/arc/build/contracts/Reputation.json");
 
 async function configure({ env, ...rest }) {
@@ -35,6 +36,8 @@ async function configure({ env, ...rest }) {
   );
 
   const subschemas = await new Promise((res, rej) => glob('src/**/*.graphql', (err, files) => err ? rej(err) : res(files)));
+  const partials = subschemas.reduce((acc, subschema) => ({...acc, [path.basename(subschema).replace(/\.[^/.]+$/, "")]: fs.readFileSync(subschema, 'utf-8')}), {})
+
   const schema = (config) => subschemas.map(subschema => handlebars.compile(fs.readFileSync(subschema, 'utf-8'))(config)).join('\n\n')
   fs.writeFileSync("schema.graphql", schema(config), "utf-8");
 
@@ -68,6 +71,11 @@ async function migrate(web3) {
     gas: (await web3.eth.getBlock("latest")).gasLimit - 100000
   };
 
+  const UC = new web3.eth.Contract(UController.abi, undefined, opts);
+  const uc = await UC.deploy({
+    data: UController.bytecode,
+    arguments: []
+  }).send();
   const Rep = new web3.eth.Contract(Reputation.abi, undefined, opts);
   const rep = await Rep.deploy({
     data: Reputation.bytecode,
@@ -75,7 +83,8 @@ async function migrate(web3) {
   }).send();
 
   const addresses = {
-    Reputation: rep.options.address
+    UController: uc.options.address,
+    Reputation: rep.options.address,
   };
 
   await configure({

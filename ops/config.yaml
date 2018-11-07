@@ -4,6 +4,7 @@ mainnet:
   <<: *common
   addresses:
     Reputation: "0x13ad61aa8f695ce64711a51a6feccb48a275aaf8"
+    UController: "0xa50c298118e89e0cc465f2a1705c7579f67b6f26"
 development:
   <<: *common
   postgresPassword: "letmein"

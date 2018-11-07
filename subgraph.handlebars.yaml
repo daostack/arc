@@ -5,6 +5,41 @@ schema:
   file: ./schema.graphql
 dataSources:
 - kind: ethereum/contract
+  name: UController
+  source:
+    address: "{{addresses.UController}}"
+    abi: UController
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.1
+    language: wasm/assemblyscript
+    file: ./src/mappings/uController/UController.ts
+    entities:
+    - UControllerOrganization
+    - UControllerScheme
+    - UControllerGlobalConstraint
+    - UControllerRegisterScheme
+    - UControllerUnregisterScheme
+    - UControllerUpgradeController
+    - UControllerAddGlobalConstraint
+    - UControllerRemoveGlobalConstraint
+    abis:
+    - name: UController
+      file: ./abis/UController.json
+    - name: Reputation
+      file: ./abis/Reputation.json
+    eventHandlers:
+    - event: RegisterScheme(address, address, address)
+      handler: handleRegisterScheme
+    - event: UnregisterScheme(address, address, address)
+      handler: handleUnregisterScheme
+    - event: UpgradeController(address, address, address)
+      handler: handleUpgradeController
+    - event: AddGlobalConstraint(address, bytes32, uint8, address)
+      handler: handleAddGlobalConstraint
+    - event: RemoveGlobalConstraint(address, uint256, bool, address)
+      handler: handleRemoveGlobalConstraint
+- kind: ethereum/contract
   name: Reputation
   source:
     address: "{{addresses.Reputation}}"

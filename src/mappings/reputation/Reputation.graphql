@@ -1,4 +1,5 @@
 type ReputationContract @entity {
+    id: ID!
     address: Bytes!
     totalSupply: BigInt!
 }
