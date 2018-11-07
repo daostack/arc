@@ -61,3 +61,36 @@ dataSources:
       handler: handleMint
     - event: Burn(address, uint256)
       handler: handleBurn
+- kind: ethereum/contract
+  name: DAOToken
+  source:
+    address: "{{addresses.DAOToken}}"
+    abi: DAOToken
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.1
+    language: wasm/assemblyscript
+    file: ./src/mappings/daotoken/DAOToken.ts
+    entities:
+    - TokenHolder
+    - TokenMint
+    - TokenMintFinished
+    - TokenTransfer
+    - TokenApproval
+    - TokenBurn
+    abis:
+    - name: DAOToken
+      file: ./abis/DAOToken.json
+    eventHandlers:
+    - event: Mint(address, uint256)
+      handler: handleMint
+    - event: Burn(address, uint256)
+      handler: handleBurn
+    - event: Approval(address, uint256)
+      handler: handleApproval
+    - event: MintFinished()
+      handler: handleMintFinished
+    - event: Transfer(address, address, uint256)
+      handler: handleTransfer
+    - event: OwnershipTransferred(address, address)
+      handler: handleOwnershipTransferred
