@@ -16,6 +16,7 @@ const glob = require('glob')
 
 const UController = require("@daostack/arc/build/contracts/UController.json");
 const Reputation = require("@daostack/arc/build/contracts/Reputation.json");
+const ContributionReward = require("@daostack/arc/build/contracts/ContributionReward.json");
 const DAOToken = require("@daostack/arc/build/contracts/DAOToken.json");
 
 async function configure({ env, ...rest }) {
@@ -83,6 +84,12 @@ async function migrate(web3) {
     arguments: []
   }).send();
 
+  const CR = new web3.eth.Contract(ContributionReward.abi, undefined, opts);
+  const cr = await CR.deploy({
+    data: ContributionReward.bytecode,
+    arguments: []
+  }).send();
+
   const Token = new web3.eth.Contract(DAOToken.abi, undefined, opts);
   const token = await Token.deploy({
     data: DAOToken.bytecode,
@@ -93,6 +100,7 @@ async function migrate(web3) {
     UController: uc.options.address,
     Reputation: rep.options.address,
     DAOToken: token.options.address,
+    ContributionReward: cr.options.address,
   };
 
   await configure({

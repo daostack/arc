@@ -61,6 +61,41 @@ dataSources:
       handler: handleMint
     - event: Burn(address, uint256)
       handler: handleBurn
+
+- kind: ethereum/contract
+  name: ContributionReward
+  source:
+    address: "{{addresses.ContributionReward}}"
+    abi: ContributionReward
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.1
+    language: wasm/assemblyscript
+    file: ./src/mappings/contributionReward/ContributionReward.ts
+    entities:
+    - ContributionRewardRedeemReputation
+    - ContributionRewardRedeemNativeToken
+    - ContributionRewardRedeemExternalToken
+    - ContributionRewardRedeemEther
+    - ContributionRewardProposalExecuted
+    - ContributionRewardNewContributionProposal
+    abis:
+    - name: ContributionReward
+      file: ./abis/ContributionReward.json
+    eventHandlers:
+    - event: RedeemReputation(address, bytes32, address, int256)
+      handler: handleRedeemReputation
+    - event: RedeemNativeToken(address, bytes32, address, uint256)
+      handler: handleRedeemNativeToken
+    - event: RedeemExternalToken(address, bytes32, address, uint256)
+      handler: handleRedeemExternalToken
+    - event: RedeemEther(address, bytes32 , address ,uint256)
+      handler: handleRedeemEther
+    - event: ProposalExecuted(address, bytes32, int256)
+      handler: handleProposalExecuted
+    - event: NewContributionProposal(address, bytes32, address, bytes32, int256, uint256[5], address, address)
+      handler: handleNewContributionProposal
+
 - kind: ethereum/contract
   name: DAOToken
   source:

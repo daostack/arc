@@ -1,0 +1,410 @@
+{
+  "contractName": "EthTransferHelper",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "transfer",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b5060d58061001f6000396000f300608060405260043610603e5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416631a69523081146043575b600080fd5b606273ffffffffffffffffffffffffffffffffffffffff600435166064565b005b60405173ffffffffffffffffffffffffffffffffffffffff8216903480156108fc02916000818181858888f1935050505015801560a5573d6000803e3d6000fd5b50505600a165627a7a72305820ca67bf9163cd43293cdf9ec31fd3938e2ed970b235a4701670da81d30cbc4e630029",
+  "deployedBytecode": "0x608060405260043610603e5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416631a69523081146043575b600080fd5b606273ffffffffffffffffffffffffffffffffffffffff600435166064565b005b60405173ffffffffffffffffffffffffffffffffffffffff8216903480156108fc02916000818181858888f1935050505015801560a5573d6000803e3d6000fd5b50505600a165627a7a72305820ca67bf9163cd43293cdf9ec31fd3938e2ed970b235a4701670da81d30cbc4e630029",
+  "sourceMap": "27:123:20:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:123:20;;;;;;;",
+  "deployedSourceMap": "27:123:20:-;;;;;;;;;;;;;;;;;;;;;;;61:87;;;;;;;;;;;118:23;;:12;;;;131:9;118:23;;;;;;;;;131:9;118:12;:23;;;;;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;118:23:20;61:87;:::o",
+  "source": "pragma solidity ^0.4.25;\n\n\ncontract EthTransferHelper {\n\n    function transfer(address _to) public payable  {\n        _to.transfer(msg.value);\n    }\n}\n",
+  "sourcePath": "/Users/oren/daostack/daostack2/daostack/contracts/test/EthTransferHelper.sol",
+  "ast": {
+    "absolutePath": "/Users/oren/daostack/daostack2/daostack/contracts/test/EthTransferHelper.sol",
+    "exportedSymbols": {
+      "EthTransferHelper": [
+        6595
+      ]
+    },
+    "id": 6596,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6581,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".25"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:20"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6595,
+        "linearizedBaseContracts": [
+          6595
+        ],
+        "name": "EthTransferHelper",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 6593,
+              "nodeType": "Block",
+              "src": "108:40:20",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 6589,
+                          "name": "msg",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 21567,
+                          "src": "131:3:20",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_message",
+                            "typeString": "msg"
+                          }
+                        },
+                        "id": 6590,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "value",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "131:9:20",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 6586,
+                        "name": "_to",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6583,
+                        "src": "118:3:20",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      "id": 6588,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "transfer",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "118:12:20",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_transfer_nonpayable$_t_uint256_$returns$__$",
+                        "typeString": "function (uint256)"
+                      }
+                    },
+                    "id": 6591,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "118:23:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 6592,
+                  "nodeType": "ExpressionStatement",
+                  "src": "118:23:20"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6594,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "transfer",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6584,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6583,
+                  "name": "_to",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6594,
+                  "src": "79:11:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6582,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "79:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "78:13:20"
+            },
+            "payable": true,
+            "returnParameters": {
+              "id": 6585,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "108:0:20"
+            },
+            "scope": 6595,
+            "src": "61:87:20",
+            "stateMutability": "payable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6596,
+        "src": "27:123:20"
+      }
+    ],
+    "src": "0:151:20"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/oren/daostack/daostack2/daostack/contracts/test/EthTransferHelper.sol",
+    "exportedSymbols": {
+      "EthTransferHelper": [
+        6595
+      ]
+    },
+    "id": 6596,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6581,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".25"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:20"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6595,
+        "linearizedBaseContracts": [
+          6595
+        ],
+        "name": "EthTransferHelper",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 6593,
+              "nodeType": "Block",
+              "src": "108:40:20",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 6589,
+                          "name": "msg",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 21567,
+                          "src": "131:3:20",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_message",
+                            "typeString": "msg"
+                          }
+                        },
+                        "id": 6590,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "value",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "131:9:20",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 6586,
+                        "name": "_to",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6583,
+                        "src": "118:3:20",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      "id": 6588,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "transfer",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "118:12:20",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_transfer_nonpayable$_t_uint256_$returns$__$",
+                        "typeString": "function (uint256)"
+                      }
+                    },
+                    "id": 6591,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "118:23:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 6592,
+                  "nodeType": "ExpressionStatement",
+                  "src": "118:23:20"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6594,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "transfer",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6584,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6583,
+                  "name": "_to",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6594,
+                  "src": "79:11:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6582,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "79:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "78:13:20"
+            },
+            "payable": true,
+            "returnParameters": {
+              "id": 6585,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "108:0:20"
+            },
+            "scope": 6595,
+            "src": "61:87:20",
+            "stateMutability": "payable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6596,
+        "src": "27:123:20"
+      }
+    ],
+    "src": "0:151:20"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.0-beta.1",
+  "updatedAt": "2018-11-08T08:19:02.812Z"
+}
