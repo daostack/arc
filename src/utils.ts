@@ -1,14 +1,18 @@
-import { BigInt, ByteArray } from '@graphprotocol/graph-ts'
+import {
+  BigInt,
+  ByteArray
+} from "@graphprotocol/graph-ts";
+
 
 export function concat(a: ByteArray, b: ByteArray): ByteArray {
-  let out = new Uint8Array(a.length + b.length)
+  let out = new Uint8Array(a.length + b.length);
   for (let i = 0; i < a.length; i++) {
-    out[i] = a[i]
+    out[i] = a[i];
   }
   for (let j = 0; j < b.length; j++) {
-    out[a.length + j] = b[j]
+    out[a.length + j] = b[j];
   }
-  return out as ByteArray
+  return out as ByteArray;
 }
 
 export function isZero(num: BigInt): boolean {
@@ -30,4 +34,11 @@ export function equals(a: BigInt, b: BigInt): boolean {
     }
   }
   return true;
+}
+
+export function addition(a: BigInt, b: BigInt): BigInt {
+  let first = a.toI32();
+  let second = b.toI32();
+  let total = first + second;
+  return total as BigInt;
 }
