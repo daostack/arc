@@ -138,16 +138,16 @@ export function handleUpgradeController(event: UpgradeController): void {
 }
 
 export function handleAddGlobalConstraint(event: AddGlobalConstraint): void {
-  //  let when = event.params._when;
+    let when = event.parameters[2].value.toBigInt().toI32();
     let type: string;
-    type = 'Both'; // ??????
-    // if (when == 0) {
-    //     type = 'Pre';
-    // } else if (when == 1) {
-    //     type = 'Post';
-    // } else {
-    //     type = 'Both';
-    // }
+
+    if (when === 0) {
+        type = 'Pre';
+    } else if (when === 1) {
+        type = 'Post';
+    } else {
+        type = 'Both';
+    }
     insertGlobalConstraint(event.address, event.params._avatar, event.params._globalConstraint, type);
 
     let ent = new UControllerAddGlobalConstraint();

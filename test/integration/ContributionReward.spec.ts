@@ -335,9 +335,9 @@ describe('ContributionReward', () => {
 
         await web3.eth.sendTransaction({ from: accounts[0].address,
                                          to: avatar.options.address,
-                                         value: web3.utils.toWei('10', "ether"),
-                                         data: "0xABCD", //data field is needed here due to bug in ganache
-                                         gas:50000});
+                                         value: web3.utils.toWei('10', 'ether'),
+                                         data: '0xABCD', // data field is needed here due to bug in ganache
+                                         gas: 50000});
 
         const { transactionHash: redeemEtherTxHash } = await contributionReward
                                                              .methods

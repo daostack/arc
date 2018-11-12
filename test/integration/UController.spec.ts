@@ -182,7 +182,7 @@ describe('UController', () => {
       avatarAddress: avatar.options.address.toLowerCase(),
       globalConstraint: tokenCap1.options.address.toLowerCase(),
       paramsHash: '0x' + padZeros('987', hashLength),
-      type: 'Both', // this should be fix!!!
+      type: 'Post',
     });
     expect(ucontrollerAddGlobalConstraints).toContainEqual({
       txHash: txs[4],
@@ -190,7 +190,7 @@ describe('UController', () => {
       avatarAddress: avatar.options.address.toLowerCase(),
       globalConstraint: tokenCap2.options.address.toLowerCase(),
       paramsHash: '0x' + padZeros('789', hashLength),
-      type: 'Both',
+      type: 'Post',
     });
 
     const { ucontrollerRemoveGlobalConstraints } = await sendQuery(`{
@@ -226,7 +226,7 @@ describe('UController', () => {
       avatarAddress: avatar.options.address.toLowerCase(),
       address: tokenCap1.options.address.toLowerCase(),
       paramsHash: '0x' + padZeros('987', hashLength),
-      type: 'Both',
+      type: 'Post',
     });
 
     txs.push((await uController.methods.upgradeController(accounts[4].address,
