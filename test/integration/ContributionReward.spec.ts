@@ -6,7 +6,6 @@ const ContributionReward = require('@daostack/arc/build/contracts/ContributionRe
 const DAOToken = require('@daostack/arc/build/contracts/DAOToken.json');
 const Reputation = require('@daostack/arc/build/contracts/Reputation.json');
 const UController = require('@daostack/arc/build/contracts/UController.json');
-const EthTransferHelper = require('./helpers/EthTransferHelper.json');
 
 describe('ContributionReward', () => {
     let web3;
@@ -51,11 +50,6 @@ describe('ContributionReward', () => {
 
         const absVote = await new web3.eth.Contract(AbsoluteVote.abi, undefined, opts)
             .deploy({ data: AbsoluteVote.bytecode, arguments: [] })
-            .send();
-
-        // use this till the sendTransaction issue will be solved :)
-        const ethTransferHelper = await new web3.eth.Contract(EthTransferHelper.abi, undefined, opts)
-            .deploy({ data: EthTransferHelper.bytecode, arguments: [] })
             .send();
 
         const setParams = absVote.methods.setParameters(20, true);
@@ -339,18 +333,12 @@ describe('ContributionReward', () => {
             alreadyRedeemedExternalTokenPeriods: '2',
         });
 
-        // TODO: This is failing for some reason probably due to bug in ganache or graph - node
-        // from graph-node logs:
-        // Trying again after block polling failed: could not get block from Ethereum:
-        // Decoder error: Error("invalid type: null,
-        // expected a 0x-prefixed hex-encoded vector of bytes", line: 0, column: 0)
-        // await web3.eth.sendTransaction({ from: accounts[0].address, to: avatar.options.address,
-        // value: web3.utils.toWei('10', "ether"),gas:50000});
-        await ethTransferHelper
-              .methods
-              .transfer(avatar.options.address)
-              .send({ value: web3.utils.toWei('10', 'ether') });
-        //
+        await web3.eth.sendTransaction({ from: accounts[0].address,
+                                         to: avatar.options.address,
+                                         value: web3.utils.toWei('10', "ether"),
+                                         data: "0xABCD", //data field is needed here due to bug in ganache
+                                         gas:50000});
+
         const { transactionHash: redeemEtherTxHash } = await contributionReward
                                                              .methods
                                                              .redeemEther(proposalId,
