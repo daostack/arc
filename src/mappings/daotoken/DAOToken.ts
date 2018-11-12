@@ -1,14 +1,28 @@
-import 'allocator/arena'
-export { allocate_memory }
+import 'allocator/arena';
+export { allocate_memory };
 
-import { Address,store, crypto, } from '@graphprotocol/graph-ts'
+import { Address, crypto, store } from '@graphprotocol/graph-ts';
 
 // Import event types from the Token contract ABI
-import { Mint,Burn,Transfer ,Approval, MintFinished,OwnershipTransferred, DAOToken } from '../../types/DAOToken/DAOToken'
-import { concat, isZero } from '../../utils'
+import { Approval,
+         Burn,
+         DAOToken ,
+         Mint,
+         MintFinished,
+         OwnershipTransferred,
+         Transfer,
+       } from '../../types/DAOToken/DAOToken';
+import { concat, isZero } from '../../utils';
 
 // Import entity types generated from the GraphQL schema
-import { TokenHolder, TokenMint,TokenBurn,TokenMintFinished,TokenApproval, TokenTransfer, TokenContract } from '../../types/schema'
+import { TokenApproval,
+         TokenBurn,
+         TokenContract,
+         TokenHolder,
+         TokenMint,
+         TokenMintFinished,
+         TokenTransfer,
+       } from '../../types/schema';
 
 function update(contract: Address, owner: Address): void {
     let token = DAOToken.bind(contract);
@@ -96,7 +110,6 @@ export function handleApproval(event: Approval): void {
 export function handleOwnershipTransferred(event: OwnershipTransferred): void {
     updateTokenContract(event.address);
 }
-
 
 function updateTokenContract(contract: Address): void {
     let token = DAOToken.bind(contract);

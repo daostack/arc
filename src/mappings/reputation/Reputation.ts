@@ -1,14 +1,14 @@
-import 'allocator/arena'
-export { allocate_memory }
+import 'allocator/arena';
+export { allocate_memory };
 
-import { Address,store, crypto, } from '@graphprotocol/graph-ts'
+import { Address, crypto, store } from '@graphprotocol/graph-ts';
 
 // Import event types from the Reputation contract ABI
-import { Mint, Burn, Reputation } from '../../types/Reputation/Reputation'
-import { concat, isZero } from '../../utils'
+import { Burn, Mint, Reputation } from '../../types/Reputation/Reputation';
+import { concat, isZero } from '../../utils';
 
 // Import entity types generated from the GraphQL schema
-import { ReputationHolder, ReputationMint, ReputationBurn, ReputationContract } from '../../types/schema'
+import { ReputationBurn, ReputationContract, ReputationHolder, ReputationMint } from '../../types/schema';
 
 function update(contract: Address, owner: Address): void {
     let rep = Reputation.bind(contract);
@@ -19,7 +19,6 @@ function update(contract: Address, owner: Address): void {
     ent.address = owner;
     let balance = rep.balanceOf(owner);
     ent.balance = balance;
-
 
     if (!isZero(balance)) {
         store.set('ReputationHolder', id, ent);
@@ -38,7 +37,7 @@ export function handleMint(event: Mint): void {
 
     let ent = new ReputationMint();
     // TODO: txHash is not unique
-    //ent.id = event.transaction.hash.toHex();
+    // ent.id = event.transaction.hash.toHex();
     ent.txHash = event.transaction.hash;
     ent.contract = event.address;
     ent.address = event.params._to;

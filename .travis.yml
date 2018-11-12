@@ -34,6 +34,7 @@ install:
 script:
   - sudo docker-compose build subgraph
   - sudo docker-compose run subgraph test
+  - sudo docker-compose run subgraph lint
 
 after_script:
   - docker-compose down

@@ -1,28 +1,28 @@
-import 'allocator/arena'
-export { allocate_memory }
+import 'allocator/arena';
+export { allocate_memory };
 
-import { Address, store, BigInt, Bytes } from '@graphprotocol/graph-ts'
+import { Address, BigInt, Bytes, store } from '@graphprotocol/graph-ts';
 
 // Import event types from the Reputation contract ABI
 import {
-    RedeemReputation,
-    RedeemNativeToken,
-    RedeemExternalToken,
-    RedeemEther,
-    ProposalExecuted,
+    ContributionReward,
     NewContributionProposal,
-    ContributionReward
-} from '../../types/ContributionReward/ContributionReward'
+    ProposalExecuted,
+    RedeemEther,
+    RedeemExternalToken,
+    RedeemNativeToken,
+    RedeemReputation,
+} from '../../types/ContributionReward/ContributionReward';
 
 // Import entity types generated from the GraphQL schema
 import {
     ContributionRewardNewContributionProposal,
+    ContributionRewardProposal,
     ContributionRewardProposalResolved,
-    ContributionRewardRedeemReputation,
     ContributionRewardRedeemEther,
     ContributionRewardRedeemExternalToken,
     ContributionRewardRedeemNativeToken,
-    ContributionRewardProposal,
+    ContributionRewardRedeemReputation,
 } from '../../types/schema';
 import { equals } from '../../utils';
 
@@ -97,16 +97,28 @@ function updateProposalafterRedemption(contributionRewardAddress: Address, propo
     let ent = store.get('ContributionRewardProposal', proposalId.toHex()) as ContributionRewardProposal;
     if (ent != null) {
         let cr = ContributionReward.bind(contributionRewardAddress);
-        if (type == 0) {
-            ent.alreadyRedeemedReputationPeriods = cr.getRedeemedPeriods(proposalId, ent.avatar as Address, BigInt.fromI32(0));
-        } else if (type == 1) {
-            ent.alreadyRedeemedNativeTokenPeriods = cr.getRedeemedPeriods(proposalId, ent.avatar as Address, BigInt.fromI32(1))
-        } else if (type == 2) {
-            ent.alreadyRedeemedEthPeriods = cr.getRedeemedPeriods(proposalId, ent.avatar as Address, BigInt.fromI32(2))
-        } else if (type == 3) {
-            ent.alreadyRedeemedExternalTokenPeriods = cr.getRedeemedPeriods(proposalId, ent.avatar as Address, BigInt.fromI32(3));
+        if (type === 0) {
+            ent.alreadyRedeemedReputationPeriods = cr.getRedeemedPeriods(
+                                                      proposalId,
+                                                      ent.avatar as Address,
+                                                      BigInt.fromI32(0));
+        } else if (type === 1) {
+            ent.alreadyRedeemedNativeTokenPeriods = cr.getRedeemedPeriods(
+                                                       proposalId,
+                                                       ent.avatar as Address,
+                                                       BigInt.fromI32(1));
+        } else if (type === 2) {
+            ent.alreadyRedeemedEthPeriods = cr.getRedeemedPeriods(
+                                                proposalId,
+                                                ent.avatar as Address,
+                                                BigInt.fromI32(2));
+        } else if (type === 3) {
+            ent.alreadyRedeemedExternalTokenPeriods = cr.getRedeemedPeriods(
+                                                          proposalId,
+                                                          ent.avatar as Address,
+                                                          BigInt.fromI32(3));
         }
-        store.set('ContributionRewardProposal', proposalId.toHex(), ent)
+        store.set('ContributionRewardProposal', proposalId.toHex(), ent);
     }
 }
 
@@ -149,4 +161,3 @@ export function handleNewContributionProposal(event: NewContributionProposal): v
     ent.periods = rewards.shift(); // number of periods
     store.set('ContributionRewardNewContributionProposal', ent.txHash, ent);
 }
-
