@@ -28,6 +28,8 @@ dataSources:
       file: ./abis/UController.json
     - name: Reputation
       file: ./abis/Reputation.json
+    - name: DAOToken
+      file: ./abis/DAOToken.json
     eventHandlers:
     - event: RegisterScheme(address, address, address)
       handler: handleRegisterScheme

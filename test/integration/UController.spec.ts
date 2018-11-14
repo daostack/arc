@@ -13,20 +13,19 @@ describe('UController', () => {
   let opts;
   let uController;
   let reputation;
+  let daoToken;
   beforeAll(async () => {
     web3 = await getWeb3();
     addresses = getContractAddresses();
     opts = await getOptions(web3);
     uController = new web3.eth.Contract(UController.abi, addresses.UController, opts);
     reputation = new web3.eth.Contract(Reputation.abi, addresses.Reputation, opts);
+    daoToken = new web3.eth.Contract(DAOToken.abi, addresses.DAOToken, opts);
+
   });
 
   it('Sanity', async () => {
     const accounts = web3.eth.accounts.wallet;
-    const daoToken = await new web3.eth.Contract(DAOToken.abi, undefined, opts)
-      .deploy({ data: DAOToken.bytecode, arguments: ['Test Token', 'TST', '10000000000'] })
-      .send();
-
     const avatar = await new web3.eth.Contract(Avatar.abi, undefined, opts)
       .deploy({ data: Avatar.bytecode, arguments: ['Test', daoToken.options.address, reputation.options.address] })
       .send();
@@ -116,7 +115,9 @@ describe('UController', () => {
     const { ucontrollerOrganizations } = await sendQuery(`{
       ucontrollerOrganizations {
         avatarAddress
-        nativeToken
+        nativeToken {
+          address
+        }
         nativeReputation {
           address
         }
@@ -127,7 +128,7 @@ describe('UController', () => {
     expect(ucontrollerOrganizations.length).toEqual(1);
     expect(ucontrollerOrganizations).toContainEqual({
       avatarAddress: avatar.options.address.toLowerCase(),
-      nativeToken: daoToken.options.address.toLowerCase(),
+      nativeToken: {address: daoToken.options.address.toLowerCase()},
       nativeReputation: {address: reputation.options.address.toLowerCase()},
       controller: uController.options.address.toLowerCase(),
     });
@@ -253,7 +254,9 @@ describe('UController', () => {
     const { ucontrollerOrganizations: ucontrollerOrganizations2 } = await sendQuery(`{
       ucontrollerOrganizations {
         avatarAddress
-        nativeToken
+        nativeToken {
+          address
+        }
         nativeReputation {
           address
         }
@@ -264,7 +267,7 @@ describe('UController', () => {
     expect(ucontrollerOrganizations2.length).toEqual(1);
     expect(ucontrollerOrganizations2).toContainEqual({
       avatarAddress: avatar.options.address.toLowerCase(),
-      nativeToken: daoToken.options.address.toLowerCase(),
+      nativeToken: {address: daoToken.options.address.toLowerCase()},
       nativeReputation: {address: reputation.options.address.toLowerCase()},
       controller: accounts[4].address.toLowerCase(),
     });

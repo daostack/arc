@@ -3,8 +3,11 @@ export { allocate_memory };
 
 import { Address, BigInt, ByteArray, Bytes, crypto, Entity, store, Value } from '@graphprotocol/graph-ts';
 
+import { DAOToken } from '../../types/DAOToken/DAOToken';
 import { Reputation } from '../../types/Reputation/Reputation';
+
 import { ReputationContract ,
+         TokenContract ,
         UControllerAddGlobalConstraint,
         UControllerGlobalConstraint,
         UControllerOrganization,
@@ -15,7 +18,6 @@ import { ReputationContract ,
         UControllerUpgradeController,
       } from '../../types/schema';
 import { AddGlobalConstraint,
-         MintTokens,
          RegisterScheme,
          RemoveGlobalConstraint,
          UController,
@@ -52,14 +54,23 @@ function deleteScheme(avatarAddress: Address, scheme: Address): void {
 function insertOrganization(uControllerAddress: Address, avatarAddress: Address): void {
     let uController = UController.bind(uControllerAddress);
     let org = uController.organizations(avatarAddress);
-    let ent = new UControllerOrganization();
-    ent.avatarAddress = avatarAddress.toHex();
+
     let reputationContract = new ReputationContract();
     let rep = Reputation.bind(org.value1);
     reputationContract.address = org.value1;
     reputationContract.totalSupply = rep.totalSupply();
     store.set('ReputationContract', org.value1.toHex(), reputationContract);
-    ent.nativeToken = org.value0;
+
+    let tokenContract = new TokenContract();
+    let daotoken = DAOToken.bind(org.value1);
+    tokenContract.address = org.value0;
+    tokenContract.totalSupply = daotoken.totalSupply();
+    tokenContract.owner = uControllerAddress;
+    store.set('TokenContract', org.value0.toHex(), tokenContract);
+
+    let ent = new UControllerOrganization();
+    ent.avatarAddress = avatarAddress.toHex();
+    ent.nativeToken = org.value0.toHex();
     ent.nativeReputation = org.value1.toHex();
     ent.controller = uControllerAddress;
 
