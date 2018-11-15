@@ -26,6 +26,8 @@ dataSources:
     abis:
     - name: UController
       file: ./abis/UController.json
+    - name: Avatar
+      file: ./abis/Avatar.json
     - name: Reputation
       file: ./abis/Reputation.json
     - name: DAOToken
@@ -41,6 +43,7 @@ dataSources:
       handler: handleAddGlobalConstraint
     - event: RemoveGlobalConstraint(address, uint256, bool, address)
       handler: handleRemoveGlobalConstraint
+
 - kind: ethereum/contract
   name: Reputation
   source:
@@ -52,6 +55,7 @@ dataSources:
     language: wasm/assemblyscript
     file: ./src/mappings/reputation/Reputation.ts
     entities:
+    - ReputationContract
     - ReputationHolder
     - ReputationMint
     - ReputationBurn
@@ -171,3 +175,24 @@ dataSources:
         handler: handleGPExecuteProposal
       - event: ExecuteProposal(bytes32, address, uint256, uint256)
         handler: handleExecuteProposal
+
+- kind: ethereum/contract
+  name: Avatar
+  source:
+    address: "{{addresses.Avatar}}"
+    abi: Avatar
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.1
+    language: wasm/assemblyscript
+    file: ./src/mappings/avatar/Avatar.ts
+    entities:
+      - AvatarContract
+    abis:
+      - name: Avatar
+        file: ./abis/Avatar.json
+    eventHandlers:
+      - event: SendEther(uint256, address)
+        handler: handleSendEth
+      - event: ReceiveEther(address, uint256)
+        handler: handleReceiveEth

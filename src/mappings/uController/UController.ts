@@ -3,11 +3,14 @@ export { allocate_memory };
 
 import { Address, BigInt, ByteArray, Bytes, crypto, Entity, store, Value } from '@graphprotocol/graph-ts';
 
+import { Avatar } from '../../types/Avatar/Avatar';
 import { DAOToken } from '../../types/DAOToken/DAOToken';
 import { Reputation } from '../../types/Reputation/Reputation';
 
-import { ReputationContract ,
-         TokenContract ,
+import {
+        AvatarContract,
+        ReputationContract ,
+        TokenContract ,
         UControllerAddGlobalConstraint,
         UControllerGlobalConstraint,
         UControllerOrganization,
@@ -73,6 +76,17 @@ function insertOrganization(uControllerAddress: Address, avatarAddress: Address)
     ent.nativeToken = org.value0.toHex();
     ent.nativeReputation = org.value1.toHex();
     ent.controller = uControllerAddress;
+
+    let avatarSC = Avatar.bind(avatarAddress);
+    let avatar = new AvatarContract();
+    // avatar.id = avatarAddress.toHex();
+    avatar.address = avatarAddress;
+    avatar.name = avatarSC.orgName();
+    avatar.nativeReputation = avatarSC.nativeReputation();
+    avatar.nativeToken = avatarSC.nativeToken();
+    avatar.owner = avatarSC.owner();
+    avatar.balance = BigInt.fromI32(0);
+    store.set('AvatarContract', avatarAddress.toHex(), avatar);
 
     store.set('UControllerOrganization', avatarAddress.toHex(), ent);
 }

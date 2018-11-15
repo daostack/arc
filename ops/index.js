@@ -19,6 +19,7 @@ const GenesisProtocol = require("@daostack/arc/build/contracts/GenesisProtocol.j
 const Reputation = require("@daostack/arc/build/contracts/Reputation.json");
 const ContributionReward = require("@daostack/arc/build/contracts/ContributionReward.json");
 const DAOToken = require("@daostack/arc/build/contracts/DAOToken.json");
+const Avatar = require("@daostack/arc/build/contracts/Avatar.json");
 
 async function configure({ env, ...rest }) {
   const { [env]: publicConfig } = yaml.safeLoad(
@@ -126,13 +127,20 @@ async function migrate(web3) {
     arguments: []
   }).send();
 
+  const AvatarContract = new web3.eth.Contract(Avatar.abi, undefined, opts);
+  const avatar = await AvatarContract.deploy({
+    data: Avatar.bytecode,
+    arguments: ["TESTDAO", token.options.address, rep.options.address]
+  }).send();
+
   const addresses = {
     UController: uc.options.address,
     Reputation: rep.options.address,
     DAOToken: token.options.address,
     GPToken: gpToken.options.address,
     ContributionReward: cr.options.address,
-    GenesisProtocol: gp.options.address
+    GenesisProtocol: gp.options.address,
+    Avatar: avatar.options.address
   };
 
   await configure({

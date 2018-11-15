@@ -40,5 +40,12 @@ export function addition(a: BigInt, b: BigInt): BigInt {
   let first = a.toI32();
   let second = b.toI32();
   let total = first + second;
-  return total as BigInt;
+  return BigInt.fromI32(total) as BigInt;
+}
+
+export function sub(a: BigInt, b: BigInt): BigInt {
+  let first = a.toI32();
+  let second = b.toI32();
+  let total = first - second;
+  return BigInt.fromI32(total) as BigInt;
 }

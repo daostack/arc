@@ -3,6 +3,7 @@ common: &common
 mainnet:
   <<: *common
   addresses:
+    Avatar: "0xa3f5411cfc9eee0dd108bf0d07433b6dd99037f1"
     GenesisProtocol: "0x8940442e7F54E875C8C1C80213A4Aee7EeE4781c"
     Reputation: "0x13ad61aa8f695ce64711a51a6feccb48a275aaf8"
     ContributionReward: "0xc282f494a0619592a2410166dcc749155804f548"

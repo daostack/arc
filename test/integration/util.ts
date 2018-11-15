@@ -8,9 +8,9 @@ process.env = {
     ...process.env,
 };
 
-const  {execute}  = require('apollo-link');
-const  {WebSocketLink}  = require('apollo-link-ws');
-const  {SubscriptionClient}  = require('subscriptions-transport-ws');
+const  { execute }  = require('apollo-link');
+const  { WebSocketLink }  = require('apollo-link-ws');
+const  { SubscriptionClient }  = require('subscriptions-transport-ws');
 const ws = require('ws');
 import axios from 'axios';
 import * as HDWallet from 'hdwallet-accounts';

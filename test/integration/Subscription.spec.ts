@@ -39,26 +39,22 @@ describe('Subscriptions', () => {
 
         const consumer = await subscriptionClient.subscribe((eventData) => {
         // Do something on receipt of the event
-        event = eventData.data.reputationMints[0];
+        event = eventData.data.reputationMints;
       }, (err) => {
          expect(true).toEqual(false);
       });
 
-        await reputation.methods.mint(accounts[0].address, '100').send();
+        await reputation.methods.mint(accounts[4].address, '99').send();
+
       // //wait a second
         await new Promise((res) => setTimeout(res, 1000));
 
-        if (event.address !==  accounts[0].address.toLowerCase()) {
-        expect(true).toEqual(false);
-      }
+        expect(event).toContainEqual({
+          address: accounts[4].address.toLowerCase(),
+          amount: '99',
+          contract: reputation.options.address.toLowerCase(),
+        });
 
-        if (event.amount !==  '100') {
-        expect(true).toEqual(false);
-      }
-
-        if (event.contract !==  reputation.options.address.toLowerCase()) {
-        expect(true).toEqual(false);
-      }
         consumer.unsubscribe();
 
     }, 2500);
