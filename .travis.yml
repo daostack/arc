@@ -13,11 +13,8 @@ addons:
       - docker-ce
 
 before_install:
-  - sudo apt-get install libsecret-1-dev dbus gnome-keyring python-keyring python-gnomekeyring
+  - sudo apt-get install libsecret-1-dev
 before_script:
-  # Create a new 'login' keyring; this appearas to be necessary for gnome-keyring to auto-launch
-  # properly when needed
-  - dbus-launch /usr/bin/python -c "import gnomekeyring;gnomekeyring.create_sync('login', '');"
 
 install:
   - docker --version
@@ -25,15 +22,12 @@ install:
   - sudo service postgresql stop
   - while sudo lsof -Pi :5432 -sTCP:LISTEN -t; do sleep 1; done
   - npm install
+  - npm run configure:development
+  - npm run codegen
 
 script:
-  - npm run configure:development
-  - docker-compose build subgraph
-  - npm run codegen
-  - sudo docker-compose run subgraph migrate:development
-  - npm run migrate:development
-  - dbus-launch ./node_modules/.bin/graph deploy --ipfs /ip4/127.0.0.1/tcp/5001 --node http:/127.0.0.1:8020/ --subgraph-name daostack subgraph.yaml
-  - npm run jest
+  - sudo docker-compose build subgraph
+  - sudo docker-compose run subgraph test
   - sudo docker-compose run subgraph lint
 
 after_script:
