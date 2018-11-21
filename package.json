@@ -16,7 +16,7 @@
     "migrate:development": "node ops/index.js migrate",
     "codegen": "node ops/index.js generate-abis && graph codegen --output-dir src/types/ subgraph.yaml",
     "build": "graph build subgraph.yaml",
-    "build-ipfs": "graph build --ipfs /ip4/127.0.0.1/tcp/5001 --debug subgraph.yaml",
+    "build-ipfs": "graph build --ipfs ${ipfs-/ip4/127.0.0.1/tcp/5001} --debug subgraph.yaml",
     "build-wast": "graph build -t wast subgraph.yaml",
     "deploy": "graph deploy --access-token \"\" --ipfs ${ipfs-/ip4/127.0.0.1/tcp/5001} --node ${node_rpc-http://127.0.0.1:8020/} -n daostack subgraph.yaml",
     "deploy:watch": "graph deploy --access-token \"\" -w --ipfs ${ipfs-/ip4/127.0.0.1/tcp/5001} --node ${node_rpc-http://127.0.0.1:8020/} -n daostack subgraph.yaml",

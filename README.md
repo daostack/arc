@@ -20,18 +20,16 @@ All npm scripts can be called within a container using `docker-compose` with all
 2. `configure:development` - configure the project to run against ganache.
 3. `migrate:development` - migrate contracts to ganache and update project configuration.
 4. `codegen` - automatically generate abi & type definitions for required contracts.
-5. `deploy` - deploy subgraph.
-6. `deploy:watch` - redeploy on file change.
-
-To run integration test run  `npm run test`
-
+5. `test` - run integration test.
+6. `deploy` - deploy subgraph.
+7. `deploy:watch` - redeploy on file change.
 
 Docker commands (requires installing [`docker`](https://docs.docker.com/v17.12/install/) and [`docker-compose`](https://docs.docker.com/compose/install/)):
 
 1. `docker <command>` - start a command running inside the docker container. Example: `npm run docker test` (run intergation tests).
 2. `docker:stop` - stop all running docker services.
-3.  `docker:rebuild <command>` - rebuild the docker container after changes to `package.json`.
-4.  `docker:logs <subgraph|graph-node|ganache|ipfs|postgres>` - display logs from a running docker service.
+3. `docker:rebuild <command>` - rebuild the docker container after changes to `package.json`.
+4. `docker:logs <subgraph|graph-node|ganache|ipfs|postgres>` - display logs from a running docker service.
 
 ## Exposed endpoints
 
