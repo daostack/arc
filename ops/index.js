@@ -65,6 +65,7 @@ async function configure({ env, ...rest }) {
   const subgraph = handlebars.compile(
     fs.readFileSync("subgraph.handlebars.yaml", "utf-8")
   );
+
   fs.writeFileSync("subgraph.yaml", subgraph(config), "utf-8");
 
   const dockerCompose = handlebars.compile(

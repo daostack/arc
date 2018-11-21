@@ -1,8 +1,8 @@
 require('dotenv').config();
 process.env = {
     ethereum: 'http://127.0.0.1:8545',
-    node_http: 'http://127.0.0.1:8000/daostack/graphql',
-    node_ws: 'http://graph-node:8001/by-name/daostack',
+    node_http: 'http://127.0.0.1:8000/by-name/daostack/graphql',
+    node_ws: 'http://127.0.0.1:8001/by-name/daostack',
     test_mnemonic:
         'behave pipe turkey animal voyage dial relief menu blush match jeans general',
     ...process.env,

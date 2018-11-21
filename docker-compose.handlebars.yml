@@ -18,7 +18,7 @@ services:
       ipfs_port: 5001
       WAIT_HOSTS: ipfs:5001, graph-node:8020
   graph-node:
-    image: graphprotocol/graph-node:v0.4.0
+    image: graphprotocol/graph-node:v0.4.1
     ports:
       - 8000:8000
       - 8001:8001
@@ -46,10 +46,7 @@ services:
       POSTGRES_PASSWORD: '{{postgresPassword}}'
   {{#if development}}
   ganache:
-    # image: trufflesuite/ganache-cli
-    build:
-      dockerfile: ganache.dockerfile
-      context: .
+    image: trufflesuite/ganache-cli:v6.2.1
     ports:
       - 8545:8545
     command: >
