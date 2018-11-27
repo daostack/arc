@@ -72,7 +72,7 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
             require(registrar[_beneficiary],"beneficiary should be register");
             beneficiary = _beneficiary;
         }
-        require(externalLockers[beneficiary] == false, "claiming twice is not allowed");
+        require(externalLockers[beneficiary] == false, "claiming twice for the same beneficiary is not allowed");
         externalLockers[beneficiary] = true;
         // solium-disable-next-line security/no-low-level-calls
         bool result = externalLockingContract.call(abi.encodeWithSignature(getBalanceFuncSignature, beneficiary));
@@ -86,7 +86,7 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
           default { lockedAmount := mload(0) }
         }
 
-        return super._lock(lockedAmount, 1, beneficiary);
+        return super._lock(lockedAmount, 1, beneficiary,1,1);
     }
 
   /**

@@ -60,7 +60,7 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
      * @return lockingId the unique Id
      */
     function lock(uint _period) public payable returns(bytes32 lockingId) {
-        return super._lock(msg.value, _period, msg.sender);
+        return super._lock(msg.value, _period, msg.sender,1,1);
     }
 
 }

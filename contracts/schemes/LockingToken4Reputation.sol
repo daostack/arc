@@ -1,7 +1,9 @@
 pragma solidity ^0.4.25;
 
 import "./Locking4Reputation.sol";
+import "./PriceOracleInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 
 
 /**
@@ -9,7 +11,12 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  */
 
 contract LockingToken4Reputation is Locking4Reputation, Ownable {
-    StandardToken public token;
+
+    PriceOracleInterface public priceOracleContract;
+    //      lockingId => token
+    mapping(bytes32   => StandardToken) public lockedTokens;
+
+    event LockToken(bytes32 indexed _lockingId, address indexed _token, uint _numerator, uint _denominator);
 
     /**
      * @dev initialize
@@ -22,7 +29,8 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      * @param _redeemEnableTime redeem enable time .
      *        redeem reputation can be done after this time.
      * @param _maxLockingPeriod maximum locking period allowed.
-     * @param _token the locking token
+     * @param _priceOracleContract the price oracle contract which the locked token will be
+     *        validated against
      */
     function initialize(
         Avatar _avatar,
@@ -31,11 +39,11 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
         uint _lockingEndTime,
         uint _redeemEnableTime,
         uint _maxLockingPeriod,
-        StandardToken _token)
+        PriceOracleInterface _priceOracleContract)
     external
     onlyOwner
     {
-        token = _token;
+        priceOracleContract = _priceOracleContract;
         super._initialize(
         _avatar,
         _reputationReward,
@@ -53,7 +61,7 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      */
     function release(address _beneficiary,bytes32 _lockingId) public returns(bool) {
         uint amount = super._release(_beneficiary, _lockingId);
-        require(token.transfer(_beneficiary, amount), "transfer should success");
+        require(lockedTokens[_lockingId].transfer(_beneficiary, amount), "transfer should success");
 
         return true;
     }
@@ -62,12 +70,25 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      * @dev lock function
      * @param _amount the amount to lock
      * @param _period the locking period
+     * @param _token the token to lock - this should be whitelisted at the priceOracleContract
      * @return lockingId
      */
-    function lock(uint _amount, uint _period) public returns(bytes32) {
-        require(token.transferFrom(msg.sender, address(this), _amount), "transferFrom should success");
+    function lock(uint _amount, uint _period,StandardToken _token) public returns(bytes32 lockingId) {
 
-        return super._lock(_amount, _period, msg.sender);
+        uint numerator;
+        uint denominator;
+
+        (numerator,denominator) = priceOracleContract.getPrice(address(_token));
+
+        require(numerator > 0,"numerator should be > 0");
+        require(denominator > 0,"denominator should be > 0");
+
+        require(_token.transferFrom(msg.sender, address(this), _amount), "transferFrom should success");
+
+        lockingId = super._lock(_amount, _period, msg.sender,numerator,denominator);
+
+        lockedTokens[lockingId] = _token;
+
+        emit LockToken(lockingId,address(_token),numerator,denominator);
     }
-
 }

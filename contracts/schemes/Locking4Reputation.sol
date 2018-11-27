@@ -86,9 +86,11 @@ contract Locking4Reputation {
      * @param _amount the amount to lock
      * @param _period the locking period
      * @param _locker the locker
+     * @param _numerator price numerator
+     * @param _denominator price denominator
      * @return lockingId
      */
-    function _lock(uint _amount, uint _period, address _locker) internal returns(bytes32 lockingId) {
+    function _lock(uint _amount, uint _period, address _locker,uint _numerator,uint _denominator) internal returns(bytes32 lockingId) {
         require(_amount > 0, "locking amount should be > 0");
         require(_period <= maxLockingPeriod, "locking period should be <= maxLockingPeriod");
         require(_period > 0, "locking period should be > 0");
@@ -106,7 +108,8 @@ contract Locking4Reputation {
         locker.releaseTime = now + _period;
         totalLocked += _amount;
         totalLockedLeft = totalLocked;
-        uint score = _period.mul(_amount);
+        uint score = _period.mul(_amount).mul(_numerator).div(_denominator);
+        require(score>0,"score must me > 0");
         scores[_locker] = scores[_locker].add(score);
         totalScore = totalScore.add(score);
 
