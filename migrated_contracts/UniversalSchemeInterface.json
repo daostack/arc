@@ -1,0 +1,484 @@
+{
+  "contractName": "UniversalSchemeInterface",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_hashedParameters",
+          "type": "bytes32"
+        }
+      ],
+      "name": "updateParameters",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.4.24;\r\n\r\nimport \"../controller/Controller.sol\";\r\nimport \"../controller/Avatar.sol\";\r\nimport \"openzeppelin-solidity/contracts/ownership/Ownable.sol\";\r\nimport \"openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol\";\r\n\r\n\r\ncontract UniversalSchemeInterface {\r\n\r\n    function updateParameters(bytes32 _hashedParameters) public;\r\n\r\n    function getParametersFromController(Avatar _avatar) internal view returns(bytes32);\r\n}\r\n",
+  "sourcePath": "C:\\users\\dkent\\documents\\projects\\github\\daostack\\arc\\contracts\\universalSchemes\\UniversalSchemeInterface.sol",
+  "ast": {
+    "absolutePath": "/C/users/dkent/documents/projects/github/daostack/arc/contracts/universalSchemes/UniversalSchemeInterface.sol",
+    "exportedSymbols": {
+      "UniversalSchemeInterface": [
+        15692
+      ]
+    },
+    "id": 15693,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 15675,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:38"
+      },
+      {
+        "absolutePath": "/C/users/dkent/documents/projects/github/daostack/arc/contracts/controller/Controller.sol",
+        "file": "../controller/Controller.sol",
+        "id": 15676,
+        "nodeType": "ImportDirective",
+        "scope": 15693,
+        "sourceUnit": 5980,
+        "src": "28:38:38",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/C/users/dkent/documents/projects/github/daostack/arc/contracts/controller/Avatar.sol",
+        "file": "../controller/Avatar.sol",
+        "id": 15677,
+        "nodeType": "ImportDirective",
+        "scope": 15693,
+        "sourceUnit": 4430,
+        "src": "68:34:38",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+        "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+        "id": 15678,
+        "nodeType": "ImportDirective",
+        "scope": 15693,
+        "sourceUnit": 18014,
+        "src": "104:63:38",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol",
+        "file": "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol",
+        "id": 15679,
+        "nodeType": "ImportDirective",
+        "scope": 15693,
+        "sourceUnit": 18609,
+        "src": "169:71:38",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 15692,
+        "linearizedBaseContracts": [
+          15692
+        ],
+        "name": "UniversalSchemeInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 15684,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "updateParameters",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 15682,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15681,
+                  "name": "_hashedParameters",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15684,
+                  "src": "315:25:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 15680,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "315:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "314:27:38"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 15683,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "348:0:38"
+            },
+            "scope": 15692,
+            "src": "289:60:38",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 15691,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getParametersFromController",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 15687,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15686,
+                  "name": "_avatar",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15691,
+                  "src": "394:14:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_Avatar_$4429",
+                    "typeString": "contract Avatar"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 15685,
+                    "name": "Avatar",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 4429,
+                    "src": "394:6:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Avatar_$4429",
+                      "typeString": "contract Avatar"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "393:16:38"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 15690,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15689,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15691,
+                  "src": "432:7:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 15688,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "432:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "431:9:38"
+            },
+            "scope": 15692,
+            "src": "357:84:38",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 15693,
+        "src": "246:198:38"
+      }
+    ],
+    "src": "0:446:38"
+  },
+  "legacyAST": {
+    "absolutePath": "/C/users/dkent/documents/projects/github/daostack/arc/contracts/universalSchemes/UniversalSchemeInterface.sol",
+    "exportedSymbols": {
+      "UniversalSchemeInterface": [
+        15692
+      ]
+    },
+    "id": 15693,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 15675,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:38"
+      },
+      {
+        "absolutePath": "/C/users/dkent/documents/projects/github/daostack/arc/contracts/controller/Controller.sol",
+        "file": "../controller/Controller.sol",
+        "id": 15676,
+        "nodeType": "ImportDirective",
+        "scope": 15693,
+        "sourceUnit": 5980,
+        "src": "28:38:38",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/C/users/dkent/documents/projects/github/daostack/arc/contracts/controller/Avatar.sol",
+        "file": "../controller/Avatar.sol",
+        "id": 15677,
+        "nodeType": "ImportDirective",
+        "scope": 15693,
+        "sourceUnit": 4430,
+        "src": "68:34:38",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+        "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+        "id": 15678,
+        "nodeType": "ImportDirective",
+        "scope": 15693,
+        "sourceUnit": 18014,
+        "src": "104:63:38",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol",
+        "file": "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol",
+        "id": 15679,
+        "nodeType": "ImportDirective",
+        "scope": 15693,
+        "sourceUnit": 18609,
+        "src": "169:71:38",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 15692,
+        "linearizedBaseContracts": [
+          15692
+        ],
+        "name": "UniversalSchemeInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "id": 15684,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "updateParameters",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 15682,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15681,
+                  "name": "_hashedParameters",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15684,
+                  "src": "315:25:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 15680,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "315:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "314:27:38"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 15683,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "348:0:38"
+            },
+            "scope": 15692,
+            "src": "289:60:38",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": null,
+            "id": 15691,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "getParametersFromController",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 15687,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15686,
+                  "name": "_avatar",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15691,
+                  "src": "394:14:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_Avatar_$4429",
+                    "typeString": "contract Avatar"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 15685,
+                    "name": "Avatar",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 4429,
+                    "src": "394:6:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_Avatar_$4429",
+                      "typeString": "contract Avatar"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "393:16:38"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 15690,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 15689,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 15691,
+                  "src": "432:7:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 15688,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "432:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "431:9:38"
+            },
+            "scope": 15692,
+            "src": "357:84:38",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 15693,
+        "src": "246:198:38"
+      }
+    ],
+    "src": "0:446:38"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-07-21T19:08:34.394Z"
+}
