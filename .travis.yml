@@ -7,6 +7,7 @@ sudo: required
 services:
   - docker
 
+cache: npm
 addons:
   apt:
     packages:
@@ -21,7 +22,7 @@ install:
   - docker-compose --version
   - sudo service postgresql stop
   - while sudo lsof -Pi :5432 -sTCP:LISTEN -t; do sleep 1; done
-  - npm install
+  - npm ci
   - npm run configure:development
   - npm run codegen
 

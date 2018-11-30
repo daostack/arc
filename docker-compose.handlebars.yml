@@ -53,4 +53,5 @@ services:
       --deterministic
       --mnemonic "{{test_mnemonic}}"
       --gasLimit 8000000
+      --networkId ganache
   {{/if}}
