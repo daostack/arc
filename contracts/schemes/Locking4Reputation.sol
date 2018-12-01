@@ -43,9 +43,9 @@ contract Locking4Reputation {
     /**
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary for the release
-     * @return bool
+     * @return uint reputation rewarded
      */
-    function redeem(address _beneficiary) public returns(bool) {
+    function redeem(address _beneficiary) public returns(uint) {
         // solium-disable-next-line security/no-block-members
         require(block.timestamp > redeemEnableTime, "now > redeemEnableTime");
         require(scores[_beneficiary] > 0, "score should be > 0");
@@ -60,7 +60,7 @@ contract Locking4Reputation {
 
         emit Redeem(_beneficiary, reputation);
 
-        return true;
+        return reputation;
     }
 
     /**
