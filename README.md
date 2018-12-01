@@ -36,7 +36,7 @@ We take no responsibility for your implementation decisions and any security pro
 
 PRs are welcome but please first consult with the [Contribution guide](https://github.com/daostack/arc/blob/master/CONTRIBUTING.md).
 
-Join us on [Telegram](https://t.me/daostackcommunity)!
+Join us on [Discord](https://daostack.io/community)!
 
 To contribute to Arc development start by cloning the repo and installing the dependencies:
 ```sh
