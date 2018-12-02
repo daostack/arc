@@ -268,7 +268,7 @@ contract('ExternalLocking4Reputation', accounts => {
 
     it("get earned reputation", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.externalLocking4Reputation.claim(helpers.NULL_ADDRESS);
+        await testSetup.externalLocking4Reputation.claim(helpers.NULL_ADDRESS);
         await helpers.increaseTime(3001);
         const reputation = await testSetup.externalLocking4Reputation.redeem.call(accounts[0]);
         assert.equal(reputation,100);
