@@ -281,4 +281,13 @@ contract('LockingEth4Reputation', accounts => {
                                                 100,
                                                 6000);
     });
+
+    it("get earned reputation", async () => {
+        let testSetup = await setup(accounts);
+        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        await helpers.increaseTime(3001);
+        const reputation = await testSetup.lockingEth4Reputation.redeem.call(accounts[0]);
+        assert.equal(reputation,100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
+    });
 });
