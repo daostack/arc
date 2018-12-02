@@ -266,4 +266,12 @@ contract('ExternalLocking4Reputation', accounts => {
                                                      {from:accounts[0]});
     });
 
+    it("get earned reputation", async () => {
+        let testSetup = await setup(accounts);
+        await testSetup.externalLocking4Reputation.claim(helpers.NULL_ADDRESS);
+        await helpers.increaseTime(3001);
+        const reputation = await testSetup.externalLocking4Reputation.redeem.call(accounts[0]);
+        assert.equal(reputation,100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
+    });
 });

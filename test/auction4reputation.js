@@ -337,4 +337,15 @@ contract('Auction4Reputation', accounts => {
              helpers.assertVMException(error);
            }
     });
+
+    it("get earned reputation", async () => {
+        let testSetup = await setup(accounts);
+        var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
+        var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
+        await helpers.increaseTime(3001);
+        tx = await testSetup.auction4Reputation.redeem.call(accounts[0],id);
+        const reputation = await testSetup.auction4Reputation.redeem.call(accounts[0], id);
+        assert.equal(reputation,100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
+    });
 });

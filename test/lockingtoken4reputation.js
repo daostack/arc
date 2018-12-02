@@ -45,6 +45,15 @@ const setup = async function (accounts,
 };
 
 contract('LockingToken4Reputation', accounts => {
+    it("get earned reputation", async () => {
+        let testSetup = await setup(accounts);
+        await testSetup.lockingToken4Reputation.lock(web3.utils.toWei('1', "ether"),100,testSetup.lockingToken.address);
+        await helpers.increaseTime(3001);
+        const reputation = await testSetup.lockingToken4Reputation.redeem.call(accounts[0]);
+        assert.equal(reputation,100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
+    });
+
     it("initialize", async () => {
       let testSetup = await setup(accounts);
       assert.equal(await testSetup.lockingToken4Reputation.reputationReward(),100);
@@ -324,5 +333,14 @@ contract('LockingToken4Reputation', accounts => {
                                                 100,
                                                 6000,
                                                 accounts[1]);
+    });
+
+    it("get earned reputation", async () => {
+        let testSetup = await setup(accounts);
+        await testSetup.lockingToken4Reputation.lock(web3.utils.toWei('1', "ether"),100,testSetup.lockingToken.address);
+        await helpers.increaseTime(3001);
+        const reputation = await testSetup.lockingToken4Reputation.redeem.call(accounts[0]);
+        assert.equal(reputation,100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
     });
 });

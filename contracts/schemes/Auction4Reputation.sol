@@ -86,9 +86,9 @@ contract Auction4Reputation is Ownable {
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary to redeem.
      * @param _auctionId the auction id to redeem from.
-     * @return bool
+     * @return uint reputation rewarded
      */
-    function redeem(address _beneficiary, uint _auctionId) public returns(bool) {
+    function redeem(address _beneficiary, uint _auctionId) public returns(uint reputation) {
         // solium-disable-next-line security/no-block-members
         require(now > redeemEnableTime, "now > redeemEnableTime");
         Auction storage auction = auctions[_auctionId];
@@ -96,12 +96,11 @@ contract Auction4Reputation is Ownable {
         require(bid > 0, "bidding amount should be > 0");
         auction.bids[_beneficiary] = 0;
         int256 repRelation = int216(bid).toReal().mul(int216(auctionReputationReward).toReal());
-        uint reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
+        reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
         emit Redeem(_auctionId, _beneficiary, reputation);
-        return true;
     }
 
     /**
