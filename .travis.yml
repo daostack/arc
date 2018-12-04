@@ -3,7 +3,7 @@ dist: trusty
 language: node_js
 
 node_js:
-  - "8.11.4"
+  - "10.14.1"
 
 before_install:
   - sudo apt-get update -qq
@@ -14,7 +14,7 @@ before_install:
   - sudo apt-get install geth -y -qq
 
 install:
-  - npm i
+  - npm ci
   - rm -rf build/ # remove any remaining artifacts from a previous build
   - truffle version
 
