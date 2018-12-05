@@ -30,22 +30,31 @@ describe('GenesisProtocol', () => {
 
     const Rep = new web3.eth.Contract(Reputation.abi, undefined, opts);
     reputation = await Rep.deploy({
-                     data: Reputation.bytecode,
-                     arguments: [],
-                     })
-                     .send();
+      data: Reputation.bytecode,
+      arguments: [],
+    }).send();
     genesisProtocol = new web3.eth.Contract(
-                     GenesisProtocol.abi,
-                     addresses.GenesisProtocol,
-                     opts,
-                     );
+      GenesisProtocol.abi,
+      addresses.GenesisProtocol,
+      opts,
+    );
 
-    daoToken = new web3.eth.Contract(DAOToken.abi, addresses.GPToken, opts);
+    daoToken = new web3.eth.Contract(DAOToken.abi, addresses.DAOToken, opts);
 
-    genesisProtocolCallbacks = await new web3.eth.Contract(GenesisProtocolCallbacks.abi, undefined, opts)
-        .deploy({ data: GenesisProtocolCallbacks.bytecode,
-                  arguments: [reputation.options.address, daoToken.options.address, genesisProtocol.options.address] })
-        .send();
+    genesisProtocolCallbacks = await new web3.eth.Contract(
+      GenesisProtocolCallbacks.abi,
+      undefined,
+      opts,
+    )
+      .deploy({
+        data: GenesisProtocolCallbacks.bytecode,
+        arguments: [
+          reputation.options.address,
+          daoToken.options.address,
+          genesisProtocol.options.address,
+        ],
+      })
+      .send();
   });
 
   it('Sanity', async () => {
@@ -54,19 +63,22 @@ describe('GenesisProtocol', () => {
       50, // preBoostedVoteRequiredPercentage
       60, // preBoostedVotePeriodLimit
       5, // boostedVotePeriodLimit
-      1,  // thresholdConstA
-      1,  // thresholdConstB
-      0,  // minimumStakingFee
-      0,  // quietEndingPeriod
+      1, // thresholdConstA
+      1, // thresholdConstB
+      0, // minimumStakingFee
+      0, // quietEndingPeriod
       60, // proposingRepRewardConstA
-      1,  // proposingRepRewardConstB
+      1, // proposingRepRewardConstB
       10, // stakerFeeRatioForVoters
       10, // votersReputationLossRatio
       80, // votersGainRepRatioFromLostRep
       15, // _daoBountyConst
-      10,  // _daoBountyLimit
+      10, // _daoBountyLimit
     ];
-    const setParams = genesisProtocol.methods.setParameters(params, nullAddress);
+    const setParams = genesisProtocol.methods.setParameters(
+      params,
+      nullAddress,
+    );
     const paramsHash = await setParams.call();
     await setParams.send();
 
@@ -74,7 +86,9 @@ describe('GenesisProtocol', () => {
 
     await daoToken.methods.mint(accounts[1].address, '100').send();
 
-    await daoToken.methods.approve(genesisProtocol.options.address, '100').send();
+    await daoToken.methods
+      .approve(genesisProtocol.options.address, '100')
+      .send();
 
     await reputation.methods.mint(accounts[0].address, '100').send();
     await reputation.methods.mint(accounts[1].address, '100').send();
@@ -93,19 +107,33 @@ describe('GenesisProtocol', () => {
     txs.push(await propose.send());
 
     // boost the proposal
-    txs.push(await genesisProtocol.methods.stake(proposalId, 1 /* YES */, 20).send());
+    txs.push(
+      await genesisProtocol.methods.stake(proposalId, 1 /* YES */, 20).send(),
+    );
 
-    txs.push(await genesisProtocol.methods.stake(proposalId, 1 /* YES */, 20).send({ from: accounts[1].address }));
+    txs.push(
+      await genesisProtocol.methods
+        .stake(proposalId, 1 /* YES */, 20)
+        .send({ from: accounts[1].address }),
+    );
 
     // vote for it to pass
-    txs.push(await genesisProtocol.methods.vote(proposalId, 1 /* YES */, nullAddress).send());
+    txs.push(
+      await genesisProtocol.methods
+        .vote(proposalId, 1 /* YES */, nullAddress)
+        .send(),
+    );
 
     // wait for proposal it pass
     await new Promise((res) => setTimeout(res, params[2] * 1000));
 
     txs.push(await genesisProtocol.methods.execute(proposalId).send());
 
-    txs.push(await genesisProtocol.methods.redeem(proposalId, accounts[0].address).send());
+    txs.push(
+      await genesisProtocol.methods
+        .redeem(proposalId, accounts[0].address)
+        .send(),
+    );
 
     const { genesisProtocolProposals } = await sendQuery(`{
       genesisProtocolProposals {
@@ -122,19 +150,23 @@ describe('GenesisProtocol', () => {
       }
     }`);
 
-    expect(genesisProtocolProposals.length).toEqual(1);
     expect(genesisProtocolProposals).toContainEqual({
       proposalId,
-      submittedTime: (await web3.eth.getBlock(txs[0].blockNumber)).timestamp.toString(),
+      submittedTime: (await web3.eth.getBlock(
+        txs[0].blockNumber,
+      )).timestamp.toString(),
       proposer: accounts[1].address.toLowerCase(),
       daoAvatarAddress: genesisProtocolCallbacks.options.address.toLowerCase(),
       numOfChoices: '2',
-      state: 2, /* Executed */
-      decision: '1', /* YES */
-      executionState : 3, // enum ExecutionState
-                          // { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
-      executionTime: (await web3.eth.getBlock(txs[4].blockNumber)).timestamp.toString(),
-      totalReputation: txs[4].events.ExecuteProposal.returnValues._totalReputation,
+      state: 2 /* Executed */,
+      decision: '1' /* YES */,
+      executionState: 3, // enum ExecutionState
+      // { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
+      executionTime: (await web3.eth.getBlock(
+        txs[4].blockNumber,
+      )).timestamp.toString(),
+      totalReputation:
+        txs[4].events.ExecuteProposal.returnValues._totalReputation,
     });
 
     const { genesisProtocolExecuteProposals } = await sendQuery(`{
@@ -146,12 +178,12 @@ describe('GenesisProtocol', () => {
       }
     }`);
 
-    expect(genesisProtocolExecuteProposals.length).toEqual(1);
     expect(genesisProtocolExecuteProposals).toContainEqual({
       proposalId,
-      decision: '1', /* YES */
-      organization : genesisProtocolCallbacks.options.address.toLowerCase(),
-      totalReputation: txs[4].events.ExecuteProposal.returnValues._totalReputation,
+      decision: '1' /* YES */,
+      organization: genesisProtocolCallbacks.options.address.toLowerCase(),
+      totalReputation:
+        txs[4].events.ExecuteProposal.returnValues._totalReputation,
     });
 
     const { genesisProtocolGPExecuteProposals } = await sendQuery(`{
@@ -161,12 +193,10 @@ describe('GenesisProtocol', () => {
       }
     }`);
 
-    expect(genesisProtocolGPExecuteProposals.length).toEqual(1);
     expect(genesisProtocolGPExecuteProposals).toContainEqual({
       proposalId,
-      executionState : 3, //    enum ExecutionState
-                         //     { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
+      executionState: 3, //    enum ExecutionState
+      //     { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
     });
-
   }, 15000);
 });

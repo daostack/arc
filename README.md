@@ -7,8 +7,6 @@ DAOstack subgraph for [TheGraph](https://thegraph.com/) project.
 1 `git clone https://github.com/daostack/subgraph.git && cd subgraph`
 
 2. `npm install`
-3. `npm run configure:<development|mainnet>` - configure the project to use ganache or mainnet (requires `.env` [configuration](#configuration)) via infura.
-4. `npm run codegen` - automatically generate abi and AssemblyScript type definitions required by the project.
 
 All npm scripts can be called within a container using `docker-compose` with all dependencies and services set up:
 
@@ -16,20 +14,22 @@ All npm scripts can be called within a container using `docker-compose` with all
 
 ## Commands
 
-1. `configure:mainnet` - configure the project to run against mainnet.
-2. `configure:development` - configure the project to run against ganache.
-3. `migrate:development` - migrate contracts to ganache and update project configuration.
-4. `codegen` - automatically generate abi & type definitions for required contracts.
-5. `test` - run integration test.
-6. `deploy` - deploy subgraph.
-7. `deploy:watch` - redeploy on file change.
+1. `migrate` - migrate contracts to ganache and write result to `migration.json`.
+2. `codegen` - (requires `migration.json`) automatically generate abi, subgraph, schema and type definitions for
+   required contracts.
+3. `test` - run integration test.
+4. `deploy` - deploy subgraph.
+5. `deploy:watch` - redeploy on file change.
 
-Docker commands (requires installing [`docker`](https://docs.docker.com/v17.12/install/) and [`docker-compose`](https://docs.docker.com/compose/install/)):
+Docker commands (requires installing [`docker`](https://docs.docker.com/v17.12/install/) and
+[`docker-compose`](https://docs.docker.com/compose/install/)):
 
-1. `docker <command>` - start a command running inside the docker container. Example: `npm run docker test` (run intergation tests).
+1. `docker <command>` - start a command running inside the docker container. Example: `npm run docker test` (run
+   intergation tests).
 2. `docker:stop` - stop all running docker services.
 3. `docker:rebuild <command>` - rebuild the docker container after changes to `package.json`.
 4. `docker:logs <subgraph|graph-node|ganache|ipfs|postgres>` - display logs from a running docker service.
+5. `docker:run` - run all services in detached mode (i.e. in the background).
 
 ## Exposed endpoints
 
@@ -43,23 +43,21 @@ After running a command with docker-compose, the following endpoints will be exp
 - (if using development) `http://localhost:8545` - ganache RPC endpoint.
 - `http://localhost:5432` - postgresql connection endpoint.
 
-## Configuration
-
-This project automatically generates `.yaml` files used by `docker-compose` & `graph-node` based on configuration.
-Project configuration lives under: `ops/config.yaml` (public configration), `.env` (secret configuration).
-
-The following `.env` variables can be configured:
-
-- `daostack_mainnet__postgresPassword` - postgres password when running on mainnet (e.g `123`).
-- `daostack_mainnet__ethereumProvider` - mainnet web3 provider (e.g `https://mainnet.infura.io/v3/<api key>`)
-
 ## Add a new contract tracker
 
 In order to add support for a new contract follow these steps:
 
-1. Create a mapping file at `src/mappings/<contract name>/<contract name>.ts`.
-2. Create a test file at `test/integration/<contract name>.spec.ts`.
-3. Configure the contract's mainnet address at `ops/config.yaml` under `addresses.<contract name>`.
-4. Add the contract to the migration script at the `migrate` function in `ops/index.js`.
-5. Add an additional datasource for the new contract at `subgraph.handlebars.yaml`, use `{{addresses.<contract name>}}` in place of the contract address.
-6. Add the appropriate grahpql schema for your mapping in `src/mappings/<contract name>.graphql` and register it at `schema.handlebars.graphql` by adding a `{{> <contract name>}}` line.
+1. Create a new directory `src/mappings/<contract name>/`
+2. Create 4 files:
+
+   1. `src/mappings/<contract name>/mapping.ts` - mapping code.
+   2. `src/mappings/<contract name>/schema.graphql` - GraphQL schema for that contract.
+   3. `src/mappings/<contract name>/datasource.yaml` - a yaml fragment with:
+      1. `abis` - optional - list of contract names that are required by the mapping.
+      2. [`entities`](https://github.com/graphprotocol/graph-node/blob/master/docs/subgraph-manifest.md#1521-ethereum-events-mapping) -
+         list of entities that are written by the the mapping.
+      3. [`eventHandlers`](https://github.com/graphprotocol/graph-node/blob/master/docs/subgraph-manifest.md#1522-eventhandler) -
+         map of solidity event signatures to event handlers in mapping code.
+   4. `test/integration/<contract name>.spec.ts`
+
+3. (Optionally) add a deployment step for your contract in `ops/migrate.js` that will run before testing.

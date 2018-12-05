@@ -1,16 +1,14 @@
-# template file for generating docker-compose.yml based on configuration
-
-version: "3"
+version: '3'
 services:
   subgraph:
     build: .
     links:
       - ipfs
       - graph-node
-      {{#if development}}- ganache{{/if}}
+      - ganache
     environment:
-      ethereum: {{#if development}}http://ganache:8545{{else}}{{ethereumProvider}}{{/if}}
-      test_mnemonic: {{test_mnemonic}}
+      ethereum: http://ganache:8545
+      test_mnemonic: behave pipe turkey animal voyage dial relief menu blush match jeans general
       node_http: http://graph-node:8000/by-name/daostack/graphql
       node_ws: http://graph-node:8001/by-name/daostack
       node_rpc: http://graph-node:8020
@@ -26,14 +24,14 @@ services:
     links:
       - ipfs
       - postgres
-      {{#if development}}- ganache{{/if}}
+      - ganache
     environment:
       postgres_host: postgres:5432
       postgres_user: postgres
-      postgres_pass: '{{postgresPassword}}'
+      postgres_pass: 'letmein'
       postgres_db: postgres
       ipfs: ipfs:5001
-      ethereum: {{#if development}}development:http://ganache:8545{{else}}{{env}}:{{ethereumProvider}}{{/if}}
+      ethereum: development:http://ganache:8545
   ipfs:
     image: ipfs/go-ipfs
     ports:
@@ -43,15 +41,11 @@ services:
     ports:
       - 5434:5432
     environment:
-      POSTGRES_PASSWORD: '{{postgresPassword}}'
-  {{#if development}}
+      POSTGRES_PASSWORD: 'letmein'
   ganache:
     image: trufflesuite/ganache-cli:v6.2.1
     ports:
       - 8545:8545
     command: >
-      --deterministic
-      --mnemonic "{{test_mnemonic}}"
-      --gasLimit 8000000
-      --networkId ganache
-  {{/if}}
+      --deterministic --mnemonic "behave pipe turkey animal voyage dial relief menu blush match jeans general"
+      --gasLimit 8000000 --networkId ganache

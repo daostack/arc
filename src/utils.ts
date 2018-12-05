@@ -1,8 +1,13 @@
 import {
+  Address,
   BigInt,
-  ByteArray
-} from "@graphprotocol/graph-ts";
-
+  ByteArray,
+  crypto,
+  Entity,
+  EthereumEvent,
+  store,
+  Value,
+} from '@graphprotocol/graph-ts';
 
 export function concat(a: ByteArray, b: ByteArray): ByteArray {
   let out = new Uint8Array(a.length + b.length);
@@ -15,31 +20,40 @@ export function concat(a: ByteArray, b: ByteArray): ByteArray {
   return out as ByteArray;
 }
 
-export function isZero(num: BigInt): boolean {
-  for (let i = 0; i < num.length; i++) {
-    if (num[i] != 0) {
-      return false;
-    }
-  }
-  return true;
+export function eventId(event: EthereumEvent): string {
+  return crypto
+    .keccak256(
+      concat(event.transaction.hash, event.transactionLogIndex as ByteArray),
+    )
+    .toHex();
+}
+
+export function hexToAddress(hex: string): Address {
+  return Address.fromString(hex.substr(2));
+}
+
+/**
+ * WORKAROUND: there's no `console.log` functionality in mapping.
+ * so we use `debug(..)` which writes a `Debug` entity to the store so you can see them in graphiql.
+ */
+let debugId = 0;
+export function debug(msg: string): void {
+  let ent = new Entity();
+  let id = BigInt.fromI32(debugId).toHex();
+  ent.set('id', Value.fromString(id));
+  ent.set('message', Value.fromString(msg));
+  store.set('Debug', id, ent);
+  debugId++;
 }
 
 export function equals(a: BigInt, b: BigInt): boolean {
-  if (a.length != b.length) {
+  if (a.length !== b.length) {
     return false;
   }
   for (let i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) {
+    if (a[i] !== b[i]) {
       return false;
     }
   }
   return true;
-}
-
-export function addition(a: BigInt, b: BigInt): BigInt {
-  return a.plus(b) as BigInt;
-}
-
-export function sub(a: BigInt, b: BigInt): BigInt {
-  return a.minus(b) as BigInt;
 }

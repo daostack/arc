@@ -9,15 +9,17 @@ import { Avatar, ReceiveEther, SendEther } from '../../types/Avatar/Avatar';
 // Import entity types generated from the GraphQL schema
 import { AvatarContract } from '../../types/schema';
 
-import { addition, sub } from '../../utils';
-
-function handleAvatarBalance(address: Address, value: BigInt, received: boolean): void {
+function handleAvatarBalance(
+  address: Address,
+  value: BigInt,
+  received: boolean,
+): void {
   let avatarSC = Avatar.bind(address);
 
   let avatar = store.get('AvatarContract', address.toHex()) as AvatarContract;
   if (avatar == null) {
     avatar = new AvatarContract();
-    // avatar.id = address.toHex();
+    avatar.id = address.toHex();
     avatar.address = address;
     avatar.name = avatarSC.orgName();
     avatar.nativeReputation = avatarSC.nativeReputation();
@@ -27,12 +29,12 @@ function handleAvatarBalance(address: Address, value: BigInt, received: boolean)
   }
 
   if (received) {
-    avatar.balance = addition(avatar.balance, value);
+    avatar.balance = avatar.balance.plus(value);
   } else {
-    avatar.balance = sub(avatar.balance, value);
+    avatar.balance = avatar.balance.minus(value);
   }
 
-  store.set('AvatarContract', address.toHex(), avatar);
+  store.set('AvatarContract', avatar.id, avatar);
 }
 
 export function handleSendEth(event: SendEther): void {

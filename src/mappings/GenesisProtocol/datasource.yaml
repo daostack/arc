@@ -1,0 +1,26 @@
+entities:
+  - Proposal
+  - Vote
+  - GPStake
+  - Redemption
+  - Reward
+  - RewardType
+  - ExecuteProposal
+  - GPExecuteProposal
+eventHandlers:
+  - event: NewProposal(bytes32, address, uint256, address, bytes32)
+    handler: handleNewProposal
+  - event: Redeem(bytes32, address, address, uint256)
+    handler: handleRedeem
+  - event: RedeemDaoBounty(bytes32, address, address, uint256)
+    handler: handleRedeemDaoBounty
+  - event: RedeemReputation(bytes32, address, address, uint256)
+    handler: handleRedeemReputation
+  - event: VoteProposal(bytes32, address, address, uint256, uint256)
+    handler: handleVoteProposal
+  - event: Stake(bytes32, address, address, uint256, uint256)
+    handler: handleStake
+  - event: GPExecuteProposal(bytes32, uint8)
+    handler: handleGPExecuteProposal
+  - event: ExecuteProposal(bytes32, address, uint256, uint256)
+    handler: handleExecuteProposal

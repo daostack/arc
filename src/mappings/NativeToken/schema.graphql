@@ -1,0 +1,53 @@
+type TokenContract @entity {
+	id: ID!
+	address: Bytes!
+	totalSupply: BigInt!
+	owner: Bytes!
+}
+
+type TokenHolder @entity {
+	id: ID!
+	contract: Bytes!
+	address: Bytes!
+	balance: BigInt!
+}
+
+type TokenMint @entity {
+	id: ID!
+	txHash: Bytes!
+	contract: Bytes!
+	to: Bytes!
+	amount: BigInt!
+}
+
+type TokenBurn @entity {
+	id: ID!
+	txHash: Bytes!
+	contract: Bytes!
+	burner: Bytes!
+	amount: BigInt!
+}
+
+type TokenMintFinished @entity {
+	id: ID!
+	txHash: Bytes!
+	contract: Bytes!
+}
+
+type TokenTransfer @entity {
+	id: ID!
+	txHash: Bytes!
+	contract: Bytes!
+	from: Bytes!
+	to: Bytes!
+	value: BigInt!
+}
+
+type TokenApproval @entity {
+	id: ID!
+	txHash: Bytes!
+	contract: Bytes!
+	owner: Bytes!
+	spender: Bytes!
+	value: BigInt!
+}

@@ -1,96 +1,93 @@
 {
-  "name": "@daostack/subgraph",
-  "version": "0.0.0",
-  "author": "DAOstack (https://www.daostack.io)",
-  "license": "GPL-3.0",
-  "description": "A caching layer for daostack using The Graph",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/daostack/subgraph.git"
-  },
-  "engines": {
-    "node": ">=10.13.0"
-  },
-  "scripts": {
-    "configure:mainnet": "node ops/index.js configure -e mainnet && npm run codegen",
-    "configure:development": "node ops/index.js configure -e development && npm run codegen",
-    "migrate:development": "node ops/index.js migrate",
-    "codegen": "node ops/index.js generate-abis && graph codegen --output-dir src/types/ subgraph.yaml",
-    "build": "graph build subgraph.yaml",
-    "build-ipfs": "graph build --ipfs ${ipfs-/ip4/127.0.0.1/tcp/5001} --debug subgraph.yaml",
-    "build-wast": "graph build -t wast subgraph.yaml",
-    "deploy": "graph deploy --access-token \"\" --ipfs ${ipfs-/ip4/127.0.0.1/tcp/5001} --node ${node_rpc-http://127.0.0.1:8020/} -n daostack subgraph.yaml",
-    "deploy:watch": "graph deploy --access-token \"\" -w --ipfs ${ipfs-/ip4/127.0.0.1/tcp/5001} --node ${node_rpc-http://127.0.0.1:8020/} -n daostack subgraph.yaml",
-    "test": "npm run migrate:development && npm run deploy && npm run jest",
-    "jest": "jest --runInBand --forceExit",
-    "docker": "docker-compose run --rm -v $(pwd):/usr/app -v /usr/app/node_modules subgraph \"$@\"",
-    "docker:stop": "docker-compose down -v",
-    "docker:run": "docker-compose up -d",
-    "docker:rebuild": "docker-compose build",
-    "docker:logs": "docker-compose logs \"$@\"",
-    "lint": "tslint -c tslint.json 'src/mappings/**/*.ts' && tslint -c tslint.json 'test/**/*.ts'"
-  },
-  "devDependencies": {
-    "@types/axios": "^0.14.0",
-    "@types/graphql": "^14.0.3",
-    "@types/jest": "^23.3.7",
-    "@types/mocha": "^5.2.5"
-  },
-  "dependencies": {
-    "@daostack/arc": "0.0.0-alpha.56",
-    "@graphprotocol/graph-cli": "0.4.1",
-    "@graphprotocol/graph-ts": "0.4.2",
-    "apollo-client": "^2.4.5",
-    "apollo-link-ws": "^1.0.9",
-    "axios": "^0.18.0",
-    "chalk": "^2.4.1",
-    "docker-compose": "^0.9.1",
-    "dotenv": "^6.1.0",
-    "ethereumjs-wallet": "^0.6.0",
-    "ganache-cli": "6.2.1",
-    "glob": "^7.1.3",
-    "graphql": "^14.0.2",
-    "graphql-request": "^1.8.2",
-    "graphql-tag": "^2.10.0",
-    "handlebars": "^4.0.12",
-    "hdwallet-accounts": "0.0.1",
-    "jest": "^23.6.0",
-    "js-yaml": "^3.12.0",
-    "moment": "^2.22.2",
-    "mustache": "^3.0.0",
-    "shell-exec": "^1.0.2",
-    "subscriptions-transport-ws": "^0.9.15",
-    "ts-jest": "^23.10.4",
-    "tslint": "^5.11.0",
-    "typedarray-to-buffer": "^3.1.5",
-    "typescript": "^3.1.3",
-    "web3": "1.0.0-beta.35",
-    "winston": "^3.1.0",
-    "yaeti": "^1.0.2",
-    "yargs": "^12.0.2"
-  },
-  "jest": {
-    "roots": [
-      "<rootDir>/src",
-      "<rootDir>/test"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "./test/tsconfig.json"
-      }
-    },
-    "testEnvironment": "node",
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(ts|js)?$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
-  }
+	"name": "@daostack/subgraph",
+	"version": "0.0.0",
+	"author": "DAOstack (https://www.daostack.io)",
+	"license": "GPL-3.0",
+	"description": "A caching layer for daostack using The Graph",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/daostack/subgraph.git"
+	},
+	"engines": {
+		"node": ">=10.13.0"
+	},
+	"scripts": {
+		"migrate": "ethereum=${ethereum-http://127.0.0.1:8545} node ops/migrate.js",
+		"codegen": "node ops/generate-abis.js && node ops/generate-schema.js && node ops/generate-subgraph.js && graph codegen --output-dir src/types/ subgraph.yaml",
+		"codegen:watch": "watch 'npm run codegen' src/mappings src/domain",
+		"deploy": "npm run migrate && npm run codegen && graph deploy --access-token \"\" --ipfs ${ipfs-/ip4/127.0.0.1/tcp/5001} --node ${node_rpc-http://127.0.0.1:8020/} -n daostack subgraph.yaml",
+		"deploy:watch": "npm run deploy -- --watch",
+		"test": "npm run deploy && jest --runInBand --forceExit",
+		"test:watch": "npm run test -- --watch",
+		"docker": "docker-compose run --rm -v $(pwd):/usr/app -v /usr/app/node_modules subgraph",
+		"docker:stop": "docker-compose down -v",
+		"docker:run": "docker-compose up -d",
+		"docker:rebuild": "docker-compose build",
+		"docker:logs": "docker-compose logs --follow",
+		"lint": "tslint -c tslint.json 'src//*.ts' -e 'src/types//.ts' && tslint -c tslint.json 'test/**/.ts'"
+	},
+	"devDependencies": {
+		"@types/axios": "^0.14.0",
+		"@types/graphql": "^14.0.3",
+		"@types/jest": "^23.3.7",
+		"@types/mocha": "^5.2.5",
+		"watch": "^1.0.2"
+	},
+	"dependencies": {
+		"@daostack/arc": "0.0.0-alpha.56",
+		"@graphprotocol/graph-cli": "0.4.1",
+		"@graphprotocol/graph-ts": "0.4.2",
+		"apollo-client": "^2.4.5",
+		"apollo-link-ws": "^1.0.9",
+		"axios": "^0.18.0",
+		"chalk": "^2.4.1",
+		"docker-compose": "^0.9.1",
+		"dotenv": "^6.1.0",
+		"ethereumjs-wallet": "^0.6.0",
+		"ganache-cli": "6.2.1",
+		"glob": "^7.1.3",
+		"graphql": "^14.0.2",
+		"graphql-request": "^1.8.2",
+		"graphql-tag": "^2.10.0",
+		"handlebars": "^4.0.12",
+		"hdwallet-accounts": "0.0.1",
+		"jest": "^23.6.0",
+		"js-yaml": "^3.12.0",
+		"moment": "^2.22.2",
+		"mustache": "^3.0.0",
+		"shell-exec": "^1.0.2",
+		"subscriptions-transport-ws": "^0.9.15",
+		"ts-jest": "^23.10.4",
+		"tslint": "^5.11.0",
+		"typedarray-to-buffer": "^3.1.5",
+		"typescript": "^3.1.3",
+		"web3": "1.0.0-beta.35",
+		"winston": "^3.1.0",
+		"yaeti": "^1.0.2",
+		"yargs": "^12.0.2"
+	},
+	"jest": {
+		"roots": [
+			"<rootDir>/src",
+			"<rootDir>/test"
+		],
+		"transform": {
+			"^.+\\.tsx?$": "ts-jest"
+		},
+		"globals": {
+			"ts-jest": {
+				"tsConfig": "./test/tsconfig.json"
+			}
+		},
+		"testEnvironment": "node",
+		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(ts|js)?$",
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"jsx",
+			"json",
+			"node"
+		]
+	}
 }

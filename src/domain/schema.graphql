@@ -1,0 +1,153 @@
+# WORKAROUND: there's no `console.log` functionality in mapping.
+# so we use `debug(..)` which writes a `Debug` entity to the store so you can see them in graphiql.
+type Debug @entity {
+	id: ID!
+	message: String!
+}
+
+enum Outcome {
+	Pass
+	Fail
+}
+
+enum Stage {
+	Open
+	Boosted
+	QuietEndingPeriod
+	Resolved
+}
+
+type DAO @entity {
+	id: ID!
+	name: String!
+	nativeToken: Token!
+	nativeReputation: Rep!
+	proposals: [Proposal!] @derivedFrom(field: "dao")
+	members: [Member!] @derivedFrom(field: "dao")
+	rewards: [Reward!] @derivedFrom(field: "dao")
+}
+
+type Rep @entity {
+	id: ID!
+	dao: DAO!
+	totalSupply: BigInt!
+}
+
+type Token @entity {
+	id: ID!
+	dao: DAO!
+	name: String!
+	symbol: String!
+	totalSupply: BigInt!
+}
+
+type Proposal @entity {
+	id: ID!
+	dao: DAO!
+	proposer: Member!
+	stage: Stage!
+	createdAt: BigInt!
+	boostedAt: BigInt
+	quietEndingPeriodBeganAt: BigInt
+	executedAt: BigInt
+
+	ipfsHash: Bytes!
+	title: String
+	description: String
+	url: String
+
+	rewards: [Reward!] @derivedFrom(field: "proposal")
+
+	votes: [ProposalVote!] @derivedFrom(field: "proposal")
+	votesFor: BigInt!
+	votesAgainst: BigInt!
+	winningOutcome: Outcome!
+
+	stakes: [ProposalStake!] @derivedFrom(field: "proposal")
+	stakesFor: BigInt!
+	stakesAgainst: BigInt!
+
+	# Genesis Protocol params
+	preBoostedVoteRequiredPercentage: BigInt!
+	preBoostedVotePeriodLimit: BigInt!
+	boostedVotePeriodLimit: BigInt!
+	thresholdConstA: BigInt!
+	thresholdConstB: BigInt!
+	minimumStakingFee: BigInt!
+	quietEndingPeriod: BigInt!
+	proposingRepRewardConstA: BigInt!
+	proposingRepRewardConstB: BigInt!
+	stakerFeeRatioForVoters: BigInt!
+	votersReputationLossRatio: BigInt!
+	votersGainRepRatioFromLostRep: BigInt!
+	voteOnBehalf: Bytes!
+
+	# Contribution Reward params
+	beneficiary: Bytes!
+	reputationReward: BigInt!
+	tokensReward: BigInt!
+	ethReward: BigInt!
+	externalTokenReward: BigInt!
+	externalToken: Bytes!
+	periods: BigInt!
+	periodLength: BigInt!
+}
+
+type ProposalStake @entity {
+	id: ID!
+	createdAt: BigInt!
+	staker: Bytes!
+	proposal: Proposal!
+	outcome: Outcome!
+	amount: BigInt!
+}
+
+type ProposalVote @entity {
+	id: ID!
+	createdAt: BigInt!
+	member: Member!
+	proposal: Proposal!
+	outcome: Outcome!
+	reputation: BigInt!
+}
+
+type Member @entity {
+	id: ID!
+	dao: DAO!
+	address: Bytes!
+	reputation: BigInt!
+	tokens: BigInt!
+
+	rewards: [Reward!] @derivedFrom(field: "member")
+	proposal: [Proposal!] @derivedFrom(field: "proposer")
+	votes: [ProposalVote!] @derivedFrom(field: "member")
+	stakes: [ProposalStake!] @derivedFrom(field: "member")
+}
+
+enum RewardReason {
+	Contribution
+	Proposer
+	Voter
+	Staker
+	Bounty
+}
+
+enum RewardType {
+	Reputation
+	Token
+	ETH
+	External
+}
+
+type Reward @entity {
+	id: ID!
+	createdAt: BigInt!
+	dao: DAO!
+	member: Member!
+	proposal: Proposal!
+	reason: RewardReason!
+	type: RewardType!
+	tokenAddress: Bytes
+	amount: BigInt
+	redeemed: BigInt!
+}

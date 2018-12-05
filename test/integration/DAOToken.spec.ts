@@ -1,4 +1,12 @@
-import { getContractAddresses, getOptions, getWeb3, hashLength, nullParamsHash, padZeros, sendQuery } from './util';
+import {
+  getContractAddresses,
+  getOptions,
+  getWeb3,
+  hashLength,
+  nullParamsHash,
+  padZeros,
+  sendQuery,
+} from './util';
 
 const DAOToken = require('@daostack/arc/build/contracts/DAOToken.json');
 
@@ -11,7 +19,7 @@ describe('DAOToken', () => {
     web3 = await getWeb3();
     addresses = getContractAddresses();
     opts = await getOptions(web3);
-    daotoken = new web3.eth.Contract(DAOToken.abi, addresses.DAOToken, opts);
+    daotoken = new web3.eth.Contract(DAOToken.abi, addresses.NativeToken, opts);
   });
 
   it('Sanity', async () => {
@@ -26,7 +34,9 @@ describe('DAOToken', () => {
     txs.push(await daotoken.methods.burn('1').send());
     txs.push(await daotoken.methods.transfer(accounts[3].address, '50').send());
     txs.push(await daotoken.methods.approve(accounts[3].address, '50').send());
-    txs.push(await daotoken.methods.transferOwnership(accounts[1].address).send());
+    txs.push(
+      await daotoken.methods.transferOwnership(accounts[1].address).send(),
+    );
 
     txs = txs.map(({ transactionHash }) => transactionHash);
 
@@ -38,7 +48,6 @@ describe('DAOToken', () => {
       }
     }`);
 
-    expect(tokenContracts.length).toEqual(1);
     expect(tokenContracts).toContainEqual({
       address: daotoken.options.address.toLowerCase(),
       totalSupply: '398',
@@ -78,6 +87,5 @@ describe('DAOToken', () => {
       to: accounts[3].address.toLowerCase(),
       value: '50',
     });
-
   }, 20000);
 });

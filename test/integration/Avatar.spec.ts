@@ -36,13 +36,12 @@ describe('Avatar', () => {
       }
     }`);
 
-    expect(avatarContracts.length).toEqual(2);
     expect(avatarContracts).toContainEqual({
       id: addresses.Avatar.toLowerCase(),
       address: addresses.Avatar.toLowerCase(),
       name: 'TESTDAO',
-      nativeToken: addresses.DAOToken.toLowerCase(),
-      nativeReputation: addresses.Reputation.toLowerCase(),
+      nativeToken: addresses.NativeToken.toLowerCase(),
+      nativeReputation: addresses.NativeReputation.toLowerCase(),
       balance: '1',
       owner: accounts[0].address.toLowerCase(),
     });

@@ -24,7 +24,7 @@ import {
   VoteProposal,
 } from '../../types/GenesisProtocol/GenesisProtocol';
 
-import { addition, concat } from '../../utils';
+import { concat, eventId } from '../../utils';
 
 import {
   GenesisProtocolExecuteProposal,
@@ -36,23 +36,31 @@ import {
   GenesisProtocolVote,
 } from '../../types/schema';
 
+import * as domain from '../../domain';
+
 export function handleNewProposal(event: NewProposal): void {
+  domain.handleNewProposal(event);
+
   let ent = new GenesisProtocolProposal();
-  ent.proposalId = event.params._proposalId.toHex();
+  ent.id = event.params._proposalId.toHex();
+  ent.proposalId = event.params._proposalId;
   ent.submittedTime = event.block.timestamp;
   ent.proposer = event.params._proposer;
   ent.daoAvatarAddress = event.params._organization;
   ent.numOfChoices = event.params._numOfChoices;
 
-  store.set('GenesisProtocolProposal', event.params._proposalId.toHex(), ent);
+  store.set('GenesisProtocolProposal', ent.id, ent);
 }
 
 export function handleVoteProposal(event: VoteProposal): void {
+  domain.handleVoteProposal(event);
+
   let ent = new GenesisProtocolVote();
   let uniqueId = concat(event.params._proposalId, event.params._voter).toHex();
 
   let vote = store.get('GenesisProtocolVote', uniqueId) as GenesisProtocolVote;
   if (vote == null) {
+    ent.id = uniqueId;
     ent.avatarAddress = event.params._organization;
     ent.reputation = event.params._reputation;
     ent.voterAddress = event.params._voter;
@@ -60,7 +68,7 @@ export function handleVoteProposal(event: VoteProposal): void {
     ent.proposalId = event.params._proposalId.toHex();
   } else {
     // Is it possible someone will use 50% for one voteOption and rest for the other
-    vote.reputation = addition(vote.reputation, event.params._reputation);
+    vote.reputation = vote.reputation.plus(event.params._reputation);
     store.set('GenesisProtocolVote', uniqueId, vote);
     return;
   }
@@ -69,6 +77,8 @@ export function handleVoteProposal(event: VoteProposal): void {
 }
 
 export function handleStake(event: Stake): void {
+  domain.handleStake(event);
+
   let ent = new GenesisProtocolStake();
   let uniqueId = concat(event.params._proposalId, event.params._staker).toHex();
 
@@ -78,6 +88,7 @@ export function handleStake(event: Stake): void {
   ) as GenesisProtocolStake;
 
   if (stake == null) {
+    ent.id = uniqueId;
     ent.avatarAddress = event.params._organization;
     ent.stakeAmount = event.params._amount;
     ent.stakerAddress = event.params._staker;
@@ -85,7 +96,7 @@ export function handleStake(event: Stake): void {
     ent.proposalId = event.params._proposalId.toHex();
   } else {
     // Is it possible someone will use 50% for one voteOption and rest for the other
-    stake.stakeAmount = addition(stake.stakeAmount, event.params._amount);
+    stake.stakeAmount = stake.stakeAmount.plus(event.params._amount);
     store.set('GenesisProtocolStake', uniqueId, stake);
     return;
   }
@@ -126,15 +137,18 @@ export function handleGPExecuteProposal(event: GPExecuteProposal): void {
     .toI32();
   genesisProtocolGPExecuteProposal.contract = event.address;
   genesisProtocolGPExecuteProposal.proposalId = event.params._proposalId;
-  genesisProtocolGPExecuteProposal.txHash = event.transaction.hash.toHex();
+  genesisProtocolGPExecuteProposal.txHash = event.transaction.hash;
+  genesisProtocolGPExecuteProposal.id = eventId(event);
   store.set(
     'GenesisProtocolGPExecuteProposal',
-    event.transaction.hash.toHex(),
+    genesisProtocolGPExecuteProposal.id,
     genesisProtocolGPExecuteProposal,
   );
 }
 
 export function handleExecuteProposal(event: ExecuteProposal): void {
+  domain.handleExecuteProposal(event);
+
   let proposal = store.get(
     'GenesisProtocolProposal',
     event.params._proposalId.toHex(),
@@ -160,10 +174,11 @@ export function handleExecuteProposal(event: ExecuteProposal): void {
   genesisProtocolExecuteProposal.proposalId = event.params._proposalId;
   genesisProtocolExecuteProposal.totalReputation =
     event.params._totalReputation;
-  genesisProtocolExecuteProposal.txHash = event.transaction.hash.toHex();
+  genesisProtocolExecuteProposal.txHash = event.transaction.hash;
+  genesisProtocolExecuteProposal.id = eventId(event);
   store.set(
     'GenesisProtocolExecuteProposal',
-    event.transaction.hash.toHex(),
+    genesisProtocolExecuteProposal.id,
     genesisProtocolExecuteProposal,
   );
 }
@@ -229,10 +244,11 @@ function updateRedemption(
   ) as GenesisProtocolRedemption;
   if (redemption == null) {
     redemption = new GenesisProtocolRedemption();
+    redemption.id = uniqueId;
     redemption.redeemer = beneficiary;
     redemption.proposalId = proposalId.toHex();
     redemption.rewardId = rewardId.toHex();
-    store.set('GenesisProtocolRedemption', uniqueId, redemption);
+    store.set('GenesisProtocolRedemption', redemption.id, redemption);
   }
 
   let reward = store.get(
@@ -245,12 +261,12 @@ function updateRedemption(
     reward.type = rewardString.toString();
     reward.amount = amount;
 
-    store.set('GenesisProtocolReward', rewardId.toHex(), reward);
+    store.set('GenesisProtocolReward', reward.id, reward);
   }
 }
 
 function state(proposalId: Bytes, address: Address): BigInt {
-  let genesisProtocol = new SmartContract('GenesisProtocol', address);
+  let genesisProtocol = GenesisProtocol.bind(address);
   let result = genesisProtocol.call('state', [
     EthereumValue.fromFixedBytes(proposalId),
   ]);

@@ -2,9 +2,8 @@ node_modules
 dist
 *.log
 subgraph.yaml
-docker-compose.yml
-config.json
+migration.json
 abis
 yarn.lock
 src/types
-schema.graphql
+/schema.graphql

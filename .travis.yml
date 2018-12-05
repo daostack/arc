@@ -1,35 +1,23 @@
 language: node_js
 node_js:
-  - "10.13.0"
+  - '10.13.0'
 
 sudo: required
 
 services:
   - docker
-
-cache: npm
 addons:
   apt:
     packages:
       - docker-ce
 
-before_install:
-  - sudo apt-get install libsecret-1-dev
-before_script:
-
 install:
   - docker --version
   - docker-compose --version
-  - sudo service postgresql stop
-  - while sudo lsof -Pi :5432 -sTCP:LISTEN -t; do sleep 1; done
-  - npm ci
-  - npm run configure:development
-  - npm run codegen
 
 script:
-  - sudo docker-compose build subgraph
-  - sudo docker-compose run subgraph test
-  - sudo docker-compose run subgraph lint
+  - npm run docker lint
+  - npm run docker test
 
 after_script:
-  - docker-compose down
+  - npm run docker:stop
