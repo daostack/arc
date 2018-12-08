@@ -248,12 +248,9 @@ contract('Auction4Reputation', accounts => {
         var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(3001);
         await testSetup.auction4Reputation.redeem(accounts[0],id);
-        try {
-          await testSetup.auction4Reputation.redeem(accounts[0],id);
-          assert(false, "cannot redeem twice");
-        } catch(error) {
-          helpers.assertVMException(error);
-        }
+        tx = await testSetup.auction4Reputation.redeem(accounts[0],id);
+        assert.equal(tx.logs.length,0);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+100);
     });
 
     it("redeem before auctionEndTime should revert", async () => {
@@ -346,6 +343,19 @@ contract('Auction4Reputation', accounts => {
         tx = await testSetup.auction4Reputation.redeem.call(accounts[0],id);
         const reputation = await testSetup.auction4Reputation.redeem.call(accounts[0], id);
         assert.equal(reputation,100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
+    });
+
+    it("get earned reputation with zero score returns zero", async () => {
+        let testSetup = await setup(accounts);
+        await testSetup.biddingToken.transfer(accounts[1],web3.utils.toWei('3', "ether"));
+        await testSetup.biddingToken.approve(testSetup.auction4Reputation.address,web3.utils.toWei('100', "ether"),{from:accounts[1]});
+        let tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('3', "ether"),{from:accounts[1]});
+        var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
+        await helpers.increaseTime(3001);
+        await testSetup.auction4Reputation.redeem.call(accounts[0],id);
+        const reputation = await testSetup.auction4Reputation.redeem.call(accounts[0], id);
+        assert.equal(reputation,0);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
     });
 });

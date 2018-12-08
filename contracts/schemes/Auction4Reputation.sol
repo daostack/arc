@@ -93,14 +93,17 @@ contract Auction4Reputation is Ownable {
         require(now > redeemEnableTime, "now > redeemEnableTime");
         Auction storage auction = auctions[_auctionId];
         uint bid = auction.bids[_beneficiary];
-        require(bid > 0, "bidding amount should be > 0");
-        auction.bids[_beneficiary] = 0;
-        int256 repRelation = int216(bid).toReal().mul(int216(auctionReputationReward).toReal());
-        reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
-        // check that the reputation is sum zero
-        reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
-        emit Redeem(_auctionId, _beneficiary, reputation);
+        if (bid <= 0) {
+            reputation = 0;
+        } else {
+            auction.bids[_beneficiary] = 0;
+            int256 repRelation = int216(bid).toReal().mul(int216(auctionReputationReward).toReal());
+            reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
+            // check that the reputation is sum zero
+            reputationRewardLeft = reputationRewardLeft.sub(reputation);
+            require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
+            emit Redeem(_auctionId, _beneficiary, reputation);
+        }
     }
 
     /**

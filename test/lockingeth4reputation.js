@@ -189,12 +189,9 @@ contract('LockingEth4Reputation', accounts => {
         await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(3001);
         await testSetup.lockingEth4Reputation.redeem(accounts[0]);
-        try {
-          await testSetup.lockingEth4Reputation.redeem(accounts[0]);
-          assert(false, "cannot redeem twice");
-        } catch(error) {
-          helpers.assertVMException(error);
-        }
+        let tx = await testSetup.lockingEth4Reputation.redeem(accounts[0]);
+        assert.equal(tx.logs.length,0);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+100);
     });
 
     it("redeem before lockingEndTime should revert", async () => {
@@ -288,6 +285,14 @@ contract('LockingEth4Reputation', accounts => {
         await helpers.increaseTime(3001);
         const reputation = await testSetup.lockingEth4Reputation.redeem.call(accounts[0]);
         assert.equal(reputation,100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
+    });
+
+    it("get earned reputation with zero score returns zero", async () => {
+        let testSetup = await setup(accounts);
+        await helpers.increaseTime(3001);
+        const reputation = await testSetup.lockingEth4Reputation.redeem.call(accounts[0]);
+        assert.equal(reputation,0);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
     });
 });

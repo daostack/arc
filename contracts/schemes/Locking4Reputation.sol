@@ -48,17 +48,20 @@ contract Locking4Reputation {
     function redeem(address _beneficiary) public returns(uint reputation) {
         // solium-disable-next-line security/no-block-members
         require(block.timestamp > redeemEnableTime, "now > redeemEnableTime");
-        require(scores[_beneficiary] > 0, "score should be > 0");
         uint score = scores[_beneficiary];
-        scores[_beneficiary] = 0;
-        int256 repRelation = int216(score).toReal().mul(int216(reputationReward).toReal());
-        reputation = uint256(repRelation.div(int216(totalScore).toReal()).fromReal());
+        if (score <= 0) {
+            reputation = 0;
+        } else {
+            scores[_beneficiary] = 0;
+            int256 repRelation = int216(score).toReal().mul(int216(reputationReward).toReal());
+            reputation = uint256(repRelation.div(int216(totalScore).toReal()).fromReal());
 
-        //check that the reputation is sum zero
-        reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
+            //check that the reputation is sum zero
+            reputationRewardLeft = reputationRewardLeft.sub(reputation);
+            require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
 
-        emit Redeem(_beneficiary, reputation);
+            emit Redeem(_beneficiary, reputation);
+        }
     }
 
     /**

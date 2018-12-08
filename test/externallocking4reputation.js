@@ -165,12 +165,9 @@ contract('ExternalLocking4Reputation', accounts => {
         await testSetup.externalLocking4Reputation.claim(helpers.NULL_ADDRESS);
         await helpers.increaseTime(3001);
         await testSetup.externalLocking4Reputation.redeem(accounts[0]);
-        try {
-          await testSetup.externalLocking4Reputation.redeem(accounts[0]);
-          assert(false, "cannot redeem twice");
-        } catch(error) {
-          helpers.assertVMException(error);
-        }
+        let tx = await testSetup.externalLocking4Reputation.redeem(accounts[0]);
+        assert.equal(tx.logs.length,0);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+100);
     });
 
     it("redeem before lockingEndTime should revert", async () => {
@@ -272,6 +269,14 @@ contract('ExternalLocking4Reputation', accounts => {
         await helpers.increaseTime(3001);
         const reputation = await testSetup.externalLocking4Reputation.redeem.call(accounts[0]);
         assert.equal(reputation,100);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
+    });
+
+    it("get earned reputation with zero score returns zero", async () => {
+        let testSetup = await setup(accounts);
+        await helpers.increaseTime(3001);
+        const reputation = await testSetup.externalLocking4Reputation.redeem.call(accounts[0]);
+        assert.equal(reputation,0);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
     });
 });
