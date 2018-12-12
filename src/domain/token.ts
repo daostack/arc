@@ -5,8 +5,7 @@ import { Token } from '../types/schema';
 export function getToken(id: string): Token {
   let token = store.get('Token', id) as Token;
   if (token == null) {
-    token = new Token();
-    token.id = id;
+    token = new Token(id);
   }
 
   return token;

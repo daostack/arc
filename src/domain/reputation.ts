@@ -5,8 +5,7 @@ import { Rep } from '../types/schema';
 export function getReputation(id: string): Rep {
   let reputation = store.get('Rep', id) as Rep;
   if (reputation == null) {
-    reputation = new Rep();
-    reputation.id = id;
+    reputation = new Rep(id);
   }
 
   return reputation;

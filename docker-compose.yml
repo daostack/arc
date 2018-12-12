@@ -8,15 +8,16 @@ services:
       - ganache
     environment:
       ethereum: http://ganache:8545
-      test_mnemonic: behave pipe turkey animal voyage dial relief menu blush match jeans general
-      node_http: http://graph-node:8000/by-name/daostack/graphql
-      node_ws: http://graph-node:8001/by-name/daostack
+      test_mnemonic: myth like bonus scare over problem client lizard pioneer submit female collect
+      node_http: http://graph-node:8000/subgraphs/name/daostack/graphql
+      node_ws: http://graph-node:8001/subgraphs/name/daostack
       node_rpc: http://graph-node:8020
       ipfs_host: ipfs
       ipfs_port: 5001
-      WAIT_HOSTS: ipfs:5001, graph-node:8020
+      WAIT_HOSTS: ipfs:5001, graph-node:8020, ganache:8545
+
   graph-node:
-    image: graphprotocol/graph-node:v0.4.1
+    image: graphprotocol/graph-node:v0.5.0
     ports:
       - 8000:8000
       - 8001:8001
@@ -32,6 +33,7 @@ services:
       postgres_db: postgres
       ipfs: ipfs:5001
       ethereum: development:http://ganache:8545
+
   ipfs:
     image: ipfs/go-ipfs
     ports:
@@ -43,9 +45,10 @@ services:
     environment:
       POSTGRES_PASSWORD: 'letmein'
   ganache:
-    image: trufflesuite/ganache-cli:v6.2.1
+    image: trufflesuite/ganache-cli:v6.2.3
     ports:
       - 8545:8545
     command: >
-      --deterministic --mnemonic "behave pipe turkey animal voyage dial relief menu blush match jeans general"
-      --gasLimit 8000000 --networkId ganache
+      --deterministic
+      --gasLimit 8000000
+      --networkId ganache

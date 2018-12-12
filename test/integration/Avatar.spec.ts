@@ -39,11 +39,11 @@ describe('Avatar', () => {
     expect(avatarContracts).toContainEqual({
       id: addresses.Avatar.toLowerCase(),
       address: addresses.Avatar.toLowerCase(),
-      name: 'TESTDAO',
+      name: 'Genesis Test',
       nativeToken: addresses.NativeToken.toLowerCase(),
       nativeReputation: addresses.NativeReputation.toLowerCase(),
       balance: '1',
-      owner: accounts[0].address.toLowerCase(),
+      owner: addresses.UController.toLowerCase(),
     });
   }, 20000);
 });

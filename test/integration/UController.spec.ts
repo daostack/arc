@@ -30,12 +30,17 @@ describe('UController', () => {
       addresses.UController,
       opts,
     );
-    reputation = new web3.eth.Contract(
-      Reputation.abi,
-      addresses.NativeReputation,
-      opts,
-    );
-    daoToken = new web3.eth.Contract(DAOToken.abi, addresses.NativeToken, opts);
+    reputation = await new web3.eth.Contract(Reputation.abi, undefined, opts).deploy({
+      data: Reputation.bytecode,
+      arguments: []
+    }).send();
+
+    daoToken = await new web3.eth.Contract(DAOToken.abi, undefined, opts)
+    .deploy({
+      data: DAOToken.bytecode,
+      arguments: ['TEST', 'TST', 1000000000]
+    })
+    .send();
   });
 
   it('Sanity', async () => {

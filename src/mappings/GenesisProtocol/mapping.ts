@@ -1,5 +1,4 @@
 import 'allocator/arena';
-export { allocate_memory };
 
 import {
   Address,
@@ -41,8 +40,7 @@ import * as domain from '../../domain';
 export function handleNewProposal(event: NewProposal): void {
   domain.handleNewProposal(event);
 
-  let ent = new GenesisProtocolProposal();
-  ent.id = event.params._proposalId.toHex();
+  let ent = new GenesisProtocolProposal(event.params._proposalId.toHex());
   ent.proposalId = event.params._proposalId;
   ent.submittedTime = event.block.timestamp;
   ent.proposer = event.params._proposer;
@@ -54,13 +52,12 @@ export function handleNewProposal(event: NewProposal): void {
 
 export function handleVoteProposal(event: VoteProposal): void {
   domain.handleVoteProposal(event);
-
-  let ent = new GenesisProtocolVote();
   let uniqueId = concat(event.params._proposalId, event.params._voter).toHex();
+  let ent = new GenesisProtocolVote(uniqueId);
+  
 
   let vote = store.get('GenesisProtocolVote', uniqueId) as GenesisProtocolVote;
   if (vote == null) {
-    ent.id = uniqueId;
     ent.avatarAddress = event.params._organization;
     ent.reputation = event.params._reputation;
     ent.voterAddress = event.params._voter;
@@ -78,9 +75,9 @@ export function handleVoteProposal(event: VoteProposal): void {
 
 export function handleStake(event: Stake): void {
   domain.handleStake(event);
-
-  let ent = new GenesisProtocolStake();
   let uniqueId = concat(event.params._proposalId, event.params._staker).toHex();
+
+  let ent = new GenesisProtocolStake(uniqueId);
 
   let stake = store.get(
     'GenesisProtocolStake',
@@ -88,7 +85,6 @@ export function handleStake(event: Stake): void {
   ) as GenesisProtocolStake;
 
   if (stake == null) {
-    ent.id = uniqueId;
     ent.avatarAddress = event.params._organization;
     ent.stakeAmount = event.params._amount;
     ent.stakerAddress = event.params._staker;
@@ -131,14 +127,13 @@ export function handleGPExecuteProposal(event: GPExecuteProposal): void {
     proposal,
   );
 
-  let genesisProtocolGPExecuteProposal = new GenesisProtocolGPExecuteProposal();
+  let genesisProtocolGPExecuteProposal = new GenesisProtocolGPExecuteProposal(eventId(event));
   genesisProtocolGPExecuteProposal.executionState = event.parameters[1].value
     .toBigInt()
     .toI32();
   genesisProtocolGPExecuteProposal.contract = event.address;
   genesisProtocolGPExecuteProposal.proposalId = event.params._proposalId;
   genesisProtocolGPExecuteProposal.txHash = event.transaction.hash;
-  genesisProtocolGPExecuteProposal.id = eventId(event);
   store.set(
     'GenesisProtocolGPExecuteProposal',
     genesisProtocolGPExecuteProposal.id,
@@ -167,7 +162,7 @@ export function handleExecuteProposal(event: ExecuteProposal): void {
     proposal,
   );
 
-  let genesisProtocolExecuteProposal = new GenesisProtocolExecuteProposal();
+  let genesisProtocolExecuteProposal = new GenesisProtocolExecuteProposal(eventId(event));
   genesisProtocolExecuteProposal.decision = event.params._decision;
   genesisProtocolExecuteProposal.contract = event.address;
   genesisProtocolExecuteProposal.organization = event.params._organization;
@@ -175,7 +170,6 @@ export function handleExecuteProposal(event: ExecuteProposal): void {
   genesisProtocolExecuteProposal.totalReputation =
     event.params._totalReputation;
   genesisProtocolExecuteProposal.txHash = event.transaction.hash;
-  genesisProtocolExecuteProposal.id = eventId(event);
   store.set(
     'GenesisProtocolExecuteProposal',
     genesisProtocolExecuteProposal.id,
@@ -243,8 +237,7 @@ function updateRedemption(
     uniqueId,
   ) as GenesisProtocolRedemption;
   if (redemption == null) {
-    redemption = new GenesisProtocolRedemption();
-    redemption.id = uniqueId;
+    redemption = new GenesisProtocolRedemption(uniqueId);
     redemption.redeemer = beneficiary;
     redemption.proposalId = proposalId.toHex();
     redemption.rewardId = rewardId.toHex();
@@ -256,8 +249,7 @@ function updateRedemption(
     rewardId.toHex(),
   ) as GenesisProtocolReward;
   if (reward == null) {
-    reward = new GenesisProtocolReward();
-    reward.id = rewardId.toHex();
+    reward = new GenesisProtocolReward(rewardId.toHex());
     reward.type = rewardString.toString();
     reward.amount = amount;
 

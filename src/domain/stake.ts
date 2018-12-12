@@ -5,8 +5,7 @@ import { getMember } from './member';
 export function getStake(id: string): ProposalStake {
   let stake = store.get('ProposalStake', id) as ProposalStake;
   if (stake == null) {
-    stake = new ProposalStake();
-    stake.id = id;
+    stake = new ProposalStake(id);
   }
   return stake;
 }

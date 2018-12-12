@@ -5,14 +5,39 @@ DAOstack subgraph for [TheGraph](https://thegraph.com/) project.
 ## Getting started
 
 1 `git clone https://github.com/daostack/subgraph.git && cd subgraph`
+1. `npm install`
 
-2. `npm install`
+## Testing
+
+If you have changed `package.json` (or pulled a new version from github), you need to rebuild the containers:
+```sh
+docker-compose up build
+```
+
+Run tests in the docker container:
+```sh
+npm run docker test
+```
+
+Or, more explicitly, you can run the tests in the host container:
+
+```sh
+docker-compose up graph-node
+npm run test # in a new terminal
+docker-compose down -v
+```
+The tests are run with jest, which takes a number of options that may be useful when developing:
+```sh
+npm run test -- --watch # re-run the tests after each change
+npm run test -- test/integration/Avatar.spec.js # run a single test file
+```
+
+
+## Commands
 
 All npm scripts can be called within a container using `docker-compose` with all dependencies and services set up:
 
 `npm run docker <command>`
-
-## Commands
 
 1. `migrate` - migrate contracts to ganache and write result to `migration.json`.
 2. `codegen` - (requires `migration.json`) automatically generate abi, subgraph, schema and type definitions for
@@ -35,9 +60,9 @@ Docker commands (requires installing [`docker`](https://docs.docker.com/v17.12/i
 
 After running a command with docker-compose, the following endpoints will be exposed on your local machine:
 
-- `http://localhost:8000/by-name/daostack` - GraphiQL graphical user interface.
-- `http://localhost:8000/by-name/daostack/graphql` - GraphQL api endpoint.
-- `http://localhost:8001/by-name/daostack` - graph-node's websockets endpoint
+- `http://localhost:8000/subgraphs/name/daostack` - GraphiQL graphical user interface.
+- `http://localhost:8000/subgraphs/name/daostack/graphql` - GraphQL api endpoint.
+- `http://localhost:8001/subgraphs/name/daostack` - graph-node's websockets endpoint
 - `http://localhost:8020` - graph-node's RPC endpoint
 - `http://localhost:5001` - ipfs endpoint.
 - (if using development) `http://localhost:8545` - ganache RPC endpoint.
@@ -60,4 +85,4 @@ In order to add support for a new contract follow these steps:
          map of solidity event signatures to event handlers in mapping code.
    4. `test/integration/<contract name>.spec.ts`
 
-3. (Optionally) add a deployment step for your contract in `ops/migrate.js` that will run before testing.
+3. (Optionally) add a deployment step for your contract in `ops/deployDaoStack.js` that will run before testing.

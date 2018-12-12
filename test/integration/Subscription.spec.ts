@@ -19,7 +19,7 @@ describe('Subscriptions', () => {
     opts = await getOptions(web3);
     reputation = new web3.eth.Contract(
       Reputation.abi,
-      addresses.NativeReputation,
+      addresses.Reputation,
       opts,
     );
   });

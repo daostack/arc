@@ -8,8 +8,7 @@ import { UController } from '../types/UController/UController';
 export function getDAO(id: string): DAO {
   let dao = store.get('DAO', id) as DAO;
   if (dao == null) {
-    dao = new DAO();
-    dao.id = id;
+    dao = new DAO(id);
   }
 
   return dao;
