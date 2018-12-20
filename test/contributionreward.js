@@ -53,7 +53,7 @@ const setupContributionRewardParams = async function(
   var contributionRewardParams = new ContributionRewardParams();
   contributionRewardParams.orgNativeTokenFee =  orgNativeTokenFee;
   if (genesisProtocol === true) {
-    contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,avatar,0);
+    contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,avatar,helpers.NULL_ADDRESS);
     await contributionReward.setParameters(
                                            contributionRewardParams.orgNativeTokenFee,
                                            contributionRewardParams.votingMachine.params,
@@ -529,17 +529,14 @@ contract('ContributionReward', accounts => {
                                                                     testSetup.standardTokenMock.address,
                                                                     otherAvatar.address
                                                                   );
-
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,{from:accounts[0]});
-
      await helpers.increaseTime(periodLength+1);
      var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
-
      var redeemRewards = await arcUtils.redeem.call(proposalId,testSetup.org.avatar.address,accounts[0]);
-     assert.equal(redeemRewards[0][3],100); //redeemRewards[0] gpRewards
-     assert.equal(redeemRewards[0][4],61);
+     assert.equal(redeemRewards[0][1],100); //redeemRewards[0] gpRewards
+     assert.equal(redeemRewards[0][2],60);
      assert.equal(redeemRewards[1][0],0); //daoBountyRewards
      assert.equal(redeemRewards[1][1],0); //daoBountyRewards
      assert.equal(redeemRewards[2],false); //isExecuted
@@ -558,8 +555,7 @@ contract('ContributionReward', accounts => {
      var reputation = await testSetup.org.reputation.balanceOf(accounts[0]);
      var reputationGainAsVoter =  0;
      var proposingRepRewardConstA=60;
-     var proposingRepRewardConstB=1;
-     var reputationGainAsProposer = (proposingRepRewardConstA*1000 + proposingRepRewardConstB*1000)/1000;
+     var reputationGainAsProposer = proposingRepRewardConstA;
      assert.equal(reputation, 1000+reputationGainAsVoter + reputationGainAsProposer);
     });
     it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer for negative proposal", async function() {

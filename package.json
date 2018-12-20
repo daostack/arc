@@ -81,7 +81,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra": "0.0.0-alpha.10",
+    "@daostack/infra": "0.0.0-alpha.11",
     "ethereumjs-abi": "^0.6.5",
     "openzeppelin-solidity": "1.12.0"
   },

@@ -28,10 +28,8 @@ contract Redeemer {
     * @param _beneficiary beneficiary
     * @return gpRewards array
     *          gpRewards[0] - stakerTokenAmount
-    *          gpRewards[1] - stakerReputationAmount
-    *          gpRewards[2] - voterTokenAmount
-    *          gpRewards[3] - voterReputationAmount
-    *          gpRewards[4] - proposerReputationAmount
+    *          gpRewards[1] - voterReputationAmount
+    *          gpRewards[2] - proposerReputationAmount
     * @return gpDaoBountyReward array
     *         gpDaoBountyReward[0] - staker dao bounty reward -
     *                                will be zero for the case there is not enough tokens in avatar for the reward.
@@ -47,7 +45,7 @@ contract Redeemer {
     */
     function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
     external
-    returns(uint[5] gpRewards,
+    returns(uint[3] gpRewards,
             uint[2] gpDaoBountyReward,
             bool executed,
             uint256 winningVote,
@@ -58,14 +56,15 @@ contract Redeemer {
     {
         GenesisProtocol.ProposalState pState = genesisProtocol.state(_proposalId);
         // solium-disable-next-line operator-whitespace
-        if ((pState == GenesisProtocol.ProposalState.PreBoosted)||
-            (pState == GenesisProtocol.ProposalState.Boosted)||
-            (pState == GenesisProtocol.ProposalState.QuietEndingPeriod)) {
+        if ((pState == GenesisProtocolLogic.ProposalState.Queued)||
+            (pState == GenesisProtocolLogic.ProposalState.PreBoosted)||
+            (pState == GenesisProtocolLogic.ProposalState.Boosted)||
+            (pState == GenesisProtocolLogic.ProposalState.QuietEndingPeriod)) {
             executed = genesisProtocol.execute(_proposalId);
         }
         pState = genesisProtocol.state(_proposalId);
-        if ((pState == GenesisProtocol.ProposalState.Executed) ||
-            (pState == GenesisProtocol.ProposalState.Closed)) {
+        if ((pState == GenesisProtocolLogic.ProposalState.Executed) ||
+            (pState == GenesisProtocolLogic.ProposalState.ExpiredInQueue)) {
             gpRewards = genesisProtocol.redeem(_proposalId,_beneficiary);
             (gpDaoBountyReward[0],gpDaoBountyReward[1]) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
             winningVote = genesisProtocol.winningVote(_proposalId);
