@@ -61,7 +61,7 @@ contract('Auction4Reputation', accounts => {
         await auction4Reputation.initialize(accounts[0],
                                                300,
                                                0,
-                                               3000,
+                                               1000,
                                                0,
                                                3000,
                                               accounts[0],
@@ -73,19 +73,37 @@ contract('Auction4Reputation', accounts => {
       }
     });
 
-    it("initialize _redeemEnableTime < _auctionsEndTime is not allowed", async () => {
+    it("initialize auctionPeriod <= 15 seconds  is not allowed", async () => {
+      var auction4Reputation = await Auction4Reputation.new();
+      try {
+        await auction4Reputation.initialize(accounts[0],
+                                               300,
+                                               0,
+                                               15,
+                                               3,
+                                               3000,
+                                              accounts[0],
+                                              accounts[0],
+                                              {gas :constants.ARC_GAS_LIMIT});
+        assert(false, "numberOfAuctions = 0  is not allowed");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("initialize _redeemEnableTime < auctionsEndTime is not allowed", async () => {
       var auction4Reputation = await Auction4Reputation.new();
       try {
         await auction4Reputation.initialize(accounts[0],
                                                100,
                                                0,
-                                               3000,
+                                               1000,
                                                1,
-                                               3000-1,
+                                               1000-1,
                                               accounts[0],
                                               accounts[0],
                                               {gas :constants.ARC_GAS_LIMIT});
-        assert(false, "numberOfAuctions = 0  is not allowed");
+        assert(false, "_redeemEnableTime < auctionsEndTime is not allowed");
       } catch(error) {
         helpers.assertVMException(error);
       }
@@ -97,9 +115,9 @@ contract('Auction4Reputation', accounts => {
         await auction4Reputation.initialize(accounts[0],
                                                100,
                                                0,
-                                               3000,
+                                               1000,
                                                1,
-                                               3000,
+                                               1000,
                                               accounts[0],
                                               accounts[0],
                                               {gas :constants.ARC_GAS_LIMIT,from:accounts[1]});
@@ -110,9 +128,9 @@ contract('Auction4Reputation', accounts => {
       await auction4Reputation.initialize(accounts[0],
                                              100,
                                              0,
-                                             3000,
+                                             1000,
                                              1,
-                                             3000,
+                                             1000,
                                             accounts[0],
                                             accounts[0],
                                           {gas :constants.ARC_GAS_LIMIT,from:accounts[0]});

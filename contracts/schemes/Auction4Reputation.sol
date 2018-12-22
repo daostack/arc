@@ -68,7 +68,8 @@ contract Auction4Reputation is Ownable {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         require(_numberOfAuctions > 0, "number of auctions cannot be zero");
-        require(_auctionPeriod > 0, "auctionPeriod should be > 0");
+        //_auctionPeriod should be greater than block interval
+        require(_auctionPeriod > 15, "auctionPeriod should be > 15");
         auctionPeriod = _auctionPeriod;
         auctionsEndTime = _auctionsStartTime + _auctionPeriod.mul(_numberOfAuctions);
         require(_redeemEnableTime >= auctionsEndTime, "_redeemEnableTime >= auctionsEndTime");
