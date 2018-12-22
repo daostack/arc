@@ -22,11 +22,12 @@ const setup = async function (accounts,
    testSetup.auctionsStartTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsStartTime;
    testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
    testSetup.auction4Reputation = await Auction4Reputation.new();
+   testSetup.auctionPeriod = (testSetup.auctionsEndTime - testSetup.auctionsStartTime)/3;
    if (_initialize === true ) {
      await testSetup.auction4Reputation.initialize(testSetup.org.avatar.address,
                                                      _auctionReputationReward,
                                                      testSetup.auctionsStartTime,
-                                                     testSetup.auctionsEndTime,
+                                                     testSetup.auctionPeriod,
                                                      _numberOfAuctions,
                                                      testSetup.redeemEnableTime,
                                                      testSetup.biddingToken.address,
@@ -45,13 +46,13 @@ contract('Auction4Reputation', accounts => {
       let testSetup = await setup(accounts);
 
       assert.equal(await testSetup.auction4Reputation.reputationRewardLeft(),300);
-      assert.equal(await testSetup.auction4Reputation.auctionsEndTime(),testSetup.auctionsEndTime);
+      assert.equal(await testSetup.auction4Reputation.auctionsEndTime(),testSetup.auctionsStartTime + testSetup.auctionPeriod*3);
       assert.equal(await testSetup.auction4Reputation.auctionsStartTime(),testSetup.auctionsStartTime);
       assert.equal(await testSetup.auction4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.auction4Reputation.token(),testSetup.biddingToken.address);
       assert.equal(await testSetup.auction4Reputation.numberOfAuctions(),3);
       assert.equal(await testSetup.auction4Reputation.wallet(),testSetup.org.avatar.address);
-      assert.equal(await testSetup.auction4Reputation.auctionPeriod(),(testSetup.auctionsEndTime-testSetup.auctionsStartTime)/3);
+      assert.equal(await testSetup.auction4Reputation.auctionPeriod(),testSetup.auctionPeriod);
     });
 
     it("initialize numberOfAuctions = 0  is not allowed", async () => {

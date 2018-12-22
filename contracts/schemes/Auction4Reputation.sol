@@ -44,8 +44,9 @@ contract Auction4Reputation is Ownable {
      * @param _auctionReputationReward the reputation reward per auction this contract will reward
      *        for the token locking
      * @param _auctionsStartTime auctions period start time
-     * @param _auctionsEndTime auctions period end time.
-     *        bidding is disable after this time.
+     * @param _auctionPeriod auctions period time.
+     *        auctionsEndTime is set to _auctionsStartTime + _auctionPeriod*_numberOfAuctions
+     *        bidding is disable after auctionsEndTime.
      * @param _numberOfAuctions number of auctions.
      * @param _redeemEnableTime redeem enable time .
      *        redeem reputation can be done after this time.
@@ -56,7 +57,7 @@ contract Auction4Reputation is Ownable {
         Avatar _avatar,
         uint _auctionReputationReward,
         uint _auctionsStartTime,
-        uint _auctionsEndTime,
+        uint _auctionPeriod,
         uint _numberOfAuctions,
         uint _redeemEnableTime,
         StandardToken _token,
@@ -66,15 +67,14 @@ contract Auction4Reputation is Ownable {
        {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
-        require(_redeemEnableTime >= _auctionsEndTime, "_redeemEnableTime >= _auctionsEndTime");
-        // number of auctions cannot be zero
-        // auctionsEndTime should be greater than auctionsStartTime
-        auctionPeriod = (_auctionsEndTime.sub(_auctionsStartTime)).div(_numberOfAuctions);
-        require(auctionPeriod > 0, "auctionPeriod should be > 0");
+        require(_numberOfAuctions > 0, "number of auctions cannot be zero");
+        require(_auctionPeriod > 0, "auctionPeriod should be > 0");
+        auctionPeriod = _auctionPeriod;
+        auctionsEndTime = _auctionsStartTime + _auctionPeriod.mul(_numberOfAuctions);
+        require(_redeemEnableTime >= auctionsEndTime, "_redeemEnableTime >= auctionsEndTime");
         token = _token;
         avatar = _avatar;
         auctionsStartTime = _auctionsStartTime;
-        auctionsEndTime = _auctionsEndTime;
         numberOfAuctions = _numberOfAuctions;
         wallet = _wallet;
         auctionReputationReward = _auctionReputationReward;
