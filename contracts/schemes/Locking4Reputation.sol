@@ -104,7 +104,7 @@ contract Locking4Reputation {
         locker.amount = _amount;
         // solium-disable-next-line security/no-block-members
         locker.releaseTime = now + _period;
-        totalLocked += _amount;
+        totalLocked = totalLocked.add(_amount);
         totalLockedLeft = totalLocked;
         uint score = _period.mul(_amount).mul(_numerator).div(_denominator);
         require(score>0,"score must me > 0");
