@@ -41,7 +41,7 @@ contract Auction4Reputation is Ownable {
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
-     * @param _reputationReward the total reputation this contract will reward
+     * @param _auctionReputationReward the reputation reward per auction this contract will reward
      *        for the token locking
      * @param _auctionsStartTime auctions period start time
      * @param _auctionsEndTime auctions period end time.
@@ -54,7 +54,7 @@ contract Auction4Reputation is Ownable {
      */
     function initialize(
         Avatar _avatar,
-        uint _reputationReward,
+        uint _auctionReputationReward,
         uint _auctionsStartTime,
         uint _auctionsEndTime,
         uint _numberOfAuctions,
@@ -77,8 +77,8 @@ contract Auction4Reputation is Ownable {
         auctionsEndTime = _auctionsEndTime;
         numberOfAuctions = _numberOfAuctions;
         wallet = _wallet;
-        auctionReputationReward = _reputationReward / _numberOfAuctions;
-        reputationRewardLeft = _reputationReward;
+        auctionReputationReward = _auctionReputationReward;
+        reputationRewardLeft = _auctionReputationReward.mul(_numberOfAuctions);
         redeemEnableTime = _redeemEnableTime;
     }
 

@@ -7,7 +7,7 @@ var Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
 
 
 const setup = async function (accounts,
-                             _repAllocation = 300,
+                             _auctionReputationReward = 100,
                              _auctionsStartTime = 0,
                              _auctionsEndTime = 3000,
                              _numberOfAuctions = 3,
@@ -24,7 +24,7 @@ const setup = async function (accounts,
    testSetup.auction4Reputation = await Auction4Reputation.new();
    if (_initialize === true ) {
      await testSetup.auction4Reputation.initialize(testSetup.org.avatar.address,
-                                                     _repAllocation,
+                                                     _auctionReputationReward,
                                                      testSetup.auctionsStartTime,
                                                      testSetup.auctionsEndTime,
                                                      _numberOfAuctions,
@@ -76,7 +76,7 @@ contract('Auction4Reputation', accounts => {
       var auction4Reputation = await Auction4Reputation.new();
       try {
         await auction4Reputation.initialize(accounts[0],
-                                               300,
+                                               100,
                                                0,
                                                3000,
                                                1,
@@ -94,7 +94,7 @@ contract('Auction4Reputation', accounts => {
       var auction4Reputation = await Auction4Reputation.new();
       try {
         await auction4Reputation.initialize(accounts[0],
-                                               300,
+                                               100,
                                                0,
                                                3000,
                                                1,
@@ -107,7 +107,7 @@ contract('Auction4Reputation', accounts => {
         helpers.assertVMException(error);
       }
       await auction4Reputation.initialize(accounts[0],
-                                             300,
+                                             100,
                                              0,
                                              3000,
                                              1,
@@ -121,7 +121,7 @@ contract('Auction4Reputation', accounts => {
       var auction4Reputation = await Auction4Reputation.new();
       try {
         await auction4Reputation.initialize(accounts[0],
-                                               300,
+                                               100,
                                                300,
                                                300,
                                                1,
@@ -138,7 +138,7 @@ contract('Auction4Reputation', accounts => {
       var auction4Reputation = await Auction4Reputation.new();
       try {
         await auction4Reputation.initialize(accounts[0],
-                                               300,
+                                               100,
                                                200,
                                                100,
                                                1,
@@ -182,7 +182,7 @@ contract('Auction4Reputation', accounts => {
     });
 
     it("bid without initialize should fail", async () => {
-      let testSetup = await setup(accounts,300,0,3000,3,3000,false);
+      let testSetup = await setup(accounts,100,0,3000,3,3000,false);
       try {
         await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         assert(false, "bid without initialize should fail");
@@ -270,7 +270,7 @@ contract('Auction4Reputation', accounts => {
     });
 
     it("redeem before redeemEnableTime should revert", async () => {
-        let testSetup = await setup(accounts,300,0,3000,3,4000,true);
+        let testSetup = await setup(accounts,100,0,3000,3,4000,true);
         var tx = await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"));
         var id = await helpers.getValueFromLogs(tx, '_auctionId',1);
         await helpers.increaseTime(3500);
@@ -325,7 +325,7 @@ contract('Auction4Reputation', accounts => {
         let testSetup = await setup(accounts);
         try {
              await testSetup.auction4Reputation.initialize(accounts[0],
-                                                              300,
+                                                              100,
                                                               200,
                                                               100,
                                                               1,
