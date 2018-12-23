@@ -98,13 +98,13 @@ contract Locking4Reputation {
         require(now >= lockingStartTime, "lock should start after lockingStartTime");
 
         lockingId = keccak256(abi.encodePacked(this, lockingsCounter));
-        lockingsCounter++;
+        lockingsCounter = lockingsCounter.add(1);
 
         Locker storage locker = lockers[_locker][lockingId];
         locker.amount = _amount;
         // solium-disable-next-line security/no-block-members
         locker.releaseTime = now + _period;
-        totalLocked += _amount;
+        totalLocked = totalLocked.add(_amount);
         totalLockedLeft = totalLocked;
         uint score = _period.mul(_amount).mul(_numerator).div(_denominator);
         require(score>0,"score must me > 0");

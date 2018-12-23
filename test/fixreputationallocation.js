@@ -75,6 +75,35 @@ contract('FixedReputationAllocation', accounts => {
           reputation = await testSetup.org.reputation.balanceOf(accounts[i]);
           assert.equal(reputation.toNumber(),tx.logs[0].args._amount);
       }
+
+    });
+
+    it("cannot redeem twice", async () => {
+      let testSetup = await setup(accounts);
+      let tx = await testSetup.fixedReputationAllocation.addBeneficiaries(accounts);
+      assert.equal(await testSetup.fixedReputationAllocation.numberOfBeneficiaries(),accounts.length);
+      assert.equal(await testSetup.fixedReputationAllocation.beneficiaryReward(),0);
+      await testSetup.fixedReputationAllocation.enable();
+      assert.equal(await testSetup.fixedReputationAllocation.beneficiaryReward(),300/accounts.length);
+      var beneficiaryReward;
+      var reputation;
+      await helpers.increaseTime(3001);
+      for (var i = 0 ;i< accounts.length ;i++) {
+          tx = await testSetup.fixedReputationAllocation.redeem(accounts[i]);
+          assert.equal(tx.logs.length,1);
+          assert.equal(tx.logs[0].event,"Redeem");
+          beneficiaryReward = await testSetup.fixedReputationAllocation.beneficiaryReward();
+          assert.equal(tx.logs[0].args._amount,beneficiaryReward.toNumber());
+          reputation = await testSetup.org.reputation.balanceOf(accounts[i]);
+          assert.equal(reputation.toNumber(),tx.logs[0].args._amount);
+      }
+
+      try {
+        await testSetup.fixedReputationAllocation.redeem(accounts[0]);
+        assert(false, "cannot redeem  twice");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
     });
 
     it("cannot redeem if not initialize", async () => {
