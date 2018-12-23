@@ -138,6 +138,16 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
       returns(bytes32)
     {
         require(((_rewards[3] > 0) || (_rewards[4] == 1)),"periodLength equal 0 require numberOfPeriods to be 1");
+        if (_rewards[4] > 0) {
+           //check that numberOfPeriods * _reputationChange will not overflow
+            assert((int(_rewards[4]) * _reputationChange) / int(_rewards[4]) == _reputationChange);
+            //check that numberOfPeriods * tokenReward will not overflow
+            assert((_rewards[4] * _rewards[0]) / _rewards[4] == _rewards[0]);
+            //check that numberOfPeriods * ethReward will not overflow
+            assert((_rewards[4] * _rewards[1]) / _rewards[4] == _rewards[1]);
+            //check that numberOfPeriods * texternalTokenReward will not overflow
+            assert((_rewards[4] * _rewards[2]) / _rewards[4] == _rewards[2]);
+        }
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
         // Pay fees for submitting the contribution:
         if (controllerParams.orgNativeTokenFee > 0) {
