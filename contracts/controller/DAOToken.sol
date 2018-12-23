@@ -16,7 +16,7 @@ contract DAOToken is ERC827Token,MintableToken,BurnableToken {
     string public symbol;
     // solium-disable-next-line uppercase
     uint8 public constant decimals = 18;
-    uint public cap;
+    uint256 public cap;
 
     /**
     * @dev Constructor
@@ -24,7 +24,7 @@ contract DAOToken is ERC827Token,MintableToken,BurnableToken {
     * @param _symbol - token symbol
     * @param _cap - token cap - 0 value means no cap
     */
-    constructor(string _name, string _symbol,uint _cap) public {
+    constructor(string _name, string _symbol,uint256 _cap) public {
         name = _name;
         symbol = _symbol;
         cap = _cap;

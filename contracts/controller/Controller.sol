@@ -7,7 +7,7 @@ import "./ControllerInterface.sol";
 
 /**
  * @title Controller contract
- * @dev A controller controls the organizations tokens,reputation and avatar.
+ * @dev A controller controls the organizations tokens, reputation and avatar.
  * It is subject to a set of schemes and constraints that determine its behavior.
  * Each scheme has it own parameters and operation permissions.
  */
@@ -32,7 +32,7 @@ contract Controller is ControllerInterface {
 
     struct GlobalConstraintRegister {
         bool isRegistered; //is registered
-        uint index;    //index at globalConstraints
+        uint256 index;    //index at globalConstraints
     }
 
     mapping(address=>Scheme) public schemes;
@@ -101,7 +101,7 @@ contract Controller is ControllerInterface {
     }
 
     modifier onlySubjectToConstraint(bytes32 func) {
-        uint idx;
+        uint256 idx;
         for (idx = 0;idx<globalConstraintsPre.length;idx++) {
             require((GlobalConstraintInterface(globalConstraintsPre[idx].gcAddress)).pre(msg.sender,globalConstraintsPre[idx].params,func));
         }
@@ -213,9 +213,9 @@ contract Controller is ControllerInterface {
     returns(bool)
     {
     //check if the scheme is registered
-        if (schemes[_scheme].permissions&bytes4(1) == bytes4(0)) {
+        if (_isSchemeRegistered(_scheme) == false) {
             return false;
-          }
+        }
     // Check the unregistering scheme has enough permissions:
         require(bytes4(0x1F)&(schemes[_scheme].permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
@@ -230,7 +230,7 @@ contract Controller is ControllerInterface {
      * @return bool which represents a success
      */
     function unregisterSelf(address _avatar) external isAvatarValid(_avatar) returns(bool) {
-        if (_isSchemeRegistered(msg.sender,_avatar) == false) {
+        if (_isSchemeRegistered(msg.sender) == false) {
             return false;
         }
         delete schemes[msg.sender];
@@ -239,7 +239,7 @@ contract Controller is ControllerInterface {
     }
 
     function isSchemeRegistered(address _scheme,address _avatar) external isAvatarValid(_avatar) view returns(bool) {
-        return _isSchemeRegistered(_scheme,_avatar);
+        return _isSchemeRegistered(_scheme);
     }
 
     function getSchemeParameters(address _scheme,address _avatar) external isAvatarValid(_avatar) view returns(bytes32) {
@@ -267,8 +267,8 @@ contract Controller is ControllerInterface {
 
    /**
     * @dev globalConstraintsCount return the global constraint pre and post count
-    * @return uint globalConstraintsPre count.
-    * @return uint globalConstraintsPost count.
+    * @return uint256 globalConstraintsPre count.
+    * @return uint256 globalConstraintsPost count.
     */
     function globalConstraintsCount(address _avatar)
         external
@@ -427,7 +427,7 @@ contract Controller is ControllerInterface {
    * @param _to address of the beneficiary
    * @return bool which represents a success
    */
-    function sendEther(uint _amountInWei, address _to,address _avatar)
+    function sendEther(uint256 _amountInWei, address _to,address _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("sendEther")
@@ -444,7 +444,7 @@ contract Controller is ControllerInterface {
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value,address _avatar)
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint256 _value,address _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenTransfer")
@@ -464,7 +464,7 @@ contract Controller is ControllerInterface {
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value,address _avatar)
+    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint256 _value,address _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenTransferFrom")
@@ -482,7 +482,7 @@ contract Controller is ControllerInterface {
     * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue,address _avatar)
+    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint256 _addedValue,address _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenIncreaseApproval")
@@ -500,7 +500,7 @@ contract Controller is ControllerInterface {
     * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address _avatar)
+    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint256 _subtractedValue,address _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenDecreaseApproval")
@@ -519,7 +519,7 @@ contract Controller is ControllerInterface {
         return address(nativeReputation);
     }
 
-    function _isSchemeRegistered(address _scheme,address _avatar) private isAvatarValid(_avatar) view returns(bool) {
+    function _isSchemeRegistered(address _scheme) private view returns(bool) {
         return (schemes[_scheme].permissions&bytes4(1) != bytes4(0));
     }
 }

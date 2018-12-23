@@ -9,7 +9,7 @@ contract UniversalSchemeMock is UniversalScheme {
     constructor() public {
     }
 
-    function genericCall(address _avatar,address _contract,uint _a,address _b,bytes32 _c)
+    function genericCall(address _avatar,address _contract,uint256 _a,address _b,bytes32 _c)
     public returns(bytes32)
     {
 
@@ -17,7 +17,7 @@ contract UniversalSchemeMock is UniversalScheme {
         return ControllerInterface(controller).genericCall(_contract,abi.encodeWithSignature("test(uint256,address,bytes32)",_a,_b,_c),_avatar);
     }
 
-    function genericCallDirect(address _avatar,address _contract,uint _a,address _b,bytes32 _c)
+    function genericCallDirect(address _avatar,address _contract,uint256 _a,address _b,bytes32 _c)
     public returns(bytes32)
     {
         Avatar(_avatar).genericCall(_contract,abi.encodeWithSignature("test(uint256,address,bytes32)",_a,_b,_c));

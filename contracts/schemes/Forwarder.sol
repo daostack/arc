@@ -12,7 +12,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 contract Forwarder is Ownable {
 
     Avatar public avatar;
-    uint public expirationTime;
+    uint256 public expirationTime;
 
     /**
      * @dev forwardCall forward a call to the dao controller
@@ -39,7 +39,7 @@ contract Forwarder is Ownable {
      * @param _avatar the avatar of the dao to forward the call to
      * @param _expirationTime the expirationTime to forwardCall
      */
-    function initialize(Avatar _avatar, uint _expirationTime) external onlyOwner {
+    function initialize(Avatar _avatar, uint256 _expirationTime) external onlyOwner {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         avatar = _avatar;

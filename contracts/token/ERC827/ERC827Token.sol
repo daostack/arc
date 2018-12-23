@@ -113,7 +113,7 @@ contract ERC827Token is ERC827, StandardToken {
    */
     function increaseApprovalAndCall(
         address _spender,
-        uint _addedValue,
+        uint256 _addedValue,
         bytes _data
     )
     public
@@ -143,7 +143,7 @@ contract ERC827Token is ERC827, StandardToken {
    */
     function decreaseApprovalAndCall(
         address _spender,
-        uint _subtractedValue,
+        uint256 _subtractedValue,
         bytes _data
     )
     public

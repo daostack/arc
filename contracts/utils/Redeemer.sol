@@ -50,11 +50,11 @@ contract Redeemer {
     returns(uint[5] gpRewards,
             uint[2] gpDaoBountyReward,
             bool executed,
-            uint winningVote,
+            uint256 winningVote,
             int crReputationReward,
-            uint crNativeTokenReward,
-            uint crEthReward,
-            uint crExternalTokenReward)
+            uint256 crNativeTokenReward,
+            uint256 crEthReward,
+            uint256 crExternalTokenReward)
     {
         GenesisProtocol.ProposalState pState = genesisProtocol.state(_proposalId);
         // solium-disable-next-line operator-whitespace
@@ -78,14 +78,14 @@ contract Redeemer {
 
     function contributionRewardRedeem(bytes32 _proposalId,address _avatar)
     private
-    returns (int reputation,uint nativeToken,uint eth,uint externalToken)
+    returns (int reputation,uint256 nativeToken,uint256 eth,uint256 externalToken)
     {
         bool[4] memory whatToRedeem;
         whatToRedeem[0] = true; //reputation
         whatToRedeem[1] = true; //nativeToken
-        uint periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,2);
-        uint ethReward = contributionReward.getProposalEthReward(_proposalId,_avatar);
-        uint externalTokenReward = contributionReward.getProposalExternalTokenReward(_proposalId,_avatar);
+        uint256 periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,2);
+        uint256 ethReward = contributionReward.getProposalEthReward(_proposalId,_avatar);
+        uint256 externalTokenReward = contributionReward.getProposalExternalTokenReward(_proposalId,_avatar);
         address externalTokenAddress = contributionReward.getProposalExternalToken(_proposalId,_avatar);
         ethReward = periodsToPay.mul(ethReward);
         if ((ethReward == 0) || (_avatar.balance < ethReward)) {

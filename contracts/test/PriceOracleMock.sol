@@ -6,8 +6,8 @@ import "../schemes/PriceOracleInterface.sol";
 contract PriceOracleMock is PriceOracleInterface {
 
     struct Price {
-        uint numerator;
-        uint denominator;
+        uint256 numerator;
+        uint256 denominator;
     }
     // user => amount
     mapping (address => Price) public tokenPrices;
@@ -18,7 +18,7 @@ contract PriceOracleMock is PriceOracleInterface {
         return (price.numerator, price.denominator);
     }
 
-    function setTokenPrice(address token,uint numerator,uint denominator) public {
+    function setTokenPrice(address token,uint256 numerator,uint256 denominator) public {
         tokenPrices[token] = Price(numerator,denominator);
     }
 }

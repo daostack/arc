@@ -61,7 +61,7 @@ contract DaoCreator {
         require(_founders.length > 0);
         require(locks[address(_avatar)] == msg.sender);
         // Mint token and reputation for founders:
-        for (uint i = 0 ; i < _founders.length ; i++ ) {
+        for (uint256 i = 0 ; i < _founders.length ; i++ ) {
             require(_founders[i] != address(0));
             if (_foundersTokenAmount[i] > 0) {
                 ControllerInterface(_avatar.owner()).mintTokens(_foundersTokenAmount[i],_founders[i],address(_avatar));
@@ -97,7 +97,7 @@ contract DaoCreator {
         uint[] _foundersTokenAmount,
         uint[] _foundersReputationAmount,
         UController _uController,
-        uint _cap
+        uint256 _cap
       )
       external
       returns(address)
@@ -134,7 +134,7 @@ contract DaoCreator {
         require(locks[address(_avatar)] == msg.sender);
         // register initial schemes:
         ControllerInterface controller = ControllerInterface(_avatar.owner());
-        for ( uint i = 0 ; i < _schemes.length ; i++ ) {
+        for ( uint256 i = 0 ; i < _schemes.length ; i++ ) {
             controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
         }
         // Unregister self:
@@ -167,7 +167,7 @@ contract DaoCreator {
         uint[] _foundersTokenAmount,
         uint[] _foundersReputationAmount,
         UController _uController,
-        uint _cap
+        uint256 _cap
     ) private returns(address)
     {
         // Create Token, Reputation and Avatar:
@@ -180,7 +180,7 @@ contract DaoCreator {
         ControllerInterface  controller;
 
         // Mint token and reputation for founders:
-        for (uint i = 0 ; i < _founders.length ; i++ ) {
+        for (uint256 i = 0 ; i < _founders.length ; i++ ) {
             require(_founders[i] != address(0));
             if (_foundersTokenAmount[i] > 0) {
                 nativeToken.mint(_founders[i],_foundersTokenAmount[i]);

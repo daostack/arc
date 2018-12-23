@@ -36,10 +36,10 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
      */
     function initialize(
         Avatar _avatar,
-        uint _reputationReward,
-        uint _claimingStartTime,
-        uint _claimingEndTime,
-        uint _redeemEnableTime,
+        uint256 _reputationReward,
+        uint256 _claimingStartTime,
+        uint256 _claimingEndTime,
+        uint256 _redeemEnableTime,
         address _externalLockingContract,
         string _getBalanceFuncSignature)
     external
@@ -76,7 +76,7 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         externalLockers[beneficiary] = true;
         // solium-disable-next-line security/no-low-level-calls
         bool result = externalLockingContract.call(abi.encodeWithSignature(getBalanceFuncSignature, beneficiary));
-        uint lockedAmount;
+        uint256 lockedAmount;
         // solium-disable-next-line security/no-inline-assembly
         assembly {
           returndatacopy(0, 0, returndatasize)

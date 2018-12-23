@@ -13,7 +13,7 @@ contract OrganizationRegister is UniversalScheme {
     using SafeMath for uint;
 
     struct Parameters {
-        uint fee;
+        uint256 fee;
         StandardToken token;
         address beneficiary;
     }
@@ -24,7 +24,7 @@ contract OrganizationRegister is UniversalScheme {
     mapping(bytes32=>Parameters) public parameters;
 
     event OrgAdded( address indexed _registry, address indexed _org);
-    event Promotion( address indexed _registry, address indexed _org, uint _amount);
+    event Promotion( address indexed _registry, address indexed _org, uint256 _amount);
 
 
     /**
@@ -34,7 +34,7 @@ contract OrganizationRegister is UniversalScheme {
     * @param _beneficiary  - the beneficiary payment address
     * @return bytes32 -the parameters hash
     */
-    function setParameters(StandardToken _token, uint _fee, address _beneficiary) public returns(bytes32) {
+    function setParameters(StandardToken _token, uint256 _fee, address _beneficiary) public returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_token, _fee, _beneficiary);
         if (parameters[paramsHash].token == address(0)) {
             parameters[paramsHash].token = _token;
@@ -51,7 +51,7 @@ contract OrganizationRegister is UniversalScheme {
     * @param _beneficiary  - the beneficiary payment address
     * @return bytes32 -the parameters hash
     */
-    function getParametersHash(StandardToken _token, uint _fee, address _beneficiary)
+    function getParametersHash(StandardToken _token, uint256 _fee, address _beneficiary)
     public pure returns(bytes32)
     {
         return (keccak256(abi.encodePacked(_token, _fee, _beneficiary)));
@@ -66,7 +66,7 @@ contract OrganizationRegister is UniversalScheme {
      * @param _record The address to add or promote.
      * @param _amount amount to pay for adding or promoting
      */
-    function addOrPromoteAddress(Avatar _avatar, address _record, uint _amount)
+    function addOrPromoteAddress(Avatar _avatar, address _record, uint256 _amount)
     public
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];

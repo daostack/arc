@@ -80,8 +80,8 @@ interface ControllerInterface {
 
     /**
      * @dev globalConstraintsCount return the global constraint pre and post count
-     * @return uint globalConstraintsPre count.
-     * @return uint globalConstraintsPost count.
+     * @return uint256 globalConstraintsPre count.
+     * @return uint256 globalConstraintsPost count.
      */
     function globalConstraintsCount(address _avatar) external view returns(uint,uint);
 
@@ -134,7 +134,7 @@ interface ControllerInterface {
    * @param _avatar address
    * @return bool which represents a success
    */
-    function sendEther(uint _amountInWei, address _to,address _avatar)
+    function sendEther(uint256 _amountInWei, address _to,address _avatar)
     external returns(bool);
 
     /**
@@ -145,7 +145,7 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value,address _avatar)
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint256 _value,address _avatar)
     external
     returns(bool);
 
@@ -160,7 +160,7 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value,address _avatar)
+    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint256 _value,address _avatar)
     external
     returns(bool);
 
@@ -173,7 +173,7 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue,address _avatar)
+    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint256 _addedValue,address _avatar)
     external
     returns(bool);
 
@@ -186,7 +186,7 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address _avatar)
+    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint256 _subtractedValue,address _avatar)
     external
     returns(bool);
 

@@ -13,13 +13,13 @@ contract Locking4Reputation {
     using RealMath for int216;
     using RealMath for int256;
 
-    event Redeem(address indexed _beneficiary, uint _amount);
-    event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint _amount);
-    event Lock(address indexed _locker, bytes32 indexed _lockingId, uint _amount, uint _period);
+    event Redeem(address indexed _beneficiary, uint256 _amount);
+    event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
+    event Lock(address indexed _locker, bytes32 indexed _lockingId, uint256 _amount, uint256 _period);
 
     struct Locker {
-        uint amount;
-        uint releaseTime;
+        uint256 amount;
+        uint256 releaseTime;
     }
 
     Avatar public avatar;
@@ -29,27 +29,27 @@ contract Locking4Reputation {
     // A mapping from lockers addresses to their scores.
     mapping(address => uint) public scores;
 
-    uint public totalLocked;
-    uint public totalLockedLeft;
-    uint public totalScore;
-    uint public lockingsCounter; // Total number of lockings
-    uint public reputationReward;
-    uint public reputationRewardLeft;
-    uint public lockingEndTime;
-    uint public maxLockingPeriod;
-    uint public lockingStartTime;
-    uint public redeemEnableTime;
+    uint256 public totalLocked;
+    uint256 public totalLockedLeft;
+    uint256 public totalScore;
+    uint256 public lockingsCounter; // Total number of lockings
+    uint256 public reputationReward;
+    uint256 public reputationRewardLeft;
+    uint256 public lockingEndTime;
+    uint256 public maxLockingPeriod;
+    uint256 public lockingStartTime;
+    uint256 public redeemEnableTime;
 
     /**
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary for the release
-     * @return uint reputation rewarded
+     * @return uint256 reputation rewarded
      */
-    function redeem(address _beneficiary) public returns(uint reputation) {
+    function redeem(address _beneficiary) public returns(uint256 reputation) {
         // solium-disable-next-line security/no-block-members
         require(block.timestamp > redeemEnableTime, "now > redeemEnableTime");
         require(scores[_beneficiary] > 0, "score should be > 0");
-        uint score = scores[_beneficiary];
+        uint256 score = scores[_beneficiary];
         scores[_beneficiary] = 0;
         int256 repRelation = int216(score).toReal().mul(int216(reputationReward).toReal());
         reputation = uint256(repRelation.div(int216(totalScore).toReal()).fromReal());
@@ -67,7 +67,7 @@ contract Locking4Reputation {
      * @param _lockingId the locking id to release
      * @return bool
      */
-    function _release(address _beneficiary, bytes32 _lockingId) internal returns(uint amount) {
+    function _release(address _beneficiary, bytes32 _lockingId) internal returns(uint256 amount) {
         Locker storage locker = lockers[_beneficiary][_lockingId];
         require(locker.amount > 0, "amount should be > 0");
         amount = locker.amount;
@@ -88,7 +88,15 @@ contract Locking4Reputation {
      * @param _denominator price denominator
      * @return lockingId
      */
-    function _lock(uint _amount, uint _period, address _locker,uint _numerator,uint _denominator) internal returns(bytes32 lockingId) {
+    function _lock(
+        uint256 _amount,
+        uint256 _period,
+        address _locker,
+        uint256 _numerator,
+        uint256 _denominator)
+        internal
+        returns(bytes32 lockingId)
+        {
         require(_amount > 0, "locking amount should be > 0");
         require(_period <= maxLockingPeriod, "locking period should be <= maxLockingPeriod");
         require(_period > 0, "locking period should be > 0");
@@ -106,7 +114,7 @@ contract Locking4Reputation {
         locker.releaseTime = now + _period;
         totalLocked = totalLocked.add(_amount);
         totalLockedLeft = totalLocked;
-        uint score = _period.mul(_amount).mul(_numerator).div(_denominator);
+        uint256 score = _period.mul(_amount).mul(_numerator).div(_denominator);
         require(score>0,"score must me > 0");
         scores[_locker] = scores[_locker].add(score);
         totalScore = totalScore.add(score);
@@ -128,11 +136,11 @@ contract Locking4Reputation {
      */
     function _initialize(
         Avatar _avatar,
-        uint _reputationReward,
-        uint _lockingStartTime,
-        uint _lockingEndTime,
-        uint _redeemEnableTime,
-        uint _maxLockingPeriod)
+        uint256 _reputationReward,
+        uint256 _lockingStartTime,
+        uint256 _lockingEndTime,
+        uint256 _redeemEnableTime,
+        uint256 _maxLockingPeriod)
     internal
     {
         require(avatar == Avatar(0), "can be called only one time");
