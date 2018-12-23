@@ -137,7 +137,7 @@ contract UpgradeScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @dev propose to replace this scheme by another upgrading scheme
     * @param _avatar avatar of the organization
     * @param _scheme address of the new upgrading scheme
-    * @param _params ???
+    * @param _params the parameters of the new upgrading scheme
     * @return an id which represents the proposal
     */
     function proposeChangeUpgradingScheme(

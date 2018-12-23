@@ -16,7 +16,7 @@ contract FixedReputationAllocation is Ownable {
     using RealMath for int256;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
-    event BeneficiaryAddressAdded(address _beneficiary);
+    event BeneficiaryAddressAdded(address indexed _beneficiary);
 
     // beneficiary -> exist
     mapping(address => bool) public beneficiaries;
