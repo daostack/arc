@@ -227,8 +227,8 @@ describe('UController', () => {
       paramsHash: '0x' + padZeros('123', hashLength),
       canRegisterSchemes: true,
       canManageGlobalConstraints: true,
-      canUpgradeController: null,
-      canDelegateCall: null,
+      canUpgradeController: false,
+      canDelegateCall: false,
     });
 
     const { ucontrollerAddGlobalConstraints } = await sendQuery(`{
@@ -276,7 +276,7 @@ describe('UController', () => {
       controller: uController.options.address.toLowerCase(),
       avatarAddress: avatar.options.address.toLowerCase(),
       globalConstraint: tokenCap2.options.address.toLowerCase(),
-      isPre: null,
+      isPre: false,
     });
     //
     const { ucontrollerGlobalConstraints } = await sendQuery(`{

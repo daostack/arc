@@ -13,6 +13,7 @@ export function getMember(address: Address, daoAddress: Address): Member {
     member.address = address;
     member.dao = daoAddress.toHex();
     member.reputation = BigInt.fromI32(0);
+    saveMember(member);
   }
   return member;
 }

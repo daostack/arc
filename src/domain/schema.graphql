@@ -29,13 +29,13 @@ type DAO @entity {
 
 type Rep @entity {
 	id: ID!
-	dao: DAO!
+	dao: DAO
 	totalSupply: BigInt!
 }
 
 type Token @entity {
 	id: ID!
-	dao: DAO!
+	dao: DAO
 	name: String!
 	symbol: String!
 	totalSupply: BigInt!
