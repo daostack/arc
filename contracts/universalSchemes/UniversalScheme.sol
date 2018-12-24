@@ -23,6 +23,7 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface {
     *  @dev get the parameters for the current scheme from the controller
     */
     function getParametersFromController(Avatar _avatar) internal view returns(bytes32) {
+        require(ControllerInterface(_avatar.owner()).isSchemeRegistered(this,address(_avatar)),"scheme is not registered");
         return ControllerInterface(_avatar.owner()).getSchemeParameters(this,address(_avatar));
     }
 }

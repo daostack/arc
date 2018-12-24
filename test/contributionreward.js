@@ -637,4 +637,82 @@ contract('ContributionReward', accounts => {
        rep = await testSetup.org.reputation.balanceOf(accounts[1]);
        assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
     });
+
+
+    it("execute proposeContributionReward  param validate ", async function() {
+       var testSetup = await setup(accounts);
+       let BigNumber = require('bignumber.js');
+       let reputationReward = ((new BigNumber(2)).toPower(255).sub(1)).toString(10);
+       var periodLength = 1;
+       var numberOfPeriods = 2;
+
+       try {
+         await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                   web3.utils.asciiToHex("description"),
+                                                                   reputationReward,
+                                                                   [0,0,0,periodLength,numberOfPeriods],
+                                                                   testSetup.standardTokenMock.address,
+                                                                   accounts[1],
+                                                                   {from:accounts[2]}
+                                                                 );
+            assert(false, 'numberOfPeriods * _reputationChange should not overflow');
+            } catch (ex) {
+             helpers.assertVMException(ex);
+       }
+
+       reputationReward = 12;
+       var tokenReward = ((new BigNumber(2)).toPower(256).sub(1)).toString(10);
+       var ethReward = 0;
+       var externalTokenReward = 0;
+
+       try {
+         await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                   web3.utils.asciiToHex("description"),
+                                                                   reputationReward,
+                                                                   [tokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
+                                                                   testSetup.standardTokenMock.address,
+                                                                   accounts[1],
+                                                                   {from:accounts[2]}
+                                                                 );
+            assert(false, 'numberOfPeriods * tokenReward should not overflow');
+            } catch (ex) {
+             helpers.assertVMException(ex);
+       }
+
+        tokenReward = 0;
+        ethReward = ((new BigNumber(2)).toPower(256).sub(1)).toString(10);
+        externalTokenReward = 0;
+
+       try {
+         await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                   web3.utils.asciiToHex("description"),
+                                                                   reputationReward,
+                                                                   [tokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
+                                                                   testSetup.standardTokenMock.address,
+                                                                   accounts[1],
+                                                                   {from:accounts[2]}
+                                                                 );
+            assert(false, 'numberOfPeriods * ethReward should not overflow');
+            } catch (ex) {
+             helpers.assertVMException(ex);
+       }
+
+       tokenReward = 0;
+       ethReward = 0;
+       externalTokenReward = ((new BigNumber(2)).toPower(256).sub(1)).toString(10);
+
+      try {
+        await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                  web3.utils.asciiToHex("description"),
+                                                                  reputationReward,
+                                                                  [tokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
+                                                                  testSetup.standardTokenMock.address,
+                                                                  accounts[1],
+                                                                  {from:accounts[2]}
+                                                                );
+           assert(false, 'numberOfPeriods * externalTokenReward should not overflow');
+           } catch (ex) {
+            helpers.assertVMException(ex);
+      }
+    });
 });

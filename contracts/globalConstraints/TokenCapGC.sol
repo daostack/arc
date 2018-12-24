@@ -13,7 +13,7 @@ contract TokenCapGC {
     // A set of parameters, on which the cap will be checked:
     struct Parameters {
         StandardToken token;
-        uint cap;
+        uint256 cap;
     }
 
     // Mapping from the hash of the parameters to the parameters themselves:
@@ -26,7 +26,7 @@ contract TokenCapGC {
      * @param _cap the cap to check the total supply against.
      * @return the calculated parameters hash
      */
-    function setParameters(StandardToken _token, uint _cap) public returns(bytes32) {
+    function setParameters(StandardToken _token, uint256 _cap) public returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_token, _cap);
         parameters[paramsHash].token = _token;
         parameters[paramsHash].cap = _cap;
@@ -39,7 +39,7 @@ contract TokenCapGC {
      * @param _cap the cap to check the total supply against.
      * @return the calculated parameters hash
      */
-    function getParametersHash(StandardToken _token, uint _cap) public pure returns(bytes32) {
+    function getParametersHash(StandardToken _token, uint256 _cap) public pure returns(bytes32) {
         return (keccak256(abi.encodePacked(_token, _cap)));
     }
 

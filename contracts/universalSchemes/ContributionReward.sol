@@ -27,21 +27,21 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     );
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event RedeemReputation(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,int _amount);
-    event RedeemEther(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
-    event RedeemNativeToken(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
-    event RedeemExternalToken(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint _amount);
+    event RedeemEther(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint256 _amount);
+    event RedeemNativeToken(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint256 _amount);
+    event RedeemExternalToken(address indexed _avatar, bytes32 indexed _proposalId, address indexed _beneficiary,uint256 _amount);
 
     // A struct holding the data for a contribution proposal
     struct ContributionProposal {
-        uint nativeTokenReward; // Reward asked in the native token of the organization.
+        uint256 nativeTokenReward; // Reward asked in the native token of the organization.
         int reputationChange; // Organization reputation reward requested.
-        uint ethReward;
+        uint256 ethReward;
         StandardToken externalToken;
-        uint externalTokenReward;
+        uint256 externalTokenReward;
         address beneficiary;
-        uint periodLength;
-        uint numberOfPeriods;
-        uint executionTime;
+        uint256 periodLength;
+        uint256 numberOfPeriods;
+        uint256 executionTime;
         uint[4] redeemedPeriods;
     }
 
@@ -51,7 +51,7 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     // A contribution fee can be in the organization token or the scheme token or a combination
     struct Parameters {
-        uint orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
+        uint256 orgNativeTokenFee; // a fee (in the organization's token) that is to be paid for submitting a contribution
         bytes32 voteApproveParams;
         IntVoteInterface intVote;
     }
@@ -80,7 +80,7 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     * @dev hash the parameters, save them if necessary, and return the hash value
     */
     function setParameters(
-        uint _orgNativeTokenFee,
+        uint256 _orgNativeTokenFee,
         bytes32 _voteApproveParams,
         IntVoteInterface _intVote
     ) public returns(bytes32)
@@ -105,7 +105,7 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     */
     // TODO: These fees are messy. Better to have a _fee and _feeToken pair, just as in some other contract (which one?) with some sane default
     function getParametersHash(
-        uint _orgNativeTokenFee,
+        uint256 _orgNativeTokenFee,
         bytes32 _voteApproveParams,
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
@@ -138,6 +138,16 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
       returns(bytes32)
     {
         require(((_rewards[3] > 0) || (_rewards[4] == 1)),"periodLength equal 0 require numberOfPeriods to be 1");
+        if (_rewards[4] > 0) {
+           //check that numberOfPeriods * _reputationChange will not overflow
+            assert((int(_rewards[4]) * _reputationChange) / int(_rewards[4]) == _reputationChange);
+            //check that numberOfPeriods * tokenReward will not overflow
+            assert((_rewards[4] * _rewards[0]) / _rewards[4] == _rewards[0]);
+            //check that numberOfPeriods * ethReward will not overflow
+            assert((_rewards[4] * _rewards[1]) / _rewards[4] == _rewards[1]);
+            //check that numberOfPeriods * texternalTokenReward will not overflow
+            assert((_rewards[4] * _rewards[2]) / _rewards[4] == _rewards[2]);
+        }
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
         // Pay fees for submitting the contribution:
         if (controllerParams.orgNativeTokenFee > 0) {
@@ -204,7 +214,7 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
-        uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,0);
+        uint256 periodsToPay = getPeriodsToPay(_proposalId,_avatar,0);
 
         //set proposal reward to zero to prevent reentrancy attack.
         proposal.reputationChange = 0;
@@ -228,12 +238,12 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     * @param _avatar address of the controller
     * @return amount the redeemed nativeToken.
     */
-    function redeemNativeToken(bytes32 _proposalId, address _avatar) public returns(uint amount) {
+    function redeemNativeToken(bytes32 _proposalId, address _avatar) public returns(uint256 amount) {
 
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
-        uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,1);
+        uint256 periodsToPay = getPeriodsToPay(_proposalId,_avatar,1);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.nativeTokenReward = 0;
 
@@ -254,12 +264,12 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     * @param _avatar address of the controller
     * @return amount ether redeemed amount
     */
-    function redeemEther(bytes32 _proposalId, address _avatar) public returns(uint amount) {
+    function redeemEther(bytes32 _proposalId, address _avatar) public returns(uint256 amount) {
 
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
-        uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,2);
+        uint256 periodsToPay = getPeriodsToPay(_proposalId,_avatar,2);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.ethReward = 0;
         amount = periodsToPay.mul(_proposal.ethReward);
@@ -280,12 +290,12 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     * @param _avatar address of the controller
     * @return amount the external token redeemed amount
     */
-    function redeemExternalToken(bytes32 _proposalId, address _avatar) public returns(uint amount) {
+    function redeemExternalToken(bytes32 _proposalId, address _avatar) public returns(uint256 amount) {
 
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[_avatar][_proposalId];
         require(proposal.executionTime != 0);
-        uint periodsToPay = getPeriodsToPay(_proposalId,_avatar,3);
+        uint256 periodsToPay = getPeriodsToPay(_proposalId,_avatar,3);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.externalTokenReward = 0;
 
@@ -314,7 +324,7 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     */
     function redeem(bytes32 _proposalId, address _avatar,bool[4] _whatToRedeem)
     public
-    returns(int reputationReward,uint nativeTokenReward,uint etherReward,uint externalTokenReward)
+    returns(int reputationReward,uint256 nativeTokenReward,uint256 etherReward,uint256 externalTokenReward)
     {
 
         if (_whatToRedeem[0]) {
@@ -346,17 +356,17 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     *         3 - ExternalToken
     * @return  periods left to be paid.
     */
-    function getPeriodsToPay(bytes32 _proposalId, address _avatar,uint _redeemType) public view returns (uint) {
+    function getPeriodsToPay(bytes32 _proposalId, address _avatar,uint256 _redeemType) public view returns (uint) {
         require(_redeemType <= 3,"should be in the redeemedPeriods range");
         ContributionProposal memory _proposal = organizationsProposals[_avatar][_proposalId];
         if (_proposal.executionTime == 0)
             return 0;
-        uint periodsFromExecution;
+        uint256 periodsFromExecution;
         if (_proposal.periodLength > 0) {
           // solium-disable-next-line security/no-block-members
             periodsFromExecution = (now.sub(_proposal.executionTime))/(_proposal.periodLength);
         }
-        uint periodsToPay;
+        uint256 periodsToPay;
         if ((_proposal.periodLength == 0) || (periodsFromExecution >= _proposal.numberOfPeriods)) {
             periodsToPay = _proposal.numberOfPeriods.sub(_proposal.redeemedPeriods[_redeemType]);
         } else {
@@ -376,7 +386,7 @@ contract ContributionReward is UniversalScheme,VotingMachineCallbacks,ProposalEx
     *         3 - ExternalToken
     * @return redeemed period.
     */
-    function getRedeemedPeriods(bytes32 _proposalId, address _avatar,uint _redeemType) public view returns (uint) {
+    function getRedeemedPeriods(bytes32 _proposalId, address _avatar,uint256 _redeemType) public view returns (uint) {
         return organizationsProposals[_avatar][_proposalId].redeemedPeriods[_redeemType];
     }
 

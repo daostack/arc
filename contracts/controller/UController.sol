@@ -32,7 +32,7 @@ contract UController is ControllerInterface {
 
     struct GlobalConstraintRegister {
         bool isRegistered; //is registered
-        uint index;    //index at globalConstraints
+        uint256 index;    //index at globalConstraints
     }
 
     struct Organization {
@@ -128,7 +128,7 @@ contract UController is ControllerInterface {
     }
 
     modifier onlySubjectToConstraint(bytes32 func,address _avatar) {
-        uint idx;
+        uint256 idx;
         GlobalConstraint[] memory globalConstraintsPre = organizations[_avatar].globalConstraintsPre;
         GlobalConstraint[] memory globalConstraintsPost = organizations[_avatar].globalConstraintsPost;
         for (idx = 0;idx<globalConstraintsPre.length;idx++) {
@@ -292,8 +292,8 @@ contract UController is ControllerInterface {
 
    /**
    * @dev globalConstraintsCount return the global constraint pre and post count
-   * @return uint globalConstraintsPre count.
-   * @return uint globalConstraintsPost count.
+   * @return uint256 globalConstraintsPre count.
+   * @return uint256 globalConstraintsPost count.
    */
     function globalConstraintsCount(address _avatar) external view returns(uint,uint) {
         return (organizations[_avatar].globalConstraintsPre.length,organizations[_avatar].globalConstraintsPost.length);
@@ -411,7 +411,7 @@ contract UController is ControllerInterface {
    * @param _avatar the organization avatar.
    * @return bool which represents a success
    */
-    function sendEther(uint _amountInWei, address _to,address _avatar)
+    function sendEther(uint256 _amountInWei, address _to,address _avatar)
     external
     onlyRegisteredScheme(_avatar)
     onlySubjectToConstraint("sendEther",_avatar)
@@ -428,7 +428,7 @@ contract UController is ControllerInterface {
     * @param _avatar the organization avatar.
     * @return bool which represents a success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value,address _avatar)
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint256 _value,address _avatar)
     external
     onlyRegisteredScheme(_avatar)
     onlySubjectToConstraint("externalTokenTransfer",_avatar)
@@ -448,7 +448,7 @@ contract UController is ControllerInterface {
     * @param _avatar the organization avatar.
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint _value,address _avatar)
+    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint256 _value,address _avatar)
     external
     onlyRegisteredScheme(_avatar)
     onlySubjectToConstraint("externalTokenTransferFrom",_avatar)
@@ -466,7 +466,7 @@ contract UController is ControllerInterface {
     * @param _avatar the organization avatar.
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue,address _avatar)
+    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint256 _addedValue,address _avatar)
     external
     onlyRegisteredScheme(_avatar)
     onlySubjectToConstraint("externalTokenIncreaseApproval",_avatar)
@@ -484,7 +484,7 @@ contract UController is ControllerInterface {
     * @param _avatar the organization avatar.
     * @return bool which represents a success
     */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue,address _avatar)
+    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint256 _subtractedValue,address _avatar)
     external
     onlyRegisteredScheme(_avatar)
     onlySubjectToConstraint("externalTokenDecreaseApproval",_avatar)

@@ -24,11 +24,11 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
      */
     function initialize(
         Avatar _avatar,
-        uint _reputationReward,
-        uint _lockingStartTime,
-        uint _lockingEndTime,
-        uint _redeemEnableTime,
-        uint _maxLockingPeriod)
+        uint256 _reputationReward,
+        uint256 _lockingStartTime,
+        uint256 _lockingEndTime,
+        uint256 _redeemEnableTime,
+        uint256 _maxLockingPeriod)
     external
     onlyOwner
     {
@@ -48,7 +48,7 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
      * @return bool
      */
     function release(address _beneficiary, bytes32 _lockingId) public returns(bool) {
-        uint amount = super._release(_beneficiary, _lockingId);
+        uint256 amount = super._release(_beneficiary, _lockingId);
         _beneficiary.transfer(amount);
 
         return true;
@@ -59,7 +59,7 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
      * @param _period the locking period
      * @return lockingId the unique Id
      */
-    function lock(uint _period) public payable returns(bytes32 lockingId) {
+    function lock(uint256 _period) public payable returns(bytes32 lockingId) {
         return super._lock(msg.value, _period, msg.sender,1,1);
     }
 

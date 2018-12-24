@@ -48,16 +48,16 @@ contract SimpleICO is UniversalScheme {
     struct Organization {
         bytes32 paramsHash; // Save the parameters approved by the org to open the ICO, so reuse of ICO will not change.
         address avatarContractICO; // Avatar is a contract for users that want to send ether without calling a function.
-        uint totalEthRaised;
+        uint256 totalEthRaised;
         bool isHalted; // The admin of the ICO can halt the ICO at any time, and also resume it.
     }
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
     struct Parameters {
-        uint cap; // Cap in Eth
-        uint price; // Price represents Tokens per 1 Eth
-        uint startBlock;
-        uint endBlock;
+        uint256 cap; // Cap in Eth
+        uint256 price; // Price represents Tokens per 1 Eth
+        uint256 startBlock;
+        uint256 endBlock;
         address beneficiary; // all funds received will be transferred to this address.
         address admin; // The admin can halt or resume ICO.
     }
@@ -67,7 +67,7 @@ contract SimpleICO is UniversalScheme {
 
     mapping(bytes32=>Parameters) public parameters;
 
-    event DonationReceived(address indexed organization, address indexed _beneficiary, uint _incomingEther, uint indexed _tokensAmount);
+    event DonationReceived(address indexed organization, address indexed _beneficiary, uint256 _incomingEther, uint256 indexed _tokensAmount);
 
     /**
     * @dev Hash the parameters, save them if necessary, and return the hash value
@@ -80,10 +80,10 @@ contract SimpleICO is UniversalScheme {
     * @return bytes32 -the params hash
     */
     function setParameters(
-        uint _cap,
-        uint _price,
-        uint _startBlock,
-        uint _endBlock,
+        uint256 _cap,
+        uint256 _price,
+        uint256 _startBlock,
+        uint256 _endBlock,
         address _beneficiary,
         address _admin
     )
@@ -123,10 +123,10 @@ contract SimpleICO is UniversalScheme {
     * @return bytes32 -the params hash
     */
     function getParametersHash(
-        uint _cap,
-        uint _price,
-        uint _startBlock,
-        uint _endBlock,
+        uint256 _cap,
+        uint256 _price,
+        uint256 _startBlock,
+        uint256 _endBlock,
         address _beneficiary,
         address _admin
     )
@@ -206,7 +206,7 @@ contract SimpleICO is UniversalScheme {
      * The donator will get the change in ethers.
      * @param _avatar The Avatar's of the organization.
      * @param _beneficiary The donator's address - which will receive the ICO's tokens.
-     * @return uint number of tokens minted for the donation.
+     * @return uint256 number of tokens minted for the donation.
      */
     function donate(Avatar _avatar, address _beneficiary) public payable returns(uint) {
         Organization memory org = organizationsICOInfo[_avatar];
@@ -219,8 +219,8 @@ contract SimpleICO is UniversalScheme {
         require(!org.isHalted);
 
 
-        uint incomingEther;
-        uint change;
+        uint256 incomingEther;
+        uint256 change;
 
         // Compute how much tokens to buy:
         if ( msg.value > (params.cap).sub(org.totalEthRaised) ) {
@@ -230,7 +230,7 @@ contract SimpleICO is UniversalScheme {
             incomingEther = msg.value;
         }
 
-        uint tokens = incomingEther.mul(params.price);
+        uint256 tokens = incomingEther.mul(params.price);
         // Update total raised, call event and return amount of tokens bought:
         organizationsICOInfo[_avatar].totalEthRaised += incomingEther;
         // Send ether to the defined address, mint, and send change to beneficiary:

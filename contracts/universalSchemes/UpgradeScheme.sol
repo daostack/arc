@@ -32,7 +32,7 @@ contract UpgradeScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     struct UpgradeProposal {
         address upgradeContract; // Either the new controller we upgrade to, or the new upgrading scheme.
         bytes32 params; // Params for the new upgrading scheme.
-        uint proposalType; // 1: Upgrade controller, 2: change upgrade scheme.
+        uint256 proposalType; // 1: Upgrade controller, 2: change upgrade scheme.
     }
 
     // A mapping from the organization's (Avatar) address to the saved data of the organization:
@@ -137,7 +137,7 @@ contract UpgradeScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @dev propose to replace this scheme by another upgrading scheme
     * @param _avatar avatar of the organization
     * @param _scheme address of the new upgrading scheme
-    * @param _params ???
+    * @param _params the parameters of the new upgrading scheme
     * @return an id which represents the proposal
     */
     function proposeChangeUpgradingScheme(

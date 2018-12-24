@@ -17,12 +17,12 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
     event AgreementProposal(address indexed _avatar, bytes32 indexed _proposalId);
-    event NewVestedAgreement(uint indexed _agreementId);
-    event ProposedVestedAgreement(uint indexed _agreementId, bytes32 indexed _proposalId);
-    event SignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
-    event RevokeSignToCancelAgreement(uint indexed _agreementId, address indexed _signer);
-    event AgreementCancel(uint indexed _agreementId);
-    event Collect(uint indexed _agreementId);
+    event NewVestedAgreement(uint256 indexed _agreementId);
+    event ProposedVestedAgreement(uint256 indexed _agreementId, bytes32 indexed _proposalId);
+    event SignToCancelAgreement(uint256 indexed _agreementId, address indexed _signer);
+    event RevokeSignToCancelAgreement(uint256 indexed _agreementId, address indexed _signer);
+    event AgreementCancel(uint256 indexed _agreementId);
+    event Collect(uint256 indexed _agreementId);
 
 
     // The data for each vested agreement:
@@ -30,14 +30,14 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         StandardToken token;
         address beneficiary;
         address returnOnCancelAddress;
-        uint startingBlock;
-        uint amountPerPeriod;
-        uint periodLength;
-        uint numOfAgreedPeriods;
-        uint cliffInPeriods;
-        uint signaturesReqToCancel;
-        uint collectedPeriods;
-        uint signaturesReceivedCounter;
+        uint256 startingBlock;
+        uint256 amountPerPeriod;
+        uint256 periodLength;
+        uint256 numOfAgreedPeriods;
+        uint256 cliffInPeriods;
+        uint256 signaturesReqToCancel;
+        uint256 collectedPeriods;
+        uint256 signaturesReceivedCounter;
         mapping(address=>bool) signers;
         mapping(address=>bool) signaturesReceived;
     }
@@ -57,16 +57,16 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     // A mapping from index to Agreement
     mapping(uint=>Agreement) public agreements;
 
-    uint public agreementsCounter;
+    uint256 public agreementsCounter;
 
     // Modifier, only the signers on an agreement:
-    modifier onlySigner(uint _agreementId) {
+    modifier onlySigner(uint256 _agreementId) {
         require(agreements[_agreementId].signers[msg.sender]);
         _;
     }
 
     // Modifier, only the beneficiary on an agreement:
-    modifier onlyBeneficiary(uint _agreementId) {
+    modifier onlyBeneficiary(uint256 _agreementId) {
         require(agreements[_agreementId].beneficiary == msg.sender);
         _;
     }
@@ -88,8 +88,8 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         if (_param == 1) {
         // Define controller and mint tokens, check minting actually took place:
             ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
-            uint tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
-            controller.mintTokens(tokensToMint, this,avatar);
+            uint256 tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
+            require(controller.mintTokens(tokensToMint, this,avatar));
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:
@@ -116,12 +116,12 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     function proposeVestingAgreement(
         address _beneficiary,
         address _returnOnCancelAddress,
-        uint _startingBlock,
-        uint _amountPerPeriod,
-        uint _periodLength,
-        uint _numOfAgreedPeriods,
-        uint _cliffInPeriods,
-        uint _signaturesReqToCancel,
+        uint256 _startingBlock,
+        uint256 _amountPerPeriod,
+        uint256 _periodLength,
+        uint256 _numOfAgreedPeriods,
+        uint256 _cliffInPeriods,
+        uint256 _signaturesReqToCancel,
         address[] _signersArray,
         Avatar _avatar
     )
@@ -135,7 +135,7 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         require(_periodLength > 0);
         require(_numOfAgreedPeriods > 0, "Number of Agreed Periods must be greater than 0");
         // Write the signers mapping:
-        for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
+        for (uint256 cnt = 0; cnt<_signersArray.length; cnt++) {
             organizationsProposals[_avatar][proposalId].signers[_signersArray[cnt]] = true;
         }
         // Write parameters:
@@ -173,18 +173,18 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @param _cliffInPeriods the length of the cliff in periods.
     * @param _signaturesReqToCancel number of signatures required to cancel agreement.
     * @param _signersArray avatar array of addresses that can sign to cancel agreement.
-    * @return uint the agreement index.
+    * @return uint256 the agreement index.
     */
     function createVestedAgreement(
         StandardToken _token,
         address _beneficiary,
         address _returnOnCancelAddress,
-        uint _startingBlock,
-        uint _amountPerPeriod,
-        uint _periodLength,
-        uint _numOfAgreedPeriods,
-        uint _cliffInPeriods,
-        uint _signaturesReqToCancel,
+        uint256 _startingBlock,
+        uint256 _amountPerPeriod,
+        uint256 _periodLength,
+        uint256 _numOfAgreedPeriods,
+        uint256 _cliffInPeriods,
+        uint256 _signaturesReqToCancel,
         address[] _signersArray
     )
         external
@@ -194,7 +194,7 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         require(_periodLength > 0);
         require(_numOfAgreedPeriods > 0, "Number of Agreed Periods must be greater than 0");
         // Collect funds:
-        uint totalAmount = _amountPerPeriod.mul(_numOfAgreedPeriods);
+        uint256 totalAmount = _amountPerPeriod.mul(_numOfAgreedPeriods);
         require(_token.transferFrom(msg.sender, this, totalAmount));
 
         // Write parameters:
@@ -209,7 +209,7 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         agreements[agreementsCounter].signaturesReqToCancel = _signaturesReqToCancel;
 
         // Write the signers mapping:
-        for (uint cnt = 0; cnt<_signersArray.length; cnt++) {
+        for (uint256 cnt = 0; cnt<_signersArray.length; cnt++) {
             agreements[agreementsCounter].signers[_signersArray[cnt]] = true;
         }
 
@@ -256,7 +256,7 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @dev Function to sign to cancel an agreement.
     * @param _agreementId the relevant agreement.
     */
-    function signToCancelAgreement(uint _agreementId) public onlySigner(_agreementId) {
+    function signToCancelAgreement(uint256 _agreementId) public onlySigner(_agreementId) {
         Agreement storage agreement = agreements[_agreementId];
 
         // Check attempt to double sign:
@@ -278,7 +278,7 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @dev Function to revoke vote for canceling agreement.
     * @param _agreementId the relevant agreement.
     */
-    function revokeSignToCancelAgreement(uint _agreementId) public onlySigner(_agreementId) {
+    function revokeSignToCancelAgreement(uint256 _agreementId) public onlySigner(_agreementId) {
         Agreement storage agreement = agreements[_agreementId];
 
         // Check signer did sign:
@@ -295,13 +295,13 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @dev Function for a beneficiary to collect.
     * @param _agreementId the relevant agreement.
     */
-    function collect(uint _agreementId) public onlyBeneficiary(_agreementId) {
+    function collect(uint256 _agreementId) public onlyBeneficiary(_agreementId) {
         Agreement memory agreement = agreements[_agreementId];
-        uint periodsFromStartingBlock = (block.number.sub(agreement.startingBlock)).div(agreement.periodLength);
+        uint256 periodsFromStartingBlock = (block.number.sub(agreement.startingBlock)).div(agreement.periodLength);
         require(periodsFromStartingBlock >= agreement.cliffInPeriods);
 
         // Compute periods to pay:
-        uint periodsToPay;
+        uint256 periodsToPay;
         if (periodsFromStartingBlock >= agreement.numOfAgreedPeriods) {
             periodsToPay = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
         } else {
@@ -311,7 +311,7 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         agreements[_agreementId].collectedPeriods = agreements[_agreementId].collectedPeriods.add(periodsToPay);
 
         // Transfer:
-        uint tokensToTransfer = periodsToPay.mul(agreement.amountPerPeriod);
+        uint256 tokensToTransfer = periodsToPay.mul(agreement.amountPerPeriod);
         require(agreement.token.transfer(agreement.beneficiary, tokensToTransfer));
 
         // Log collecting:
@@ -322,11 +322,11 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @dev Internal function, to cancel an agreement.
     * @param _agreementId the relevant agreement.
     */
-    function cancelAgreement(uint _agreementId) internal {
+    function cancelAgreement(uint256 _agreementId) internal {
         Agreement memory agreement = agreements[_agreementId];
         delete  agreements[_agreementId];
-        uint periodsLeft = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
-        uint tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
+        uint256 periodsLeft = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
+        uint256 tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
         require(agreement.token.transfer(agreement.returnOnCancelAddress, tokensLeft));
         // Log canceling agreement:
         emit AgreementCancel(_agreementId);

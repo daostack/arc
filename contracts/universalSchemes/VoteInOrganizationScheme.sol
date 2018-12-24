@@ -17,7 +17,7 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
         address indexed _intVoteInterface,
         IntVoteInterface _originalIntVote,
         bytes32 _originalProposalId,
-        uint _originalNumOfChoices
+        uint256 _originalNumOfChoices
     );
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
@@ -27,7 +27,7 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
     struct VoteProposal {
         IntVoteInterface originalIntVote;
         bytes32 originalProposalId;
-        uint originalNumOfChoices;
+        uint256 originalNumOfChoices;
         bool exist;
     }
 
@@ -123,11 +123,11 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
     public
     returns(bytes32)
     {
-        uint originalNumOfChoices = _originalIntVote.getNumberOfChoices(_originalProposalId);
+        uint256 originalNumOfChoices = _originalIntVote.getNumberOfChoices(_originalProposalId);
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
 
-        uint proposalNumberOfChoices = originalNumOfChoices;
+        uint256 proposalNumberOfChoices = originalNumOfChoices;
         if (intVote.isAbstainAllow()) {
             //The voting choices can be in the range of 0 - originalNumOfChoices+1 .
             //vote 0 - for not to vote in the other organization.

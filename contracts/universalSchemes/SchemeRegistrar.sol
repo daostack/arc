@@ -32,7 +32,7 @@ contract SchemeRegistrar is UniversalScheme,VotingMachineCallbacks,ProposalExecu
     struct SchemeProposal {
         address scheme; //
         bytes32 parametersHash;
-        uint proposalType; // 1: add a scheme, 2: remove a scheme.
+        uint256 proposalType; // 1: add a scheme, 2: remove a scheme.
         bytes4 permissions;
     }
 

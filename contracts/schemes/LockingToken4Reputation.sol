@@ -16,7 +16,7 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
     //      lockingId => token
     mapping(bytes32   => StandardToken) public lockedTokens;
 
-    event LockToken(bytes32 indexed _lockingId, address indexed _token, uint _numerator, uint _denominator);
+    event LockToken(bytes32 indexed _lockingId, address indexed _token, uint256 _numerator, uint256 _denominator);
 
     /**
      * @dev initialize
@@ -34,11 +34,11 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      */
     function initialize(
         Avatar _avatar,
-        uint _reputationReward,
-        uint _lockingStartTime,
-        uint _lockingEndTime,
-        uint _redeemEnableTime,
-        uint _maxLockingPeriod,
+        uint256 _reputationReward,
+        uint256 _lockingStartTime,
+        uint256 _lockingEndTime,
+        uint256 _redeemEnableTime,
+        uint256 _maxLockingPeriod,
         PriceOracleInterface _priceOracleContract)
     external
     onlyOwner
@@ -60,7 +60,7 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      * @return bool
      */
     function release(address _beneficiary,bytes32 _lockingId) public returns(bool) {
-        uint amount = super._release(_beneficiary, _lockingId);
+        uint256 amount = super._release(_beneficiary, _lockingId);
         require(lockedTokens[_lockingId].transfer(_beneficiary, amount), "transfer should success");
 
         return true;
@@ -73,10 +73,10 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      * @param _token the token to lock - this should be whitelisted at the priceOracleContract
      * @return lockingId
      */
-    function lock(uint _amount, uint _period,StandardToken _token) public returns(bytes32 lockingId) {
+    function lock(uint256 _amount, uint256 _period,StandardToken _token) public returns(bytes32 lockingId) {
 
-        uint numerator;
-        uint denominator;
+        uint256 numerator;
+        uint256 denominator;
 
         (numerator,denominator) = priceOracleContract.getPrice(address(_token));
 

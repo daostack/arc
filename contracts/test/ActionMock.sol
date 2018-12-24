@@ -6,7 +6,7 @@ import "../controller/Avatar.sol";
 contract ActionMock {
 
     event WithoutReturnValue(address _addr);
-    function test(uint _a,address _b,bytes32 _c) public view returns(uint) {
+    function test(uint256 _a,address _b,bytes32 _c) public view returns(uint) {
         require(_a == 7);
         require(_b == address(this));
         require(_c == 0x1234000000000000000000000000000000000000000000000000000000000000);

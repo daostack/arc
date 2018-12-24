@@ -7,7 +7,7 @@ import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
 contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
 
     struct ProposalInfo {
-        uint blockNumber; // the proposal's block number
+        uint256 blockNumber; // the proposal's block number
         Avatar avatar; // the proposal's avatar
         address votingMachine;
     }
@@ -27,7 +27,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         return proposal.avatar.nativeReputation().totalSupplyAt(proposal.blockNumber);
     }
 
-    function mintReputation(uint _amount,address _beneficiary,bytes32 _proposalId) external onlyVotingMachine(_proposalId) returns(bool) {
+    function mintReputation(uint256 _amount,address _beneficiary,bytes32 _proposalId) external onlyVotingMachine(_proposalId) returns(bool) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
         if (avatar == Avatar(0)) {
             return false;
@@ -35,7 +35,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         return ControllerInterface(avatar.owner()).mintReputation(_amount,_beneficiary,address(avatar));
     }
 
-    function burnReputation(uint _amount,address _beneficiary,bytes32 _proposalId) external onlyVotingMachine(_proposalId) returns(bool) {
+    function burnReputation(uint256 _amount,address _beneficiary,bytes32 _proposalId) external onlyVotingMachine(_proposalId) returns(bool) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
         if (avatar == Avatar(0)) {
             return false;
@@ -54,7 +54,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
     function stakingTokenTransfer(
         StandardToken _stakingToken,
         address _beneficiary,
-        uint _amount,
+        uint256 _amount,
         bytes32 _proposalId)
     external
     onlyVotingMachine(_proposalId)
@@ -69,6 +69,9 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
 
     function balanceOfStakingToken(StandardToken _stakingToken,bytes32 _proposalId) external view returns(uint) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
+        if (proposalsInfo[_proposalId].avatar == Avatar(0)) {
+            return 0;
+        }
         return _stakingToken.balanceOf(address(avatar));
     }
 }

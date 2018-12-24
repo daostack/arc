@@ -15,11 +15,11 @@ contract Auction4Reputation is Ownable {
     using RealMath for int216;
     using RealMath for int256;
 
-    event Bid(address indexed _bidder, uint indexed _auctionId, uint _amount);
-    event Redeem(uint indexed _auctionId, address indexed _beneficiary, uint _amount);
+    event Bid(address indexed _bidder, uint256 indexed _auctionId, uint256 _amount);
+    event Redeem(uint256 indexed _auctionId, address indexed _beneficiary, uint256 _amount);
 
     struct Auction {
-        uint totalBid;
+        uint256 totalBid;
         // A mapping from bidder addresses to their bids.
         mapping(address=>uint) bids;
     }
@@ -28,13 +28,13 @@ contract Auction4Reputation is Ownable {
     mapping(uint=>Auction) public auctions;
 
     Avatar public avatar;
-    uint public reputationRewardLeft;
-    uint public auctionsEndTime;
-    uint public auctionsStartTime;
-    uint public numberOfAuctions;
-    uint public auctionReputationReward;
-    uint public auctionPeriod;
-    uint public redeemEnableTime;
+    uint256 public reputationRewardLeft;
+    uint256 public auctionsEndTime;
+    uint256 public auctionsStartTime;
+    uint256 public numberOfAuctions;
+    uint256 public auctionReputationReward;
+    uint256 public auctionPeriod;
+    uint256 public redeemEnableTime;
     StandardToken public token;
     address public wallet;
 
@@ -55,11 +55,11 @@ contract Auction4Reputation is Ownable {
      */
     function initialize(
         Avatar _avatar,
-        uint _auctionReputationReward,
-        uint _auctionsStartTime,
-        uint _auctionPeriod,
-        uint _numberOfAuctions,
-        uint _redeemEnableTime,
+        uint256 _auctionReputationReward,
+        uint256 _auctionsStartTime,
+        uint256 _auctionPeriod,
+        uint256 _numberOfAuctions,
+        uint256 _redeemEnableTime,
         StandardToken _token,
         address _wallet)
        external
@@ -87,13 +87,13 @@ contract Auction4Reputation is Ownable {
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary to redeem.
      * @param _auctionId the auction id to redeem from.
-     * @return uint reputation rewarded
+     * @return uint256 reputation rewarded
      */
-    function redeem(address _beneficiary, uint _auctionId) public returns(uint reputation) {
+    function redeem(address _beneficiary, uint256 _auctionId) public returns(uint256 reputation) {
         // solium-disable-next-line security/no-block-members
         require(now > redeemEnableTime, "now > redeemEnableTime");
         Auction storage auction = auctions[_auctionId];
-        uint bid = auction.bids[_beneficiary];
+        uint256 bid = auction.bids[_beneficiary];
         require(bid > 0, "bidding amount should be > 0");
         auction.bids[_beneficiary] = 0;
         int256 repRelation = int216(bid).toReal().mul(int216(auctionReputationReward).toReal());
@@ -109,7 +109,7 @@ contract Auction4Reputation is Ownable {
      * @param _amount the amount to bid with
      * @return auctionId
      */
-    function bid(uint _amount) public returns(uint auctionId) {
+    function bid(uint256 _amount) public returns(uint256 auctionId) {
         require(_amount > 0, "bidding amount should be > 0");
         // solium-disable-next-line security/no-block-members
         require(now <= auctionsEndTime, "bidding should be within the allowed bidding period");
@@ -130,7 +130,7 @@ contract Auction4Reputation is Ownable {
      * @param _auctionId auction id
      * @return uint
      */
-    function getBid(address _bidder,uint _auctionId) public view returns(uint) {
+    function getBid(address _bidder,uint256 _auctionId) public view returns(uint) {
         return auctions[_auctionId].bids[_bidder];
     }
 
@@ -141,7 +141,7 @@ contract Auction4Reputation is Ownable {
     function transferToWallet() public {
       // solium-disable-next-line security/no-block-members
         require(now > auctionsEndTime, "now > auctionsEndTime");
-        uint tokenBalance = token.balanceOf(this);
+        uint256 tokenBalance = token.balanceOf(this);
         require(token.transfer(wallet,tokenBalance), "transfer should success");
     }
 

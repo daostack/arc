@@ -33,7 +33,7 @@ contract GlobalConstraintRegistrar is UniversalScheme,VotingMachineCallbacks,Pro
     struct GCProposal {
         address gc; // The address of the global constraint contract.
         bytes32 params; // Parameters for global constraint.
-        uint proposalType; // 1: add a GC, 2: remove a GC.
+        uint256 proposalType; // 1: add a GC, 2: remove a GC.
         bytes32 voteToRemoveParams; // Voting parameters for removing this GC.
     }
 

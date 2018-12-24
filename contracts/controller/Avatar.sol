@@ -18,12 +18,12 @@ contract Avatar is Ownable {
     Reputation public nativeReputation;
 
     event GenericCall(address indexed _contract, bytes _params);
-    event SendEther(uint _amountInWei, address indexed _to);
-    event ExternalTokenTransfer(address indexed _externalToken, address indexed _to, uint _value);
-    event ExternalTokenTransferFrom(address indexed _externalToken, address _from, address _to, uint _value);
-    event ExternalTokenIncreaseApproval(StandardToken indexed _externalToken, address _spender, uint _addedValue);
-    event ExternalTokenDecreaseApproval(StandardToken indexed _externalToken, address _spender, uint _subtractedValue);
-    event ReceiveEther(address indexed _sender, uint _value);
+    event SendEther(uint256 _amountInWei, address indexed _to);
+    event ExternalTokenTransfer(address indexed _externalToken, address indexed _to, uint256 _value);
+    event ExternalTokenTransferFrom(address indexed _externalToken, address _from, address _to, uint256 _value);
+    event ExternalTokenIncreaseApproval(StandardToken indexed _externalToken, address _spender, uint256 _addedValue);
+    event ExternalTokenDecreaseApproval(StandardToken indexed _externalToken, address _spender, uint256 _subtractedValue);
+    event ReceiveEther(address indexed _sender, uint256 _value);
 
     /**
     * @dev the constructor takes organization name, native token and reputation system
@@ -70,7 +70,7 @@ contract Avatar is Ownable {
     * @param _to send the ethers to this address
     * @return bool which represents success
     */
-    function sendEther(uint _amountInWei, address _to) public onlyOwner returns(bool) {
+    function sendEther(uint256 _amountInWei, address _to) public onlyOwner returns(bool) {
         _to.transfer(_amountInWei);
         emit SendEther(_amountInWei, _to);
         return true;
@@ -83,7 +83,7 @@ contract Avatar is Ownable {
     * @param _value the amount of tokens to transfer
     * @return bool which represents success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint _value)
+    function externalTokenTransfer(StandardToken _externalToken, address _to, uint256 _value)
     public onlyOwner returns(bool)
     {
         _externalToken.safeTransfer(_to, _value);
@@ -103,7 +103,7 @@ contract Avatar is Ownable {
         StandardToken _externalToken,
         address _from,
         address _to,
-        uint _value
+        uint256 _value
     )
     public onlyOwner returns(bool)
     {
@@ -120,7 +120,7 @@ contract Avatar is Ownable {
     * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint _addedValue)
+    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint256 _addedValue)
     public onlyOwner returns(bool)
     {
         require(_externalToken.increaseApproval(_spender, _addedValue),"increase approval must succeed");
@@ -136,7 +136,7 @@ contract Avatar is Ownable {
     * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint _subtractedValue )
+    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint256 _subtractedValue )
     public onlyOwner returns(bool)
     {
         require(_externalToken.decreaseApproval(_spender, _subtractedValue),"decrease approval must succeed");

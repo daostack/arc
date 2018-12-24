@@ -15,18 +15,18 @@ contract FixedReputationAllocation is Ownable {
     using RealMath for int216;
     using RealMath for int256;
 
-    event Redeem(address indexed _beneficiary, uint _amount);
-    event BeneficiaryAddressAdded(address _beneficiary);
+    event Redeem(address indexed _beneficiary, uint256 _amount);
+    event BeneficiaryAddressAdded(address indexed _beneficiary);
 
     // beneficiary -> exist
     mapping(address => bool) public beneficiaries;
 
     Avatar public avatar;
-    uint public reputationReward;
+    uint256 public reputationReward;
     bool public isEnable;
-    uint public numberOfBeneficiaries;
-    uint public beneficiaryReward;
-    uint public redeemEnableTime;
+    uint256 public numberOfBeneficiaries;
+    uint256 public beneficiaryReward;
+    uint256 public redeemEnableTime;
 
     /**
      * @dev initialize
@@ -34,7 +34,7 @@ contract FixedReputationAllocation is Ownable {
      * @param _reputationReward the total reputation this contract will reward
      * @param _redeemEnableTime time to enable redeem
      */
-    function initialize(Avatar _avatar, uint _reputationReward, uint _redeemEnableTime) external onlyOwner {
+    function initialize(Avatar _avatar, uint256 _reputationReward, uint256 _redeemEnableTime) external onlyOwner {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         reputationReward = _reputationReward;

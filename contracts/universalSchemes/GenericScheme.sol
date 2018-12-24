@@ -53,8 +53,8 @@ contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         delete organizationsProposals[avatar][_proposalId];
         emit ProposalDeleted(avatar, _proposalId);
         bool retVal = true;
-        // If no decision do nothing:
-        if (_param != 0) {
+        // Check decision:
+        if (_param == 1) {
         // Define controller and get the params:
             ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
             if (controller.genericCall(
