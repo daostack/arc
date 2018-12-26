@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../controller/ControllerInterface.sol";
 import { RealMath } from "../libs/RealMath.sol";
@@ -53,7 +53,7 @@ contract FixedReputationAllocation is Ownable {
         beneficiaries[_beneficiary] = false;
         // solium-disable-next-line security/no-block-members
         require(now > redeemEnableTime, "require now > redeemEnableTime");
-        require(ControllerInterface(avatar.owner()).mintReputation(beneficiaryReward, _beneficiary, avatar), "mint reputation should success");
+        require(ControllerInterface(avatar.owner()).mintReputation(beneficiaryReward, _beneficiary, address(avatar)), "mint reputation failed");
 
         emit Redeem(_beneficiary, beneficiaryReward);
 
@@ -79,7 +79,7 @@ contract FixedReputationAllocation is Ownable {
      * @dev add addBeneficiaries function
      * @param _beneficiaries addresses
      */
-    function addBeneficiaries(address[] _beneficiaries) public onlyOwner {
+    function addBeneficiaries(address[] memory _beneficiaries) public onlyOwner {
         for (uint256 i = 0; i < _beneficiaries.length; i++) {
             addBeneficiary(_beneficiaries[i]);
         }

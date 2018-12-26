@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../controller/ControllerInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -21,17 +21,8 @@ contract Forwarder is Ownable {
         // solium-disable-next-line security/no-block-members
         require(expirationTime > now, "expirationTime > now");
         // solium-disable-next-line security/no-low-level-calls
-        bool result = avatar.owner().call(msg.data);
-        // solium-disable-next-line security/no-inline-assembly
-        assembly {
-        // Copy the returned data.
-        returndatacopy(0, 0, returndatasize)
-
-        switch result
-        // call returns 0 on error.
-        case 0 { revert(0, returndatasize) }
-        default { return(0, returndatasize) }
-        }
+        (bool result,) = avatar.owner().call(msg.data);
+        require(result);
     }
 
     /**

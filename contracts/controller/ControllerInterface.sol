@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./Avatar.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
@@ -113,7 +113,7 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function upgradeController(address _newController,address _avatar)
+    function upgradeController(address _newController,Avatar _avatar)
     external returns(bool);
 
     /**
@@ -123,9 +123,9 @@ interface ControllerInterface {
     * @param _avatar the controller's avatar address
     * @return bytes32  - the return value of the called _contract's function.
     */
-    function genericCall(address _contract,bytes _data,address _avatar)
+    function genericCall(address _contract,bytes calldata _data,Avatar _avatar)
     external
-    returns(bytes32);
+    returns(bytes memory);
 
   /**
    * @dev send some ether
@@ -134,7 +134,7 @@ interface ControllerInterface {
    * @param _avatar address
    * @return bool which represents a success
    */
-    function sendEther(uint256 _amountInWei, address _to,address _avatar)
+    function sendEther(uint256 _amountInWei, address payable _to,Avatar _avatar)
     external returns(bool);
 
     /**
@@ -145,7 +145,7 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint256 _value,address _avatar)
+    function externalTokenTransfer(ERC20 _externalToken, address _to, uint256 _value,Avatar _avatar)
     external
     returns(bool);
 
@@ -160,33 +160,19 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint256 _value,address _avatar)
+    function externalTokenTransferFrom(ERC20 _externalToken, address _from, address _to, uint256 _value,Avatar _avatar)
     external
     returns(bool);
 
     /**
-    * @dev increase approval for the spender address to spend a specified amount of tokens
+    * @dev externalTokenApproval approve the spender address to spend a specified amount of tokens
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
-    * @param _avatar address
+    * @param _value the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint256 _addedValue,address _avatar)
-    external
-    returns(bool);
-
-    /**
-    * @dev decrease approval for the spender address to spend a specified amount of tokens
-    *      on behalf of msg.sender.
-    * @param _externalToken the address of the Token Contract
-    * @param _spender address
-    * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
-    * @param _avatar address
-    * @return bool which represents a success
-    */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint256 _subtractedValue,address _avatar)
+    function externalTokenApproval(ERC20 _externalToken, address _spender, uint256 _value ,Avatar _avatar)
     external
     returns(bool);
 

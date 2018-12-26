@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import { RealMath } from "../libs/RealMath.sol";
@@ -35,7 +35,7 @@ contract Auction4Reputation is Ownable {
     uint256 public auctionReputationReward;
     uint256 public auctionPeriod;
     uint256 public redeemEnableTime;
-    StandardToken public token;
+    ERC20 public token;
     address public wallet;
 
     /**
@@ -52,6 +52,8 @@ contract Auction4Reputation is Ownable {
      *        redeem reputation can be done after this time.
      * @param _token the bidding token
      * @param  _wallet the address of the wallet the token will be transfer to.
+     *         Please note that _wallet address should be a trusted account.
+     *         Normally this address should be set as the DAO's avatar address.
      */
     function initialize(
         Avatar _avatar,
@@ -60,7 +62,7 @@ contract Auction4Reputation is Ownable {
         uint256 _auctionPeriod,
         uint256 _numberOfAuctions,
         uint256 _redeemEnableTime,
-        StandardToken _token,
+        ERC20 _token,
         address _wallet)
        external
        onlyOwner
@@ -100,7 +102,7 @@ contract Auction4Reputation is Ownable {
         reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
+        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should success");
         emit Redeem(_auctionId, _beneficiary, reputation);
     }
 
@@ -115,7 +117,7 @@ contract Auction4Reputation is Ownable {
         require(now <= auctionsEndTime, "bidding should be within the allowed bidding period");
         // solium-disable-next-line security/no-block-members
         require(now >= auctionsStartTime, "bidding is enable only after bidding auctionsStartTime");
-        require(token.transferFrom(msg.sender, this, _amount), "transferFrom should success");
+        require(token.transferFrom(msg.sender, address(this), _amount), "transferFrom should success");
         // solium-disable-next-line security/no-block-members
         auctionId = (now - auctionsStartTime) / auctionPeriod;
         Auction storage auction = auctions[auctionId];
@@ -141,7 +143,7 @@ contract Auction4Reputation is Ownable {
     function transferToWallet() public {
       // solium-disable-next-line security/no-block-members
         require(now > auctionsEndTime, "now > auctionsEndTime");
-        uint256 tokenBalance = token.balanceOf(this);
+        uint256 tokenBalance = token.balanceOf(address(this));
         require(token.transfer(wallet,tokenBalance), "transfer should success");
     }
 

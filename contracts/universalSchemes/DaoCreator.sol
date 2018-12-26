@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./UniversalScheme.sol";
 import "../controller/UController.sol";
@@ -13,8 +13,8 @@ contract ControllerCreator {
 
     function create(Avatar _avatar) public returns(address) {
         Controller controller = new Controller(_avatar);
-        controller.registerScheme(msg.sender,bytes32(0),bytes4(0x1F),address(_avatar));
-        controller.unregisterScheme(this,address(_avatar));
+        controller.registerScheme(msg.sender,bytes32(0),bytes4(0x0000001f),address(_avatar));
+        controller.unregisterScheme(address(this),address(_avatar));
         return address(controller);
     }
 }
@@ -49,9 +49,9 @@ contract DaoCreator {
       */
     function addFounders (
         Avatar _avatar,
-        address[] _founders,
-        uint[] _foundersTokenAmount,
-        uint[] _foundersReputationAmount
+        address[] calldata _founders,
+        uint[] calldata _foundersTokenAmount,
+        uint[] calldata _foundersReputationAmount
       )
       external
       returns(bool)
@@ -90,12 +90,12 @@ contract DaoCreator {
     * @return The address of the avatar of the controller
     */
     function forgeOrg (
-        string _orgName,
-        string _tokenName,
-        string _tokenSymbol,
-        address[] _founders,
-        uint[] _foundersTokenAmount,
-        uint[] _foundersReputationAmount,
+        string calldata _orgName,
+        string calldata _tokenName,
+        string calldata _tokenSymbol,
+        address[] calldata _founders,
+        uint[] calldata _foundersTokenAmount,
+        uint[] calldata _foundersReputationAmount,
         UController _uController,
         uint256 _cap
       )
@@ -123,9 +123,9 @@ contract DaoCreator {
       */
     function setSchemes (
         Avatar _avatar,
-        address[] _schemes,
-        bytes32[] _params,
-        bytes4[] _permissions
+        address[] calldata _schemes,
+        bytes32[] calldata _params,
+        bytes4[] calldata _permissions
     )
         external
     {
@@ -138,7 +138,7 @@ contract DaoCreator {
             controller.registerScheme(_schemes[i], _params[i], _permissions[i],address(_avatar));
         }
         // Unregister self:
-        controller.unregisterScheme(this,address(_avatar));
+        controller.unregisterScheme(address(this),address(_avatar));
         // Remove lock:
         delete locks[address(_avatar)];
         emit InitialSchemesSet(address(_avatar));
@@ -160,12 +160,12 @@ contract DaoCreator {
      * @return The address of the avatar of the controller
      */
     function _forgeOrg (
-        string _orgName,
-        string _tokenName,
-        string _tokenSymbol,
-        address[] _founders,
-        uint[] _foundersTokenAmount,
-        uint[] _foundersReputationAmount,
+        string memory _orgName,
+        string memory _tokenName,
+        string memory _tokenSymbol,
+        address[] memory _founders,
+        uint[] memory _foundersTokenAmount,
+        uint[] memory _foundersReputationAmount,
         UController _uController,
         uint256 _cap
     ) private returns(address)
@@ -193,15 +193,15 @@ contract DaoCreator {
         // Create Controller:
         if (UController(0) == _uController) {
             controller = ControllerInterface(controllerCreator.create(avatar));
-            avatar.transferOwnership(controller);
+            avatar.transferOwnership(address(controller));
         } else {
             controller = _uController;
-            avatar.transferOwnership(controller);
+            avatar.transferOwnership(address(controller));
             _uController.newOrganization(avatar);
         }
         // Transfer ownership:
-        nativeToken.transferOwnership(controller);
-        nativeReputation.transferOwnership(controller);
+        nativeToken.transferOwnership(address(controller));
+        nativeReputation.transferOwnership(address(controller));
 
         locks[address(avatar)] = msg.sender;
 

@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.0-alpha.59",
+  "version": "0.0.1-rc.1",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -52,10 +52,8 @@
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
-    "solc": "^0.4.24",
-    "solc-cli": "^0.3.0",
     "solium": "^1.1.8",
-    "truffle": "5.0.0-beta.1",
+    "truffle": "5.0.0",
     "uint32": "^0.2.1"
   },
   "repository": {
@@ -72,7 +70,7 @@
     "arc"
   ],
   "engines": {
-    "node": ">=10.14.1"
+    "node": ">=10.14.2"
   },
   "author": "DAOstack (https://www.daostack.io)",
   "license": "GPL-3.0",
@@ -81,11 +79,11 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra": "0.0.0-alpha.11",
+    "@daostack/infra": "^0.0.1-rc.2",
     "ethereumjs-abi": "^0.6.5",
-    "openzeppelin-solidity": "1.12.0"
+    "openzeppelin-solidity": "github:OpenZeppelin/openzeppelin-solidity#release-v2.1.0-solc-0.5"
   },
   "peerDependencies": {
-    "ganache-cli": "^6.2.3"
+    "ganache-cli": "^6.2.5"
   }
 }

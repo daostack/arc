@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../universalSchemes/ContributionReward.sol";
 import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
@@ -43,10 +43,10 @@ contract Redeemer {
     * @return int crEthReward Ether - from ContributionReward
     * @return int crExternalTokenReward ExternalToken - from ContributionReward
     */
-    function redeem(bytes32 _proposalId,address _avatar,address _beneficiary)
+    function redeem(bytes32 _proposalId,Avatar _avatar,address _beneficiary)
     external
-    returns(uint[3] gpRewards,
-            uint[2] gpDaoBountyReward,
+    returns(uint[3] memory gpRewards,
+            uint[2] memory gpDaoBountyReward,
             bool executed,
             uint256 winningVote,
             int crReputationReward,
@@ -69,32 +69,32 @@ contract Redeemer {
             (gpDaoBountyReward[0],gpDaoBountyReward[1]) = genesisProtocol.redeemDaoBounty(_proposalId,_beneficiary);
             winningVote = genesisProtocol.winningVote(_proposalId);
             //redeem from contributionReward only if it executed
-            if (contributionReward.getProposalExecutionTime(_proposalId,_avatar) > 0) {
+            if (contributionReward.getProposalExecutionTime(_proposalId,address(_avatar)) > 0) {
                 (crReputationReward,crNativeTokenReward,crEthReward,crExternalTokenReward) = contributionRewardRedeem(_proposalId,_avatar);
             }
         }
     }
 
-    function contributionRewardRedeem(bytes32 _proposalId,address _avatar)
+    function contributionRewardRedeem(bytes32 _proposalId,Avatar _avatar)
     private
     returns (int reputation,uint256 nativeToken,uint256 eth,uint256 externalToken)
     {
         bool[4] memory whatToRedeem;
         whatToRedeem[0] = true; //reputation
         whatToRedeem[1] = true; //nativeToken
-        uint256 periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,2);
-        uint256 ethReward = contributionReward.getProposalEthReward(_proposalId,_avatar);
-        uint256 externalTokenReward = contributionReward.getProposalExternalTokenReward(_proposalId,_avatar);
-        address externalTokenAddress = contributionReward.getProposalExternalToken(_proposalId,_avatar);
+        uint256 periodsToPay = contributionReward.getPeriodsToPay(_proposalId,address(_avatar),2);
+        uint256 ethReward = contributionReward.getProposalEthReward(_proposalId,address(_avatar));
+        uint256 externalTokenReward = contributionReward.getProposalExternalTokenReward(_proposalId,address(_avatar));
+        address externalTokenAddress = contributionReward.getProposalExternalToken(_proposalId,address(_avatar));
         ethReward = periodsToPay.mul(ethReward);
-        if ((ethReward == 0) || (_avatar.balance < ethReward)) {
+        if ((ethReward == 0) || (address(_avatar).balance < ethReward)) {
             whatToRedeem[2] = false;
         } else {
             whatToRedeem[2] = true;
         }
-        periodsToPay = contributionReward.getPeriodsToPay(_proposalId,_avatar,3);
+        periodsToPay = contributionReward.getPeriodsToPay(_proposalId,address(_avatar),3);
         externalTokenReward = periodsToPay.mul(externalTokenReward);
-        if ((externalTokenReward == 0) || (StandardToken(externalTokenAddress).balanceOf(_avatar) < externalTokenReward)) {
+        if ((externalTokenReward == 0) || (ERC20(externalTokenAddress).balanceOf(address(_avatar)) < externalTokenReward)) {
             whatToRedeem[3] = false;
         } else {
             whatToRedeem[3] = true;

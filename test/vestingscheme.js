@@ -2,7 +2,7 @@ import * as helpers from './helpers';
 const constants = require('./constants');
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const VestingScheme = artifacts.require('./VestingScheme.sol');
-const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
@@ -16,7 +16,7 @@ const setupVestingSchemeParams = async function(
                                             vestingScheme,
                                             ) {
   var vestingSchemeParams = new VestingSchemeParams();
-  vestingSchemeParams.votingMachine = await helpers.setupAbsoluteVote(true,50,vestingScheme.address);
+  vestingSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,vestingScheme.address);
   await vestingScheme.setParameters(vestingSchemeParams.votingMachine.params,vestingSchemeParams.votingMachine.absoluteVote.address);
   vestingSchemeParams.paramsHash = await vestingScheme.getParametersHash(vestingSchemeParams.votingMachine.params,vestingSchemeParams.votingMachine.absoluteVote.address);
   return vestingSchemeParams;
@@ -25,7 +25,7 @@ const setupVestingSchemeParams = async function(
 const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
-   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
+   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.vestingScheme = await VestingScheme.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
@@ -76,23 +76,6 @@ contract('VestingScheme', accounts => {
        var avatarAddress = await helpers.getValueFromLogs(tx, '_avatar',1);
        assert.equal(avatarAddress,testSetup.org.avatar.address);
       });
-
-    it("proposeVestingAgreement check owner vote", async function() {
-     var testSetup = await setup(accounts);
-     var blockNumber = await (web3.utils.toBN(await web3.eth.getBlockNumber()));
-     var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
-                                                                    accounts[1],
-                                                                    blockNumber,
-                                                                    15,
-                                                                    2,
-                                                                    3,
-                                                                    11,
-                                                                    3,
-                                                                    [accounts[0],accounts[1],accounts[2]],
-                                                                    testSetup.org.avatar.address);
-     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-     await helpers.checkVoteInfo(testSetup.vestingSchemeParams.votingMachine.absoluteVote,proposalId,accounts[0],[1,testSetup.reputationArray[0]]);
-    });
 
     it("proposeVestingAgreement check assert _signaturesReqToCancel <= _signersArray.length", async function() {
       var testSetup = await setup(accounts);
@@ -157,7 +140,7 @@ contract('VestingScheme', accounts => {
                                                                     testSetup.org.avatar.address);
     //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-     await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
+     await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
      await testSetup.vestingScheme.getPastEvents('ProposedVestedAgreement', {
            filter: {_proposalId: proposalId},
            fromBlock: tx.blockNumber,
@@ -188,7 +171,7 @@ contract('VestingScheme', accounts => {
        //check organizationsProposals before execution
        var organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
        assert.equal(organizationProposal[0],testSetup.org.token.address);//proposalType
-       await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
+       await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
        organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
        assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
@@ -240,7 +223,7 @@ contract('VestingScheme', accounts => {
       assert.equal(organizationProposal[0],testSetup.org.token.address);
 
       //Vote with reputation to trigger execution
-      await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,{from:accounts[2]});
+      await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       //check organizationsProposals after execution
       organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
       assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
@@ -269,7 +252,7 @@ contract('VestingScheme', accounts => {
                var organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
                assert.equal(organizationProposal[0],testSetup.org.token.address);
                assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),0);
-               await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,{from:accounts[2]});
+               await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
                //check organizationsProposals after execution
                organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
                assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address

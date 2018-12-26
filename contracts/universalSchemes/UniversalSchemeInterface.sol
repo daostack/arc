@@ -1,9 +1,9 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../controller/Controller.sol";
 import "../controller/Avatar.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 
 contract UniversalSchemeInterface {

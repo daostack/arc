@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./Avatar.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
@@ -66,7 +66,7 @@ contract Controller is ControllerInterface {
         avatar = _avatar;
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
-        schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x1F)});
+        schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x0000001F)});
     }
 
   // Do not allow mistaken calls:
@@ -76,27 +76,27 @@ contract Controller is ControllerInterface {
 
   // Modifiers:
     modifier onlyRegisteredScheme() {
-        require(schemes[msg.sender].permissions&bytes4(1) == bytes4(1));
+        require(schemes[msg.sender].permissions&bytes4(0x00000001) == bytes4(0x00000001));
         _;
     }
 
     modifier onlyRegisteringSchemes() {
-        require(schemes[msg.sender].permissions&bytes4(2) == bytes4(2));
+        require(schemes[msg.sender].permissions&bytes4(0x00000002) == bytes4(0x00000002));
         _;
     }
 
     modifier onlyGlobalConstraintsScheme() {
-        require(schemes[msg.sender].permissions&bytes4(4) == bytes4(4));
+        require(schemes[msg.sender].permissions&bytes4(0x00000004) == bytes4(0x00000004));
         _;
     }
 
     modifier onlyUpgradingScheme() {
-        require(schemes[msg.sender].permissions&bytes4(8) == bytes4(8));
+        require(schemes[msg.sender].permissions&bytes4(0x00000008) == bytes4(0x00000008));
         _;
     }
 
     modifier onlyGenericCallScheme() {
-        require(schemes[msg.sender].permissions&bytes4(16) == bytes4(16));
+        require(schemes[msg.sender].permissions&bytes4(0x00000010) == bytes4(0x00000010));
         _;
     }
 
@@ -188,14 +188,14 @@ contract Controller is ControllerInterface {
     // Implementation is a bit messy. One must recall logic-circuits ^^
 
     // produces non-zero if sender does not have all of the perms that are changing between old and new
-        require(bytes4(0x1F)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
+        require(bytes4(0x0000001f)&(_permissions^scheme.permissions)&(~schemes[msg.sender].permissions) == bytes4(0));
 
     // produces non-zero if sender does not have all of the perms in the old scheme
-        require(bytes4(0x1F)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
+        require(bytes4(0x0000001f)&(scheme.permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
     // Add or change the scheme:
         schemes[_scheme].paramsHash = _paramsHash;
-        schemes[_scheme].permissions = _permissions|bytes4(1);
+        schemes[_scheme].permissions = _permissions|bytes4(0x00000001);
         emit RegisterScheme(msg.sender, _scheme);
         return true;
     }
@@ -217,7 +217,7 @@ contract Controller is ControllerInterface {
             return false;
         }
     // Check the unregistering scheme has enough permissions:
-        require(bytes4(0x1F)&(schemes[_scheme].permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
+        require(bytes4(0x0000001f)&(schemes[_scheme].permissions&(~schemes[msg.sender].permissions)) == bytes4(0));
 
     // Unregister:
         emit UnregisterScheme(msg.sender, _scheme);
@@ -375,10 +375,10 @@ contract Controller is ControllerInterface {
     * @param  _newController the address of the new controller.
     * @return bool which represents a success
     */
-    function upgradeController(address _newController,address _avatar)
+    function upgradeController(address _newController,Avatar _avatar)
     external
     onlyUpgradingScheme
-    isAvatarValid(_avatar)
+    isAvatarValid(address(_avatar))
     returns(bool)
     {
         require(newController == address(0));   // so the upgrade could be done once for a contract.
@@ -394,7 +394,7 @@ contract Controller is ControllerInterface {
             nativeReputation.transferOwnership(_newController);
             require(nativeReputation.owner()==_newController);
         }
-        emit UpgradeController(this,newController);
+        emit UpgradeController(address(this),newController);
         return true;
     }
 
@@ -405,20 +405,14 @@ contract Controller is ControllerInterface {
     * @param _avatar the controller's avatar address
     * @return bytes32  - the return value of the called _contract's function.
     */
-    function genericCall(address _contract,bytes _data,address _avatar)
+    function genericCall(address _contract,bytes calldata _data,Avatar _avatar)
     external
     onlyGenericCallScheme
     onlySubjectToConstraint("genericCall")
-    isAvatarValid(_avatar)
-    returns (bytes32 returnValue)
+    isAvatarValid(address(_avatar))
+    returns (bytes memory returnValue)
     {
-        avatar.genericCall(_contract, _data);
-        // solium-disable-next-line security/no-inline-assembly
-        assembly {
-        // Copy the returned data.
-        returndatacopy(returnValue, 0, returndatasize)
-        return(returnValue, 0x20)
-        }
+        return avatar.genericCall(_contract, _data);
     }
 
   /**
@@ -427,11 +421,11 @@ contract Controller is ControllerInterface {
    * @param _to address of the beneficiary
    * @return bool which represents a success
    */
-    function sendEther(uint256 _amountInWei, address _to,address _avatar)
+    function sendEther(uint256 _amountInWei, address payable _to,Avatar _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("sendEther")
-    isAvatarValid(_avatar)
+    isAvatarValid(address(_avatar))
     returns(bool)
     {
         return avatar.sendEther(_amountInWei, _to);
@@ -444,11 +438,11 @@ contract Controller is ControllerInterface {
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint256 _value,address _avatar)
+    function externalTokenTransfer(ERC20 _externalToken, address _to, uint256 _value,Avatar _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenTransfer")
-    isAvatarValid(_avatar)
+    isAvatarValid(address(_avatar))
     returns(bool)
     {
         return avatar.externalTokenTransfer(_externalToken, _to, _value);
@@ -464,50 +458,32 @@ contract Controller is ControllerInterface {
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint256 _value,address _avatar)
+    function externalTokenTransferFrom(ERC20 _externalToken, address _from, address _to, uint256 _value,Avatar _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenTransferFrom")
-    isAvatarValid(_avatar)
+    isAvatarValid(address(_avatar))
     returns(bool)
     {
         return avatar.externalTokenTransferFrom(_externalToken, _from, _to, _value);
     }
 
     /**
-    * @dev increase approval for the spender address to spend a specified amount of tokens
+    * @dev externalTokenApproval approve the spender address to spend a specified amount of tokens
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
+    * @param _value the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint256 _addedValue,address _avatar)
+    function externalTokenApproval(ERC20 _externalToken, address _spender, uint256 _value ,Avatar _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenIncreaseApproval")
-    isAvatarValid(_avatar)
+    isAvatarValid(address(_avatar))
     returns(bool)
     {
-        return avatar.externalTokenIncreaseApproval(_externalToken, _spender, _addedValue);
-    }
-
-    /**
-    * @dev decrease approval for the spender address to spend a specified amount of tokens
-    *      on behalf of msg.sender.
-    * @param _externalToken the address of the Token Contract
-    * @param _spender address
-    * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
-    * @return bool which represents a success
-    */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint256 _subtractedValue,address _avatar)
-    external
-    onlyRegisteredScheme
-    onlySubjectToConstraint("externalTokenDecreaseApproval")
-    isAvatarValid(_avatar)
-    returns(bool)
-    {
-        return avatar.externalTokenDecreaseApproval(_externalToken, _spender, _subtractedValue);
+        return avatar.externalTokenApproval(_externalToken, _spender, _value);
     }
 
     /**
@@ -520,6 +496,6 @@ contract Controller is ControllerInterface {
     }
 
     function _isSchemeRegistered(address _scheme) private view returns(bool) {
-        return (schemes[_scheme].permissions&bytes4(1) != bytes4(0));
+        return (schemes[_scheme].permissions&bytes4(0x00000001) != bytes4(0));
     }
 }

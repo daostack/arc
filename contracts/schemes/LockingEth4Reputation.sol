@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./Locking4Reputation.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -47,7 +47,7 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
      * @param _lockingId the locking id
      * @return bool
      */
-    function release(address _beneficiary, bytes32 _lockingId) public returns(bool) {
+    function release(address payable _beneficiary, bytes32 _lockingId) public returns(bool) {
         uint256 amount = super._release(_beneficiary, _lockingId);
         _beneficiary.transfer(amount);
 

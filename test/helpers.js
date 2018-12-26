@@ -9,12 +9,11 @@ const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 
-
+export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
 export const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
-
 
 export class TestSetup {
   constructor() {
@@ -121,12 +120,12 @@ export function assertJump(error) {
   assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned' + error.message);
 }
 
-export const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50 ) {
+export const setupAbsoluteVote = async function (voteOnBehalf=NULL_ADDRESS, precReq=50 ) {
   var votingMachine = new VotingMachine();
   votingMachine.absoluteVote = await AbsoluteVote.new();
   // register some parameters
-  await votingMachine.absoluteVote.setParameters( precReq, isOwnedVote);
-  votingMachine.params = await votingMachine.absoluteVote.getParametersHash( precReq, isOwnedVote);
+  await votingMachine.absoluteVote.setParameters( precReq, voteOnBehalf);
+  votingMachine.params = await votingMachine.absoluteVote.getParametersHash( precReq, voteOnBehalf);
   return votingMachine;
 };
 
@@ -180,7 +179,7 @@ export const setupGenesisProtocol = async function (
   return votingMachine;
 };
 
-export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=0,cap=0) {
+export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=NULL_ADDRESS,cap=0) {
   var org = new Organization();
   var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,controller,cap,{gas: constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
@@ -194,7 +193,7 @@ export const setupOrganizationWithArrays = async function (daoCreator,daoCreator
   return org;
 };
 
-export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=0,cap=0) {
+export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=NULL_ADDRESS,cap=0) {
   var org = new Organization();
   var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],controller,cap,{gas: constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);

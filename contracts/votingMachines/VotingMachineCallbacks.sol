@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../universalSchemes/UniversalScheme.sol";
 import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
@@ -52,7 +52,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
     }
 
     function stakingTokenTransfer(
-        StandardToken _stakingToken,
+        ERC20 _stakingToken,
         address _beneficiary,
         uint256 _amount,
         bytes32 _proposalId)
@@ -64,10 +64,10 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         if (avatar == Avatar(0)) {
             return false;
         }
-        return ControllerInterface(avatar.owner()).externalTokenTransfer(_stakingToken,_beneficiary,_amount,address(avatar));
+        return ControllerInterface(avatar.owner()).externalTokenTransfer(_stakingToken,_beneficiary,_amount,avatar);
     }
 
-    function balanceOfStakingToken(StandardToken _stakingToken,bytes32 _proposalId) external view returns(uint) {
+    function balanceOfStakingToken(ERC20 _stakingToken,bytes32 _proposalId) external view returns(uint) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
         if (proposalsInfo[_proposalId].avatar == Avatar(0)) {
             return 0;

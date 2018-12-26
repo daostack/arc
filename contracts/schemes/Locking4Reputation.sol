@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../controller/ControllerInterface.sol";
 import { RealMath } from "../libs/RealMath.sol";
@@ -56,7 +56,7 @@ contract Locking4Reputation {
 
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
+        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should success");
 
         emit Redeem(_beneficiary, reputation);
     }
@@ -105,7 +105,7 @@ contract Locking4Reputation {
         // solium-disable-next-line security/no-block-members
         require(now >= lockingStartTime, "lock should start after lockingStartTime");
 
-        lockingId = keccak256(abi.encodePacked(this, lockingsCounter));
+        lockingId = keccak256(abi.encodePacked(address(this), lockingsCounter));
         lockingsCounter = lockingsCounter.add(1);
 
         Locker storage locker = lockers[_locker][lockingId];
