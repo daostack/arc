@@ -20,7 +20,7 @@
     "start": "pm2 start truffle -- serve",
     "lint": "eslint .",
     "lint --fix": "eslint --fix .",
-    "solium": "solium --dir ./contracts/",
+    "solium": "solium --dir .",
     "truffle": "truffle",
     "build": "rimraf build && truffle compile",
     "docs:update": "soldoc -q -o docs/generated_docs",

@@ -57,10 +57,7 @@ contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         if (_param == 1) {
         // Define controller and get the params:
             ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
-            genericCallReturnValue = controller.genericCall(
-                                     params.contractToCall,
-                                     proposal.callData,
-                                     avatar);
+            genericCallReturnValue = controller.genericCall(params.contractToCall,proposal.callData,avatar);
         }
         emit ProposalExecuted(address(avatar), _proposalId,_param, genericCallReturnValue);
         return true;

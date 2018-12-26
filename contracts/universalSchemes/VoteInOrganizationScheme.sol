@@ -61,13 +61,14 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
 
             ControllerInterface controller = ControllerInterface(avatar.owner());
             callReturnValue = controller.genericCall(
-                               address(proposal.originalIntVote),
-                               abi.encodeWithSignature("vote(bytes32,uint256,uint256,address)",
-                               proposal.originalProposalId,
-                               proposal.vote,
-                               0,
-                               address(this)),
-                               avatar);
+                                 address(proposal.originalIntVote),
+                                 abi.encodeWithSignature("vote(bytes32,uint256,uint256,address)",
+                                 proposal.originalProposalId,
+                                 proposal.vote,
+                                 0,
+                                 address(this)),
+                                 avatar
+            );
         }
         emit ProposalExecuted(address(avatar), _proposalId,_param,callReturnValue);
         return true;
