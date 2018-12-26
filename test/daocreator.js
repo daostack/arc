@@ -290,7 +290,7 @@ contract('DaoCreator', function(accounts) {
        var amountToMint = 10;
        var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
        daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-       var uControllerAddress = 0;
+       var uControllerAddress = helpers.NULL_ADDRESS;
        try {
         await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[amountToMint],[],uControllerAddress,helpers.NULL_ADDRESS,{gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert  because reputation array size is 0");
@@ -300,7 +300,7 @@ contract('DaoCreator', function(accounts) {
        }
 
        try {
-        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0],0],[amountToMint,amountToMint],[amountToMint,amountToMint],uControllerAddress,0,{gas:constants.ARC_GAS_LIMIT});
+        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0],helpers.NULL_ADDRESS],[amountToMint,amountToMint],[amountToMint,amountToMint],uControllerAddress,0,{gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert  because account is 0");
        }
        catch(ex){
