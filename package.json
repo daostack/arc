@@ -78,7 +78,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra": "^0.0.1-rc.2",
+    "@daostack/infra": "^0.0.1-rc.3",
     "ethereumjs-abi": "^0.6.5",
     "openzeppelin-solidity": "github:OpenZeppelin/openzeppelin-solidity#release-v2.1.0-solc-0.5",
     "solhint": "^1.5.0"
