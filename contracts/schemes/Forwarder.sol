@@ -17,10 +17,11 @@ contract Forwarder is Ownable {
     /**
      * @dev forwardCall forward a call to the dao controller
      */
+    // solhint-disable-next-line no-complex-fallback,payable-fallback
     function () external onlyOwner {
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(expirationTime > now, "expirationTime > now");
-        // solium-disable-next-line security/no-low-level-calls
+        // solhint-disable-next-line avoid-low-level-calls
         (bool result,) = avatar.owner().call(msg.data);
         require(result);
     }
@@ -42,7 +43,7 @@ contract Forwarder is Ownable {
      * @return bool
      */
     function unregisterSelf() public returns(bool) {
-       // solium-disable-next-line security/no-block-members
+       // solhint-disable-next-line not-rely-on-time
         require(expirationTime <= now, "expirationTime <= now");
         return ControllerInterface(avatar.owner()).unregisterSelf(address(avatar));
     }

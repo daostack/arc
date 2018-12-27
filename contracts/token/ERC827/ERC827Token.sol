@@ -13,7 +13,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
  * methods to transfer value and data and execute calls in transfers and
  * approvals. Uses OpenZeppelin ERC20.
  */
-contract ERC827Token is ERC20,ERC827 {
+contract ERC827Token is ERC20, ERC827 {
 
   /**
    * @dev Addition to ERC20 token methods. It allows to
@@ -42,7 +42,7 @@ contract ERC827Token is ERC20,ERC827 {
 
         super.approve(_spender, _value);
 
-        // solium-disable-next-line security/no-call-value
+        // solhint-disable-next-line avoid-call-value
         (bool success,) = _spender.call.value(msg.value)(_data);
         require(success);
 
@@ -70,7 +70,7 @@ contract ERC827Token is ERC20,ERC827 {
 
         super.transfer(_to, _value);
 
-        // solium-disable-next-line security/no-call-value
+        // solhint-disable-next-line avoid-call-value
         (bool success,) = _to.call.value(msg.value)(_data);
         require(success);
         return true;
@@ -97,7 +97,7 @@ contract ERC827Token is ERC20,ERC827 {
 
         super.transferFrom(_from, _to, _value);
 
-        // solium-disable-next-line security/no-call-value
+        // solhint-disable-next-line avoid-call-value
         (bool success,) = _to.call.value(msg.value)(_data);
         require(success);
         return true;
@@ -127,7 +127,7 @@ contract ERC827Token is ERC20,ERC827 {
 
         super.increaseAllowance(_spender, _addedValue);
 
-        // solium-disable-next-line security/no-call-value
+        // solhint-disable-next-line avoid-call-value
         (bool success,) = _spender.call.value(msg.value)(_data);
         require(success);
 
@@ -158,7 +158,7 @@ contract ERC827Token is ERC20,ERC827 {
 
         super.decreaseAllowance(_spender, _subtractedValue);
 
-        // solium-disable-next-line security/no-call-value
+        // solhint-disable-next-line avoid-call-value
         (bool success,) = _spender.call.value(msg.value)(_data);
         require(success);
 

@@ -11,10 +11,10 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  * @dev Can be used without organization just as a vesting component.
  */
 
-contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
+contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
     using SafeMath for uint;
 
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
     event AgreementProposal(address indexed _avatar, bytes32 indexed _proposalId);
     event NewVestedAgreement(uint256 indexed _agreementId);
@@ -23,7 +23,6 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     event RevokeSignToCancelAgreement(uint256 indexed _agreementId, address indexed _signer);
     event AgreementCancel(uint256 indexed _agreementId);
     event Collect(uint256 indexed _agreementId);
-
 
     // The data for each vested agreement:
     struct Agreement {
@@ -41,7 +40,6 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         mapping(address=>bool) signers;
         mapping(address=>bool) signaturesReceived;
     }
-
 
     struct Parameters {
         bytes32 voteParams;
@@ -77,25 +75,25 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     * @return bool which represents a successful of the function
     */
-    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
+    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
         Agreement memory proposedAgreement = organizationsProposals[address(avatar)][_proposalId];
         require(proposedAgreement.periodLength > 0);
         delete organizationsProposals[address(avatar)][_proposalId];
-        emit ProposalDeleted(address(avatar),_proposalId);
+        emit ProposalDeleted(address(avatar), _proposalId);
 
         // Check if vote was successful:
         if (_param == 1) {
         // Define controller and mint tokens, check minting actually took place:
             ControllerInterface controller = ControllerInterface(avatar.owner());
             uint256 tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
-            require(controller.mintTokens(tokensToMint,address(this),address(avatar)));
+            require(controller.mintTokens(tokensToMint, address(this), address(avatar)));
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:
             emit ProposedVestedAgreement(agreementsCounter-1, _proposalId);
         }
-        emit ProposalExecuted(address(avatar),_proposalId,_param);
+        emit ProposalExecuted(address(avatar), _proposalId, _param);
         return true;
     }
 
@@ -130,12 +128,12 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     {
         // Open voting:
         Parameters memory params = parameters[getParametersFromController(_avatar)];
-        bytes32 proposalId = params.intVote.propose(2, params.voteParams,msg.sender,address(_avatar));
+        bytes32 proposalId = params.intVote.propose(2, params.voteParams, msg.sender, address(_avatar));
         require(_signaturesReqToCancel <= _signersArray.length);
         require(_periodLength > 0);
         require(_numOfAgreedPeriods > 0, "Number of Agreed Periods must be greater than 0");
         // Write the signers mapping:
-        for (uint256 cnt = 0; cnt<_signersArray.length; cnt++) {
+        for (uint256 cnt = 0; cnt < _signersArray.length; cnt++) {
             organizationsProposals[address(_avatar)][proposalId].signers[_signersArray[cnt]] = true;
         }
         // Write parameters:
@@ -149,10 +147,11 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         organizationsProposals[address(_avatar)][proposalId].cliffInPeriods = _cliffInPeriods;
         organizationsProposals[address(_avatar)][proposalId].signaturesReqToCancel = _signaturesReqToCancel;
 
-        proposalsInfo[proposalId] = ProposalInfo(
-            {blockNumber:block.number,
+        proposalsInfo[proposalId] = ProposalInfo({
+            blockNumber:block.number,
             avatar:_avatar,
-            votingMachine:address(params.intVote)});
+            votingMachine:address(params.intVote)
+        });
         emit AgreementProposal(address(_avatar), proposalId);
         return proposalId;
     }
@@ -184,14 +183,14 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         address[] calldata _signersArray
     )
         external
-        returns(uint)
+        returns(uint256)
     {
         require(_signaturesReqToCancel <= _signersArray.length);
         require(_periodLength > 0);
         require(_numOfAgreedPeriods > 0, "Number of Agreed Periods must be greater than 0");
         // Collect funds:
         uint256 totalAmount = _amountPerPeriod.mul(_numOfAgreedPeriods);
-        require(_token.transferFrom(msg.sender,address(this), totalAmount));
+        require(_token.transferFrom(msg.sender, address(this), totalAmount));
 
         // Write parameters:
         agreements[agreementsCounter].token = _token;
@@ -205,7 +204,7 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         agreements[agreementsCounter].signaturesReqToCancel = _signaturesReqToCancel;
 
         // Write the signers mapping:
-        for (uint256 cnt = 0; cnt<_signersArray.length; cnt++) {
+        for (uint256 cnt = 0; cnt < _signersArray.length; cnt++) {
             agreements[agreementsCounter].signers[_signersArray[cnt]] = true;
         }
 
@@ -256,13 +255,13 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         Agreement storage agreement = agreements[_agreementId];
 
         // Check attempt to double sign:
-        require(! agreement.signaturesReceived[msg.sender]);
+        require(!agreement.signaturesReceived[msg.sender]);
 
         // Sign:
         agreement.signaturesReceived[msg.sender] = true;
         agreement.signaturesReceivedCounter++;
 
-        emit SignToCancelAgreement(_agreementId,msg.sender);
+        emit SignToCancelAgreement(_agreementId, msg.sender);
 
         // Check if threshold crossed:
         if (agreement.signaturesReceivedCounter == agreement.signaturesReqToCancel) {
@@ -284,7 +283,7 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         agreement.signaturesReceived[msg.sender] = false;
         agreement.signaturesReceivedCounter--;
 
-        emit RevokeSignToCancelAgreement(_agreementId,msg.sender);
+        emit RevokeSignToCancelAgreement(_agreementId, msg.sender);
     }
 
     /**
@@ -320,7 +319,7 @@ contract VestingScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     */
     function cancelAgreement(uint256 _agreementId) internal {
         Agreement memory agreement = agreements[_agreementId];
-        delete  agreements[_agreementId];
+        delete agreements[_agreementId];
         uint256 periodsLeft = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
         uint256 tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
         require(agreement.token.transfer(agreement.returnOnCancelAddress, tokensLeft));

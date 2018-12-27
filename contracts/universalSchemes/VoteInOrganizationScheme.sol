@@ -10,7 +10,7 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  * @title VoteInOrganizationScheme.
  * @dev A scheme to allow an organization to vote in a proposal.
  */
-contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
+contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
     event NewVoteProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -19,7 +19,8 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
         bytes32 _originalProposalId,
         uint256 _vote
     );
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param,bytes _callReturnValue);
+
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param, bytes _callReturnValue);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // Details of a voting proposal:
@@ -32,7 +33,6 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
     mapping(address=>mapping(bytes32=>VoteProposal)) public organizationsProposals;
-
 
     struct Parameters {
         IntVoteInterface intVote;
@@ -48,7 +48,7 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     * @return bool which represents a successful of the function
     */
-    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
+    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
         // Save proposal to memory and delete from storage:
         VoteProposal memory proposal = organizationsProposals[address(avatar)][_proposalId];
@@ -61,16 +61,16 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
 
             ControllerInterface controller = ControllerInterface(avatar.owner());
             callReturnValue = controller.genericCall(
-                                 address(proposal.originalIntVote),
-                                 abi.encodeWithSignature("vote(bytes32,uint256,uint256,address)",
-                                 proposal.originalProposalId,
-                                 proposal.vote,
-                                 0,
-                                 address(this)),
-                                 avatar
+            address(proposal.originalIntVote),
+            abi.encodeWithSignature("vote(bytes32,uint256,uint256,address)",
+            proposal.originalProposalId,
+            proposal.vote,
+            0,
+            address(this)),
+            avatar
             );
         }
-        emit ProposalExecuted(address(avatar), _proposalId,_param,callReturnValue);
+        emit ProposalExecuted(address(avatar), _proposalId, _param, callReturnValue);
         return true;
     }
 
@@ -114,17 +114,18 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
     * @param _vote - which value to vote in the destination organization
     * @return an id which represents the proposal
     */
-    function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId,uint256 _vote)
+    function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId, uint256 _vote)
     public
     returns(bytes32)
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
-        (uint256 minVote,uint256 maxVote) = _originalIntVote.getAllowedRangeOfChoices();
-        require(_vote <= maxVote && _vote >= minVote,"vote should be in the allowed range");
-        require(_vote <= _originalIntVote.getNumberOfChoices(_originalProposalId),"vote should be <= original proposal number of choices");
+        (uint256 minVote, uint256 maxVote) = _originalIntVote.getAllowedRangeOfChoices();
+        require(_vote <= maxVote && _vote >= minVote, "vote should be in the allowed range");
+        require(_vote <= _originalIntVote.getNumberOfChoices(_originalProposalId),
+        "vote should be <= original proposal number of choices");
 
-        bytes32 proposalId = intVote.propose(2, params.voteParams,msg.sender,address(_avatar));
+        bytes32 proposalId = intVote.propose(2, params.voteParams, msg.sender, address(_avatar));
 
         organizationsProposals[address(_avatar)][proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
@@ -140,10 +141,11 @@ contract VoteInOrganizationScheme is UniversalScheme,VotingMachineCallbacks,Prop
             _originalProposalId,
             _vote
         );
-        proposalsInfo[proposalId] = ProposalInfo(
-            {blockNumber:block.number,
+        proposalsInfo[proposalId] = ProposalInfo({
+            blockNumber:block.number,
             avatar:_avatar,
-            votingMachine:address(intVote)});
+            votingMachine:address(intVote)
+        });
         return proposalId;
     }
 }

@@ -64,9 +64,9 @@ contract Auction4Reputation is Ownable {
         uint256 _redeemEnableTime,
         ERC20 _token,
         address _wallet)
-       external
-       onlyOwner
-       {
+    external
+    onlyOwner
+    {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         require(_numberOfAuctions > 0, "number of auctions cannot be zero");
@@ -92,7 +92,7 @@ contract Auction4Reputation is Ownable {
      * @return uint256 reputation rewarded
      */
     function redeem(address _beneficiary, uint256 _auctionId) public returns(uint256 reputation) {
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "now > redeemEnableTime");
         Auction storage auction = auctions[_auctionId];
         uint256 bid = auction.bids[_beneficiary];
@@ -102,7 +102,9 @@ contract Auction4Reputation is Ownable {
         reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should success");
+        require(
+        ControllerInterface(avatar.owner())
+        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should success");
         emit Redeem(_auctionId, _beneficiary, reputation);
     }
 
@@ -113,12 +115,12 @@ contract Auction4Reputation is Ownable {
      */
     function bid(uint256 _amount) public returns(uint256 auctionId) {
         require(_amount > 0, "bidding amount should be > 0");
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(now <= auctionsEndTime, "bidding should be within the allowed bidding period");
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(now >= auctionsStartTime, "bidding is enable only after bidding auctionsStartTime");
         require(token.transferFrom(msg.sender, address(this), _amount), "transferFrom should success");
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         auctionId = (now - auctionsStartTime) / auctionPeriod;
         Auction storage auction = auctions[auctionId];
         auction.totalBid = auction.totalBid.add(_amount);
@@ -132,7 +134,7 @@ contract Auction4Reputation is Ownable {
      * @param _auctionId auction id
      * @return uint
      */
-    function getBid(address _bidder,uint256 _auctionId) public view returns(uint) {
+    function getBid(address _bidder, uint256 _auctionId) public view returns(uint256) {
         return auctions[_auctionId].bids[_bidder];
     }
 
@@ -141,10 +143,10 @@ contract Auction4Reputation is Ownable {
      *      can be called only after auctionsEndTime
      */
     function transferToWallet() public {
-      // solium-disable-next-line security/no-block-members
+      // solhint-disable-next-line not-rely-on-time
         require(now > auctionsEndTime, "now > auctionsEndTime");
         uint256 tokenBalance = token.balanceOf(address(this));
-        require(token.transfer(wallet,tokenBalance), "transfer should success");
+        require(token.transfer(wallet, tokenBalance), "transfer should success");
     }
 
 }

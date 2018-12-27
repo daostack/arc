@@ -12,9 +12,18 @@ install:
   - rm -rf build/ # remove any remaining artifacts from a previous build
   - truffle version
 
-script:
-  - npm run test
-  - npm run lint
-  - npm run solium
+include:
+    - stage: tests
+      name: "Unit tests"
+      script: npm run test
+
+    - stage: tests
+      name: "Solidity Lint"
+      script: npm run solhint
+
+    - stage: tests
+      name: "JS Lint"
+      script: npm run lint
+
 notifications:
   slack: daostack:fGuaFPsiQiV5mgmzRcSzbYqw

@@ -212,9 +212,9 @@ export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddres
   let voteInfo;
   voteInfo = await absoluteVote.voteInfo(proposalId, voterAddress);
   // voteInfo has the following structure
-  // int vote;
+  // int256 vote;
   assert.equal(voteInfo[0].toNumber(), _voteInfo[0]);
-  // uint reputation;
+  // uint256 reputation;
   assert.equal(voteInfo[1].toNumber(), _voteInfo[1]);
 };
 

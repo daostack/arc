@@ -19,7 +19,6 @@ contract TokenCapGC {
     // Mapping from the hash of the parameters to the parameters themselves:
     mapping (bytes32=>Parameters) public parameters;
 
-
     /**
      * @dev adding a new set of parameters
      * @param  _token the token to add to the params.
@@ -59,9 +58,9 @@ contract TokenCapGC {
      */
     function post(address, bytes32 _paramsHash, bytes32) public view returns(bool) {
         if ((parameters[_paramsHash].token != ERC20(0)) &&
-            ( parameters[_paramsHash].token.totalSupply() > parameters[_paramsHash].cap)) {
+            (parameters[_paramsHash].token.totalSupply() > parameters[_paramsHash].cap)) {
             return false;
-          }
+        }
         return true;
     }
 

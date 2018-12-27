@@ -59,7 +59,7 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      * @param _lockingId the locking id
      * @return bool
      */
-    function release(address _beneficiary,bytes32 _lockingId) public returns(bool) {
+    function release(address _beneficiary, bytes32 _lockingId) public returns(bool) {
         uint256 amount = super._release(_beneficiary, _lockingId);
         require(lockedTokens[_lockingId].transfer(_beneficiary, amount), "transfer should success");
 
@@ -73,22 +73,22 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      * @param _token the token to lock - this should be whitelisted at the priceOracleContract
      * @return lockingId
      */
-    function lock(uint256 _amount, uint256 _period,ERC20 _token) public returns(bytes32 lockingId) {
+    function lock(uint256 _amount, uint256 _period, ERC20 _token) public returns(bytes32 lockingId) {
 
         uint256 numerator;
         uint256 denominator;
 
-        (numerator,denominator) = priceOracleContract.getPrice(address(_token));
+        (numerator, denominator) = priceOracleContract.getPrice(address(_token));
 
-        require(numerator > 0,"numerator should be > 0");
-        require(denominator > 0,"denominator should be > 0");
+        require(numerator > 0, "numerator should be > 0");
+        require(denominator > 0, "denominator should be > 0");
 
         require(_token.transferFrom(msg.sender, address(this), _amount), "transferFrom should success");
 
-        lockingId = super._lock(_amount, _period, msg.sender,numerator,denominator);
+        lockingId = super._lock(_amount, _period, msg.sender, numerator, denominator);
 
         lockedTokens[lockingId] = _token;
 
-        emit LockToken(lockingId,address(_token),numerator,denominator);
+        emit LockToken(lockingId, address(_token), numerator, denominator);
     }
 }

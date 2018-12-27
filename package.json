@@ -20,7 +20,7 @@
     "start": "pm2 start truffle -- serve",
     "lint": "eslint .",
     "lint --fix": "eslint --fix .",
-    "solium": "solium --dir .",
+    "solhint": "solhint contracts/**/*.sol",
     "truffle": "truffle",
     "build": "rimraf build && truffle compile",
     "docs:update": "soldoc -q -o docs/generated_docs",
@@ -52,7 +52,6 @@
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
-    "solium": "^1.1.8",
     "truffle": "5.0.0",
     "uint32": "^0.2.1"
   },
@@ -81,7 +80,8 @@
   "dependencies": {
     "@daostack/infra": "^0.0.1-rc.2",
     "ethereumjs-abi": "^0.6.5",
-    "openzeppelin-solidity": "github:OpenZeppelin/openzeppelin-solidity#release-v2.1.0-solc-0.5"
+    "openzeppelin-solidity": "github:OpenZeppelin/openzeppelin-solidity#release-v2.1.0-solc-0.5",
+    "solhint": "^1.5.0"
   },
   "peerDependencies": {
     "ganache-cli": "^6.2.5"

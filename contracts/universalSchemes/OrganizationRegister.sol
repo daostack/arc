@@ -26,7 +26,6 @@ contract OrganizationRegister is UniversalScheme {
     event OrgAdded( address indexed _registry, address indexed _org);
     event Promotion( address indexed _registry, address indexed _org, uint256 _amount);
 
-
     /**
     * @dev Hash the parameters, save if needed and return the hash value
     * @param _token -  the token to pay for register or promotion an address.
@@ -77,7 +76,8 @@ contract OrganizationRegister is UniversalScheme {
         if (organizationsRegistry[address(_avatar)][_record] == 0) {
             emit OrgAdded(address(_avatar), _record);
         }
-        organizationsRegistry[address(_avatar)][_record] = organizationsRegistry[address(_avatar)][_record].add(_amount);
+        organizationsRegistry[address(_avatar)][_record] =
+        organizationsRegistry[address(_avatar)][_record].add(_amount);
         emit Promotion(address(_avatar), _record, _amount);
     }
 }

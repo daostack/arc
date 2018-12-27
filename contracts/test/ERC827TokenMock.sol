@@ -8,7 +8,7 @@ import "../token/ERC827/ERC827Token.sol";
 contract ERC827TokenMock is ERC827Token {
 
     constructor(address initialAccount, uint256 initialBalance) public {
-        _mint(initialAccount,initialBalance);
+        _mint(initialAccount, initialBalance);
     }
 
 }

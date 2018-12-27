@@ -10,11 +10,11 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * @dev ERC20 compatible token. It is a mintable, destructible, burnable token.
  */
 
-contract DAOToken is ERC20,ERC20Burnable,Ownable {
+contract DAOToken is ERC20, ERC20Burnable, Ownable {
 
     string public name;
     string public symbol;
-    // solium-disable-next-line uppercase
+    // solhint-disable-next-line const-name-snakecase
     uint8 public constant decimals = 18;
     uint256 public cap;
 
@@ -24,9 +24,8 @@ contract DAOToken is ERC20,ERC20Burnable,Ownable {
     * @param _symbol - token symbol
     * @param _cap - token cap - 0 value means no cap
     */
-    constructor(string memory _name, string memory _symbol,uint256 _cap)
-    public
-    {
+    constructor(string memory _name, string memory _symbol, uint256 _cap)
+    public {
         name = _name;
         symbol = _symbol;
         cap = _cap;

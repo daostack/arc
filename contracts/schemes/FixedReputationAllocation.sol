@@ -51,9 +51,12 @@ contract FixedReputationAllocation is Ownable {
         require(isEnable, "require to be enable");
         require(beneficiaries[_beneficiary], "require _beneficiary to exist in the beneficiaries map");
         beneficiaries[_beneficiary] = false;
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "require now > redeemEnableTime");
-        require(ControllerInterface(avatar.owner()).mintReputation(beneficiaryReward, _beneficiary, address(avatar)), "mint reputation failed");
+        require(
+        ControllerInterface(
+        avatar.owner())
+        .mintReputation(beneficiaryReward, _beneficiary, address(avatar)), "mint reputation failed");
 
         emit Redeem(_beneficiary, beneficiaryReward);
 

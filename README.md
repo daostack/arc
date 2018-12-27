@@ -51,7 +51,7 @@ Available commands while developing:
 - `npm run build` - Compile all contracts to the `build/` folder.
 - `npm run test` - This will run ganache-cli, compile, migrate and run all tests.
 - `npm run lint` - Check all JavaScript code for style & good practices.
-- `npm run solium` - Check all Solidity code for style & good practices.
+- `npm run solhint` - Check all Solidity code for style & good practices.
 - `npm run docs:<update|build|deploy|preview>` - See [this](docs#contributing-to-arc-docs) for details.
 
 ### Docker

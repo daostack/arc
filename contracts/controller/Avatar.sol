@@ -47,9 +47,9 @@ contract Avatar is Ownable {
     * @param _data ABI-encoded contract call to call `_contract` address.
     * @return the return bytes of the called contract's function.
     */
-    function genericCall(address _contract,bytes memory _data) public onlyOwner returns(bytes memory) {
-        emit GenericCall(_contract,_data);
-        // solium-disable-next-line security/no-low-level-calls
+    function genericCall(address _contract, bytes memory _data) public onlyOwner returns(bytes memory) {
+        emit GenericCall(_contract, _data);
+        // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returnValue) = _contract.call(_data);
         require(success);
         return returnValue;
@@ -114,7 +114,7 @@ contract Avatar is Ownable {
     function externalTokenApproval(ERC20 _externalToken, address _spender, uint256 _value)
     public onlyOwner returns(bool)
     {
-        require(_externalToken.approve(_spender, _value),"approve must succeed");
+        require(_externalToken.approve(_spender, _value), "approve must succeed");
         emit ExternalTokenApproval(_externalToken, _spender, _value);
         return true;
     }
