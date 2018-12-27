@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/ProposalExecuteInterface.sol";
@@ -11,13 +11,15 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  * @dev The scheme is used to upgrade the controller of an organization to a new controller.
  */
 
-contract UpgradeScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
+contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
+
     event NewUpgradeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _newController
     );
+
     event ChangeUpgradeSchemeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -25,7 +27,8 @@ contract UpgradeScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         address _newUpgradeScheme,
         bytes32 _params
     );
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
+
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // Details of an upgrade proposal:
@@ -51,33 +54,34 @@ contract UpgradeScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @param _proposalId the ID of the voting in the voting machine
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
-    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        address avatar = proposalsInfo[_proposalId].avatar;
-        UpgradeProposal memory proposal = organizationsProposals[avatar][_proposalId];
+    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        UpgradeProposal memory proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.proposalType != 0);
-        delete organizationsProposals[avatar][_proposalId];
-        emit ProposalDeleted(avatar,_proposalId);
+        delete organizationsProposals[address(avatar)][_proposalId];
+        emit ProposalDeleted(address(avatar), _proposalId);
         // Check if vote was successful:
         if (_param == 1) {
 
         // Define controller and get the params:
-            ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
+            ControllerInterface controller = ControllerInterface(avatar.owner());
         // Upgrading controller:
             if (proposal.proposalType == 1) {
-                require(controller.upgradeController(proposal.upgradeContract,avatar));
+                require(controller.upgradeController(proposal.upgradeContract, avatar));
             }
 
         // Changing upgrade scheme:
             if (proposal.proposalType == 2) {
-                bytes4 permissions = controller.getSchemePermissions(this,avatar);
-
-                require(controller.registerScheme(proposal.upgradeContract, proposal.params, permissions,avatar));
-                if (proposal.upgradeContract != address(this) ) {
-                    require(controller.unregisterSelf(avatar));
-                    }
-                  }
+                bytes4 permissions = controller.getSchemePermissions(address(this), address(avatar));
+                require(
+                controller.registerScheme(proposal.upgradeContract, proposal.params, permissions, address(avatar))
+                );
+                if (proposal.upgradeContract != address(this)) {
+                    require(controller.unregisterSelf(address(avatar)));
+                }
+            }
         }
-        emit ProposalExecuted(avatar, _proposalId,_param);
+        emit ProposalExecuted(address(avatar), _proposalId, _param);
         return true;
     }
 
@@ -117,19 +121,19 @@ contract UpgradeScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         returns(bytes32)
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
-        bytes32 proposalId = params.intVote.propose(2, params.voteParams,msg.sender,_avatar);
+        bytes32 proposalId = params.intVote.propose(2, params.voteParams, msg.sender, address(_avatar));
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 1,
             upgradeContract: _newController,
             params: bytes32(0)
         });
-        organizationsProposals[_avatar][proposalId] = proposal;
-        emit NewUpgradeProposal(_avatar, proposalId, params.intVote, _newController);
-        proposalsInfo[proposalId] = ProposalInfo(
-            {blockNumber:block.number,
+        organizationsProposals[address(_avatar)][proposalId] = proposal;
+        emit NewUpgradeProposal(address(_avatar), proposalId, address(params.intVote), _newController);
+        proposalsInfo[proposalId] = ProposalInfo({
+            blockNumber:block.number,
             avatar:_avatar,
-            votingMachine:params.intVote});
-        params.intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the proposal submitter.*/
+            votingMachine:address(params.intVote)
+        });
         return proposalId;
     }
 
@@ -150,28 +154,28 @@ contract UpgradeScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
-        bytes32 proposalId = intVote.propose(2, params.voteParams,msg.sender,_avatar);
-        require(organizationsProposals[_avatar][proposalId].proposalType == 0);
+        bytes32 proposalId = intVote.propose(2, params.voteParams, msg.sender, address(_avatar));
+        require(organizationsProposals[address(_avatar)][proposalId].proposalType == 0);
 
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 2,
             upgradeContract: _scheme,
             params: _params
         });
-        organizationsProposals[_avatar][proposalId] = proposal;
+        organizationsProposals[address(_avatar)][proposalId] = proposal;
 
         emit ChangeUpgradeSchemeProposal(
-            _avatar,
+            address(_avatar),
             proposalId,
-            params.intVote,
+            address(params.intVote),
             _scheme,
             _params
         );
-        proposalsInfo[proposalId] = ProposalInfo(
-            {blockNumber:block.number,
+        proposalsInfo[proposalId] = ProposalInfo({
+            blockNumber:block.number,
             avatar:_avatar,
-            votingMachine:intVote});
-        intVote.ownerVote(proposalId, 1, msg.sender); // Automatically votes `yes` in the name of the opener.
+            votingMachine:address(intVote)
+        });
         return proposalId;
     }
 }

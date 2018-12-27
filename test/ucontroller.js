@@ -3,7 +3,7 @@ const UController = artifacts.require("./UController.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken   = artifacts.require("./DAOToken.sol");
-const StandardTokenMock = artifacts.require('./StandardTokenMock.sol');
+const ERC20Mock = artifacts.require('./ERC20Mock.sol');
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
 const ActionMock = artifacts.require('./test/ActionMock.sol');
 const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
@@ -24,7 +24,7 @@ const setup = async function (accounts,permission='0x00000000',registerScheme = 
   if (permission !== '0x00000000'){
     await uController.newOrganization(avatar.address,{from:accounts[1]});
     await uController.registerScheme(registerScheme,helpers.NULL_HASH,permission,avatar.address,{from:accounts[1]});
-    await uController.unregisterSelf(0,{from:accounts[1]});
+    await uController.unregisterSelf(avatar.address,{from:accounts[1]});
   }
   else {
     await uController.newOrganization(avatar.address);
@@ -396,7 +396,7 @@ contract('UController',accounts =>  {
   it("externalTokenTransfer", async () => {
     //External transfer token from avatar contract to other address
     controller = await  setup(accounts);
-    var standardToken = await StandardTokenMock.new(avatar.address, 100);
+    var standardToken = await ERC20Mock.new(avatar.address, 100);
     let balanceAvatar = await standardToken.balanceOf(avatar.address);
     assert.equal(balanceAvatar, 100);
     var tx = await controller.externalTokenTransfer(standardToken.address,accounts[1],50,avatar.address);
@@ -414,19 +414,19 @@ contract('UController',accounts =>  {
     assert.equal(balance1, 50);
   });
 
-  it("externalTokenTransferFrom & ExternalTokenIncreaseApproval", async () => {
+  it("externalTokenTransferFrom & ExternalTokenApproval", async () => {
     var tx;
     var to   = accounts[1];
     controller = await  setup(accounts);
-    var standardToken = await StandardTokenMock.new(avatar.address, 100);
-    tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-    await avatar.getPastEvents('ExternalTokenIncreaseApproval', {
+    var standardToken = await ERC20Mock.new(avatar.address, 100);
+    tx = await controller.externalTokenApproval(standardToken.address,avatar.address,50,avatar.address);
+    await avatar.getPastEvents('ExternalTokenApproval', {
           filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
           fromBlock: tx.blockNumber,
           toBlock: 'latest'
       })
       .then(function(events){
-          assert.equal(events[0].event,"ExternalTokenIncreaseApproval");
+          assert.equal(events[0].event,"ExternalTokenApproval");
       });
     tx = await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
 
@@ -444,46 +444,6 @@ contract('UController',accounts =>  {
     assert.equal(balanceTo, 50);
   });
 
-
-  it("externalTokenTransferFrom & externalTokenDecreaseApproval", async () => {
-    var tx;
-    var to   = accounts[1];
-    controller = await  setup(accounts);
-    var standardToken = await StandardTokenMock.new(avatar.address, 100);
-    tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-    tx = await controller.externalTokenDecreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-
-    await avatar.getPastEvents('ExternalTokenDecreaseApproval', {
-          filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
-          fromBlock: tx.blockNumber,
-          toBlock: 'latest'
-      })
-      .then(function(events){
-          assert.equal(events[0].event,"ExternalTokenDecreaseApproval");
-      });
-
-    try{
-      await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
-      assert(false,"externalTokenTransferFrom should fail due to decrease approval ");
-    }
-    catch(ex){
-      helpers.assertVMException(ex);
-    }
-    tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-    tx=  await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
-    await avatar.getPastEvents('ExternalTokenTransferFrom', {
-          filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
-          fromBlock: tx.blockNumber,
-          toBlock: 'latest'
-      })
-      .then(function(events){
-          assert.equal(events[0].event,"ExternalTokenTransferFrom");
-      });
-    let balanceAvatar = await standardToken.balanceOf(avatar.address);
-    assert.equal(balanceAvatar, 50);
-    let balanceTo = await standardToken.balanceOf(to);
-    assert.equal(balanceTo, 50);
-  });
     it("globalConstraints mintReputation add & remove", async () => {
       controller = await  setup(accounts);
       var globalConstraints = await constraint("mintReputation");
@@ -634,7 +594,7 @@ contract('UController',accounts =>  {
      it("globalConstraints externalTokenTransfer  add & remove", async () => {
         controller = await  setup(accounts);
         var globalConstraints = await constraint("externalTokenTransfer");
-        var standardToken = await StandardTokenMock.new(avatar.address, 100);
+        var standardToken = await ERC20Mock.new(avatar.address, 100);
         let balanceAvatar = await standardToken.balanceOf(avatar.address);
         assert.equal(balanceAvatar, 100);
 
@@ -664,14 +624,14 @@ contract('UController',accounts =>  {
         assert.equal(balance1, 50);
         });
 
-    it("globalConstraints externalTokenTransferFrom , externalTokenIncreaseApproval , externalTokenDecreaseApproval", async () => {
+    it("globalConstraints externalTokenTransferFrom , externalTokenApproval", async () => {
        var tx;
        var to   = accounts[1];
        controller = await  setup(accounts);
-       var globalConstraints = await constraint("externalTokenIncreaseApproval");
-       var standardToken = await StandardTokenMock.new(avatar.address, 100);
+       var globalConstraints = await constraint("externalTokenApproval");
+       var standardToken = await ERC20Mock.new(avatar.address, 100);
        try {
-        await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
+        await controller.externalTokenApproval(standardToken.address,avatar.address,50,avatar.address);
         assert(false,"externalTokenIncreaseApproval should fail due to the global constraint ");
        }
        catch(ex){
@@ -682,14 +642,14 @@ contract('UController',accounts =>  {
        assert.equal(globalConstraintsCount[0],0);
        assert.equal(globalConstraintsCount[1],0);
 
-       tx = await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-       await avatar.getPastEvents('ExternalTokenIncreaseApproval', {
+       tx = await controller.externalTokenApproval(standardToken.address,avatar.address,50,avatar.address);
+       await avatar.getPastEvents('ExternalTokenApproval', {
              filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
              fromBlock: tx.blockNumber,
              toBlock: 'latest'
          })
          .then(function(events){
-             assert.equal(events[0].event,"ExternalTokenIncreaseApproval");
+             assert.equal(events[0].event,"ExternalTokenApproval");
          });
        globalConstraints = await constraint("externalTokenTransferFrom");
        try {
@@ -702,38 +662,5 @@ contract('UController',accounts =>  {
        await controller.removeGlobalConstraint(globalConstraints.address,avatar.address);
        globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
        assert.equal(globalConstraintsCount[0],0);
-
-       globalConstraints = await constraint("externalTokenDecreaseApproval");
-       try {
-        await controller.externalTokenDecreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-        assert(false,"externalTokenDecreaseApproval should fail due to the global constraint ");
-       }
-       catch(ex){
-         helpers.assertVMException(ex);
-       }
-       await controller.removeGlobalConstraint(globalConstraints.address,avatar.address);
-       await controller.externalTokenDecreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-       try {
-        await await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
-        assert(false,"externalTokenTransferFrom should fail due to decrease approval ");
-       }
-       catch(ex){
-         helpers.assertVMException(ex);
-       }
-
-       await controller.externalTokenIncreaseApproval(standardToken.address,avatar.address,50,avatar.address);
-       tx = await controller.externalTokenTransferFrom(standardToken.address,avatar.address,to,50,avatar.address);
-       await avatar.getPastEvents('ExternalTokenTransferFrom', {
-             filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
-             fromBlock: tx.blockNumber,
-             toBlock: 'latest'
-         })
-         .then(function(events){
-             assert.equal(events[0].event,"ExternalTokenTransferFrom");
-         });
-       let balanceAvatar = await standardToken.balanceOf(avatar.address);
-       assert.equal(balanceAvatar, 50);
-       let balanceTo = await standardToken.balanceOf(to);
-       assert.equal(balanceTo, 50);
        });
 });

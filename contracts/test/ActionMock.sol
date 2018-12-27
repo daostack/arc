@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../controller/Avatar.sol";
 
@@ -6,7 +6,8 @@ import "../controller/Avatar.sol";
 contract ActionMock {
 
     event WithoutReturnValue(address _addr);
-    function test(uint256 _a,address _b,bytes32 _c) public view returns(uint) {
+
+    function test(uint256 _a, address _b, bytes32 _c) public view returns(uint256) {
         require(_a == 7);
         require(_b == address(this));
         require(_c == 0x1234000000000000000000000000000000000000000000000000000000000000);
@@ -14,12 +15,12 @@ contract ActionMock {
     }
 
     function test2(address _addr) public view returns(bool) {
-        require(msg.sender == _addr,"the caller must be equal to _addr");
+        require(msg.sender == _addr, "the caller must be equal to _addr");
         return true;
     }
 
     function withoutReturnValue(address _addr) public {
-        require(msg.sender == _addr,"the caller must be equal to _addr");
+        require(msg.sender == _addr, "the caller must be equal to _addr");
         emit WithoutReturnValue(_addr);
     }
 

@@ -1,10 +1,10 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./UniversalSchemeInterface.sol";
 import "../controller/ControllerInterface.sol";
 import "../controller/Avatar.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 
 contract UniversalScheme is Ownable, UniversalSchemeInterface {
@@ -23,7 +23,8 @@ contract UniversalScheme is Ownable, UniversalSchemeInterface {
     *  @dev get the parameters for the current scheme from the controller
     */
     function getParametersFromController(Avatar _avatar) internal view returns(bytes32) {
-        require(ControllerInterface(_avatar.owner()).isSchemeRegistered(this,address(_avatar)),"scheme is not registered");
-        return ControllerInterface(_avatar.owner()).getSchemeParameters(this,address(_avatar));
+        require(ControllerInterface(_avatar.owner()).isSchemeRegistered(address(this), address(_avatar)),
+        "scheme is not registered");
+        return ControllerInterface(_avatar.owner()).getSchemeParameters(address(this), address(_avatar));
     }
 }

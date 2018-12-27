@@ -5,11 +5,12 @@ var UController = artifacts.require('./UController.sol');
 var DaoCreator = artifacts.require('./DaoCreator.sol');
 var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.sol');
 var SchemeRegistrar = artifacts.require('./SchemeRegistrar.sol');
-var SimpleICO = artifacts.require('./SimpleICO.sol');
 var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 var ContributionReward = artifacts.require('./ContributionReward.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var ControllerCreator = artifacts.require('./ControllerCreator.sol');
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 
 // TEST_ORGANIZATION ORG parameters:
 const orgName = "TEST_ORGANIZATION";
@@ -42,7 +43,7 @@ module.exports = async function(deployer) {
       await web3.eth.getAccounts(function(err,res) { accounts = res; });
       founders[0] = accounts[0];
       var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,0,cap,{gas: constants.ARC_GAS_LIMIT});
+          initTokenInWei, initRepInWei,NULL_ADDRESS,cap,{gas: constants.ARC_GAS_LIMIT});
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       await deployer.deploy(AbsoluteVote,{gas: constants.ARC_GAS_LIMIT});
       // Deploy AbsoluteVote:
@@ -57,14 +58,11 @@ module.exports = async function(deployer) {
       await deployer.deploy(GlobalConstraintRegistrar);
       var globalConstraintRegistrarInst = await GlobalConstraintRegistrar.deployed();
 
-      await deployer.deploy(SimpleICO);
-      var simpleICOInst = await SimpleICO.deployed();
-
       await deployer.deploy(ContributionReward);
       var contributionRewardInst = await ContributionReward.deployed();
 
       // Voting parameters and schemes params:
-      var voteParametersHash = await AbsoluteVoteInst.getParametersHash(votePrec, true);
+      var voteParametersHash = await AbsoluteVoteInst.getParametersHash(votePrec, NULL_ADDRESS);
 
       await schemeRegistrarInst.setParameters(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);
       var schemeRegisterParams = await schemeRegistrarInst.getParametersHash(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);
@@ -73,18 +71,15 @@ module.exports = async function(deployer) {
       await upgradeSchemeInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
       var schemeUpgradeParams = await upgradeSchemeInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
 
-      await simpleICOInst.setParameters(1000, 1, 1, 2, web3.eth.accounts[0], web3.eth.accounts[0]);
-      var simpleICOParams = await simpleICOInst.getParametersHash(1000, 1, 1, 2, web3.eth.accounts[0], web3.eth.accounts[0]);
       await contributionRewardInst.setParameters(10,voteParametersHash, AbsoluteVoteInst.address);
       var contributionRewardParams = await contributionRewardInst.getParametersHash(10,voteParametersHash, AbsoluteVoteInst.address);
 
       var schemesArray = [schemeRegistrarInst.address,
                           globalConstraintRegistrarInst.address,
                           upgradeSchemeInst.address,
-                          simpleICOInst.address,
                           contributionRewardInst.address];
-      const paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams,simpleICOParams,contributionRewardParams];
-      const permissionArray = ['0x0000001F', '0x00000005', '0x0000000a','0x00000001','0x00000001'];
+      const paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams,contributionRewardParams];
+      const permissionArray = ['0x0000001F', '0x00000005', '0x0000000a','0x00000001'];
 
       // set DAOstack initial schmes:
       await daoCreatorInst.setSchemes(

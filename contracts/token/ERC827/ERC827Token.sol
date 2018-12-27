@@ -1,9 +1,9 @@
 /* solium-disable security/no-low-level-calls */
 
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./ERC827.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 
 /**
@@ -11,9 +11,9 @@ import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
  *
  * @dev Implementation the ERC827, following the ERC20 standard with extra
  * methods to transfer value and data and execute calls in transfers and
- * approvals. Uses OpenZeppelin StandardToken.
+ * approvals. Uses OpenZeppelin ERC20.
  */
-contract ERC827Token is ERC827, StandardToken {
+contract ERC827Token is ERC20, ERC827 {
 
   /**
    * @dev Addition to ERC20 token methods. It allows to
@@ -32,7 +32,7 @@ contract ERC827Token is ERC827, StandardToken {
     function approveAndCall(
         address _spender,
         uint256 _value,
-        bytes _data
+        bytes memory _data
     )
     public
     payable
@@ -42,8 +42,9 @@ contract ERC827Token is ERC827, StandardToken {
 
         super.approve(_spender, _value);
 
-        // solium-disable-next-line security/no-call-value
-        require(_spender.call.value(msg.value)(_data));
+        // solhint-disable-next-line avoid-call-value
+        (bool success,) = _spender.call.value(msg.value)(_data);
+        require(success);
 
         return true;
     }
@@ -59,7 +60,7 @@ contract ERC827Token is ERC827, StandardToken {
     function transferAndCall(
         address _to,
         uint256 _value,
-        bytes _data
+        bytes memory _data
     )
     public
     payable
@@ -69,8 +70,9 @@ contract ERC827Token is ERC827, StandardToken {
 
         super.transfer(_to, _value);
 
-        // solium-disable-next-line security/no-call-value
-        require(_to.call.value(msg.value)(_data));
+        // solhint-disable-next-line avoid-call-value
+        (bool success,) = _to.call.value(msg.value)(_data);
+        require(success);
         return true;
     }
 
@@ -87,7 +89,7 @@ contract ERC827Token is ERC827, StandardToken {
         address _from,
         address _to,
         uint256 _value,
-        bytes _data
+        bytes memory _data
     )
     public payable returns (bool)
     {
@@ -95,13 +97,14 @@ contract ERC827Token is ERC827, StandardToken {
 
         super.transferFrom(_from, _to, _value);
 
-        // solium-disable-next-line security/no-call-value
-        require(_to.call.value(msg.value)(_data));
+        // solhint-disable-next-line avoid-call-value
+        (bool success,) = _to.call.value(msg.value)(_data);
+        require(success);
         return true;
     }
 
   /**
-   * @dev Addition to StandardToken methods. Increase the amount of tokens that
+   * @dev Addition to ERC20 methods. Increase the amount of tokens that
    * an owner allowed to a spender and execute a call with the sent data.
    * approve should be called when allowed[_spender] == 0. To increment
    * allowed value is better to use this function to avoid 2 calls (and wait until
@@ -114,7 +117,7 @@ contract ERC827Token is ERC827, StandardToken {
     function increaseApprovalAndCall(
         address _spender,
         uint256 _addedValue,
-        bytes _data
+        bytes memory _data
     )
     public
     payable
@@ -122,16 +125,17 @@ contract ERC827Token is ERC827, StandardToken {
     {
         require(_spender != address(this));
 
-        super.increaseApproval(_spender, _addedValue);
+        super.increaseAllowance(_spender, _addedValue);
 
-        // solium-disable-next-line security/no-call-value
-        require(_spender.call.value(msg.value)(_data));
+        // solhint-disable-next-line avoid-call-value
+        (bool success,) = _spender.call.value(msg.value)(_data);
+        require(success);
 
         return true;
     }
 
   /**
-   * @dev Addition to StandardToken methods. Decrease the amount of tokens that
+   * @dev Addition to ERC20 methods. Decrease the amount of tokens that
    * an owner allowed to a spender and execute a call with the sent data.
    * approve should be called when allowed[_spender] == 0. To decrement
    * allowed value is better to use this function to avoid 2 calls (and wait until
@@ -144,7 +148,7 @@ contract ERC827Token is ERC827, StandardToken {
     function decreaseApprovalAndCall(
         address _spender,
         uint256 _subtractedValue,
-        bytes _data
+        bytes memory _data
     )
     public
     payable
@@ -152,10 +156,11 @@ contract ERC827Token is ERC827, StandardToken {
     {
         require(_spender != address(this));
 
-        super.decreaseApproval(_spender, _subtractedValue);
+        super.decreaseAllowance(_spender, _subtractedValue);
 
-        // solium-disable-next-line security/no-call-value
-        require(_spender.call.value(msg.value)(_data));
+        // solhint-disable-next-line avoid-call-value
+        (bool success,) = _spender.call.value(msg.value)(_data);
+        require(success);
 
         return true;
     }

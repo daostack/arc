@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./Avatar.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
@@ -62,12 +62,12 @@ contract UController is ControllerInterface {
     mapping(address=>bool) public tokens;
 
 
-    event MintReputation (address indexed _sender, address indexed _to, uint256 _amount,address indexed _avatar);
-    event BurnReputation (address indexed _sender, address indexed _from, uint256 _amount,address indexed _avatar);
+    event MintReputation (address indexed _sender, address indexed _to, uint256 _amount, address indexed _avatar);
+    event BurnReputation (address indexed _sender, address indexed _from, uint256 _amount, address indexed _avatar);
     event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount, address indexed _avatar);
-    event RegisterScheme (address indexed _sender, address indexed _scheme,address indexed _avatar);
+    event RegisterScheme (address indexed _sender, address indexed _scheme, address indexed _avatar);
     event UnregisterScheme (address indexed _sender, address indexed _scheme, address indexed _avatar);
-    event UpgradeController(address indexed _oldController,address _newController,address _avatar);
+    event UpgradeController(address indexed _oldController, address _newController, address _avatar);
 
     event AddGlobalConstraint(
         address indexed _globalConstraint,
@@ -75,8 +75,13 @@ contract UController is ControllerInterface {
         GlobalConstraintInterface.CallPhase _when,
         address indexed _avatar
     );
-    event RemoveGlobalConstraint(address indexed _globalConstraint ,uint256 _index,bool _isPre,address indexed _avatar);
 
+    event RemoveGlobalConstraint(
+        address indexed _globalConstraint,
+        uint256 _index,
+        bool _isPre,
+        address indexed _avatar
+    );
 
    /**
     * @dev newOrganization set up a new organization with default daoCreator.
@@ -89,54 +94,59 @@ contract UController is ControllerInterface {
         require(!organizations[address(_avatar)].exist);
         require(_avatar.owner() == address(this));
         //To guaranty uniqueness for the reputation systems.
-        require(!reputations[_avatar.nativeReputation()]);
+        require(!reputations[address(_avatar.nativeReputation())]);
         //To guaranty uniqueness for the reputation systems.
-        require(!tokens[_avatar.nativeToken()]);
+        require(!tokens[address(_avatar.nativeToken())]);
         organizations[address(_avatar)].exist = true;
         organizations[address(_avatar)].nativeToken = _avatar.nativeToken();
         organizations[address(_avatar)].nativeReputation = _avatar.nativeReputation();
-        reputations[_avatar.nativeReputation()] = true;
-        tokens[_avatar.nativeToken()] = true;
-        organizations[address(_avatar)].schemes[msg.sender] = Scheme({paramsHash: bytes32(0),permissions: bytes4(0x1F)});
-        emit RegisterScheme(msg.sender, msg.sender,_avatar);
+        reputations[address(_avatar.nativeReputation())] = true;
+        tokens[address(_avatar.nativeToken())] = true;
+        organizations[address(_avatar)].schemes[msg.sender] =
+        Scheme({paramsHash: bytes32(0), permissions: bytes4(0x0000001f)});
+        emit RegisterScheme(msg.sender, msg.sender, address(_avatar));
     }
 
   // Modifiers:
     modifier onlyRegisteredScheme(address avatar) {
-        require(organizations[avatar].schemes[msg.sender].permissions&bytes4(1) == bytes4(1));
+        require(organizations[avatar].schemes[msg.sender].permissions&bytes4(0x00000001) == bytes4(0x00000001));
         _;
     }
 
     modifier onlyRegisteringSchemes(address avatar) {
-        require(organizations[avatar].schemes[msg.sender].permissions&bytes4(2) == bytes4(2));
+        require(organizations[avatar].schemes[msg.sender].permissions&bytes4(0x00000002) == bytes4(0x00000002));
         _;
     }
 
     modifier onlyGlobalConstraintsScheme(address avatar) {
-        require(organizations[avatar].schemes[msg.sender].permissions&bytes4(4) == bytes4(4));
+        require(organizations[avatar].schemes[msg.sender].permissions&bytes4(0x00000004) == bytes4(0x00000004));
         _;
     }
 
     modifier onlyUpgradingScheme(address _avatar) {
-        require(organizations[_avatar].schemes[msg.sender].permissions&bytes4(8) == bytes4(8));
+        require(organizations[_avatar].schemes[msg.sender].permissions&bytes4(0x00000008) == bytes4(0x00000008));
         _;
     }
 
     modifier onlyGenericCallScheme(address _avatar) {
-        require(organizations[_avatar].schemes[msg.sender].permissions&bytes4(16) == bytes4(16));
+        require(organizations[_avatar].schemes[msg.sender].permissions&bytes4(0x00000010) == bytes4(0x00000010));
         _;
     }
 
-    modifier onlySubjectToConstraint(bytes32 func,address _avatar) {
+    modifier onlySubjectToConstraint(bytes32 func, address _avatar) {
         uint256 idx;
         GlobalConstraint[] memory globalConstraintsPre = organizations[_avatar].globalConstraintsPre;
         GlobalConstraint[] memory globalConstraintsPost = organizations[_avatar].globalConstraintsPost;
-        for (idx = 0;idx<globalConstraintsPre.length;idx++) {
-            require((GlobalConstraintInterface(globalConstraintsPre[idx].gcAddress)).pre(msg.sender, globalConstraintsPre[idx].params, func));
+        for (idx = 0; idx < globalConstraintsPre.length; idx++) {
+            require(
+            (GlobalConstraintInterface(globalConstraintsPre[idx].gcAddress))
+            .pre(msg.sender, globalConstraintsPre[idx].params, func));
         }
         _;
-        for (idx = 0;idx<globalConstraintsPost.length;idx++) {
-            require((GlobalConstraintInterface(globalConstraintsPost[idx].gcAddress)).post(msg.sender, globalConstraintsPost[idx].params, func));
+        for (idx = 0; idx < globalConstraintsPost.length; idx++) {
+            require(
+            (GlobalConstraintInterface(globalConstraintsPost[idx].gcAddress))
+            .post(msg.sender, globalConstraintsPost[idx].params, func));
         }
     }
 
@@ -150,10 +160,10 @@ contract UController is ControllerInterface {
     function mintReputation(uint256 _amount, address _to, address _avatar)
     external
     onlyRegisteredScheme(_avatar)
-    onlySubjectToConstraint("mintReputation",_avatar)
+    onlySubjectToConstraint("mintReputation", _avatar)
     returns(bool)
     {
-        emit MintReputation(msg.sender, _to, _amount,_avatar);
+        emit MintReputation(msg.sender, _to, _amount, _avatar);
         return organizations[_avatar].nativeReputation.mint(_to, _amount);
     }
 
@@ -163,13 +173,13 @@ contract UController is ControllerInterface {
      * @param _from The address that will lose the reputation
      * @return bool which represents a success
      */
-    function burnReputation(uint256 _amount, address _from,address _avatar)
+    function burnReputation(uint256 _amount, address _from, address _avatar)
     external
     onlyRegisteredScheme(_avatar)
-    onlySubjectToConstraint("burnReputation",_avatar)
+    onlySubjectToConstraint("burnReputation", _avatar)
     returns(bool)
     {
-        emit BurnReputation(msg.sender, _from, _amount,_avatar);
+        emit BurnReputation(msg.sender, _from, _amount, _avatar);
         return organizations[_avatar].nativeReputation.burn(_from, _amount);
     }
 
@@ -180,13 +190,13 @@ contract UController is ControllerInterface {
      * @param _avatar the organization avatar.
      * @return bool which represents a success
      */
-    function mintTokens(uint256 _amount, address _beneficiary,address _avatar)
+    function mintTokens(uint256 _amount, address _beneficiary, address _avatar)
     external
     onlyRegisteredScheme(_avatar)
-    onlySubjectToConstraint("mintTokens",_avatar)
+    onlySubjectToConstraint("mintTokens", _avatar)
     returns(bool)
     {
-        emit MintTokens(msg.sender, _beneficiary, _amount,_avatar);
+        emit MintTokens(msg.sender, _beneficiary, _amount, _avatar);
         return organizations[_avatar].nativeToken.mint(_beneficiary, _amount);
     }
 
@@ -198,10 +208,10 @@ contract UController is ControllerInterface {
    * @param _avatar the organization avatar.
    * @return bool which represents a success
    */
-    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions,address _avatar)
+    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions, address _avatar)
     external
     onlyRegisteringSchemes(_avatar)
-    onlySubjectToConstraint("registerScheme",_avatar)
+    onlySubjectToConstraint("registerScheme", _avatar)
     returns(bool)
     {
         bytes4 schemePermission = organizations[_avatar].schemes[_scheme].permissions;
@@ -210,13 +220,14 @@ contract UController is ControllerInterface {
     // Implementation is a bit messy. One must recall logic-circuits ^^
 
     // produces non-zero if sender does not have all of the perms that are changing between old and new
-        require(bytes4(0x1F)&(_permissions^schemePermission)&(~senderPermission) == bytes4(0));
+        require(bytes4(0x0000001f)&(_permissions^schemePermission)&(~senderPermission) == bytes4(0));
 
     // produces non-zero if sender does not have all of the perms in the old scheme
-        require(bytes4(0x1F)&(schemePermission&(~senderPermission)) == bytes4(0));
+        require(bytes4(0x0000001f)&(schemePermission&(~senderPermission)) == bytes4(0));
 
     // Add or change the scheme:
-        organizations[_avatar].schemes[_scheme] = Scheme({paramsHash:_paramsHash,permissions:_permissions|bytes4(1)});
+        organizations[_avatar].schemes[_scheme] =
+        Scheme({paramsHash:_paramsHash, permissions:_permissions|bytes4(0x00000001)});
         emit RegisterScheme(msg.sender, _scheme, _avatar);
         return true;
     }
@@ -227,22 +238,23 @@ contract UController is ControllerInterface {
      * @param _avatar the organization avatar.
      * @return bool which represents a success
      */
-    function unregisterScheme(address _scheme,address _avatar)
+    function unregisterScheme(address _scheme, address _avatar)
     external
     onlyRegisteringSchemes(_avatar)
-    onlySubjectToConstraint("unregisterScheme",_avatar)
+    onlySubjectToConstraint("unregisterScheme", _avatar)
     returns(bool)
     {
         bytes4 schemePermission = organizations[_avatar].schemes[_scheme].permissions;
     //check if the scheme is registered
-        if (schemePermission&bytes4(1) == bytes4(0)) {
+        if (schemePermission&bytes4(0x00000001) == bytes4(0)) {
             return false;
-          }
+        }
     // Check the unregistering scheme has enough permissions:
-        require(bytes4(0x1F)&(schemePermission&(~organizations[_avatar].schemes[msg.sender].permissions)) == bytes4(0));
+        require(
+        bytes4(0x0000001f)&(schemePermission&(~organizations[_avatar].schemes[msg.sender].permissions)) == bytes4(0));
 
     // Unregister:
-        emit UnregisterScheme(msg.sender, _scheme,_avatar);
+        emit UnregisterScheme(msg.sender, _scheme, _avatar);
         delete organizations[_avatar].schemes[_scheme];
         return true;
     }
@@ -253,23 +265,197 @@ contract UController is ControllerInterface {
      * @return bool which represents a success
      */
     function unregisterSelf(address _avatar) external returns(bool) {
-        if (_isSchemeRegistered(msg.sender,_avatar) == false) {
+        if (_isSchemeRegistered(msg.sender, _avatar) == false) {
             return false;
         }
         delete organizations[_avatar].schemes[msg.sender];
-        emit UnregisterScheme(msg.sender, msg.sender,_avatar);
+        emit UnregisterScheme(msg.sender, msg.sender, _avatar);
         return true;
     }
 
-    function isSchemeRegistered( address _scheme,address _avatar) external view returns(bool) {
-        return _isSchemeRegistered(_scheme,_avatar);
+    /**
+     * @dev add or update Global Constraint
+     * @param _globalConstraint the address of the global constraint to be added.
+     * @param _params the constraint parameters hash.
+     * @param _avatar the avatar of the organization
+     * @return bool which represents a success
+     */
+    function addGlobalConstraint(address _globalConstraint, bytes32 _params, address _avatar)
+    external onlyGlobalConstraintsScheme(_avatar) returns(bool)
+    {
+        Organization storage organization = organizations[_avatar];
+        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
+        if ((when == GlobalConstraintInterface.CallPhase.Pre)||
+            (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            if (!organization.globalConstraintsRegisterPre[_globalConstraint].isRegistered) {
+                organization.globalConstraintsPre.push(GlobalConstraint(_globalConstraint, _params));
+                organization.globalConstraintsRegisterPre[_globalConstraint] =
+                GlobalConstraintRegister(true, organization.globalConstraintsPre.length-1);
+            }else {
+                organization
+                .globalConstraintsPre[organization.globalConstraintsRegisterPre[_globalConstraint].index]
+                .params = _params;
+            }
+        }
+
+        if ((when == GlobalConstraintInterface.CallPhase.Post)||
+            (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            if (!organization.globalConstraintsRegisterPost[_globalConstraint].isRegistered) {
+                organization.globalConstraintsPost.push(GlobalConstraint(_globalConstraint, _params));
+                organization.globalConstraintsRegisterPost[_globalConstraint] =
+                GlobalConstraintRegister(true, organization.globalConstraintsPost.length-1);
+            } else {
+                organization
+                .globalConstraintsPost[organization.globalConstraintsRegisterPost[_globalConstraint].index]
+                .params = _params;
+            }
+        }
+        emit AddGlobalConstraint(_globalConstraint, _params, when, _avatar);
+        return true;
     }
 
-    function getSchemeParameters(address _scheme,address _avatar) external view returns(bytes32) {
+    /**
+     * @dev remove Global Constraint
+     * @param _globalConstraint the address of the global constraint to be remove.
+     * @param _avatar the organization avatar.
+     * @return bool which represents a success
+     */
+    function removeGlobalConstraint (address _globalConstraint, address _avatar)
+    external onlyGlobalConstraintsScheme(_avatar) returns(bool)
+    {
+        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
+        if ((when == GlobalConstraintInterface.CallPhase.Pre)||
+            (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            removeGlobalConstraintPre(_globalConstraint, _avatar);
+        }
+        if ((when == GlobalConstraintInterface.CallPhase.Post)||
+            (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            removeGlobalConstraintPost(_globalConstraint, _avatar);
+        }
+        return false;
+    }
+
+  /**
+    * @dev upgrade the Controller
+    *      The function will trigger an event 'UpgradeController'.
+    * @param  _newController the address of the new controller.
+    * @param _avatar the organization avatar.
+    * @return bool which represents a success
+    */
+    function upgradeController(address _newController, Avatar _avatar)
+    external onlyUpgradingScheme(address(_avatar)) returns(bool)
+    {
+        require(newControllers[address(_avatar)] == address(0));   // so the upgrade could be done once for a contract.
+        require(_newController != address(0));
+        newControllers[address(_avatar)] = _newController;
+        _avatar.transferOwnership(_newController);
+        require(_avatar.owner() == _newController);
+        if (organizations[address(_avatar)].nativeToken.owner() == address(this)) {
+            organizations[address(_avatar)].nativeToken.transferOwnership(_newController);
+            require(organizations[address(_avatar)].nativeToken.owner() == _newController);
+        }
+        if (organizations[address(_avatar)].nativeReputation.owner() == address(this)) {
+            organizations[address(_avatar)].nativeReputation.transferOwnership(_newController);
+            require(organizations[address(_avatar)].nativeReputation.owner() == _newController);
+        }
+        emit UpgradeController(address(this), _newController, address(_avatar));
+        return true;
+    }
+
+    /**
+    * @dev perform a generic call to an arbitrary contract
+    * @param _contract  the contract's address to call
+    * @param _data ABI-encoded contract call to call `_contract` address.
+    * @return bytes32  - the return value of the called _contract's function.
+    */
+    function genericCall(address _contract, bytes calldata _data, Avatar _avatar)
+    external
+    onlyGenericCallScheme(address(_avatar))
+    onlySubjectToConstraint("genericCall", address(_avatar))
+    returns (bytes memory returnValue)
+    {
+        return _avatar.genericCall(_contract, _data);
+    }
+
+  /**
+   * @dev send some ether
+   * @param _amountInWei the amount of ether (in Wei) to send
+   * @param _to address of the beneficiary
+   * @param _avatar the organization avatar.
+   * @return bool which represents a success
+   */
+    function sendEther(uint256 _amountInWei, address payable _to, Avatar _avatar)
+    external
+    onlyRegisteredScheme(address(_avatar))
+    onlySubjectToConstraint("sendEther", address(_avatar))
+    returns(bool)
+    {
+        return _avatar.sendEther(_amountInWei, _to);
+    }
+
+    /**
+    * @dev send some amount of arbitrary ERC20 Tokens
+    * @param _externalToken the address of the Token Contract
+    * @param _to address of the beneficiary
+    * @param _value the amount of ether (in Wei) to send
+    * @param _avatar the organization avatar.
+    * @return bool which represents a success
+    */
+    function externalTokenTransfer(ERC20 _externalToken, address _to, uint256 _value, Avatar _avatar)
+    external
+    onlyRegisteredScheme(address(_avatar))
+    onlySubjectToConstraint("externalTokenTransfer", address(_avatar))
+    returns(bool)
+    {
+        return _avatar.externalTokenTransfer(_externalToken, _to, _value);
+    }
+
+    /**
+    * @dev transfer token "from" address "to" address
+    *      One must to approve the amount of tokens which can be spend from the
+    *      "from" account.This can be done using externalTokenApprove.
+    * @param _externalToken the address of the Token Contract
+    * @param _from address of the account to send from
+    * @param _to address of the beneficiary
+    * @param _value the amount of ether (in Wei) to send
+    * @param _avatar the organization avatar.
+    * @return bool which represents a success
+    */
+    function externalTokenTransferFrom(ERC20 _externalToken, address _from, address _to, uint256 _value, Avatar _avatar)
+    external
+    onlyRegisteredScheme(address(_avatar))
+    onlySubjectToConstraint("externalTokenTransferFrom", address(_avatar))
+    returns(bool)
+    {
+        return _avatar.externalTokenTransferFrom(_externalToken, _from, _to, _value);
+    }
+
+    /**
+    * @dev externalTokenApproval approve the spender address to spend a specified amount of tokens
+    *      on behalf of msg.sender.
+    * @param _externalToken the address of the Token Contract
+    * @param _spender address
+    * @param _value the amount of ether (in Wei) which the approval is referring to.
+    * @return bool which represents a success
+    */
+    function externalTokenApproval(ERC20 _externalToken, address _spender, uint256 _value, Avatar _avatar)
+    external
+    onlyRegisteredScheme(address(_avatar))
+    onlySubjectToConstraint("externalTokenApproval", address(_avatar))
+    returns(bool)
+    {
+        return _avatar.externalTokenApproval(_externalToken, _spender, _value);
+    }
+
+    function isSchemeRegistered( address _scheme, address _avatar) external view returns(bool) {
+        return _isSchemeRegistered(_scheme, _avatar);
+    }
+
+    function getSchemeParameters(address _scheme, address _avatar) external view returns(bytes32) {
         return organizations[_avatar].schemes[_scheme].paramsHash;
     }
 
-    function getSchemePermissions(address _scheme,address _avatar) external view returns(bytes4) {
+    function getSchemePermissions(address _scheme, address _avatar) external view returns(bytes4) {
         return organizations[_avatar].schemes[_scheme].permissions;
     }
 
@@ -295,202 +481,16 @@ contract UController is ControllerInterface {
    * @return uint256 globalConstraintsPre count.
    * @return uint256 globalConstraintsPost count.
    */
-    function globalConstraintsCount(address _avatar) external view returns(uint,uint) {
-        return (organizations[_avatar].globalConstraintsPre.length,organizations[_avatar].globalConstraintsPost.length);
+    function globalConstraintsCount(address _avatar) external view returns(uint, uint) {
+        return (
+        organizations[_avatar].globalConstraintsPre.length,
+        organizations[_avatar].globalConstraintsPost.length
+        );
     }
 
-    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) external view returns(bool) {
+    function isGlobalConstraintRegistered(address _globalConstraint, address _avatar) external view returns(bool) {
         return (organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint].isRegistered ||
-        organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint].isRegistered) ;
-    }
-
-    /**
-     * @dev add or update Global Constraint
-     * @param _globalConstraint the address of the global constraint to be added.
-     * @param _params the constraint parameters hash.
-     * @param _avatar the avatar of the organization
-     * @return bool which represents a success
-     */
-    function addGlobalConstraint(address _globalConstraint, bytes32 _params, address _avatar)
-    external onlyGlobalConstraintsScheme(_avatar) returns(bool)
-    {
-        Organization storage organization = organizations[_avatar];
-        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
-        if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            if (!organization.globalConstraintsRegisterPre[_globalConstraint].isRegistered) {
-                organization.globalConstraintsPre.push(GlobalConstraint(_globalConstraint,_params));
-                organization.globalConstraintsRegisterPre[_globalConstraint] = GlobalConstraintRegister(true,organization.globalConstraintsPre.length-1);
-            }else {
-                organization.globalConstraintsPre[organization.globalConstraintsRegisterPre[_globalConstraint].index].params = _params;
-            }
-        }
-
-        if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            if (!organization.globalConstraintsRegisterPost[_globalConstraint].isRegistered) {
-                organization.globalConstraintsPost.push(GlobalConstraint(_globalConstraint,_params));
-                organization.globalConstraintsRegisterPost[_globalConstraint] = GlobalConstraintRegister(true,organization.globalConstraintsPost.length-1);
-           }else {
-                organization.globalConstraintsPost[organization.globalConstraintsRegisterPost[_globalConstraint].index].params = _params;
-           }
-        }
-        emit AddGlobalConstraint(_globalConstraint, _params,when,_avatar);
-        return true;
-    }
-
-    /**
-     * @dev remove Global Constraint
-     * @param _globalConstraint the address of the global constraint to be remove.
-     * @param _avatar the organization avatar.
-     * @return bool which represents a success
-     */
-    function removeGlobalConstraint (address _globalConstraint,address _avatar)
-    external onlyGlobalConstraintsScheme(_avatar) returns(bool)
-    {
-        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
-        if ((when == GlobalConstraintInterface.CallPhase.Pre)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            removeGlobalConstraintPre(_globalConstraint,_avatar);
-        }
-        if ((when == GlobalConstraintInterface.CallPhase.Post)||(when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
-            removeGlobalConstraintPost(_globalConstraint,_avatar);
-        }
-        return false;
-    }
-
-  /**
-    * @dev upgrade the Controller
-    *      The function will trigger an event 'UpgradeController'.
-    * @param  _newController the address of the new controller.
-    * @param _avatar the organization avatar.
-    * @return bool which represents a success
-    */
-    function upgradeController(address _newController,address _avatar)
-    external onlyUpgradingScheme(_avatar) returns(bool)
-    {
-        require(newControllers[_avatar] == address(0));   // so the upgrade could be done once for a contract.
-        require(_newController != address(0));
-        newControllers[_avatar] = _newController;
-        (Avatar(_avatar)).transferOwnership(_newController);
-        require(Avatar(_avatar).owner() == _newController);
-        if (organizations[_avatar].nativeToken.owner() == address(this)) {
-            organizations[_avatar].nativeToken.transferOwnership(_newController);
-            require(organizations[_avatar].nativeToken.owner() == _newController);
-        }
-        if (organizations[_avatar].nativeReputation.owner() == address(this)) {
-            organizations[_avatar].nativeReputation.transferOwnership(_newController);
-            require(organizations[_avatar].nativeReputation.owner() == _newController);
-        }
-        emit UpgradeController(this,_newController,_avatar);
-        return true;
-    }
-
-    /**
-    * @dev perform a generic call to an arbitrary contract
-    * @param _contract  the contract's address to call
-    * @param _data ABI-encoded contract call to call `_contract` address.
-    * @return bytes32  - the return value of the called _contract's function.
-    */
-    function genericCall(address _contract,bytes _data,address _avatar)
-    external
-    onlyGenericCallScheme(_avatar)
-    onlySubjectToConstraint("genericCall",_avatar)
-    returns (bytes32 returnValue)
-    {
-        (Avatar(_avatar)).genericCall(_contract, _data);
-        // solium-disable-next-line security/no-inline-assembly
-        assembly {
-        // Copy the returned data.
-        returndatacopy(returnValue, 0, returndatasize)
-        return(returnValue, 0x20)
-        }
-    }
-
-  /**
-   * @dev send some ether
-   * @param _amountInWei the amount of ether (in Wei) to send
-   * @param _to address of the beneficiary
-   * @param _avatar the organization avatar.
-   * @return bool which represents a success
-   */
-    function sendEther(uint256 _amountInWei, address _to,address _avatar)
-    external
-    onlyRegisteredScheme(_avatar)
-    onlySubjectToConstraint("sendEther",_avatar)
-    returns(bool)
-    {
-        return (Avatar(_avatar)).sendEther(_amountInWei, _to);
-    }
-
-    /**
-    * @dev send some amount of arbitrary ERC20 Tokens
-    * @param _externalToken the address of the Token Contract
-    * @param _to address of the beneficiary
-    * @param _value the amount of ether (in Wei) to send
-    * @param _avatar the organization avatar.
-    * @return bool which represents a success
-    */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint256 _value,address _avatar)
-    external
-    onlyRegisteredScheme(_avatar)
-    onlySubjectToConstraint("externalTokenTransfer",_avatar)
-    returns(bool)
-    {
-        return (Avatar(_avatar)).externalTokenTransfer(_externalToken, _to, _value);
-    }
-
-    /**
-    * @dev transfer token "from" address "to" address
-    *      One must to approve the amount of tokens which can be spend from the
-    *      "from" account.This can be done using externalTokenApprove.
-    * @param _externalToken the address of the Token Contract
-    * @param _from address of the account to send from
-    * @param _to address of the beneficiary
-    * @param _value the amount of ether (in Wei) to send
-    * @param _avatar the organization avatar.
-    * @return bool which represents a success
-    */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint256 _value,address _avatar)
-    external
-    onlyRegisteredScheme(_avatar)
-    onlySubjectToConstraint("externalTokenTransferFrom",_avatar)
-    returns(bool)
-    {
-        return (Avatar(_avatar)).externalTokenTransferFrom(_externalToken, _from, _to, _value);
-    }
-
-    /**
-    * @dev increase approval for the spender address to spend a specified amount of tokens
-    *      on behalf of msg.sender.
-    * @param _externalToken the address of the Token Contract
-    * @param _spender address
-    * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
-    * @param _avatar the organization avatar.
-    * @return bool which represents a success
-    */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint256 _addedValue,address _avatar)
-    external
-    onlyRegisteredScheme(_avatar)
-    onlySubjectToConstraint("externalTokenIncreaseApproval",_avatar)
-    returns(bool)
-    {
-        return (Avatar(_avatar)).externalTokenIncreaseApproval(_externalToken, _spender, _addedValue);
-    }
-
-    /**
-    * @dev decrease approval for the spender address to spend a specified amount of tokens
-    *      on behalf of msg.sender.
-    * @param _externalToken the address of the Token Contract
-    * @param _spender address
-    * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
-    * @param _avatar the organization avatar.
-    * @return bool which represents a success
-    */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint256 _subtractedValue,address _avatar)
-    external
-    onlyRegisteredScheme(_avatar)
-    onlySubjectToConstraint("externalTokenDecreaseApproval",_avatar)
-    returns(bool)
-    {
-        return (Avatar(_avatar)).externalTokenDecreaseApproval(_externalToken, _spender, _subtractedValue);
+        organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint].isRegistered);
     }
 
     /**
@@ -508,21 +508,23 @@ contract UController is ControllerInterface {
      * @param _avatar the organization avatar.
      * @return bool which represents a success
      */
-    function removeGlobalConstraintPre(address _globalConstraint,address _avatar)
+    function removeGlobalConstraintPre(address _globalConstraint, address _avatar)
     private returns(bool)
     {
-        GlobalConstraintRegister memory globalConstraintRegister = organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint];
+        GlobalConstraintRegister memory globalConstraintRegister =
+        organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint];
         GlobalConstraint[] storage globalConstraints = organizations[_avatar].globalConstraintsPre;
 
         if (globalConstraintRegister.isRegistered) {
             if (globalConstraintRegister.index < globalConstraints.length-1) {
                 GlobalConstraint memory globalConstraint = globalConstraints[globalConstraints.length-1];
                 globalConstraints[globalConstraintRegister.index] = globalConstraint;
-                organizations[_avatar].globalConstraintsRegisterPre[globalConstraint.gcAddress].index = globalConstraintRegister.index;
-              }
+                organizations[_avatar].globalConstraintsRegisterPre[globalConstraint.gcAddress].index =
+                globalConstraintRegister.index;
+            }
             globalConstraints.length--;
             delete organizations[_avatar].globalConstraintsRegisterPre[_globalConstraint];
-            emit RemoveGlobalConstraint(_globalConstraint,globalConstraintRegister.index,true,_avatar);
+            emit RemoveGlobalConstraint(_globalConstraint, globalConstraintRegister.index, true, _avatar);
             return true;
         }
         return false;
@@ -534,27 +536,29 @@ contract UController is ControllerInterface {
      * @param _avatar the organization avatar.
      * @return bool which represents a success
      */
-    function removeGlobalConstraintPost(address _globalConstraint,address _avatar)
+    function removeGlobalConstraintPost(address _globalConstraint, address _avatar)
     private returns(bool)
     {
-        GlobalConstraintRegister memory globalConstraintRegister = organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint];
+        GlobalConstraintRegister memory globalConstraintRegister =
+        organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint];
         GlobalConstraint[] storage globalConstraints = organizations[_avatar].globalConstraintsPost;
 
         if (globalConstraintRegister.isRegistered) {
             if (globalConstraintRegister.index < globalConstraints.length-1) {
                 GlobalConstraint memory globalConstraint = globalConstraints[globalConstraints.length-1];
                 globalConstraints[globalConstraintRegister.index] = globalConstraint;
-                organizations[_avatar].globalConstraintsRegisterPost[globalConstraint.gcAddress].index = globalConstraintRegister.index;
-              }
+                organizations[_avatar].globalConstraintsRegisterPost[globalConstraint.gcAddress].index =
+                globalConstraintRegister.index;
+            }
             globalConstraints.length--;
             delete organizations[_avatar].globalConstraintsRegisterPost[_globalConstraint];
-            emit RemoveGlobalConstraint(_globalConstraint,globalConstraintRegister.index,false,_avatar);
+            emit RemoveGlobalConstraint(_globalConstraint, globalConstraintRegister.index, false, _avatar);
             return true;
         }
         return false;
     }
 
-    function _isSchemeRegistered( address _scheme,address _avatar) private view returns(bool) {
-        return (organizations[_avatar].schemes[_scheme].permissions&bytes4(1) != bytes4(0));
+    function _isSchemeRegistered( address _scheme, address _avatar) private view returns(bool) {
+        return (organizations[_avatar].schemes[_scheme].permissions&bytes4(0x00000001) != bytes4(0));
     }
 }

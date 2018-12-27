@@ -1,9 +1,9 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "@daostack/infra/contracts/Reputation.sol";
 import "./DAOToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 
 
@@ -11,7 +11,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
  * @title An Avatar holds tokens, reputation and ether for a controller
  */
 contract Avatar is Ownable {
-    using SafeERC20 for StandardToken;
+    using SafeERC20 for ERC20;
 
     string public orgName;
     DAOToken public nativeToken;
@@ -21,15 +21,14 @@ contract Avatar is Ownable {
     event SendEther(uint256 _amountInWei, address indexed _to);
     event ExternalTokenTransfer(address indexed _externalToken, address indexed _to, uint256 _value);
     event ExternalTokenTransferFrom(address indexed _externalToken, address _from, address _to, uint256 _value);
-    event ExternalTokenIncreaseApproval(StandardToken indexed _externalToken, address _spender, uint256 _addedValue);
-    event ExternalTokenDecreaseApproval(StandardToken indexed _externalToken, address _spender, uint256 _subtractedValue);
+    event ExternalTokenApproval(ERC20 indexed _externalToken, address _spender, uint256 _value);
     event ReceiveEther(address indexed _sender, uint256 _value);
 
     /**
     * @dev the constructor takes organization name, native token and reputation system
     and creates an avatar for a controller
     */
-    constructor(string _orgName, DAOToken _nativeToken, Reputation _nativeReputation) public {
+    constructor(string memory _orgName, DAOToken _nativeToken, Reputation _nativeReputation) public {
         orgName = _orgName;
         nativeToken = _nativeToken;
         nativeReputation = _nativeReputation;
@@ -38,7 +37,7 @@ contract Avatar is Ownable {
     /**
     * @dev enables an avatar to receive ethers
     */
-    function() public payable {
+    function() external payable {
         emit ReceiveEther(msg.sender, msg.value);
     }
 
@@ -48,20 +47,12 @@ contract Avatar is Ownable {
     * @param _data ABI-encoded contract call to call `_contract` address.
     * @return the return bytes of the called contract's function.
     */
-    function genericCall(address _contract,bytes _data) public onlyOwner {
-        emit GenericCall(_contract,_data);
-        // solium-disable-next-line security/no-low-level-calls
-        bool result = _contract.call(_data);
-        // solium-disable-next-line security/no-inline-assembly
-        assembly {
-        // Copy the returned data.
-        returndatacopy(0, 0, returndatasize)
-
-        switch result
-        // call returns 0 on error.
-        case 0 { revert(0, returndatasize) }
-        default { return(0, returndatasize) }
-        }
+    function genericCall(address _contract, bytes memory _data) public onlyOwner returns(bytes memory) {
+        emit GenericCall(_contract, _data);
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success, bytes memory returnValue) = _contract.call(_data);
+        require(success);
+        return returnValue;
     }
 
     /**
@@ -70,7 +61,7 @@ contract Avatar is Ownable {
     * @param _to send the ethers to this address
     * @return bool which represents success
     */
-    function sendEther(uint256 _amountInWei, address _to) public onlyOwner returns(bool) {
+    function sendEther(uint256 _amountInWei, address payable _to) public onlyOwner returns(bool) {
         _to.transfer(_amountInWei);
         emit SendEther(_amountInWei, _to);
         return true;
@@ -83,11 +74,11 @@ contract Avatar is Ownable {
     * @param _value the amount of tokens to transfer
     * @return bool which represents success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint256 _value)
+    function externalTokenTransfer(ERC20 _externalToken, address _to, uint256 _value)
     public onlyOwner returns(bool)
     {
         _externalToken.safeTransfer(_to, _value);
-        emit ExternalTokenTransfer(_externalToken, _to, _value);
+        emit ExternalTokenTransfer(address(_externalToken), _to, _value);
         return true;
     }
 
@@ -100,7 +91,7 @@ contract Avatar is Ownable {
     * @return bool which represents success
     */
     function externalTokenTransferFrom(
-        StandardToken _externalToken,
+        ERC20 _externalToken,
         address _from,
         address _to,
         uint256 _value
@@ -108,39 +99,23 @@ contract Avatar is Ownable {
     public onlyOwner returns(bool)
     {
         _externalToken.safeTransferFrom(_from, _to, _value);
-        emit ExternalTokenTransferFrom(_externalToken, _from, _to, _value);
+        emit ExternalTokenTransferFrom(address(_externalToken), _from, _to, _value);
         return true;
     }
 
     /**
-    * @dev increase approval for the spender address to spend a specified amount of tokens
+    * @dev externalTokenApproval approve the spender address to spend a specified amount of tokens
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
+    * @param _value the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint256 _addedValue)
+    function externalTokenApproval(ERC20 _externalToken, address _spender, uint256 _value)
     public onlyOwner returns(bool)
     {
-        require(_externalToken.increaseApproval(_spender, _addedValue),"increase approval must succeed");
-        emit ExternalTokenIncreaseApproval(_externalToken, _spender, _addedValue);
-        return true;
-    }
-
-    /**
-    * @dev decrease approval for the spender address to spend a specified amount of tokens
-    *      on behalf of msg.sender.
-    * @param _externalToken the address of the Token Contract
-    * @param _spender address
-    * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
-    * @return bool which represents a success
-    */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint256 _subtractedValue )
-    public onlyOwner returns(bool)
-    {
-        require(_externalToken.decreaseApproval(_spender, _subtractedValue),"decrease approval must succeed");
-        emit ExternalTokenDecreaseApproval(_externalToken,_spender, _subtractedValue);
+        require(_externalToken.approve(_spender, _value), "approve must succeed");
+        emit ExternalTokenApproval(_externalToken, _spender, _value);
         return true;
     }
 

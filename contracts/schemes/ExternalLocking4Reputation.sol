@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./Locking4Reputation.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -41,7 +41,7 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         uint256 _claimingEndTime,
         uint256 _redeemEnableTime,
         address _externalLockingContract,
-        string _getBalanceFuncSignature)
+        string calldata _getBalanceFuncSignature)
     external
     onlyOwner
     {
@@ -69,27 +69,24 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         if (_beneficiary == address(0)) {
             beneficiary = msg.sender;
         } else {
-            require(registrar[_beneficiary],"beneficiary should be register");
+            require(registrar[_beneficiary], "beneficiary should be register");
             beneficiary = _beneficiary;
         }
         require(externalLockers[beneficiary] == false, "claiming twice for the same beneficiary is not allowed");
         externalLockers[beneficiary] = true;
-        // solium-disable-next-line security/no-low-level-calls
-        bool result = externalLockingContract.call(abi.encodeWithSignature(getBalanceFuncSignature, beneficiary));
+        (bool result, bytes memory returnValue) =
+        // solhint-disable-next-line avoid-call-value,avoid-low-level-calls
+        externalLockingContract.call(abi.encodeWithSignature(getBalanceFuncSignature, beneficiary));
+        require(result, "call to external contract should success");
         uint256 lockedAmount;
-        // solium-disable-next-line security/no-inline-assembly
+        // solhint-disable-next-line no-inline-assembly
         assembly {
-          returndatacopy(0, 0, returndatasize)
-          switch result
-          // call returns 0 on error.
-          case 0 { revert(0, returndatasize) }
-          default { lockedAmount := mload(0) }
+            lockedAmount := mload(add(returnValue, add(0x20, 0)))
         }
-
-        return super._lock(lockedAmount, 1, beneficiary,1,1);
+        return super._lock(lockedAmount, 1, beneficiary, 1, 1);
     }
 
-  /**
+   /**
     * @dev register function
     *      register for external locking claim
     */

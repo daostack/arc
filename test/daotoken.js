@@ -61,15 +61,15 @@ contract('DAOToken', accounts => {
         assert.equal(totalSupply.toNumber(), newSupply.toNumber());
     });
 
-    it("log the Mint event on mint", async () => {
+    it("log the Transfer event on mint", async () => {
         const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
 
         const tx = await token.mint(accounts[1], 1000, { from: accounts[0] });
 
-        assert.equal(tx.logs.length, 2);
-        assert.equal(tx.logs[0].event, "Mint");
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "Transfer");
         assert.equal(tx.logs[0].args.to, accounts[1]);
-        assert.equal(tx.logs[0].args.amount.toNumber(), 1000);
+        assert.equal(tx.logs[0].args.value.toNumber(), 1000);
     });
 
     it("mint should be reflected in totalSupply", async () => {

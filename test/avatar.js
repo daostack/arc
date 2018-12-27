@@ -1,6 +1,6 @@
 const helpers = require('./helpers');
 const Avatar = artifacts.require("./Avatar.sol");
-const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const ActionMock = artifacts.require('./test/ActionMock.sol');
 const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 
@@ -81,7 +81,7 @@ contract('Avatar',  accounts =>  {
 
     it("externalTokenTransfer  ", async () => {
       avatar = await setup(accounts);
-      var standardToken = await StandardTokenMock.new(avatar.address, 100);
+      var standardToken = await ERC20Mock.new(avatar.address, 100);
       let balanceAvatar = await standardToken.balanceOf(avatar.address);
       assert.equal(balanceAvatar, 100);
       var tx = await avatar.externalTokenTransfer(standardToken.address,accounts[1],50);
@@ -93,14 +93,14 @@ contract('Avatar',  accounts =>  {
       assert.equal(balance1, 50);
     });
 
-    it("externalTokenTransferFrom & externalTokenIncreaseApproval", async () => {
+    it("externalTokenTransferFrom & externalTokenApproval", async () => {
       var tx;
       var to   = accounts[1];
       avatar = await setup(accounts);
-      var standardToken = await StandardTokenMock.new(avatar.address, 100);
-      tx = await avatar.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
+      var standardToken = await ERC20Mock.new(avatar.address, 100);
+      tx = await avatar.externalTokenApproval(standardToken.address,avatar.address,50);
       assert.equal(tx.logs.length, 1);
-      assert.equal(tx.logs[0].event, "ExternalTokenIncreaseApproval");
+      assert.equal(tx.logs[0].event, "ExternalTokenApproval");
       tx = await avatar.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
@@ -109,31 +109,4 @@ contract('Avatar',  accounts =>  {
       let balanceTo = await standardToken.balanceOf(to);
       assert.equal(balanceTo, 50);
     });
-
-    it("externalTokenTransferFrom & externalTokenDecreaseApproval", async () => {
-      var tx;
-      var to   = accounts[1];
-      avatar = await setup(accounts);
-      var standardToken = await StandardTokenMock.new(avatar.address, 100);
-      tx = await avatar.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
-      tx = await avatar.externalTokenDecreaseApproval(standardToken.address,avatar.address,50);
-      assert.equal(tx.logs.length, 1);
-      assert.equal(tx.logs[0].event, "ExternalTokenDecreaseApproval");
-      try{
-         await avatar.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
-         assert(false,"externalTokenTransferFrom should fail due to decrease approval ");
-        }
-        catch(ex){
-          helpers.assertVMException(ex);
-        }
-      tx = await avatar.externalTokenIncreaseApproval(standardToken.address,avatar.address,50);
-      tx = await avatar.externalTokenTransferFrom(standardToken.address,avatar.address,to,50);
-      assert.equal(tx.logs.length, 1);
-      assert.equal(tx.logs[0].event, "ExternalTokenTransferFrom");
-      let balanceAvatar = await standardToken.balanceOf(avatar.address);
-      assert.equal(balanceAvatar, 50);
-      let balanceTo = await standardToken.balanceOf(to);
-      assert.equal(balanceTo, 50);
-    });
-
 });

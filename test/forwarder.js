@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const constants = require('./constants');
-const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var Forwarder = artifacts.require("./Forwarder.sol");
 var ControllerInterface = artifacts.require("./ControllerInterface.sol");
 
@@ -10,7 +10,7 @@ const setup = async function (accounts,
                              _expirationTime = 300)
   {
    var testSetup = new helpers.TestSetup();
-   testSetup.biddingToken = await StandardTokenMock.new(accounts[0], web3.utils.toWei('100', "ether"));
+   testSetup.biddingToken = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);

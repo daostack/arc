@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 /**
  * RealMath: fixed-point math library, based on fractional and integer parts.
@@ -22,59 +22,58 @@ library RealMath {
     /**
      * How many total bits are there?
      */
-    int256 constant REAL_BITS = 256;
+    int256 constant private REAL_BITS = 256;
 
     /**
      * How many fractional bits are there?
      */
-    int256 constant REAL_FBITS = 40;
+    int256 constant private REAL_FBITS = 40;
 
     /**
      * How many integer bits are there?
      */
-    int256 constant REAL_IBITS = REAL_BITS - REAL_FBITS;
+    int256 constant private REAL_IBITS = REAL_BITS - REAL_FBITS;
 
     /**
      * What's the first non-fractional bit
      */
-    int256 constant REAL_ONE = int256(1) << REAL_FBITS;
+    int256 constant private REAL_ONE = int256(1) << REAL_FBITS;
 
     /**
      * What's the last fractional bit?
      */
-    int256 constant REAL_HALF = REAL_ONE >> 1;
+    int256 constant private REAL_HALF = REAL_ONE >> 1;
 
     /**
      * What's two? Two is pretty useful.
      */
-    int256 constant REAL_TWO = REAL_ONE << 1;
+    int256 constant private REAL_TWO = REAL_ONE << 1;
 
     /**
      * And our logarithms are based on ln(2).
      */
-    int256 constant REAL_LN_TWO = 762123384786;
+    int256 constant private REAL_LN_TWO = 762123384786;
 
     /**
      * It is also useful to have Pi around.
      */
-    int256 constant REAL_PI = 3454217652358;
+    int256 constant private REAL_PI = 3454217652358;
 
     /**
      * And half Pi, to save on divides.
-     * TODO: That might not be how the compiler handles constants.
+     * TODO: That might not be how the compiler handles constant privates.
      */
-    int256 constant REAL_HALF_PI = 1727108826179;
+    int256 constant private REAL_HALF_PI = 1727108826179;
 
     /**
      * And two pi, which happens to be odd in its most accurate representation.
      */
-    int256 constant REAL_TWO_PI = 6908435304715;
+    int256 constant private REAL_TWO_PI = 6908435304715;
 
     /**
      * What's the sign bit?
      */
-    int256 constant SIGN_MASK = int256(1) << 255;
-
+    int256 constant private SIGN_MASK = int256(1) << 255;
 
     /**
      * Convert an integer to a real. Preserves sign.
@@ -184,7 +183,6 @@ library RealMath {
     // Now we have some fancy math things (like pow and trig stuff). This isn't
     // in the RealMath that was deployed with the original Macroverse
     // deployment, so it needs to be linked into your contract statically.
-
     /**
      * Raise a number to a positive integer power in O(log power) time.
      * See <https://stackoverflow.com/a/101613>
@@ -237,6 +235,7 @@ library RealMath {
     /**
      * Given a number with one bit set, finds the index of that bit.
      */
+    // solhint-disable-next-line code-complexity
     function findbit(uint256 val) internal pure returns (uint8 index) {
         index = 0;
         // We and the value with alternating bit patters of various pitches to find it.
@@ -313,7 +312,7 @@ library RealMath {
      * Note that it is potentially possible to get an un-converged value; lack
      * of convergence does not throw.
      */
-    function lnLimited(int256 realArg, int maxIterations) internal pure returns (int256) {
+    function lnLimited(int256 realArg, int256 maxIterations) internal pure returns (int256) {
         if (realArg <= 0) {
             // Outside of acceptable domain
             revert();
@@ -374,7 +373,7 @@ library RealMath {
      * Note that it is potentially possible to get an un-converged value; lack
      * of convergence does not throw.
      */
-    function expLimited(int256 realArg, int maxIterations) internal pure returns (int256) {
+    function expLimited(int256 realArg, int256 maxIterations) internal pure returns (int256) {
         // We will accumulate the result here
         int256 realResult = 0;
 
@@ -441,7 +440,7 @@ library RealMath {
 
         if (realBase < 0) {
             // It's a negative base to a non-integer power.
-            // In general pow(-x^y) is undefined, unless y is an int or some
+            // In general pow(-x^y) is undefined, unless y is an int256 or some
             // weird rational-number-based relationship holds.
             revert();
         }
@@ -471,7 +470,8 @@ library RealMath {
 
         // We sum from large to small iteration so that we can have higher powers in later terms
         for (int216 iteration = maxIterations - 1; iteration >= 0; iteration--) {
-            accumulator = REAL_ONE - mul(div(mul(realArg, realArg), toReal((2 * iteration + 2) * (2 * iteration + 3))), accumulator);
+            accumulator = REAL_ONE - mul(div(mul(realArg, realArg),
+            toReal((2 * iteration + 2) * (2 * iteration + 3))), accumulator);
             // We can't stop early; we need to make it to the first term.
         }
 

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../controller/ControllerInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -17,21 +17,13 @@ contract Forwarder is Ownable {
     /**
      * @dev forwardCall forward a call to the dao controller
      */
+    // solhint-disable-next-line no-complex-fallback,payable-fallback
     function () external onlyOwner {
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(expirationTime > now, "expirationTime > now");
-        // solium-disable-next-line security/no-low-level-calls
-        bool result = avatar.owner().call(msg.data);
-        // solium-disable-next-line security/no-inline-assembly
-        assembly {
-        // Copy the returned data.
-        returndatacopy(0, 0, returndatasize)
-
-        switch result
-        // call returns 0 on error.
-        case 0 { revert(0, returndatasize) }
-        default { return(0, returndatasize) }
-        }
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool result,) = avatar.owner().call(msg.data);
+        require(result);
     }
 
     /**
@@ -51,7 +43,7 @@ contract Forwarder is Ownable {
      * @return bool
      */
     function unregisterSelf() public returns(bool) {
-       // solium-disable-next-line security/no-block-members
+       // solhint-disable-next-line not-rely-on-time
         require(expirationTime <= now, "expirationTime <= now");
         return ControllerInterface(avatar.owner()).unregisterSelf(address(avatar));
     }

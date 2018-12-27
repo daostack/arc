@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../controller/ControllerInterface.sol";
 import { RealMath } from "../libs/RealMath.sol";
@@ -46,7 +46,7 @@ contract Locking4Reputation {
      * @return uint256 reputation rewarded
      */
     function redeem(address _beneficiary) public returns(uint256 reputation) {
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(block.timestamp > redeemEnableTime, "now > redeemEnableTime");
         require(scores[_beneficiary] > 0, "score should be > 0");
         uint256 score = scores[_beneficiary];
@@ -56,7 +56,10 @@ contract Locking4Reputation {
 
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(ControllerInterface(avatar.owner()).mintReputation(reputation, _beneficiary, avatar), "mint reputation should success");
+        require(
+        ControllerInterface(
+        avatar.owner())
+        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should success");
 
         emit Redeem(_beneficiary, reputation);
     }
@@ -72,7 +75,7 @@ contract Locking4Reputation {
         require(locker.amount > 0, "amount should be > 0");
         amount = locker.amount;
         locker.amount = 0;
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(block.timestamp > locker.releaseTime, "check the lock period pass");
         totalLockedLeft = totalLockedLeft.sub(amount);
 
@@ -100,22 +103,22 @@ contract Locking4Reputation {
         require(_amount > 0, "locking amount should be > 0");
         require(_period <= maxLockingPeriod, "locking period should be <= maxLockingPeriod");
         require(_period > 0, "locking period should be > 0");
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(now <= lockingEndTime, "lock should be within the allowed locking period");
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         require(now >= lockingStartTime, "lock should start after lockingStartTime");
 
-        lockingId = keccak256(abi.encodePacked(this, lockingsCounter));
+        lockingId = keccak256(abi.encodePacked(address(this), lockingsCounter));
         lockingsCounter = lockingsCounter.add(1);
 
         Locker storage locker = lockers[_locker][lockingId];
         locker.amount = _amount;
-        // solium-disable-next-line security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         locker.releaseTime = now + _period;
         totalLocked = totalLocked.add(_amount);
         totalLockedLeft = totalLocked;
         uint256 score = _period.mul(_amount).mul(_numerator).div(_denominator);
-        require(score>0,"score must me > 0");
+        require(score > 0, "score must me > 0");
         scores[_locker] = scores[_locker].add(score);
         totalScore = totalScore.add(score);
 

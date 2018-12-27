@@ -1,6 +1,6 @@
 import * as helpers from './helpers';
 const constants = require('./constants');
-const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallbacksMock.sol");
@@ -11,7 +11,7 @@ const setup = async function (accounts) {
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   testSetup.standardTokenMock = await StandardTokenMock.new(testSetup.org.avatar.address,100);
+   testSetup.standardTokenMock = await ERC20Mock.new(testSetup.org.avatar.address,100);
 
    testSetup.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
 

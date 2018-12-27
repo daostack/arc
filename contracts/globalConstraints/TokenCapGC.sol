@@ -1,6 +1,6 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "./GlobalConstraintInterface.sol";
 
 
@@ -12,13 +12,12 @@ import "./GlobalConstraintInterface.sol";
 contract TokenCapGC {
     // A set of parameters, on which the cap will be checked:
     struct Parameters {
-        StandardToken token;
+        ERC20 token;
         uint256 cap;
     }
 
     // Mapping from the hash of the parameters to the parameters themselves:
     mapping (bytes32=>Parameters) public parameters;
-
 
     /**
      * @dev adding a new set of parameters
@@ -26,7 +25,7 @@ contract TokenCapGC {
      * @param _cap the cap to check the total supply against.
      * @return the calculated parameters hash
      */
-    function setParameters(StandardToken _token, uint256 _cap) public returns(bytes32) {
+    function setParameters(ERC20 _token, uint256 _cap) public returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_token, _cap);
         parameters[paramsHash].token = _token;
         parameters[paramsHash].cap = _cap;
@@ -39,7 +38,7 @@ contract TokenCapGC {
      * @param _cap the cap to check the total supply against.
      * @return the calculated parameters hash
      */
-    function getParametersHash(StandardToken _token, uint256 _cap) public pure returns(bytes32) {
+    function getParametersHash(ERC20 _token, uint256 _cap) public pure returns(bytes32) {
         return (keccak256(abi.encodePacked(_token, _cap)));
     }
 
@@ -58,10 +57,10 @@ contract TokenCapGC {
      * @return bool which represents a success
      */
     function post(address, bytes32 _paramsHash, bytes32) public view returns(bool) {
-        if ((parameters[_paramsHash].token != StandardToken(0)) &&
-            ( parameters[_paramsHash].token.totalSupply() > parameters[_paramsHash].cap)) {
+        if ((parameters[_paramsHash].token != ERC20(0)) &&
+            (parameters[_paramsHash].token.totalSupply() > parameters[_paramsHash].cap)) {
             return false;
-          }
+        }
         return true;
     }
 

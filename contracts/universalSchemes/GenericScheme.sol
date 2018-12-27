@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
@@ -11,13 +11,20 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  * @dev  A scheme for proposing and executing calls to an arbitrary function
  * on a specific contract on behalf of the organization avatar.
  */
-contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecuteInterface {
+contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
     event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         bytes   callData
     );
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId,int _param);
+
+    event ProposalExecuted(
+        address indexed _avatar,
+        bytes32 indexed _proposalId,
+        int256 _param,
+        bytes _genericCallReturnValue
+    );
+
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // Details of a voting proposal:
@@ -28,7 +35,6 @@ contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
     mapping(address=>mapping(bytes32=>CallProposal)) public organizationsProposals;
-
 
     struct Parameters {
         IntVoteInterface intVote;
@@ -44,28 +50,23 @@ contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @param _proposalId the ID of the voting in the voting machine
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
-    function executeProposal(bytes32 _proposalId,int _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        address avatar = proposalsInfo[_proposalId].avatar;
-        Parameters memory params = parameters[getParametersFromController(Avatar(avatar))];
+    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        Parameters memory params = parameters[getParametersFromController(avatar)];
         // Save proposal to memory and delete from storage:
-        CallProposal memory proposal = organizationsProposals[avatar][_proposalId];
-        require(proposal.exist,"must be a live proposal");
-        delete organizationsProposals[avatar][_proposalId];
-        emit ProposalDeleted(avatar, _proposalId);
-        bool retVal = true;
+        CallProposal memory proposal = organizationsProposals[address(avatar)][_proposalId];
+        require(proposal.exist, "must be a live proposal");
+        delete organizationsProposals[address(avatar)][_proposalId];
+        emit ProposalDeleted(address(avatar), _proposalId);
+        bytes memory genericCallReturnValue;
         // Check decision:
         if (_param == 1) {
         // Define controller and get the params:
             ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
-            if (controller.genericCall(
-                     params.contractToCall,
-                     proposal.callData,
-                     avatar) == bytes32(0)) {
-                retVal = false;
-            }
-          }
-        emit ProposalExecuted(avatar, _proposalId,_param);
-        return retVal;
+            genericCallReturnValue = controller.genericCall(params.contractToCall, proposal.callData, avatar);
+        }
+        emit ProposalExecuted(address(avatar), _proposalId, _param, genericCallReturnValue);
+        return true;
     }
 
     /**
@@ -80,7 +81,7 @@ contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         address _contractToCall
     ) public returns(bytes32)
     {
-        bytes32 paramsHash = getParametersHash(_voteParams, _intVote,_contractToCall);
+        bytes32 paramsHash = getParametersHash(_voteParams, _intVote, _contractToCall);
         parameters[paramsHash].voteParams = _voteParams;
         parameters[paramsHash].intVote = _intVote;
         parameters[paramsHash].contractToCall = _contractToCall;
@@ -99,7 +100,7 @@ contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
         address _contractToCall
     ) public pure returns(bytes32)
     {
-        return keccak256(abi.encodePacked(_voteParams, _intVote,_contractToCall));
+        return keccak256(abi.encodePacked(_voteParams, _intVote, _contractToCall));
     }
 
     /**
@@ -109,24 +110,25 @@ contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @param _avatar avatar of the organization
     * @return an id which represents the proposal
     */
-    function proposeCall(Avatar _avatar, bytes _callData)
+    function proposeCall(Avatar _avatar, bytes memory _callData)
     public
     returns(bytes32)
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
 
-        bytes32 proposalId = intVote.propose(2, params.voteParams,msg.sender,_avatar);
+        bytes32 proposalId = intVote.propose(2, params.voteParams, msg.sender, address(_avatar));
 
-        organizationsProposals[_avatar][proposalId] = CallProposal({
+        organizationsProposals[address(_avatar)][proposalId] = CallProposal({
             callData: _callData,
             exist: true
         });
-        proposalsInfo[proposalId] = ProposalInfo(
-            {blockNumber:block.number,
+        proposalsInfo[proposalId] = ProposalInfo({
+            blockNumber:block.number,
             avatar:_avatar,
-            votingMachine:params.intVote});
-        emit NewCallProposal(_avatar,proposalId,_callData);
+            votingMachine:address(params.intVote)
+        });
+        emit NewCallProposal(address(_avatar), proposalId, _callData);
         return proposalId;
     }
 
@@ -136,8 +138,8 @@ contract GenericScheme is UniversalScheme,VotingMachineCallbacks,ProposalExecute
     * @return address the address of the contract this scheme is calling to
     * on behalf of the avatar
     */
-    function getContractToCall(address _avatar) public view returns(address) {
-        return parameters[getParametersFromController(Avatar(_avatar))].contractToCall;
+    function getContractToCall(Avatar _avatar) public view returns(address) {
+        return parameters[getParametersFromController(_avatar)].contractToCall;
     }
 
 }

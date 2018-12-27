@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./Avatar.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
@@ -17,7 +17,7 @@ interface ControllerInterface {
      * @param _to beneficiary address
      * @return bool which represents a success
     */
-    function mintReputation(uint256 _amount, address _to,address _avatar)
+    function mintReputation(uint256 _amount, address _to, address _avatar)
     external
     returns(bool);
 
@@ -27,7 +27,7 @@ interface ControllerInterface {
      * @param _from The address that will lose the reputation
      * @return bool which represents a success
      */
-    function burnReputation(uint256 _amount, address _from,address _avatar)
+    function burnReputation(uint256 _amount, address _from, address _avatar)
     external
     returns(bool);
 
@@ -38,7 +38,7 @@ interface ControllerInterface {
      * @param _avatar address
      * @return bool which represents a success
      */
-    function mintTokens(uint256 _amount, address _beneficiary,address _avatar)
+    function mintTokens(uint256 _amount, address _beneficiary, address _avatar)
     external
     returns(bool);
 
@@ -50,7 +50,7 @@ interface ControllerInterface {
    * @param _avatar address
    * @return bool which represents a success
    */
-    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions,address _avatar)
+    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions, address _avatar)
     external
     returns(bool);
 
@@ -60,32 +60,16 @@ interface ControllerInterface {
      * @param _scheme the address of the scheme
      * @return bool which represents a success
      */
-    function unregisterScheme(address _scheme,address _avatar)
+    function unregisterScheme(address _scheme, address _avatar)
     external
     returns(bool);
+
     /**
      * @dev unregister the caller's scheme
      * @param _avatar address
      * @return bool which represents a success
      */
     function unregisterSelf(address _avatar) external returns(bool);
-
-    function isSchemeRegistered( address _scheme,address _avatar) external view returns(bool);
-
-    function getSchemeParameters(address _scheme,address _avatar) external view returns(bytes32);
-
-    function getGlobalConstraintParameters(address _globalConstraint,address _avatar) external view returns(bytes32);
-
-    function getSchemePermissions(address _scheme,address _avatar) external view returns(bytes4);
-
-    /**
-     * @dev globalConstraintsCount return the global constraint pre and post count
-     * @return uint256 globalConstraintsPre count.
-     * @return uint256 globalConstraintsPost count.
-     */
-    function globalConstraintsCount(address _avatar) external view returns(uint,uint);
-
-    function isGlobalConstraintRegistered(address _globalConstraint,address _avatar) external view returns(bool);
 
     /**
      * @dev add or update Global Constraint
@@ -94,7 +78,7 @@ interface ControllerInterface {
      * @param _avatar the avatar of the organization
      * @return bool which represents a success
      */
-    function addGlobalConstraint(address _globalConstraint, bytes32 _params,address _avatar)
+    function addGlobalConstraint(address _globalConstraint, bytes32 _params, address _avatar)
     external returns(bool);
 
     /**
@@ -103,7 +87,7 @@ interface ControllerInterface {
      * @param _avatar the organization avatar.
      * @return bool which represents a success
      */
-    function removeGlobalConstraint (address _globalConstraint,address _avatar)
+    function removeGlobalConstraint (address _globalConstraint, address _avatar)
     external  returns(bool);
 
   /**
@@ -113,7 +97,7 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function upgradeController(address _newController,address _avatar)
+    function upgradeController(address _newController, Avatar _avatar)
     external returns(bool);
 
     /**
@@ -123,9 +107,9 @@ interface ControllerInterface {
     * @param _avatar the controller's avatar address
     * @return bytes32  - the return value of the called _contract's function.
     */
-    function genericCall(address _contract,bytes _data,address _avatar)
+    function genericCall(address _contract, bytes calldata _data, Avatar _avatar)
     external
-    returns(bytes32);
+    returns(bytes memory);
 
   /**
    * @dev send some ether
@@ -134,7 +118,7 @@ interface ControllerInterface {
    * @param _avatar address
    * @return bool which represents a success
    */
-    function sendEther(uint256 _amountInWei, address _to,address _avatar)
+    function sendEther(uint256 _amountInWei, address payable _to, Avatar _avatar)
     external returns(bool);
 
     /**
@@ -145,7 +129,7 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenTransfer(StandardToken _externalToken, address _to, uint256 _value,address _avatar)
+    function externalTokenTransfer(ERC20 _externalToken, address _to, uint256 _value, Avatar _avatar)
     external
     returns(bool);
 
@@ -160,33 +144,19 @@ interface ControllerInterface {
     * @param _avatar address
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(StandardToken _externalToken, address _from, address _to, uint256 _value,address _avatar)
+    function externalTokenTransferFrom(ERC20 _externalToken, address _from, address _to, uint256 _value, Avatar _avatar)
     external
     returns(bool);
 
     /**
-    * @dev increase approval for the spender address to spend a specified amount of tokens
+    * @dev externalTokenApproval approve the spender address to spend a specified amount of tokens
     *      on behalf of msg.sender.
     * @param _externalToken the address of the Token Contract
     * @param _spender address
-    * @param _addedValue the amount of ether (in Wei) which the approval is referring to.
-    * @param _avatar address
+    * @param _value the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenIncreaseApproval(StandardToken _externalToken, address _spender, uint256 _addedValue,address _avatar)
-    external
-    returns(bool);
-
-    /**
-    * @dev decrease approval for the spender address to spend a specified amount of tokens
-    *      on behalf of msg.sender.
-    * @param _externalToken the address of the Token Contract
-    * @param _spender address
-    * @param _subtractedValue the amount of ether (in Wei) which the approval is referring to.
-    * @param _avatar address
-    * @return bool which represents a success
-    */
-    function externalTokenDecreaseApproval(StandardToken _externalToken, address _spender, uint256 _subtractedValue,address _avatar)
+    function externalTokenApproval(ERC20 _externalToken, address _spender, uint256 _value, Avatar _avatar)
     external
     returns(bool);
 
@@ -199,4 +169,21 @@ interface ControllerInterface {
     external
     view
     returns(address);
+
+    function isSchemeRegistered( address _scheme, address _avatar) external view returns(bool);
+
+    function getSchemeParameters(address _scheme, address _avatar) external view returns(bytes32);
+
+    function getGlobalConstraintParameters(address _globalConstraint, address _avatar) external view returns(bytes32);
+
+    function getSchemePermissions(address _scheme, address _avatar) external view returns(bytes4);
+
+    /**
+     * @dev globalConstraintsCount return the global constraint pre and post count
+     * @return uint256 globalConstraintsPre count.
+     * @return uint256 globalConstraintsPost count.
+     */
+    function globalConstraintsCount(address _avatar) external view returns(uint, uint);
+
+    function isGlobalConstraintRegistered(address _globalConstraint, address _avatar) external view returns(bool);
 }

@@ -6,7 +6,7 @@ const DaoCreator = artifacts.require("./DaoCreator.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const Controller = artifacts.require("./Controller.sol");
 const UController = artifacts.require("./UController.sol");
-const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
@@ -15,7 +15,7 @@ var avatar,token,reputation,daoCreator,uController,controllerCreator;
 const setup = async function (accounts,founderToken,founderReputation,useUController=false,cap=0) {
   controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
   daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-  var uControllerAddress = 0;
+  var uControllerAddress = helpers.NULL_ADDRESS;
   if (useUController){
     uController = await UController.new({gas:constants.ARC_GAS_LIMIT});
     uControllerAddress = uController.address;
@@ -107,7 +107,7 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes increase approval for scheme and register org in scheme", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var standardTokenMock = await StandardTokenMock.new(avatar.address, 100);
+        var standardTokenMock = await ERC20Mock.new(avatar.address, 100);
         var universalSchemeMock = await UniversalSchemeMock.new();
         var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
@@ -119,7 +119,7 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes increase approval for scheme without fee", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var standardTokenMock = await StandardTokenMock.new(accounts[0], 100);
+        var standardTokenMock = await ERC20Mock.new(accounts[0], 100);
         var allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
 
@@ -225,7 +225,7 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes with universal controller increase approval for scheme and register org in scheme", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint,true);
-        var standardTokenMock = await StandardTokenMock.new(avatar.address, 100);
+        var standardTokenMock = await ERC20Mock.new(avatar.address, 100);
         var universalSchemeMock = await UniversalSchemeMock.new();
         var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
@@ -238,7 +238,7 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes with universal controller increase approval for scheme without fee", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint,true);
-        var standardTokenMock = await StandardTokenMock.new(accounts[0], 100);
+        var standardTokenMock = await ERC20Mock.new(accounts[0], 100);
         var allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
 
@@ -290,9 +290,9 @@ contract('DaoCreator', function(accounts) {
        var amountToMint = 10;
        var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
        daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-       var uControllerAddress = 0;
+       var uControllerAddress = helpers.NULL_ADDRESS;
        try {
-        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[amountToMint],[],uControllerAddress,0,{gas:constants.ARC_GAS_LIMIT});
+        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[amountToMint],[],uControllerAddress,helpers.NULL_ADDRESS,{gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert  because reputation array size is 0");
        }
        catch(ex){
@@ -300,7 +300,7 @@ contract('DaoCreator', function(accounts) {
        }
 
        try {
-        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0],0],[amountToMint,amountToMint],[amountToMint,amountToMint],uControllerAddress,0,{gas:constants.ARC_GAS_LIMIT});
+        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0],helpers.NULL_ADDRESS],[amountToMint,amountToMint],[amountToMint,amountToMint],uControllerAddress,0,{gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert  because account is 0");
        }
        catch(ex){

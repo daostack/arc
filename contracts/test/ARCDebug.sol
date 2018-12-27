@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
 import "@daostack/infra/contracts/votingMachines/AbsoluteVote.sol";
@@ -13,7 +13,7 @@ import "@daostack/infra/contracts/test/GenesisProtocolCallbacksMock.sol";
 
 contract ARCDebug {
     event LogAddress(address _msg);
-    event LogInt(int _msg);
+    event LogInt(int256 _msg);
     event LogString(string _msg);
     event LogUint(uint256 _msg);
     event LogBytes(bytes _msg);

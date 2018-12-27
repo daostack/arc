@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../universalSchemes/UniversalScheme.sol";
 import "../controller/ControllerInterface.sol";
@@ -6,26 +6,18 @@ import "../controller/ControllerInterface.sol";
 
 contract UniversalSchemeMock is UniversalScheme {
 
-    constructor() public {
-    }
-
-    function genericCall(address _avatar,address _contract,uint256 _a,address _b,bytes32 _c)
-    public returns(bytes32)
+    function genericCall(Avatar _avatar, address _contract, uint256 _a, address _b, bytes32 _c)
+    public returns(bytes memory)
     {
 
-        address controller = Avatar(_avatar).owner();
-        return ControllerInterface(controller).genericCall(_contract,abi.encodeWithSignature("test(uint256,address,bytes32)",_a,_b,_c),_avatar);
+        address controller = _avatar.owner();
+        return ControllerInterface(controller).genericCall(
+        _contract, abi.encodeWithSignature("test(uint256,address,bytes32)", _a, _b, _c), _avatar);
     }
 
-    function genericCallDirect(address _avatar,address _contract,uint256 _a,address _b,bytes32 _c)
-    public returns(bytes32)
+    function genericCallDirect(Avatar _avatar, address _contract, uint256 _a, address _b, bytes32 _c)
+    public returns(bytes memory)
     {
-        Avatar(_avatar).genericCall(_contract,abi.encodeWithSignature("test(uint256,address,bytes32)",_a,_b,_c));
-        // solium-disable-next-line security/no-inline-assembly
-        assembly {
-        // Copy the returned data.
-        returndatacopy(0, 0, returndatasize)
-        return(0, returndatasize)
-        }
+        return _avatar.genericCall(_contract, abi.encodeWithSignature("test(uint256,address,bytes32)", _a, _b, _c));
     }
 }

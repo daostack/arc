@@ -1,7 +1,7 @@
 import * as helpers from './helpers';
 const constants = require('./constants');
 const OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
-const StandardTokenMock = artifacts.require('./test/StandardTokenMock.sol');
+const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
@@ -26,7 +26,7 @@ const setupOrganizationRegisterParams = async function(
 const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
-   testSetup.standardTokenMock = await StandardTokenMock.new(accounts[1],100);
+   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.organizationRegister = await OrganizationRegister.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});

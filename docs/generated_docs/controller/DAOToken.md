@@ -148,7 +148,7 @@ Returns:
 --- 
 ### increaseApproval(address,uint256,bytes)
 >
-> Addition to StandardToken methods. Increase the amount of tokens that an owner allowed to a spender and execute a call with the sent data.   * approve should be called when allowed[_spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
+> Addition to ERC20 methods. Increase the amount of tokens that an owner allowed to a spender and execute a call with the sent data.   * approve should be called when allowed[_spender] == 0. To increment allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
 
 
 **Execution cost**: No bound available
@@ -383,7 +383,7 @@ Returns:
 --- 
 ### decreaseApproval(address,uint256,bytes)
 >
-> Addition to StandardToken methods. Decrease the amount of tokens that an owner allowed to a spender and execute a call with the sent data.   * approve should be called when allowed[_spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
+> Addition to ERC20 methods. Decrease the amount of tokens that an owner allowed to a spender and execute a call with the sent data.   * approve should be called when allowed[_spender] == 0. To decrement allowed value is better to use this function to avoid 2 calls (and wait until the first transaction is mined) From MonolithDAO Token.sol
 
 
 **Execution cost**: No bound available

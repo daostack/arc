@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../globalConstraints/GlobalConstraintInterface.sol";
 
@@ -9,11 +9,12 @@ contract GlobalConstraintMock {
         bool pre;
         bool post;
     }
+
     mapping (bytes32=>TestParam) public testParams;
 
-    GlobalConstraintInterface.CallPhase public currentCallPhase ;
+    GlobalConstraintInterface.CallPhase public currentCallPhase;
 
-    function setConstraint(bytes32 method,bool pre,bool post) public returns(bool) {
+    function setConstraint(bytes32 method, bool pre, bool post) public returns(bool) {
         testParams[method].pre = pre;
         testParams[method].post = post;
 
@@ -22,9 +23,9 @@ contract GlobalConstraintMock {
         } else {
             if (!pre) {
                 currentCallPhase = GlobalConstraintInterface.CallPhase.Pre;
-          } else if (!post) {
-                     currentCallPhase = GlobalConstraintInterface.CallPhase.Post;
-          }
+            } else if (!post) {
+                currentCallPhase = GlobalConstraintInterface.CallPhase.Post;
+            }
         }
         return true;
     }
@@ -33,7 +34,7 @@ contract GlobalConstraintMock {
         return testParams[method].pre;
     }
 
-    function post(address, bytes32 , bytes32 method) public view returns(bool) {
+    function post(address, bytes32, bytes32 method) public view returns(bool) {
         return testParams[method].post;
     }
 

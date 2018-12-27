@@ -36,6 +36,13 @@ module.exports = {
       port: 8545,
       gas: 4543760
     },
+    coverage: {
+      host: 'localhost',
+      network_id: '*', // eslint-disable-line camelcase
+      port: 8555,
+      gas: 0xfffffffffff,
+      gasPrice: 0x01,
+    }
   },
   rpc: {
     host: "localhost",
@@ -49,7 +56,7 @@ module.exports = {
   },
   compilers: {
     solc: {
-         version: "0.4.25",    // Fetch exact version from solc-bin (default: truffle's version)
+         version: "0.5.2",    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       optimizer: {
         enabled: true,

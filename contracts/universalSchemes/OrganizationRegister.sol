@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./UniversalScheme.sol";
 
@@ -14,7 +14,7 @@ contract OrganizationRegister is UniversalScheme {
 
     struct Parameters {
         uint256 fee;
-        StandardToken token;
+        ERC20 token;
         address beneficiary;
     }
 
@@ -26,7 +26,6 @@ contract OrganizationRegister is UniversalScheme {
     event OrgAdded( address indexed _registry, address indexed _org);
     event Promotion( address indexed _registry, address indexed _org, uint256 _amount);
 
-
     /**
     * @dev Hash the parameters, save if needed and return the hash value
     * @param _token -  the token to pay for register or promotion an address.
@@ -34,9 +33,9 @@ contract OrganizationRegister is UniversalScheme {
     * @param _beneficiary  - the beneficiary payment address
     * @return bytes32 -the parameters hash
     */
-    function setParameters(StandardToken _token, uint256 _fee, address _beneficiary) public returns(bytes32) {
+    function setParameters(ERC20 _token, uint256 _fee, address _beneficiary) public returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_token, _fee, _beneficiary);
-        if (parameters[paramsHash].token == address(0)) {
+        if (parameters[paramsHash].token == ERC20(0)) {
             parameters[paramsHash].token = _token;
             parameters[paramsHash].fee = _fee;
             parameters[paramsHash].beneficiary = _beneficiary;
@@ -51,7 +50,7 @@ contract OrganizationRegister is UniversalScheme {
     * @param _beneficiary  - the beneficiary payment address
     * @return bytes32 -the parameters hash
     */
-    function getParametersHash(StandardToken _token, uint256 _fee, address _beneficiary)
+    function getParametersHash(ERC20 _token, uint256 _fee, address _beneficiary)
     public pure returns(bytes32)
     {
         return (keccak256(abi.encodePacked(_token, _fee, _beneficiary)));
@@ -71,13 +70,14 @@ contract OrganizationRegister is UniversalScheme {
     {
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         // Pay promotion, if the org was not listed the minimum is the fee:
-        require((organizationsRegistry[_avatar][_record] > 0) || (_amount >= params.fee));
+        require((organizationsRegistry[address(_avatar)][_record] > 0) || (_amount >= params.fee));
 
         require(params.token.transferFrom(msg.sender, params.beneficiary, _amount));
-        if (organizationsRegistry[_avatar][_record] == 0) {
-            emit OrgAdded(_avatar, _record);
+        if (organizationsRegistry[address(_avatar)][_record] == 0) {
+            emit OrgAdded(address(_avatar), _record);
         }
-        organizationsRegistry[_avatar][_record] = organizationsRegistry[_avatar][_record].add(_amount);
-        emit Promotion(_avatar, _record, _amount);
+        organizationsRegistry[address(_avatar)][_record] =
+        organizationsRegistry[address(_avatar)][_record].add(_amount);
+        emit Promotion(address(_avatar), _record, _amount);
     }
 }
