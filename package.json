@@ -28,7 +28,7 @@
 		"test:watch": "npm run test -- --watch"
 	},
 	"devDependencies": {
-		"@daostack/migration": "0.0.0-alpha.58-v5",
+		"@daostack/migration": "0.0.0-alpha.58-v7",
 		"@types/axios": "^0.14.0",
 		"@types/graphql": "^14.0.3",
 		"@types/jest": "^23.3.7",
