@@ -24,6 +24,58 @@ describe('Domain Layer', () => {
     opts = await getOptions(web3);
   });
 
+  it('migration dao', async () => {
+    const getMigrationDao = `{
+      dao(id: "${addresses.Avatar.toLowerCase()}") {
+        id
+        name
+        nativeToken {
+          id
+          dao {
+            id
+          }
+        }
+        nativeReputation {
+          id
+          dao {
+            id
+          }
+        }
+      }
+    }`;
+    let dao = (await sendQuery(getMigrationDao)).dao;
+    expect(dao).toMatchObject({
+      id: addresses.Avatar.toLowerCase(),
+      name: 'Genesis Test',
+      nativeToken: {
+        id: addresses.NativeToken.toLowerCase(),
+        dao: {
+          id: addresses.Avatar.toLowerCase(),
+        },
+      },
+      nativeReputation: {
+        id: addresses.NativeReputation.toLowerCase(),
+        dao: {
+          id: addresses.Avatar.toLowerCase(),
+        },
+      },
+    });
+
+    const getMigrationDaoMembers = `{
+      dao(id: "${addresses.Avatar.toLowerCase()}") {
+        members{
+          reputation
+          tokens
+        }
+      }
+    }`;
+    let members = (await sendQuery(getMigrationDaoMembers)).dao.members;
+    expect(members).toContainEqual({
+      reputation:"1000",
+      tokens:"1000",
+    });
+  });
+
   it('Sanity', async () => {
     const accounts = web3.eth.accounts.wallet;
 
@@ -203,6 +255,7 @@ describe('Domain Layer', () => {
     }`;
     let dao;
     dao = (await sendQuery(getDAO)).dao;
+
     expect(dao).toMatchObject({
       id: avatarAddress.toLowerCase(),
       name: orgName,

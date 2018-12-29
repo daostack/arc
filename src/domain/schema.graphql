@@ -151,3 +151,7 @@ type Reward @entity {
 	amount: BigInt
 	redeemed: BigInt!
 }
+
+type FirstRegisterSchemeFlag @entity {
+	id: ID!
+}
