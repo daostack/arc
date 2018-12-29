@@ -15,7 +15,7 @@ import {
 import { Burn, Mint } from '../types/NativeReputation/Reputation';
 import { Transfer } from '../types/NativeToken/DAOToken';
 import { RegisterScheme } from '../types/UController/UController';
-import { equals, eventId, hexToAddress,debug } from '../utils';
+import { equals, eventId, hexToAddress } from '../utils';
 import { insertNewDAO } from './dao';
 import { updateMemberReputation, updateMemberTokens ,updateMemberReputationWithValue } from './member';
 import {
