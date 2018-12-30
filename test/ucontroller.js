@@ -341,7 +341,7 @@ contract('UController',accounts =>  {
     let c = "0x1234";
     const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.test(a,b,c).encodeABI();
     var result = await controller.genericCall.call(actionMock.address,encodeABI,avatar.address);
-    assert.equal(result, 14);
+    assert.equal(result[1], 14);
 
   });
     it("generic call withoutReturnValue", async () => {
@@ -368,7 +368,7 @@ contract('UController',accounts =>  {
     let b = actionMock.address;
     let c = "0x1234";
     let result = await scheme.genericCall.call(avatar.address,actionMock.address, a,b,c);
-    assert.equal(result, 14);
+    assert.equal(result[1], 14);
 
   });
 

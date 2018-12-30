@@ -45,14 +45,13 @@ contract Avatar is Ownable {
     * @dev perform a generic call to an arbitrary contract
     * @param _contract  the contract's address to call
     * @param _data ABI-encoded contract call to call `_contract` address.
-    * @return the return bytes of the called contract's function.
+    * @return bool    success or fail
+    *         bytes - the return bytes of the called contract's function.
     */
-    function genericCall(address _contract, bytes memory _data) public onlyOwner returns(bytes memory) {
+    function genericCall(address _contract, bytes memory _data) public onlyOwner returns(bool, bytes memory) {
         emit GenericCall(_contract, _data);
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returnValue) = _contract.call(_data);
-        require(success);
-        return returnValue;
+        return _contract.call(_data);
     }
 
     /**

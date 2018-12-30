@@ -366,13 +366,14 @@ contract UController is ControllerInterface {
     * @dev perform a generic call to an arbitrary contract
     * @param _contract  the contract's address to call
     * @param _data ABI-encoded contract call to call `_contract` address.
-    * @return bytes32  - the return value of the called _contract's function.
+    * @return bool -success
+    *         bytes  - the return value of the called _contract's function.
     */
     function genericCall(address _contract, bytes calldata _data, Avatar _avatar)
     external
     onlyGenericCallScheme(address(_avatar))
     onlySubjectToConstraint("genericCall", address(_avatar))
-    returns (bytes memory returnValue)
+    returns (bool, bytes memory)
     {
         return _avatar.genericCall(_contract, _data);
     }

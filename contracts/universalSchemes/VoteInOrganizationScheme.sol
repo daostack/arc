@@ -56,11 +56,12 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
         delete organizationsProposals[address(avatar)][_proposalId];
         emit ProposalDeleted(address(avatar), _proposalId);
         bytes memory callReturnValue;
+        bool success;
         // If no decision do nothing:
         if (_param == 1) {
 
             ControllerInterface controller = ControllerInterface(avatar.owner());
-            callReturnValue = controller.genericCall(
+            (success, callReturnValue) = controller.genericCall(
             address(proposal.originalIntVote),
             abi.encodeWithSignature("vote(bytes32,uint256,uint256,address)",
             proposal.originalProposalId,
@@ -69,6 +70,7 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
             address(this)),
             avatar
             );
+            require(success);
         }
         emit ProposalExecuted(address(avatar), _proposalId, _param, callReturnValue);
         return true;

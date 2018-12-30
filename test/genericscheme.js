@@ -100,7 +100,7 @@ contract('genericScheme', function(accounts) {
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-       assert.equal(organizationProposal.callData,null);
+       assert.equal(organizationProposal.executedByVotingMachine,true);
     });
 
     it("execute proposeVote -positive decision - proposal data delete", async function() {
@@ -117,18 +117,19 @@ contract('genericScheme', function(accounts) {
         assert.equal(organizationProposal.callData,null);//new contract address
      });
 
-    it("execute proposeVote -positive decision - check action", async function() {
+    it("execute proposeVote -positive decision - destination reverts", async function() {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,actionMock.address);
        var callData = await createCallToActionMock(helpers.NULL_ADDRESS,actionMock);
        var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-       try {
-         await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-         assert(false, "should revert in actionMock because msg.sender is not the _addr param at actionMock");
-       } catch(error) {
-         helpers.assertVMException(error);
-       }
+
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
+       var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
+       assert.equal(organizationProposal.exist,true);//new contract address
+       assert.equal(organizationProposal.executedByVotingMachine,true);//new contract address
+
     });
 
     it("execute proposeVote without return value-positive decision - check action", async function() {
@@ -151,12 +152,12 @@ contract('genericScheme', function(accounts) {
        var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-       await testSetup.genericScheme.getPastEvents('ProposalExecuted', {
+       await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {
              fromBlock: tx.blockNumber,
              toBlock: 'latest'
          })
          .then(function(events){
-             assert.equal(events[0].event,"ProposalExecuted");
+             assert.equal(events[0].event,"ProposalExecutedByVotingMachine");
              assert.equal(events[0].args._param,1);
         });
     });
@@ -170,12 +171,12 @@ contract('genericScheme', function(accounts) {
        var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-       await testSetup.genericScheme.getPastEvents('ProposalExecuted', {
+       await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {
              fromBlock: tx.blockNumber,
              toBlock: 'latest'
          })
          .then(function(events){
-             assert.equal(events[0].event,"ProposalExecuted");
+             assert.equal(events[0].event,"ProposalExecutedByVotingMachine");
              assert.equal(events[0].args._param,2);
         });
       });

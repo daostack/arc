@@ -37,10 +37,10 @@ contract('Avatar',  accounts =>  {
         let b = actionMock.address;
         let c = "0x1234";
         var result = await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c);
-        assert.equal(result,a*2);
+        assert.equal(result[1],a*2);
     });
 
-    it("generic call should revert if action revert", async () => {
+    it("generic call should not revert if action revert", async () => {
         avatar = await setup(accounts);
         let actionMock = await ActionMock.new();
         var scheme = await UniversalSchemeMock.new();
@@ -48,13 +48,7 @@ contract('Avatar',  accounts =>  {
         let a = 7;
         let b = actionMock.address;
         let c = "0x4567"; //the action test function require 0x1234
-        try{
-           await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c);
-           assert(false,"generic call should revert if action revert ");
-          }
-          catch(ex){
-          helpers.assertVMException(ex);
-        }
+        await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c);
     });
 
     it("pay ether to avatar", async () => {
