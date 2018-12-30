@@ -100,7 +100,8 @@ contract('genericScheme', function(accounts) {
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-       assert.equal(organizationProposal.executedByVotingMachine,true);
+       assert.equal(organizationProposal.executedByVotingMachine,false);
+       assert.equal(organizationProposal.callData,null);
     });
 
     it("execute proposeVote -positive decision - proposal data delete", async function() {
