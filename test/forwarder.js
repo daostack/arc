@@ -79,15 +79,18 @@ contract('Forwarder', accounts => {
                                   methods.
                                   registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
                                   encodeABI();
-       await helpers.increaseTime(301);
+       //expiered
+      await helpers.increaseTime(301);
 
-      try {
-        await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address);
-
-        assert(false, "expired");
-        } catch(error) {
-          helpers.assertVMException(error);
-        }
+      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address);
+      await testSetupB.org.avatar.getPastEvents('GenericCall', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"GenericCall");
+            assert.equal(events[0].args._success,false);
+        });
 
     });
 
@@ -102,13 +105,16 @@ contract('Forwarder', accounts => {
                                   methods.
                                   registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
                                   encodeABI();
-      try {
-        await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address);
+      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address);
+      await testSetupB.org.avatar.getPastEvents('GenericCall', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"GenericCall");
+            assert.equal(events[0].args._success,false);
+        });
 
-        assert(false, "forwardCall is onlyOwner");
-      } catch(error) {
-        helpers.assertVMException(error);
-      }
     });
 
     it("unregisterSelf", async () => {

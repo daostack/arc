@@ -17,7 +17,7 @@ contract Avatar is Ownable {
     DAOToken public nativeToken;
     Reputation public nativeReputation;
 
-    event GenericCall(address indexed _contract, bytes _params);
+    event GenericCall(address indexed _contract, bytes _params, bool _success);
     event SendEther(uint256 _amountInWei, address indexed _to);
     event ExternalTokenTransfer(address indexed _externalToken, address indexed _to, uint256 _value);
     event ExternalTokenTransferFrom(address indexed _externalToken, address _from, address _to, uint256 _value);
@@ -48,10 +48,13 @@ contract Avatar is Ownable {
     * @return bool    success or fail
     *         bytes - the return bytes of the called contract's function.
     */
-    function genericCall(address _contract, bytes memory _data) public onlyOwner returns(bool, bytes memory) {
-        emit GenericCall(_contract, _data);
-        // solhint-disable-next-line avoid-low-level-calls
-        return _contract.call(_data);
+    function genericCall(address _contract, bytes memory _data)
+    public
+    onlyOwner
+    returns(bool success, bytes memory returnValue) {
+      // solhint-disable-next-line avoid-low-level-calls
+        (success, returnValue) = _contract.call(_data);
+        emit GenericCall(_contract, _data, success);
     }
 
     /**

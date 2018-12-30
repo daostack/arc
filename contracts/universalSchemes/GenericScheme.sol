@@ -61,9 +61,14 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         CallProposal storage proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.executedByVotingMachine == false, "cannot execute twice");
         proposal.executedByVotingMachine = true;
+
         if (_param == 1) {
             execute(_proposalId);
+        } else {
+            delete organizationsProposals[address(avatar)][_proposalId];
+            emit ProposalDeleted(address(avatar), _proposalId);
         }
+
         emit ProposalExecutedByVotingMachine(address(avatar), _proposalId, _param);
         return true;
     }
@@ -82,7 +87,6 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         bytes memory genericCallReturnValue;
         bool success;
         ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
-
         (success, genericCallReturnValue) = controller.genericCall(params.contractToCall, proposal.callData, avatar);
         if (success) {
             delete organizationsProposals[address(avatar)][_proposalId];
@@ -147,7 +151,6 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
             callData: _callData,
             exist: true,
             executedByVotingMachine: false
-
         });
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,
