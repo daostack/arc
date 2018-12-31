@@ -11,7 +11,7 @@ RUN chmod +x /wait /entry
 
 WORKDIR /usr/app
 COPY . .
-RUN npm install
+RUN npm ci
 
 ENTRYPOINT [ "/entry" ]
 CMD [ "deploy" ]

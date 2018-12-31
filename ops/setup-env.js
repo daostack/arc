@@ -3,13 +3,13 @@ const subgraphRepo = path.resolve(`${__dirname}/..`);
 
 async function setupenv () {
   // const provider = 'http://ganach:8545';
-  let result
-  console.log(`Deploying Daostack contracts`)
+  let result;
+  console.log(`Deploying Daostack contracts`);
   const deployDaoStack = require('./deployDaoStack');
   result = await deployDaoStack();
-  console.log(result)
+  console.log(result);
   console.log(`Deployed Daostack contracts, information written to ${result.options.output}`);
-  console.log(result.migrationResult)
+  console.log(result.migrationResult);
   console.log(`Generating ABI files`);
   // node ops/generate-abis.js && node ops/generate-schema.js && node ops/generate-subgraph.js
   await require(`../ops/generate-abis`)();
@@ -36,7 +36,7 @@ async function setupenv () {
 
 
 if (require.main === module) {
-  setupenv().catch((err)  => { console.log(err); process.exit(1) })
+  setupenv().catch((err)  => { console.log(err); process.exit(1); });
 } else {
   module.exports = setupenv;
 }

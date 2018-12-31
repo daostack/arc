@@ -115,7 +115,7 @@ describe('ContributionReward', () => {
             }
         }`);
 
-        expect(contributionRewardNewContributionProposals.length).toEqual(1);
+        expect(contributionRewardNewContributionProposals.length).toEqual(2);
         expect(contributionRewardNewContributionProposals).toContainEqual({
             avatar: avatar.options.address.toLowerCase(),
             beneficiary: accounts[1].address.toLowerCase(),
@@ -156,7 +156,7 @@ describe('ContributionReward', () => {
             }
         }`);
 
-        expect(contributionRewardProposals.length).toEqual(1);
+        expect(contributionRewardProposals.length).toEqual(2);
         expect(contributionRewardProposals).toContainEqual({
             alreadyRedeemedEthPeriods: null,
             alreadyRedeemedExternalTokenPeriods: null,
@@ -212,7 +212,7 @@ describe('ContributionReward', () => {
             }
         }`)).contributionRewardProposals;
 
-        expect(contributionRewardProposals.length).toEqual(1);
+        expect(contributionRewardProposals.length).toEqual(2);
         expect(contributionRewardProposals).toContainEqual({
             executedAt: block.timestamp.toString(),
         });
@@ -252,7 +252,7 @@ describe('ContributionReward', () => {
             }
         }`)).contributionRewardProposals;
 
-        expect(contributionRewardProposals.length).toEqual(1);
+        expect(contributionRewardProposals.length).toEqual(2);
         expect(contributionRewardProposals).toContainEqual({
             alreadyRedeemedReputationPeriods: '2',
         });
@@ -290,7 +290,7 @@ describe('ContributionReward', () => {
             }
         }`)).contributionRewardProposals;
 
-        expect(contributionRewardProposals.length).toEqual(1);
+        expect(contributionRewardProposals.length).toEqual(2);
         expect(contributionRewardProposals).toContainEqual({
             alreadyRedeemedNativeTokenPeriods: '2',
         });
@@ -328,7 +328,7 @@ describe('ContributionReward', () => {
             }
         }`)).contributionRewardProposals;
 
-        expect(contributionRewardProposals.length).toEqual(1);
+        expect(contributionRewardProposals.length).toEqual(2);
         expect(contributionRewardProposals).toContainEqual({
             alreadyRedeemedExternalTokenPeriods: '2',
         });
@@ -383,7 +383,7 @@ describe('ContributionReward', () => {
             }
         }`)).contributionRewardProposals;
 
-        expect(contributionRewardProposals.length).toEqual(1);
+        expect(contributionRewardProposals.length).toEqual(2);
         expect(contributionRewardProposals).toContainEqual({
             alreadyRedeemedEthPeriods: '2',
         });
