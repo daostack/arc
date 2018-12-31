@@ -37,7 +37,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     struct CallProposal {
         bytes callData;
         bool exist;
-        bool executedByVotingMachine;
+        bool proposalPassed;
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
@@ -55,23 +55,27 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     /**
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
     * @param _proposalId the ID of the voting in the voting machine
-    * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    * @param _decision a parameter of the voting result, 1 yes and 2 is no.
     * @return bool success
     */
-    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
+    function executeProposal(bytes32 _proposalId, int256 _decision)
+    external
+    onlyVotingMachine(_proposalId)
+    returns(bool) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
         CallProposal storage proposal = organizationsProposals[address(avatar)][_proposalId];
-        require(proposal.executedByVotingMachine == false, "cannot execute twice");
-        proposal.executedByVotingMachine = true;
+        require(proposal.exist, "must be a live proposal");
+        require(proposal.proposalPassed == false, "cannot execute twice");
 
-        if (_param == 1) {
+        if (_decision == 1) {
+            proposal.proposalPassed = true;
             execute(_proposalId);
         } else {
             delete organizationsProposals[address(avatar)][_proposalId];
             emit ProposalDeleted(address(avatar), _proposalId);
         }
 
-        emit ProposalExecutedByVotingMachine(address(avatar), _proposalId, _param);
+        emit ProposalExecutedByVotingMachine(address(avatar), _proposalId, _decision);
         return true;
     }
 
@@ -84,7 +88,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         Parameters memory params = parameters[getParametersFromController(avatar)];
         CallProposal storage proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.exist, "must be a live proposal");
-        require(proposal.executedByVotingMachine, "must be executed by voting machine");
+        require(proposal.proposalPassed, "proposal must passed by voting machine");
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
@@ -153,7 +157,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         organizationsProposals[address(_avatar)][proposalId] = CallProposal({
             callData: _callData,
             exist: true,
-            executedByVotingMachine: false
+            proposalPassed: false
         });
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,
