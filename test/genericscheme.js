@@ -100,7 +100,7 @@ contract('genericScheme', function(accounts) {
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-       assert.equal(organizationProposal.proposalPassed,false);
+       assert.equal(organizationProposal.passed,false);
        assert.equal(organizationProposal.callData,null);
     });
 
@@ -129,7 +129,7 @@ contract('genericScheme', function(accounts) {
        //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
        var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
        assert.equal(organizationProposal.exist,true);//new contract address
-       assert.equal(organizationProposal.proposalPassed,true);//new contract address
+       assert.equal(organizationProposal.passed,true);//new contract address
        //can call execute
        await testSetup.genericScheme.execute(proposalId);
 
@@ -149,7 +149,7 @@ contract('genericScheme', function(accounts) {
        //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
        var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
        assert.equal(organizationProposal.exist,true);//new contract address
-       assert.equal(organizationProposal.proposalPassed,true);//new contract address
+       assert.equal(organizationProposal.passed,true);//new contract address
        //can call execute
        await testSetup.genericScheme.execute(proposalId);
        await helpers.increaseTime(1001);
@@ -157,7 +157,7 @@ contract('genericScheme', function(accounts) {
 
        organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
        assert.equal(organizationProposal.exist,false);//new contract address
-       assert.equal(organizationProposal.proposalPassed,false);//new contract address
+       assert.equal(organizationProposal.passed,false);//new contract address
        try {
          await testSetup.genericScheme.execute(proposalId);
          assert(false, "cannot call execute after it been executed");

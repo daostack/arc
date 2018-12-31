@@ -37,7 +37,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     struct CallProposal {
         bytes callData;
         bool exist;
-        bool proposalPassed;
+        bool passed;
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
@@ -65,10 +65,10 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         Avatar avatar = proposalsInfo[_proposalId].avatar;
         CallProposal storage proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.exist, "must be a live proposal");
-        require(proposal.proposalPassed == false, "cannot execute twice");
+        require(proposal.passed == false, "cannot execute twice");
 
         if (_decision == 1) {
-            proposal.proposalPassed = true;
+            proposal.passed = true;
             execute(_proposalId);
         } else {
             delete organizationsProposals[address(avatar)][_proposalId];
@@ -88,7 +88,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         Parameters memory params = parameters[getParametersFromController(avatar)];
         CallProposal storage proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.exist, "must be a live proposal");
-        require(proposal.proposalPassed, "proposal must passed by voting machine");
+        require(proposal.passed, "proposal must passed by voting machine");
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
@@ -157,7 +157,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         organizationsProposals[address(_avatar)][proposalId] = CallProposal({
             callData: _callData,
             exist: true,
-            proposalPassed: false
+            passed: false
         });
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,
