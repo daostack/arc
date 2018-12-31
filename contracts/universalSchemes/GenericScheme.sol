@@ -55,6 +55,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
     * @param _proposalId the ID of the voting in the voting machine
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    * @return bool success
     */
     function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
