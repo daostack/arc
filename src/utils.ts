@@ -8,6 +8,7 @@ import {
   store,
   Value,
 } from '@graphprotocol/graph-ts';
+import {Debug } from './types/schema';
 
 export function concat(a: ByteArray, b: ByteArray): ByteArray {
   let out = new Uint8Array(a.length + b.length);
@@ -38,9 +39,9 @@ export function hexToAddress(hex: string): Address {
  */
 let debugId = 0;
 export function debug(msg: string): void {
-  let ent = new Entity();
+
   let id = BigInt.fromI32(debugId).toHex();
-  ent.set('id', Value.fromString(id));
+  let ent = new Debug(id);
   ent.set('message', Value.fromString(msg));
   store.set('Debug', id, ent);
   debugId++;
