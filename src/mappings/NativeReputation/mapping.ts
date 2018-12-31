@@ -28,16 +28,25 @@ function update(contract: Address, owner: Address): void {
   let balance = rep.balanceOf(owner);
   ent.balance = balance;
 
+  let reputationContract = ReputationContract.load(contract.toHex());
+
+  if (reputationContract == null) {
+    reputationContract = new ReputationContract(contract.toHex());
+    reputationContract.reputationHolders = new Array<String>()
+  }
+
+  let reputationHolders = reputationContract.reputationHolders;
+
   if (!equals(balance, BigInt.fromI32(0))) {
     store.set('ReputationHolder', ent.id, ent);
+    reputationHolders.push(ent.id);
   } else {
     store.remove('ReputationHolder', ent.id);
   }
-
-  let reputationContract = new ReputationContract(contract.toHex());
+  reputationContract.reputationHolders = reputationHolders;
   reputationContract.address = contract;
   reputationContract.totalSupply = rep.totalSupply();
-  store.set('ReputationContract', reputationContract.id, reputationContract);
+  reputationContract.save();
 }
 
 export function handleMint(event: Mint): void {

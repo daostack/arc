@@ -41,6 +41,20 @@ export function updateMemberReputation(
   }
 }
 
+export function updateMemberReputationWithValue(
+  address: Address,
+  daoAddress: Address,
+  value: BigInt
+): void {
+  let member = getMember(address, daoAddress);
+  member.reputation = value;
+  if (equals(member.reputation as BigInt, BigInt.fromI32(0))) {
+    deleteMember(member);
+  } else {
+    saveMember(member);
+  }
+}
+
 export function updateMemberTokens(
   address: Address,
   daoAddress: Address,
