@@ -70,7 +70,8 @@ contract('VestingScheme', accounts => {
                                                                      11,
                                                                      3,
                                                                      signatures,
-                                                                     testSetup.org.avatar.address);
+                                                                     testSetup.org.avatar.address,
+                                                                     helpers.NULL_HASH);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "AgreementProposal");
        var avatarAddress = await helpers.getValueFromLogs(tx, '_avatar',1);
@@ -96,7 +97,8 @@ contract('VestingScheme', accounts => {
                                                                      11,
                                                                      _signaturesReqToCancel,
                                                                      _signersArray,
-                                                                     testSetup.org.avatar.address);
+                                                                     testSetup.org.avatar.address,
+                                                                     helpers.NULL_HASH);
        assert(false,"proposeVestingAgreement should fail - due to _signaturesReqToCancel > _signersArray.length !");
       }catch(ex){
        helpers.assertVMException(ex);
@@ -116,7 +118,7 @@ contract('VestingScheme', accounts => {
           0,
           11,
           3, [accounts[0], accounts[1], accounts[2]],
-          testSetup.org.avatar.address);
+          testSetup.org.avatar.address,helpers.NULL_HASH);
         assert(false, "proposeVestingAgreement should fail - due to _numOfAgreedPeriods > 0 !");
       } catch (ex) {
         helpers.assertVMException(ex);
@@ -137,7 +139,7 @@ contract('VestingScheme', accounts => {
                                                                     11,
                                                                     0,
                                                                     [],
-                                                                    testSetup.org.avatar.address);
+                                                                    testSetup.org.avatar.address,helpers.NULL_HASH);
     //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
      await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -165,7 +167,7 @@ contract('VestingScheme', accounts => {
                                                                       11,
                                                                       0,
                                                                       [],
-                                                                      testSetup.org.avatar.address);
+                                                                      testSetup.org.avatar.address,helpers.NULL_HASH);
       //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
        //check organizationsProposals before execution
@@ -190,7 +192,7 @@ contract('VestingScheme', accounts => {
                                                                      11,
                                                                      0,
                                                                      [],
-                                                                     testSetup.org.avatar.address);
+                                                                     testSetup.org.avatar.address,helpers.NULL_HASH);
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       //check organizationsProposals before execution
       var organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
@@ -216,7 +218,7 @@ contract('VestingScheme', accounts => {
                                                                      11,
                                                                      0,
                                                                      [],
-                                                                     testSetup.org.avatar.address);
+                                                                     testSetup.org.avatar.address,helpers.NULL_HASH);
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       //check organizationsProposals before execution
       var organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
@@ -245,7 +247,7 @@ contract('VestingScheme', accounts => {
                                                                               11,
                                                                               0,
                                                                               [],
-                                                                              testSetup.org.avatar.address);
+                                                                              testSetup.org.avatar.address,helpers.NULL_HASH);
               //Vote with reputation to trigger execution
                var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
                //check organizationsProposals before execution

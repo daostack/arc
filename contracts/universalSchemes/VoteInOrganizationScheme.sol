@@ -17,7 +17,8 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
         address indexed _intVoteInterface,
         IntVoteInterface _originalIntVote,
         bytes32 _originalProposalId,
-        uint256 _vote
+        uint256 _vote,
+        bytes32 _descriptionHash
     );
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param, bytes _callReturnValue);
@@ -114,9 +115,15 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
     * @param _originalIntVote the other organization voting machine
     * @param _originalProposalId the other organization proposal id
     * @param _vote - which value to vote in the destination organization
+    * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
-    function proposeVote(Avatar _avatar, IntVoteInterface _originalIntVote, bytes32 _originalProposalId, uint256 _vote)
+    function proposeVote(
+    Avatar _avatar,
+    IntVoteInterface _originalIntVote,
+    bytes32 _originalProposalId,
+    uint256 _vote,
+    bytes32 _descriptionHash)
     public
     returns(bytes32)
     {
@@ -141,7 +148,8 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
             address(params.intVote),
             _originalIntVote,
             _originalProposalId,
-            _vote
+            _vote,
+            _descriptionHash
         );
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,

@@ -18,14 +18,16 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
         address indexed _intVoteInterface,
         address _gc,
         bytes32 _params,
-        bytes32 _voteToRemoveParams
+        bytes32 _voteToRemoveParams,
+        bytes32 _descriptionHash
     );
 
     event RemoveGlobalConstraintsProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        address _gc
+        address _gc,
+        bytes32 _descriptionHash
     );
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
@@ -124,10 +126,16 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
     * @param _gc the address of the global constraint that is being proposed
     * @param _params the parameters for the global constraint
     * @param _voteToRemoveParams the conditions (on the voting machine) for removing this global constraint
+    * @param _descriptionHash proposal's description hash
     * @return bytes32 -the proposal id
     */
     // TODO: do some checks on _voteToRemoveParams - it is very easy to make a mistake and not be able to remove the GC
-    function proposeGlobalConstraint(Avatar _avatar, address _gc, bytes32 _params, bytes32 _voteToRemoveParams)
+    function proposeGlobalConstraint(
+    Avatar _avatar,
+    address _gc,
+    bytes32 _params,
+    bytes32 _voteToRemoveParams,
+    bytes32 _descriptionHash)
     public
     returns(bytes32)
     {
@@ -150,7 +158,8 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
             address(intVote),
             _gc,
             _params,
-            _voteToRemoveParams
+            _voteToRemoveParams,
+            _descriptionHash
         );
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,
@@ -164,9 +173,10 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
     * @dev propose to remove a global constraint:
     * @param _avatar the avatar of the organization that the constraint is proposed for
     * @param _gc the address of the global constraint that is being proposed
+    * @param _descriptionHash proposal's description hash
     * @return bytes32 -the proposal id
     */
-    function proposeToRemoveGC(Avatar _avatar, address _gc) public returns(bytes32) {
+    function proposeToRemoveGC(Avatar _avatar, address _gc, bytes32 _descriptionHash) public returns(bytes32) {
         Controller controller = Controller(_avatar.owner());
         require(controller.isGlobalConstraintRegistered(_gc, address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
@@ -186,7 +196,7 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
         });
 
         organizationsProposals[address(_avatar)][proposalId] = proposal;
-        emit RemoveGlobalConstraintsProposal(address(_avatar), proposalId, address(intVote), _gc);
+        emit RemoveGlobalConstraintsProposal(address(_avatar), proposalId, address(intVote), _gc, _descriptionHash);
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,
             avatar:_avatar,

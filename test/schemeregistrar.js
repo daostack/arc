@@ -51,7 +51,11 @@ contract('SchemeRegistrar', accounts => {
     it("proposeScheme log", async function() {
       var testSetup = await setup(accounts);
 
-      var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address,helpers.NULL_HASH,"0x00000000");
+      var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,
+                                                             testSetup.schemeRegistrar.address,
+                                                             helpers.NULL_HASH,
+                                                             "0x00000000",
+                                                             helpers.NULL_HASH);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewSchemeProposal");
      });
@@ -59,7 +63,9 @@ contract('SchemeRegistrar', accounts => {
        it("proposeToRemoveScheme log", async function() {
          var testSetup = await setup(accounts);
 
-         var tx = await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address);
+         var tx = await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,
+                                                                        testSetup.schemeRegistrar.address,
+                                                                        helpers.NULL_HASH);
          assert.equal(tx.logs.length, 1);
          assert.equal(tx.logs[0].event, "RemoveSchemeProposal");
         });
@@ -68,7 +74,7 @@ contract('SchemeRegistrar', accounts => {
     it("execute proposeScheme  and execute -yes - fee > 0 ", async function() {
       var testSetup = await setup(accounts);
       var universalScheme = await UniversalScheme.new();
-      var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,helpers.NULL_HASH,"0x00000000");
+      var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,helpers.NULL_HASH,"0x00000000",helpers.NULL_HASH);
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -80,7 +86,7 @@ contract('SchemeRegistrar', accounts => {
        var testSetup = await setup(accounts);
        var permissions = "0x00000001";
 
-       var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions);
+       var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions,helpers.NULL_HASH);
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
        await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -93,7 +99,7 @@ contract('SchemeRegistrar', accounts => {
         var testSetup = await setup(accounts);
         var permissions = "0x00000002";
 
-        var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions);
+        var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions,helpers.NULL_HASH);
         //Vote with reputation to trigger execution
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -106,7 +112,7 @@ contract('SchemeRegistrar', accounts => {
          var testSetup = await setup(accounts);
          var permissions = "0x00000003";
 
-         var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions);
+         var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions,helpers.NULL_HASH);
          //Vote with reputation to trigger execution
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
          await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -119,7 +125,7 @@ contract('SchemeRegistrar', accounts => {
           var testSetup = await setup(accounts);
           var permissions = "0x00000008";
 
-          var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions);
+          var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions,helpers.NULL_HASH);
           //Vote with reputation to trigger execution
           var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
           await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -132,7 +138,7 @@ contract('SchemeRegistrar', accounts => {
            var testSetup = await setup(accounts);
            var permissions = "0x00000010";
 
-           var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions);
+           var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,permissions,helpers.NULL_HASH);
            //Vote with reputation to trigger execution
            var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
            await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -144,7 +150,7 @@ contract('SchemeRegistrar', accounts => {
       it("execute proposeScheme  and execute -yes - isRegistering==FALSE ", async function() {
         var testSetup = await setup(accounts);
 
-        var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,"0x00000000");
+        var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,"0x00000000",helpers.NULL_HASH);
         //Vote with reputation to trigger execution
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -158,7 +164,7 @@ contract('SchemeRegistrar', accounts => {
        it("execute proposeScheme - no decision (same for remove scheme) - proposal data delete", async function() {
          var testSetup = await setup(accounts);
 
-         var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,"0x00000000");
+         var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,accounts[0],helpers.NULL_HASH,"0x00000000",helpers.NULL_HASH);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
          //check organizationsProposals before execution
          var organizationProposal = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
@@ -177,7 +183,7 @@ contract('SchemeRegistrar', accounts => {
         it("execute proposeToRemoveScheme ", async function() {
           var testSetup = await setup(accounts);
 
-          var tx = await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address);
+          var tx = await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address,helpers.NULL_HASH);
           var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
           var controller = await Controller.at(await testSetup.org.avatar.owner());
           assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,testSetup.org.avatar.address),true);
@@ -192,7 +198,7 @@ contract('SchemeRegistrar', accounts => {
      var testSetup = await setup(accounts);
 
      var universalScheme = await UniversalScheme.new();
-     var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,helpers.NULL_HASH,"0x00000000");
+     var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,helpers.NULL_HASH,"0x00000000",helpers.NULL_HASH);
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
      await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -202,7 +208,7 @@ contract('SchemeRegistrar', accounts => {
       var testSetup = await setup(accounts);
 
       var universalScheme = await UniversalScheme.new();
-      var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,helpers.NULL_HASH,"0x00000000");
+      var tx = await testSetup.schemeRegistrar.proposeScheme(testSetup.org.avatar.address,universalScheme.address,helpers.NULL_HASH,"0x00000000",helpers.NULL_HASH);
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});

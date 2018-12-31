@@ -18,13 +18,15 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
         address indexed _intVoteInterface,
         address _scheme,
         bytes32 _parametersHash,
-        bytes4 _permissions
+        bytes4 _permissions,
+        bytes32 _descriptionHash
     );
 
     event RemoveSchemeProposal(address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        address _scheme
+        address _scheme,
+        bytes32 _descriptionHash
     );
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
@@ -115,6 +117,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
     * @param _scheme the address of the scheme to be registered
     * @param _parametersHash a hash of the configuration of the _scheme
     * @param _permissions the permission of the scheme to be registered
+    * @param _descriptionHash proposal's description hash
     * @return a proposal Id
     * @dev NB: not only proposes the vote, but also votes for it
     */
@@ -122,7 +125,8 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
         Avatar _avatar,
         address _scheme,
         bytes32 _parametersHash,
-        bytes4 _permissions
+        bytes4 _permissions,
+        bytes32 _descriptionHash
     )
     public
     returns(bytes32)
@@ -149,7 +153,8 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
             proposalId,
             address(controllerParams.intVote),
             _scheme, _parametersHash,
-            _permissions
+            _permissions,
+            _descriptionHash
         );
         organizationsProposals[address(_avatar)][proposalId] = proposal;
         proposalsInfo[proposalId] = ProposalInfo({
@@ -164,10 +169,10 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
     * @dev propose to remove a scheme for a controller
     * @param _avatar the address of the controller from which we want to remove a scheme
     * @param _scheme the address of the scheme we want to remove
-    *
+    * @param _descriptionHash proposal description hash
     * NB: not only registers the proposal, but also votes for it
     */
-    function proposeToRemoveScheme(Avatar _avatar, address _scheme)
+    function proposeToRemoveScheme(Avatar _avatar, address _scheme, bytes32 _descriptionHash)
     public
     returns(bytes32)
     {
@@ -179,7 +184,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
 
         organizationsProposals[address(_avatar)][proposalId].proposalType = 2;
         organizationsProposals[address(_avatar)][proposalId].scheme = _scheme;
-        emit RemoveSchemeProposal(address(_avatar), proposalId, address(intVote), _scheme);
+        emit RemoveSchemeProposal(address(_avatar), proposalId, address(intVote), _scheme, _descriptionHash);
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,
             avatar:_avatar,

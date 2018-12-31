@@ -15,7 +15,8 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        bytes   callData
+        bytes   _callData,
+        bytes32  _descriptionHash
     );
 
     event ProposalExecuted(
@@ -137,9 +138,10 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     *      The function trigger NewCallProposal event
     * @param _callData - The abi encode data for the call
     * @param _avatar avatar of the organization
+    * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
-    function proposeCall(Avatar _avatar, bytes memory _callData)
+    function proposeCall(Avatar _avatar, bytes memory _callData, bytes32 _descriptionHash)
     public
     returns(bytes32)
     {
@@ -158,7 +160,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
             avatar:_avatar,
             votingMachine:address(params.intVote)
         });
-        emit NewCallProposal(address(_avatar), proposalId, _callData);
+        emit NewCallProposal(address(_avatar), proposalId, _callData, _descriptionHash);
         return proposalId;
     }
 

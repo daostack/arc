@@ -86,7 +86,7 @@ contract('genericScheme', function(accounts) {
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
 
        var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,
-                                                           callData);
+                                                           callData,helpers.NULL_HASH);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "NewCallProposal");
     });
@@ -95,7 +95,7 @@ contract('genericScheme', function(accounts) {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,actionMock.address);
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
@@ -108,10 +108,10 @@ contract('genericScheme', function(accounts) {
         var actionMock =await ActionMock.new();
         var testSetup = await setup(accounts,actionMock.address);
         var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-        var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+        var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData,helpers.NULL_HASH);
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
         var organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-        assert.equal(organizationProposal[0],callData);
+        assert.equal(organizationProposal[0],callData,helpers.NULL_HASH);
         await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
         //check organizationsProposals after execution
         organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
@@ -122,7 +122,7 @@ contract('genericScheme', function(accounts) {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,actionMock.address);
        var callData = await createCallToActionMock(helpers.NULL_ADDRESS,actionMock);
-       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -142,7 +142,7 @@ contract('genericScheme', function(accounts) {
        var activationTime = (await web3.eth.getBlock("latest")).timestamp + 1000;
        await actionMock.setActivationTime(activationTime);
        var callData = await new web3.eth.Contract(actionMock.abi).methods.test3().encodeABI();
-       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -172,7 +172,7 @@ contract('genericScheme', function(accounts) {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,actionMock.address);
        const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
-       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,encodeABI);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,encodeABI,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -183,7 +183,7 @@ contract('genericScheme', function(accounts) {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,actionMock.address);
        const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
-       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,encodeABI);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,encodeABI,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
        try {
@@ -201,7 +201,7 @@ contract('genericScheme', function(accounts) {
        var testSetup = await setup(accounts,actionMock.address,0,true,standardTokenMock.address);
 
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {
@@ -220,7 +220,7 @@ contract('genericScheme', function(accounts) {
        var testSetup = await setup(accounts,actionMock.address,0,true,standardTokenMock.address);
 
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData);
+       var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {

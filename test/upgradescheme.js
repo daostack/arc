@@ -84,7 +84,7 @@ contract('UpgradeScheme', accounts => {
        var testSetup = await setup(accounts);
 
        var newController = await setupNewController(accounts);
-       var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
+       var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address,helpers.NULL_HASH);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "NewUpgradeProposal");
        var votingMachine = await helpers.getValueFromLogs(tx, '_intVoteInterface',1);
@@ -94,7 +94,7 @@ contract('UpgradeScheme', accounts => {
         it("proposeChangeUpgradingScheme log", async function() {
           var testSetup = await setup(accounts);
 
-          var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000000");
+          var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000000",helpers.NULL_HASH);
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "ChangeUpgradeSchemeProposal");
           var votingMachine = await helpers.getValueFromLogs(tx, '_intVoteInterface',1);
@@ -106,7 +106,7 @@ contract('UpgradeScheme', accounts => {
 
    var newController = await setupNewController(accounts);
    assert.notEqual(newController.address,await testSetup.org.avatar.owner());
-   var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
+   var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address,helpers.NULL_HASH);
    //Vote with reputation to trigger execution
    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
    //check organizationsProposals before execution
@@ -125,7 +125,7 @@ contract('UpgradeScheme', accounts => {
     var testSetup = await setup(accounts);
 
     var newController = await setupNewController(accounts);
-    var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address);
+    var tx = await testSetup.upgradeScheme.proposeUpgrade(testSetup.org.avatar.address,newController.address,helpers.NULL_HASH);
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
     //check organizationsProposals before execution
     var organizationProposal = await testSetup.upgradeScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
@@ -146,7 +146,7 @@ contract('UpgradeScheme', accounts => {
      var testSetup = await setup(accounts);
 
 
-     var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000002");
+     var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000002",helpers.NULL_HASH);
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
@@ -176,7 +176,7 @@ contract('UpgradeScheme', accounts => {
       var testSetup = await setup(accounts);
 
 
-      var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000002");
+      var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,accounts[0],"0x00000002",helpers.NULL_HASH);
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
@@ -206,7 +206,7 @@ contract('UpgradeScheme', accounts => {
        var testSetup = await setup(accounts);
 
 
-       var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,testSetup.upgradeScheme.address,"0x00000002");
+       var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.org.avatar.address,testSetup.upgradeScheme.address,"0x00000002",helpers.NULL_HASH);
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
