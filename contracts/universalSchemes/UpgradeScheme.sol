@@ -17,7 +17,8 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        address _newController
+        address _newController,
+        bytes32 _descriptionHash
     );
 
     event ChangeUpgradeSchemeProposal(
@@ -25,7 +26,8 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _newUpgradeScheme,
-        bytes32 _params
+        bytes32 _params,
+        bytes32 _descriptionHash
     );
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
@@ -114,9 +116,10 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @dev propose an upgrade of the organization's controller
     * @param _avatar avatar of the organization
     * @param _newController address of the new controller that is being proposed
+    * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
-    function proposeUpgrade(Avatar _avatar, address _newController)
+    function proposeUpgrade(Avatar _avatar, address _newController, bytes32 _descriptionHash)
         public
         returns(bytes32)
     {
@@ -128,7 +131,13 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
             params: bytes32(0)
         });
         organizationsProposals[address(_avatar)][proposalId] = proposal;
-        emit NewUpgradeProposal(address(_avatar), proposalId, address(params.intVote), _newController);
+        emit NewUpgradeProposal(
+        address(_avatar),
+        proposalId,
+        address(params.intVote),
+        _newController,
+        _descriptionHash
+        );
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,
             avatar:_avatar,
@@ -142,12 +151,14 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @param _avatar avatar of the organization
     * @param _scheme address of the new upgrading scheme
     * @param _params the parameters of the new upgrading scheme
+    * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
     function proposeChangeUpgradingScheme(
         Avatar _avatar,
         address _scheme,
-        bytes32 _params
+        bytes32 _params,
+        bytes32 _descriptionHash
     )
         public
         returns(bytes32)
@@ -169,7 +180,8 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
             proposalId,
             address(params.intVote),
             _scheme,
-            _params
+            _params,
+            _descriptionHash
         );
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,

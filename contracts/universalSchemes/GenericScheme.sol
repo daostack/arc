@@ -15,14 +15,20 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        bytes   callData
+        bytes   _callData,
+        bytes32  _descriptionHash
     );
 
     event ProposalExecuted(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        int256 _param,
         bytes _genericCallReturnValue
+    );
+
+    event ProposalExecutedByVotingMachine(
+        address indexed _avatar,
+        bytes32 indexed _proposalId,
+        int256 _param
     );
 
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
@@ -31,6 +37,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     struct CallProposal {
         bytes callData;
         bool exist;
+        bool passed;
     }
 
     // A mapping from the organization (Avatar) address to the saved data of the organization:
@@ -48,25 +55,52 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     /**
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
     * @param _proposalId the ID of the voting in the voting machine
-    * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    * @param _decision a parameter of the voting result, 1 yes and 2 is no.
+    * @return bool success
     */
-    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
+    function executeProposal(bytes32 _proposalId, int256 _decision)
+    external
+    onlyVotingMachine(_proposalId)
+    returns(bool) {
+        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        CallProposal storage proposal = organizationsProposals[address(avatar)][_proposalId];
+        require(proposal.exist, "must be a live proposal");
+        require(proposal.passed == false, "cannot execute twice");
+
+        if (_decision == 1) {
+            proposal.passed = true;
+            execute(_proposalId);
+        } else {
+            delete organizationsProposals[address(avatar)][_proposalId];
+            emit ProposalDeleted(address(avatar), _proposalId);
+        }
+
+        emit ProposalExecutedByVotingMachine(address(avatar), _proposalId, _decision);
+        return true;
+    }
+
+    /**
+    * @dev execution of proposals after it has been decided by the voting machine
+    * @param _proposalId the ID of the voting in the voting machine
+    */
+    function execute(bytes32 _proposalId) public {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
         Parameters memory params = parameters[getParametersFromController(avatar)];
-        // Save proposal to memory and delete from storage:
-        CallProposal memory proposal = organizationsProposals[address(avatar)][_proposalId];
+        CallProposal storage proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.exist, "must be a live proposal");
-        delete organizationsProposals[address(avatar)][_proposalId];
-        emit ProposalDeleted(address(avatar), _proposalId);
+        require(proposal.passed, "proposal must passed by voting machine");
+        proposal.exist = false;
         bytes memory genericCallReturnValue;
-        // Check decision:
-        if (_param == 1) {
-        // Define controller and get the params:
-            ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
-            genericCallReturnValue = controller.genericCall(params.contractToCall, proposal.callData, avatar);
+        bool success;
+        ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
+        (success, genericCallReturnValue) = controller.genericCall(params.contractToCall, proposal.callData, avatar);
+        if (success) {
+            delete organizationsProposals[address(avatar)][_proposalId];
+            emit ProposalDeleted(address(avatar), _proposalId);
+            emit ProposalExecuted(address(avatar), _proposalId, genericCallReturnValue);
+        } else {
+            proposal.exist = true;
         }
-        emit ProposalExecuted(address(avatar), _proposalId, _param, genericCallReturnValue);
-        return true;
     }
 
     /**
@@ -108,9 +142,10 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     *      The function trigger NewCallProposal event
     * @param _callData - The abi encode data for the call
     * @param _avatar avatar of the organization
+    * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
-    function proposeCall(Avatar _avatar, bytes memory _callData)
+    function proposeCall(Avatar _avatar, bytes memory _callData, bytes32 _descriptionHash)
     public
     returns(bytes32)
     {
@@ -121,14 +156,15 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
 
         organizationsProposals[address(_avatar)][proposalId] = CallProposal({
             callData: _callData,
-            exist: true
+            exist: true,
+            passed: false
         });
         proposalsInfo[proposalId] = ProposalInfo({
             blockNumber:block.number,
             avatar:_avatar,
             votingMachine:address(params.intVote)
         });
-        emit NewCallProposal(address(_avatar), proposalId, _callData);
+        emit NewCallProposal(address(_avatar), proposalId, _callData, _descriptionHash);
         return proposalId;
     }
 

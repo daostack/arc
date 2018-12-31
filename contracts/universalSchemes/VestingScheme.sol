@@ -16,7 +16,7 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
-    event AgreementProposal(address indexed _avatar, bytes32 indexed _proposalId);
+    event AgreementProposal(address indexed _avatar, bytes32 indexed _proposalId, bytes32 _descriptionHash);
     event NewVestedAgreement(uint256 indexed _agreementId);
     event ProposedVestedAgreement(uint256 indexed _agreementId, bytes32 indexed _proposalId);
     event SignToCancelAgreement(uint256 indexed _agreementId, address indexed _signer);
@@ -109,6 +109,7 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @param _signaturesReqToCancel number of signatures required to cancel agreement.
     * @param _signersArray avatar array of addresses that can sign to cancel agreement.
     * @param _avatar avatar of the organization.
+    * @param _descriptionHash proposal description hash
     * @return bytes32 the proposalId
     */
     function proposeVestingAgreement(
@@ -121,7 +122,8 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         uint256 _cliffInPeriods,
         uint256 _signaturesReqToCancel,
         address[] calldata _signersArray,
-        Avatar _avatar
+        Avatar _avatar,
+        bytes32 _descriptionHash
     )
     external
     returns(bytes32)
@@ -152,7 +154,7 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
             avatar:_avatar,
             votingMachine:address(params.intVote)
         });
-        emit AgreementProposal(address(_avatar), proposalId);
+        emit AgreementProposal(address(_avatar), proposalId, _descriptionHash);
         return proposalId;
     }
 
