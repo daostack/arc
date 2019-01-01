@@ -116,7 +116,7 @@ type Member @entity {
 	dao: DAO!
 	address: Bytes!
 	reputation: BigInt!
-	tokens: BigInt!
+	tokens: BigInt
 
 	rewards: [Reward!] @derivedFrom(field: "member")
 	proposal: [Proposal!] @derivedFrom(field: "proposer")
