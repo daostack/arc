@@ -18,7 +18,7 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _newController,
-        bytes32 _descriptionHash
+        string _descriptionHash
     );
 
     event ChangeUpgradeSchemeProposal(
@@ -27,7 +27,7 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         address indexed _intVoteInterface,
         address _newUpgradeScheme,
         bytes32 _params,
-        bytes32 _descriptionHash
+        string _descriptionHash
     );
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
@@ -119,7 +119,7 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
-    function proposeUpgrade(Avatar _avatar, address _newController, bytes32 _descriptionHash)
+    function proposeUpgrade(Avatar _avatar, address _newController, string memory _descriptionHash)
         public
         returns(bytes32)
     {
@@ -158,7 +158,7 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         Avatar _avatar,
         address _scheme,
         bytes32 _params,
-        bytes32 _descriptionHash
+        string memory _descriptionHash
     )
         public
         returns(bytes32)

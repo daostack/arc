@@ -16,7 +16,7 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
-    event AgreementProposal(address indexed _avatar, bytes32 indexed _proposalId, bytes32 _descriptionHash);
+    event AgreementProposal(address indexed _avatar, bytes32 indexed _proposalId, string _descriptionHash);
     event NewVestedAgreement(uint256 indexed _agreementId);
     event ProposedVestedAgreement(uint256 indexed _agreementId, bytes32 indexed _proposalId);
     event SignToCancelAgreement(uint256 indexed _agreementId, address indexed _signer);
@@ -123,7 +123,7 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         uint256 _signaturesReqToCancel,
         address[] calldata _signersArray,
         Avatar _avatar,
-        bytes32 _descriptionHash
+        string calldata _descriptionHash
     )
     external
     returns(bytes32)
