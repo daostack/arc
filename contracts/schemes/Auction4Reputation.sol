@@ -104,7 +104,7 @@ contract Auction4Reputation is Ownable {
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
         ControllerInterface(avatar.owner())
-        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should success");
+        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
         emit Redeem(_auctionId, _beneficiary, reputation);
     }
 
@@ -119,7 +119,7 @@ contract Auction4Reputation is Ownable {
         require(now <= auctionsEndTime, "bidding should be within the allowed bidding period");
         // solhint-disable-next-line not-rely-on-time
         require(now >= auctionsStartTime, "bidding is enable only after bidding auctionsStartTime");
-        require(token.transferFrom(msg.sender, address(this), _amount), "transferFrom should success");
+        require(token.transferFrom(msg.sender, address(this), _amount), "transferFrom should succeed");
         // solhint-disable-next-line not-rely-on-time
         auctionId = (now - auctionsStartTime) / auctionPeriod;
         Auction storage auction = auctions[auctionId];
@@ -146,7 +146,7 @@ contract Auction4Reputation is Ownable {
       // solhint-disable-next-line not-rely-on-time
         require(now > auctionsEndTime, "now > auctionsEndTime");
         uint256 tokenBalance = token.balanceOf(address(this));
-        require(token.transfer(wallet, tokenBalance), "transfer should success");
+        require(token.transfer(wallet, tokenBalance), "transfer should succeed");
     }
 
 }

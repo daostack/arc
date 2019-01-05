@@ -77,7 +77,7 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         (bool result, bytes memory returnValue) =
         // solhint-disable-next-line avoid-call-value,avoid-low-level-calls
         externalLockingContract.call(abi.encodeWithSignature(getBalanceFuncSignature, beneficiary));
-        require(result, "call to external contract should success");
+        require(result, "call to external contract should succeed");
         uint256 lockedAmount;
         // solhint-disable-next-line no-inline-assembly
         assembly {

@@ -59,7 +59,7 @@ contract Locking4Reputation {
         require(
         ControllerInterface(
         avatar.owner())
-        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should success");
+        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
 
         emit Redeem(_beneficiary, reputation);
     }
