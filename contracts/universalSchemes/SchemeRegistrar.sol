@@ -132,7 +132,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
     returns(bytes32)
     {
         // propose
-        require(_scheme != address(0),"scheme address should not be zero");
+        require(_scheme != address(0), "scheme cannot be zero");
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
         bytes32 proposalId = controllerParams.intVote.propose(
@@ -176,7 +176,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
     public
     returns(bytes32)
     {
-        require(_scheme != address(0),"scheme address should not be zero");
+        require(_scheme != address(0), "scheme cannot be zero");
         bytes32 paramsHash = getParametersFromController(_avatar);
         Parameters memory params = parameters[paramsHash];
 

@@ -429,7 +429,12 @@ contract Controller is ControllerInterface {
     * @param _value the amount of ether (in Wei) to send
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(IERC20 _externalToken, address _from, address _to, uint256 _value, Avatar _avatar)
+    function externalTokenTransferFrom(
+    IERC20 _externalToken,
+    address _from,
+    address _to,
+    uint256 _value,
+    Avatar _avatar)
     external
     onlyRegisteredScheme
     onlySubjectToConstraint("externalTokenTransferFrom")

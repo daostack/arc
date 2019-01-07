@@ -422,7 +422,12 @@ contract UController is ControllerInterface {
     * @param _avatar the organization avatar.
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(IERC20 _externalToken, address _from, address _to, uint256 _value, Avatar _avatar)
+    function externalTokenTransferFrom(
+    IERC20 _externalToken,
+    address _from,
+    address _to,
+    uint256 _value,
+    Avatar _avatar)
     external
     onlyRegisteredScheme(address(_avatar))
     onlySubjectToConstraint("externalTokenTransferFrom", address(_avatar))
