@@ -26,7 +26,7 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
 
     // The data for each vested agreement:
     struct Agreement {
-        ERC20 token;
+        IERC20 token;
         address beneficiary;
         address returnOnCancelAddress;
         uint256 startingBlock;
@@ -173,7 +173,7 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @return uint256 the agreement index.
     */
     function createVestedAgreement(
-        ERC20 _token,
+        IERC20 _token,
         address _beneficiary,
         address _returnOnCancelAddress,
         uint256 _startingBlock,

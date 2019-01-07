@@ -22,7 +22,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         string _contributionDescription,
         int256 _reputationChange,
         uint[5]  _rewards,
-        ERC20 _externalToken,
+        IERC20 _externalToken,
         address _beneficiary
     );
 
@@ -54,7 +54,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         uint256 nativeTokenReward; // Reward asked in the native token of the organization.
         int256 reputationChange; // Organization reputation reward requested.
         uint256 ethReward;
-        ERC20 externalToken;
+        IERC20 externalToken;
         uint256 externalTokenReward;
         address payable beneficiary;
         uint256 periodLength;
@@ -153,7 +153,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         string memory _contributionDescriptionHash,
         int256 _reputationChange,
         uint[5] memory _rewards,
-        ERC20 _externalToken,
+        IERC20 _externalToken,
         address payable _beneficiary
     )
     public
@@ -311,7 +311,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.externalTokenReward = 0;
 
-        if (proposal.externalToken != ERC20(0) && _proposal.externalTokenReward > 0) {
+        if (proposal.externalToken != IERC20(0) && _proposal.externalTokenReward > 0) {
             amount = periodsToPay.mul(_proposal.externalTokenReward);
             if (amount > 0) {
                 require(

@@ -45,7 +45,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
     }
 
     function stakingTokenTransfer(
-        ERC20 _stakingToken,
+        IERC20 _stakingToken,
         address _beneficiary,
         uint256 _amount,
         bytes32 _proposalId)
@@ -60,7 +60,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         return ControllerInterface(avatar.owner()).externalTokenTransfer(_stakingToken, _beneficiary, _amount, avatar);
     }
 
-    function balanceOfStakingToken(ERC20 _stakingToken, bytes32 _proposalId) external view returns(uint256) {
+    function balanceOfStakingToken(IERC20 _stakingToken, bytes32 _proposalId) external view returns(uint256) {
         Avatar avatar = proposalsInfo[_proposalId].avatar;
         if (proposalsInfo[_proposalId].avatar == Avatar(0)) {
             return 0;

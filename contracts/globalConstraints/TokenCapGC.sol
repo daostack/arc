@@ -1,6 +1,6 @@
 pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./GlobalConstraintInterface.sol";
 
 
@@ -12,7 +12,7 @@ import "./GlobalConstraintInterface.sol";
 contract TokenCapGC {
     // A set of parameters, on which the cap will be checked:
     struct Parameters {
-        ERC20 token;
+        IERC20 token;
         uint256 cap;
     }
 
@@ -25,7 +25,7 @@ contract TokenCapGC {
      * @param _cap the cap to check the total supply against.
      * @return the calculated parameters hash
      */
-    function setParameters(ERC20 _token, uint256 _cap) public returns(bytes32) {
+    function setParameters(IERC20 _token, uint256 _cap) public returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_token, _cap);
         parameters[paramsHash].token = _token;
         parameters[paramsHash].cap = _cap;
@@ -38,7 +38,7 @@ contract TokenCapGC {
      * @param _cap the cap to check the total supply against.
      * @return the calculated parameters hash
      */
-    function getParametersHash(ERC20 _token, uint256 _cap) public pure returns(bytes32) {
+    function getParametersHash(IERC20 _token, uint256 _cap) public pure returns(bytes32) {
         return (keccak256(abi.encodePacked(_token, _cap)));
     }
 
@@ -57,7 +57,7 @@ contract TokenCapGC {
      * @return bool which represents a success
      */
     function post(address, bytes32 _paramsHash, bytes32) public view returns(bool) {
-        if ((parameters[_paramsHash].token != ERC20(0)) &&
+        if ((parameters[_paramsHash].token != IERC20(0)) &&
             (parameters[_paramsHash].token.totalSupply() > parameters[_paramsHash].cap)) {
             return false;
         }
