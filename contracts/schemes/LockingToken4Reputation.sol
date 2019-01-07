@@ -61,7 +61,7 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      */
     function release(address _beneficiary, bytes32 _lockingId) public returns(bool) {
         uint256 amount = super._release(_beneficiary, _lockingId);
-        require(lockedTokens[_lockingId].transfer(_beneficiary, amount), "transfer should success");
+        require(lockedTokens[_lockingId].transfer(_beneficiary, amount), "transfer should succeed");
 
         return true;
     }
@@ -83,7 +83,7 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
         require(numerator > 0, "numerator should be > 0");
         require(denominator > 0, "denominator should be > 0");
 
-        require(_token.transferFrom(msg.sender, address(this), _amount), "transferFrom should success");
+        require(_token.transferFrom(msg.sender, address(this), _amount), "transferFrom should succeed");
 
         lockingId = super._lock(_amount, _period, msg.sender, numerator, denominator);
 

@@ -19,7 +19,7 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
         address _gc,
         bytes32 _params,
         bytes32 _voteToRemoveParams,
-        bytes32 _descriptionHash
+        string _descriptionHash
     );
 
     event RemoveGlobalConstraintsProposal(
@@ -27,7 +27,7 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _gc,
-        bytes32 _descriptionHash
+        string _descriptionHash
     );
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
@@ -135,7 +135,7 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
     address _gc,
     bytes32 _params,
     bytes32 _voteToRemoveParams,
-    bytes32 _descriptionHash)
+    string memory _descriptionHash)
     public
     returns(bytes32)
     {
@@ -176,7 +176,7 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
     * @param _descriptionHash proposal's description hash
     * @return bytes32 -the proposal id
     */
-    function proposeToRemoveGC(Avatar _avatar, address _gc, bytes32 _descriptionHash) public returns(bytes32) {
+    function proposeToRemoveGC(Avatar _avatar, address _gc, string memory _descriptionHash) public returns(bytes32) {
         Controller controller = Controller(_avatar.owner());
         require(controller.isGlobalConstraintRegistered(_gc, address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];

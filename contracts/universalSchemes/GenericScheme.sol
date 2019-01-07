@@ -16,7 +16,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         address indexed _avatar,
         bytes32 indexed _proposalId,
         bytes   _callData,
-        bytes32  _descriptionHash
+        string  _descriptionHash
     );
 
     event ProposalExecuted(
@@ -145,7 +145,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
-    function proposeCall(Avatar _avatar, bytes memory _callData, bytes32 _descriptionHash)
+    function proposeCall(Avatar _avatar, bytes memory _callData, string memory _descriptionHash)
     public
     returns(bytes32)
     {

@@ -19,14 +19,14 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
         address _scheme,
         bytes32 _parametersHash,
         bytes4 _permissions,
-        bytes32 _descriptionHash
+        string _descriptionHash
     );
 
     event RemoveSchemeProposal(address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _scheme,
-        bytes32 _descriptionHash
+        string _descriptionHash
     );
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
@@ -126,7 +126,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
         address _scheme,
         bytes32 _parametersHash,
         bytes4 _permissions,
-        bytes32 _descriptionHash
+        string memory _descriptionHash
     )
     public
     returns(bytes32)
@@ -172,7 +172,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
     * @param _descriptionHash proposal description hash
     * NB: not only registers the proposal, but also votes for it
     */
-    function proposeToRemoveScheme(Avatar _avatar, address _scheme, bytes32 _descriptionHash)
+    function proposeToRemoveScheme(Avatar _avatar, address _scheme, string memory _descriptionHash)
     public
     returns(bytes32)
     {

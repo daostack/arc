@@ -189,7 +189,7 @@ contract('Controller', accounts =>  {
                   helpers.assertVMException(ex);
               }
            }else{
-             //unregister should success
+             //unregister should succeed
             tx = await controller.unregisterScheme(unregisteredScheme,avatar.address,{ from: registeredScheme });
             assert.equal(tx.logs.length, 1);
             assert.equal(tx.logs[0].event, "UnregisterScheme");

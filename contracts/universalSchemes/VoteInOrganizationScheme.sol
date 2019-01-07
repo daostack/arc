@@ -18,7 +18,7 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
         IntVoteInterface _originalIntVote,
         bytes32 _originalProposalId,
         uint256 _vote,
-        bytes32 _descriptionHash
+        string _descriptionHash
     );
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param, bytes _callReturnValue);
@@ -123,7 +123,7 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
     IntVoteInterface _originalIntVote,
     bytes32 _originalProposalId,
     uint256 _vote,
-    bytes32 _descriptionHash)
+    string memory _descriptionHash)
     public
     returns(bytes32)
     {

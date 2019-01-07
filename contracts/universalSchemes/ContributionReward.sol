@@ -19,7 +19,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        bytes32 _contributionDescription,
+        string _contributionDescription,
         int256 _reputationChange,
         uint[5]  _rewards,
         ERC20 _externalToken,
@@ -150,7 +150,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     */
     function proposeContributionReward(
         Avatar _avatar,
-        bytes32 _contributionDescriptionHash,
+        string memory _contributionDescriptionHash,
         int256 _reputationChange,
         uint[5] memory _rewards,
         ERC20 _externalToken,
