@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.1-rc.3",
+  "version": "0.0.1-rc.4",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -69,7 +69,7 @@
     "arc"
   ],
   "engines": {
-    "node": ">=10.14.2"
+    "node": ">=10.15.0"
   },
   "author": "DAOstack (https://www.daostack.io)",
   "license": "GPL-3.0",

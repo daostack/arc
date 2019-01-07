@@ -3,7 +3,7 @@ dist: trusty
 language: node_js
 
 node_js:
-  - "10.14.2"
+  - "10.15.0"
 
 before_install:
 
