@@ -120,7 +120,7 @@ contract('ContributionReward', accounts => {
       assert.equal(tx.logs[0].event, "NewContributionProposal");
       assert.equal(await helpers.getValueFromLogs(tx, '_avatar',0), testSetup.org.avatar.address, "Wrong log: _avatar");
       assert.equal(await helpers.getValueFromLogs(tx, '_intVoteInterface',0), testSetup.contributionRewardParams.votingMachine.absoluteVote.address, "Wrong log: _intVoteInterface");
-      assert.equal(await helpers.getValueFromLogs(tx, '_contributionDescription',15), "description-hash", "Wrong log: _contributionDescription");
+      assert.equal(await helpers.getValueFromLogs(tx, '_descriptionHash',15), "description-hash", "Wrong log: _contributionDescription");
       assert.equal(await helpers.getValueFromLogs(tx, '_reputationChange',0), 10, "Wrong log: _reputationChange");
       var arr = await helpers.getValueFromLogs(tx, '_rewards',0);
       assert.equal(arr[0].words[0], 1, "Wrong log: _rewards");

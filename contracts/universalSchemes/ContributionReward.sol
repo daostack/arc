@@ -19,7 +19,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        string _contributionDescription,
+        string _descriptionHash,
         int256 _reputationChange,
         uint[5]  _rewards,
         IERC20 _externalToken,
@@ -137,7 +137,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     /**
     * @dev Submit a proposal for a reward for a contribution:
     * @param _avatar Avatar of the organization that the contribution was made for
-    * @param _contributionDescriptionHash A hash of the contribution's description
+    * @param _descriptionHash A hash of the proposal's description
     * @param _reputationChange - Amount of reputation change requested .Can be negative.
     * @param _rewards rewards array:
     *         rewards[0] - Amount of tokens requested per period
@@ -150,7 +150,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     */
     function proposeContributionReward(
         Avatar _avatar,
-        string memory _contributionDescriptionHash,
+        string memory _descriptionHash,
         int256 _reputationChange,
         uint[5] memory _rewards,
         IERC20 _externalToken,
@@ -196,7 +196,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
             address(_avatar),
             contributionId,
             address(controllerParams.intVote),
-            _contributionDescriptionHash,
+            _descriptionHash,
             _reputationChange,
             _rewards,
             _externalToken,
