@@ -14,7 +14,7 @@ contract OrganizationRegister is UniversalScheme {
 
     struct Parameters {
         uint256 fee;
-        ERC20 token;
+        IERC20 token;
         address beneficiary;
     }
 
@@ -33,7 +33,7 @@ contract OrganizationRegister is UniversalScheme {
     * @param _beneficiary  - the beneficiary payment address
     * @return bytes32 -the parameters hash
     */
-    function setParameters(ERC20 _token, uint256 _fee, address _beneficiary) public returns(bytes32) {
+    function setParameters(IERC20 _token, uint256 _fee, address _beneficiary) public returns(bytes32) {
         bytes32 paramsHash = getParametersHash(_token, _fee, _beneficiary);
         if (parameters[paramsHash].token == ERC20(0)) {
             parameters[paramsHash].token = _token;
@@ -50,7 +50,7 @@ contract OrganizationRegister is UniversalScheme {
     * @param _beneficiary  - the beneficiary payment address
     * @return bytes32 -the parameters hash
     */
-    function getParametersHash(ERC20 _token, uint256 _fee, address _beneficiary)
+    function getParametersHash(IERC20 _token, uint256 _fee, address _beneficiary)
     public pure returns(bytes32)
     {
         return (keccak256(abi.encodePacked(_token, _fee, _beneficiary)));

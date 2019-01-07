@@ -402,7 +402,7 @@ contract UController is ControllerInterface {
     * @param _avatar the organization avatar.
     * @return bool which represents a success
     */
-    function externalTokenTransfer(ERC20 _externalToken, address _to, uint256 _value, Avatar _avatar)
+    function externalTokenTransfer(IERC20 _externalToken, address _to, uint256 _value, Avatar _avatar)
     external
     onlyRegisteredScheme(address(_avatar))
     onlySubjectToConstraint("externalTokenTransfer", address(_avatar))
@@ -422,7 +422,12 @@ contract UController is ControllerInterface {
     * @param _avatar the organization avatar.
     * @return bool which represents a success
     */
-    function externalTokenTransferFrom(ERC20 _externalToken, address _from, address _to, uint256 _value, Avatar _avatar)
+    function externalTokenTransferFrom(
+    IERC20 _externalToken,
+    address _from,
+    address _to,
+    uint256 _value,
+    Avatar _avatar)
     external
     onlyRegisteredScheme(address(_avatar))
     onlySubjectToConstraint("externalTokenTransferFrom", address(_avatar))
@@ -439,7 +444,7 @@ contract UController is ControllerInterface {
     * @param _value the amount of ether (in Wei) which the approval is referring to.
     * @return bool which represents a success
     */
-    function externalTokenApproval(ERC20 _externalToken, address _spender, uint256 _value, Avatar _avatar)
+    function externalTokenApproval(IERC20 _externalToken, address _spender, uint256 _value, Avatar _avatar)
     external
     onlyRegisteredScheme(address(_avatar))
     onlySubjectToConstraint("externalTokenApproval", address(_avatar))

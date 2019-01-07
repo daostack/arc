@@ -19,10 +19,10 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        string _contributionDescription,
+        string _descriptionHash,
         int256 _reputationChange,
         uint[5]  _rewards,
-        ERC20 _externalToken,
+        IERC20 _externalToken,
         address _beneficiary
     );
 
@@ -54,7 +54,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         uint256 nativeTokenReward; // Reward asked in the native token of the organization.
         int256 reputationChange; // Organization reputation reward requested.
         uint256 ethReward;
-        ERC20 externalToken;
+        IERC20 externalToken;
         uint256 externalTokenReward;
         address payable beneficiary;
         uint256 periodLength;
@@ -137,7 +137,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     /**
     * @dev Submit a proposal for a reward for a contribution:
     * @param _avatar Avatar of the organization that the contribution was made for
-    * @param _contributionDescriptionHash A hash of the contribution's description
+    * @param _descriptionHash A hash of the proposal's description
     * @param _reputationChange - Amount of reputation change requested .Can be negative.
     * @param _rewards rewards array:
     *         rewards[0] - Amount of tokens requested per period
@@ -150,10 +150,10 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     */
     function proposeContributionReward(
         Avatar _avatar,
-        string memory _contributionDescriptionHash,
+        string memory _descriptionHash,
         int256 _reputationChange,
         uint[5] memory _rewards,
-        ERC20 _externalToken,
+        IERC20 _externalToken,
         address payable _beneficiary
     )
     public
@@ -196,7 +196,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
             address(_avatar),
             contributionId,
             address(controllerParams.intVote),
-            _contributionDescriptionHash,
+            _descriptionHash,
             _reputationChange,
             _rewards,
             _externalToken,
@@ -311,7 +311,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.externalTokenReward = 0;
 
-        if (proposal.externalToken != ERC20(0) && _proposal.externalTokenReward > 0) {
+        if (proposal.externalToken != IERC20(0) && _proposal.externalTokenReward > 0) {
             amount = periodsToPay.mul(_proposal.externalTokenReward);
             if (amount > 0) {
                 require(

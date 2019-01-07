@@ -35,8 +35,8 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
     // a SchemeProposal is a  proposal to add or remove a scheme to/from the an organization
     struct SchemeProposal {
         address scheme; //
+        bool addScheme; // true: add a scheme, false: remove a scheme.
         bytes32 parametersHash;
-        uint256 proposalType; // 1: add a scheme, 2: remove a scheme.
         bytes4 permissions;
     }
 
@@ -69,7 +69,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
             ControllerInterface controller = ControllerInterface(avatar.owner());
 
           // Add a scheme:
-            if (proposal.proposalType == 1) {
+            if (proposal.addScheme) {
                 require(controller.registerScheme(
                         proposal.scheme,
                         proposal.parametersHash,
@@ -78,7 +78,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
                 );
             }
           // Remove a scheme:
-            if (proposal.proposalType == 2) {
+            if (!proposal.addScheme) {
                 require(controller.unregisterScheme(proposal.scheme, address(avatar)));
             }
         }
@@ -132,7 +132,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
     returns(bytes32)
     {
         // propose
-        require(_scheme != address(0));
+        require(_scheme != address(0), "scheme cannot be zero");
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
         bytes32 proposalId = controllerParams.intVote.propose(
@@ -145,7 +145,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
         SchemeProposal memory proposal = SchemeProposal({
             scheme: _scheme,
             parametersHash: _parametersHash,
-            proposalType: 1,
+            addScheme: true,
             permissions: _permissions
         });
         emit NewSchemeProposal(
@@ -176,13 +176,12 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
     public
     returns(bytes32)
     {
+        require(_scheme != address(0), "scheme cannot be zero");
         bytes32 paramsHash = getParametersFromController(_avatar);
         Parameters memory params = parameters[paramsHash];
 
         IntVoteInterface intVote = params.intVote;
         bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, msg.sender, address(_avatar));
-
-        organizationsProposals[address(_avatar)][proposalId].proposalType = 2;
         organizationsProposals[address(_avatar)][proposalId].scheme = _scheme;
         emit RemoveSchemeProposal(address(_avatar), proposalId, address(intVote), _scheme, _descriptionHash);
         proposalsInfo[proposalId] = ProposalInfo({

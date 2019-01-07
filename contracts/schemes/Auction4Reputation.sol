@@ -35,7 +35,7 @@ contract Auction4Reputation is Ownable {
     uint256 public auctionReputationReward;
     uint256 public auctionPeriod;
     uint256 public redeemEnableTime;
-    ERC20 public token;
+    IERC20  public token;
     address public wallet;
 
     /**
@@ -62,7 +62,7 @@ contract Auction4Reputation is Ownable {
         uint256 _auctionPeriod,
         uint256 _numberOfAuctions,
         uint256 _redeemEnableTime,
-        ERC20 _token,
+        IERC20 _token,
         address _wallet)
     external
     onlyOwner

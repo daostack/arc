@@ -36,8 +36,8 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
     // The struct that holds the information of a global constraint proposed to be added or removed.
     struct GCProposal {
         address gc; // The address of the global constraint contract.
+        bool addGC; // true: add a GC, false: remove a GC.
         bytes32 params; // Parameters for global constraint.
-        uint256 proposalType; // 1: add a GC, 2: remove a GC.
         bytes32 voteToRemoveParams; // Voting parameters for removing this GC.
     }
 
@@ -76,12 +76,12 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
             ControllerInterface controller = ControllerInterface(avatar.owner());
 
         // Adding a GC
-            if (proposal.proposalType == 1) {
+            if (proposal.addGC) {
                 retVal = controller.addGlobalConstraint(proposal.gc, proposal.params, address(avatar));
                 voteToRemoveParams[address(avatar)][proposal.gc] = proposal.voteToRemoveParams;
             }
         // Removing a GC
-            if (proposal.proposalType == 2) {
+            if (!proposal.addGC) {
                 retVal = controller.removeGlobalConstraint(proposal.gc, address(avatar));
             }
         }
@@ -147,7 +147,7 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
         GCProposal memory proposal = GCProposal({
             gc: _gc,
             params: _params,
-            proposalType: 1,
+            addGC: true,
             voteToRemoveParams: _voteToRemoveParams
         });
 
@@ -191,7 +191,7 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
         GCProposal memory proposal = GCProposal({
             gc: _gc,
             params: 0,
-            proposalType: 2,
+            addGC: false,
             voteToRemoveParams: 0
         });
 
