@@ -1,7 +1,6 @@
 pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import { RealMath } from "../libs/RealMath.sol";
 import "../controller/ControllerInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
@@ -11,9 +10,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 contract Auction4Reputation is Ownable {
-    using SafeMath for uint;
-    using RealMath for int216;
-    using RealMath for int256;
+    using SafeMath for uint256;
 
     event Bid(address indexed _bidder, uint256 indexed _auctionId, uint256 _amount);
     event Redeem(uint256 indexed _auctionId, address indexed _beneficiary, uint256 _amount);
@@ -98,8 +95,8 @@ contract Auction4Reputation is Ownable {
         uint256 bid = auction.bids[_beneficiary];
         require(bid > 0, "bidding amount should be > 0");
         auction.bids[_beneficiary] = 0;
-        int256 repRelation = int216(bid).toReal().mul(int216(auctionReputationReward).toReal());
-        reputation = uint256(repRelation.div(int216(auction.totalBid).toReal()).fromReal());
+        uint256 repRelation = bid.mul(auctionReputationReward);
+        reputation = repRelation.div(auction.totalBid);
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
