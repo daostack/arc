@@ -159,7 +159,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     public
     returns(bytes32)
     {
-        validateProposalParams(_rewards, _reputationChange);
+        validateProposalParams(_reputationChange, _rewards);
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
         // Pay fees for submitting the contribution:
         if (controllerParams.orgNativeTokenFee > 0) {
@@ -424,19 +424,36 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         return organizationsProposals[_avatar][_proposalId].executionTime;
     }
 
-    function validateProposalParams(uint[5] memory _rewards, int256 _reputationChange) private pure {
+    /**
+    * @dev validateProposalParams validate proposal's rewards parameters.
+    * The function check for potential overflow upon proposal's redeem.
+    * The function reverts if the params are not valid.
+    * @param _reputationChange - Amount of reputation change requested .Can be negative.
+    * @param _rewards rewards array:
+    *         rewards[0] - Amount of tokens requested per period
+    *         rewards[1] - Amount of ETH requested per period
+    *         rewards[2] - Amount of external tokens requested per period
+    *         rewards[3] - Period length - if set to zero it allows immediate redeeming after execution.
+    *         rewards[4] - Number of periods
+    */
+    function validateProposalParams(int256 _reputationChange, uint[5] memory _rewards) private pure {
         require(((_rewards[3] > 0) || (_rewards[4] == 1)), "periodLength equal 0 require numberOfPeriods to be 1");
         if (_rewards[4] > 0) {
             // This is the only case of overflow not detected by the check below
-            require(!(int(_rewards[4]) == -1 && _reputationChange == (-2**255)));
+            require(!(int(_rewards[4]) == -1 && _reputationChange == (-2**255)),
+            "numberOfPeriods * _reputationChange will overflow");
            //check that numberOfPeriods * _reputationChange will not overflow
-            require((int(_rewards[4]) * _reputationChange) / int(_rewards[4]) == _reputationChange);
+            require((int(_rewards[4]) * _reputationChange) / int(_rewards[4]) == _reputationChange,
+            "numberOfPeriods * reputationChange will overflow");
             //check that numberOfPeriods * tokenReward will not overflow
-            require((_rewards[4] * _rewards[0]) / _rewards[4] == _rewards[0]);
+            require((_rewards[4] * _rewards[0]) / _rewards[4] == _rewards[0],
+            "numberOfPeriods * tokenReward will overflow");
             //check that numberOfPeriods * ethReward will not overflow
-            require((_rewards[4] * _rewards[1]) / _rewards[4] == _rewards[1]);
+            require((_rewards[4] * _rewards[1]) / _rewards[4] == _rewards[1],
+            "numberOfPeriods * ethReward will overflow");
             //check that numberOfPeriods * texternalTokenReward will not overflow
-            require((_rewards[4] * _rewards[2]) / _rewards[4] == _rewards[2]);
+            require((_rewards[4] * _rewards[2]) / _rewards[4] == _rewards[2],
+            "numberOfPeriods * texternalTokenReward will overflow");
         }
     }
 
