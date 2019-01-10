@@ -1,7 +1,6 @@
 pragma solidity ^0.5.2;
 
 import "../controller/ControllerInterface.sol";
-import { RealMath } from "../libs/RealMath.sol";
 
 
 /**
@@ -9,9 +8,7 @@ import { RealMath } from "../libs/RealMath.sol";
  */
 
 contract Locking4Reputation {
-    using SafeMath for uint;
-    using RealMath for int216;
-    using RealMath for int256;
+    using SafeMath for uint256;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
     event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
@@ -51,8 +48,8 @@ contract Locking4Reputation {
         require(scores[_beneficiary] > 0, "score should be > 0");
         uint256 score = scores[_beneficiary];
         scores[_beneficiary] = 0;
-        int256 repRelation = int216(score).toReal().mul(int216(reputationReward).toReal());
-        reputation = uint256(repRelation.div(int216(totalScore).toReal()).fromReal());
+        uint256 repRelation = score.mul(reputationReward);
+        reputation = repRelation.div(totalScore);
 
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);

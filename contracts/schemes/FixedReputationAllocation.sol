@@ -1,7 +1,6 @@
 pragma solidity ^0.5.2;
 
 import "../controller/ControllerInterface.sol";
-import { RealMath } from "../libs/RealMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
@@ -11,9 +10,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * beneficiaries.
  */
 contract FixedReputationAllocation is Ownable {
-    using SafeMath for uint;
-    using RealMath for int216;
-    using RealMath for int256;
+    using SafeMath for uint256;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
     event BeneficiaryAddressAdded(address indexed _beneficiary);
@@ -94,6 +91,6 @@ contract FixedReputationAllocation is Ownable {
     function enable() public onlyOwner {
         isEnable = true;
         // Calculate beneficiary reward
-        beneficiaryReward = uint256(int216(reputationReward).div(int256(numberOfBeneficiaries)).fromReal());
+        beneficiaryReward = reputationReward.div(numberOfBeneficiaries);
     }
 }
