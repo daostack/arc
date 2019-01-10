@@ -7,7 +7,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /**
  * @title DAOToken, base on zeppelin contract.
- * @dev ERC20 compatible token. It is a mintable, destructible, burnable token.
+ * @dev ERC20 compatible token. It is a mintable, burnable token.
  */
 
 contract DAOToken is ERC20, ERC20Burnable, Ownable {

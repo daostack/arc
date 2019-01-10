@@ -177,7 +177,7 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
     * @return bytes32 -the proposal id
     */
     function proposeToRemoveGC(Avatar _avatar, address _gc, string memory _descriptionHash) public returns(bytes32) {
-        Controller controller = Controller(_avatar.owner());
+        ControllerInterface controller = ControllerInterface(_avatar.owner());
         require(controller.isGlobalConstraintRegistered(_gc, address(_avatar)));
         Parameters memory params = parameters[getParametersFromController(_avatar)];
         IntVoteInterface intVote = params.intVote;
