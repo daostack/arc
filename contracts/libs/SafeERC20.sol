@@ -23,28 +23,15 @@ library SafeERC20 {
     bytes4 constant private TRANSFERFROM_SELECTOR = bytes4(keccak256(bytes("transferFrom(address,address,uint256)")));
     bytes4 constant private APPROVE_SELECTOR = bytes4(keccak256(bytes("approve(address,uint256)")));
 
-    function handleReturnData(bytes memory returnValue) internal pure returns (bool result) {
-        if (returnValue.length == 0) {
-            result = true;
-        } else if (returnValue.length == 32) {
-          // solhint-disable-next-line no-inline-assembly
-            assembly {
-            result := mload(add(returnValue, 32))
-            }
-        } else {
-            revert();
-        }
-    }
-
     function safeTransfer(address _erc20Addr, address _to, uint256 _value) internal {
 
         // Must be a contract addr first!
         require(_erc20Addr.isContract());
 
-        // call return false when something wrong
         (bool success, bytes memory returnValue) =
         // solhint-disable-next-line avoid-low-level-calls
         _erc20Addr.call(abi.encodeWithSelector(TRANSFER_SELECTOR, _to, _value));
+        // call return false when something wrong
         require(success);
 
         // handle returndata
@@ -56,10 +43,10 @@ library SafeERC20 {
         // Must be a contract addr first!
         require(_erc20Addr.isContract());
 
-        // call return false when something wrong
         (bool success, bytes memory returnValue) =
         // solhint-disable-next-line avoid-low-level-calls
         _erc20Addr.call(abi.encodeWithSelector(TRANSFERFROM_SELECTOR, _from, _to, _value));
+        // call return false when something wrong
         require(success);
 
         // handle returndata
@@ -75,13 +62,26 @@ library SafeERC20 {
         // or when resetting it to zero.
         require((_value == 0) || (IERC20(_erc20Addr).allowance(msg.sender, _spender) == 0));
 
-        // call return false when something wrong
         (bool success, bytes memory returnValue) =
         // solhint-disable-next-line avoid-low-level-calls
         _erc20Addr.call(abi.encodeWithSelector(APPROVE_SELECTOR, _spender, _value));
+        // call return false when something wrong
         require(success);
 
         // handle returndata
         require(handleReturnData(returnValue));
+    }
+
+    function handleReturnData(bytes memory returnValue) private pure returns (bool result) {
+        if (returnValue.length == 0) {
+            result = true;
+        } else if (returnValue.length == 32) {
+          // solhint-disable-next-line no-inline-assembly
+            assembly {
+            result := mload(add(returnValue, 32))
+            }
+        } else {
+            revert();
+        }
     }
 }
