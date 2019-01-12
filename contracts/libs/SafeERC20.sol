@@ -19,6 +19,10 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 library SafeERC20 {
     using Address for address;
 
+    bytes4 constant private TRANSFER_SELECTOR = bytes4(keccak256(bytes("transfer(address,uint256)")));
+    bytes4 constant private TRANSFERFROM_SELECTOR = bytes4(keccak256(bytes("transferFrom(address,address,uint256)")));
+    bytes4 constant private APPROVE_SELECTOR = bytes4(keccak256(bytes("approve(address,uint256)")));
+
     function handleReturnData(bytes memory returnValue) internal pure returns (bool result) {
         if (returnValue.length == 0) {
             result = true;
@@ -40,7 +44,7 @@ library SafeERC20 {
         // call return false when something wrong
         (bool success, bytes memory returnValue) =
         // solhint-disable-next-line avoid-low-level-calls
-        _erc20Addr.call(abi.encodeWithSignature("transfer(address,uint256)", _to, _value));
+        _erc20Addr.call(abi.encodeWithSelector(TRANSFER_SELECTOR, _to, _value));
         require(success);
 
         // handle returndata
@@ -55,7 +59,7 @@ library SafeERC20 {
         // call return false when something wrong
         (bool success, bytes memory returnValue) =
         // solhint-disable-next-line avoid-low-level-calls
-        _erc20Addr.call(abi.encodeWithSignature("transferFrom(address,address,uint256)", _from, _to, _value));
+        _erc20Addr.call(abi.encodeWithSelector(TRANSFERFROM_SELECTOR, _from, _to, _value));
         require(success);
 
         // handle returndata
@@ -74,7 +78,7 @@ library SafeERC20 {
         // call return false when something wrong
         (bool success, bytes memory returnValue) =
         // solhint-disable-next-line avoid-low-level-calls
-        _erc20Addr.call(abi.encodeWithSignature("approve(address,uint256)", _spender, _value));
+        _erc20Addr.call(abi.encodeWithSelector(APPROVE_SELECTOR, _spender, _value));
         require(success);
 
         // handle returndata
