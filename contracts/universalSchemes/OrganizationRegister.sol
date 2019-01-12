@@ -1,6 +1,7 @@
 pragma solidity ^0.5.2;
 
 import "./UniversalScheme.sol";
+import "../libs/SafeERC20.sol";
 
 /**
  * @title A universal organization registry.
@@ -8,9 +9,9 @@ import "./UniversalScheme.sol";
  * Other organizations can then add and promote themselves on this registry.
  */
 
-
 contract OrganizationRegister is UniversalScheme {
     using SafeMath for uint;
+    using SafeERC20 for address;
 
     struct Parameters {
         uint256 fee;
@@ -72,7 +73,7 @@ contract OrganizationRegister is UniversalScheme {
         // Pay promotion, if the org was not listed the minimum is the fee:
         require((organizationsRegistry[address(_avatar)][_record] > 0) || (_amount >= params.fee));
 
-        require(params.token.transferFrom(msg.sender, params.beneficiary, _amount));
+        address(params.token).safeTransferFrom(msg.sender, params.beneficiary, _amount);
         if (organizationsRegistry[address(_avatar)][_record] == 0) {
             emit OrgAdded(address(_avatar), _record);
         }
