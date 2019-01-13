@@ -33,9 +33,8 @@ library SafeERC20 {
         _erc20Addr.call(abi.encodeWithSelector(TRANSFER_SELECTOR, _to, _value));
         // call return false when something wrong
         require(success);
-
-        // handle returndata
-        require(handleReturnData(returnValue));
+        //check return value
+        require(returnValue.length == 0 || (returnValue.length == 32 && (returnValue[31] != 0)));
     }
 
     function safeTransferFrom(address _erc20Addr, address _from, address _to, uint256 _value) internal {
@@ -48,9 +47,8 @@ library SafeERC20 {
         _erc20Addr.call(abi.encodeWithSelector(TRANSFERFROM_SELECTOR, _from, _to, _value));
         // call return false when something wrong
         require(success);
-
-        // handle returndata
-        require(handleReturnData(returnValue));
+        //check return value
+        require(returnValue.length == 0 || (returnValue.length == 32 && (returnValue[31] != 0)));
     }
 
     function safeApprove(address _erc20Addr, address _spender, uint256 _value) internal {
@@ -67,21 +65,7 @@ library SafeERC20 {
         _erc20Addr.call(abi.encodeWithSelector(APPROVE_SELECTOR, _spender, _value));
         // call return false when something wrong
         require(success);
-
-        // handle returndata
-        require(handleReturnData(returnValue));
-    }
-
-    function handleReturnData(bytes memory returnValue) private pure returns (bool result) {
-        if (returnValue.length == 0) {
-            result = true;
-        } else if (returnValue.length == 32) {
-          // solhint-disable-next-line no-inline-assembly
-            assembly {
-            result := mload(add(returnValue, 32))
-            }
-        } else {
-            revert();
-        }
+        //check return value
+        require(returnValue.length == 0 || (returnValue.length == 32 && (returnValue[31] != 0)));
     }
 }

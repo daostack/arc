@@ -19,7 +19,6 @@ contract('safe erc 20', accounts => {
       var safeERC20Mock = await SafeERC20Mock.new(badERC20.address);
       try {
         await safeERC20Mock.transfer(accounts[1],123);
-
         assert(false, "transfer bad token without the fix revert");
       } catch(error) {
         helpers.assertVMException(error);

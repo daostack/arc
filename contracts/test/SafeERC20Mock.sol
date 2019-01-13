@@ -15,10 +15,7 @@ contract SafeERC20Mock {
     }
 
     function transfer(address _to, uint256 _value) public returns(bool) {
-        (, bytes memory returnValue) =
-        // solhint-disable-next-line avoid-low-level-calls
-        token.call(abi.encodeWithSignature("transfer(address,uint256)", _to, _value));
-        require(returnValue.length > 0);
+        require(IERC20(token).transfer(_to, _value));
     }
 
     function transferWithFix(address _to, uint256 _value) public returns(bool) {
