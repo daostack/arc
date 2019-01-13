@@ -10,7 +10,7 @@ Arc is a modular, upgradeable platform that allows for a rapid natural selection
 ![Arc Structure Diagram](https://user-images.githubusercontent.com/5414803/51004260-d7252180-1507-11e9-9be7-2018dbc7452d.jpeg)
 *<p align="center">Figure 1: Arc's structure</p>*
 
-**Every box in Figure 1 represents a smart contract** (to be precise, a proxy + logic contract).
+**Every box in Figure 1 represents a smart contract.**
 
 The Token contract probably does not require an explanation, being the most popular use-case of the Ethereum network.
 
