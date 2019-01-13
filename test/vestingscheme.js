@@ -272,12 +272,12 @@ contract('VestingScheme', accounts => {
       var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                      accounts[0],
                                                                      accounts[1],
-                                                                     blockNumber,
+                                                                     [blockNumber,
                                                                      amountPerPeriod,
                                                                      2,
                                                                      numberOfAgreedPeriods,
                                                                      11,
-                                                                     0,
+                                                                     0],
                                                                      [],{from:accounts[1]});
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewVestedAgreement");
@@ -288,12 +288,12 @@ contract('VestingScheme', accounts => {
       tx = await testSetup.vestingScheme.createVestedAgreement( testSetup.standardTokenMock.address,
                                                                 accounts[0],
                                                                      accounts[1],
-                                                                     blockNumber,
+                                                                     [blockNumber,
                                                                      amountPerPeriod,
                                                                      2,
                                                                      numberOfAgreedPeriods,
                                                                      11,
-                                                                     0,
+                                                                     0],
                                                                      [],
                                                                      {from:accounts[1]});
       assert.equal(tx.logs.length, 1);
@@ -315,12 +315,12 @@ contract('VestingScheme', accounts => {
        await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                      accounts[0],
                                                                      accounts[1],
-                                                                     blockNumber,
+                                                                     [blockNumber,
                                                                      amountPerPeriod,
                                                                      periodLength,
                                                                      numberOfAgreedPeriods,
                                                                      11,
-                                                                     0,
+                                                                     0],
                                                                      [],{from:accounts[1]});
 
       assert(false,"createVestedAgreement should fail - due to periodLength == 0");
@@ -339,12 +339,12 @@ contract('VestingScheme', accounts => {
        await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                       accounts[0],
                                                                       accounts[1],
-                                                                      blockNumber,
+                                                                      [blockNumber,
                                                                       amountPerPeriod,
                                                                       2,
                                                                       numberOfAgreedPeriods,
                                                                       11,
-                                                                      0,
+                                                                      0],
                                                                       [],{from:accounts[1]});
        assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.vestingScheme.address),amountPerPeriod*numberOfAgreedPeriods);
       });
@@ -366,12 +366,12 @@ contract('VestingScheme', accounts => {
           await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                          accounts[0],
                                                                          accounts[1],
-                                                                         blockNumber,
+                                                                         [blockNumber,
                                                                          amountPerPeriod,
                                                                          2,
                                                                          numberOfAgreedPeriods,
                                                                          11,
-                                                                         _signaturesReqToCancel,
+                                                                         _signaturesReqToCancel],
                                                                          _signersArray,{from:accounts[1]});
          assert(false,"createVestedAgreement should fail - due to _signaturesReqToCancel > _signersArray.length !");
         }catch(ex){
@@ -390,12 +390,12 @@ contract('VestingScheme', accounts => {
         await testSetup.vestingScheme.createVestedAgreement(testSetup.standardTokenMock.address,
           accounts[0],
           accounts[1],
-          blockNumber,
+          [blockNumber,
           amountPerPeriod,
           periodLength,
           numberOfAgreedPeriods,
           11,
-          0, [], {
+          0], [], {
             from: accounts[1]
           });
 
@@ -419,12 +419,12 @@ contract('VestingScheme', accounts => {
      var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                     accounts[0],
                                                                     accounts[1],
-                                                                    blockNumber,
+                                                                    [blockNumber,
                                                                     amountPerPeriod,
                                                                     2,
                                                                     numberOfAgreedPeriods,
                                                                     11,
-                                                                    _signaturesReqToCancel,
+                                                                    _signaturesReqToCancel],
                                                                     _signersArray,{from:accounts[1]});
      var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
      assert.equal(agreementId,0);
@@ -447,12 +447,12 @@ contract('VestingScheme', accounts => {
       var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                      accounts[0],
                                                                      accounts[1],
-                                                                     blockNumber,
+                                                                     [blockNumber,
                                                                      amountPerPeriod,
                                                                      2,
                                                                      numberOfAgreedPeriods,
                                                                      11,
-                                                                     _signaturesReqToCancel,
+                                                                     _signaturesReqToCancel],
                                                                      _signersArray,{from:accounts[1]});
       var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
       try{
@@ -478,12 +478,12 @@ contract('VestingScheme', accounts => {
        var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                       accounts[0],
                                                                       accounts[1],
-                                                                      blockNumber,
+                                                                      [blockNumber,
                                                                       amountPerPeriod,
                                                                       2,
                                                                       numberOfAgreedPeriods,
                                                                       11,
-                                                                      _signaturesReqToCancel,
+                                                                      _signaturesReqToCancel],
                                                                       _signersArray,{from:accounts[1]});
        var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
        try{
@@ -509,12 +509,12 @@ contract('VestingScheme', accounts => {
         var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                        accounts[0],
                                                                        accounts[1],
-                                                                       blockNumber,
+                                                                       [blockNumber,
                                                                        amountPerPeriod,
                                                                        2,
                                                                        numberOfAgreedPeriods,
                                                                        11,
-                                                                       _signaturesReqToCancel,
+                                                                       _signaturesReqToCancel],
                                                                        _signersArray,{from:accounts[1]});
         var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
         await testSetup.vestingScheme.signToCancelAgreement(agreementId);
@@ -542,12 +542,12 @@ contract('VestingScheme', accounts => {
        var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                       accounts[0],
                                                                       returnOnCancelAddress,
-                                                                      blockNumber,
+                                                                      [blockNumber,
                                                                       amountPerPeriod,
                                                                       2,
                                                                       numberOfAgreedPeriods,
                                                                       11,
-                                                                      _signaturesReqToCancel,
+                                                                      _signaturesReqToCancel],
                                                                       _signersArray,{from:accounts[1]});
        var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
        tx = await testSetup.vestingScheme.signToCancelAgreement(agreementId);
@@ -580,12 +580,12 @@ contract('VestingScheme', accounts => {
          var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                         accounts[0],
                                                                         accounts[1],
-                                                                        blockNumber,
+                                                                        [blockNumber,
                                                                         amountPerPeriod,
                                                                         2,
                                                                         numberOfAgreedPeriods,
                                                                         11,
-                                                                        _signaturesReqToCancel,
+                                                                        _signaturesReqToCancel],
                                                                         _signersArray,{from:accounts[1]});
          var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
          assert.equal(agreementId,0);
@@ -618,12 +618,12 @@ contract('VestingScheme', accounts => {
           var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                          accounts[0],
                                                                          accounts[1],
-                                                                         blockNumber,
+                                                                         [blockNumber,
                                                                          amountPerPeriod,
                                                                          2,
                                                                          numberOfAgreedPeriods,
                                                                          11,
-                                                                         _signaturesReqToCancel,
+                                                                         _signaturesReqToCancel],
                                                                          _signersArray,{from:accounts[1]});
           var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
           assert.equal(agreementId,0);
@@ -654,12 +654,12 @@ contract('VestingScheme', accounts => {
            var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                           accounts[0],
                                                                           accounts[1],
-                                                                          blockNumber,
+                                                                          [blockNumber,
                                                                           amountPerPeriod,
                                                                           2,
                                                                           numberOfAgreedPeriods,
                                                                           11,
-                                                                          _signaturesReqToCancel,
+                                                                          _signaturesReqToCancel],
                                                                           _signersArray,{from:accounts[1]});
            var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
            assert.equal(agreementId,0);
@@ -691,12 +691,12 @@ contract('VestingScheme', accounts => {
             var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                            accounts[0],
                                                                            accounts[1],
-                                                                           blockNumber,
+                                                                           [blockNumber,
                                                                            amountPerPeriod,
                                                                            2,
                                                                            numberOfAgreedPeriods,
                                                                            11,
-                                                                           _signaturesReqToCancel,
+                                                                           _signaturesReqToCancel],
                                                                            _signersArray,{from:accounts[1]});
             var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
             assert.equal(agreementId,0);
@@ -727,12 +727,12 @@ contract('VestingScheme', accounts => {
        var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                       beneficiary,
                                                                       accounts[1],
-                                                                      startingBlock,
+                                                                      [startingBlock,
                                                                       amountPerPeriod,
                                                                       periodLength,
                                                                       numberOfAgreedPeriods,
                                                                       cliffInPeriods,
-                                                                      _signaturesReqToCancel,
+                                                                      _signaturesReqToCancel],
                                                                       _signersArray,{from:accounts[1]});
        var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
        tx = await testSetup.vestingScheme.collect(agreementId,{from:beneficiary});
@@ -761,12 +761,12 @@ contract('VestingScheme', accounts => {
         var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                        beneficiary,
                                                                        accounts[1],
-                                                                       startingBlock,
+                                                                       [startingBlock,
                                                                        amountPerPeriod,
                                                                        periodLength,
                                                                        numberOfAgreedPeriods,
                                                                        cliffInPeriods,
-                                                                       _signaturesReqToCancel,
+                                                                       _signaturesReqToCancel],
                                                                        _signersArray,{from:accounts[1]});
         var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
         tx = await testSetup.vestingScheme.collect(agreementId,{from:beneficiary});
@@ -796,12 +796,12 @@ contract('VestingScheme', accounts => {
       var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                      beneficiary,
                                                                      accounts[1],
-                                                                     startingBlock,
+                                                                     [startingBlock,
                                                                      amountPerPeriod,
                                                                      periodLength,
                                                                      numberOfAgreedPeriods,
                                                                      cliffInPeriods,
-                                                                     _signaturesReqToCancel,
+                                                                     _signaturesReqToCancel],
                                                                      _signersArray,{from:accounts[1]});
       var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
       try{
@@ -830,12 +830,12 @@ contract('VestingScheme', accounts => {
        var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                       beneficiary,
                                                                       accounts[1],
-                                                                      startingBlock,
+                                                                      [startingBlock,
                                                                       amountPerPeriod,
                                                                       periodLength,
                                                                       numberOfAgreedPeriods,
                                                                       cliffInPeriods,
-                                                                      _signaturesReqToCancel,
+                                                                      _signaturesReqToCancel],
                                                                       _signersArray,{from:accounts[1]});
        var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
        try{
@@ -865,12 +865,12 @@ contract('VestingScheme', accounts => {
         var tx = await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                        beneficiary,
                                                                        accounts[1],
-                                                                       startingBlock,
+                                                                      [startingBlock,
                                                                        amountPerPeriod,
                                                                        periodLength,
                                                                        numberOfAgreedPeriods,
                                                                        cliffInPeriods,
-                                                                       _signaturesReqToCancel,
+                                                                       _signaturesReqToCancel],
                                                                        _signersArray,{from:accounts[1]});
         var agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
         await testSetup.vestingScheme.collect(agreementId,{from:beneficiary});
@@ -897,12 +897,12 @@ contract('VestingScheme', accounts => {
          await testSetup.vestingScheme.createVestedAgreement(  testSetup.standardTokenMock.address,
                                                                         beneficiary,
                                                                         accounts[1],
-                                                                        startingBlock,
+                                                                        [startingBlock,
                                                                         amountPerPeriod,
                                                                         periodLength,
                                                                         numberOfAgreedPeriods,
                                                                         cliffInPeriods,
-                                                                        _signaturesReqToCancel,
+                                                                        _signaturesReqToCancel],
                                                                         _signersArray,{from:accounts[1]});
          for (i=0;i<numberOfAgreedPeriods;i++){
           await testSetup.vestingScheme.collect(0,{from:beneficiary});
