@@ -1,6 +1,7 @@
 /*
 
-badERC20 POC Fix by SECBIT Team
+SafeERC20 by daostack.
+The code is based on a fix by SECBIT Team.
 
 USE WITH CAUTION & NO WARRANTY
 
