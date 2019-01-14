@@ -3,7 +3,7 @@ pragma solidity ^0.5.2;
 import "./Locking4Reputation.sol";
 import "./PriceOracleInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "../libs/SafeERC20.sol";
 
 
 /**
@@ -11,10 +11,11 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
  */
 
 contract LockingToken4Reputation is Locking4Reputation, Ownable {
+    using SafeERC20 for address;
 
     PriceOracleInterface public priceOracleContract;
     //      lockingId => token
-    mapping(bytes32   => IERC20) public lockedTokens;
+    mapping(bytes32   => address) public lockedTokens;
 
     event LockToken(bytes32 indexed _lockingId, address indexed _token, uint256 _numerator, uint256 _denominator);
 
@@ -61,7 +62,7 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      */
     function release(address _beneficiary, bytes32 _lockingId) public returns(bool) {
         uint256 amount = super._release(_beneficiary, _lockingId);
-        require(lockedTokens[_lockingId].transfer(_beneficiary, amount), "transfer should succeed");
+        lockedTokens[_lockingId].safeTransfer(_beneficiary, amount);
 
         return true;
     }
@@ -73,22 +74,22 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
      * @param _token the token to lock - this should be whitelisted at the priceOracleContract
      * @return lockingId
      */
-    function lock(uint256 _amount, uint256 _period, IERC20 _token) public returns(bytes32 lockingId) {
+    function lock(uint256 _amount, uint256 _period, address _token) public returns(bytes32 lockingId) {
 
         uint256 numerator;
         uint256 denominator;
 
-        (numerator, denominator) = priceOracleContract.getPrice(address(_token));
+        (numerator, denominator) = priceOracleContract.getPrice(_token);
 
         require(numerator > 0, "numerator should be > 0");
         require(denominator > 0, "denominator should be > 0");
 
-        require(_token.transferFrom(msg.sender, address(this), _amount), "transferFrom should succeed");
+        _token.safeTransferFrom(msg.sender, address(this), _amount);
 
         lockingId = super._lock(_amount, _period, msg.sender, numerator, denominator);
 
         lockedTokens[lockingId] = _token;
 
-        emit LockToken(lockingId, address(_token), numerator, denominator);
+        emit LockToken(lockingId, _token, numerator, denominator);
     }
 }

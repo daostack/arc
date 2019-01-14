@@ -3,6 +3,7 @@ pragma solidity ^0.5.2;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/ControllerInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../libs/SafeERC20.sol";
 
 /**
  * @title A scheme for conduct ERC20 Tokens auction for reputation
@@ -11,6 +12,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract Auction4Reputation is Ownable {
     using SafeMath for uint256;
+    using SafeERC20 for address;
 
     event Bid(address indexed _bidder, uint256 indexed _auctionId, uint256 _amount);
     event Redeem(uint256 indexed _auctionId, address indexed _beneficiary, uint256 _amount);
@@ -32,7 +34,7 @@ contract Auction4Reputation is Ownable {
     uint256 public auctionReputationReward;
     uint256 public auctionPeriod;
     uint256 public redeemEnableTime;
-    IERC20  public token;
+    IERC20 public token;
     address public wallet;
 
     /**
@@ -116,7 +118,7 @@ contract Auction4Reputation is Ownable {
         require(now <= auctionsEndTime, "bidding should be within the allowed bidding period");
         // solhint-disable-next-line not-rely-on-time
         require(now >= auctionsStartTime, "bidding is enable only after bidding auctionsStartTime");
-        require(token.transferFrom(msg.sender, address(this), _amount), "transferFrom should succeed");
+        address(token).safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
         auctionId = (now - auctionsStartTime) / auctionPeriod;
         Auction storage auction = auctions[auctionId];
@@ -143,7 +145,7 @@ contract Auction4Reputation is Ownable {
       // solhint-disable-next-line not-rely-on-time
         require(now > auctionsEndTime, "now > auctionsEndTime");
         uint256 tokenBalance = token.balanceOf(address(this));
-        require(token.transfer(wallet, tokenBalance), "transfer should succeed");
+        address(token).safeTransfer(wallet, tokenBalance);
     }
 
 }

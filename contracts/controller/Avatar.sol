@@ -4,14 +4,14 @@ import "@daostack/infra/contracts/Reputation.sol";
 import "./DAOToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
+import "../libs/SafeERC20.sol";
 
 
 /**
  * @title An Avatar holds tokens, reputation and ether for a controller
  */
 contract Avatar is Ownable {
-    using SafeERC20 for IERC20;
+    using SafeERC20 for address;
 
     string public orgName;
     DAOToken public nativeToken;
@@ -21,7 +21,7 @@ contract Avatar is Ownable {
     event SendEther(uint256 _amountInWei, address indexed _to);
     event ExternalTokenTransfer(address indexed _externalToken, address indexed _to, uint256 _value);
     event ExternalTokenTransferFrom(address indexed _externalToken, address _from, address _to, uint256 _value);
-    event ExternalTokenApproval(IERC20 indexed _externalToken, address _spender, uint256 _value);
+    event ExternalTokenApproval(address indexed _externalToken, address _spender, uint256 _value);
     event ReceiveEther(address indexed _sender, uint256 _value);
 
     /**
@@ -79,7 +79,7 @@ contract Avatar is Ownable {
     function externalTokenTransfer(IERC20 _externalToken, address _to, uint256 _value)
     public onlyOwner returns(bool)
     {
-        _externalToken.safeTransfer(_to, _value);
+        address(_externalToken).safeTransfer(_to, _value);
         emit ExternalTokenTransfer(address(_externalToken), _to, _value);
         return true;
     }
@@ -100,7 +100,7 @@ contract Avatar is Ownable {
     )
     public onlyOwner returns(bool)
     {
-        _externalToken.safeTransferFrom(_from, _to, _value);
+        address(_externalToken).safeTransferFrom(_from, _to, _value);
         emit ExternalTokenTransferFrom(address(_externalToken), _from, _to, _value);
         return true;
     }
@@ -116,8 +116,8 @@ contract Avatar is Ownable {
     function externalTokenApproval(IERC20 _externalToken, address _spender, uint256 _value)
     public onlyOwner returns(bool)
     {
-        require(_externalToken.approve(_spender, _value), "approve must succeed");
-        emit ExternalTokenApproval(_externalToken, _spender, _value);
+        address(_externalToken).safeApprove(_spender, _value);
+        emit ExternalTokenApproval(address(_externalToken), _spender, _value);
         return true;
     }
 
