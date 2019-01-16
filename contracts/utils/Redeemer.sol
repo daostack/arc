@@ -2,6 +2,7 @@ pragma solidity ^0.5.2;
 
 import "../universalSchemes/ContributionReward.sol";
 import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 
 contract Redeemer {
@@ -96,7 +97,7 @@ contract Redeemer {
         periodsToPay = contributionReward.getPeriodsToPay(_proposalId, address(_avatar), 3);
         externalTokenReward = periodsToPay.mul(externalTokenReward);
         if ((externalTokenReward == 0) ||
-            (ERC20(externalTokenAddress).balanceOf(address(_avatar)) < externalTokenReward)) {
+            (IERC20(externalTokenAddress).balanceOf(address(_avatar)) < externalTokenReward)) {
             whatToRedeem[3] = false;
         } else {
             whatToRedeem[3] = true;
