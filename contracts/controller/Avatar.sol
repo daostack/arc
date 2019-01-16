@@ -128,8 +128,8 @@ contract Avatar is Ownable {
     * @return bool which represents a success
     */
     function metaData(string memory _metaData) public onlyOwner returns(bool) {
-      emit MetaData(_metaData);
-      return true;
+        emit MetaData(_metaData);
+        return true;
     }
 
 
