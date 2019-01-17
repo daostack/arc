@@ -4,6 +4,12 @@ require("babel-register")({
   "plugins": ["syntax-async-functions","transform-regenerator"]
 });
 
+var HDWalletProvider = require("truffle-hdwallet-provider");
+
+var mnemonic = "account mnemonic ...";
+var provideUrl = "https://kovan.infura.io/v3/....";
+
+
 module.exports = {
   networks: {
     live: {
@@ -26,9 +32,10 @@ module.exports = {
     },
     kovan: {
       network_id: 42,
-      host: "localhost",
-      port: 8545,
-      gas: 4543760
+      provider: () =>
+        new HDWalletProvider(mnemonic, provideUrl),
+      gas: 8000000,
+      gasPrice : 20000000000,
     },
     development: {
       network_id: "*",
