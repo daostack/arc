@@ -117,6 +117,9 @@ contract Locking4Reputation {
         uint256 score = _period.mul(_amount).mul(_numerator).div(_denominator);
         require(score > 0, "score must me > 0");
         scores[_locker] = scores[_locker].add(score);
+        //verify that redeem will not overflow for this locker
+        require((scores[_locker] * reputationReward)/scores[_locker] == reputationReward,
+        "score is too high");
         totalScore = totalScore.add(score);
 
         emit Lock(_locker, lockingId, _amount, _period);
