@@ -64,7 +64,7 @@ contract('LockingEth4Reputation', accounts => {
     it("score too high", async () => {
       let testSetup = await setup(accounts);
       let BigNumber = require('bignumber.js');
-      BigNumber.set({ DECIMAL_PLACES: 0, ROUNDING_MODE: 4 })
+      BigNumber.set({ DECIMAL_PLACES: 0, ROUNDING_MODE: 4 });
       let maxUint = ((new BigNumber(2)).toPower(256).sub(1)).div(100).add(1);
       try {
         await testSetup.lockingEth4Reputation.lock(1,{value:maxUint.toString(10)});
