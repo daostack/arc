@@ -61,6 +61,20 @@ contract('LockingEth4Reputation', accounts => {
 
     });
 
+    it("score too high", async () => {
+      let testSetup = await setup(accounts);
+      let BigNumber = require('bignumber.js');
+      BigNumber.set({ DECIMAL_PLACES: 0, ROUNDING_MODE: 4 });
+      let maxUint = ((new BigNumber(2)).toPower(256).sub(1)).div(100).add(1);
+      try {
+        await testSetup.lockingEth4Reputation.lock(1,{value:maxUint.toString(10)});
+        assert(false, "score too high should revert");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+
+    });
+
     it("cannot lock without initialize", async () => {
       let testSetup = await setup(accounts,100,0,3000,3000,6000,false);
       try {
