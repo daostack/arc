@@ -64,9 +64,10 @@ contract('LockingEth4Reputation', accounts => {
     it("score too high", async () => {
       let testSetup = await setup(accounts);
       let BigNumber = require('bignumber.js');
-      let maxUint = ((new BigNumber(2)).toPower(255).sub(1)).toString(10);
+      BigNumber.set({ DECIMAL_PLACES: 0, ROUNDING_MODE: 4 })
+      let maxUint = ((new BigNumber(2)).toPower(256).sub(1)).div(100).add(1);
       try {
-        await testSetup.lockingEth4Reputation.lock(maxUint,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(1,{value:maxUint.toString(10)});
         assert(false, "score too high should revert");
       } catch(error) {
         helpers.assertVMException(error);
