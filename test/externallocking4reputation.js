@@ -15,9 +15,9 @@ const setup = async function (accounts,_repAllocation = 100,_claimingStartTime =
    testSetup.lockingStartTime = block.timestamp + _claimingStartTime;
    testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
    testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
-   await testSetup.extetnalTokenLockerMock.lock(100,{from:accounts[0]});
-   await testSetup.extetnalTokenLockerMock.lock(200,{from:accounts[1]});
-   await testSetup.extetnalTokenLockerMock.lock(300,{from:accounts[2]});
+   await testSetup.extetnalTokenLockerMock.lock(100,accounts[0]);
+   await testSetup.extetnalTokenLockerMock.lock(200,accounts[1]);
+   await testSetup.extetnalTokenLockerMock.lock(300,accounts[2]);
 
    testSetup.externalLocking4Reputation = await ExternalLocking4Reputation.new();
    if (_initialize === true) {
@@ -44,6 +44,17 @@ contract('ExternalLocking4Reputation', accounts => {
       assert.equal(await testSetup.externalLocking4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.externalLocking4Reputation.externalLockingContract(),testSetup.extetnalTokenLockerMock.address);
       assert.equal(await testSetup.externalLocking4Reputation.getBalanceFuncSignature(),"lockedTokenBalances(address)");
+    });
+
+    it("externalLockingMock is onlyOwner", async () => {
+      let testSetup = await setup(accounts);
+      try {
+        await testSetup.extetnalTokenLockerMock.lock(1030,accounts[3],{from:accounts[1]});
+        assert(false, "externalLockingMock is onlyOwner");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+
     });
 
     it("claim", async () => {

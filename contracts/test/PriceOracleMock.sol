@@ -1,9 +1,10 @@
 pragma solidity ^0.5.2;
 
 import "../schemes/PriceOracleInterface.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
-contract PriceOracleMock is PriceOracleInterface {
+contract PriceOracleMock is PriceOracleInterface, Ownable {
 
     struct Price {
         uint256 numerator;
@@ -18,7 +19,7 @@ contract PriceOracleMock is PriceOracleInterface {
         return (price.numerator, price.denominator);
     }
 
-    function setTokenPrice(address token, uint256 numerator, uint256 denominator) public {
+    function setTokenPrice(address token, uint256 numerator, uint256 denominator) public onlyOwner {
         tokenPrices[token] = Price(numerator, denominator);
     }
 }
