@@ -54,6 +54,17 @@ contract('LockingToken4Reputation', accounts => {
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
     });
 
+    it("priceOracleMock is onlyOwner", async () => {
+      let testSetup = await setup(accounts);
+      try {
+        await testSetup.priceOracleMock.setTokenPrice(testSetup.lockingToken.address,100,4,{from:accounts[1]});
+        assert(false, "priceOracleMock is onlyOwner");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+
+    });
+
     it("initialize", async () => {
       let testSetup = await setup(accounts);
       assert.equal(await testSetup.lockingToken4Reputation.reputationReward(),100);
