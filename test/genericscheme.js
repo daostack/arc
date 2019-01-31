@@ -5,9 +5,8 @@ const GenericScheme = artifacts.require('./GenericScheme.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
-
-
 const ActionMock = artifacts.require("./ActionMock.sol");
+const Wallet = artifacts.require("./Wallet.sol");
 
 export class GenericSchemeParams {
   constructor() {
@@ -232,4 +231,21 @@ contract('genericScheme', function(accounts) {
              assert.equal(events[0].args._param,2);
         });
       });
+
+      it("Wallet - execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
+         var wallet =await Wallet.new();
+         await web3.eth.sendTransaction({from:accounts[0],to:wallet.address, value: web3.utils.toWei('1', "ether")});
+         var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+         var testSetup = await setup(accounts,wallet.address,0,true,standardTokenMock.address);
+         var callData = await new web3.eth.Contract(wallet.abi).methods.pay(accounts[1]).encodeABI();
+         var tx = await testSetup.genericScheme.proposeCall(testSetup.org.avatar.address,callData,helpers.NULL_HASH);
+         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+         assert.equal(await web3.eth.getBalance(wallet.address),web3.utils.toWei('1', "ether"));
+         await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+         assert.equal(await web3.eth.getBalance(wallet.address),web3.utils.toWei('1', "ether"));
+         await wallet.transferOwnership(testSetup.org.avatar.address);
+         await testSetup.genericScheme.execute(proposalId);
+         assert.equal(await web3.eth.getBalance(wallet.address),0);
+      });
+
 });
