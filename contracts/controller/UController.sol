@@ -97,7 +97,7 @@ contract UController is ControllerInterface {
         Reputation nativeReputation = _avatar.nativeReputation();
         //To guaranty uniqueness for the reputation systems.
         require(!reputations[address(nativeReputation)]);
-        //To guaranty uniqueness for the reputation systems.
+        //To guaranty uniqueness for the nativeToken.
         require(!tokens[address(nativeToken)]);
         organizations[address(_avatar)].exist = true;
         organizations[address(_avatar)].nativeToken = nativeToken;
