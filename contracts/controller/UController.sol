@@ -93,15 +93,17 @@ contract UController is ControllerInterface {
     {
         require(!organizations[address(_avatar)].exist);
         require(_avatar.owner() == address(this));
+        DAOToken nativeToken = _avatar.nativeToken();
+        Reputation nativeReputation = _avatar.nativeReputation();
         //To guaranty uniqueness for the reputation systems.
-        require(!reputations[address(_avatar.nativeReputation())]);
+        require(!reputations[address(nativeReputation)]);
         //To guaranty uniqueness for the reputation systems.
-        require(!tokens[address(_avatar.nativeToken())]);
+        require(!tokens[address(nativeToken)]);
         organizations[address(_avatar)].exist = true;
-        organizations[address(_avatar)].nativeToken = _avatar.nativeToken();
-        organizations[address(_avatar)].nativeReputation = _avatar.nativeReputation();
-        reputations[address(_avatar.nativeReputation())] = true;
-        tokens[address(_avatar.nativeToken())] = true;
+        organizations[address(_avatar)].nativeToken = nativeToken;
+        organizations[address(_avatar)].nativeReputation = nativeReputation;
+        reputations[address(nativeReputation)] = true;
+        tokens[address(nativeToken)] = true;
         organizations[address(_avatar)].schemes[msg.sender] =
         Scheme({paramsHash: bytes32(0), permissions: bytes4(0x0000001f)});
         emit RegisterScheme(msg.sender, msg.sender, address(_avatar));
