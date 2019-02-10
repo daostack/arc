@@ -50,7 +50,7 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
     * @return bool which represents a successful of the function
     */
     function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
         // Save proposal to memory and delete from storage:
         VoteProposal memory proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.exist);
@@ -151,10 +151,9 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
             _vote,
             _descriptionHash
         );
-        proposalsInfo[proposalId] = ProposalInfo({
+        proposalsInfo[address(intVote)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(intVote)
+            avatar:_avatar
         });
         return proposalId;
     }

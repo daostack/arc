@@ -78,7 +78,7 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @return bool which represents a successful of the function
     */
     function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
         Agreement memory proposedAgreement = organizationsProposals[address(avatar)][_proposalId];
         require(proposedAgreement.periodLength > 0);
         delete organizationsProposals[address(avatar)][_proposalId];
@@ -151,10 +151,9 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         organizationsProposals[address(_avatar)][proposalId].cliffInPeriods = _cliffInPeriods;
         organizationsProposals[address(_avatar)][proposalId].signaturesReqToCancel = _signaturesReqToCancel;
 
-        proposalsInfo[proposalId] = ProposalInfo({
+        proposalsInfo[address(params.intVote)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(params.intVote)
+            avatar:_avatar
         });
         emit AgreementProposal(address(_avatar), proposalId, _descriptionHash);
         return proposalId;
