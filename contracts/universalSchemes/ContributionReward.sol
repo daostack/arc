@@ -84,7 +84,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
     function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        ProposalInfo memory proposal = proposalsInfo[_proposalId];
+        ProposalInfo memory proposal = proposalsInfo[msg.sender][_proposalId];
         require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
         require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
         // Check if vote was successful:
@@ -203,10 +203,9 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
             beneficiary
         );
 
-        proposalsInfo[contributionId] = ProposalInfo({
+        proposalsInfo[address(controllerParams.intVote)][contributionId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(controllerParams.intVote)
+            avatar:_avatar
         });
         return contributionId;
     }

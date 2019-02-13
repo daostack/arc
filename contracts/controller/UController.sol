@@ -334,7 +334,7 @@ contract UController is ControllerInterface {
             (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
             removeGlobalConstraintPost(_globalConstraint, _avatar);
         }
-        return false;
+        return true;
     }
 
   /**

@@ -58,7 +58,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
     function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
         SchemeProposal memory proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.scheme != address(0));
         delete organizationsProposals[address(avatar)][_proposalId];
@@ -157,10 +157,9 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
             _descriptionHash
         );
         organizationsProposals[address(_avatar)][proposalId] = proposal;
-        proposalsInfo[proposalId] = ProposalInfo({
+        proposalsInfo[address(controllerParams.intVote)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(controllerParams.intVote)
+            avatar:_avatar
         });
         return proposalId;
     }
@@ -184,10 +183,9 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
         bytes32 proposalId = intVote.propose(2, params.voteRemoveParams, msg.sender, address(_avatar));
         organizationsProposals[address(_avatar)][proposalId].scheme = _scheme;
         emit RemoveSchemeProposal(address(_avatar), proposalId, address(intVote), _scheme, _descriptionHash);
-        proposalsInfo[proposalId] = ProposalInfo({
+        proposalsInfo[address(params.intVote)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(params.intVote)
+            avatar:_avatar
         });
         return proposalId;
     }

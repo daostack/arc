@@ -130,7 +130,7 @@ contract('genericScheme', function(accounts) {
        assert.equal(organizationProposal.exist,true);//new contract address
        assert.equal(organizationProposal.passed,true);//new contract address
        //can call execute
-       await testSetup.genericScheme.execute(proposalId);
+       await testSetup.genericScheme.execute(testSetup.org.avatar.address, proposalId);
 
     });
 
@@ -150,15 +150,15 @@ contract('genericScheme', function(accounts) {
        assert.equal(organizationProposal.exist,true);//new contract address
        assert.equal(organizationProposal.passed,true);//new contract address
        //can call execute
-       await testSetup.genericScheme.execute(proposalId);
+       await testSetup.genericScheme.execute(testSetup.org.avatar.address, proposalId);
        await helpers.increaseTime(1001);
-       await testSetup.genericScheme.execute(proposalId);
+       await testSetup.genericScheme.execute(testSetup.org.avatar.address, proposalId);
 
        organizationProposal = await testSetup.genericScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
        assert.equal(organizationProposal.exist,false);//new contract address
        assert.equal(organizationProposal.passed,false);//new contract address
        try {
-         await testSetup.genericScheme.execute(proposalId);
+         await testSetup.genericScheme.execute(testSetup.org.avatar.address, proposalId);
          assert(false, "cannot call execute after it been executed");
        } catch(error) {
          helpers.assertVMException(error);
@@ -186,7 +186,7 @@ contract('genericScheme', function(accounts) {
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
        try {
-         await testSetup.genericScheme.execute(proposalId);
+         await testSetup.genericScheme.execute(testSetup.org.avatar.address, proposalId);
          assert(false, "execute should fail if not executed from votingMachine");
        } catch(error) {
          helpers.assertVMException(error);
@@ -244,7 +244,7 @@ contract('genericScheme', function(accounts) {
          await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
          assert.equal(await web3.eth.getBalance(wallet.address),web3.utils.toWei('1', "ether"));
          await wallet.transferOwnership(testSetup.org.avatar.address);
-         await testSetup.genericScheme.execute(proposalId);
+         await testSetup.genericScheme.execute(testSetup.org.avatar.address, proposalId);
          assert.equal(await web3.eth.getBalance(wallet.address),0);
       });
 

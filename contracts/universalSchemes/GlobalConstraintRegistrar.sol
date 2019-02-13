@@ -62,7 +62,7 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
     * @return bool which represents a successful of the function.
     */
     function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
         bool retVal = true;
         // Check if vote was successful:
         GCProposal memory proposal = organizationsProposals[address(avatar)][_proposalId];
@@ -161,10 +161,9 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
             _voteToRemoveParams,
             _descriptionHash
         );
-        proposalsInfo[proposalId] = ProposalInfo({
+        proposalsInfo[address(intVote)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(intVote)
+            avatar:_avatar
         });
         return proposalId;
     }
@@ -197,10 +196,9 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
 
         organizationsProposals[address(_avatar)][proposalId] = proposal;
         emit RemoveGlobalConstraintsProposal(address(_avatar), proposalId, address(intVote), _gc, _descriptionHash);
-        proposalsInfo[proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(intVote)
+        proposalsInfo[address(intVote)][proposalId] = ProposalInfo({
+            blockNumber: block.number,
+            avatar: _avatar
         });
         return proposalId;
     }

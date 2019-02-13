@@ -57,7 +57,7 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
     function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
         UpgradeProposal memory proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.proposalType != 0);
         delete organizationsProposals[address(avatar)][_proposalId];
@@ -138,10 +138,9 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         _newController,
         _descriptionHash
         );
-        proposalsInfo[proposalId] = ProposalInfo({
+        proposalsInfo[address(params.intVote)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(params.intVote)
+            avatar:_avatar
         });
         return proposalId;
     }
@@ -183,10 +182,9 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
             _params,
             _descriptionHash
         );
-        proposalsInfo[proposalId] = ProposalInfo({
+        proposalsInfo[address(intVote)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(intVote)
+            avatar:_avatar
         });
         return proposalId;
     }

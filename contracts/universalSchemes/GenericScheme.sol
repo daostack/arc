@@ -62,14 +62,14 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     external
     onlyVotingMachine(_proposalId)
     returns(bool) {
-        Avatar avatar = proposalsInfo[_proposalId].avatar;
+        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
         CallProposal storage proposal = organizationsProposals[address(avatar)][_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed == false, "cannot execute twice");
 
         if (_decision == 1) {
             proposal.passed = true;
-            execute(_proposalId);
+            execute(avatar, _proposalId);
         } else {
             delete organizationsProposals[address(avatar)][_proposalId];
             emit ProposalDeleted(address(avatar), _proposalId);
@@ -83,21 +83,20 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     * @dev execution of proposals after it has been decided by the voting machine
     * @param _proposalId the ID of the voting in the voting machine
     */
-    function execute(bytes32 _proposalId) public {
-        Avatar avatar = proposalsInfo[_proposalId].avatar;
-        Parameters memory params = parameters[getParametersFromController(avatar)];
-        CallProposal storage proposal = organizationsProposals[address(avatar)][_proposalId];
+    function execute(Avatar _avatar, bytes32 _proposalId) public {
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
+        CallProposal storage proposal = organizationsProposals[address(_avatar)][_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed, "proposal must passed by voting machine");
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
-        ControllerInterface controller = ControllerInterface(Avatar(avatar).owner());
-        (success, genericCallReturnValue) = controller.genericCall(params.contractToCall, proposal.callData, avatar);
+        ControllerInterface controller = ControllerInterface(_avatar.owner());
+        (success, genericCallReturnValue) = controller.genericCall(params.contractToCall, proposal.callData, _avatar);
         if (success) {
-            delete organizationsProposals[address(avatar)][_proposalId];
-            emit ProposalDeleted(address(avatar), _proposalId);
-            emit ProposalExecuted(address(avatar), _proposalId, genericCallReturnValue);
+            delete organizationsProposals[address(_avatar)][_proposalId];
+            emit ProposalDeleted(address(_avatar), _proposalId);
+            emit ProposalExecuted(address(_avatar), _proposalId, genericCallReturnValue);
         } else {
             proposal.exist = true;
         }
@@ -159,10 +158,9 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
             exist: true,
             passed: false
         });
-        proposalsInfo[proposalId] = ProposalInfo({
+        proposalsInfo[address(params.intVote)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar,
-            votingMachine:address(params.intVote)
+            avatar:_avatar
         });
         emit NewCallProposal(address(_avatar), proposalId, _callData, _descriptionHash);
         return proposalId;
