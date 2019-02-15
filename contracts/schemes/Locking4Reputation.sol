@@ -113,7 +113,7 @@ contract Locking4Reputation {
         // solhint-disable-next-line not-rely-on-time
         locker.releaseTime = now + _period;
         totalLocked = totalLocked.add(_amount);
-        totalLockedLeft = totalLocked;
+        totalLockedLeft = totalLockedLeft.add(_amount);
         uint256 score = _period.mul(_amount).mul(_numerator).div(_denominator);
         require(score > 0, "score must me > 0");
         scores[_locker] = scores[_locker].add(score);

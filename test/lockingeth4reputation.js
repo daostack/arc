@@ -149,6 +149,27 @@ contract('LockingEth4Reputation', accounts => {
       assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
     });
 
+    it("release totallockleft", async () => {
+      let testSetup = await setup(accounts);
+      var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+      assert.equal(web3.utils.toWei('1', "ether"),await testSetup.lockingEth4Reputation.totalLocked());
+      assert.equal(web3.utils.toWei('1', "ether"),await testSetup.lockingEth4Reputation.totalLockedLeft());
+      var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
+      await helpers.increaseTime(101);
+      tx = await testSetup.lockingEth4Reputation.release(accounts[0],lockingId);
+      assert.equal(web3.utils.toWei('1', "ether"),await testSetup.lockingEth4Reputation.totalLocked());
+      assert.equal(0,await testSetup.lockingEth4Reputation.totalLockedLeft());
+      await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether"),from:accounts[1]});
+      assert.equal(web3.utils.toWei('2', "ether"),await testSetup.lockingEth4Reputation.totalLocked());
+      assert.equal(web3.utils.toWei('1', "ether"),await testSetup.lockingEth4Reputation.totalLockedLeft());
+      assert.equal(tx.logs.length,1);
+      assert.equal(tx.logs[0].event,"Release");
+      assert.equal(tx.logs[0].args._lockingId,lockingId);
+      assert.equal(tx.logs[0].args._amount,web3.utils.toWei('1', "ether"));
+      assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
+    });
+
+
     it("release before locking period should revert", async () => {
       let testSetup = await setup(accounts);
       var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
