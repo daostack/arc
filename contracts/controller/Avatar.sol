@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.5.4;
 
 import "@daostack/infra/contracts/Reputation.sol";
 import "./DAOToken.sol";

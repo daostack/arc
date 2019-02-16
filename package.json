@@ -52,7 +52,7 @@
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
-    "truffle": "5.0.0",
+    "truffle": "5.0.4",
     "uint32": "^0.2.1"
   },
   "repository": {

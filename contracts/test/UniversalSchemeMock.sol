@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.5.4;
 
 import "../universalSchemes/UniversalScheme.sol";
 import "../controller/ControllerInterface.sol";
