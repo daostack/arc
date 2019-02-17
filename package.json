@@ -76,6 +76,7 @@
   "dependencies": {
     "@daostack/infra": "0.0.1-rc.10",
     "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
     "ethereumjs-abi": "^0.6.5",
     "openzeppelin-solidity": "2.1.1"
   },
