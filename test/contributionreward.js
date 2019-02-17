@@ -95,7 +95,7 @@ const setup = async function (accounts,orgNativeTokenFee=0,genesisProtocol = fal
    var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                         [testSetup.contributionReward.address],
-                                        [testSetup.contributionRewardParams.paramsHash],[permissions]);
+                                        [testSetup.contributionRewardParams.paramsHash],[permissions],"metaData");
    return testSetup;
 };
 contract('ContributionReward', accounts => {

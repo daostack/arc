@@ -33,7 +33,7 @@ const setup = async function (accounts) {
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.organizationRegisterParams= await setupOrganizationRegisterParams(testSetup.organizationRegister,testSetup.standardTokenMock.address,accounts[2]);
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.organizationRegister.address],[testSetup.organizationRegisterParams.paramsHash],[permissions]);
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.organizationRegister.address],[testSetup.organizationRegisterParams.paramsHash],[permissions],"metaData");
 
    return testSetup;
 };
