@@ -60,7 +60,7 @@ const setup = async function (accounts) {
 
    var permissions = "0x0000000a";
 
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.upgradeScheme.address],[testSetup.upgradeSchemeParams.paramsHash],[permissions]);
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.upgradeScheme.address],[testSetup.upgradeSchemeParams.paramsHash],[permissions],"metaData");
 
    return testSetup;
 };

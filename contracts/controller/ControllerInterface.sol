@@ -167,6 +167,14 @@ interface ControllerInterface {
     returns(bool);
 
     /**
+    * @dev metaData emits an event with a string, should contain the hash of some meta data.
+    * @param _metaData a string representing a hash of the meta data
+    * @param _avatar Avatar
+    * @return bool which represents a success
+    */
+    function metaData(string calldata _metaData, Avatar _avatar) external returns(bool);
+
+    /**
      * @dev getNativeReputation
      * @param _avatar the organization avatar.
      * @return organization native reputation

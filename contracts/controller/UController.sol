@@ -135,6 +135,11 @@ contract UController is ControllerInterface {
         _;
     }
 
+    modifier onlyMetaDataScheme(address _avatar) {
+        require(organizations[_avatar].schemes[msg.sender].permissions&bytes4(0x00000010) == bytes4(0x00000010));
+        _;
+    }
+
     modifier onlySubjectToConstraint(bytes32 func, address _avatar) {
         uint256 idx;
         GlobalConstraint[] memory globalConstraintsPre = organizations[_avatar].globalConstraintsPre;
@@ -453,6 +458,20 @@ contract UController is ControllerInterface {
     returns(bool)
     {
         return _avatar.externalTokenApproval(_externalToken, _spender, _value);
+    }
+
+    /**
+    * @dev metaData emits an event with a string, should contain the hash of some meta data.
+    * @param _metaData a string representing a hash of the meta data
+    * @param _avatar Avatar
+    * @return bool which represents a success
+    */
+    function metaData(string calldata _metaData, Avatar _avatar)
+        external
+        onlyMetaDataScheme(address(_avatar))
+        returns(bool)
+        {
+        return _avatar.metaData(_metaData);
     }
 
     function isSchemeRegistered( address _scheme, address _avatar) external view returns(bool) {

@@ -68,7 +68,7 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
 
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                         [testSetup.voteInOrganization.address,accounts[3]],
-                                        [testSetup.voteInOrganizationParams.paramsHash,helpers.NULL_HASH],[permissions,permissions]);
+                                        [testSetup.voteInOrganizationParams.paramsHash,helpers.NULL_HASH],[permissions,permissions],"metaData");
 
    return testSetup;
 };

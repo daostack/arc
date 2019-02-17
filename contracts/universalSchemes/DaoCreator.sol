@@ -122,12 +122,14 @@ contract DaoCreator {
       * @param _schemes the schemes to register for the organization
       * @param _params the schemes's params
       * @param _permissions the schemes permissions.
+      * @param _metaData dao meta data hash
       */
     function setSchemes (
         Avatar _avatar,
         address[] calldata _schemes,
         bytes32[] calldata _params,
-        bytes4[] calldata _permissions
+        bytes4[] calldata _permissions,
+        string calldata _metaData
     )
         external
     {
@@ -139,6 +141,7 @@ contract DaoCreator {
         for (uint256 i = 0; i < _schemes.length; i++) {
             controller.registerScheme(_schemes[i], _params[i], _permissions[i], address(_avatar));
         }
+        controller.metaData(_metaData, _avatar);
         // Unregister self:
         controller.unregisterScheme(address(this), address(_avatar));
         // Remove lock:

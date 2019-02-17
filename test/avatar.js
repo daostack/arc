@@ -103,4 +103,12 @@ contract('Avatar',  accounts =>  {
       let balanceTo = await standardToken.balanceOf(to);
       assert.equal(balanceTo, 50);
     });
+
+    it("metaData event", async () => {
+        avatar = await setup(accounts);
+        let tx = await avatar.metaData(helpers.SOME_HASH);
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "MetaData");
+        assert.equal(tx.logs[0].args["_metaData"], helpers.SOME_HASH);
+    });
 });

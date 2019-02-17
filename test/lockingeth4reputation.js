@@ -31,7 +31,7 @@ const setup = async function (accounts,
 
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.lockingEth4Reputation.address],[helpers.NULL_HASH],[permissions]);
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.lockingEth4Reputation.address],[helpers.NULL_HASH],[permissions],"metaData");
    return testSetup;
 };
 

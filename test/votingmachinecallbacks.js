@@ -19,7 +19,7 @@ const setup = async function (accounts) {
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                           [testSetup.arcVotingMachineCallbacksMock.address],
                                           [helpers.NULL_HASH],
-                                          [permissions]);
+                                          [permissions],"metaData");
    await testSetup.arcVotingMachineCallbacksMock.propose(proposalId,
                                                            testSetup.org.avatar.address,
                                                            accounts[0]);

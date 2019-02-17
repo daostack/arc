@@ -86,7 +86,8 @@ module.exports = async function(deployer) {
         AvatarInst.address,
         schemesArray,
         paramsArray,
-        permissionArray);
+        permissionArray,
+        "metaData");
       //now deploy with universal controller
       await deployer.deploy(UController, {gas: constants.ARC_GAS_LIMIT});
       var uController = await UController.deployed();
@@ -97,6 +98,7 @@ module.exports = async function(deployer) {
           AvatarInst.address,
           schemesArray,
           paramsArray,
-          permissionArray);
+          permissionArray,
+          "metaData");
      });
   };

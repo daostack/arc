@@ -25,7 +25,7 @@ const setup = async function (accounts,
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                         [accounts[0],testSetup.forwarder.address],
                                         [web3.utils.asciiToHex("0"),web3.utils.asciiToHex("0")],
-                                        [permissions,permissions]);
+                                        [permissions,permissions],"metaData");
    return testSetup;
 };
 

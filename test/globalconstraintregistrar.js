@@ -48,11 +48,10 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
    testSetup.globalConstraintRegistrarParams= await setupGlobalConstraintRegistrarParams(testSetup.globalConstraintRegistrar,accounts,genesisProtocol,tokenAddress);
    var permissions = "0x00000004";
-   //await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.globalConstraintRegistrar.address],[testSetup.globalConstraintRegistrarParams.paramsHash],[permissions]);
-     await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                           [testSetup.globalConstraintRegistrar.address],
                                           [testSetup.globalConstraintRegistrarParams.paramsHash],
-                                          [permissions]);
+                                          [permissions],"metaData");
 
    return testSetup;
 };

@@ -23,6 +23,7 @@ contract Avatar is Ownable {
     event ExternalTokenTransferFrom(address indexed _externalToken, address _from, address _to, uint256 _value);
     event ExternalTokenApproval(address indexed _externalToken, address _spender, uint256 _value);
     event ReceiveEther(address indexed _sender, uint256 _value);
+    event MetaData(string _metaData);
 
     /**
     * @dev the constructor takes organization name, native token and reputation system
@@ -120,5 +121,16 @@ contract Avatar is Ownable {
         emit ExternalTokenApproval(address(_externalToken), _spender, _value);
         return true;
     }
+
+    /**
+    * @dev metaData emits an event with a string, should contain the hash of some meta data.
+    * @param _metaData a string representing a hash of the meta data
+    * @return bool which represents a success
+    */
+    function metaData(string memory _metaData) public onlyOwner returns(bool) {
+        emit MetaData(_metaData);
+        return true;
+    }
+
 
 }

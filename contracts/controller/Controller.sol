@@ -105,6 +105,11 @@ contract Controller is ControllerInterface {
         _;
     }
 
+    modifier onlyMetaDataScheme() {
+        require(schemes[msg.sender].permissions&bytes4(0x00000010) == bytes4(0x00000010));
+        _;
+    }
+
     modifier onlySubjectToConstraint(bytes32 func) {
         uint256 idx;
         for (idx = 0; idx < globalConstraintsPre.length; idx++) {
@@ -460,6 +465,21 @@ contract Controller is ControllerInterface {
     returns(bool)
     {
         return avatar.externalTokenApproval(_externalToken, _spender, _value);
+    }
+
+    /**
+    * @dev metaData emits an event with a string, should contain the hash of some meta data.
+    * @param _metaData a string representing a hash of the meta data
+    * @param _avatar Avatar
+    * @return bool which represents a success
+    */
+    function metaData(string calldata _metaData, Avatar _avatar)
+        external
+        onlyMetaDataScheme
+        isAvatarValid(address(_avatar))
+        returns(bool)
+        {
+        return avatar.metaData(_metaData);
     }
 
     /**
