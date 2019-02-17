@@ -122,7 +122,7 @@ contract Auction4Reputation is Ownable {
         address(token).safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
         auctionId = (now - auctionsStartTime) / auctionPeriod;
-        require(auctionId == _auctionId, "false auction id");
+        require(auctionId == _auctionId, "auction is not active");
         Auction storage auction = auctions[auctionId];
         auction.totalBid = auction.totalBid.add(_amount);
         auction.bids[msg.sender] = auction.bids[msg.sender].add(_amount);
