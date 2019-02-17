@@ -110,9 +110,10 @@ contract Auction4Reputation is Ownable {
     /**
      * @dev bid function
      * @param _amount the amount to bid with
+     * @param _auctionId the auction id to bid at .
      * @return auctionId
      */
-    function bid(uint256 _amount) public returns(uint256 auctionId) {
+    function bid(uint256 _amount, uint256 _auctionId) public returns(uint256 auctionId) {
         require(_amount > 0, "bidding amount should be > 0");
         // solhint-disable-next-line not-rely-on-time
         require(now <= auctionsEndTime, "bidding should be within the allowed bidding period");
@@ -121,6 +122,7 @@ contract Auction4Reputation is Ownable {
         address(token).safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
         auctionId = (now - auctionsStartTime) / auctionPeriod;
+        require(auctionId == _auctionId, "auction is not active");
         Auction storage auction = auctions[auctionId];
         auction.totalBid = auction.totalBid.add(_amount);
         auction.bids[msg.sender] = auction.bids[msg.sender].add(_amount);
