@@ -59,7 +59,7 @@ library SafeERC20 {
 
         // safeApprove should only be called when setting an initial allowance,
         // or when resetting it to zero.
-        require((_value == 0) || (IERC20(_erc20Addr).allowance(msg.sender, _spender) == 0));
+        require((_value == 0) || (IERC20(_erc20Addr).allowance(address(this), _spender) == 0));
 
         (bool success, bytes memory returnValue) =
         // solhint-disable-next-line avoid-low-level-calls
