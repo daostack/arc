@@ -16,6 +16,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         address indexed _avatar,
         bytes32 indexed _proposalId,
         bytes   _callData,
+        uint256 _value,
         string  _descriptionHash
     );
 
@@ -36,6 +37,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     // Details of a voting proposal:
     struct CallProposal {
         bytes callData;
+        uint256 value;
         bool exist;
         bool passed;
     }
@@ -92,7 +94,8 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         bytes memory genericCallReturnValue;
         bool success;
         ControllerInterface controller = ControllerInterface(_avatar.owner());
-        (success, genericCallReturnValue) = controller.genericCall(params.contractToCall, proposal.callData, _avatar);
+        (success, genericCallReturnValue) =
+        controller.genericCall(params.contractToCall, proposal.callData, _avatar, proposal.value);
         if (success) {
             delete organizationsProposals[address(_avatar)][_proposalId];
             emit ProposalDeleted(address(_avatar), _proposalId);
@@ -139,12 +142,13 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     /**
     * @dev propose to call on behalf of the _avatar
     *      The function trigger NewCallProposal event
-    * @param _callData - The abi encode data for the call
     * @param _avatar avatar of the organization
+    * @param _callData - The abi encode data for the call
+    * @param _value value(ETH) to transfer with the call
     * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
-    function proposeCall(Avatar _avatar, bytes memory _callData, string memory _descriptionHash)
+    function proposeCall(Avatar _avatar, bytes memory _callData, uint256 _value, string memory _descriptionHash)
     public
     returns(bytes32)
     {
@@ -155,6 +159,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
 
         organizationsProposals[address(_avatar)][proposalId] = CallProposal({
             callData: _callData,
+            value: _value,
             exist: true,
             passed: false
         });
@@ -162,7 +167,7 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
             blockNumber:block.number,
             avatar:_avatar
         });
-        emit NewCallProposal(address(_avatar), proposalId, _callData, _descriptionHash);
+        emit NewCallProposal(address(_avatar), proposalId, _callData, _value, _descriptionHash);
         return proposalId;
     }
 

@@ -105,10 +105,11 @@ interface ControllerInterface {
     * @param _contract  the contract's address to call
     * @param _data ABI-encoded contract call to call `_contract` address.
     * @param _avatar the controller's avatar address
+    * @param _value value (ETH) to transfer with the transaction
     * @return bool -success
     *         bytes  - the return value of the called _contract's function.
     */
-    function genericCall(address _contract, bytes calldata _data, Avatar _avatar)
+    function genericCall(address _contract, bytes calldata _data, Avatar _avatar, uint256 _value)
     external
     returns(bool, bytes memory);
 
