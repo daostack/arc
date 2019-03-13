@@ -69,7 +69,8 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
             proposal.vote,
             0,
             address(this)),
-            avatar
+            avatar,
+            0
             );
             require(success);
         }

@@ -321,7 +321,7 @@ contract('UController',accounts =>  {
     let b = actionMock.address;
     let c = "0x1234";
     const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.test(a,b,c).encodeABI();
-    var tx = await controller.genericCall(actionMock.address,encodeABI,avatar.address);
+    var tx = await controller.genericCall(actionMock.address,encodeABI,avatar.address,0);
     await avatar.getPastEvents('GenericCall', {
           fromBlock: tx.blockNumber,
           toBlock: 'latest'
@@ -340,7 +340,7 @@ contract('UController',accounts =>  {
     let b = actionMock.address;
     let c = "0x1234";
     const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.test(a,b,c).encodeABI();
-    var result = await controller.genericCall.call(actionMock.address,encodeABI,avatar.address);
+    var result = await controller.genericCall.call(actionMock.address,encodeABI,avatar.address,0);
     assert.equal(result[1], 14);
 
   });
@@ -349,7 +349,7 @@ contract('UController',accounts =>  {
       let actionMock =  await ActionMock.new();
       const actionMockContract = await new web3.eth.Contract(actionMock.abi);
       const encodeABI = actionMockContract.methods.withoutReturnValue(avatar.address).encodeABI();
-      var tx = await controller.genericCall(actionMock.address,encodeABI,avatar.address);
+      var tx = await controller.genericCall(actionMock.address,encodeABI,avatar.address,0);
       await actionMock.getPastEvents('WithoutReturnValue', {
             filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
             fromBlock: tx.blockNumber,
@@ -367,7 +367,7 @@ contract('UController',accounts =>  {
     let a = 7;
     let b = actionMock.address;
     let c = "0x1234";
-    let result = await scheme.genericCall.call(avatar.address,actionMock.address, a,b,c);
+    let result = await scheme.genericCall.call(avatar.address,actionMock.address, a,b,c,0);
     assert.equal(result[1], 14);
 
   });
@@ -538,7 +538,7 @@ contract('UController',accounts =>  {
         let c = "0x1234";
         const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.test(a,b,c).encodeABI();
         try {
-          await controller.genericCall.call(actionMock.address,encodeABI,avatar.address);
+          await controller.genericCall.call(actionMock.address,encodeABI,avatar.address,0);
           assert(false,"genericAction should fail due to the global constraint ");
         }
         catch(ex){
@@ -548,7 +548,7 @@ contract('UController',accounts =>  {
         var globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
         assert.equal(globalConstraintsCount[0],0);
         assert.equal(globalConstraintsCount[1],0);
-        var tx =  await controller.genericCall(actionMock.address,encodeABI,avatar.address);
+        var tx =  await controller.genericCall(actionMock.address,encodeABI,avatar.address,0);
         await avatar.getPastEvents('GenericCall', {
               filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
               fromBlock: tx.blockNumber,

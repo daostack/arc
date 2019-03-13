@@ -61,7 +61,7 @@ contract('Forwarder', accounts => {
                                   registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
                                   encodeABI();
       assert.equal(await controllerA.isSchemeRegistered(accounts[1],testSetupA.org.avatar.address),false);
-      await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address);
+      await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address,0);
       //check that accounts[1] register as scheme at controllerA.
       assert.equal(await controllerA.isSchemeRegistered(accounts[1],testSetupA.org.avatar.address),true);
 
@@ -82,7 +82,7 @@ contract('Forwarder', accounts => {
        //expiered
       await helpers.increaseTime(301);
 
-      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address);
+      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address,0);
       await testSetupB.org.avatar.getPastEvents('GenericCall', {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
@@ -105,7 +105,7 @@ contract('Forwarder', accounts => {
                                   methods.
                                   registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
                                   encodeABI();
-      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address);
+      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address,0);
       await testSetupB.org.avatar.getPastEvents('GenericCall', {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'

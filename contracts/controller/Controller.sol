@@ -378,17 +378,18 @@ contract Controller is ControllerInterface {
     * @param _contract  the contract's address to call
     * @param _data ABI-encoded contract call to call `_contract` address.
     * @param _avatar the controller's avatar address
+    * @param _value value (ETH) to transfer with the transaction
     * @return bool -success
     *         bytes  - the return value of the called _contract's function.
     */
-    function genericCall(address _contract, bytes calldata _data, Avatar _avatar)
+    function genericCall(address _contract, bytes calldata _data, Avatar _avatar, uint256 _value)
     external
     onlyGenericCallScheme
     onlySubjectToConstraint("genericCall")
     isAvatarValid(address(_avatar))
     returns (bool, bytes memory)
     {
-        return avatar.genericCall(_contract, _data);
+        return avatar.genericCall(_contract, _data, _value);
     }
 
   /**

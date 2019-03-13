@@ -21,7 +21,7 @@ contract('Avatar',  accounts =>  {
         let b = actionMock.address;
         let c = "0x1234";
         try{
-         await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c,{from :accounts[1]});
+         await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c,0,{from :accounts[1]});
          assert(false, "genericAction should fail due to wrong owner");
          } catch (ex) {
              helpers.assertVMException(ex);
@@ -36,8 +36,12 @@ contract('Avatar',  accounts =>  {
         let a = 7;
         let b = actionMock.address;
         let c = "0x1234";
-        var result = await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c);
+        await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('1', "ether")});
+        var result = await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c,100);
         assert.equal(result[1],a*2);
+        await scheme.genericCallDirect(avatar.address,actionMock.address,a,b,c,100);
+        assert.equal(await web3.eth.getBalance(actionMock.address),100);
+
     });
 
     it("generic call should not revert if action revert", async () => {
@@ -48,7 +52,7 @@ contract('Avatar',  accounts =>  {
         let a = 7;
         let b = actionMock.address;
         let c = "0x4567"; //the action test function require 0x1234
-        await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c);
+        await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c,0);
     });
 
     it("pay ether to avatar", async () => {
