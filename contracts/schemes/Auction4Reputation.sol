@@ -2,7 +2,6 @@ pragma solidity ^0.5.4;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/ControllerInterface.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../libs/SafeERC20.sol";
 
 /**
@@ -64,7 +63,6 @@ contract Auction4Reputation is Ownable {
         IERC20 _token,
         address _wallet)
     external
-    onlyOwner
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");

@@ -110,33 +110,6 @@ contract('Auction4Reputation', accounts => {
       }
     });
 
-    it("initialize is onlyOwner", async () => {
-      var auction4Reputation = await Auction4Reputation.new();
-      try {
-        await auction4Reputation.initialize(accounts[0],
-                                               100,
-                                               0,
-                                               1000,
-                                               1,
-                                               1000,
-                                              accounts[0],
-                                              accounts[0],
-                                              {gas :constants.ARC_GAS_LIMIT,from:accounts[1]});
-        assert(false, "initialize is onlyOwner");
-      } catch(error) {
-        helpers.assertVMException(error);
-      }
-      await auction4Reputation.initialize(accounts[0],
-                                             100,
-                                             0,
-                                             1000,
-                                             1,
-                                             1000,
-                                            accounts[0],
-                                            accounts[0],
-                                          {gas :constants.ARC_GAS_LIMIT,from:accounts[0]});
-    });
-
     it("initialize auctionsEndTime = auctionsStartTime is not allowed", async () => {
       var auction4Reputation = await Auction4Reputation.new();
       try {

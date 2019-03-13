@@ -1,14 +1,12 @@
 pragma solidity ^0.5.4;
 
 import "./Locking4Reputation.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-
 
 /**
  * @title A scheme for locking ETH for reputation
  */
 
-contract LockingEth4Reputation is Locking4Reputation, Ownable {
+contract LockingEth4Reputation is Locking4Reputation {
 
     /**
      * @dev initialize
@@ -30,7 +28,6 @@ contract LockingEth4Reputation is Locking4Reputation, Ownable {
         uint256 _redeemEnableTime,
         uint256 _maxLockingPeriod)
     external
-    onlyOwner
     {
         super._initialize(
         _avatar,

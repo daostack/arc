@@ -273,29 +273,6 @@ contract('LockingEth4Reputation', accounts => {
            }
     });
 
-    it("initialize is onlyOwner", async () => {
-      var lockingEth4Reputation = await LockingEth4Reputation.new();
-      try {
-        await lockingEth4Reputation.initialize(accounts[1],
-                                                  100,
-                                                  0,
-                                                  100,
-                                                  100,
-                                                  6000,
-                                                {from:accounts[1]});
-        assert(false, "initialize is onlyOwner");
-      } catch(error) {
-        helpers.assertVMException(error);
-      }
-      await lockingEth4Reputation.initialize(accounts[1],
-                                                100,
-                                                0,
-                                                100,
-                                                100,
-                                                6000,
-                                              {from:accounts[0]});
-    });
-
     it("redeemEnableTime >= lockingEndTime", async () => {
       var lockingEth4Reputation = await LockingEth4Reputation.new();
       try {

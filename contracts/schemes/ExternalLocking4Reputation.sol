@@ -1,8 +1,6 @@
 pragma solidity ^0.5.4;
 
 import "./Locking4Reputation.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-
 
 /**
  * @title A scheme for external locking Tokens for reputation
@@ -43,7 +41,6 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         address _externalLockingContract,
         string calldata _getBalanceFuncSignature)
     external
-    onlyOwner
     {
         require(_claimingEndTime > _claimingStartTime, "_claimingEndTime should be greater than _claimingStartTime");
         externalLockingContract = _externalLockingContract;
