@@ -231,35 +231,38 @@ contract('VestingScheme', accounts => {
       assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
      });
 
-             it("execute proposeVestingAgreement controller -yes - check minting", async function() {
-               var testSetup = await setup(accounts);
-               var amountPerPeriod =3;
-               var numberOfAgreedPeriods = 7;
-               var blockNumber = await (web3.utils.toBN(await web3.eth.getBlockNumber()));
+   it("execute proposeVestingAgreement controller -yes - check set total amount", async function() {
+     var testSetup = await setup(accounts);
+     var amountPerPeriod =3;
+     var numberOfAgreedPeriods = 7;
+     var blockNumber = await (web3.utils.toBN(await web3.eth.getBlockNumber()));
 
 
-               var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
-                                                                              accounts[1],
-                                                                              blockNumber,
-                                                                              amountPerPeriod,
-                                                                              2,
-                                                                              numberOfAgreedPeriods,
-                                                                              11,
-                                                                              0,
-                                                                              [],
-                                                                              testSetup.org.avatar.address,helpers.NULL_HASH);
-              //Vote with reputation to trigger execution
-               var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-               //check organizationsProposals before execution
-               var organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-               assert.equal(organizationProposal[0],testSetup.org.token.address);
-               assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),0);
-               await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-               //check organizationsProposals after execution
-               organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
-               assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
-               assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),amountPerPeriod*numberOfAgreedPeriods);
-              });
+     var tx = await testSetup.vestingScheme.proposeVestingAgreement(accounts[0],
+                                                                    accounts[1],
+                                                                    blockNumber,
+                                                                    amountPerPeriod,
+                                                                    2,
+                                                                    numberOfAgreedPeriods,
+                                                                    11,
+                                                                    0,
+                                                                    [],
+                                                                    testSetup.org.avatar.address,helpers.NULL_HASH);
+    //Vote with reputation to trigger execution
+     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+     //check organizationsProposals before execution
+     var organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
+     assert.equal(organizationProposal[0],testSetup.org.token.address);
+     assert.equal(await testSetup.org.token.balanceOf(testSetup.vestingScheme.address),0);
+     await testSetup.vestingSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+     //check organizationsProposals after execution
+     organizationProposal = await testSetup.vestingScheme.organizationsProposals(testSetup.org.avatar.address,proposalId);
+     assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
+     var agreementsCounter = await testSetup.vestingScheme.agreementsCounter() - 1;
+     var agreement = await testSetup.vestingScheme.agreements(agreementsCounter);
+     assert.equal(agreement[11],testSetup.org.avatar.address);//avatar
+     assert.equal(agreement[12],amountPerPeriod*numberOfAgreedPeriods);//totalAmount
+    });
 
     it("createVestedAgreement check agreement id ", async function() {
       var testSetup = await setup(accounts);
@@ -285,6 +288,13 @@ contract('VestingScheme', accounts => {
       assert.equal(agreementId,0);
       blockNumber = await (web3.utils.toBN(await web3.eth.getBlockNumber()));
 
+
+      var agreementsCounter = await testSetup.vestingScheme.agreementsCounter() - 1;
+      var agreement = await testSetup.vestingScheme.agreements(agreementsCounter);
+      assert.equal(agreement[11],0);//avatar
+      assert.equal(agreement[12],amountPerPeriod*numberOfAgreedPeriods);//totalAmount
+
+
       tx = await testSetup.vestingScheme.createVestedAgreement( testSetup.standardTokenMock.address,
                                                                 accounts[0],
                                                                      accounts[1],
@@ -300,6 +310,12 @@ contract('VestingScheme', accounts => {
       assert.equal(tx.logs[0].event, "NewVestedAgreement");
       agreementId = await helpers.getValueFromLogs(tx, '_agreementId',1);
       assert.equal(agreementId,1);
+
+      agreementsCounter = await testSetup.vestingScheme.agreementsCounter() - 1;
+      agreement = await testSetup.vestingScheme.agreements(agreementsCounter);
+      assert.equal(agreement[11],0);//avatar
+      assert.equal(agreement[12],amountPerPeriod*numberOfAgreedPeriods);//totalAmount
+
      });
 
     it("createVestedAgreement check periodLength==0 ", async function() {
@@ -914,7 +930,7 @@ contract('VestingScheme', accounts => {
            assert.equal(balance.toNumber(),numberOfAgreedPeriods*amountPerPeriod);
          }
        }
-        });
+    });
 
 
 });

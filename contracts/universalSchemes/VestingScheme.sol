@@ -39,6 +39,8 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         uint256 signaturesReqToCancel;
         uint256 collectedPeriods;
         uint256 signaturesReceivedCounter;
+        Avatar avatar;
+        uint256 totalAmount;
         mapping(address=>bool) signers;
         mapping(address=>bool) signaturesReceived;
     }
@@ -87,9 +89,8 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         // Check if vote was successful:
         if (_param == 1) {
         // Define controller and mint tokens, check minting actually took place:
-            ControllerInterface controller = ControllerInterface(avatar.owner());
-            uint256 tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
-            require(controller.mintTokens(tokensToMint, address(this), address(avatar)));
+            proposedAgreement.totalAmount = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
+            proposedAgreement.avatar = avatar;
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:
@@ -192,6 +193,7 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         address(_token).safeTransferFrom(msg.sender, address(this), totalAmount);
 
         // Write parameters:
+        agreements[agreementsCounter].totalAmount = totalAmount;
         agreements[agreementsCounter].token = _token;
         agreements[agreementsCounter].beneficiary = _beneficiary;
         agreements[agreementsCounter].returnOnCancelAddress = _returnOnCancelAddress;
@@ -306,8 +308,14 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
 
         // Transfer:
         uint256 tokensToTransfer = periodsToPay.mul(agreement.amountPerPeriod);
-        address(agreement.token).safeTransfer(agreement.beneficiary, tokensToTransfer);
-
+        agreement.totalAmount = agreement.totalAmount.sub(tokensToTransfer);
+        if (agreement.avatar != Avatar(0)) {
+            ControllerInterface controller = ControllerInterface(agreement.avatar.owner());
+            require(controller.mintTokens(tokensToTransfer, agreement.beneficiary, address(agreement.avatar)));
+        } else {
+            //the agreement was created directly. not via the DAO.
+            address(agreement.token).safeTransfer(agreement.beneficiary, tokensToTransfer);
+        }
         // Log collecting:
         emit Collect(_agreementId);
     }
@@ -321,7 +329,14 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         delete agreements[_agreementId];
         uint256 periodsLeft = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
         uint256 tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
-        address(agreement.token).safeTransfer(agreement.returnOnCancelAddress, tokensLeft);
+        agreement.totalAmount = agreement.totalAmount.sub(tokensLeft);
+        if (agreement.avatar != Avatar(0)) {
+            ControllerInterface controller = ControllerInterface(agreement.avatar.owner());
+            require(controller.mintTokens(tokensLeft, agreement.returnOnCancelAddress, address(agreement.avatar)));
+        } else {
+            //the agreement was created directly. not via the DAO.
+            address(agreement.token).safeTransfer(agreement.returnOnCancelAddress, tokensLeft);
+        }
         // Log canceling agreement:
         emit AgreementCancel(_agreementId);
     }
