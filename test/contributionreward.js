@@ -44,38 +44,34 @@ const checkRedeemedPeriodsLeft = async function(
 
 const setupContributionRewardParams = async function(
                                             contributionReward,
-                                            orgNativeTokenFee=0,
                                             accounts,
                                             genesisProtocol,
                                             token,
                                             avatar
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
-  contributionRewardParams.orgNativeTokenFee =  orgNativeTokenFee;
   if (genesisProtocol === true) {
     contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,avatar,helpers.NULL_ADDRESS);
     await contributionReward.setParameters(
-                                           contributionRewardParams.orgNativeTokenFee,
                                            contributionRewardParams.votingMachine.params,
                                            contributionRewardParams.votingMachine.genesisProtocol.address);
-    contributionRewardParams.paramsHash = await contributionReward.getParametersHash(contributionRewardParams.orgNativeTokenFee,
+    contributionRewardParams.paramsHash = await contributionReward.getParametersHash(
                                                                                      contributionRewardParams.votingMachine.params,
                                                                                      contributionRewardParams.votingMachine.genesisProtocol.address);
     } else {
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,contributionReward.address);
-  await contributionReward.setParameters(contributionRewardParams.orgNativeTokenFee,
+  await contributionReward.setParameters(
                                          contributionRewardParams.votingMachine.params,
                                          contributionRewardParams.votingMachine.absoluteVote.address);
-  contributionRewardParams.paramsHash = await contributionReward.getParametersHash(contributionRewardParams.orgNativeTokenFee,
+  contributionRewardParams.paramsHash = await contributionReward.getParametersHash(
                                                                                    contributionRewardParams.votingMachine.params,
                                                                                    contributionRewardParams.votingMachine.absoluteVote.address);
   }
   return contributionRewardParams;
 };
 
-const setup = async function (accounts,orgNativeTokenFee=0,genesisProtocol = false,tokenAddress=0) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    var testSetup = new helpers.TestSetup();
-   testSetup.fee = 10;
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.contributionReward = await ContributionReward.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
@@ -88,7 +84,6 @@ const setup = async function (accounts,orgNativeTokenFee=0,genesisProtocol = fal
    testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
    testSetup.contributionRewardParams= await setupContributionRewardParams(
                       testSetup.contributionReward,
-                      orgNativeTokenFee,
                       accounts,genesisProtocol,
                       tokenAddress,
                       testSetup.org.avatar);
@@ -104,11 +99,11 @@ contract('ContributionReward', accounts => {
        var contributionReward = await ContributionReward.new();
        var params = await setupContributionRewardParams(contributionReward);
        var parameters = await contributionReward.parameters(params.paramsHash);
-       assert.equal(parameters[2],params.votingMachine.absoluteVote.address);
+       assert.equal(parameters[1],params.votingMachine.absoluteVote.address);
     });
 
     it("proposeContributionReward log", async function() {
-      var testSetup = await setup(accounts,0);
+      var testSetup = await setup(accounts);
       var periodLength = 1;
       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
                                                                      "description-hash",
@@ -131,29 +126,6 @@ contract('ContributionReward', accounts => {
       assert.equal(await helpers.getValueFromLogs(tx, '_externalToken',0), testSetup.standardTokenMock.address, "Wrong log: _externalToken");
       assert.equal(await helpers.getValueFromLogs(tx, '_beneficiary',0), accounts[0], "Wrong log: _beneficiary");
      });
-
-    it("proposeContributionReward fees", async function() {
-       var testSetup = await setup(accounts,14);
-       var periodLength = 1;
-
-       var balanceBefore  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);
-       //give approval to scheme to do the fees transfer
-       await testSetup.org.token.approve(testSetup.contributionReward.address,100);
-       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
-                                                                      web3.utils.asciiToHex("description"),
-                                                                      0,
-                                                                      [0,0,0,periodLength,0],
-                                                                      testSetup.standardTokenMock.address,
-                                                                      accounts[0],
-                                                                      {from:accounts[0]}
-                                                                    );
-       assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "NewContributionProposal");
-       var balance  = await testSetup.org.token.balanceOf(testSetup.org.avatar.address);
-       assert.equal(balance.toNumber(),testSetup.contributionRewardParams.orgNativeTokenFee);
-       balance  = await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address);
-       assert.equal(balance.toNumber(),balanceBefore.toNumber());
-    });
 
     it("proposeContributionReward check beneficiary==0", async() => {
        var testSetup = await setup(accounts);
@@ -498,7 +470,7 @@ contract('ContributionReward', accounts => {
 
    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer", async function() {
      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-     var testSetup = await setup(accounts,0,true,standardTokenMock.address);
+     var testSetup = await setup(accounts,true,standardTokenMock.address);
      var reputationReward = 12;
      var nativeTokenReward = 12;
      var ethReward = 12;
@@ -545,7 +517,7 @@ contract('ContributionReward', accounts => {
     });
     it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer for negative proposal", async function() {
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-      var testSetup = await setup(accounts,0,true,standardTokenMock.address);
+      var testSetup = await setup(accounts,true,standardTokenMock.address);
       var reputationReward = 12;
       var nativeTokenReward = 12;
       var ethReward = 12;
