@@ -294,7 +294,8 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     function collect(uint256 _agreementId) public onlyBeneficiary(_agreementId) {
         Agreement memory agreement = agreements[_agreementId];
         if (agreement.avatar != Avatar(0)) {
-            require(ControllerInterface(agreement.avatar.owner()).isSchemeRegistered(address(this), address(agreement.avatar)));
+            require(ControllerInterface(agreement.avatar.owner())
+                    .isSchemeRegistered(address(this), address(agreement.avatar)));
         }
         uint256 periodsFromStartingBlock = (block.number.sub(agreement.startingBlock)).div(agreement.periodLength);
         require(periodsFromStartingBlock >= agreement.cliffInPeriods);
@@ -325,7 +326,8 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         Agreement memory agreement = agreements[_agreementId];
         delete agreements[_agreementId];
         if (agreement.avatar != Avatar(0)) {
-            require(ControllerInterface(agreement.avatar.owner()).isSchemeRegistered(address(this), address(agreement.avatar)));
+            require(ControllerInterface(agreement.avatar.owner())
+                    .isSchemeRegistered(address(this), address(agreement.avatar)));
         }
         uint256 periodsLeft = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
         uint256 tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
