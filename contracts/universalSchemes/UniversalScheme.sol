@@ -3,21 +3,9 @@ pragma solidity ^0.5.4;
 import "./UniversalSchemeInterface.sol";
 import "../controller/ControllerInterface.sol";
 import "../controller/Avatar.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
-contract UniversalScheme is Ownable, UniversalSchemeInterface {
-    bytes32 public hashedParameters; // For other parameters.
-
-    function updateParameters(
-        bytes32 _hashedParameters
-    )
-        public
-        onlyOwner
-    {
-        hashedParameters = _hashedParameters;
-    }
-
+contract UniversalScheme is UniversalSchemeInterface {
     /**
     *  @dev get the parameters for the current scheme from the controller
     */

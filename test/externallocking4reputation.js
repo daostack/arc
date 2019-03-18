@@ -227,31 +227,6 @@ contract('ExternalLocking4Reputation', accounts => {
            }
     });
 
-    it("initialize is onlyOwner", async () => {
-      var externalLocking4Reputation = await ExternalLocking4Reputation.new();
-      try {
-        await externalLocking4Reputation.initialize(accounts[0],
-                                                       100,
-                                                       0,
-                                                       3000,
-                                                       3000,
-                                                       accounts[0],
-                                                       "lockedTokenBalances(address)",
-                                              {from:accounts[1]});
-        assert(false, "initialize is onlyOwner");
-      } catch(error) {
-        helpers.assertVMException(error);
-      }
-      await externalLocking4Reputation.initialize(accounts[0],
-                                                     100,
-                                                     0,
-                                                     3000,
-                                                     3000,
-                                                     accounts[0],
-                                                     "lockedTokenBalances(address)",
-                                                     {from:accounts[0]});
-    });
-
     it("redeemEnableTime >= lockingEndTime ", async () => {
       var externalLocking4Reputation = await ExternalLocking4Reputation.new();
       try {

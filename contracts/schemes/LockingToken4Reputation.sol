@@ -2,7 +2,6 @@ pragma solidity ^0.5.4;
 
 import "./Locking4Reputation.sol";
 import "./PriceOracleInterface.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../libs/SafeERC20.sol";
 
 
@@ -10,7 +9,7 @@ import "../libs/SafeERC20.sol";
  * @title A scheme for locking ERC20 Tokens for reputation
  */
 
-contract LockingToken4Reputation is Locking4Reputation, Ownable {
+contract LockingToken4Reputation is Locking4Reputation {
     using SafeERC20 for address;
 
     PriceOracleInterface public priceOracleContract;
@@ -42,7 +41,6 @@ contract LockingToken4Reputation is Locking4Reputation, Ownable {
         uint256 _maxLockingPeriod,
         PriceOracleInterface _priceOracleContract)
     external
-    onlyOwner
     {
         priceOracleContract = _priceOracleContract;
         super._initialize(

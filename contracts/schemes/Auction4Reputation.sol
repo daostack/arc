@@ -2,7 +2,6 @@ pragma solidity ^0.5.4;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/ControllerInterface.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../libs/SafeERC20.sol";
 
 /**
@@ -64,7 +63,6 @@ contract Auction4Reputation is Ownable {
         IERC20 _token,
         address _wallet)
     external
-    onlyOwner
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
@@ -116,7 +114,7 @@ contract Auction4Reputation is Ownable {
     function bid(uint256 _amount, uint256 _auctionId) public returns(uint256 auctionId) {
         require(_amount > 0, "bidding amount should be > 0");
         // solhint-disable-next-line not-rely-on-time
-        require(now <= auctionsEndTime, "bidding should be within the allowed bidding period");
+        require(now < auctionsEndTime, "bidding should be within the allowed bidding period");
         // solhint-disable-next-line not-rely-on-time
         require(now >= auctionsStartTime, "bidding is enable only after bidding auctionsStartTime");
         address(token).safeTransferFrom(msg.sender, address(this), _amount);
