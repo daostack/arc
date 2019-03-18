@@ -71,8 +71,8 @@ module.exports = async function(deployer) {
       await upgradeSchemeInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
       var schemeUpgradeParams = await upgradeSchemeInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
 
-      await contributionRewardInst.setParameters(10,voteParametersHash, AbsoluteVoteInst.address);
-      var contributionRewardParams = await contributionRewardInst.getParametersHash(10,voteParametersHash, AbsoluteVoteInst.address);
+      await contributionRewardInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
+      var contributionRewardParams = await contributionRewardInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
 
       var schemesArray = [schemeRegistrarInst.address,
                           globalConstraintRegistrarInst.address,

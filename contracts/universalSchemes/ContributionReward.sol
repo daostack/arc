@@ -67,10 +67,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     mapping(address=>mapping(bytes32=>ContributionProposal)) public organizationsProposals;
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
-    // A contribution fee can be in the organization token or the scheme token or a combination
     struct Parameters {
-      // a fee (in the organization's token) that is to be paid for submitting a contribution
-        uint256 orgNativeTokenFee;
         bytes32 voteApproveParams;
         IntVoteInterface intVote;
     }
@@ -100,17 +97,14 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     * @dev hash the parameters, save them if necessary, and return the hash value
     */
     function setParameters(
-        uint256 _orgNativeTokenFee,
         bytes32 _voteApproveParams,
         IntVoteInterface _intVote
     ) public returns(bytes32)
     {
         bytes32 paramsHash = getParametersHash(
-            _orgNativeTokenFee,
             _voteApproveParams,
             _intVote
         );
-        parameters[paramsHash].orgNativeTokenFee = _orgNativeTokenFee;
         parameters[paramsHash].voteApproveParams = _voteApproveParams;
         parameters[paramsHash].intVote = _intVote;
         return paramsHash;
@@ -118,20 +112,16 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
 
     /**
     * @dev return a hash of the given parameters
-    * @param _orgNativeTokenFee the fee for submitting a contribution in organizations native token
     * @param _voteApproveParams parameters for the voting machine used to approve a contribution
     * @param _intVote the voting machine used to approve a contribution
     * @return a hash of the parameters
     */
-    // TODO: These fees are messy. Better to have a _fee and _feeToken pair,
-    //just as in some other contract (which one?) with some sane default
     function getParametersHash(
-        uint256 _orgNativeTokenFee,
         bytes32 _voteApproveParams,
         IntVoteInterface _intVote
     ) public pure returns(bytes32)
     {
-        return (keccak256(abi.encodePacked(_voteApproveParams, _orgNativeTokenFee, _intVote)));
+        return (keccak256(abi.encodePacked(_voteApproveParams, _intVote)));
     }
 
     /**
@@ -161,10 +151,6 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     {
         validateProposalParams(_reputationChange, _rewards);
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
-        // Pay fees for submitting the contribution:
-        if (controllerParams.orgNativeTokenFee > 0) {
-            _avatar.nativeToken().transferFrom(msg.sender, address(_avatar), controllerParams.orgNativeTokenFee);
-        }
 
         bytes32 contributionId = controllerParams.intVote.propose(
         2,
