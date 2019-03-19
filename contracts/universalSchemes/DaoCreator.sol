@@ -199,14 +199,17 @@ contract DaoCreator {
         if (UController(0) == _uController) {
             controller = ControllerInterface(controllerCreator.create(avatar));
             avatar.transferOwnership(address(controller));
+            // Transfer ownership:
+            nativeToken.transferOwnership(address(controller));
+            nativeReputation.transferOwnership(address(controller));
         } else {
             controller = _uController;
             avatar.transferOwnership(address(controller));
+            // Transfer ownership:
+            nativeToken.transferOwnership(address(controller));
+            nativeReputation.transferOwnership(address(controller));
             _uController.newOrganization(avatar);
         }
-        // Transfer ownership:
-        nativeToken.transferOwnership(address(controller));
-        nativeReputation.transferOwnership(address(controller));
 
         locks[address(avatar)] = msg.sender;
 
