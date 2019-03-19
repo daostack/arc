@@ -95,6 +95,8 @@ contract UController is ControllerInterface {
         require(_avatar.owner() == address(this));
         DAOToken nativeToken = _avatar.nativeToken();
         Reputation nativeReputation = _avatar.nativeReputation();
+        require(nativeToken.owner() == address(this));
+        require(nativeReputation.owner() == address(this));
         //To guaranty uniqueness for the reputation systems.
         require(!reputations[address(nativeReputation)]);
         //To guaranty uniqueness for the nativeToken.

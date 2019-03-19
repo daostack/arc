@@ -19,6 +19,8 @@ const setup = async function (accounts,permission='0x00000000',registerScheme = 
   token  = await DAOToken.new("TEST","TST",0);
   // set up a reputation system
   reputation = await Reputation.new();
+  await token.transferOwnership(uController.address);
+  await reputation.transferOwnership(uController.address);
   avatar = await Avatar.new('name', token.address, reputation.address);
   await avatar.transferOwnership(uController.address);
   if (permission !== '0x00000000'){
@@ -89,7 +91,6 @@ contract('UController',accounts =>  {
 
   it("mint reputation via controller", async () => {
     controller = await  setup(accounts);
-    await reputation.transferOwnership(controller.address);
     let tx =  await controller.mintReputation(amountToMint,accounts[0],avatar.address);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "MintReputation");
@@ -101,7 +102,6 @@ contract('UController',accounts =>  {
 
   it("burn reputation via controller", async () => {
     controller = await  setup(accounts);
-    await reputation.transferOwnership(controller.address);
     await controller.mintReputation(amountToMint,accounts[0],avatar.address);
     let tx =  await controller.burnReputation(amountToMint-1,accounts[0],avatar.address);
     assert.equal(tx.logs.length, 1);
@@ -114,7 +114,6 @@ contract('UController',accounts =>  {
 
   it("mint tokens via controller", async () => {
     controller = await  setup(accounts);
-    await token.transferOwnership(controller.address);
     let tx =  await controller.mintTokens(amountToMint,accounts[0],avatar.address);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "MintTokens");
@@ -294,9 +293,6 @@ contract('UController',accounts =>  {
 
   it("upgrade controller ", async () => {
     controller = await  setup(accounts);
-
-    await reputation.transferOwnership(controller.address);
-    await token.transferOwnership(controller.address);
     var tx = await controller.upgradeController(accounts[1],avatar.address);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "UpgradeController");
@@ -304,8 +300,6 @@ contract('UController',accounts =>  {
 
   it("upgrade controller check permission", async () => {
     controller = await  setup(accounts,'0x00000007');
-    await token.transferOwnership(controller.address);
-    await reputation.transferOwnership(controller.address);
     try{
       await controller.upgradeController(accounts[1],avatar.address);
       assert(false,"scheme with permission 0x00000007 is not allowed to upgrade ");
@@ -447,7 +441,6 @@ contract('UController',accounts =>  {
     it("globalConstraints mintReputation add & remove", async () => {
       controller = await  setup(accounts);
       var globalConstraints = await constraint("mintReputation");
-      await reputation.transferOwnership(controller.address);
       try {
       await controller.mintReputation(amountToMint,accounts[0],avatar.address);
       assert(false,"mint reputation should fail due to the global constraint ");
@@ -471,7 +464,6 @@ contract('UController',accounts =>  {
 
       controller = await  setup(accounts);
       var globalConstraints = await constraint("mintTokens");
-      await token.transferOwnership(controller.address);
       try {
       await controller.mintTokens(amountToMint,accounts[0],avatar.address);
       assert(false,"mint tokens should fail due to the global constraint ");

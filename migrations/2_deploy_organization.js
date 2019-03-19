@@ -36,7 +36,7 @@ var accounts;
 module.exports = async function(deployer) {
     deployer.deploy(ControllerCreator, {gas: constants.ARC_GAS_LIMIT}).then(async function(){
       var controllerCreator = await ControllerCreator.deployed();
-      await deployer.deploy(DaoCreator,controllerCreator.address);
+      await deployer.deploy(DaoCreator,controllerCreator.address, {gas: constants.ARC_GAS_LIMIT});
       var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address,{gas: constants.ARC_GAS_LIMIT});
       // Create DAOstack:
 
