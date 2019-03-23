@@ -52,15 +52,11 @@ contract UController is ControllerInterface {
 
     //mapping between organization's avatar address to Organization
     mapping(address=>Organization) public organizations;
-  // newController will point to the new controller after the present controller is upgraded
-  //  address external newController;
+    // newController will point to the new controller after the present controller is upgraded
+    //  address external newController;
     mapping(address=>address) public newControllers;//mapping between avatar address and newController address
-
-    //mapping for all reputation system addresses registered.
-    mapping(address=>bool) public reputations;
-    //mapping for all tokens addresses registered.
-    mapping(address=>bool) public tokens;
-
+    //mapping for all reputation system and tokens addresses registered.
+    mapping(address=>bool) public actors;
 
     event MintReputation (address indexed _sender, address indexed _to, uint256 _amount, address indexed _avatar);
     event BurnReputation (address indexed _sender, address indexed _from, uint256 _amount, address indexed _avatar);
@@ -98,14 +94,14 @@ contract UController is ControllerInterface {
         require(nativeToken.owner() == address(this));
         require(nativeReputation.owner() == address(this));
         //To guaranty uniqueness for the reputation systems.
-        require(!reputations[address(nativeReputation)]);
+        require(!actors[address(nativeReputation)]);
+        actors[address(nativeReputation)] = true;
         //To guaranty uniqueness for the nativeToken.
-        require(!tokens[address(nativeToken)]);
+        require(!actors[address(nativeToken)]);
+        actors[address(nativeToken)] = true;
         organizations[address(_avatar)].exist = true;
         organizations[address(_avatar)].nativeToken = nativeToken;
         organizations[address(_avatar)].nativeReputation = nativeReputation;
-        reputations[address(nativeReputation)] = true;
-        tokens[address(nativeToken)] = true;
         organizations[address(_avatar)].schemes[msg.sender] =
         Scheme({paramsHash: bytes32(0), permissions: bytes4(0x0000001f)});
         emit RegisterScheme(msg.sender, msg.sender, address(_avatar));
