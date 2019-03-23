@@ -39,7 +39,6 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         uint256 signaturesReqToCancel;
         uint256 collectedPeriods;
         uint256 signaturesReceivedCounter;
-        Avatar avatar;
         mapping(address=>bool) signers;
         mapping(address=>bool) signaturesReceived;
     }
@@ -90,8 +89,13 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         // Define controller and mint tokens, check minting actually took place:
             ControllerInterface controller = ControllerInterface(avatar.owner());
             uint256 tokensToMint = proposedAgreement.amountPerPeriod.mul(proposedAgreement.numOfAgreedPeriods);
+            uint256 balanceBeforeMint =  proposedAgreement.token.balanceOf(address(this));
             require(controller.mintTokens(tokensToMint, address(this), address(avatar)));
-            proposedAgreement.avatar = avatar;
+            // verify the token actually minted.
+            // This is to prevent use of non-standard contracts to claim ownership of a token vested
+            // by another user by returning an incorrect nativeToken value
+            // and always returning true when mintTokens is called.
+            require((proposedAgreement.token.balanceOf(address(this)) - balanceBeforeMint) == tokensToMint);
             agreements[agreementsCounter] = proposedAgreement;
             agreementsCounter++;
         // Log the new agreement:
@@ -293,10 +297,6 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     */
     function collect(uint256 _agreementId) public onlyBeneficiary(_agreementId) {
         Agreement memory agreement = agreements[_agreementId];
-        if (agreement.avatar != Avatar(0)) {
-            require(ControllerInterface(agreement.avatar.owner())
-                    .isSchemeRegistered(address(this), address(agreement.avatar)));
-        }
         uint256 periodsFromStartingBlock = (block.number.sub(agreement.startingBlock)).div(agreement.periodLength);
         require(periodsFromStartingBlock >= agreement.cliffInPeriods);
 
@@ -325,10 +325,6 @@ contract VestingScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     function cancelAgreement(uint256 _agreementId) internal {
         Agreement memory agreement = agreements[_agreementId];
         delete agreements[_agreementId];
-        if (agreement.avatar != Avatar(0)) {
-            require(ControllerInterface(agreement.avatar.owner())
-                    .isSchemeRegistered(address(this), address(agreement.avatar)));
-        }
         uint256 periodsLeft = agreement.numOfAgreedPeriods.sub(agreement.collectedPeriods);
         uint256 tokensLeft = periodsLeft.mul(agreement.amountPerPeriod);
         address(agreement.token).safeTransfer(agreement.returnOnCancelAddress, tokensLeft);
