@@ -46,7 +46,7 @@ const constraint = async function (method, pre=false, post=false) {
 };
 
 contract('UController',accounts =>  {
-
+  
    it("getGlobalConstraintParameters", async() => {
         controller = await setup(accounts);
         // separate cases for pre and post
@@ -84,6 +84,48 @@ contract('UController',accounts =>  {
     try {
       await controller.newOrganization(avatar.address);
       assert(false, 'trying to call new organization with an avatar which already registered should fail.');
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
+  });
+
+  it("newOrganization with same reputation and token", async () => {
+    controller = await  setup(accounts);
+    let fakeAvatar = await Avatar.new("0x1234", reputation.address, token.address);
+    await fakeAvatar.transferOwnership(controller.address);
+    try {
+      await controller.newOrganization(fakeAvatar.address);
+      assert(false, 'trying to call new organization with same reputation and token');
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
+
+    fakeAvatar = await Avatar.new("0x1234", token.address, reputation.address);
+    await fakeAvatar.transferOwnership(controller.address);
+
+    try {
+      await controller.newOrganization(fakeAvatar.address);
+      assert(false, 'trying to call new organization with same reputation and token');
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
+
+    fakeAvatar = await Avatar.new("0x1234", token.address, token.address);
+    await fakeAvatar.transferOwnership(controller.address);
+
+    try {
+      await controller.newOrganization(fakeAvatar.address);
+      assert(false, 'trying to call new organization with same reputation and token');
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
+
+    fakeAvatar = await Avatar.new("0x1234", reputation.address, reputation.address);
+    await fakeAvatar.transferOwnership(controller.address);
+
+    try {
+      await controller.newOrganization(fakeAvatar.address);
+      assert(false, 'trying to call new organization with same reputation and token');
     } catch (ex) {
       helpers.assertVMException(ex);
     }

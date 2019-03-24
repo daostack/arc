@@ -47,20 +47,15 @@ contract UController is ControllerInterface {
         mapping(address=>GlobalConstraintRegister) globalConstraintsRegisterPre;
       // globalConstraintsRegisterPost indicate if a globalConstraints is registered as a Post global constraint.
         mapping(address=>GlobalConstraintRegister) globalConstraintsRegisterPost;
-        bool exist;
     }
 
     //mapping between organization's avatar address to Organization
     mapping(address=>Organization) public organizations;
-  // newController will point to the new controller after the present controller is upgraded
-  //  address external newController;
+    // newController will point to the new controller after the present controller is upgraded
+    //  address external newController;
     mapping(address=>address) public newControllers;//mapping between avatar address and newController address
-
-    //mapping for all reputation system addresses registered.
-    mapping(address=>bool) public reputations;
-    //mapping for all tokens addresses registered.
-    mapping(address=>bool) public tokens;
-
+    //mapping for all reputation system and tokens addresses registered.
+    mapping(address=>bool) public actors;
 
     event MintReputation (address indexed _sender, address indexed _to, uint256 _amount, address indexed _avatar);
     event BurnReputation (address indexed _sender, address indexed _from, uint256 _amount, address indexed _avatar);
@@ -91,21 +86,21 @@ contract UController is ControllerInterface {
         Avatar _avatar
     ) external
     {
-        require(!organizations[address(_avatar)].exist);
+        require(!actors[address(_avatar)]);
+        actors[address(_avatar)] = true;
         require(_avatar.owner() == address(this));
         DAOToken nativeToken = _avatar.nativeToken();
         Reputation nativeReputation = _avatar.nativeReputation();
         require(nativeToken.owner() == address(this));
         require(nativeReputation.owner() == address(this));
         //To guaranty uniqueness for the reputation systems.
-        require(!reputations[address(nativeReputation)]);
+        require(!actors[address(nativeReputation)]);
+        actors[address(nativeReputation)] = true;
         //To guaranty uniqueness for the nativeToken.
-        require(!tokens[address(nativeToken)]);
-        organizations[address(_avatar)].exist = true;
+        require(!actors[address(nativeToken)]);
+        actors[address(nativeToken)] = true;
         organizations[address(_avatar)].nativeToken = nativeToken;
         organizations[address(_avatar)].nativeReputation = nativeReputation;
-        reputations[address(nativeReputation)] = true;
-        tokens[address(nativeToken)] = true;
         organizations[address(_avatar)].schemes[msg.sender] =
         Scheme({paramsHash: bytes32(0), permissions: bytes4(0x0000001f)});
         emit RegisterScheme(msg.sender, msg.sender, address(_avatar));

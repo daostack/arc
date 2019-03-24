@@ -78,7 +78,7 @@ contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
         uint256 lockedAmount;
         // solhint-disable-next-line no-inline-assembly
         assembly {
-            lockedAmount := mload(add(returnValue, add(0x20, 0)))
+            lockedAmount := mload(add(returnValue, 0x20))
         }
         return super._lock(lockedAmount, 1, beneficiary, 1, 1);
     }
