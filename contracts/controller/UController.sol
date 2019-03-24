@@ -47,7 +47,6 @@ contract UController is ControllerInterface {
         mapping(address=>GlobalConstraintRegister) globalConstraintsRegisterPre;
       // globalConstraintsRegisterPost indicate if a globalConstraints is registered as a Post global constraint.
         mapping(address=>GlobalConstraintRegister) globalConstraintsRegisterPost;
-        bool exist;
     }
 
     //mapping between organization's avatar address to Organization
@@ -87,7 +86,8 @@ contract UController is ControllerInterface {
         Avatar _avatar
     ) external
     {
-        require(!organizations[address(_avatar)].exist);
+        require(!actors[address(_avatar)]);
+        actors[address(_avatar)] = true;
         require(_avatar.owner() == address(this));
         DAOToken nativeToken = _avatar.nativeToken();
         Reputation nativeReputation = _avatar.nativeReputation();
@@ -99,7 +99,6 @@ contract UController is ControllerInterface {
         //To guaranty uniqueness for the nativeToken.
         require(!actors[address(nativeToken)]);
         actors[address(nativeToken)] = true;
-        organizations[address(_avatar)].exist = true;
         organizations[address(_avatar)].nativeToken = nativeToken;
         organizations[address(_avatar)].nativeReputation = nativeReputation;
         organizations[address(_avatar)].schemes[msg.sender] =
