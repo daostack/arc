@@ -9,7 +9,7 @@ import "../libs/SafeERC20.sol";
  */
 
 
-contract Auction4Reputation is Ownable {
+contract Auction4Reputation {
     using SafeMath for uint256;
     using SafeERC20 for address;
 

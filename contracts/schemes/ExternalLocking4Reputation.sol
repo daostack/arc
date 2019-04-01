@@ -6,7 +6,7 @@ import "./Locking4Reputation.sol";
  * @title A scheme for external locking Tokens for reputation
  */
 
-contract ExternalLocking4Reputation is Locking4Reputation, Ownable {
+contract ExternalLocking4Reputation is Locking4Reputation {
 
     event Register(address indexed _beneficiary);
 
