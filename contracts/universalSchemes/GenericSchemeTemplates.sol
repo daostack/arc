@@ -13,6 +13,7 @@ contract GenericSchemeTemplates is UniversalScheme, VotingMachineCallbacks, Prop
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
 
+    // eslint-disable-next-line max-line-length
     event NewTemplateProposal(bytes32 indexed proposalId, address indexed _avatar, address indexed _genericScheme, string _name, address _contract, string _abi);
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
@@ -68,6 +69,30 @@ contract GenericSchemeTemplates is UniversalScheme, VotingMachineCallbacks, Prop
     mapping(address=>mapping(bytes32=>Proposal)) public organizationsProposals;
 
     /**
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    */
+    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        ProposalInfo memory proposalInfo = proposalsInfo[msg.sender][_proposalId];
+        Proposal memory proposal = organizationsProposals[address(proposalInfo.avatar)][_proposalId];
+        require(proposalInfo.avatar == proposal.avatar);
+        require(proposal.executionTime == 0);
+        require(bytes(proposal.name).length != 0);
+        require(proposal.theContract != address(0));
+        require(proposal.avatar != Avatar(0));
+        require(proposal.genericScheme != GenericScheme(0));
+        require(bytes(proposal.abi).length != 0);
+        // Check if vote was successful:
+        if (_param == 1) {
+          // solhint-disable-next-line not-rely-on-time
+            organizationsProposals[address(proposal.avatar)][_proposalId].executionTime = now;
+        }
+        emit ProposalExecuted(address(proposal.avatar), _proposalId, _param);
+        return true;
+    }
+
+    /**
     * @dev Submit a proposal
     */
     function propose(
@@ -100,7 +125,7 @@ contract GenericSchemeTemplates is UniversalScheme, VotingMachineCallbacks, Prop
     public
     returns(bytes32)
     {
-        validateProposalParams(_avatar,_genericScheme,_abi,_name,_contract);
+        validateProposalParams(_avatar, _genericScheme, _abi, _name, _contract);
 
         Parameters memory controllerParams = parameters[getParametersFromController(_avatar)];
 
@@ -136,30 +161,6 @@ contract GenericSchemeTemplates is UniversalScheme, VotingMachineCallbacks, Prop
             avatar:_avatar
         });
         return proposalId;
-    }
-
-    /**
-    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _param a parameter of the voting result, 1 yes and 2 is no.
-    */
-    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        ProposalInfo memory proposalInfo = proposalsInfo[msg.sender][_proposalId];
-        Proposal memory proposal = organizationsProposals[address(proposalInfo.avatar)][_proposalId];
-        require(proposalInfo.avatar == proposal.avatar);
-        require(proposal.executionTime == 0);
-        require(bytes(proposal.name).length != 0);
-        require(proposal.theContract != address(0));
-        require(proposal.avatar != Avatar(0));
-        require(proposal.genericScheme != GenericScheme(0));
-        require(bytes(proposal.abi).length != 0);
-        // Check if vote was successful:
-        if (_param == 1) {
-          // solhint-disable-next-line not-rely-on-time
-            organizationsProposals[address(proposal.avatar)][_proposalId].executionTime = now;
-        }
-        emit ProposalExecuted(address(proposal.avatar), _proposalId, _param);
-        return true;
     }
 
     function validateProposalParams(
