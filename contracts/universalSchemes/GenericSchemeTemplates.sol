@@ -13,7 +13,7 @@ contract GenericSchemeTemplates is UniversalScheme, VotingMachineCallbacks, Prop
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
 
-    // sollint-disable-next-line max-line-length
+    // solint-disable-next-line max-line-length
     event NewTemplateProposal(bytes32 indexed proposalId, address indexed _avatar, address indexed _genericScheme, string _name, address _contract, string _abi);
 
     // A mapping from hashes to parameters (use to store a particular configuration on the controller)
