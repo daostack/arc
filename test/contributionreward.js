@@ -559,6 +559,7 @@ contract('ContributionReward', accounts => {
       await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[1]});
       await standardTokenMock.approve(testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,1000);
       await testSetup.contributionRewardParams.votingMachine.genesisProtocol.stake(proposalId,1,1000);
+      assert.equal(  (await testSetup.contributionRewardParams.votingMachine.genesisProtocol.proposals(proposalId)).state,5); 
       await helpers.increaseTime(60+1);
       var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
       var redeemRewards = await arcUtils.redeem.call(proposalId,testSetup.org.avatar.address,accounts[0]);
