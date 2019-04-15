@@ -515,6 +515,50 @@ contract('ContributionReward', accounts => {
      var reputationGainAsProposer = proposingRepRewardConstA;
      assert.equal(reputation, 1000+reputationGainAsVoter + reputationGainAsProposer);
     });
+
+    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer with beneficiary as NULL_ADDRESS", async function() {
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,true,standardTokenMock.address);
+      var reputationReward = 12;
+      var nativeTokenReward = 12;
+      var ethReward = 12;
+      var periodLength = 50;
+      var numberOfPeriods = 1;
+      //send some ether to the org avatar
+      var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
+      await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+      var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                     web3.utils.asciiToHex("description"),
+                                                                     reputationReward,
+                                                                     [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
+                                                                     testSetup.standardTokenMock.address,
+                                                                     otherAvatar.address
+                                                                   );
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+      await helpers.increaseTime(periodLength+1);
+      var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
+      var redeemRewards = await arcUtils.redeem.call(proposalId,testSetup.org.avatar.address,helpers.NULL_ADDRESS);
+      assert.equal(redeemRewards[0][1],0); //redeemRewards[0] gpRewards
+      assert.equal(redeemRewards[0][2],0);
+      assert.equal(redeemRewards[1][0],0); //daoBountyRewards
+      assert.equal(redeemRewards[1][1],0); //daoBountyRewards
+      assert.equal(redeemRewards[2],false); //isExecuted
+      assert.equal(redeemRewards[3],1); //winningVote
+      assert.equal(redeemRewards[4],reputationReward); //crReputationReward
+      assert.equal(redeemRewards[5],nativeTokenReward); //crNativeTokenReward
+      assert.equal(redeemRewards[6],ethReward); //crEthReward
+      assert.equal(redeemRewards[7],0); //crExternalTokenReward
+
+      await arcUtils.redeem(proposalId,testSetup.org.avatar.address,helpers.NULL_ADDRESS);
+
+      var eth = await web3.eth.getBalance(otherAvatar.address);
+      assert.equal(eth,ethReward);
+      assert.equal(await testSetup.org.reputation.balanceOf(otherAvatar.address),reputationReward);
+      assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
+     });
+
     it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer for negative proposal", async function() {
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
       var testSetup = await setup(accounts,true,standardTokenMock.address);
