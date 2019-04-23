@@ -74,7 +74,11 @@ contract LockingToken4Reputation is Locking4Reputation {
      * @param _token the token to lock - this should be whitelisted at the priceOracleContract
      * @return lockingId
      */
-    function lock(uint256 _amount, uint256 _period, address _token, bytes32 _agreementHash) public returns(bytes32 lockingId) {
+    function lock(uint256 _amount,
+        uint256 _period,
+        address _token,
+        bytes32 _agreementHash)
+    public returns(bytes32 lockingId) {
 
         uint256 numerator;
         uint256 denominator;
