@@ -36,6 +36,7 @@ contract Locking4Reputation {
     uint256 public maxLockingPeriod;
     uint256 public lockingStartTime;
     uint256 public redeemEnableTime;
+    bytes32 public agreementHash;
 
     /**
      * @dev redeem reputation function
@@ -93,11 +94,13 @@ contract Locking4Reputation {
         uint256 _period,
         address _locker,
         uint256 _numerator,
-        uint256 _denominator)
+        uint256 _denominator,
+        bytes32 _agreementHash)
         internal
         returns(bytes32 lockingId)
         {
         require(_amount > 0, "locking amount should be > 0");
+        require(_agreementHash == agreementHash, "Sender must send the right agreementHash");
         require(_period <= maxLockingPeriod, "locking period should be <= maxLockingPeriod");
         require(_period > 0, "locking period should be > 0");
         // solhint-disable-next-line not-rely-on-time
@@ -143,7 +146,8 @@ contract Locking4Reputation {
         uint256 _lockingStartTime,
         uint256 _lockingEndTime,
         uint256 _redeemEnableTime,
-        uint256 _maxLockingPeriod)
+        uint256 _maxLockingPeriod,
+        bytes32 _agreementHash )
     internal
     {
         require(avatar == Avatar(0), "can be called only one time");
@@ -158,6 +162,7 @@ contract Locking4Reputation {
         avatar = _avatar;
         lockingStartTime = _lockingStartTime;
         redeemEnableTime = _redeemEnableTime;
+        agreementHash = _agreementHash;
     }
 
 }
