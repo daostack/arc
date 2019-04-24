@@ -25,4 +25,15 @@ contract('Agreement', accounts => {
         helpers.assertVMException(error);
       }
     });
+
+    it("onlyAgree", async () => {
+      let testSetup = await setup(accounts);
+      await testSetup.agreementMock.test(helpers.SOME_HASH);
+      try {
+        await testSetup.agreementMock.test(helpers.NULL_HASH);
+        assert(false, "onlyAgree");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
 });
