@@ -1,9 +1,5 @@
 pragma solidity ^0.5.4;
 
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "../controller/ControllerInterface.sol";
-import "../libs/SafeERC20.sol";
-
 /**
  * @title A scheme for conduct ERC20 Tokens auction for reputation
  */
