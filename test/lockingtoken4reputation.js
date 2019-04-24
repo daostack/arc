@@ -75,7 +75,7 @@ contract('LockingToken4Reputation', accounts => {
       assert.equal(await testSetup.lockingToken4Reputation.lockingEndTime(),testSetup.lockingEndTime);
       assert.equal(await testSetup.lockingToken4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.lockingToken4Reputation.priceOracleContract(),testSetup.priceOracleMock.address);
-      assert.equal(await testSetup.lockingToken4Reputation.agreementHash(),testSetup.agreementHash);
+      assert.equal(await testSetup.lockingToken4Reputation.getAgreementHash(),testSetup.agreementHash);
     });
 
     it("lock", async () => {

@@ -45,7 +45,7 @@ contract('LockingEth4Reputation', accounts => {
       assert.equal(await testSetup.lockingEth4Reputation.maxLockingPeriod(),6000);
       assert.equal(await testSetup.lockingEth4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.lockingEth4Reputation.lockingEndTime(),testSetup.lockingEndTime);
-      assert.equal(await testSetup.lockingEth4Reputation.agreementHash(),testSetup.agreementHash);
+      assert.equal(await testSetup.lockingEth4Reputation.getAgreementHash(),testSetup.agreementHash);
     });
 
     it("lock", async () => {

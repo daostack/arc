@@ -89,8 +89,7 @@ contract ExternalLocking4Reputation is Locking4Reputation {
     * @dev register function
     *      register for external locking claim
     */
-    function register(bytes32 _agreementHash) public {
-        require(_agreementHash == agreementHash, "Sender must send the right agreementHash");
+    function register(bytes32 _agreementHash) public onlyAgree(_agreementHash) {
         registrar[msg.sender] = true;
         emit Register(msg.sender);
     }

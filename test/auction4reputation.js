@@ -57,7 +57,7 @@ contract('Auction4Reputation', accounts => {
       assert.equal(await testSetup.auction4Reputation.numberOfAuctions(),3);
       assert.equal(await testSetup.auction4Reputation.wallet(),testSetup.org.avatar.address);
       assert.equal(await testSetup.auction4Reputation.auctionPeriod(),testSetup.auctionPeriod);
-      assert.equal(await testSetup.auction4Reputation.agreementHash(),testSetup.agreementHash);
+      assert.equal(await testSetup.auction4Reputation.getAgreementHash(),testSetup.agreementHash);
     });
 
     it("initialize numberOfAuctions = 0  is not allowed", async () => {

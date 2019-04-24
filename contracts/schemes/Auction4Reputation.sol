@@ -3,13 +3,14 @@ pragma solidity ^0.5.4;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/ControllerInterface.sol";
 import "../libs/SafeERC20.sol";
+import "./Agreement.sol";
 
 /**
  * @title A scheme for conduct ERC20 Tokens auction for reputation
  */
 
 
-contract Auction4Reputation {
+contract Auction4Reputation is Agreement {
     using SafeMath for uint256;
     using SafeERC20 for address;
 
@@ -35,7 +36,6 @@ contract Auction4Reputation {
     uint256 public redeemEnableTime;
     IERC20 public token;
     address public wallet;
-    bytes32 public agreementHash;
 
     /**
      * @dev initialize
@@ -83,7 +83,7 @@ contract Auction4Reputation {
         auctionReputationReward = _auctionReputationReward;
         reputationRewardLeft = _auctionReputationReward.mul(_numberOfAuctions);
         redeemEnableTime = _redeemEnableTime;
-        agreementHash = _agreementHash;
+        super.setAgreementHash(_agreementHash);
     }
 
     /**
@@ -115,9 +115,12 @@ contract Auction4Reputation {
      * @param _auctionId the auction id to bid at .
      * @return auctionId
      */
-    function bid(uint256 _amount, uint256 _auctionId, bytes32 _agreementHash) public returns(uint256 auctionId) {
+    function bid(uint256 _amount, uint256 _auctionId, bytes32 _agreementHash)
+    public
+    onlyAgree(_agreementHash)
+    returns(uint256 auctionId)
+    {
         require(_amount > 0, "bidding amount should be > 0");
-        require(_agreementHash == agreementHash, "Sender must send the right agreementHash");
         // solhint-disable-next-line not-rely-on-time
         require(now < auctionsEndTime, "bidding should be within the allowed bidding period");
         // solhint-disable-next-line not-rely-on-time

@@ -46,7 +46,7 @@ contract('ExternalLocking4Reputation', accounts => {
       assert.equal(await testSetup.externalLocking4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.externalLocking4Reputation.externalLockingContract(),testSetup.extetnalTokenLockerMock.address);
       assert.equal(await testSetup.externalLocking4Reputation.getBalanceFuncSignature(),"lockedTokenBalances(address)");
-      assert.equal(await testSetup.externalLocking4Reputation.agreementHash(),testSetup.agreementHash);
+      assert.equal(await testSetup.externalLocking4Reputation.getAgreementHash(),testSetup.agreementHash);
     });
 
     it("externalLockingMock is onlyOwner", async () => {
