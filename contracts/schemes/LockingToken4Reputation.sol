@@ -39,7 +39,8 @@ contract LockingToken4Reputation is Locking4Reputation {
         uint256 _lockingEndTime,
         uint256 _redeemEnableTime,
         uint256 _maxLockingPeriod,
-        PriceOracleInterface _priceOracleContract)
+        PriceOracleInterface _priceOracleContract,
+        bytes32 _agreementHash)
     external
     {
         priceOracleContract = _priceOracleContract;
@@ -49,7 +50,8 @@ contract LockingToken4Reputation is Locking4Reputation {
         _lockingStartTime,
         _lockingEndTime,
         _redeemEnableTime,
-        _maxLockingPeriod);
+        _maxLockingPeriod,
+        _agreementHash);
     }
 
     /**
@@ -72,7 +74,11 @@ contract LockingToken4Reputation is Locking4Reputation {
      * @param _token the token to lock - this should be whitelisted at the priceOracleContract
      * @return lockingId
      */
-    function lock(uint256 _amount, uint256 _period, address _token) public returns(bytes32 lockingId) {
+    function lock(uint256 _amount,
+        uint256 _period,
+        address _token,
+        bytes32 _agreementHash)
+    public returns(bytes32 lockingId) {
 
         uint256 numerator;
         uint256 denominator;
@@ -84,7 +90,7 @@ contract LockingToken4Reputation is Locking4Reputation {
 
         _token.safeTransferFrom(msg.sender, address(this), _amount);
 
-        lockingId = super._lock(_amount, _period, msg.sender, numerator, denominator);
+        lockingId = super._lock(_amount, _period, msg.sender, numerator, denominator, _agreementHash);
 
         lockedTokens[lockingId] = _token;
 

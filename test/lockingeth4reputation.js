@@ -11,6 +11,7 @@ const setup = async function (accounts,
                              _lockingEndTime = 3000,
                              _redeemEnableTime = 3000,
                              _maxLockingPeriod = 6000,
+                             _agreementHash = helpers.SOME_HASH,
                              _initialize = true) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
@@ -20,13 +21,15 @@ const setup = async function (accounts,
    testSetup.lockingStartTime = (await web3.eth.getBlock("latest")).timestamp + _lockingStartTime;
    testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
    testSetup.lockingEth4Reputation = await LockingEth4Reputation.new();
+   testSetup.agreementHash = _agreementHash;
    if (_initialize === true) {
       await testSetup.lockingEth4Reputation.initialize(testSetup.org.avatar.address,
                                                           _repAllocation,
                                                           testSetup.lockingStartTime,
                                                           testSetup.lockingEndTime,
                                                           testSetup.redeemEnableTime,
-                                                          _maxLockingPeriod);
+                                                          _maxLockingPeriod,
+                                                          testSetup.agreementHash);
    }
 
 
@@ -42,11 +45,12 @@ contract('LockingEth4Reputation', accounts => {
       assert.equal(await testSetup.lockingEth4Reputation.maxLockingPeriod(),6000);
       assert.equal(await testSetup.lockingEth4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.lockingEth4Reputation.lockingEndTime(),testSetup.lockingEndTime);
+      assert.equal(await testSetup.lockingEth4Reputation.getAgreementHash(),testSetup.agreementHash);
     });
 
     it("lock", async () => {
       let testSetup = await setup(accounts);
-      var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+      var tx = await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
       var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
       assert.equal(tx.logs.length,1);
       assert.equal(tx.logs[0].event,"Lock");
@@ -56,7 +60,7 @@ contract('LockingEth4Reputation', accounts => {
       assert.equal(tx.logs[0].args._locker,accounts[0]);
 
       assert.equal(await testSetup.lockingEth4Reputation.totalScore(),100*web3.utils.toWei('1', "ether"));
-      await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+      await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
       assert.equal(await testSetup.lockingEth4Reputation.totalScore(),2*100*web3.utils.toWei('1', "ether"));
 
     });
@@ -67,7 +71,7 @@ contract('LockingEth4Reputation', accounts => {
       BigNumber.set({ DECIMAL_PLACES: 0, ROUNDING_MODE: 4 });
       let maxUint = ((new BigNumber(2)).toPower(256).sub(1)).div(100).add(1);
       try {
-        await testSetup.lockingEth4Reputation.lock(1,{value:maxUint.toString(10)});
+        await testSetup.lockingEth4Reputation.lock(1,testSetup.agreementHash,{value:maxUint.toString(10)});
         assert(false, "score too high should revert");
       } catch(error) {
         helpers.assertVMException(error);
@@ -76,10 +80,20 @@ contract('LockingEth4Reputation', accounts => {
     });
 
     it("cannot lock without initialize", async () => {
-      let testSetup = await setup(accounts,100,0,3000,3000,6000,false);
+      let testSetup = await setup(accounts,100,0,3000,3000,6000,helpers.SOME_HASH,false);
       try {
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         assert(false, "cannot lock without initialize");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("cannot lock with wrong agreementHash", async () => {
+      let testSetup = await setup(accounts);
+      try {
+        await testSetup.lockingEth4Reputation.lock(100,helpers.NULL_HASH,{value:web3.utils.toWei('1', "ether")});
+        assert(false, "cannot lock with wrong agreementHash");
       } catch(error) {
         helpers.assertVMException(error);
       }
@@ -88,7 +102,7 @@ contract('LockingEth4Reputation', accounts => {
     it("lock with value == 0 should revert", async () => {
       let testSetup = await setup(accounts);
       try {
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('0', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('0', "ether")});
         assert(false, "lock with value == 0 should revert");
       } catch(error) {
         helpers.assertVMException(error);
@@ -98,7 +112,7 @@ contract('LockingEth4Reputation', accounts => {
     it("lock before start should revert", async () => {
       let testSetup = await setup(accounts,100,1000);
       try {
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         assert(false, "lock before start should  revert");
       } catch(error) {
         helpers.assertVMException(error);
@@ -109,7 +123,7 @@ contract('LockingEth4Reputation', accounts => {
       let testSetup = await setup(accounts);
       await helpers.increaseTime(3001);
       try {
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         assert(false, "lock after _lockingEndTime should revert");
       } catch(error) {
         helpers.assertVMException(error);
@@ -119,7 +133,7 @@ contract('LockingEth4Reputation', accounts => {
     it("lock with period == 0 should revert", async () => {
       let testSetup = await setup(accounts);
       try {
-        await testSetup.lockingEth4Reputation.lock(0,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(0,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         assert(false, "lock with period == 0 should revert");
       } catch(error) {
         helpers.assertVMException(error);
@@ -129,7 +143,7 @@ contract('LockingEth4Reputation', accounts => {
     it("lock over _maxLockingPeriod should revert", async () => {
       let testSetup = await setup(accounts);
       try {
-        await testSetup.lockingEth4Reputation.lock(6001,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(6001,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         assert(false, "lock over _maxLockingPeriod should revert");
       } catch(error) {
         helpers.assertVMException(error);
@@ -138,7 +152,7 @@ contract('LockingEth4Reputation', accounts => {
 
     it("release", async () => {
       let testSetup = await setup(accounts);
-      var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+      var tx = await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
       var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
       await helpers.increaseTime(101);
       tx = await testSetup.lockingEth4Reputation.release(accounts[0],lockingId);
@@ -151,7 +165,7 @@ contract('LockingEth4Reputation', accounts => {
 
     it("release totallockleft", async () => {
       let testSetup = await setup(accounts);
-      var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+      var tx = await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
       assert.equal(web3.utils.toWei('1', "ether"),await testSetup.lockingEth4Reputation.totalLocked());
       assert.equal(web3.utils.toWei('1', "ether"),await testSetup.lockingEth4Reputation.totalLockedLeft());
       var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
@@ -159,7 +173,7 @@ contract('LockingEth4Reputation', accounts => {
       tx = await testSetup.lockingEth4Reputation.release(accounts[0],lockingId);
       assert.equal(web3.utils.toWei('1', "ether"),await testSetup.lockingEth4Reputation.totalLocked());
       assert.equal(0,await testSetup.lockingEth4Reputation.totalLockedLeft());
-      await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether"),from:accounts[1]});
+      await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether"),from:accounts[1]});
       assert.equal(web3.utils.toWei('2', "ether"),await testSetup.lockingEth4Reputation.totalLocked());
       assert.equal(web3.utils.toWei('1', "ether"),await testSetup.lockingEth4Reputation.totalLockedLeft());
       assert.equal(tx.logs.length,1);
@@ -172,7 +186,7 @@ contract('LockingEth4Reputation', accounts => {
 
     it("release before locking period should revert", async () => {
       let testSetup = await setup(accounts);
-      var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+      var tx = await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
       var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
       try {
         await testSetup.lockingEth4Reputation.release(accounts[0],lockingId);
@@ -184,7 +198,7 @@ contract('LockingEth4Reputation', accounts => {
 
     it("release cannot release twice", async () => {
         let testSetup = await setup(accounts);
-        var tx = await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        var tx = await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
         await helpers.increaseTime(101);
         await testSetup.lockingEth4Reputation.release(accounts[0],lockingId);
@@ -198,7 +212,7 @@ contract('LockingEth4Reputation', accounts => {
 
     it("redeem", async () => {
         let testSetup = await setup(accounts);
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(3001);
         var tx = await testSetup.lockingEth4Reputation.redeem(accounts[0]);
         assert.equal(tx.logs.length,1);
@@ -210,8 +224,8 @@ contract('LockingEth4Reputation', accounts => {
 
     it("redeem score ", async () => {
         let testSetup = await setup(accounts);
-        await testSetup.lockingEth4Reputation.lock(100,{from:accounts[0],value:web3.utils.toWei('1', "ether")});
-        await testSetup.lockingEth4Reputation.lock(300,{from:accounts[1],value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{from:accounts[0],value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(300,testSetup.agreementHash,{from:accounts[1],value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(3001);
         await testSetup.lockingEth4Reputation.redeem(accounts[0]);
         await testSetup.lockingEth4Reputation.redeem(accounts[1]);
@@ -221,7 +235,7 @@ contract('LockingEth4Reputation', accounts => {
 
     it("redeem cannot redeem twice", async () => {
         let testSetup = await setup(accounts);
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(3001);
         await testSetup.lockingEth4Reputation.redeem(accounts[0]);
         try {
@@ -234,7 +248,7 @@ contract('LockingEth4Reputation', accounts => {
 
     it("redeem before lockingEndTime should revert", async () => {
         let testSetup = await setup(accounts);
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(50);
         try {
              await testSetup.lockingEth4Reputation.redeem(accounts[0]);
@@ -245,8 +259,8 @@ contract('LockingEth4Reputation', accounts => {
     });
 
     it("redeem before redeemEnableTime should revert", async () => {
-        let testSetup = await setup(accounts,100,0,3000,4000,6000,true);
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        let testSetup = await setup(accounts,100,0,3000,4000,6000,helpers.agreementHash,true);
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(3500);
         try {
              await testSetup.lockingEth4Reputation.redeem(accounts[0]);
@@ -266,7 +280,8 @@ contract('LockingEth4Reputation', accounts => {
                                                                  testSetup.lockingStartTime,
                                                                  testSetup.lockingEndTime,
                                                                  testSetup.redeemEnableTime,
-                                                                 6000);
+                                                                 6000,
+                                                                 testSetup.agreementHash);
              assert(false, "cannot initialize twice");
            } catch(error) {
              helpers.assertVMException(error);
@@ -281,7 +296,8 @@ contract('LockingEth4Reputation', accounts => {
                                                   0,
                                                   100,
                                                   100-1,
-                                                  6000);
+                                                  6000,
+                                                  helpers.SOME_HASH);
         assert(false, "redeemEnableTime >= lockingEndTime");
       } catch(error) {
         helpers.assertVMException(error);
@@ -291,12 +307,13 @@ contract('LockingEth4Reputation', accounts => {
                                                 0,
                                                 100,
                                                 100,
-                                                6000);
+                                                6000,
+                                                helpers.SOME_HASH);
     });
 
     it("get earned reputation", async () => {
         let testSetup = await setup(accounts);
-        await testSetup.lockingEth4Reputation.lock(100,{value:web3.utils.toWei('1', "ether")});
+        await testSetup.lockingEth4Reputation.lock(100,testSetup.agreementHash,{value:web3.utils.toWei('1', "ether")});
         await helpers.increaseTime(3001);
         const reputation = await testSetup.lockingEth4Reputation.redeem.call(accounts[0]);
         assert.equal(reputation,100);

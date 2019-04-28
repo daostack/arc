@@ -26,7 +26,8 @@ contract LockingEth4Reputation is Locking4Reputation {
         uint256 _lockingStartTime,
         uint256 _lockingEndTime,
         uint256 _redeemEnableTime,
-        uint256 _maxLockingPeriod)
+        uint256 _maxLockingPeriod,
+        bytes32 _agreementHash )
     external
     {
         super._initialize(
@@ -35,7 +36,8 @@ contract LockingEth4Reputation is Locking4Reputation {
         _lockingStartTime,
         _lockingEndTime,
         _redeemEnableTime,
-        _maxLockingPeriod);
+        _maxLockingPeriod,
+        _agreementHash);
     }
 
     /**
@@ -56,8 +58,8 @@ contract LockingEth4Reputation is Locking4Reputation {
      * @param _period the locking period
      * @return lockingId the unique Id
      */
-    function lock(uint256 _period) public payable returns(bytes32 lockingId) {
-        return super._lock(msg.value, _period, msg.sender, 1, 1);
+    function lock(uint256 _period, bytes32 _agreementHash) public payable returns(bytes32 lockingId) {
+        return super._lock(msg.value, _period, msg.sender, 1, 1, _agreementHash);
     }
 
 }

@@ -1,13 +1,13 @@
 pragma solidity ^0.5.4;
 
 import "../controller/ControllerInterface.sol";
-
+import "./Agreement.sol";
 
 /**
  * @title A locker contract
  */
 
-contract Locking4Reputation {
+contract Locking4Reputation is Agreement {
     using SafeMath for uint256;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
@@ -93,8 +93,10 @@ contract Locking4Reputation {
         uint256 _period,
         address _locker,
         uint256 _numerator,
-        uint256 _denominator)
+        uint256 _denominator,
+        bytes32 _agreementHash)
         internal
+        onlyAgree(_agreementHash)
         returns(bytes32 lockingId)
         {
         require(_amount > 0, "locking amount should be > 0");
@@ -143,7 +145,8 @@ contract Locking4Reputation {
         uint256 _lockingStartTime,
         uint256 _lockingEndTime,
         uint256 _redeemEnableTime,
-        uint256 _maxLockingPeriod)
+        uint256 _maxLockingPeriod,
+        bytes32 _agreementHash )
     internal
     {
         require(avatar == Avatar(0), "can be called only one time");
@@ -158,6 +161,7 @@ contract Locking4Reputation {
         avatar = _avatar;
         lockingStartTime = _lockingStartTime;
         redeemEnableTime = _redeemEnableTime;
+        super.setAgreementHash(_agreementHash);
     }
 
 }

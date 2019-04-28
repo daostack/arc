@@ -39,7 +39,8 @@ contract ExternalLocking4Reputation is Locking4Reputation {
         uint256 _claimingEndTime,
         uint256 _redeemEnableTime,
         address _externalLockingContract,
-        string calldata _getBalanceFuncSignature)
+        string calldata _getBalanceFuncSignature,
+        bytes32 _agreementHash)
     external
     {
         require(_claimingEndTime > _claimingStartTime, "_claimingEndTime should be greater than _claimingStartTime");
@@ -51,7 +52,8 @@ contract ExternalLocking4Reputation is Locking4Reputation {
         _claimingStartTime,
         _claimingEndTime,
         _redeemEnableTime,
-        1);
+        1,
+        _agreementHash);
     }
 
     /**
@@ -60,7 +62,7 @@ contract ExternalLocking4Reputation is Locking4Reputation {
      *        if _beneficiary == 0 the claim will be for the msg.sender.
      * @return claimId
      */
-    function claim(address _beneficiary) public returns(bytes32) {
+    function claim(address _beneficiary, bytes32 _agreementHash) public returns(bytes32) {
         require(avatar != Avatar(0), "should initialize first");
         address beneficiary;
         if (_beneficiary == address(0)) {
@@ -80,14 +82,14 @@ contract ExternalLocking4Reputation is Locking4Reputation {
         assembly {
             lockedAmount := mload(add(returnValue, 0x20))
         }
-        return super._lock(lockedAmount, 1, beneficiary, 1, 1);
+        return super._lock(lockedAmount, 1, beneficiary, 1, 1, _agreementHash);
     }
 
    /**
     * @dev register function
     *      register for external locking claim
     */
-    function register() public {
+    function register(bytes32 _agreementHash) public onlyAgree(_agreementHash) {
         registrar[msg.sender] = true;
         emit Register(msg.sender);
     }

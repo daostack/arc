@@ -3,13 +3,14 @@ pragma solidity ^0.5.4;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/ControllerInterface.sol";
 import "../libs/SafeERC20.sol";
+import "./Agreement.sol";
 
 /**
  * @title A scheme for conduct ERC20 Tokens auction for reputation
  */
 
 
-contract Auction4Reputation {
+contract Auction4Reputation is Agreement {
     using SafeMath for uint256;
     using SafeERC20 for address;
 
@@ -52,6 +53,7 @@ contract Auction4Reputation {
      * @param  _wallet the address of the wallet the token will be transfer to.
      *         Please note that _wallet address should be a trusted account.
      *         Normally this address should be set as the DAO's avatar address.
+     * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
     function initialize(
         Avatar _avatar,
@@ -61,7 +63,8 @@ contract Auction4Reputation {
         uint256 _numberOfAuctions,
         uint256 _redeemEnableTime,
         IERC20 _token,
-        address _wallet)
+        address _wallet,
+        bytes32 _agreementHash )
     external
     {
         require(avatar == Avatar(0), "can be called only one time");
@@ -80,6 +83,7 @@ contract Auction4Reputation {
         auctionReputationReward = _auctionReputationReward;
         reputationRewardLeft = _auctionReputationReward.mul(_numberOfAuctions);
         redeemEnableTime = _redeemEnableTime;
+        super.setAgreementHash(_agreementHash);
     }
 
     /**
@@ -111,7 +115,11 @@ contract Auction4Reputation {
      * @param _auctionId the auction id to bid at .
      * @return auctionId
      */
-    function bid(uint256 _amount, uint256 _auctionId) public returns(uint256 auctionId) {
+    function bid(uint256 _amount, uint256 _auctionId, bytes32 _agreementHash)
+    public
+    onlyAgree(_agreementHash)
+    returns(uint256 auctionId)
+    {
         require(_amount > 0, "bidding amount should be > 0");
         // solhint-disable-next-line not-rely-on-time
         require(now < auctionsEndTime, "bidding should be within the allowed bidding period");
