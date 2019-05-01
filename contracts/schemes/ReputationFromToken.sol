@@ -1,13 +1,15 @@
 pragma solidity ^0.5.4;
 
 import "../controller/ControllerInterface.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+
 /**
  * @title A scheme for reputation allocation according to token balances
  */
 
 contract ReputationFromToken {
 
-    address public tokenContract;
+    IERC20 public tokenContract;
     //      beneficiary -> bool
     mapping(address     => bool) public redeems;
     Avatar public avatar;
@@ -19,7 +21,7 @@ contract ReputationFromToken {
      * @param _avatar the avatar to mint reputation from
      * @param _tokenContract the token contract
      */
-    function initialize(Avatar _avatar, address _tokenContract) external
+    function initialize(Avatar _avatar, IERC20 _tokenContract) external
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
@@ -35,15 +37,7 @@ contract ReputationFromToken {
         require(avatar != Avatar(0), "should initialize first");
         require(redeems[msg.sender] == false, "redeeming twice from the same account is not allowed");
         redeems[msg.sender] = true;
-        (bool result, bytes memory returnValue) =
-        // solhint-disable-next-line avoid-call-value,avoid-low-level-calls
-        tokenContract.call(abi.encodeWithSignature("balanceOf(address)", msg.sender));
-        require(result, "call to external contract should succeed");
-        uint256 tokenAmount;
-        // solhint-disable-next-line no-inline-assembly
-        assembly {
-            tokenAmount := mload(add(returnValue, 0x20))
-        }
+        uint256 tokenAmount = tokenContract.balanceOf(msg.sender);
         require(
         ControllerInterface(
         avatar.owner())
