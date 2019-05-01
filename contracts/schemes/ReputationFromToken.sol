@@ -1,6 +1,6 @@
 pragma solidity ^0.5.4;
 
-import "../Controller/ControllerInterface.sol";
+import "../controller/ControllerInterface.sol";
 /**
  * @title A scheme for reputation allocation according to token balances
  */
