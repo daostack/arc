@@ -56,6 +56,18 @@ contract('ReputationFromToken', accounts => {
       assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),100);
     });
 
+    it("redeem with no beneficiary", async () => {
+      let testSetup = await setup(accounts);
+      var tx = await testSetup.reputationFromToken.redeem(helpers.NULL_ADDRESS);
+      assert.equal(tx.logs.length,1);
+      assert.equal(tx.logs[0].event,"Redeem");
+      assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
+      assert.equal(tx.logs[0].args._amount,100);
+      assert.equal(tx.logs[0].args._sender,accounts[0]);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1100);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),0);
+    });
+
     it("cannot initialize twice", async () => {
         let testSetup = await setup(accounts);
         try {
