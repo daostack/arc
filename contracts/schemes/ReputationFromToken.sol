@@ -5,6 +5,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title A scheme for reputation allocation according to token balances
+ *        This contract is assuming that the token contract is paused, and one cannot transfer its tokens.
  */
 
 contract ReputationFromToken {
@@ -38,6 +39,9 @@ contract ReputationFromToken {
         require(redeems[msg.sender] == false, "redeeming twice from the same account is not allowed");
         redeems[msg.sender] = true;
         uint256 tokenAmount = tokenContract.balanceOf(msg.sender);
+        if (_beneficiary == address(0)) {
+            _beneficiary = msg.sender;
+        }
         require(
         ControllerInterface(
         avatar.owner())
