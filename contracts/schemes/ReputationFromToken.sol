@@ -39,7 +39,7 @@ contract ReputationFromToken {
         require(redeems[msg.sender] == false, "redeeming twice from the same account is not allowed");
         redeems[msg.sender] = true;
         uint256 tokenAmount = tokenContract.balanceOf(msg.sender);
-        if (_beneficiary = address(0)) {
+        if (_beneficiary == address(0)) {
             _beneficiary = msg.sender;
         }
         require(
