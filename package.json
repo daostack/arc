@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.1-rc.18",
+  "version": "0.0.1-rc.19",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -39,7 +39,7 @@
     "bignumber.js": "^5.0.0",
     "cross-conf-env": "^1.1.2",
     "default-options": "^1.0.0",
-    "eslint": "^4.19.1",
+    "eslint": "^5.16.0",
     "eslint-config-defaults": "^9.0.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.8.0",
@@ -80,7 +80,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra": "0.0.1-rc.13",
+    "@daostack/infra": "0.0.1-rc.14",
     "openzeppelin-solidity": "2.1.3"
   },
   "peerDependencies": {
