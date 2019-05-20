@@ -4,7 +4,7 @@ const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const constants = require('./constants');
 var ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
 var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
-var SQRTCurve = artifacts.require("./SQRTCurve.sol");
+var PolkaCurve = artifacts.require("./PolkaCurve.sol");
 
 const setup = async function (accounts, _initialize = true) {
    var testSetup = new helpers.TestSetup();
@@ -17,7 +17,7 @@ const setup = async function (accounts, _initialize = true) {
    await testSetup.extetnalTokenLockerMock.lock(300,accounts[2]);
 
    testSetup.reputationFromToken = await ReputationFromToken.new();
-   testSetup.curve = await SQRTCurve.new();
+   testSetup.curve = await PolkaCurve.new();
    if (_initialize === true) {
      await testSetup.reputationFromToken.initialize(testSetup.org.avatar.address,
                                                     testSetup.extetnalTokenLockerMock.address,
@@ -51,24 +51,32 @@ contract('ReputationFromToken', accounts => {
     it("redeem", async () => {
       let testSetup = await setup(accounts);
       var tx = await testSetup.reputationFromToken.redeem(accounts[1]);
+      var total_reputation = await testSetup.curve.TOTAL_REPUTATION();
+      var sum_of_sqrt = await testSetup.curve.SUM_OF_SQRTS();
+      var expected = Math.floor(((10*total_reputation)/sum_of_sqrt) * 1000000000) * 1000000000;
+
       assert.equal(tx.logs.length,1);
       assert.equal(tx.logs[0].event,"Redeem");
       assert.equal(tx.logs[0].args._beneficiary,accounts[1]);
-      assert.equal(tx.logs[0].args._amount,10);
+      assert.equal(tx.logs[0].args._amount.toString(),expected);
       assert.equal(tx.logs[0].args._sender,accounts[0]);
       assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
-      assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),10);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),expected);
     });
 
     it("redeem with no beneficiary", async () => {
       let testSetup = await setup(accounts);
       var tx = await testSetup.reputationFromToken.redeem(helpers.NULL_ADDRESS);
+      var total_reputation = await testSetup.curve.TOTAL_REPUTATION();
+      var sum_of_sqrt = await testSetup.curve.SUM_OF_SQRTS();
+      var expected = Math.floor(((10*total_reputation)/sum_of_sqrt) * 1000000000) * 1000000000;
       assert.equal(tx.logs.length,1);
       assert.equal(tx.logs[0].event,"Redeem");
       assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
-      assert.equal(tx.logs[0].args._amount,10);
+      assert.equal(tx.logs[0].args._amount,expected);
       assert.equal(tx.logs[0].args._sender,accounts[0]);
-      assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1010);
+      assert.equal((await testSetup.org.reputation.balanceOf(accounts[0])).toString(),
+                  (expected + 1000).toString());
       assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),0);
     });
 
