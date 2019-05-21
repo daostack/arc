@@ -1,6 +1,5 @@
 const math = require("math");
 var PolkaCurve = artifacts.require("./PolkaCurve.sol");
-const BigNumber = require('bignumber.js');
 
 contract('PolkaCurve', function(){
 
