@@ -23,13 +23,6 @@ contract DxDAOLockETH {
         bytes indexed _lockingId
     );
 
-    //only for test
-    function init(address payable _genesisDAOAvatar, address _dxdaoEthLockingScheme, bytes32 _agreementHash) public {
-        genesisDAOAvatar = Avatar(_genesisDAOAvatar);
-        dxdaoEthLockingScheme = _dxdaoEthLockingScheme;
-        agreementHash = _agreementHash;
-    }
-
     /**
     * @dev lock 10 eth for 30 days on the dxdao
     */
