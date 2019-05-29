@@ -11,7 +11,7 @@ import "../controller/Avatar.sol";
 contract DxDAOLockETH {
 
     address public dxdaoEthLockingScheme = address(0x4564BFe303900178578769b2D76B1a13533E5fd5);
-    Avatar public genesisDAOAvatar = Avatar(0x519b70055af55A007110B4Ff99b0eA33071c720a);
+    Avatar public genesisDAOAvatar = Avatar(0x294f999356ed03347c7a23bcbcf8d33fa41dc830);
     uint256 public ethToLock = 10 ether;
     uint256 public periodToLock = 30*24*60*60; //30 days
     bytes32 public agreementHash = bytes32(0x2d9c919cecf0e19b7717a86747f703d8cf0f9ffd98e4e8a13638b1a92ef0b25a);
