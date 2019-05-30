@@ -8,7 +8,6 @@ import "../controller/Controller.sol";
 /**
  * @title ControllerCreator for creating a single controller.
  */
-
 contract ControllerCreator {
 
     function create(Avatar _avatar) public returns(address) {
@@ -22,8 +21,6 @@ contract ControllerCreator {
 /**
  * @title Genesis Scheme that creates organizations
  */
-
-
 contract DaoCreator {
 
     mapping(address=>address) public locks;
@@ -32,9 +29,11 @@ contract DaoCreator {
     event InitialSchemesSet (address _avatar);
 
     ControllerCreator private controllerCreator;
+    DAOTracker private daoTracker;
 
-    constructor(ControllerCreator _controllerCreator) public {
+    constructor(ControllerCreator _controllerCreator, DAOTracker _daoTracker) public {
         controllerCreator = _controllerCreator;
+        daoTracker = _daoTracker;
     }
 
     /**
@@ -198,16 +197,19 @@ contract DaoCreator {
         // Create Controller:
         if (UController(0) == _uController) {
             controller = ControllerInterface(controllerCreator.create(avatar));
-            avatar.transferOwnership(address(controller));
-            // Transfer ownership:
-            nativeToken.transferOwnership(address(controller));
-            nativeReputation.transferOwnership(address(controller));
         } else {
             controller = _uController;
-            avatar.transferOwnership(address(controller));
-            // Transfer ownership:
-            nativeToken.transferOwnership(address(controller));
-            nativeReputation.transferOwnership(address(controller));
+        }
+
+        // Add the DAO to the tracking registry
+        daoTracker.track(avatar, controller);
+
+        // Transfer ownership:
+        avatar.transferOwnership(address(controller));
+        nativeToken.transferOwnership(address(controller));
+        nativeReputation.transferOwnership(address(controller));
+
+        if (controller == _uController) {
             _uController.newOrganization(avatar);
         }
 
