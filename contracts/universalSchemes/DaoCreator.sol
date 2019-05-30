@@ -29,11 +29,9 @@ contract DaoCreator {
     event InitialSchemesSet (address _avatar);
 
     ControllerCreator private controllerCreator;
-    DAOTracker private daoTracker;
 
-    constructor(ControllerCreator _controllerCreator, DAOTracker _daoTracker) public {
+    constructor(ControllerCreator _controllerCreator) public {
         controllerCreator = _controllerCreator;
-        daoTracker = _daoTracker;
     }
 
     /**
@@ -171,7 +169,8 @@ contract DaoCreator {
         uint[] memory _foundersTokenAmount,
         uint[] memory _foundersReputationAmount,
         UController _uController,
-        uint256 _cap
+        uint256 _cap,
+        DAOTracker _daoTracker
     ) private returns(address)
     {
         // Create Token, Reputation and Avatar:
@@ -202,7 +201,8 @@ contract DaoCreator {
         }
 
         // Add the DAO to the tracking registry
-        daoTracker.track(avatar, controller);
+        require(_daoTracker != address(0));
+        _daoTracker.track(avatar, controller);
 
         // Transfer ownership:
         avatar.transferOwnership(address(controller));

@@ -32,11 +32,11 @@ contract DAOTracker is Ownable {
   /**
   * @dev track a new organization. This function will tell the subgraph
   *      to start ingesting events from the DAO's contracts.
-  *      NOTE: This function should be called as early as possible in the deployment
-  *      process. Smart Contract Events that are emitted from blocks prior to this function's
-  *      event being emitted WILL NOT be ingested into the subgraph, leading to an incorrect
-  *      cache. If this happens to you, please contact the subgraph maintainer (DAOstack).
-  *      They will need to manually add your DAO to the subgraph, and rebuild the cache.
+  *      NOTE: This function should be called as early as possible in the DAO deployment
+  *      process. **Smart Contract Events that are emitted from blocks prior to this function's
+  *      event being emitted WILL NOT be ingested into the subgraph**, leading to an incorrect
+  *      cache. If this happens to you, please contact the subgraph maintainer. Your DAO will
+  *      need to be added to the subgraph's startup config, and the cache will need to be rebuilt.
   * @param _avatar the organization avatar
   * @param _controller the organization controller
   */
