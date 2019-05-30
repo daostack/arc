@@ -3,6 +3,7 @@ pragma solidity ^0.5.4;
 import "./UniversalScheme.sol";
 import "../controller/UController.sol";
 import "../controller/Controller.sol";
+import "../utils/DAOTracker.sol";
 
 
 /**
@@ -29,9 +30,13 @@ contract DaoCreator {
     event InitialSchemesSet (address _avatar);
 
     ControllerCreator private controllerCreator;
+    DAOTracker private daoTracker;
 
-    constructor(ControllerCreator _controllerCreator) public {
+    constructor(ControllerCreator _controllerCreator, DAOTracker _daoTracker) public {
+        require(_controllerCreator != ControllerCreator(0));
+        require(_daoTracker != DAOTracker(0));
         controllerCreator = _controllerCreator;
+        daoTracker = _daoTracker;
     }
 
     /**
@@ -169,8 +174,7 @@ contract DaoCreator {
         uint[] memory _foundersTokenAmount,
         uint[] memory _foundersReputationAmount,
         UController _uController,
-        uint256 _cap,
-        DAOTracker _daoTracker
+        uint256 _cap
     ) private returns(address)
     {
         // Create Token, Reputation and Avatar:
@@ -201,8 +205,7 @@ contract DaoCreator {
         }
 
         // Add the DAO to the tracking registry
-        require(_daoTracker != address(0));
-        _daoTracker.track(avatar, controller);
+        daoTracker.track(avatar, controller);
 
         // Transfer ownership:
         avatar.transferOwnership(address(controller));

@@ -1,5 +1,9 @@
 pragma solidity ^0.5.4;
 
+import "@daostack/infra/contracts/Reputation.sol";
+import "../controller/DAOToken.sol";
+import "../controller/Avatar.sol";
+import "../controller/ControllerInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /**
@@ -19,7 +23,7 @@ contract DAOTracker is Ownable {
 
   // Mapping from Avatar address to a flag letting the subgraph
   // know if it should track this DAO or not.
-  mapping(address=>TrackingInfo) public trackingInfo;
+  mapping(address=>TrackingInfo) public tracking;
 
   event TrackDAO(address indexed _avatar, address indexed _controller);
 
@@ -45,18 +49,18 @@ contract DAOTracker is Ownable {
   onlyAvatarOwner(_avatar) {
     // Only allow the information to be set once. In the case of a controller upgrades,
     // the subgraph will be updated via the UpgradeController event.
-    require(_avatar != address(0));
-    require(_controller != address(0));
-    require(tracking[_avatar].nativeToken == address(0));
-    require(tracking[_avatar].nativeReputation == address(0));
-    require(tracking[_avatar].controller == address(0));
-    require(tracking[_avatar].blacklist == false);
+    require(_avatar != Avatar(0));
+    require(_controller != ControllerInterface(0));
+    require(tracking[address(_avatar)].nativeToken == DAOToken(0));
+    require(tracking[address(_avatar)].nativeReputation == Reputation(0));
+    require(tracking[address(_avatar)].controller == ControllerInterface(0));
+    require(tracking[address(_avatar)].blacklist == false);
 
-    tracking[_avatar].nativeToken = _avatar.nativeToken();
-    tracking[_avatar].nativeReputation = _avatar.nativeReputation();
-    tracking[_avatar].controller = _controller;
+    tracking[address(_avatar)].nativeToken = _avatar.nativeToken();
+    tracking[address(_avatar)].nativeReputation = _avatar.nativeReputation();
+    tracking[address(_avatar)].controller = _controller;
 
-    emit TrackDAO(_avatar, _controller);
+    emit TrackDAO(address(_avatar), address(_controller));
   }
 
   /**
@@ -68,7 +72,7 @@ contract DAOTracker is Ownable {
   function blacklist(Avatar _avatar)
   public
   onlyOwner {
-    tracking[_avatar].blacklist = true;
+    tracking[address(_avatar)].blacklist = true;
   }
 
   /**
@@ -78,9 +82,9 @@ contract DAOTracker is Ownable {
   function reset(Avatar _avatar)
   public
   onlyOwner {
-    tracking[_avatar].nativeToken = address(0);
-    tracking[_avatar].nativeReputation = address(0);
-    tracking[_avatar].controller = address(0);
-    tracking[_avatar].blacklist = false;
+    tracking[address(_avatar)].nativeToken = DAOToken(0);
+    tracking[address(_avatar)].nativeReputation = Reputation(0);
+    tracking[address(_avatar)].controller = ControllerInterface(0);
+    tracking[address(_avatar)].blacklist = false;
   }
 }
