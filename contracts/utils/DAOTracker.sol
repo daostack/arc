@@ -72,6 +72,7 @@ contract DAOTracker is Ownable {
   function blacklist(Avatar _avatar)
   public
   onlyOwner {
+    require(_avatar != Avatar(0));
     tracking[address(_avatar)].blacklist = true;
   }
 
@@ -82,6 +83,7 @@ contract DAOTracker is Ownable {
   function reset(Avatar _avatar)
   public
   onlyOwner {
+    require(_avatar != Avatar(0));
     tracking[address(_avatar)].nativeToken = DAOToken(0);
     tracking[address(_avatar)].nativeReputation = Reputation(0);
     tracking[address(_avatar)].controller = ControllerInterface(0);
