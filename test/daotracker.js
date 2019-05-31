@@ -58,7 +58,9 @@ contract("DAOTracker", accounts => {
         avatar, controller, {gas: opts.gas, from: accounts[1]}
       );
       assert.fail("This should never happen.");
-    } catch (e) { }
+    } catch (e) {
+      return;
+    }
   });
 
   it("track null Avatar", async () => {
@@ -70,7 +72,9 @@ contract("DAOTracker", accounts => {
         "0x0000000000000000000000000000000000000000", controller, opts
       );
       assert.fail("This should never happen.");
-    } catch (e) { }
+    } catch (e) {
+      return;
+    }
   });
 
   it("track null Controller", async () => {
@@ -82,7 +86,9 @@ contract("DAOTracker", accounts => {
         avatar, "0x0000000000000000000000000000000000000000", opts
       );
       assert.fail("This should never happen.");
-    } catch (e) { }
+    } catch (e) {
+      return;
+    }
   });
 
   it("blacklist", async () => {
@@ -106,7 +112,9 @@ contract("DAOTracker", accounts => {
     try {
       await testSetup.daoTracker.blacklist(avatar, {gas: opts.gas, from: accounts[1]});
       assert.fail("This should never happen.");
-    } catch (e) { }
+    } catch (e) {
+      return;
+    }
   });
 
   it("blacklist null Avatar", async () => {
@@ -115,7 +123,9 @@ contract("DAOTracker", accounts => {
     try {
       await testSetup.daoTracker.blacklist("0x0000000000000000000000000000000000000000", opts);
       assert.fail("This should never happen.");
-    } catch (e) { }
+    } catch (e) {
+      return;
+    }
   });
 
   it("reset", async () => { 
@@ -156,6 +166,8 @@ contract("DAOTracker", accounts => {
     try {
       await testSetup.daoTracker.reset(avatar, {gas: opts.gas, from: accounts[1]});
       assert.fail("This should never happen.");
-    } catch (e) { }
+    } catch (e) {
+      return;
+    }
   });
 });
