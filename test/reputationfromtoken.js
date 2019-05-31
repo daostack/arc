@@ -1,6 +1,7 @@
 const helpers = require('./helpers');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const DAOTracker = artifacts.require("./DAOTracker.sol");
 const constants = require('./constants');
 var ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
 var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
@@ -9,7 +10,8 @@ var PolkaCurve = artifacts.require("./PolkaCurve.sol");
 const setup = async function (accounts, _initialize = true) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
    await testSetup.extetnalTokenLockerMock.lock(100,accounts[0]);

@@ -4,6 +4,7 @@ const ContributionReward = artifacts.require("./ContributionReward.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const DAOTracker = artifacts.require("./DAOTracker.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const Redeemer = artifacts.require("./Redeemer.sol");
 
@@ -75,7 +76,8 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.contributionReward = await ContributionReward.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    if (genesisProtocol) {
       testSetup.reputationArray = [1000,100,0];
    } else {
