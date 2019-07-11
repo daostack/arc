@@ -623,10 +623,11 @@ contract('ContributionReward', accounts => {
        await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[1]});
        await helpers.increaseTime(60+1);
        var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
-       var proposal = await testSetup.contributionRewardParams.votingMachine.genesisProtocol.proposals(proposalId);
-       assert.equal(proposal.state,3); //ExpiredInQueue
        await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[1]);
+       var proposal = await testSetup.contributionRewardParams.votingMachine.genesisProtocol.proposals(proposalId);
+       assert.equal(proposal.state,1); //ExpiredInQueue
        var reputation = await testSetup.org.reputation.balanceOf(accounts[1]);
+       //accounts[1] redeems its deposit rep.
        assert.equal(reputation.toNumber(), 100);
       });
 
