@@ -601,6 +601,36 @@ contract('ContributionReward', accounts => {
       assert.equal(reputation, 1000);
      });
 
+     it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer ExpiredInQueue", async function() {
+       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,true,standardTokenMock.address);
+       var reputationReward = 12;
+       var nativeTokenReward = 12;
+       var ethReward = 12;
+       var periodLength = 50;
+       var numberOfPeriods = 1;
+       //send some ether to the org avatar
+       var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
+       var tx = await testSetup.contributionReward.proposeContributionReward(testSetup.org.avatar.address,
+                                                                      web3.utils.asciiToHex("description"),
+                                                                      reputationReward,
+                                                                      [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
+                                                                      testSetup.standardTokenMock.address,
+                                                                      otherAvatar.address
+                                                                    );
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+
+       await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[1]});
+       await helpers.increaseTime(60+1);
+       var arcUtils = await Redeemer.new(testSetup.contributionReward.address,testSetup.contributionRewardParams.votingMachine.genesisProtocol.address);
+       await arcUtils.redeem(proposalId,testSetup.org.avatar.address,accounts[1]);
+       var proposal = await testSetup.contributionRewardParams.votingMachine.genesisProtocol.proposals(proposalId);
+       assert.equal(proposal.state,1); //ExpiredInQueue
+       var reputation = await testSetup.org.reputation.balanceOf(accounts[1]);
+       //accounts[1] redeems its deposit rep.
+       assert.equal(reputation.toNumber(), 100);
+      });
+
     it("execute proposeContributionReward  mint reputation with period 0 ", async function() {
        var testSetup = await setup(accounts);
        var reputationReward = 12;

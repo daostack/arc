@@ -67,7 +67,10 @@ contract Redeemer {
         if ((pState == GenesisProtocolLogic.ProposalState.Executed) ||
             (pState == GenesisProtocolLogic.ProposalState.ExpiredInQueue)) {
             gpRewards = genesisProtocol.redeem(_proposalId, _beneficiary);
-            (gpDaoBountyReward[0], gpDaoBountyReward[1]) = genesisProtocol.redeemDaoBounty(_proposalId, _beneficiary);
+            if (pState == GenesisProtocolLogic.ProposalState.Executed) {
+                (gpDaoBountyReward[0], gpDaoBountyReward[1]) =
+                genesisProtocol.redeemDaoBounty(_proposalId, _beneficiary);
+            }
             winningVote = genesisProtocol.winningVote(_proposalId);
             //redeem from contributionReward only if it executed
             if (contributionReward.getProposalExecutionTime(_proposalId, address(_avatar)) > 0) {
