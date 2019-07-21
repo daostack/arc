@@ -65,7 +65,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     }
 
     /**
-    * @dev Submit a proposal for a signal:
+    * @dev Submit a proposal for a dao signal
     * @param _descriptionHash A hash of the proposal's description
     */
     function proposeSignal(
