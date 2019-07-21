@@ -38,8 +38,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         Avatar avatar;
     }
 
-    // A mapping from the proposalId to Proposals
-    mapping(bytes32=>Proposal) public proposals;
+    mapping(bytes32  =>  Proposal) public proposals;
 
     Parameters public params;
 
