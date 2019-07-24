@@ -36,8 +36,9 @@ contract ReputationFromToken {
     /**
      * @dev redeem function
      * @param _beneficiary the beneficiary address to redeem for
+     * @return uint256 minted reputation
      */
-    function redeem(address _beneficiary) public {
+    function redeem(address _beneficiary) public returns(uint256) {
         require(avatar != Avatar(0), "should initialize first");
         require(redeems[msg.sender] == false, "redeeming twice from the same account is not allowed");
         redeems[msg.sender] = true;
@@ -53,5 +54,6 @@ contract ReputationFromToken {
         avatar.owner())
         .mintReputation(tokenAmount, _beneficiary, address(avatar)), "mint reputation should succeed");
         emit Redeem(_beneficiary, msg.sender, tokenAmount);
+        return tokenAmount;
     }
 }
