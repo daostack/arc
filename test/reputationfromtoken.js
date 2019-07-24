@@ -3,7 +3,8 @@ const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const constants = require('./constants');
 var ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
-var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
+var RepAllocation = artifacts.require("./RepAllocation.sol");
+
 var PolkaCurve = artifacts.require("./PolkaCurve.sol");
 
 const setup = async function (accounts, _initialize = true) {
@@ -11,16 +12,16 @@ const setup = async function (accounts, _initialize = true) {
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
-   await testSetup.extetnalTokenLockerMock.lock(100,accounts[0]);
-   await testSetup.extetnalTokenLockerMock.lock(200,accounts[1]);
-   await testSetup.extetnalTokenLockerMock.lock(300,accounts[2]);
+   testSetup.repAllocation = await RepAllocation.new();
+   await testSetup.repAllocation.addBeneficiary(accounts[0],100);
+   await testSetup.repAllocation.addBeneficiary(accounts[1],200);
+   await testSetup.repAllocation.addBeneficiary(accounts[2],300);
 
    testSetup.reputationFromToken = await ReputationFromToken.new();
    testSetup.curve = await PolkaCurve.new();
    if (_initialize === true) {
      await testSetup.reputationFromToken.initialize(testSetup.org.avatar.address,
-                                                    testSetup.extetnalTokenLockerMock.address,
+                                                    testSetup.repAllocation.address,
                                                     testSetup.curve.address);
    }
 
@@ -29,24 +30,54 @@ const setup = async function (accounts, _initialize = true) {
    return testSetup;
 };
 
-contract('ReputationFromToken', accounts => {
+contract('ReputationFromToken and RepAllocation', accounts => {
     it("initialize", async () => {
       let testSetup = await setup(accounts);
-      assert.equal(await testSetup.reputationFromToken.tokenContract(),testSetup.extetnalTokenLockerMock.address);
+      assert.equal(await testSetup.reputationFromToken.tokenContract(),testSetup.repAllocation.address);
       assert.equal(await testSetup.reputationFromToken.avatar(),testSetup.org.avatar.address);
       assert.equal(await testSetup.reputationFromToken.curve(),testSetup.curve.address);
     });
 
-    it("externalLockingMock is onlyOwner", async () => {
+    it("repAllocation is onlyOwner", async () => {
       let testSetup = await setup(accounts);
       try {
-        await testSetup.extetnalTokenLockerMock.lock(1030,accounts[3],{from:accounts[1]});
-        assert(false, "externalLockingMock is onlyOwner");
+        await testSetup.repAllocation.addBeneficiary(accounts[3],1030,{from:accounts[1]});
+        assert(false, "repAllocation is onlyOwner");
       } catch(error) {
         helpers.assertVMException(error);
       }
 
     });
+
+    it("repAllocation cannot allocate after freeze", async () => {
+      let testSetup = await setup(accounts);
+      await testSetup.repAllocation.addBeneficiary(accounts[3],1030);
+      await testSetup.repAllocation.freeze();
+
+
+      try {
+          await testSetup.repAllocation.addBeneficiary(accounts[4],1030);
+        assert(false, "cannot allocate after freeze");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+
+    });
+
+    it("repAllocation cannot allocate twice", async () => {
+      let testSetup = await setup(accounts);
+      assert(await testSetup.repAllocation.balanceOf(accounts[1]),200);
+      await testSetup.repAllocation.addBeneficiary(accounts[1],1030);
+      assert(await testSetup.repAllocation.balanceOf(accounts[1]),200);
+    });
+
+    it("repAllocation addBeneficiaries", async () => {
+      let testSetup = await setup(accounts);
+      let tx = await testSetup.repAllocation.addBeneficiaries([accounts[3],accounts[4]],[300,400]);
+      assert.equal(tx.logs.length,2);
+    });
+
+
 
     it("redeem", async () => {
       let testSetup = await setup(accounts);
@@ -84,7 +115,7 @@ contract('ReputationFromToken', accounts => {
         let testSetup = await setup(accounts);
         try {
              await testSetup.reputationFromToken.initialize(testSetup.org.avatar.address,
-                                                            testSetup.extetnalTokenLockerMock.address,
+                                                            testSetup.repAllocation.address,
                                                             testSetup.curve.address
                                                             );
              assert(false, "cannot initialize twice");
