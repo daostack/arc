@@ -1,4 +1,5 @@
 const helpers = require('./helpers');
+const { MerkleTree } = require('./merkleTree.js');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const constants = require('./constants');
@@ -75,6 +76,26 @@ contract('ReputationFromToken and RepAllocation', accounts => {
       let testSetup = await setup(accounts);
       let tx = await testSetup.repAllocation.addBeneficiaries([accounts[3],accounts[4]],[300,400]);
       assert.equal(tx.logs.length,2);
+    });
+
+    it("repAllocation addBeneficiariesRoot", async () => {
+      let testSetup = await setup(accounts);
+
+      const elements = [
+        accounts[3].toString() + (100).toString(16).padStart(64, '0'),
+        accounts[4].toString() + (200).toString(16).padStart(64, '0'),
+      ];
+      const merkleTree = new MerkleTree(elements);
+
+      await testSetup.repAllocation.addBeneficiariesRoot(merkleTree.getHexRoot());
+      assert(await testSetup.repAllocation.balanceOf(accounts[3]),0);
+      assert(await testSetup.repAllocation.balanceOf(accounts[4]),0);
+
+      await testSetup.repAllocation.revealBeneficiary(accounts[3],100,merkleTree.getProof(elements[0]));
+      assert(await testSetup.repAllocation.balanceOf(accounts[3]),100);
+
+      await testSetup.repAllocation.revealBeneficiary(accounts[4],200,merkleTree.getProof(elements[1]));
+      assert(await testSetup.repAllocation.balanceOf(accounts[4]),200);
     });
 
 

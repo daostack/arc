@@ -14,6 +14,7 @@ contract RepAllocation is Ownable {
 
        // beneficiary -> amount
     mapping(address   =>   uint256) public reputationAllocations;
+    mapping(bytes32 => bool) public reputationAllocationsRoots;
     bool public isFreeze;
 
     event BeneficiaryAddressAdded(address indexed _beneficiary, uint256 indexed _amount);
@@ -40,6 +41,41 @@ contract RepAllocation is Ownable {
         for (uint256 i = 0; i < _beneficiaries.length; i++) {
             addBeneficiary(_beneficiaries[i], _amounts[i]);
         }
+    }
+
+    /**
+     * @dev add addBeneficiariesRoot function
+     * @param _root Merkle Tree root
+     */
+    function addBeneficiariesRoot(bytes32 _root) public onlyOwner {
+        require(!reputationAllocationsRoots[_root]);
+        reputationAllocationsRoots[_root] = true;
+    }
+
+    /**
+     * @dev add addBeneficiariesRoot function
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/cryptography/MerkleProof.sol
+     * @param _beneficiary user address
+     * @param _amount allocation
+     * @param _proof Merkle proof related to previously submitted Merkle root
+     */
+    function revealBeneficiary(address _beneficiary, uint256 _amount, bytes32[] memory _proof) public {
+        bytes32 computedHash = keccak256(abi.encodePacked(_beneficiary, _amount));
+
+        for (uint256 i = 0; i < _proof.length; i++) {
+            bytes32 proofElement = _proof[i];
+
+            if (computedHash < proofElement) {
+                // Hash(current computed hash + current element of the proof)
+                computedHash = keccak256(abi.encodePacked(computedHash, proofElement));
+            } else {
+                // Hash(current element of the proof + current computed hash)
+                computedHash = keccak256(abi.encodePacked(proofElement, computedHash));
+            }
+        }
+
+        require(reputationAllocationsRoots[computedHash], "Root does not exist");
+        addBeneficiary(_beneficiary, _amount);
     }
 
     /**
