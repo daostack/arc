@@ -18,6 +18,7 @@ contract RepAllocation is Ownable {
     bool public isFreeze;
 
     event BeneficiaryAddressAdded(address indexed _beneficiary, uint256 indexed _amount);
+    event BeneficiaryAddressAddedByRoot(bytes32 indexed root, address[] _beneficiaries, uint256[] _amounts);
 
     /**
      * @dev addBeneficiary function
@@ -46,10 +47,17 @@ contract RepAllocation is Ownable {
     /**
      * @dev add addBeneficiariesRoot function
      * @param _root Merkle Tree root
+     * @param _beneficiaries user addresses
+     * @param _amounts allocations
      */
-    function addBeneficiariesRoot(bytes32 _root) public onlyOwner {
+    function addBeneficiariesRoot(
+        bytes32 _root,
+        address[] memory _beneficiaries,
+        uint256[] memory _amounts
+    ) public onlyOwner {
         require(!reputationAllocationsRoots[_root]);
         reputationAllocationsRoots[_root] = true;
+        emit BeneficiaryAddressAddedByRoot(_root, _beneficiaries, _amounts);
     }
 
     /**
