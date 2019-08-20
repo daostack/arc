@@ -36,7 +36,7 @@ contract RepAllocation is Ownable {
     }
 
     /**
-     * @dev add addBeneficiaries function
+     * @dev add beneficiaries array function
      * @param _beneficiaries addresses
      */
     function addBeneficiaries(address[] memory _beneficiaries, uint256[] memory _amounts) public onlyOwner {
@@ -47,7 +47,7 @@ contract RepAllocation is Ownable {
     }
 
     /**
-     * @dev add addBeneficiariesRoot function
+     * @dev add beneficiaries by merkle root function
      * @param _root Merkle Tree root
      * @param _beneficiaries user addresses
      * @param _amounts allocations
@@ -63,7 +63,7 @@ contract RepAllocation is Ownable {
     }
 
     /**
-     * @dev add revealBeneficiary function
+     * @dev reveal beneficiary from previously submitted merkle root function
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/cryptography/MerkleProof.sol
      * @param _beneficiary user address
      * @param _amount allocation
