@@ -107,10 +107,10 @@ contract.only('ReputationFromToken and RepAllocation', accounts => {
       );
       const merkleTreeOnClientSide = new MerkleTree(elementsOnClientSide);
 
-      await testSetup.repAllocation.revealBeneficiary(beneficiaries[0],amounts[0],merkleTreeOnClientSide.getProof(elementsOnClientSide[0]));
+      await testSetup.repAllocation.revealBeneficiary(beneficiaries[0],amounts[0],merkleTree.getHexRoot(),merkleTreeOnClientSide.getProof(elementsOnClientSide[0]));
       assert(await testSetup.repAllocation.balanceOf(accounts[3]),100);
 
-      await testSetup.repAllocation.revealBeneficiary(beneficiaries[1],amounts[1],merkleTreeOnClientSide.getProof(elementsOnClientSide[1]));
+      await testSetup.repAllocation.revealBeneficiary(beneficiaries[1],amounts[1],merkleTree.getHexRoot(),merkleTreeOnClientSide.getProof(elementsOnClientSide[1]));
       assert(await testSetup.repAllocation.balanceOf(accounts[4]),200);
     });
 

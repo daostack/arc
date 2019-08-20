@@ -1,6 +1,7 @@
 pragma solidity ^0.5.4;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/cryptography/MerkleProof.sol";
 
 
 /**
@@ -11,6 +12,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  */
 contract RepAllocation is Ownable {
 
+    using MerkleProof for bytes32[];
 
        // beneficiary -> amount
     mapping(address   =>   uint256) public reputationAllocations;
@@ -61,28 +63,17 @@ contract RepAllocation is Ownable {
     }
 
     /**
-     * @dev add addBeneficiariesRoot function
+     * @dev add revealBeneficiary function
      * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/cryptography/MerkleProof.sol
      * @param _beneficiary user address
      * @param _amount allocation
+     * @param _root Merkle root
      * @param _proof Merkle proof related to previously submitted Merkle root
      */
-    function revealBeneficiary(address _beneficiary, uint256 _amount, bytes32[] memory _proof) public {
-        bytes32 computedHash = keccak256(abi.encodePacked(_beneficiary, _amount));
-
-        for (uint256 i = 0; i < _proof.length; i++) {
-            bytes32 proofElement = _proof[i];
-
-            if (computedHash < proofElement) {
-                // Hash(current computed hash + current element of the proof)
-                computedHash = keccak256(abi.encodePacked(computedHash, proofElement));
-            } else {
-                // Hash(current element of the proof + current computed hash)
-                computedHash = keccak256(abi.encodePacked(proofElement, computedHash));
-            }
-        }
-
-        require(reputationAllocationsRoots[computedHash], "Root does not exist");
+    function revealBeneficiary(address _beneficiary, uint256 _amount, bytes32 _root, bytes32[] memory _proof) public {
+        require(reputationAllocationsRoots[_root], "Root does not exist");
+        bytes32 leaf = keccak256(abi.encodePacked(_beneficiary, _amount));
+        require(_proof.verify(_root, leaf));
         addBeneficiary(_beneficiary, _amount);
     }
 
