@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "./UniversalScheme.sol";
 import "../libs/SafeERC20.sol";
@@ -45,19 +45,6 @@ contract OrganizationRegister is UniversalScheme {
     }
 
     /**
-    * @dev Hash the parameters ,and return the hash value
-    * @param _token -  the token to pay for register or promotion an address.
-    * @param _fee  - fee needed for register an address.
-    * @param _beneficiary  - the beneficiary payment address
-    * @return bytes32 -the parameters hash
-    */
-    function getParametersHash(IERC20 _token, uint256 _fee, address _beneficiary)
-    public pure returns(bytes32)
-    {
-        return (keccak256(abi.encodePacked(_token, _fee, _beneficiary)));
-    }
-
-    /**
      * @dev Adding or promoting an address on the registry.
      *      An address(record) to add or promote can be organization address or any contract address.
      *      Adding a record is done by paying at least the minimum required by the registry params.
@@ -80,5 +67,18 @@ contract OrganizationRegister is UniversalScheme {
         organizationsRegistry[address(_avatar)][_record] =
         organizationsRegistry[address(_avatar)][_record].add(_amount);
         emit Promotion(address(_avatar), _record, _amount);
+    }
+
+    /**
+    * @dev Hash the parameters ,and return the hash value
+    * @param _token -  the token to pay for register or promotion an address.
+    * @param _fee  - fee needed for register an address.
+    * @param _beneficiary  - the beneficiary payment address
+    * @return bytes32 -the parameters hash
+    */
+    function getParametersHash(IERC20 _token, uint256 _fee, address _beneficiary)
+    public pure returns(bytes32)
+    {
+        return (keccak256(abi.encodePacked(_token, _fee, _beneficiary)));
     }
 }

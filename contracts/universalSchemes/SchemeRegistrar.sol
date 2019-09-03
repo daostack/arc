@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
@@ -102,15 +102,6 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
         return paramsHash;
     }
 
-    function getParametersHash(
-        bytes32 _voteRegisterParams,
-        bytes32 _voteRemoveParams,
-        IntVoteInterface _intVote
-    ) public pure returns(bytes32)
-    {
-        return keccak256(abi.encodePacked(_voteRegisterParams, _voteRemoveParams, _intVote));
-    }
-
     /**
     * @dev create a proposal to register a scheme
     * @param _avatar the address of the organization the scheme will be registered for
@@ -188,5 +179,14 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
             avatar:_avatar
         });
         return proposalId;
+    }
+
+    function getParametersHash(
+        bytes32 _voteRegisterParams,
+        bytes32 _voteRemoveParams,
+        IntVoteInterface _intVote
+    ) public pure returns(bytes32)
+    {
+        return keccak256(abi.encodePacked(_voteRegisterParams, _voteRemoveParams, _intVote));
     }
 }

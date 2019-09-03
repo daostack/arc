@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/ProposalExecuteInterface.sol";
@@ -102,17 +102,6 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     }
 
     /**
-    * @dev return a hash of the given parameters
-    */
-    function getParametersHash(
-        bytes32 _voteParams,
-        IntVoteInterface _intVote
-    ) public pure returns(bytes32)
-    {
-        return  (keccak256(abi.encodePacked(_voteParams, _intVote)));
-    }
-
-    /**
     * @dev propose an upgrade of the organization's controller
     * @param _avatar avatar of the organization
     * @param _newController address of the new controller that is being proposed
@@ -187,5 +176,16 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
             avatar:_avatar
         });
         return proposalId;
+    }
+
+    /**
+    * @dev return a hash of the given parameters
+    */
+    function getParametersHash(
+        bytes32 _voteParams,
+        IntVoteInterface _intVote
+    ) public pure returns(bytes32)
+    {
+        return  (keccak256(abi.encodePacked(_voteParams, _intVote)));
     }
 }
