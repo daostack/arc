@@ -10,7 +10,6 @@ import { RealMath } from "@daostack/infra/contracts/libs/RealMath.sol";
  * @title A scheme for conduct ERC20 Tokens auction for reputation
  */
 
-
 contract ContinuousLocking4Reputation is Agreement {
     using SafeMath for uint256;
     using SafeERC20 for address;
