@@ -1,6 +1,7 @@
 pragma solidity ^0.5.11;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/math/Math.sol";
 import "../controller/ControllerInterface.sol";
 import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
@@ -15,6 +16,7 @@ contract ContinuousLocking4Reputation is Agreement {
     using SafeERC20 for address;
     using RealMath for uint216;
     using RealMath for uint256;
+    using Math for uint256;
 
     event Redeem(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
     event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
@@ -28,7 +30,6 @@ contract ContinuousLocking4Reputation is Agreement {
 
     struct Locker {
         uint256 amount;
-        uint256 releaseTime;
         uint256 lockingTime;
         uint256 period;
     }
@@ -114,18 +115,23 @@ contract ContinuousLocking4Reputation is Agreement {
         // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "now > redeemEnableTime");
         Locker storage locker = lockers[_beneficiary][_lockingId];
-        uint256 lockingPeriodToRedeemFrom = (locker.lockingTime - startTime) / periodsUnit;
-        for (lockingPeriodToRedeemFrom; lockingPeriodToRedeemFrom < locker.period; lockingPeriodToRedeemFrom++) {
-            Locking storage locking = lockings[lockingPeriodToRedeemFrom];
+        uint256 periodToRedeemFrom = (locker.lockingTime - startTime) / periodsUnit;
+        // solhint-disable-next-line not-rely-on-time
+        uint256 currentLockingPeriod = (now - startTime) / periodsUnit;
+        uint256 lastLockingPeriodToRedeem =  currentLockingPeriod.min(periodToRedeemFrom + locker.period);
+        for (periodToRedeemFrom; periodToRedeemFrom < lastLockingPeriodToRedeem; periodToRedeemFrom++) {
+            Locking storage locking = lockings[periodToRedeemFrom];
             uint256 score = locking.scores[_beneficiary];
-            require(score > 0, "locking score should be > 0");
-            locking.scores[_beneficiary] = 0;
-            uint256 lockingPeriodReputationReward =
-            mul(repRewardConstA, repRewardConstB.pow(lockingPeriodToRedeemFrom));
-            uint256 repRelation = mul(toReal(uint216(score)), lockingPeriodReputationReward);
-            reputation = reputation.add(div(repRelation, toReal(uint216(locking.totalScore))));
+            if (score > 0) {
+                locking.scores[_beneficiary] = 0;
+                uint256 lockingPeriodReputationReward =
+                mul(repRewardConstA, repRewardConstB.pow(periodToRedeemFrom));
+                uint256 repRelation = mul(toReal(uint216(score)), lockingPeriodReputationReward);
+                reputation = reputation.add(div(repRelation, toReal(uint216(locking.totalScore))));
+            }
         }
         reputation = uint256(fromReal(reputation));
+        require(reputation > 0, "reputation to redeem is 0");
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(

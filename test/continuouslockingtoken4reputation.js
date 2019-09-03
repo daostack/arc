@@ -178,6 +178,42 @@ contract('ContinuousLocking4Reputation', accounts => {
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+redeemAmount);
     });
 
+    it("redeem part of the periods", async () => {
+        let testSetup = await setup(accounts);
+        var period = 12;
+        var tx = await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),period,0,testSetup.agreementHash);
+        var id = await helpers.getValueFromLogs(tx, '_lockingId',1);
+        await helpers.increaseTime(testSetup.periodsUnit * 3 +1);
+        tx = await testSetup.continuousLocking4Reputation.redeem(accounts[0],id);
+        var redeemAmount = 230349;
+        // for (var lockingPeriodToRedeemFrom = 0; lockingPeriodToRedeemFrom < 3; lockingPeriodToRedeemFrom++) {
+        //     redeemAmount += testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+        // }
+
+        //redeemAmount = Math.round(redeemAmount);
+
+        assert.equal(tx.logs.length,1);
+        assert.equal(tx.logs[0].event,"Redeem");
+        assert.equal(tx.logs[0].args._amount.toNumber(),redeemAmount);
+        assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+redeemAmount);
+
+        await helpers.increaseTime(testSetup.periodsUnit * 9  +1);
+        tx = await testSetup.continuousLocking4Reputation.redeem(accounts[0],id);
+        redeemAmount = 0;
+        for (var lockingPeriodToRedeemFrom = 3; lockingPeriodToRedeemFrom < period; lockingPeriodToRedeemFrom++) {
+             redeemAmount += testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+        }
+
+        redeemAmount = Math.round(redeemAmount) - 1;
+        assert.equal(tx.logs.length,1);
+        assert.equal(tx.logs[0].event,"Redeem");
+        assert.equal(tx.logs[0].args._amount.toNumber(),redeemAmount);
+        assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+redeemAmount + 230349);
+
+    });
+
     it("redeem score ", async () => {
         let testSetup = await setup(accounts);
         var tx = await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),1,0,testSetup.agreementHash,{from:accounts[0]});
@@ -269,7 +305,7 @@ contract('ContinuousLocking4Reputation', accounts => {
            }
     });
 
-    it("cannot bid with wrong _lockingPeriodToLockIn", async () => {
+    it("cannot lock with wrong _lockingPeriodToLockIn", async () => {
         var lockingPeriodToLockIn = 2;
         let testSetup = await setup(accounts);
         try {
@@ -278,5 +314,44 @@ contract('ContinuousLocking4Reputation', accounts => {
            } catch(error) {
              helpers.assertVMException(error);
            }
+    });
+
+    it("release", async () => {
+      let testSetup = await setup(accounts);
+      var tx = await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),1,0,testSetup.agreementHash);
+      var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
+      await helpers.increaseTime(testSetup.periodsUnit+1);
+      tx = await testSetup.continuousLocking4Reputation.release(accounts[0],lockingId);
+      assert.equal(tx.logs.length,1);
+      assert.equal(tx.logs[0].event,"Release");
+      assert.equal(tx.logs[0].args._lockingId,lockingId);
+      assert.equal(tx.logs[0].args._amount,web3.utils.toWei('1', "ether"));
+      assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
+    });
+
+    it("release before locking period should revert", async () => {
+      let testSetup = await setup(accounts);
+      var tx = await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),1,0,testSetup.agreementHash);
+      var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
+      try {
+        await testSetup.continuousLocking4Reputation.release(accounts[0],lockingId);
+        assert(false, "release before locking period  should revert");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("release cannot release twice", async () => {
+        let testSetup = await setup(accounts);
+        var tx = await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),1,0,testSetup.agreementHash);
+        var lockingId = await helpers.getValueFromLogs(tx, '_lockingId',1);
+        await helpers.increaseTime(testSetup.periodsUnit+1);
+        await testSetup.continuousLocking4Reputation.release(accounts[0],lockingId);
+        try {
+          await testSetup.continuousLocking4Reputation.release(accounts[0],lockingId);
+          assert(false, "release cannot release twice");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
     });
 });
