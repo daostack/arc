@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/ControllerInterface.sol";
@@ -19,7 +19,7 @@ contract ContinuousLocking4Reputation is Agreement {
 
     event Redeem(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
     event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
-    event Lock(address indexed _locker, bytes32 indexed _lockingId, uint256 _amount, uint256 _period);
+    event LockToken(address indexed _locker, bytes32 indexed _lockingId, uint256 _amount, uint256 _period);
 
     struct Locking {
         uint256 totalScore;
@@ -41,58 +41,66 @@ contract ContinuousLocking4Reputation is Agreement {
 
     Avatar public avatar;
     uint256 public reputationRewardLeft;
-    uint256 public lockingStartTime;
+    uint256 public startTime;
     uint256 public numberOfLockingPeriods;
-    uint256 public lockingReputationReward;
     uint256 public redeemEnableTime;
-    uint256 public maxLockingPeriod;
-    uint256 public lockingPeriodsUnit;
+    uint256 public maxLockingPeriods;
+    uint256 public periodsUnit;
     IERC20 public token;
     uint256 public lockingsCounter; // Total number of lockings
     uint256 public totalLockedLeft;
-    uint256 repRewardConstA;
-    uint256 repRewardConstB;
+    uint256 public repRewardConstA;
+    uint256 public repRewardConstB;
+
+    uint256 constant private REAL_FBITS = 40;
+    /**
+     * What's the first non-fractional bit
+     */
+    uint256 constant private REAL_ONE = uint256(1) << REAL_FBITS;
 
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
-     * @param _lockingReputationReward the reputation reward per auction this contract will reward
+     * @param _reputationReward the reputation reward per auction this contract will reward
      *        for the token locking
-     * @param _lockingStartTime auctions period start time
-     * @param _lockingPeriodsUnit locking periods units (e.g 30 days).
+     * @param _startTime auctions period start time
+     * @param _periodsUnit locking periods units (e.g 30 days).
      * @param _redeemEnableTime redeem enable time .
      *        redeem reputation can be done after this time.
-     * @param _maxLockingPeriod - maximum number of locking periods (in _lockingPeriodsUnit units)
+     * @param _maxLockingPeriods - maximum number of locking periods (in _periodsUnit units)
      * @param _token the bidding token
      * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
     function initialize(
         Avatar _avatar,
-        uint256 _lockingReputationReward,
-        uint256 _lockingStartTime,
-        uint256 _lockingPeriodsUnit,
+        uint256 _reputationReward,
+        uint256 _startTime,
+        uint256 _periodsUnit,
         uint256 _redeemEnableTime,
-        uint256 _maxLockingPeriod,
-        IERC20 _token,
+        uint256 _maxLockingPeriods,
         uint256 _repRewardConstA,
         uint256 _repRewardConstB,
+        IERC20 _token,
         bytes32 _agreementHash )
     external
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
-        //_lockingPeriodsUnit should be greater than block interval
-        require(_lockingPeriodsUnit > 15, "lockingPeriod should be > 15");
-        require(_redeemEnableTime >= _lockingStartTime+_lockingPeriodsUnit,
-        "_redeemEnableTime >= _lockingStartTime+_lockingPeriodsUnit");
+        //_periodsUnit should be greater than block interval
+        require(_periodsUnit > 15, "lockingPeriod should be > 15");
+        require(_maxLockingPeriods < 24, "maxLockingPeriods should be < 24");
+        require(_redeemEnableTime >= _startTime+_periodsUnit,
+        "_redeemEnableTime >= _startTime+_periodsUnit");
         token = _token;
         avatar = _avatar;
-        lockingStartTime = _lockingStartTime;
-        lockingReputationReward = _lockingReputationReward;
+        startTime = _startTime;
+        reputationRewardLeft = _reputationReward;
         redeemEnableTime = _redeemEnableTime;
-        maxLockingPeriod = _maxLockingPeriod;
-        lockingPeriodsUnit = _lockingPeriodsUnit;
-        repRewardConstA = _repRewardConstA;
+        maxLockingPeriods = _maxLockingPeriods;
+        periodsUnit = _periodsUnit;
+        require(_repRewardConstB < 1000, "_repRewardConstB should be < 1000");
+        require(repRewardConstA < _reputationReward, "repRewardConstA should be < _reputationReward");
+        repRewardConstA = toReal(uint216(_repRewardConstA));
         repRewardConstB = uint216(_repRewardConstB).fraction(uint216(1000));
         super.setAgreementHash(_agreementHash);
     }
@@ -107,16 +115,18 @@ contract ContinuousLocking4Reputation is Agreement {
         // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "now > redeemEnableTime");
         Locker storage locker = lockers[_beneficiary][_lockingId];
-        uint256 lockingPeriodToRedeemFrom = (locker.lockingTime - lockingStartTime) / lockingPeriodsUnit;
-        for (lockingPeriodToRedeemFrom; lockingPeriodToRedeemFrom < locker.period; lockingPeriodToRedeemFrom) {
+        uint256 lockingPeriodToRedeemFrom = (locker.lockingTime - startTime) / periodsUnit;
+        for (lockingPeriodToRedeemFrom; lockingPeriodToRedeemFrom < locker.period; lockingPeriodToRedeemFrom++) {
             Locking storage locking = lockings[lockingPeriodToRedeemFrom];
             uint256 score = locking.scores[_beneficiary];
             require(score > 0, "locking score should be > 0");
             locking.scores[_beneficiary] = 0;
-            uint256 lockingPeriodReputationReward = repRewardConstA.mul(repRewardConstB.pow(lockingPeriodToRedeemFrom));
-            uint256 repRelation = score.mul(lockingPeriodReputationReward);
-            reputation = reputation.add(repRelation.div(locking.totalScore));
+            uint256 lockingPeriodReputationReward =
+            mul(repRewardConstA, repRewardConstB.pow(lockingPeriodToRedeemFrom));
+            uint256 repRelation = mul(toReal(uint216(score)), lockingPeriodReputationReward);
+            reputation = reputation.add(div(repRelation, toReal(uint216(locking.totalScore))));
         }
+        reputation = uint256(fromReal(reputation));
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
@@ -128,31 +138,31 @@ contract ContinuousLocking4Reputation is Agreement {
     /**
      * @dev lock function
      * @param _amount the amount to bid with
-     * @param _period the period to lock. in lockingPeriodsUnit.
+     * @param _period the period to lock. in periodsUnit.
      * @param _lockingPeriodToLockIn the locking id to lock at .
      * @return lockingId
      */
-    function lock(uint256 _amount, uint256 _period ,uint256 _lockingPeriodToLockIn, bytes32 _agreementHash)
+    function lock(uint256 _amount, uint256 _period, uint256 _lockingPeriodToLockIn, bytes32 _agreementHash)
     public
     onlyAgree(_agreementHash)
     returns(bytes32 lockingId)
     {
         require(_amount > 0, "bidding amount should be > 0");
         // solhint-disable-next-line not-rely-on-time
-        require(now >= lockingStartTime, "bidding is enable only after bidding lockingStartTime");
-        require(_period <= maxLockingPeriod, "locking period exceed the maximum allowed");
+        require(now >= startTime, "bidding is enable only after bidding startTime");
+        require(_period <= maxLockingPeriods, "locking period exceed the maximum allowed");
         require(_period > 0, "locking period equal to zero");
         address(token).safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
-        uint256 lockingPeriodToLockIn = (now - lockingStartTime) / lockingPeriodsUnit;
+        uint256 lockingPeriodToLockIn = (now - startTime) / periodsUnit;
         require(lockingPeriodToLockIn == _lockingPeriodToLockIn, "locking is not active");
-        uint256 i = 0;
+        uint256 j = _period;
         //fill in the next lockings scores.
         //todo : check limitation of _period and require that on the init function.
-        for (lockingPeriodToLockIn; lockingPeriodToLockIn < lockingPeriodToLockIn+_period; lockingPeriodToLockIn++) {
-            Locking storage locking = lockings[lockingPeriodToLockIn];
-            uint256 score = (_period - i) * _amount;
-            i = i + 1;
+        for (int256 i = int256(lockingPeriodToLockIn + _period - 1); i >= int256(lockingPeriodToLockIn); i--) {
+            Locking storage locking = lockings[uint256(i)];
+            uint256 score = (_period - j + 1) * _amount;
+            j--;
             locking.totalScore = locking.totalScore.add(score);
             locking.scores[msg.sender] = score;
         }
@@ -168,7 +178,7 @@ contract ContinuousLocking4Reputation is Agreement {
 
         totalLockedLeft = totalLockedLeft.add(_amount);
 
-        emit Lock(msg.sender, lockingId, _amount, _period);
+        emit LockToken(msg.sender, lockingId, _amount, _period);
     }
 
     /**
@@ -183,11 +193,45 @@ contract ContinuousLocking4Reputation is Agreement {
         amount = locker.amount;
         locker.amount = 0;
         // solhint-disable-next-line not-rely-on-time
-        require(block.timestamp > locker.lockingTime + (locker.period*lockingPeriodsUnit),
+        require(block.timestamp > locker.lockingTime + (locker.period*periodsUnit),
         "check the lock period pass");
         totalLockedLeft = totalLockedLeft.sub(amount);
         address(token).safeTransfer(_beneficiary, amount);
         emit Release(_lockingId, _beneficiary, amount);
+    }
+
+    /**
+     * Multiply one real by another. Truncates overflows.
+     */
+    function mul(uint256 realA, uint256 realB) private pure returns (uint256) {
+        // When multiplying fixed point in x.y and z.w formats we get (x+z).(y+w) format.
+        // So we just have to clip off the extra REAL_FBITS fractional bits.
+        uint256 res = realA * realB;
+        require(res/realA == realB, "RealMath mul overflow");
+        return (res >> REAL_FBITS);
+    }
+
+    /**
+     * Convert an integer to a real. Preserves sign.
+     */
+    function toReal(uint216 ipart) private pure returns (uint256) {
+        return uint256(ipart) * REAL_ONE;
+    }
+
+    /**
+     * Convert a real to an integer. Preserves sign.
+     */
+    function fromReal(uint256 _realValue) private pure returns (uint216) {
+        return uint216(_realValue / REAL_ONE);
+    }
+
+    /**
+     * Divide one real by another real. Truncates overflows.
+     */
+    function div(uint256 realNumerator, uint256 realDenominator) private pure returns (uint256) {
+        // We use the reverse of the multiplication trick: convert numerator from
+        // x.y to (x+z).(y+w) fixed point, then divide by denom in z.w fixed point.
+        return uint256((uint256(realNumerator) * REAL_ONE) / uint256(realDenominator));
     }
 
 }
