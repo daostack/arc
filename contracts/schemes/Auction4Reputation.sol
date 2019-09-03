@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/ControllerInterface.sol";
@@ -136,16 +136,6 @@ contract Auction4Reputation is Agreement {
     }
 
     /**
-     * @dev getBid get bid for specific bidder and _auctionId
-     * @param _bidder the bidder
-     * @param _auctionId auction id
-     * @return uint
-     */
-    function getBid(address _bidder, uint256 _auctionId) public view returns(uint256) {
-        return auctions[_auctionId].bids[_bidder];
-    }
-
-    /**
      * @dev transferToWallet transfer the tokens to the wallet.
      *      can be called only after auctionsEndTime
      */
@@ -154,6 +144,16 @@ contract Auction4Reputation is Agreement {
         require(now > auctionsEndTime, "now > auctionsEndTime");
         uint256 tokenBalance = token.balanceOf(address(this));
         address(token).safeTransfer(wallet, tokenBalance);
+    }
+
+    /**
+     * @dev getBid get bid for specific bidder and _auctionId
+     * @param _bidder the bidder
+     * @param _auctionId auction id
+     * @return uint
+     */
+    function getBid(address _bidder, uint256 _auctionId) public view returns(uint256) {
+        return auctions[_auctionId].bids[_bidder];
     }
 
 }

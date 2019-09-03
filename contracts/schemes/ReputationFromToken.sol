@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "../controller/ControllerInterface.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
