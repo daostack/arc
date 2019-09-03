@@ -8,7 +8,7 @@ import "./Agreement.sol";
 import { RealMath } from "@daostack/infra/contracts/libs/RealMath.sol";
 
 /**
- * @title A scheme for conduct ERC20 Tokens auction for reputation
+ * @title A scheme for continuous locking ERC20 Token for reputation
  */
 
 contract ContinuousLocking4Reputation is Agreement {
@@ -180,9 +180,7 @@ contract ContinuousLocking4Reputation is Agreement {
         locker.period = _period;
         // solhint-disable-next-line not-rely-on-time
         locker.lockingTime = now;
-
         totalLockedLeft = totalLockedLeft.add(_amount);
-
         emit LockToken(msg.sender, lockingId, _amount, _period);
     }
 
