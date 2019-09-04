@@ -206,9 +206,16 @@ contract ContinuousLocking4Reputation is Agreement {
         emit Release(_lockingId, _beneficiary, amount);
     }
 
-    function repRewardPerPeriod(uint256  _periodToRedeemFrom) public view returns(uint256 repReward) {
-        if (_periodToRedeemFrom <= MAX_PERIODS) {
-            repReward = mul(repRewardConstA, repRewardConstB.pow(_periodToRedeemFrom));
+    /**
+     * @dev repRewardPerPeriod function
+     * the calculation is done the following formula:
+     * RepReward =  repRewardConstA * (repRewardConstB**_periodNumber)
+     * @param _periodNumber the period number to calc rep reward of
+     * @return repReward
+     */
+    function repRewardPerPeriod(uint256  _periodNumber) public view returns(uint256 repReward) {
+        if (_periodNumber <= MAX_PERIODS) {
+            repReward = mul(repRewardConstA, repRewardConstB.pow(_periodNumber));
         }
     }
 
