@@ -354,4 +354,38 @@ contract('ContinuousLocking4Reputation', accounts => {
           helpers.assertVMException(error);
         }
     });
+
+    it("redeem reward limits 100 periods", async () => {
+        let testSetup = await setup(accounts);
+        var repForPeriod = await testSetup.continuousLocking4Reputation.repRewardPerPeriod(100);
+        var REAL_FBITS = 40;
+        var res = (repForPeriod.shrn(REAL_FBITS).toNumber() + (repForPeriod.maskn(REAL_FBITS)/Math.pow(2,REAL_FBITS))).toFixed(2);
+        assert.equal(Math.floor(res),Math.floor(testSetup.repRewardConstA* Math.pow(testSetup.repRewardConstB/1000,100)));
+        assert.equal(await testSetup.continuousLocking4Reputation.repRewardPerPeriod(101),0);
+    });
+
+    it("redeem limits 100 periods", async () => {
+        let testSetup = await setup(accounts,false);
+        var period = 24;
+        await helpers.increaseTime(testSetup.periodsUnit*90+1);
+        await testSetup.continuousLocking4Reputation.initialize(testSetup.org.avatar.address,
+                                                        testSetup.reputationReward,
+                                                        testSetup.startTime,
+                                                        testSetup.periodsUnit,
+                                                        testSetup.redeemEnableTime,
+                                                        period,
+                                                        testSetup.repRewardConstA,
+                                                        testSetup.repRewardConstB,
+                                                        testSetup.lockingToken.address,
+                                                        testSetup.agreementHash,
+                                                        {gas : constants.ARC_GAS_LIMIT});
+        await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),1,90,testSetup.agreementHash);
+        try {
+          await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),period,90,testSetup.agreementHash);
+          assert(false, "exceed max allowe periods");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+    });
+
 });

@@ -58,6 +58,9 @@ contract ContinuousLocking4Reputation is Agreement {
      */
     uint256 constant private REAL_ONE = uint256(1) << REAL_FBITS;
 
+    uint256 constant public MAX_PERIODS = 100;
+    uint256 constant public MAX_LOCKING_PERIODS = 24;
+
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
@@ -88,7 +91,7 @@ contract ContinuousLocking4Reputation is Agreement {
         require(_avatar != Avatar(0), "avatar cannot be zero");
         //_periodsUnit should be greater than block interval
         require(_periodsUnit > 15, "lockingPeriod should be > 15");
-        require(_maxLockingPeriods < 24, "maxLockingPeriods should be < 24");
+        require(_maxLockingPeriods <= MAX_LOCKING_PERIODS, "maxLockingPeriods should be <= MAX_LOCKING_PERIODS");
         require(_redeemEnableTime >= _startTime+_periodsUnit,
         "_redeemEnableTime >= _startTime+_periodsUnit");
         token = _token;
@@ -124,8 +127,7 @@ contract ContinuousLocking4Reputation is Agreement {
             uint256 score = locking.scores[_beneficiary];
             if (score > 0) {
                 locking.scores[_beneficiary] = 0;
-                uint256 lockingPeriodReputationReward =
-                mul(repRewardConstA, repRewardConstB.pow(periodToRedeemFrom));
+                uint256 lockingPeriodReputationReward = repRewardPerPeriod(periodToRedeemFrom);
                 uint256 repRelation = mul(toReal(uint216(score)), lockingPeriodReputationReward);
                 reputation = reputation.add(div(repRelation, toReal(uint216(locking.totalScore))));
             }
@@ -157,6 +159,7 @@ contract ContinuousLocking4Reputation is Agreement {
         require(now >= startTime, "bidding is enable only after bidding startTime");
         require(_period <= maxLockingPeriods, "locking period exceed the maximum allowed");
         require(_period > 0, "locking period equal to zero");
+        require((_lockingPeriodToLockIn + _period) <= MAX_PERIODS, "exceed max allowed periods");
         address(token).safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
         uint256 lockingPeriodToLockIn = (now - startTime) / periodsUnit;
@@ -201,6 +204,12 @@ contract ContinuousLocking4Reputation is Agreement {
         totalLockedLeft = totalLockedLeft.sub(amount);
         address(token).safeTransfer(_beneficiary, amount);
         emit Release(_lockingId, _beneficiary, amount);
+    }
+
+    function repRewardPerPeriod(uint256  _periodToRedeemFrom) public view returns(uint256 repReward) {
+        if (_periodToRedeemFrom <= MAX_PERIODS) {
+            repReward = mul(repRewardConstA, repRewardConstB.pow(_periodToRedeemFrom));
+        }
     }
 
     /**
