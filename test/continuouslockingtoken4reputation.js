@@ -63,9 +63,9 @@ contract('ContinuousLocking4Reputation', accounts => {
       assert.equal(await testSetup.continuousLocking4Reputation.startTime(),testSetup.startTime);
       assert.equal(await testSetup.continuousLocking4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.continuousLocking4Reputation.token(),testSetup.lockingToken.address);
-      assert.equal(await testSetup.continuousLocking4Reputation.periodsUnit(),testSetup.periodsUnit);
+      assert.equal(await testSetup.continuousLocking4Reputation.batchTime(),testSetup.periodsUnit);
       assert.equal(await testSetup.continuousLocking4Reputation.getAgreementHash(),testSetup.agreementHash);
-      assert.equal(await testSetup.continuousLocking4Reputation.periodsCap(),testSetup.periodsCap);
+      assert.equal(await testSetup.continuousLocking4Reputation.batchesIndexCap(),testSetup.periodsCap);
     });
 
     it("initialize periodsUnit <= 15 seconds  is not allowed", async () => {
@@ -385,11 +385,11 @@ contract('ContinuousLocking4Reputation', accounts => {
 
     it("redeem reward limits 100 periods", async () => {
         let testSetup = await setup(accounts);
-        var repForPeriod = await testSetup.continuousLocking4Reputation.repRewardPerPeriod(100);
+        var repForPeriod = await testSetup.continuousLocking4Reputation.repRewardPerBatch(100);
         var REAL_FBITS = 40;
         var res = (repForPeriod.shrn(REAL_FBITS).toNumber() + (repForPeriod.maskn(REAL_FBITS)/Math.pow(2,REAL_FBITS))).toFixed(2);
         assert.equal(Math.floor(res),Math.floor(testSetup.repRewardConstA* Math.pow(testSetup.repRewardConstB/1000,100)));
-        assert.equal(await testSetup.continuousLocking4Reputation.repRewardPerPeriod(101),0);
+        assert.equal(await testSetup.continuousLocking4Reputation.repRewardPerBatch(101),0);
     });
 
     it("redeem limits 100 periods", async () => {

@@ -35,24 +35,23 @@ contract ContinuousLocking4Reputation is Agreement {
         uint256 period;
     }
 
-    // A mapping from lockers addresses their lock balances.
+    // A mapping from lockers addresses to their locks.
     mapping(address => mapping(bytes32=>Lock)) public lockers;
-    // A mapping from locking index to locking.
-    mapping(uint256=>Batch) public batches;
+    //A mapping from batch index to batch.
+    mapping(uint256 => Batch) public batches;
 
     Avatar public avatar;
     uint256 public reputationRewardLeft;
     uint256 public startTime;
-    uint256 public numberOfLockingPeriods;
     uint256 public redeemEnableTime;
     uint256 public maxLockingBatches;
-    uint256 public periodsUnit;
+    uint256 public batchTime;
     IERC20 public token;
     uint256 public batchesCounter; // Total number of batches
     uint256 public totalLockedLeft;
     uint256 public repRewardConstA;
     uint256 public repRewardConstB;
-    uint256 public periodsCap;
+    uint256 public batchesIndexCap;
 
     uint256 constant private REAL_FBITS = 40;
     /**
@@ -60,7 +59,7 @@ contract ContinuousLocking4Reputation is Agreement {
      */
 
     uint256 constant private REAL_ONE = uint256(1) << REAL_FBITS;
-    uint256 constant private PERIODS_HARDCAP = 100;
+    uint256 constant private BATCHES_INDEX_HARDCAP = 100;
     uint256 constant public MAX_LOCKING_BATCHES_HARDCAP = 24;
 
     /**
@@ -68,16 +67,16 @@ contract ContinuousLocking4Reputation is Agreement {
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the reputation reward per auction this contract will reward
      *        for the token locking
-     * @param _startTime auctions period start time
-     * @param _periodsUnit locking periods units (e.g 30 days).
+     * @param _startTime locking period start time
+     * @param _batchTime batch time (e.g 30 days).
      * @param _redeemEnableTime redeem enable time .
      *        redeem reputation can be done after this time.
-     * @param _maxLockingBatches - maximum number of locking periods (in _periodsUnit units)
-     * @param _repRewardConstA - reputation allocation per period is calculated by :
-     *   _repRewardConstA * (_repRewardConstB ** periodNumber)
-     * @param _repRewardConstB - reputation allocation per period is calculated by :
-     *   _repRewardConstA * (_repRewardConstB ** periodNumber)
-     * @param _periodsCap  the max periods number to allow to lock in . this value capped by PERIODS_HARDCAP
+     * @param _maxLockingBatches - maximum number of locking batches (in _batchTime units)
+     * @param _repRewardConstA - reputation allocation per batch is calculated by :
+     *   _repRewardConstA * (_repRewardConstB ** batchIndex)
+     * @param _repRewardConstB - reputation allocation per batch is calculated by :
+     *   _repRewardConstA * (_repRewardConstB ** batchIndex)
+     * @param _batchesIndexCap  the max batch index which allows to lock in . this value capped by BATCHES_HARDCAP
      * @param _token the locking token
      * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
@@ -85,37 +84,37 @@ contract ContinuousLocking4Reputation is Agreement {
         Avatar _avatar,
         uint256 _reputationReward,
         uint256 _startTime,
-        uint256 _periodsUnit,
+        uint256 _batchTime,
         uint256 _redeemEnableTime,
         uint256 _maxLockingBatches,
         uint256 _repRewardConstA,
         uint256 _repRewardConstB,
-        uint256 _periodsCap,
+        uint256 _batchesIndexCap,
         IERC20 _token,
         bytes32 _agreementHash )
     external
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
-        //_periodsUnit should be greater than block interval
-        require(_periodsUnit > 15, "lockingPeriod should be > 15");
+        //_batchTime should be greater than block interval
+        require(_batchTime > 15, "batchTime should be > 15");
         require(_maxLockingBatches <= MAX_LOCKING_BATCHES_HARDCAP,
         "maxLockingBatches should be <= MAX_LOCKING_BATCHES_HARDCAP");
-        require(_redeemEnableTime >= _startTime+_periodsUnit,
-        "_redeemEnableTime >= _startTime+_periodsUnit");
-        require(_periodsCap <= PERIODS_HARDCAP, "_periodsCap > PERIODS_HARDCAP");
+        require(_redeemEnableTime >= _startTime+_batchTime,
+        "_redeemEnableTime >= _startTime+_batchTime");
+        require(_batchesIndexCap <= BATCHES_INDEX_HARDCAP, "_batchesIndexCap > BATCHES_INDEX_HARDCAP");
         token = _token;
         avatar = _avatar;
         startTime = _startTime;
         reputationRewardLeft = _reputationReward;
         redeemEnableTime = _redeemEnableTime;
         maxLockingBatches = _maxLockingBatches;
-        periodsUnit = _periodsUnit;
+        batchTime = _batchTime;
         require(_repRewardConstB < 1000, "_repRewardConstB should be < 1000");
         require(repRewardConstA < _reputationReward, "repRewardConstA should be < _reputationReward");
         repRewardConstA = toReal(uint216(_repRewardConstA));
         repRewardConstB = uint216(_repRewardConstB).fraction(uint216(1000));
-        periodsCap = _periodsCap;
+        batchesIndexCap = _batchesIndexCap;
         super.setAgreementHash(_agreementHash);
     }
 
@@ -129,17 +128,17 @@ contract ContinuousLocking4Reputation is Agreement {
         // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "now > redeemEnableTime");
         Lock storage locker = lockers[_beneficiary][_lockingId];
-        uint256 periodToRedeemFrom = (locker.lockingTime - startTime) / periodsUnit;
+        uint256 batchIndexToRedeemFrom = (locker.lockingTime - startTime) / batchTime;
         // solhint-disable-next-line not-rely-on-time
-        uint256 currentLockingPeriod = (now - startTime) / periodsUnit;
-        uint256 lastLockingPeriodToRedeem =  currentLockingPeriod.min(periodToRedeemFrom + locker.period);
-        for (periodToRedeemFrom; periodToRedeemFrom < lastLockingPeriodToRedeem; periodToRedeemFrom++) {
-            Batch storage locking = batches[periodToRedeemFrom];
+        uint256 currentBatch = (now - startTime) / batchTime;
+        uint256 lastBatchIndexToRedeem =  currentBatch.min(batchIndexToRedeemFrom + locker.period);
+        for (batchIndexToRedeemFrom; batchIndexToRedeemFrom < lastBatchIndexToRedeem; batchIndexToRedeemFrom++) {
+            Batch storage locking = batches[batchIndexToRedeemFrom];
             uint256 score = locking.scores[_beneficiary];
             if (score > 0) {
                 locking.scores[_beneficiary] = 0;
-                uint256 lockingPeriodReputationReward = repRewardPerPeriod(periodToRedeemFrom);
-                uint256 repRelation = mul(toReal(uint216(score)), lockingPeriodReputationReward);
+                uint256 batchReputationReward = repRewardPerBatch(batchIndexToRedeemFrom);
+                uint256 repRelation = mul(toReal(uint216(score)), batchReputationReward);
                 reputation = reputation.add(div(repRelation, toReal(uint216(locking.totalScore))));
             }
         }
@@ -155,12 +154,12 @@ contract ContinuousLocking4Reputation is Agreement {
 
     /**
      * @dev lock function
-     * @param _amount the amount to bid with
-     * @param _period the period to lock. in periodsUnit.
-     * @param _lockingPeriodToLockIn the locking id to lock at .
+     * @param _amount the amount of token to lock
+     * @param _period the period to lock. in batchTime units
+     * @param _batchIndexToLockIn the locking id to lock in.
      * @return lockingId
      */
-    function lock(uint256 _amount, uint256 _period, uint256 _lockingPeriodToLockIn, bytes32 _agreementHash)
+    function lock(uint256 _amount, uint256 _period, uint256 _batchIndexToLockIn, bytes32 _agreementHash)
     public
     onlyAgree(_agreementHash)
     returns(bytes32 lockingId)
@@ -168,21 +167,21 @@ contract ContinuousLocking4Reputation is Agreement {
         require(_amount > 0, "locking amount should be > 0");
         // solhint-disable-next-line not-rely-on-time
         require(now >= startTime, "locking is enable only after locking startTime");
-        require(_period <= maxLockingBatches, "locking period exceed the maximum allowed");
-        require(_period > 0, "locking period equal to zero");
-        require((_lockingPeriodToLockIn + _period) <= periodsCap, "exceed max allowed periods");
+        require(_period <= maxLockingBatches, "period exceed the maximum allowed");
+        require(_period > 0, "period equal to zero");
+        require((_batchIndexToLockIn + _period) <= batchesIndexCap, "exceed max allowed batches");
         address(token).safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
-        uint256 lockingPeriodToLockIn = (now - startTime) / periodsUnit;
-        require(lockingPeriodToLockIn == _lockingPeriodToLockIn, "locking is not active");
+        uint256 batchIndexToLockIn = (now - startTime) / batchTime;
+        require(batchIndexToLockIn == _batchIndexToLockIn, "locking is not active");
         uint256 j = _period;
-        //fill in the next batche scores.
-        for (int256 i = int256(lockingPeriodToLockIn + _period - 1); i >= int256(lockingPeriodToLockIn); i--) {
-            Batch storage locking = batches[uint256(i)];
+        //fill in the next batches scores.
+        for (int256 i = int256(batchIndexToLockIn + _period - 1); i >= int256(batchIndexToLockIn); i--) {
+            Batch storage batch = batches[uint256(i)];
             uint256 score = (_period - j + 1) * _amount;
             j--;
-            locking.totalScore = locking.totalScore.add(score);
-            locking.scores[msg.sender] = score;
+            batch.totalScore = batch.totalScore.add(score);
+            batch.scores[msg.sender] = score;
         }
 
         lockingId = keccak256(abi.encodePacked(address(this), batchesCounter));
@@ -199,13 +198,13 @@ contract ContinuousLocking4Reputation is Agreement {
 
     /**
      * @dev extendLocking function
-     * @param _extendPeriod the period to extend the locking. in periodsUnit.
-     * @param _lockingPeriodToLockIn the locking id to lock at .
+     * @param _extendPeriod the period to extend the locking. in batchTime.
+     * @param _batchIndexToLockIn the locking id to lock at .
      * @param _lockingId the locking id to extend
      */
     function extendLocking(
         uint256 _extendPeriod,
-        uint256 _lockingPeriodToLockIn,
+        uint256 _batchIndexToLockIn,
         bytes32 _lockingId,
         bytes32 _agreementHash)
     public
@@ -213,26 +212,26 @@ contract ContinuousLocking4Reputation is Agreement {
     {
         Lock storage locker = lockers[msg.sender][_lockingId];
         require(locker.lockingTime != 0, "wrong locking id");
-        uint256 lockingPeriodRemain =
-        ((locker.lockingTime + (locker.period*periodsUnit) - startTime)/periodsUnit).sub(_lockingPeriodToLockIn);
-        uint256 extendPeriodsFromNow = lockingPeriodRemain + _extendPeriod;
-        require(extendPeriodsFromNow <= maxLockingBatches, "locking period exceed the maximum allowed");
+        uint256 remainBatches =
+        ((locker.lockingTime + (locker.period*batchTime) - startTime)/batchTime).sub(_batchIndexToLockIn);
+        uint256 batchesCountFromCurrent = remainBatches + _extendPeriod;
+        require(batchesCountFromCurrent <= maxLockingBatches, "locking period exceed the maximum allowed");
         require(_extendPeriod > 0, "extend locking period equal to zero");
-        require((_lockingPeriodToLockIn + extendPeriodsFromNow) <= periodsCap,
-        "exceed max allowed periods");
+        require((_batchIndexToLockIn + batchesCountFromCurrent) <= batchesIndexCap,
+        "exceed max allowed batches");
         // solhint-disable-next-line not-rely-on-time
-        uint256 lockingPeriodToLockIn = (now - startTime) / periodsUnit;
-        require(lockingPeriodToLockIn == _lockingPeriodToLockIn, "locking is not active");
-        uint256 j = extendPeriodsFromNow;
+        uint256 batchIndexToLockIn = (now - startTime) / batchTime;
+        require(batchIndexToLockIn == _batchIndexToLockIn, "locking is not active");
+        uint256 j = batchesCountFromCurrent;
         //fill in the next batche scores.
-        for (int256 i = int256(lockingPeriodToLockIn + extendPeriodsFromNow - 1);
-            i >= int256(lockingPeriodToLockIn);
+        for (int256 i = int256(batchIndexToLockIn + batchesCountFromCurrent - 1);
+            i >= int256(batchIndexToLockIn);
             i--) {
-                Batch storage locking = batches[uint256(i)];
-                uint256 score = (extendPeriodsFromNow - j + 1) * locker.amount;
+                Batch storage batch = batches[uint256(i)];
+                uint256 score = (batchesCountFromCurrent - j + 1) * locker.amount;
                 j--;
-                locking.totalScore = locking.totalScore.add(score).sub(locking.scores[msg.sender]);
-                locking.scores[msg.sender] = score;
+                batch.totalScore = batch.totalScore.add(score).sub(batch.scores[msg.sender]);
+                batch.scores[msg.sender] = score;
             }
         locker.period = locker.period + _extendPeriod;
         emit ExtendLocking(msg.sender, _lockingId, _extendPeriod);
@@ -250,23 +249,23 @@ contract ContinuousLocking4Reputation is Agreement {
         amount = locker.amount;
         locker.amount = 0;
         // solhint-disable-next-line not-rely-on-time
-        require(block.timestamp > locker.lockingTime + (locker.period*periodsUnit),
-        "check the lock period pass");
+        require(block.timestamp > locker.lockingTime + (locker.period*batchTime),
+        "locking period not passed");
         totalLockedLeft = totalLockedLeft.sub(amount);
         address(token).safeTransfer(_beneficiary, amount);
         emit Release(_lockingId, _beneficiary, amount);
     }
 
     /**
-     * @dev repRewardPerPeriod function
+     * @dev repRewardPerBatch function
      * the calculation is done the following formula:
-     * RepReward =  repRewardConstA * (repRewardConstB**_periodNumber)
-     * @param _periodNumber the period number to calc rep reward of
+     * RepReward =  repRewardConstA * (repRewardConstB**_batchIndex)
+     * @param _batchIndex the batch number to calc rep reward of
      * @return repReward
      */
-    function repRewardPerPeriod(uint256  _periodNumber) public view returns(uint256 repReward) {
-        if (_periodNumber <= periodsCap) {
-            repReward = mul(repRewardConstA, repRewardConstB.pow(_periodNumber));
+    function repRewardPerBatch(uint256  _batchIndex) public view returns(uint256 repReward) {
+        if (_batchIndex <= batchesIndexCap) {
+            repReward = mul(repRewardConstA, repRewardConstB.pow(_batchIndex));
         }
     }
 
