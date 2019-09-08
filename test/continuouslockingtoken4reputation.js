@@ -15,6 +15,7 @@ const setup = async function (accounts,
                              _maxLockingPeriod = 12,
                              _repRewardConstA = 85000,
                              _repRewardConstB = 900,
+                             _periodsCap = 100,
                              _agreementHash = helpers.SOME_HASH
                            ) {
    var testSetup = new helpers.TestSetup();
@@ -33,6 +34,7 @@ const setup = async function (accounts,
    testSetup.repRewardConstA = _repRewardConstA;
    testSetup.repRewardConstB = _repRewardConstB;
    testSetup.reputationReward = _reputationReward;
+   testSetup.periodsCap = _periodsCap;
    if (_initialize === true ) {
      await testSetup.continuousLocking4Reputation.initialize(testSetup.org.avatar.address,
                                                      testSetup.reputationReward,
@@ -42,6 +44,7 @@ const setup = async function (accounts,
                                                      testSetup.maxLockingPeriod,
                                                      testSetup.repRewardConstA,
                                                      testSetup.repRewardConstB,
+                                                     testSetup.periodsCap,
                                                      testSetup.lockingToken.address,
                                                      testSetup.agreementHash,
                                                      {gas : constants.ARC_GAS_LIMIT});
@@ -62,6 +65,7 @@ contract('ContinuousLocking4Reputation', accounts => {
       assert.equal(await testSetup.continuousLocking4Reputation.token(),testSetup.lockingToken.address);
       assert.equal(await testSetup.continuousLocking4Reputation.periodsUnit(),testSetup.periodsUnit);
       assert.equal(await testSetup.continuousLocking4Reputation.getAgreementHash(),testSetup.agreementHash);
+      assert.equal(await testSetup.continuousLocking4Reputation.periodsCap(),testSetup.periodsCap);
     });
 
     it("initialize periodsUnit <= 15 seconds  is not allowed", async () => {
@@ -75,6 +79,7 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         testSetup.maxLockingPeriod,
                                                         testSetup.repRewardConstA,
                                                         testSetup.repRewardConstB,
+                                                        testSetup.periodsCap,
                                                         testSetup.lockingToken.address,
                                                         testSetup.agreementHash,
                                                         {gas : constants.ARC_GAS_LIMIT});
@@ -95,10 +100,32 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         testSetup.maxLockingPeriod,
                                                         testSetup.repRewardConstA,
                                                         testSetup.repRewardConstB,
+                                                        testSetup.periodsCap,
                                                         testSetup.lockingToken.address,
                                                         testSetup.agreementHash,
                                                         {gas : constants.ARC_GAS_LIMIT});
         assert(false, "_redeemEnableTime < _startTime+_periodsUnit  is not allowed");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("period cap", async () => {
+      let testSetup = await setup(accounts,false);
+      try {
+        await testSetup.continuousLocking4Reputation.initialize(testSetup.org.avatar.address,
+                                                        testSetup.reputationReward,
+                                                        testSetup.startTime,
+                                                        testSetup.periodsUnit,
+                                                        testSetup.startTime,
+                                                        testSetup.maxLockingPeriod,
+                                                        testSetup.repRewardConstA,
+                                                        testSetup.repRewardConstB,
+                                                        testSetup.periodsCap +1,
+                                                        testSetup.lockingToken.address,
+                                                        testSetup.agreementHash,
+                                                        {gas : constants.ARC_GAS_LIMIT});
+        assert(false, "period cap cannot be greater than 100");
       } catch(error) {
         helpers.assertVMException(error);
       }
@@ -296,6 +323,7 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                              testSetup.maxLockingPeriod,
                                                              testSetup.repRewardConstA,
                                                              testSetup.repRewardConstB,
+                                                             testSetup.periodsCap,
                                                              testSetup.lockingToken.address,
                                                              testSetup.agreementHash,
                                                              {gas : constants.ARC_GAS_LIMIT});
@@ -376,6 +404,7 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         period,
                                                         testSetup.repRewardConstA,
                                                         testSetup.repRewardConstB,
+                                                        testSetup.periodsCap,
                                                         testSetup.lockingToken.address,
                                                         testSetup.agreementHash,
                                                         {gas : constants.ARC_GAS_LIMIT});
