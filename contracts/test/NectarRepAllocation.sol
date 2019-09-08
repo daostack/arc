@@ -2,11 +2,17 @@ pragma solidity ^0.5.11;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
+
 contract MiniMeToken {
     function balanceOfAt(address _owner, uint _blockNumber) public view returns (uint);
     function totalSupplyAt(uint _blockNumber) public view returns(uint);
 }
 
+/**
+ * @title NectarRepAllocation contract
+ * This contract should be use to calculate reputation allocation for nextar dao bootstrat
+ * this contract can be used as the rep mapping contract for RepitationFromToken contract.
+ */
 
 contract NectarRepAllocation {
     using SafeMath for uint256;
