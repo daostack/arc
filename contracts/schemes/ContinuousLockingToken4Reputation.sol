@@ -72,6 +72,10 @@ contract ContinuousLocking4Reputation is Agreement {
      * @param _redeemEnableTime redeem enable time .
      *        redeem reputation can be done after this time.
      * @param _maxLockingPeriods - maximum number of locking periods (in _periodsUnit units)
+     * @param _repRewardConstA - reputation allocation per period is calculated by :
+     *   _repRewardConstA * (_repRewardConstB ** periodNumber)
+     * @param _repRewardConstB - reputation allocation per period is calculated by :
+     *   _repRewardConstA * (_repRewardConstB ** periodNumber)
      * @param _token the locking token
      * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
@@ -167,7 +171,6 @@ contract ContinuousLocking4Reputation is Agreement {
         require(lockingPeriodToLockIn == _lockingPeriodToLockIn, "locking is not active");
         uint256 j = _period;
         //fill in the next lockings scores.
-        //todo : check limitation of _period and require that on the init function.
         for (int256 i = int256(lockingPeriodToLockIn + _period - 1); i >= int256(lockingPeriodToLockIn); i--) {
             Locking storage locking = lockings[uint256(i)];
             uint256 score = (_period - j + 1) * _amount;
@@ -216,7 +219,6 @@ contract ContinuousLocking4Reputation is Agreement {
         require(lockingPeriodToLockIn == _lockingPeriodToLockIn, "locking is not active");
         uint256 j = extendPeriodsFromNow;
         //fill in the next lockings scores.
-        //todo : check limitation of _period and require that on the init function.
         for (int256 i = int256(lockingPeriodToLockIn + extendPeriodsFromNow - 1);
             i >= int256(lockingPeriodToLockIn);
             i--) {
