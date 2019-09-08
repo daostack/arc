@@ -29,14 +29,14 @@ contract ContinuousLocking4Reputation is Agreement {
         mapping(address=>uint256) scores;
     }
 
-    struct Locker {
+    struct Lock {
         uint256 amount;
         uint256 lockingTime;
         uint256 period;
     }
 
     // A mapping from lockers addresses their lock balances.
-    mapping(address => mapping(bytes32=>Locker)) public lockers;
+    mapping(address => mapping(bytes32=>Lock)) public lockers;
     // A mapping from locking index to locking.
     mapping(uint256=>Batch) public batches;
 
@@ -77,6 +77,7 @@ contract ContinuousLocking4Reputation is Agreement {
      *   _repRewardConstA * (_repRewardConstB ** periodNumber)
      * @param _repRewardConstB - reputation allocation per period is calculated by :
      *   _repRewardConstA * (_repRewardConstB ** periodNumber)
+     * @param _periodsCap  the max periods number to allow to lock in . this value capped by PERIODS_HARDCAP
      * @param _token the locking token
      * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
@@ -127,7 +128,7 @@ contract ContinuousLocking4Reputation is Agreement {
     function redeem(address _beneficiary, bytes32 _lockingId) public returns(uint256 reputation) {
         // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "now > redeemEnableTime");
-        Locker storage locker = lockers[_beneficiary][_lockingId];
+        Lock storage locker = lockers[_beneficiary][_lockingId];
         uint256 periodToRedeemFrom = (locker.lockingTime - startTime) / periodsUnit;
         // solhint-disable-next-line not-rely-on-time
         uint256 currentLockingPeriod = (now - startTime) / periodsUnit;
@@ -187,7 +188,7 @@ contract ContinuousLocking4Reputation is Agreement {
         lockingId = keccak256(abi.encodePacked(address(this), batchesCounter));
         batchesCounter = batchesCounter.add(1);
 
-        Locker storage locker = lockers[msg.sender][lockingId];
+        Lock storage locker = lockers[msg.sender][lockingId];
         locker.amount = _amount;
         locker.period = _period;
         // solhint-disable-next-line not-rely-on-time
@@ -210,7 +211,7 @@ contract ContinuousLocking4Reputation is Agreement {
     public
     onlyAgree(_agreementHash)
     {
-        Locker storage locker = lockers[msg.sender][_lockingId];
+        Lock storage locker = lockers[msg.sender][_lockingId];
         require(locker.lockingTime != 0, "wrong locking id");
         uint256 lockingPeriodRemain =
         ((locker.lockingTime + (locker.period*periodsUnit) - startTime)/periodsUnit).sub(_lockingPeriodToLockIn);
@@ -244,7 +245,7 @@ contract ContinuousLocking4Reputation is Agreement {
      * @return bool
      */
     function release(address _beneficiary, bytes32 _lockingId) public returns(uint256 amount) {
-        Locker storage locker = lockers[_beneficiary][_lockingId];
+        Lock storage locker = lockers[_beneficiary][_lockingId];
         require(locker.amount > 0, "amount should be > 0");
         amount = locker.amount;
         locker.amount = 0;
