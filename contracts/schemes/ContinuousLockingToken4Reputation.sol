@@ -65,7 +65,7 @@ contract ContinuousLocking4Reputation is Agreement {
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
-     * @param _reputationReward the reputation reward per auction this contract will reward
+     * @param _reputationReward the reputation reward per locking batch that this contract will reward
      *        for the token locking
      * @param _startTime locking period start time
      * @param _batchTime batch time (e.g 30 days).
