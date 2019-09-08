@@ -21,6 +21,7 @@ contract ContinuousLocking4Reputation is Agreement {
     event Redeem(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
     event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
     event LockToken(address indexed _locker, bytes32 indexed _lockingId, uint256 _amount, uint256 _period);
+    event ExtendLocking(address indexed _locker, bytes32 indexed _lockingId, uint256 _extendPeriod);
 
     struct Locking {
         uint256 totalScore;
@@ -71,7 +72,7 @@ contract ContinuousLocking4Reputation is Agreement {
      * @param _redeemEnableTime redeem enable time .
      *        redeem reputation can be done after this time.
      * @param _maxLockingPeriods - maximum number of locking periods (in _periodsUnit units)
-     * @param _token the bidding token
+     * @param _token the locking token
      * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
     function initialize(
@@ -154,9 +155,9 @@ contract ContinuousLocking4Reputation is Agreement {
     onlyAgree(_agreementHash)
     returns(bytes32 lockingId)
     {
-        require(_amount > 0, "bidding amount should be > 0");
+        require(_amount > 0, "locking amount should be > 0");
         // solhint-disable-next-line not-rely-on-time
-        require(now >= startTime, "bidding is enable only after bidding startTime");
+        require(now >= startTime, "locking is enable only after locking startTime");
         require(_period <= maxLockingPeriods, "locking period exceed the maximum allowed");
         require(_period > 0, "locking period equal to zero");
         require((_lockingPeriodToLockIn + _period) <= MAX_PERIODS, "exceed max allowed periods");
@@ -185,6 +186,48 @@ contract ContinuousLocking4Reputation is Agreement {
         locker.lockingTime = now;
         totalLockedLeft = totalLockedLeft.add(_amount);
         emit LockToken(msg.sender, lockingId, _amount, _period);
+    }
+
+    /**
+     * @dev extendLocking function
+     * @param _extendPeriod the period to extend the locking. in periodsUnit.
+     * @param _lockingPeriodToLockIn the locking id to lock at .
+     * @param _lockingId the locking id to extend
+     */
+    function extendLocking(
+        uint256 _extendPeriod,
+        uint256 _lockingPeriodToLockIn,
+        bytes32 _lockingId,
+        bytes32 _agreementHash)
+    public
+    onlyAgree(_agreementHash)
+    {
+        Locker storage locker = lockers[msg.sender][_lockingId];
+        require(locker.lockingTime != 0, "wrong locking id");
+        uint256 lockingPeriodRemain =
+        ((locker.lockingTime + (locker.period*periodsUnit) - startTime)/periodsUnit).sub(_lockingPeriodToLockIn);
+        uint256 extendPeriodsFromNow = lockingPeriodRemain + _extendPeriod;
+        require(extendPeriodsFromNow <= maxLockingPeriods, "locking period exceed the maximum allowed");
+        require(_extendPeriod > 0, "extend locking period equal to zero");
+        require((_lockingPeriodToLockIn + extendPeriodsFromNow) <= MAX_PERIODS,
+        "exceed max allowed periods");
+        // solhint-disable-next-line not-rely-on-time
+        uint256 lockingPeriodToLockIn = (now - startTime) / periodsUnit;
+        require(lockingPeriodToLockIn == _lockingPeriodToLockIn, "locking is not active");
+        uint256 j = extendPeriodsFromNow;
+        //fill in the next lockings scores.
+        //todo : check limitation of _period and require that on the init function.
+        for (int256 i = int256(lockingPeriodToLockIn + extendPeriodsFromNow - 1);
+            i >= int256(lockingPeriodToLockIn);
+            i--) {
+                Locking storage locking = lockings[uint256(i)];
+                uint256 score = (extendPeriodsFromNow - j + 1) * locker.amount;
+                j--;
+                locking.totalScore = locking.totalScore.add(score).sub(locking.scores[msg.sender]);
+                locking.scores[msg.sender] = score;
+            }
+        locker.period = locker.period + _extendPeriod;
+        emit ExtendLocking(msg.sender, _lockingId, _extendPeriod);
     }
 
     /**
