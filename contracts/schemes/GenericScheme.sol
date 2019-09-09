@@ -6,7 +6,7 @@ import "../votingMachines/VotingMachineCallbacks.sol";
 
 
 /**
- * @title UGenericScheme.
+ * @title GenericScheme.
  * @dev  A scheme for proposing and executing calls to an arbitrary function
  * on a specific contract on behalf of the organization avatar.
  */
