@@ -7,11 +7,11 @@ import "../votingMachines/VotingMachineCallbacks.sol";
 
 
 /**
- * @title GenericScheme.
+ * @title UGenericScheme.
  * @dev  A scheme for proposing and executing calls to an arbitrary function
  * on a specific contract on behalf of the organization avatar.
  */
-contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
+contract UGenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
     event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
