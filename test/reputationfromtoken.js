@@ -7,6 +7,40 @@ var RepAllocation = artifacts.require("./RepAllocation.sol");
 
 var PolkaCurve = artifacts.require("./PolkaCurve.sol");
 
+var NectarRepAllocation = artifacts.require("./NectarRepAllocation.sol");
+const NectarToken = artifacts.require('./Reputation.sol');
+
+
+const setupNectar = async function (accounts)  {
+  var testSetup = new helpers.TestSetup();
+  var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
+  testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+  testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
+  testSetup.nectarToken = await NectarToken.new();
+  await testSetup.nectarToken.mint(accounts[0],100);
+  await testSetup.nectarToken.mint(accounts[1],200);
+  testSetup.blockReference =  await web3.eth.getBlockNumber();
+  testSetup.nectarRepAllocation = await NectarRepAllocation.new();
+  testSetup.reputationReward = 100000;
+  await testSetup.nectarRepAllocation.initialize(
+                                                  testSetup.reputationReward,
+                                                  0,
+                                                  0,
+                                                  testSetup.blockReference,
+                                                  testSetup.nectarToken.address);
+
+  testSetup.reputationFromToken = await ReputationFromToken.new();
+  testSetup.curve = helpers.NULL_ADDRESS;
+  await testSetup.reputationFromToken.initialize(testSetup.org.avatar.address,
+                                                   testSetup.nectarRepAllocation.address,
+                                                   helpers.NULL_ADDRESS);
+
+
+  var permissions = "0x00000000";
+  await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[helpers.NULL_HASH],[permissions],"metaData");
+  return testSetup;
+};
+
 const setup = async function (accounts, _initialize = true) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
@@ -122,5 +156,18 @@ contract('ReputationFromToken and RepAllocation', accounts => {
            } catch(error) {
              helpers.assertVMException(error);
            }
+    });
+
+    it("redeem nectar", async () => {
+      let testSetup = await setupNectar(accounts);
+      var tx = await testSetup.reputationFromToken.redeem(accounts[1],{from:accounts[1]});
+      var expected = Math.floor((200*testSetup.reputationReward)/300);
+      assert.equal(tx.logs.length,1);
+      assert.equal(tx.logs[0].event,"Redeem");
+      assert.equal(tx.logs[0].args._beneficiary,accounts[1]);
+      assert.equal(tx.logs[0].args._amount.toString(),expected);
+      assert.equal(tx.logs[0].args._sender,accounts[1]);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),expected);
     });
 });
