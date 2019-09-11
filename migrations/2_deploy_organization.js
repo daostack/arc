@@ -7,6 +7,7 @@ var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.s
 var SchemeRegistrar = artifacts.require('./SchemeRegistrar.sol');
 var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 var ContributionReward = artifacts.require('./ContributionReward.sol');
+var StateManager = artifacts.require('./StateManager.sol')
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var ControllerCreator = artifacts.require('./ControllerCreator.sol');
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -61,6 +62,9 @@ module.exports = async function(deployer) {
       await deployer.deploy(ContributionReward);
       var contributionRewardInst = await ContributionReward.deployed();
 
+      await deployer.deploy(StateManager);
+      var stateManagerInst = await StateManager.deployed();
+
       // Voting parameters and schemes params:
       var voteParametersHash = await AbsoluteVoteInst.getParametersHash(votePrec, NULL_ADDRESS);
 
@@ -74,11 +78,20 @@ module.exports = async function(deployer) {
       await contributionRewardInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
       var contributionRewardParams = await contributionRewardInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
 
+      await stateManagerInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
+      var stateManagerParams = await stateManagerInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address)
+
       var schemesArray = [schemeRegistrarInst.address,
                           globalConstraintRegistrarInst.address,
                           upgradeSchemeInst.address,
                           contributionRewardInst.address];
-      const paramsArray = [schemeRegisterParams, schemeGCRegisterParams, schemeUpgradeParams,contributionRewardParams];
+      const paramsArray = [
+          schemeRegisterParams, 
+          schemeGCRegisterParams, 
+          schemeUpgradeParams, 
+          contributionRewardParams, 
+          stateManagerParams
+      ];
       const permissionArray = ['0x0000001F', '0x00000005', '0x0000000a','0x00000001'];
 
       // set DAOstack initial schmes:
