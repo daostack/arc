@@ -4,8 +4,6 @@ const StateManager = artifacts.require("./StateManager.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-const Avatar = artifacts.require("./Avatar.sol");
-const Redeemer = artifacts.require("./Redeemer.sol");
 
 export class StateManagerParams {
     constructor() {
