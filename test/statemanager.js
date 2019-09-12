@@ -102,7 +102,7 @@ contract('StateManager', accounts => {
         var organizationProposal = await testSetup.stateManager.stateProposals(testSetup.org.avatar.address, proposalId);
         assert.notEqual(organizationProposal[8], 0);//executionTime
         // TODO check that state changed
-        assert.equal(await testSetup.stateManager.states(testSetup.org.avatar.address, "test-state-name"), "test-state-data")
+        assert.equal(await testSetup.stateManager.states(testSetup.org.avatar.address, "test-state-name"), "test-state-data");
     });
  
     it("call execute should revert if not from voting machine", async function () {

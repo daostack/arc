@@ -7,7 +7,7 @@ var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.s
 var SchemeRegistrar = artifacts.require('./SchemeRegistrar.sol');
 var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 var ContributionReward = artifacts.require('./ContributionReward.sol');
-var StateManager = artifacts.require('./StateManager.sol')
+var StateManager = artifacts.require('./StateManager.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var ControllerCreator = artifacts.require('./ControllerCreator.sol');
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -79,7 +79,7 @@ module.exports = async function(deployer) {
       var contributionRewardParams = await contributionRewardInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
 
       await stateManagerInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
-      var stateManagerParams = await stateManagerInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address)
+      var stateManagerParams = await stateManagerInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
 
       var schemesArray = [schemeRegistrarInst.address,
                           globalConstraintRegistrarInst.address,
