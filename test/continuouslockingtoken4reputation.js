@@ -145,6 +145,18 @@ contract('ContinuousLocking4Reputation', accounts => {
       assert.equal(await testSetup.lockingToken.balanceOf(testSetup.continuousLocking4Reputation.address),web3.utils.toWei('1', "ether"));
     });
 
+    it("lock twice does not overwrite score", async () => {
+      let testSetup = await setup(accounts);
+      var tx = await testSetup.continuousLocking4Reputation.lock(100, 12 , 0, testSetup.agreementHash);
+      var id1= await helpers.getValueFromLogs(tx, '_lockingId',0);
+      tx = await testSetup.continuousLocking4Reputation.lock(500, 12 , 0, testSetup.agreementHash);
+      var id2 = await helpers.getValueFromLogs(tx, '_lockingId',0);
+
+      assert.equal((await testSetup.continuousLocking4Reputation.getLockingIdScore(11,id1)).toNumber(),100);
+      assert.equal((await testSetup.continuousLocking4Reputation.getLockingIdScore(11,id2)).toNumber(),500);
+
+    });
+
 
     it("lock without initialize should fail", async () => {
       let testSetup = await setup(accounts,false);
@@ -385,11 +397,11 @@ contract('ContinuousLocking4Reputation', accounts => {
 
     it("redeem reward limits 100 periods", async () => {
         let testSetup = await setup(accounts);
-        var repForPeriod = await testSetup.continuousLocking4Reputation.repRewardPerBatch(100);
+        var repForPeriod = await testSetup.continuousLocking4Reputation.getRepRewardPerBatch(100);
         var REAL_FBITS = 40;
         var res = (repForPeriod.shrn(REAL_FBITS).toNumber() + (repForPeriod.maskn(REAL_FBITS)/Math.pow(2,REAL_FBITS))).toFixed(2);
         assert.equal(Math.floor(res),Math.floor(testSetup.repRewardConstA* Math.pow(testSetup.repRewardConstB/1000,100)));
-        assert.equal(await testSetup.continuousLocking4Reputation.repRewardPerBatch(101),0);
+        assert.equal(await testSetup.continuousLocking4Reputation.getRepRewardPerBatch(101),0);
     });
 
     it("redeem limits 100 periods", async () => {
@@ -511,7 +523,4 @@ contract('ContinuousLocking4Reputation', accounts => {
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+redeemAmount);
 
     });
-
-
-
 });
