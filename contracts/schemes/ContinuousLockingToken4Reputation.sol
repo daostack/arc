@@ -25,8 +25,8 @@ contract ContinuousLocking4Reputation is Agreement {
 
     struct Batch {
         uint256 totalScore;
-        // A mapping from locker addresses to their locking score.
-        mapping(address=>uint256) scores;
+        // A mapping from lockingId to its score.
+        mapping(bytes32=>uint) scores;
     }
 
     struct Lock {
@@ -134,10 +134,10 @@ contract ContinuousLocking4Reputation is Agreement {
         uint256 lastBatchIndexToRedeem =  currentBatch.min(batchIndexToRedeemFrom + locker.period);
         for (batchIndexToRedeemFrom; batchIndexToRedeemFrom < lastBatchIndexToRedeem; batchIndexToRedeemFrom++) {
             Batch storage locking = batches[batchIndexToRedeemFrom];
-            uint256 score = locking.scores[_beneficiary];
+            uint256 score = locking.scores[_lockingId];
             if (score > 0) {
-                locking.scores[_beneficiary] = 0;
-                uint256 batchReputationReward = repRewardPerBatch(batchIndexToRedeemFrom);
+                locking.scores[_lockingId] = 0;
+                uint256 batchReputationReward = getRepRewardPerBatch(batchIndexToRedeemFrom);
                 uint256 repRelation = mul(toReal(uint216(score)), batchReputationReward);
                 reputation = reputation.add(div(repRelation, toReal(uint216(locking.totalScore))));
             }
@@ -170,6 +170,15 @@ contract ContinuousLocking4Reputation is Agreement {
         require(_period <= maxLockingBatches, "period exceed the maximum allowed");
         require(_period > 0, "period equal to zero");
         require((_batchIndexToLockIn + _period) <= batchesIndexCap, "exceed max allowed batches");
+        lockingId = keccak256(abi.encodePacked(address(this), batchesCounter));
+        batchesCounter = batchesCounter.add(1);
+
+        Lock storage locker = lockers[msg.sender][lockingId];
+        locker.amount = _amount;
+        locker.period = _period;
+        // solhint-disable-next-line not-rely-on-time
+        locker.lockingTime = now;
+
         address(token).safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
         uint256 batchIndexToLockIn = (now - startTime) / batchTime;
@@ -181,17 +190,9 @@ contract ContinuousLocking4Reputation is Agreement {
             uint256 score = (_period - j + 1) * _amount;
             j--;
             batch.totalScore = batch.totalScore.add(score);
-            batch.scores[msg.sender] = score;
+            batch.scores[lockingId] = score;
         }
 
-        lockingId = keccak256(abi.encodePacked(address(this), batchesCounter));
-        batchesCounter = batchesCounter.add(1);
-
-        Lock storage locker = lockers[msg.sender][lockingId];
-        locker.amount = _amount;
-        locker.period = _period;
-        // solhint-disable-next-line not-rely-on-time
-        locker.lockingTime = now;
         totalLockedLeft = totalLockedLeft.add(_amount);
         emit LockToken(msg.sender, lockingId, _amount, _period);
     }
@@ -230,8 +231,8 @@ contract ContinuousLocking4Reputation is Agreement {
                 Batch storage batch = batches[uint256(i)];
                 uint256 score = (batchesCountFromCurrent - j + 1) * locker.amount;
                 j--;
-                batch.totalScore = batch.totalScore.add(score).sub(batch.scores[msg.sender]);
-                batch.scores[msg.sender] = score;
+                batch.totalScore = batch.totalScore.add(score).sub(batch.scores[_lockingId]);
+                batch.scores[_lockingId] = score;
             }
         locker.period = locker.period + _extendPeriod;
         emit ExtendLocking(msg.sender, _lockingId, _extendPeriod);
@@ -257,16 +258,27 @@ contract ContinuousLocking4Reputation is Agreement {
     }
 
     /**
-     * @dev repRewardPerBatch function
+     * @dev getRepRewardPerBatch function
      * the calculation is done the following formula:
      * RepReward =  repRewardConstA * (repRewardConstB**_batchIndex)
      * @param _batchIndex the batch number to calc rep reward of
      * @return repReward
      */
-    function repRewardPerBatch(uint256  _batchIndex) public view returns(uint256 repReward) {
+    function getRepRewardPerBatch(uint256  _batchIndex) public view returns(uint256 repReward) {
         if (_batchIndex <= batchesIndexCap) {
             repReward = mul(repRewardConstA, repRewardConstB.pow(_batchIndex));
         }
+    }
+
+    /**
+     * @dev getLockingIdScore function
+     * return score of lockingId at specific bach index
+     * @param _batchIndex batch index
+     * @param _lockingId lockingId
+     * @return score
+     */
+    function getLockingIdScore(uint256  _batchIndex, bytes32 _lockingId) public view returns(uint256) {
+        return batches[_batchIndex].scores[_lockingId];
     }
 
     /**
