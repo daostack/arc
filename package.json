@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.1-rc.24",
+  "version": "0.0.1-rc.25",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -22,14 +22,9 @@
     "lint --fix": "eslint --fix .",
     "solhint": "solhint contracts/**/*.sol",
     "truffle": "truffle",
-    "build": "rimraf build && truffle compile",
-    "docs:update": "soldoc -q -o docs/generated_docs",
-    "docs:build": "soldoc -q -o docs/generated_docs && mkdocs build",
-    "docs:deploy": "soldoc -q -o docs/generated_docs && mkdocs gh-deploy --force",
-    "docs:preview": "soldoc -q -o docs/generated_docs && mkdocs serve"
+    "build": "rimraf build && truffle compile"
   },
   "devDependencies": {
-    "@soldoc/soldoc": "^0.4.3",
     "@babel/cli": "^7.2.3",
     "babel-eslint": "^10.0.1",
     "babel-plugin-syntax-async-functions": "^6.13.0",
@@ -82,7 +77,8 @@
   "dependencies": {
     "@daostack/infra": "0.0.1-rc.14",
     "math": "0.0.3",
-    "openzeppelin-solidity": "2.3.0"
+    "openzeppelin-solidity": "2.3.0",
+    "truffle-flattener": "^1.4.2"
   },
   "peerDependencies": {
     "ganache-cli": "^6.4.1"
