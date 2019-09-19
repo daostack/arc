@@ -18,7 +18,7 @@ contract ContinuousLocking4Reputation is Agreement {
     using RealMath for uint256;
     using Math for uint256;
 
-    event Redeem(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
+    event Redeem(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount, uint256 _batchIndex);
     event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
     event LockToken(address indexed _locker, bytes32 indexed _lockingId, uint256 _amount, uint256 _period);
     event ExtendLocking(address indexed _locker, bytes32 indexed _lockingId, uint256 _extendPeriod);
@@ -139,7 +139,9 @@ contract ContinuousLocking4Reputation is Agreement {
                 locking.scores[_lockingId] = 0;
                 uint256 batchReputationReward = getRepRewardPerBatch(batchIndexToRedeemFrom);
                 uint256 repRelation = mul(toReal(uint216(score)), batchReputationReward);
-                reputation = reputation.add(div(repRelation, toReal(uint216(locking.totalScore))));
+                uint256 redeemForBatch = div(repRelation, toReal(uint216(locking.totalScore)));
+                reputation = reputation.add(redeemForBatch);
+                emit Redeem(_lockingId, _beneficiary, uint256(fromReal(redeemForBatch)), batchIndexToRedeemFrom);
             }
         }
         reputation = uint256(fromReal(reputation));
@@ -149,7 +151,6 @@ contract ContinuousLocking4Reputation is Agreement {
         require(
         ControllerInterface(avatar.owner())
         .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
-        emit Redeem(_lockingId, _beneficiary, reputation);
     }
 
     /**
