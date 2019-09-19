@@ -25,7 +25,3 @@ jobs:
       - stage: tests
         name: "JS Lint"
         script: npm run lint
-
-
-notifications:
-  slack: daostack:fGuaFPsiQiV5mgmzRcSzbYqw
