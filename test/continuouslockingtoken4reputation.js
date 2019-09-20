@@ -366,7 +366,7 @@ contract('ContinuousLocking4Reputation', accounts => {
       tx = await testSetup.continuousLocking4Reputation.release(accounts[0],lockingId);
       assert.equal(tx.logs.length,1);
       assert.equal(tx.logs[0].event,"Release");
-      assert.equal(tx.logs[0].args._lockingId,lockingId);
+      assert.equal(tx.logs[0].args._lockingId.toNumber(),lockingId.toNumber());
       assert.equal(tx.logs[0].args._amount,web3.utils.toWei('1', "ether"));
       assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
     });
@@ -451,7 +451,7 @@ contract('ContinuousLocking4Reputation', accounts => {
         tx = await testSetup.continuousLocking4Reputation.extendLocking(1,1,id,testSetup.agreementHash);
         assert.equal(tx.logs.length,1);
         assert.equal(tx.logs[0].event,"ExtendLocking");
-        assert.equal(tx.logs[0].args._lockingId,id);
+        assert.equal(tx.logs[0].args._lockingId.toNumber(),id.toNumber());
         assert.equal(tx.logs[0].args._extendPeriod,1);
         await helpers.increaseTime(testSetup.periodsUnit*11+1);
         try {
