@@ -41,14 +41,14 @@ contract ContinuousLocking4Reputation is Agreement {
     mapping(uint256 => Batch) public batches;
 
     Avatar public avatar;
-    uint256 public reputationRewardLeft;
-    uint256 public startTime;
+    uint256 public reputationRewardLeft; // the amount of reputation  that is still left to distribute
+    uint256 public startTime; //the time (in secs since epoch) that locking can start (is enable)
     uint256 public redeemEnableTime;
     uint256 public maxLockingBatches;
-    uint256 public batchTime;
-    IERC20 public token;
+    uint256 public batchTime; // the length of a batch, in seconds
+    IERC20 public token; // the token to be locked
     uint256 public lockCounter; // Total number of locks
-    uint256 public totalLockedLeft;
+    uint256 public totalLockedLeft; // the amount of reputation  that is still left to distribute
     uint256 public repRewardConstA;
     uint256 public repRewardConstB;
     uint256 public batchesIndexCap;
