@@ -47,7 +47,7 @@ contract ContinuousLocking4Reputation is Agreement {
     uint256 public maxLockingBatches;
     uint256 public batchTime;
     IERC20 public token;
-    uint256 public batchesCounter; // Total number of batches
+    uint256 public lockCounter; // Total number of locks
     uint256 public totalLockedLeft;
     uint256 public repRewardConstA;
     uint256 public repRewardConstB;
@@ -171,8 +171,8 @@ contract ContinuousLocking4Reputation is Agreement {
         require(_period <= maxLockingBatches, "period exceed the maximum allowed");
         require(_period > 0, "period equal to zero");
         require((_batchIndexToLockIn + _period) <= batchesIndexCap, "exceed max allowed batches");
-        lockingId = keccak256(abi.encodePacked(address(this), batchesCounter));
-        batchesCounter = batchesCounter.add(1);
+        lockingId = keccak256(abi.encodePacked(address(this), lockCounter));
+        lockCounter = lockCounter.add(1);
 
         Lock storage locker = lockers[msg.sender][lockingId];
         locker.amount = _amount;
