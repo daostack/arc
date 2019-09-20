@@ -77,7 +77,7 @@ contract ContinuousLocking4Reputation is Agreement {
      * @param _repRewardConstA - the total amount of reputation allocation per batch is calculated by :
      *   _repRewardConstA * ((_repRewardConstB/1000) ** batchIndex)
      * @param _repRewardConstB - the total amount of reputation allocation per batch is calculated by :
-     *   _repRewardConstA * ((_repRewardConstB/1000) ** batchIndex). . _repRewardConstB must be < 1000
+     *   _repRewardConstA * ((_repRewardConstB/1000) ** batchIndex). _repRewardConstB must be < 1000
      * @param _batchesIndexCap the length of the locking period (in batches).
      *        This value capped by BATCHES_HARDCAP .
      * @param _token the locking token
