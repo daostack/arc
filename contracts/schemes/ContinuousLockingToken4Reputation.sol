@@ -47,7 +47,7 @@ contract ContinuousLocking4Reputation is Agreement {
     uint256 public maxLockingBatches;
     uint256 public batchTime; // the length of a batch, in seconds
     IERC20 public token; // the token to be locked
-    uint256 public batchesCounter; // [The batchesCounter is incremented on each lock - is it not better ot name it "lockCounter"?]
+    uint256 public batchesCounter; // [The batchesCounter is incremented on each lock - more appropriate to name it "lockCounter"?]
     uint256 public totalLockedLeft; //  the total amount of tokens locked in the contract [JG: not sure why we need this - can't we just use the balance of this contrcat?]
     uint256 public repRewardConstA; // see below
     uint256 public repRewardConstB; //  see below
@@ -66,15 +66,16 @@ contract ContinuousLocking4Reputation is Agreement {
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the reputation reward per locking batch that this contract will reward
-     *        for the token locking [This seems wrong: this value is not used in the caluclation of the reputation reward at all]
+     *        for the token locking
+     * [This is wrong in two ways: (1) this value is not used in the caluclation of the reputation reward - which is caculated using constA, and (b) the repuation reward is not constant]
      * @param _startTime locking period start time, in seconds since epoch
-     * @param _batchTime batch time (e.g 30 days) [in seconds]
-//   * @param _redeemEnableTime redeem enable time, in seconds since epoch.
+     * @param _batchTime batch time (in seconds)
+     * @param _redeemEnableTime redeem enable time, in seconds since epoch.
      *        redeem reputation can be done after this time.
      * @param _maxLockingBatches - maximum number of locking batches that a user can lock her tokens for [JG: not really, see omment on extend function]
-     * @param _repRewardConstA - the total amount of reputation allocated per batch is calculated by :
+     * @param _repRewardConstA - the total amount of reputation allocated per batch is calculated by:
      *   _repRewardConstA * ((_repRewardConstB/1000) ** batchIndex)
-     * @param _repRewardConstB - the total amount of reputation allocated per batch is calculated by :
+     * @param _repRewardConstB - the total amount of reputation allocated per batch is calculated by:
      *   _repRewardConstA * ((_repRewardConstB/1000) ** batchIndex). _repRewardConstB must be < 1000.
      * @param _batchesIndexCap  the length of the locking period (in batches).This value capped by BATCHES_HARDCAP [perhaps rename?]
      * @param _token the locking token
@@ -173,7 +174,7 @@ contract ContinuousLocking4Reputation is Agreement {
         require(_period <= maxLockingBatches, "_period exceed the maximum allowed");
         require(_period > 0, "_period must be > 0");
         require((_batchIndexToLockIn + _period) <= batchesIndexCap, "_batchIndexToLockIn + _period exceed max allowed batches");
-        lockingId = keccak256(abi.encodePacked(address(this), batchesCounter)); // do we need to add address(this) bc these are different ids shared between different contracts?
+        lockingId = keccak256(abi.encodePacked(address(this), batchesCounter)); // [ whey do we need to add address(this) - is the ID used in other contracts as well? Why not just use batchesCounter?]
         batchesCounter = batchesCounter.add(1);
 
         Lock storage locker = lockers[msg.sender][lockingId];
