@@ -37,12 +37,12 @@ contract ContinuousLocking4Reputation is Agreement {
 
     // A mapping from lockers addresses to their locks
     mapping(address => mapping(uint256=>Lock)) public lockers;
-    //A mapping from batch index to batch
+    // A mapping from batch index to batch
     mapping(uint256 => Batch) public batches;
 
     Avatar public avatar;
-    uint256 public reputationRewardLeft; // the amount of reputation  that is still left to distribute
-    uint256 public startTime; //the time (in secs since epoch) that locking can start (is enable)
+    uint256 public reputationRewardLeft; // the amount of reputation that is still left to distribute
+    uint256 public startTime; // the time (in secs since epoch) that locking can start (is enable)
     uint256 public redeemEnableTime;
     uint256 public maxLockingBatches;
     uint256 public batchTime; // the length of a batch, in seconds
@@ -65,15 +65,13 @@ contract ContinuousLocking4Reputation is Agreement {
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
-     * @param _reputationReward the reputation reward per locking batch that this contract will reward
-     *        for the token locking
+     * @param _reputationReward the total amount of reputation that can be minted by this contract
      * @param _startTime locking period start time, in seconds since epoch
      * @param _redeemEnableTime redeem enable time
      * @param _batchTime batch time (in seconds)
      * @param _redeemEnableTime redeem enable time, in seconds since epoch
      *        redeem reputation can be done after this time.
      * @param _maxLockingBatches - maximum number of locking batches that a user can lock (or extend) her tokens for
-
      * @param _repRewardConstA - the total amount of reputation allocation per batch is calculated by :
      *   _repRewardConstA * ((_repRewardConstB/1000) ** batchIndex)
      * @param _repRewardConstB - the total amount of reputation allocation per batch is calculated by :
@@ -99,7 +97,7 @@ contract ContinuousLocking4Reputation is Agreement {
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
-        //_batchTime should be greater than block interval
+        // _batchTime should be greater than block interval
         require(_batchTime > 15, "batchTime should be > 15");
         require(_maxLockingBatches <= MAX_LOCKING_BATCHES_HARDCAP,
         "maxLockingBatches should be <= MAX_LOCKING_BATCHES_HARDCAP");
