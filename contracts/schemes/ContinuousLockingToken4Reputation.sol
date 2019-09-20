@@ -25,7 +25,7 @@ contract ContinuousLocking4Reputation is Agreement {
 
     struct Batch {
         uint256 totalScore;
-        // A mapping from lockingId to its score.
+        // A mapping from lockingId to its score
         mapping(bytes32=>uint) scores;
     }
 
@@ -41,17 +41,17 @@ contract ContinuousLocking4Reputation is Agreement {
     mapping(uint256 => Batch) public batches;
 
     Avatar public avatar;
-    uint256 public reputationRewardLeft;
-    uint256 public startTime;
+    uint256 public reputationRewardLeft; // the amount of reputation  that is still left to disctribute
+    uint256 public startTime;  // the time (in secs since epoch) that locking can start
     uint256 public redeemEnableTime;
     uint256 public maxLockingBatches;
-    uint256 public batchTime;
-    IERC20 public token;
-    uint256 public batchesCounter; // Total number of batches
-    uint256 public totalLockedLeft;
-    uint256 public repRewardConstA;
-    uint256 public repRewardConstB;
-    uint256 public batchesIndexCap;
+    uint256 public batchTime; // the length of a batch, in seconds
+    IERC20 public token; // the token to be locked
+    uint256 public batchesCounter; // [The batchesCounter is incremented on each lock - is it not better ot name it "lockCounter"?]
+    uint256 public totalLockedLeft; //  the total amount of tokens locked in the contract [JG: not sure why we need this - can't we just use the balance of this contrcat?]
+    uint256 public repRewardConstA; // see below
+    uint256 public repRewardConstB; //  see below
+    uint256 public batchesIndexCap; // see below
 
     uint256 constant private REAL_FBITS = 40;
     /**
@@ -66,19 +66,19 @@ contract ContinuousLocking4Reputation is Agreement {
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _reputationReward the reputation reward per locking batch that this contract will reward
-     *        for the token locking
-     * @param _startTime locking period start time
-     * @param _batchTime batch time (e.g 30 days).
-     * @param _redeemEnableTime redeem enable time .
+     *        for the token locking [This seems wrong: this value is not used in the caluclation of the reputation reward at all]
+     * @param _startTime locking period start time, in seconds since epoch
+     * @param _batchTime batch time (e.g 30 days) [in seconds]
+//   * @param _redeemEnableTime redeem enable time, in seconds since epoch.
      *        redeem reputation can be done after this time.
-     * @param _maxLockingBatches - maximum number of locking batches (in _batchTime units)
-     * @param _repRewardConstA - reputation allocation per batch is calculated by :
-     *   _repRewardConstA * (_repRewardConstB ** batchIndex)
-     * @param _repRewardConstB - reputation allocation per batch is calculated by :
-     *   _repRewardConstA * (_repRewardConstB ** batchIndex)
-     * @param _batchesIndexCap  the max batch index which allows to lock in . this value capped by BATCHES_HARDCAP
+     * @param _maxLockingBatches - maximum number of locking batches that a user can lock her tokens for [JG: not really, see omment on extend function]
+     * @param _repRewardConstA - the total amount of reputation allocated per batch is calculated by :
+     *   _repRewardConstA * ((_repRewardConstB/1000) ** batchIndex)
+     * @param _repRewardConstB - the total amount of reputation allocated per batch is calculated by :
+     *   _repRewardConstA * ((_repRewardConstB/1000) ** batchIndex). _repRewardConstB must be < 1000.
+     * @param _batchesIndexCap  the length of the locking period (in batches).This value capped by BATCHES_HARDCAP [perhaps rename?]
      * @param _token the locking token
-     * @param _agreementHash is a hash of agreement required to be added to the TX by participants
+     * @param _agreementHash is a hash of agreement required to be added to the TX by participants [JG: why is this needed?]
      */
     function initialize(
         Avatar _avatar,
@@ -110,9 +110,11 @@ contract ContinuousLocking4Reputation is Agreement {
         redeemEnableTime = _redeemEnableTime;
         maxLockingBatches = _maxLockingBatches;
         batchTime = _batchTime;
+        // we require _repRewardConstB < 1000 so the rewards will be diminishing
         require(_repRewardConstB < 1000, "_repRewardConstB should be < 1000");
         require(repRewardConstA < _reputationReward, "repRewardConstA should be < _reputationReward");
         repRewardConstA = toReal(uint216(_repRewardConstA));
+        // consider setting repREwardConstB = _repRewardConstB to avoid confusion
         repRewardConstB = uint216(_repRewardConstB).fraction(uint216(1000));
         batchesIndexCap = _batchesIndexCap;
         super.setAgreementHash(_agreementHash);
@@ -144,7 +146,7 @@ contract ContinuousLocking4Reputation is Agreement {
         }
         reputation = uint256(fromReal(reputation));
         require(reputation > 0, "reputation to redeem is 0");
-        // check that the reputation is sum zero
+        // check that the reputation is sum zero [JG: there is no check here]
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
         ControllerInterface(avatar.owner())
@@ -155,8 +157,9 @@ contract ContinuousLocking4Reputation is Agreement {
     /**
      * @dev lock function
      * @param _amount the amount of token to lock
-     * @param _period the period to lock. in batchTime units
-     * @param _batchIndexToLockIn the locking id to lock in.
+     * @param _period the number of batches that the tokens will be locked for [perhaps rename this arg?]
+     * @param _batchIndexToLockIn the batch index in which the locking period starts. Must be the currently active batch (???)
+     * @param _agreementHash  ???
      * @return lockingId
      */
     function lock(uint256 _amount, uint256 _period, uint256 _batchIndexToLockIn, bytes32 _agreementHash)
@@ -164,13 +167,13 @@ contract ContinuousLocking4Reputation is Agreement {
     onlyAgree(_agreementHash)
     returns(bytes32 lockingId)
     {
-        require(_amount > 0, "locking amount should be > 0");
+        require(_amount > 0, "_amount should be > 0");
         // solhint-disable-next-line not-rely-on-time
-        require(now >= startTime, "locking is enable only after locking startTime");
-        require(_period <= maxLockingBatches, "period exceed the maximum allowed");
-        require(_period > 0, "period equal to zero");
-        require((_batchIndexToLockIn + _period) <= batchesIndexCap, "exceed max allowed batches");
-        lockingId = keccak256(abi.encodePacked(address(this), batchesCounter));
+        require(now >= startTime, "locking is not enabled yet (it starts at startTime)");
+        require(_period <= maxLockingBatches, "_period exceed the maximum allowed");
+        require(_period > 0, "_period must be > 0");
+        require((_batchIndexToLockIn + _period) <= batchesIndexCap, "_batchIndexToLockIn + _period exceed max allowed batches");
+        lockingId = keccak256(abi.encodePacked(address(this), batchesCounter)); // do we need to add address(this) bc these are different ids shared between different contracts?
         batchesCounter = batchesCounter.add(1);
 
         Lock storage locker = lockers[msg.sender][lockingId];
@@ -182,13 +185,13 @@ contract ContinuousLocking4Reputation is Agreement {
         address(token).safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
         uint256 batchIndexToLockIn = (now - startTime) / batchTime;
+        // [the condition says that _batchIndexToLockIn must be the one corresponding to the "current one" -- so the error message is not very helpful at all]
         require(batchIndexToLockIn == _batchIndexToLockIn, "locking is not active");
-        uint256 j = _period;
-        //fill in the next batches scores.
-        for (int256 i = int256(batchIndexToLockIn + _period - 1); i >= int256(batchIndexToLockIn); i--) {
-            Batch storage batch = batches[uint256(i)];
-            uint256 score = (_period - j + 1) * _amount;
-            j--;
+
+        // fill in the next batches scores.
+        for (int256 p = _period); p > 0; p--) {
+            Batch storage batch = batches[uint256(batchIndexToLockIn + p - 1)];
+            uint256 score = p * _amount;
             batch.totalScore = batch.totalScore.add(score);
             batch.scores[lockingId] = score;
         }
@@ -200,7 +203,7 @@ contract ContinuousLocking4Reputation is Agreement {
     /**
      * @dev extendLocking function
      * @param _extendPeriod the period to extend the locking. in batchTime.
-     * @param _batchIndexToLockIn the locking id to lock at .
+     * @param _batchIndexToLockIn the index of the batch in which to start locking
      * @param _lockingId the locking id to extend
      */
     function extendLocking(
@@ -212,19 +215,24 @@ contract ContinuousLocking4Reputation is Agreement {
     onlyAgree(_agreementHash)
     {
         Lock storage locker = lockers[msg.sender][_lockingId];
-        require(locker.lockingTime != 0, "wrong locking id");
+        require(locker.lockingTime != 0, "_lockingId does not exist");
+        // remainBatchs is the number of future batches that are part of the currently active lock
         uint256 remainBatches =
         ((locker.lockingTime + (locker.period*batchTime) - startTime)/batchTime).sub(_batchIndexToLockIn);
+        // batchesCounterFromCurrent is the number of future batches if we extend as requested
         uint256 batchesCountFromCurrent = remainBatches + _extendPeriod;
-        require(batchesCountFromCurrent <= maxLockingBatches, "locking period exceed the maximum allowed");
-        require(_extendPeriod > 0, "extend locking period equal to zero");
+        // JG: hard to say without specs, but should this not be checked against to TOTAL lenght of the staking after the extension?
+        require(batchesCountFromCurrent <= maxLockingBatches, "locking period exceeds the maximum allowed");
+        require(_extendPeriod > 0, "_extendPeriod must be > 0");
         require((_batchIndexToLockIn + batchesCountFromCurrent) <= batchesIndexCap,
-        "exceed max allowed batches");
+        "_extendPeriod exceed max allowed batches");
         // solhint-disable-next-line not-rely-on-time
         uint256 batchIndexToLockIn = (now - startTime) / batchTime;
+        // why do we need to proivde "_batchIndexToLockIn" as an argument if that it can be calculated in the line above?
         require(batchIndexToLockIn == _batchIndexToLockIn, "locking is not active");
+
         uint256 j = batchesCountFromCurrent;
-        //fill in the next batche scores.
+        // fill in the next batch scores.
         for (int256 i = int256(batchIndexToLockIn + batchesCountFromCurrent - 1);
             i >= int256(batchIndexToLockIn);
             i--) {
@@ -246,12 +254,12 @@ contract ContinuousLocking4Reputation is Agreement {
      */
     function release(address _beneficiary, bytes32 _lockingId) public returns(uint256 amount) {
         Lock storage locker = lockers[_beneficiary][_lockingId];
-        require(locker.amount > 0, "amount should be > 0");
+        require(locker.amount > 0, "no amount left to unlock");
         amount = locker.amount;
         locker.amount = 0;
         // solhint-disable-next-line not-rely-on-time
         require(block.timestamp > locker.lockingTime + (locker.period*batchTime),
-        "locking period not passed");
+        "locking period is still active");
         totalLockedLeft = totalLockedLeft.sub(amount);
         address(token).safeTransfer(_beneficiary, amount);
         emit Release(_lockingId, _beneficiary, amount);
@@ -261,7 +269,7 @@ contract ContinuousLocking4Reputation is Agreement {
      * @dev getRepRewardPerBatch function
      * the calculation is done the following formula:
      * RepReward =  repRewardConstA * (repRewardConstB**_batchIndex)
-     * @param _batchIndex the batch number to calc rep reward of
+     * @param _batchIndex the index of the batch to calc rep reward of
      * @return repReward
      */
     function getRepRewardPerBatch(uint256  _batchIndex) public view returns(uint256 repReward) {
@@ -281,6 +289,7 @@ contract ContinuousLocking4Reputation is Agreement {
         return batches[_batchIndex].scores[_lockingId];
     }
 
+    // consider moving the Realmath functions to a separate file (or use a library???)
     /**
      * Multiply one real by another. Truncates overflows.
      */
