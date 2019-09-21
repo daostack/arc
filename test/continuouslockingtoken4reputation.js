@@ -205,16 +205,21 @@ contract('ContinuousLocking4Reputation', accounts => {
         var id = await helpers.getValueFromLogs(tx, '_lockingId',1);
         await helpers.increaseTime(testSetup.periodsUnit * period +1);
         tx = await testSetup.continuousLocking4Reputation.redeem(accounts[0],id);
+        assert.equal(tx.logs.length,12);
+        var totalRedeemAmount = 0;
         var redeemAmount = 0;
         for (var lockingPeriodToRedeemFrom = 0; lockingPeriodToRedeemFrom < period; lockingPeriodToRedeemFrom++) {
-            redeemAmount += testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+            redeemAmount = testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+            totalRedeemAmount += redeemAmount;
+            assert.equal(tx.logs[lockingPeriodToRedeemFrom].event,"Redeem");
+            var rep  = tx.logs[lockingPeriodToRedeemFrom].args._amount.toNumber();
+            //this is due to real math calculation
+            assert.equal(((rep === Math.floor(redeemAmount)) || (rep +1 === Math.floor(redeemAmount))),true);
+            assert.equal(tx.logs[lockingPeriodToRedeemFrom].args._beneficiary,accounts[0]);
+            assert.equal(tx.logs[lockingPeriodToRedeemFrom].args._batchIndex,lockingPeriodToRedeemFrom);
         }
-        redeemAmount = Math.floor(redeemAmount);
-        assert.equal(tx.logs.length,1);
-        assert.equal(tx.logs[0].event,"Redeem");
-        assert.equal(tx.logs[0].args._amount.toNumber(),redeemAmount);
-        assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
-        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+redeemAmount);
+        totalRedeemAmount = Math.floor(totalRedeemAmount);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+totalRedeemAmount);
     });
 
     it("redeem part of the periods", async () => {
@@ -224,32 +229,29 @@ contract('ContinuousLocking4Reputation', accounts => {
         var id = await helpers.getValueFromLogs(tx, '_lockingId',1);
         await helpers.increaseTime(testSetup.periodsUnit * 3 +1);
         tx = await testSetup.continuousLocking4Reputation.redeem(accounts[0],id);
-        var redeemAmount = 230349;
-        // for (var lockingPeriodToRedeemFrom = 0; lockingPeriodToRedeemFrom < 3; lockingPeriodToRedeemFrom++) {
-        //     redeemAmount += testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
-        // }
+        var totalRedeemAmount = 230349;
 
-        //redeemAmount = Math.round(redeemAmount);
-
-        assert.equal(tx.logs.length,1);
-        assert.equal(tx.logs[0].event,"Redeem");
-        assert.equal(tx.logs[0].args._amount.toNumber(),redeemAmount);
-        assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
-        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+redeemAmount);
+        assert.equal(tx.logs.length,3);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+totalRedeemAmount);
 
         await helpers.increaseTime(testSetup.periodsUnit * 9  +1);
         tx = await testSetup.continuousLocking4Reputation.redeem(accounts[0],id);
-        redeemAmount = 0;
+        totalRedeemAmount = 0;
+        var redeemAmount = 0;
         for (var lockingPeriodToRedeemFrom = 3; lockingPeriodToRedeemFrom < period; lockingPeriodToRedeemFrom++) {
-             redeemAmount += testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+             redeemAmount = testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+             totalRedeemAmount += redeemAmount;
+             assert.equal(tx.logs.length,9);
+             assert.equal(tx.logs[lockingPeriodToRedeemFrom-3].event,"Redeem");
+             var rep  = tx.logs[lockingPeriodToRedeemFrom-3].args._amount.toNumber();
+             assert.equal(((rep === Math.floor(redeemAmount)) || (rep +1 === Math.floor(redeemAmount))),true);
+             assert.equal(tx.logs[lockingPeriodToRedeemFrom-3].args._beneficiary,accounts[0]);
+             assert.equal(tx.logs[lockingPeriodToRedeemFrom-3].args._batchIndex,lockingPeriodToRedeemFrom);
         }
 
-        redeemAmount = Math.round(redeemAmount) - 1;
-        assert.equal(tx.logs.length,1);
-        assert.equal(tx.logs[0].event,"Redeem");
-        assert.equal(tx.logs[0].args._amount.toNumber(),redeemAmount);
-        assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
-        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+redeemAmount + 230349);
+        totalRedeemAmount = Math.round(totalRedeemAmount) - 1;
+
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+totalRedeemAmount + 230349);
 
     });
 
@@ -364,7 +366,7 @@ contract('ContinuousLocking4Reputation', accounts => {
       tx = await testSetup.continuousLocking4Reputation.release(accounts[0],lockingId);
       assert.equal(tx.logs.length,1);
       assert.equal(tx.logs[0].event,"Release");
-      assert.equal(tx.logs[0].args._lockingId,lockingId);
+      assert.equal(tx.logs[0].args._lockingId.toNumber(),lockingId.toNumber());
       assert.equal(tx.logs[0].args._amount,web3.utils.toWei('1', "ether"));
       assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
     });
@@ -449,7 +451,7 @@ contract('ContinuousLocking4Reputation', accounts => {
         tx = await testSetup.continuousLocking4Reputation.extendLocking(1,1,id,testSetup.agreementHash);
         assert.equal(tx.logs.length,1);
         assert.equal(tx.logs[0].event,"ExtendLocking");
-        assert.equal(tx.logs[0].args._lockingId,id);
+        assert.equal(tx.logs[0].args._lockingId.toNumber(),id.toNumber());
         assert.equal(tx.logs[0].args._extendPeriod,1);
         await helpers.increaseTime(testSetup.periodsUnit*11+1);
         try {
@@ -462,16 +464,20 @@ contract('ContinuousLocking4Reputation', accounts => {
         await testSetup.continuousLocking4Reputation.release(accounts[0],id);
 
         tx = await testSetup.continuousLocking4Reputation.redeem(accounts[0],id);
+        var totalRedeemAmount = 0;
         var redeemAmount = 0;
         for (var lockingPeriodToRedeemFrom = 0; lockingPeriodToRedeemFrom < period+1; lockingPeriodToRedeemFrom++) {
-            redeemAmount += testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+            redeemAmount = testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+            totalRedeemAmount += redeemAmount;
+            assert.equal(tx.logs.length,period+1);
+            assert.equal(tx.logs[lockingPeriodToRedeemFrom].event,"Redeem");
+            var rep  = tx.logs[lockingPeriodToRedeemFrom].args._amount.toNumber();
+            assert.equal(((rep === Math.floor(redeemAmount)) || (rep +1 === Math.floor(redeemAmount))),true);
+            assert.equal(tx.logs[lockingPeriodToRedeemFrom].args._beneficiary,accounts[0]);
+            assert.equal(tx.logs[lockingPeriodToRedeemFrom].args._batchIndex,lockingPeriodToRedeemFrom);
         }
-        redeemAmount = Math.floor(redeemAmount);
-        assert.equal(tx.logs.length,1);
-        assert.equal(tx.logs[0].event,"Redeem");
-        assert.equal(tx.logs[0].args._amount.toNumber(),redeemAmount);
-        assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
-        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+redeemAmount);
+        totalRedeemAmount = Math.floor(totalRedeemAmount);
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+totalRedeemAmount);
 
     });
 
@@ -511,16 +517,21 @@ contract('ContinuousLocking4Reputation', accounts => {
         await testSetup.continuousLocking4Reputation.release(accounts[0],id);
 
         tx = await testSetup.continuousLocking4Reputation.redeem(accounts[0],id);
+        assert.equal(tx.logs.length,100);
+        var totalRedeemAmount = 0;
         var redeemAmount = 0;
         for (var lockingPeriodToRedeemFrom = 0; lockingPeriodToRedeemFrom < 100; lockingPeriodToRedeemFrom++) {
-            redeemAmount += testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+            redeemAmount = testSetup.repRewardConstA * (Math.pow((testSetup.repRewardConstB/1000),lockingPeriodToRedeemFrom));
+            totalRedeemAmount += redeemAmount;
+            assert.equal(tx.logs[lockingPeriodToRedeemFrom].event,"Redeem");
+            var rep  = tx.logs[lockingPeriodToRedeemFrom].args._amount.toNumber();
+            assert.equal(((rep === Math.floor(redeemAmount)) || (rep +1 === Math.floor(redeemAmount))),true);
+            assert.equal(tx.logs[lockingPeriodToRedeemFrom].args._beneficiary,accounts[0]);
+            assert.equal(tx.logs[lockingPeriodToRedeemFrom].args._batchIndex,lockingPeriodToRedeemFrom);
         }
-        redeemAmount = Math.floor(redeemAmount);
-        assert.equal(tx.logs.length,1);
-        assert.equal(tx.logs[0].event,"Redeem");
-        assert.equal(tx.logs[0].args._amount.toNumber(),redeemAmount);
-        assert.equal(tx.logs[0].args._beneficiary,accounts[0]);
-        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+redeemAmount);
+        totalRedeemAmount = Math.floor(totalRedeemAmount);
+
+        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+totalRedeemAmount);
 
     });
 });
