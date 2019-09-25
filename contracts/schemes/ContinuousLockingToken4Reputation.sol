@@ -101,7 +101,7 @@ contract ContinuousLocking4Reputation is Agreement {
         require(_batchTime > 15, "batchTime should be > 15");
         require(_maxLockingBatches <= MAX_LOCKING_BATCHES_HARDCAP,
         "maxLockingBatches should be <= MAX_LOCKING_BATCHES_HARDCAP");
-        require(_redeemEnableTime >= _startTime+_batchTime,
+        require(_redeemEnableTime >= _startTime.add(_batchTime),
         "_redeemEnableTime >= _startTime+_batchTime");
         require(_batchesIndexCap <= BATCHES_INDEX_HARDCAP, "_batchesIndexCap > BATCHES_INDEX_HARDCAP");
         token = _token;
@@ -129,10 +129,11 @@ contract ContinuousLocking4Reputation is Agreement {
         // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "now > redeemEnableTime");
         Lock storage locker = lockers[_beneficiary][_lockingId];
+        require(locker.lockingTime != 0, "_lockingId does not exist");
         uint256 batchIndexToRedeemFrom = (locker.lockingTime - startTime) / batchTime;
         // solhint-disable-next-line not-rely-on-time
         uint256 currentBatch = (now - startTime) / batchTime;
-        uint256 lastBatchIndexToRedeem =  currentBatch.min(batchIndexToRedeemFrom + locker.period);
+        uint256 lastBatchIndexToRedeem =  currentBatch.min(batchIndexToRedeemFrom.add(locker.period));
         for (batchIndexToRedeemFrom; batchIndexToRedeemFrom < lastBatchIndexToRedeem; batchIndexToRedeemFrom++) {
             Batch storage locking = batches[batchIndexToRedeemFrom];
             uint256 score = locking.scores[_lockingId];
@@ -172,7 +173,7 @@ contract ContinuousLocking4Reputation is Agreement {
         require(now >= startTime, "locking is not enabled yet (it starts at startTime)");
         require(_period <= maxLockingBatches, "_period exceed the maximum allowed");
         require(_period > 0, "_period must be > 0");
-        require((_batchIndexToLockIn + _period) <= batchesIndexCap,
+        require((_batchIndexToLockIn.add(_period)) <= batchesIndexCap,
         "_batchIndexToLockIn + _period exceed max allowed batches");
         lockCounter = lockCounter.add(1);
         lockingId = lockCounter;
@@ -191,7 +192,7 @@ contract ContinuousLocking4Reputation is Agreement {
         //fill in the next batches scores.
         for (uint256 p = 0; p < _period; p++) {
             Batch storage batch = batches[batchIndexToLockIn + p];
-            uint256 score = (_period - p) * _amount;
+            uint256 score = (_period - p).mul(_amount);
             batch.totalScore = batch.totalScore.add(score);
             batch.scores[lockingId] = score;
         }
@@ -218,11 +219,11 @@ contract ContinuousLocking4Reputation is Agreement {
         require(locker.lockingTime != 0, "_lockingId does not exist");
         // remainBatchs is the number of future batches that are part of the currently active lock
         uint256 remainBatches =
-        ((locker.lockingTime + (locker.period*batchTime) - startTime)/batchTime).sub(_batchIndexToLockIn);
-        uint256 batchesCountFromCurrent = remainBatches + _extendPeriod;
+        ((locker.lockingTime.add(locker.period*batchTime).sub(startTime))/batchTime).sub(_batchIndexToLockIn);
+        uint256 batchesCountFromCurrent = remainBatches.add(_extendPeriod);
         require(batchesCountFromCurrent <= maxLockingBatches, "locking period exceeds the maximum allowed");
         require(_extendPeriod > 0, "_extendPeriod must be > 0");
-        require((_batchIndexToLockIn + batchesCountFromCurrent) <= batchesIndexCap,
+        require((_batchIndexToLockIn.add(batchesCountFromCurrent)) <= batchesIndexCap,
         "_extendPeriod exceed max allowed batches");
         // solhint-disable-next-line not-rely-on-time
         uint256 batchIndexToLockIn = (now - startTime) / batchTime;
@@ -230,11 +231,11 @@ contract ContinuousLocking4Reputation is Agreement {
         //fill in the next batch scores.
         for (uint256 p = 0; p < batchesCountFromCurrent; p++) {
             Batch storage batch = batches[batchIndexToLockIn + p];
-            uint256 score = (batchesCountFromCurrent - p) * locker.amount;
+            uint256 score = (batchesCountFromCurrent - p).mul(locker.amount);
             batch.totalScore = batch.totalScore.add(score).sub(batch.scores[_lockingId]);
             batch.scores[_lockingId] = score;
         }
-        locker.period = locker.period + _extendPeriod;
+        locker.period = locker.period.add(_extendPeriod);
         emit ExtendLocking(msg.sender, _lockingId, _extendPeriod);
     }
 
@@ -250,7 +251,7 @@ contract ContinuousLocking4Reputation is Agreement {
         amount = locker.amount;
         locker.amount = 0;
         // solhint-disable-next-line not-rely-on-time
-        require(block.timestamp > locker.lockingTime + (locker.period*batchTime),
+        require(block.timestamp > locker.lockingTime.add(locker.period*batchTime),
         "locking period is still active");
         totalLockedLeft = totalLockedLeft.sub(amount);
         address(token).safeTransfer(_beneficiary, amount);
