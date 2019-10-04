@@ -17,15 +17,17 @@ contract DAOTracker is Ownable {
         Reputation          nativeReputation;
         ControllerInterface controller;
 
-        // `blacklist` this from the subgraph's cache
+        // `blacklist` the DAO from the subgraph's cache.
+        // Only able to be set by the owner of the DAOTracker.
         bool blacklist;
     }
 
-    // Mapping from Avatar address to a flag letting the subgraph
-    // know if it should track this DAO or not.
+    // Mapping from Avatar address to the DAO's TrackingInfo
     mapping(address=>TrackingInfo) public tracking;
 
-    event TrackDAO(address indexed _avatar, address indexed _controller);
+    event TrackDAO(address indexed _avatar, address _controller, address _reputation, address _daoToken);
+    event BlacklistDAO(address indexed _avatar, string _explanationHash);
+    event ResetDAO(address indexed _avatar, string _explanationHash);
 
     modifier onlyAvatarOwner(Avatar avatar) {
         require(avatar.owner() == msg.sender,
@@ -51,8 +53,6 @@ contract DAOTracker is Ownable {
         // the subgraph will be updated via the UpgradeController event.
         require(_avatar != Avatar(0));
         require(_controller != ControllerInterface(0));
-        require(tracking[address(_avatar)].nativeToken == DAOToken(0));
-        require(tracking[address(_avatar)].nativeReputation == Reputation(0));
         require(tracking[address(_avatar)].controller == ControllerInterface(0));
         require(tracking[address(_avatar)].blacklist == false);
 
@@ -60,7 +60,12 @@ contract DAOTracker is Ownable {
         tracking[address(_avatar)].nativeReputation = _avatar.nativeReputation();
         tracking[address(_avatar)].controller = _controller;
 
-        emit TrackDAO(address(_avatar), address(_controller));
+        emit TrackDAO(
+            address(_avatar),
+            address(_controller),
+            address(_avatar.nativeReputation()),
+            address(_avatar.nativeToken())
+        );
     }
 
     /**
@@ -68,19 +73,23 @@ contract DAOTracker is Ownable {
     *      Blacklisting can be used to defend against DoS attacks, or to remove spam. In order
     *      for this blacklisting to take affect within the cache, it would need to be rebuilt.
     * @param _avatar the organization avatar
+    * @param _explanationHash A hash of a document explaining why this DAO was blacklisted
     */
-    function blacklist(Avatar _avatar)
+    function blacklist(Avatar _avatar, string memory _explanationHash)
     public
     onlyOwner {
         require(_avatar != Avatar(0));
         tracking[address(_avatar)].blacklist = true;
+        emit BlacklistDAO(address(_avatar), _explanationHash);
     }
 
     /**
     * @dev reset a DAO in the cache. This should be callable by the maintainer of the cache.
     *      The use case for this is extraordinary circumstances.
+    * @param _avatar the organization avatar
+    * @param _explanationHash A hash of a document explaining why this DAO was reset
     */
-    function reset(Avatar _avatar)
+    function reset(Avatar _avatar, string memory _explanationHash)
     public
     onlyOwner {
         require(_avatar != Avatar(0));
@@ -88,5 +97,6 @@ contract DAOTracker is Ownable {
         tracking[address(_avatar)].nativeReputation = Reputation(0);
         tracking[address(_avatar)].controller = ControllerInterface(0);
         tracking[address(_avatar)].blacklist = false;
+        emit ResetDAO(address(_avatar), _explanationHash);
     }
 }

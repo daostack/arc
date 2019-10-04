@@ -38,6 +38,8 @@ contract("DAOTracker", accounts => {
     assert.equal(tx.logs[0].event, "TrackDAO");
     assert.equal(tx.logs[0].args._avatar, avatar);
     assert.equal(tx.logs[0].args._controller, controller);
+    assert.equal(tx.logs[0].args._reputation, reputation);
+    assert.equal(tx.logs[0].args._daoToken, daoToken);
 
     // Verify Storage
     const trackingInfo = await testSetup.daoTracker.tracking(avatar);
@@ -98,7 +100,13 @@ contract("DAOTracker", accounts => {
     let trackingInfo = await testSetup.daoTracker.tracking(avatar);
     assert.equal(trackingInfo.blacklist, false);
 
-    await testSetup.daoTracker.blacklist(avatar, opts);
+    const tx = await testSetup.daoTracker.blacklist(avatar, "TEST", opts);
+
+    // Verify Event
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "BlacklistDAO");
+    assert.equal(tx.logs[0].args._avatar, avatar);
+    assert.equal(tx.logs[0].args._explanationHash, "TEST");
 
     // Verify Storage
     trackingInfo = await testSetup.daoTracker.tracking(avatar);
@@ -110,7 +118,7 @@ contract("DAOTracker", accounts => {
     const avatar = testSetup.avatar.address;
 
     try {
-      await testSetup.daoTracker.blacklist(avatar, {gas: opts.gas, from: accounts[1]});
+      await testSetup.daoTracker.blacklist(avatar, "TEST", {gas: opts.gas, from: accounts[1]});
       assert.fail("This should never happen.");
     } catch (e) {
       return;
@@ -121,7 +129,7 @@ contract("DAOTracker", accounts => {
     const testSetup = await setup();
 
     try {
-      await testSetup.daoTracker.blacklist("0x0000000000000000000000000000000000000000", opts);
+      await testSetup.daoTracker.blacklist("0x0000000000000000000000000000000000000000", "TEST", opts);
       assert.fail("This should never happen.");
     } catch (e) {
       return;
@@ -145,13 +153,20 @@ contract("DAOTracker", accounts => {
     assert.equal(trackingInfo.controller, controller);
     assert.equal(trackingInfo.blacklist, false);
 
-    await testSetup.daoTracker.blacklist(avatar, opts);
+    await testSetup.daoTracker.blacklist(avatar, "TEST", opts);
 
     trackingInfo = await testSetup.daoTracker.tracking(avatar);
     assert.equal(trackingInfo.blacklist, true);
 
-    await testSetup.daoTracker.reset(avatar, opts);
+    const tx = await testSetup.daoTracker.reset(avatar, "TEST", opts);
 
+    // Verify Event
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "ResetDAO");
+    assert.equal(tx.logs[0].args._avatar, avatar);
+    assert.equal(tx.logs[0].args._explanationHash, "TEST");
+
+    // Verify Storage
     trackingInfo = await testSetup.daoTracker.tracking(avatar);
     assert.equal(trackingInfo.nativeToken, "0x0000000000000000000000000000000000000000");
     assert.equal(trackingInfo.nativeReputation, "0x0000000000000000000000000000000000000000");
@@ -164,7 +179,7 @@ contract("DAOTracker", accounts => {
     const avatar = testSetup.avatar.address;
 
     try {
-      await testSetup.daoTracker.reset(avatar, {gas: opts.gas, from: accounts[1]});
+      await testSetup.daoTracker.reset(avatar, "TEST", {gas: opts.gas, from: accounts[1]});
       assert.fail("This should never happen.");
     } catch (e) {
       return;
