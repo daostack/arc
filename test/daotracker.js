@@ -42,12 +42,8 @@ contract("DAOTracker", accounts => {
     assert.equal(tx.logs[0].args._daoToken, daoToken);
 
     // Verify Storage
-    const trackingInfo = await testSetup.daoTracker.tracking(avatar);
-
-    assert.equal(trackingInfo.nativeToken, daoToken);
-    assert.equal(trackingInfo.nativeReputation, reputation);
-    assert.equal(trackingInfo.controller, controller);
-    assert.equal(trackingInfo.blacklist, false);
+    const blacklisted = await testSetup.daoTracker.blacklisted(avatar);
+    assert.equal(blacklisted, false);
   });
 
   it("track onlyAvatarOwner", async () => {
@@ -97,8 +93,8 @@ contract("DAOTracker", accounts => {
     const testSetup = await setup();
     const avatar = testSetup.avatar.address;
 
-    let trackingInfo = await testSetup.daoTracker.tracking(avatar);
-    assert.equal(trackingInfo.blacklist, false);
+    let blacklisted = await testSetup.daoTracker.blacklisted(avatar);
+    assert.equal(blacklisted, false);
 
     const tx = await testSetup.daoTracker.blacklist(avatar, "TEST", opts);
 
@@ -109,8 +105,8 @@ contract("DAOTracker", accounts => {
     assert.equal(tx.logs[0].args._explanationHash, "TEST");
 
     // Verify Storage
-    trackingInfo = await testSetup.daoTracker.tracking(avatar);
-    assert.equal(trackingInfo.blacklist, true);
+    blacklisted = await testSetup.daoTracker.blacklisted(avatar);
+    assert.equal(blacklisted, true);
   });
 
   it("blacklist onlyOwner", async () => {
@@ -139,24 +135,19 @@ contract("DAOTracker", accounts => {
   it("reset", async () => { 
     const testSetup = await setup();
     const avatar = testSetup.avatar.address;
-    const daoToken = testSetup.daoToken.address;
-    const reputation = testSetup.reputation.address;
     const controller = testSetup.controller.address;
 
     await testSetup.daoTracker.track(
       avatar, controller, opts
     );
 
-    let trackingInfo = await testSetup.daoTracker.tracking(avatar);
-    assert.equal(trackingInfo.nativeToken, daoToken);
-    assert.equal(trackingInfo.nativeReputation, reputation);
-    assert.equal(trackingInfo.controller, controller);
-    assert.equal(trackingInfo.blacklist, false);
+    let blacklisted = await testSetup.daoTracker.blacklisted(avatar);
+    assert.equal(blacklisted, false);
 
     await testSetup.daoTracker.blacklist(avatar, "TEST", opts);
 
-    trackingInfo = await testSetup.daoTracker.tracking(avatar);
-    assert.equal(trackingInfo.blacklist, true);
+    blacklisted = await testSetup.daoTracker.blacklisted(avatar);
+    assert.equal(blacklisted, true);
 
     const tx = await testSetup.daoTracker.reset(avatar, "TEST", opts);
 
@@ -167,11 +158,8 @@ contract("DAOTracker", accounts => {
     assert.equal(tx.logs[0].args._explanationHash, "TEST");
 
     // Verify Storage
-    trackingInfo = await testSetup.daoTracker.tracking(avatar);
-    assert.equal(trackingInfo.nativeToken, "0x0000000000000000000000000000000000000000");
-    assert.equal(trackingInfo.nativeReputation, "0x0000000000000000000000000000000000000000");
-    assert.equal(trackingInfo.controller, "0x0000000000000000000000000000000000000000");
-    assert.equal(trackingInfo.blacklist, false);
+    blacklisted = await testSetup.daoTracker.blacklisted(avatar);
+    assert.equal(blacklisted, false);
   });
 
   it("reset onlyOwner", async () => {

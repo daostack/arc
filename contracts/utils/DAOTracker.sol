@@ -12,18 +12,9 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  */
 contract DAOTracker is Ownable {
 
-    struct TrackingInfo {
-        DAOToken            nativeToken;
-        Reputation          nativeReputation;
-        ControllerInterface controller;
-
-        // `blacklist` the DAO from the subgraph's cache.
-        // Only able to be set by the owner of the DAOTracker.
-        bool blacklist;
-    }
-
-    // Mapping from Avatar address to the DAO's TrackingInfo
-    mapping(address=>TrackingInfo) public tracking;
+    // `blacklist` the DAO from the subgraph's cache.
+    // Only able to be set by the owner of the DAOTracker.
+    mapping(address=>bool) public blacklisted;
 
     event TrackDAO(address indexed _avatar, address _controller, address _reputation, address _daoToken);
     event BlacklistDAO(address indexed _avatar, string _explanationHash);
@@ -32,6 +23,12 @@ contract DAOTracker is Ownable {
     modifier onlyAvatarOwner(Avatar avatar) {
         require(avatar.owner() == msg.sender,
                 "The caller must be the owner of the Avatar.");
+        _;
+    }
+
+    modifier notBlacklisted(Avatar avatar) {
+        require(blacklisted[address(avatar)] == false,
+                "The avatar has been blacklisted.");
         _;
     }
 
@@ -48,17 +45,12 @@ contract DAOTracker is Ownable {
     */
     function track(Avatar _avatar, ControllerInterface _controller)
     public
-    onlyAvatarOwner(_avatar) {
+    onlyAvatarOwner(_avatar)
+    notBlacklisted(_avatar) {
         // Only allow the information to be set once. In the case of a controller upgrades,
         // the subgraph will be updated via the UpgradeController event.
         require(_avatar != Avatar(0));
         require(_controller != ControllerInterface(0));
-        require(tracking[address(_avatar)].controller == ControllerInterface(0));
-        require(tracking[address(_avatar)].blacklist == false);
-
-        tracking[address(_avatar)].nativeToken = _avatar.nativeToken();
-        tracking[address(_avatar)].nativeReputation = _avatar.nativeReputation();
-        tracking[address(_avatar)].controller = _controller;
 
         emit TrackDAO(
             address(_avatar),
@@ -79,13 +71,12 @@ contract DAOTracker is Ownable {
     public
     onlyOwner {
         require(_avatar != Avatar(0));
-        tracking[address(_avatar)].blacklist = true;
+        blacklisted[address(_avatar)] = true;
         emit BlacklistDAO(address(_avatar), _explanationHash);
     }
 
     /**
     * @dev reset a DAO in the cache. This should be callable by the maintainer of the cache.
-    *      The use case for this is extraordinary circumstances.
     * @param _avatar the organization avatar
     * @param _explanationHash A hash of a document explaining why this DAO was reset
     */
@@ -93,10 +84,7 @@ contract DAOTracker is Ownable {
     public
     onlyOwner {
         require(_avatar != Avatar(0));
-        tracking[address(_avatar)].nativeToken = DAOToken(0);
-        tracking[address(_avatar)].nativeReputation = Reputation(0);
-        tracking[address(_avatar)].controller = ControllerInterface(0);
-        tracking[address(_avatar)].blacklist = false;
+        blacklisted[address(_avatar)] = false;
         emit ResetDAO(address(_avatar), _explanationHash);
     }
 }
