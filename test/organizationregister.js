@@ -4,6 +4,7 @@ const OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const DAOTracker = artifacts.require("./DAOTracker.sol");
 
 export class OrganizationRegisterParams {
   constructor() {
@@ -29,7 +30,8 @@ const setup = async function (accounts) {
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.organizationRegister = await OrganizationRegister.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.organizationRegisterParams= await setupOrganizationRegisterParams(testSetup.organizationRegister,testSetup.standardTokenMock.address,accounts[2]);
    var permissions = "0x00000000";

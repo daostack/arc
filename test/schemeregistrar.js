@@ -6,7 +6,7 @@ const DaoCreator = artifacts.require("./DaoCreator.sol");
 const UniversalScheme = artifacts.require('./UniversalScheme.sol');
 const Controller = artifacts.require('./Controller.sol');
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-
+const DAOTracker = artifacts.require("./DAOTracker.sol");
 
 
 export class SchemeRegistrarParams {
@@ -30,7 +30,8 @@ const setup = async function (accounts) {
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.schemeRegistrar = await SchemeRegistrar.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.reputationArray = [20,40,70];
    testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
    testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(testSetup.schemeRegistrar);

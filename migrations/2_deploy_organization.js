@@ -9,6 +9,7 @@ var AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 var ContributionReward = artifacts.require('./ContributionReward.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var ControllerCreator = artifacts.require('./ControllerCreator.sol');
+var DAOTracker = artifacts.require('./DAOTracker.sol');
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 
@@ -35,8 +36,10 @@ var accounts;
 //schemeRegistrar, upgradeScheme,globalConstraintRegistrar,simpleICO,contributionReward.
 module.exports = async function(deployer) {
     deployer.deploy(ControllerCreator, {gas: constants.ARC_GAS_LIMIT}).then(async function(){
+      await deployer.deploy(DAOTracker, {gas: constants.ARC_GAS_LIMIT});
+      var daoTracker = await DAOTracker.deployed();
       var controllerCreator = await ControllerCreator.deployed();
-      await deployer.deploy(DaoCreator,controllerCreator.address, {gas: constants.ARC_GAS_LIMIT});
+      await deployer.deploy(DaoCreator,controllerCreator.address,daoTracker.address, {gas: constants.ARC_GAS_LIMIT});
       var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address,{gas: constants.ARC_GAS_LIMIT});
       // Create DAOstack:
 

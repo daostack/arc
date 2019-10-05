@@ -9,7 +9,7 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-
+const DAOTracker = artifacts.require("./DAOTracker.sol");
 
 
 
@@ -53,7 +53,8 @@ const setup = async function (accounts) {
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.upgradeScheme = await UpgradeScheme.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.reputationArray = [20,40,70];
    testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
    testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(testSetup.upgradeScheme);

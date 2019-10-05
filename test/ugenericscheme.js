@@ -3,6 +3,7 @@ const constants = require('./constants');
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const GenericScheme = artifacts.require('./UGenericScheme.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
+const DAOTracker = artifacts.require("./DAOTracker.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ActionMock = artifacts.require("./ActionMock.sol");
@@ -40,7 +41,8 @@ const setup = async function (accounts,contractToCall = 0,reputationAccount=0,ge
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.genericScheme = await GenericScheme.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.reputationArray = [20,10,70];
 
    if (reputationAccount === 0) {

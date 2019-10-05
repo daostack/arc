@@ -6,6 +6,7 @@ const DaoCreator = artifacts.require("./DaoCreator.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
+const DAOTracker = artifacts.require("./DAOTracker.sol");
 
 
 
@@ -43,7 +44,8 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    testSetup.fee = 10;
    testSetup.globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.reputationArray = [20,10,70];
    testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
    testSetup.globalConstraintRegistrarParams= await setupGlobalConstraintRegistrarParams(testSetup.globalConstraintRegistrar,accounts,genesisProtocol,tokenAddress);
