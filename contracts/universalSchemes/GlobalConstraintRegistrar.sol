@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
@@ -107,20 +107,6 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
     }
 
     /**
-    * @dev Hash the parameters and return the hash value
-    * @param _voteRegisterParams -  voting parameters
-    * @param _intVote  - voting machine contract.
-    * @return bytes32 -the parameters hash
-    */
-    function getParametersHash(
-        bytes32 _voteRegisterParams,
-        IntVoteInterface _intVote
-    ) public pure returns(bytes32)
-    {
-        return (keccak256(abi.encodePacked(_voteRegisterParams, _intVote)));
-    }
-
-    /**
     * @dev propose to add a new global constraint:
     * @param _avatar the avatar of the organization that the constraint is proposed for
     * @param _gc the address of the global constraint that is being proposed
@@ -201,5 +187,19 @@ contract GlobalConstraintRegistrar is UniversalScheme, VotingMachineCallbacks, P
             avatar: _avatar
         });
         return proposalId;
+    }
+
+    /**
+    * @dev Hash the parameters and return the hash value
+    * @param _voteRegisterParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
+    */
+    function getParametersHash(
+        bytes32 _voteRegisterParams,
+        IntVoteInterface _intVote
+    ) public pure returns(bytes32)
+    {
+        return (keccak256(abi.encodePacked(_voteRegisterParams, _intVote)));
     }
 }

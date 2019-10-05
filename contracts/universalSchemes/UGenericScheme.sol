@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
@@ -7,11 +7,11 @@ import "../votingMachines/VotingMachineCallbacks.sol";
 
 
 /**
- * @title GenericScheme.
+ * @title UGenericScheme.
  * @dev  A scheme for proposing and executing calls to an arbitrary function
  * on a specific contract on behalf of the organization avatar.
  */
-contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
+contract UGenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
     event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -125,21 +125,6 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     }
 
     /**
-    * @dev Hash the parameters, and return the hash value
-    * @param _voteParams -  voting parameters
-    * @param _intVote  - voting machine contract.
-    * @return bytes32 -the parameters hash
-    */
-    function getParametersHash(
-        bytes32 _voteParams,
-        IntVoteInterface _intVote,
-        address _contractToCall
-    ) public pure returns(bytes32)
-    {
-        return keccak256(abi.encodePacked(_voteParams, _intVote, _contractToCall));
-    }
-
-    /**
     * @dev propose to call on behalf of the _avatar
     *      The function trigger NewCallProposal event
     * @param _avatar avatar of the organization
@@ -179,6 +164,21 @@ contract GenericScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
     */
     function getContractToCall(Avatar _avatar) public view returns(address) {
         return parameters[getParametersFromController(_avatar)].contractToCall;
+    }
+
+    /**
+    * @dev Hash the parameters, and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
+    */
+    function getParametersHash(
+        bytes32 _voteParams,
+        IntVoteInterface _intVote,
+        address _contractToCall
+    ) public pure returns(bytes32)
+    {
+        return keccak256(abi.encodePacked(_voteParams, _intVote, _contractToCall));
     }
 
 }

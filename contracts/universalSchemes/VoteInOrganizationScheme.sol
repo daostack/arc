@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
@@ -96,20 +96,6 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
     }
 
     /**
-    * @dev Hash the parameters, and return the hash value
-    * @param _voteParams -  voting parameters
-    * @param _intVote  - voting machine contract.
-    * @return bytes32 -the parameters hash
-    */
-    function getParametersHash(
-        bytes32 _voteParams,
-        IntVoteInterface _intVote
-    ) public pure returns(bytes32)
-    {
-        return keccak256(abi.encodePacked(_voteParams, _intVote));
-    }
-
-    /**
     * @dev propose to vote in other organization
     *      The function trigger NewVoteProposal event
     * @param _avatar avatar of the organization
@@ -157,5 +143,19 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
             avatar:_avatar
         });
         return proposalId;
+    }
+
+    /**
+    * @dev Hash the parameters, and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
+    */
+    function getParametersHash(
+        bytes32 _voteParams,
+        IntVoteInterface _intVote
+    ) public pure returns(bytes32)
+    {
+        return keccak256(abi.encodePacked(_voteParams, _intVote));
     }
 }

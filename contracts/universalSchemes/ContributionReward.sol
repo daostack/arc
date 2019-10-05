@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
@@ -108,20 +108,6 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         parameters[paramsHash].voteApproveParams = _voteApproveParams;
         parameters[paramsHash].intVote = _intVote;
         return paramsHash;
-    }
-
-    /**
-    * @dev return a hash of the given parameters
-    * @param _voteApproveParams parameters for the voting machine used to approve a contribution
-    * @param _intVote the voting machine used to approve a contribution
-    * @return a hash of the parameters
-    */
-    function getParametersHash(
-        bytes32 _voteApproveParams,
-        IntVoteInterface _intVote
-    ) public pure returns(bytes32)
-    {
-        return (keccak256(abi.encodePacked(_voteApproveParams, _intVote)));
     }
 
     /**
@@ -407,6 +393,20 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
 
     function getProposalExecutionTime(bytes32 _proposalId, address _avatar) public view returns (uint256) {
         return organizationsProposals[_avatar][_proposalId].executionTime;
+    }
+
+    /**
+    * @dev return a hash of the given parameters
+    * @param _voteApproveParams parameters for the voting machine used to approve a contribution
+    * @param _intVote the voting machine used to approve a contribution
+    * @return a hash of the parameters
+    */
+    function getParametersHash(
+        bytes32 _voteApproveParams,
+        IntVoteInterface _intVote
+    ) public pure returns(bytes32)
+    {
+        return (keccak256(abi.encodePacked(_voteApproveParams, _intVote)));
     }
 
     /**

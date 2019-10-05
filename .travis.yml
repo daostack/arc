@@ -3,7 +3,7 @@ dist: trusty
 language: node_js
 
 node_js:
-  - "10.15.1"
+  - "10.16.3"
 
 before_install:
 
@@ -25,7 +25,3 @@ jobs:
       - stage: tests
         name: "JS Lint"
         script: npm run lint
-
-
-notifications:
-  slack: daostack:fGuaFPsiQiV5mgmzRcSzbYqw
