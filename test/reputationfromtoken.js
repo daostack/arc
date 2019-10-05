@@ -15,7 +15,8 @@ const NectarToken = artifacts.require('./Reputation.sol');
 const setupNectar = async function (accounts)  {
   var testSetup = new helpers.TestSetup();
   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-  testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+  var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
+  testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
   testSetup.nectarToken = await NectarToken.new();
   await testSetup.nectarToken.mint(accounts[0],100);
