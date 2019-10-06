@@ -1,4 +1,4 @@
 {
-  "presets": ["env"],
+  "presets": ["es2015"],
   "plugins": ["syntax-async-functions"]
 }
