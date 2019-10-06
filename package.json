@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.1-rc.28",
+  "version": "0.0.1-rc.29",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -29,7 +29,8 @@
     "babel-eslint": "^10.0.1",
     "babel-plugin-syntax-async-functions": "^6.13.0",
     "babel-polyfill": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/core": "^7.6.2",
     "babel-register": "^6.26.0",
     "bignumber.js": "^5.0.0",
     "cross-conf-env": "^1.1.2",
