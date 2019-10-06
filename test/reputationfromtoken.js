@@ -10,7 +10,7 @@ var PolkaCurve = artifacts.require("./PolkaCurve.sol");
 
 var NectarRepAllocation = artifacts.require("./NectarRepAllocation.sol");
 const NectarToken = artifacts.require('./Reputation.sol');
-
+var ethereumjs = require('ethereumjs-abi');
 
 const setupNectar = async function (accounts)  {
   var testSetup = new helpers.TestSetup();
@@ -66,7 +66,25 @@ const setup = async function (accounts, _initialize = true) {
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[helpers.NULL_HASH],[permissions],"metaData");
    return testSetup;
 };
+const signatureType = 1;
+const redeem = async function(_testSetup,_beneficiary,_redeemer,_fromAccount) {
+  var textMsg = "0x"+ethereumjs.soliditySHA3(
+    ["address","address"],
+    [_testSetup.reputationFromToken.address, _beneficiary]
+  ).toString("hex");
+  //https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
+  let signature = await web3.eth.sign(textMsg , _redeemer);
+  const signature1 =  signature.substring(0, signature.length-2);
+  var v = signature.substring(signature.length-2, signature.length);
 
+  if (v === '00') {
+   signature = signature1+'1b';
+ } else {
+   signature = signature1+'1c';
+ }
+  return (await _testSetup.reputationFromToken.redeemWithSignature(_beneficiary,signatureType,signature
+    ,{from:_fromAccount}));
+};
 contract('ReputationFromToken and RepAllocation', accounts => {
     it("initialize", async () => {
       let testSetup = await setup(accounts);
@@ -119,6 +137,22 @@ contract('ReputationFromToken and RepAllocation', accounts => {
     it("redeem", async () => {
       let testSetup = await setup(accounts);
       var tx = await testSetup.reputationFromToken.redeem(accounts[1]);
+      var total_reputation = await testSetup.curve.TOTAL_REPUTATION();
+      var sum_of_sqrt = await testSetup.curve.SUM_OF_SQRTS();
+      var expected = Math.floor(((10*total_reputation)/sum_of_sqrt) * 1000000000) * 1000000000;
+
+      assert.equal(tx.logs.length,1);
+      assert.equal(tx.logs[0].event,"Redeem");
+      assert.equal(tx.logs[0].args._beneficiary,accounts[1]);
+      assert.equal(tx.logs[0].args._amount.toString(),expected);
+      assert.equal(tx.logs[0].args._sender,accounts[0]);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),expected);
+    });
+
+    it("redeemWithSignature", async () => {
+      let testSetup = await setup(accounts);
+      var tx = await redeem(testSetup,accounts[1],accounts[0],accounts[2]);
       var total_reputation = await testSetup.curve.TOTAL_REPUTATION();
       var sum_of_sqrt = await testSetup.curve.SUM_OF_SQRTS();
       var expected = Math.floor(((10*total_reputation)/sum_of_sqrt) * 1000000000) * 1000000000;
