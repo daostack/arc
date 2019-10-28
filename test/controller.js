@@ -497,7 +497,7 @@ contract('Controller', accounts =>  {
          var globalConstraintsCount =await controller.globalConstraintsCount();
          assert.equal(globalConstraintsCount[0],0);
          assert.equal(globalConstraintsCount[1],0);
-         var tx =  await controller.genericCall(actionMock.address,encodeABI,avatar.address,0);
+         var tx =  await controller.genericCall(actionMock.address,encodeABI,0);
          await avatar.getPastEvents('GenericCall', {
                filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
                fromBlock: tx.blockNumber,
