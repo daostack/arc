@@ -24,8 +24,9 @@ contract DAOToken is ERC20, ERC20Burnable, Ownable, Initializable {
     * @param _symbol - token symbol
     * @param _cap - token cap - 0 value means no cap
     */
-    function initialize(string memory _name, string memory _symbol, uint256 _cap)
-    external initializer {
+    function initialize(string calldata _name, string calldata _symbol, uint256 _cap)
+    external
+    initializer {
         name = _name;
         symbol = _symbol;
         cap = _cap;

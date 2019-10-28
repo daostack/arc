@@ -36,7 +36,7 @@ contract Avatar is Ownable, Initializable {
     * @dev initialize takes organization name, native token and reputation system
     and creates an avatar for a controller
     */
-    function initialize(string memory _orgName, DAOToken _nativeToken, Reputation _nativeReputation)
+    function initialize(string calldata _orgName, DAOToken _nativeToken, Reputation _nativeReputation)
     external
     initializer {
         orgName = _orgName;
@@ -52,7 +52,7 @@ contract Avatar is Ownable, Initializable {
     * @return bool    success or fail
     *         bytes - the return bytes of the called contract's function.
     */
-    function genericCall(address _contract, bytes memory _data, uint256 _value)
+    function genericCall(address _contract, bytes calldata _data, uint256 _value)
     external
     onlyOwner
     returns(bool success, bytes memory returnValue) {
@@ -130,7 +130,7 @@ contract Avatar is Ownable, Initializable {
     * @param _metaData a string representing a hash of the meta data
     * @return bool which represents a success
     */
-    function metaData(string memory _metaData) external onlyOwner returns(bool) {
+    function metaData(string calldata _metaData) external onlyOwner returns(bool) {
         emit MetaData(_metaData);
         return true;
     }
