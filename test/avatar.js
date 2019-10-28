@@ -7,7 +7,8 @@ const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 let avatar;
 
 const setup = async function (accounts) {
-  avatar = await Avatar.new("0x1234", accounts[0], accounts[1]);
+  avatar = await Avatar.new();
+  await avatar.initialize("0x1234", accounts[0], accounts[1]);
   return avatar;
 };
 

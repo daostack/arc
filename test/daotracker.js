@@ -4,19 +4,21 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Avatar = artifacts.require("./Avatar.sol");
-const UController = artifacts.require("./UController.sol");
+const Controller = artifacts.require("./Controller.sol");
 
 const opts = {gas: constants.ARC_GAS_LIMIT};
 
 const setup = async function () {
   var testSetup = new helpers.TestSetup();
   testSetup.daoTracker = await DAOTracker.new(opts);
-  testSetup.daoToken = await DAOToken.new("test", "test", 0, opts);
+  testSetup.daoToken = await DAOToken.new(opts);
+  await testSetup.daoToken.initialize("test", "test", 0, opts);
   testSetup.reputation = await Reputation.new(opts);
-  testSetup.avatar = await Avatar.new(
+  testSetup.avatar = await Avatar.new(opts);
+  await testSetup.avatar.initialize(
     "test", testSetup.daoToken.address, testSetup.reputation.address, opts,
   );
-  testSetup.controller = await UController.new(opts);
+  testSetup.controller = await Controller.new(opts);
   return testSetup;
 };
 
@@ -132,7 +134,7 @@ contract("DAOTracker", accounts => {
     }
   });
 
-  it("reset", async () => { 
+  it("reset", async () => {
     const testSetup = await setup();
     const avatar = testSetup.avatar.address;
     const controller = testSetup.controller.address;

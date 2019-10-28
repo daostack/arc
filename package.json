@@ -12,7 +12,7 @@
     "tsconfig.json"
   ],
   "config": {
-    "gasLimit": "6100000"
+    "gasLimit": "6300000"
   },
   "scripts": {
     "test": "cross-conf-env run-with-ganache --ganache-cmd 'npm run ganache' 'npm run truffle compile && npm run truffle migrate && npm run truffle test'",
@@ -78,7 +78,8 @@
     "@daostack/infra": "0.0.1-rc.15",
     "math": "0.0.3",
     "openzeppelin-solidity": "2.3.0",
-    "truffle-flattener": "^1.4.2"
+    "truffle-flattener": "^1.4.2",
+    "@openzeppelin/upgrades": "2.5.3"
   },
   "peerDependencies": {
     "ganache-cli": "^6.4.1"

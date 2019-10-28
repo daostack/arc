@@ -1,16 +1,17 @@
 pragma solidity ^0.5.11;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title A scheme for conduct ERC20 Tokens auction for reputation
  */
 
 
-contract Auction4Reputation is Agreement {
+contract Auction4Reputation is Agreement, Initializable {
     using SafeMath for uint256;
     using SafeERC20 for address;
 
@@ -66,8 +67,8 @@ contract Auction4Reputation is Agreement {
         address _wallet,
         bytes32 _agreementHash )
     external
+    initializer
     {
-        require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         require(_numberOfAuctions > 0, "number of auctions cannot be zero");
         //_auctionPeriod should be greater than block interval
@@ -104,8 +105,8 @@ contract Auction4Reputation is Agreement {
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
-        ControllerInterface(avatar.owner())
-        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
+        Controller(avatar.owner())
+        .mintReputation(reputation, _beneficiary), "mint reputation should succeed");
         emit Redeem(_auctionId, _beneficiary, reputation);
     }
 

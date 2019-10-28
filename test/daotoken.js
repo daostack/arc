@@ -126,8 +126,8 @@ contract('DAOToken', accounts => {
 
     it("CappedToken ", async () => {
         let cap = 100000000;
-        const token = await DAOToken.new(testTokenName,testTokenSymbol,cap);
-
+        const token = await DAOToken.new();
+        await token.initialize(testTokenName,testTokenSymbol,cap);
         await token.mint(accounts[1], cap);
 
         var amount = await token.balanceOf(accounts[1]);

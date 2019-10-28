@@ -1,8 +1,8 @@
 pragma solidity ^0.5.11;
 
-import "../universalSchemes/UniversalScheme.sol";
 import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
-
+import "../controller/Avatar.sol";
+import "../controller/Controller.sol";
 
 contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
 
@@ -28,7 +28,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         if (avatar == Avatar(0)) {
             return false;
         }
-        return ControllerInterface(avatar.owner()).mintReputation(_amount, _beneficiary, address(avatar));
+        return Controller(avatar.owner()).mintReputation(_amount, _beneficiary);
     }
 
     function burnReputation(uint256 _amount, address _beneficiary, bytes32 _proposalId)
@@ -40,7 +40,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         if (avatar == Avatar(0)) {
             return false;
         }
-        return ControllerInterface(avatar.owner()).burnReputation(_amount, _beneficiary, address(avatar));
+        return Controller(avatar.owner()).burnReputation(_amount, _beneficiary);
     }
 
     function stakingTokenTransfer(
@@ -56,7 +56,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         if (avatar == Avatar(0)) {
             return false;
         }
-        return ControllerInterface(avatar.owner()).externalTokenTransfer(_stakingToken, _beneficiary, _amount, avatar);
+        return Controller(avatar.owner()).externalTokenTransfer(_stakingToken, _beneficiary, _amount);
     }
 
     function balanceOfStakingToken(IERC20 _stakingToken, bytes32 _proposalId) external view returns(uint256) {

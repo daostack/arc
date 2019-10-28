@@ -4,13 +4,14 @@ import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../controller/Avatar.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
  * @title A scheme for proposing a signal on behalkf of the daoCreator
  */
 
-contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
+contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
 
     event NewSignalProposal(
         address indexed _avatar,
@@ -53,8 +54,8 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
                         uint256 _signalType,
                         bytes32 _voteApproveParams,
                         IntVoteInterface _intVote)
-    external {
-        require(params.avatar == Avatar(0), "can be called only one time");
+    external
+    initializer {
         require(_avatar != Avatar(0), "avatar cannot be zero");
         params = Parameters({
             voteApproveParams: _voteApproveParams,
@@ -74,7 +75,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     external
     returns(bytes32)
     {
-        require(ControllerInterface(params.avatar.owner()).isSchemeRegistered(address(this), address(params.avatar)),
+        require(Controller(params.avatar.owner()).isSchemeRegistered(address(this)),
         "scheme is not registered");
 
         bytes32 proposalId = params.intVote.propose(

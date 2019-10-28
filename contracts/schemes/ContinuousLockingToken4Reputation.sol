@@ -2,16 +2,17 @@ pragma solidity ^0.5.11;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
 import { RealMath } from "@daostack/infra/contracts/libs/RealMath.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title A scheme for continuous locking ERC20 Token for reputation
  */
 
-contract ContinuousLocking4Reputation is Agreement {
+contract ContinuousLocking4Reputation is Agreement, Initializable {
     using SafeMath for uint256;
     using SafeERC20 for address;
     using RealMath for uint216;
@@ -94,8 +95,8 @@ contract ContinuousLocking4Reputation is Agreement {
         IERC20 _token,
         bytes32 _agreementHash )
     external
+    initializer
     {
-        require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         // _batchTime should be greater than block interval
         require(_batchTime > 15, "batchTime should be > 15");
@@ -151,8 +152,8 @@ contract ContinuousLocking4Reputation is Agreement {
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
-        ControllerInterface(avatar.owner())
-        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
+        Controller(avatar.owner())
+        .mintReputation(reputation, _beneficiary), "mint reputation should succeed");
     }
 
     /**

@@ -5,7 +5,6 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 const constants = require('./constants');
 var ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
 var RepAllocation = artifacts.require("./RepAllocation.sol");
-
 var PolkaCurve = artifacts.require("./PolkaCurve.sol");
 
 var NectarRepAllocation = artifacts.require("./NectarRepAllocation.sol");

@@ -5,7 +5,7 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 const constants = require("./constants");
 const ERC20Mock = artifacts.require("./test/ERC20Mock.sol");
 var Forwarder = artifacts.require("./Forwarder.sol");
-var ControllerInterface = artifacts.require("./ControllerInterface.sol");
+var Controller = artifacts.require("./Controller.sol");
 
 const setup = async function (accounts,
                              _expirationTime = 300)
@@ -56,16 +56,16 @@ contract('Forwarder', accounts => {
        // transferOwnership of testSetupA.forwarder to testSetupB avatar
       await testSetupA.forwarder.transferOwnership(testSetupB.org.avatar.address);
       //do generic call from testSetupB controller to testSetupA controller to "registerScheme"
-      let controllerB = await ControllerInterface.at(await testSetupB.org.avatar.owner());
-      let controllerA = await ControllerInterface.at(await testSetupA.org.avatar.owner());
+      let controllerB = await Controller.at(await testSetupB.org.avatar.owner());
+      let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
       const encodeABI = await new web3.eth.Contract(controllerA.abi).
                                   methods.
-                                  registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
+                                  registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f").
                                   encodeABI();
-      assert.equal(await controllerA.isSchemeRegistered(accounts[1],testSetupA.org.avatar.address),false);
-      await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address,0);
+      assert.equal(await controllerA.isSchemeRegistered(accounts[1]),false);
+      await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,0);
       //check that accounts[1] register as scheme at controllerA.
-      assert.equal(await controllerA.isSchemeRegistered(accounts[1],testSetupA.org.avatar.address),true);
+      assert.equal(await controllerA.isSchemeRegistered(accounts[1]),true);
 
     });
 
@@ -75,16 +75,16 @@ contract('Forwarder', accounts => {
        // transferOwnership of testSetupA.forwarder to testSetupB avatar
       await testSetupA.forwarder.transferOwnership(testSetupB.org.avatar.address);
       //do generic call from testSetupB controller to testSetupA controller to "registerScheme"
-      let controllerB = await ControllerInterface.at(await testSetupB.org.avatar.owner());
-      let controllerA = await ControllerInterface.at(await testSetupA.org.avatar.owner());
+      let controllerB = await Controller.at(await testSetupB.org.avatar.owner());
+      let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
       const encodeABI = await new web3.eth.Contract(controllerA.abi).
                                   methods.
-                                  registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
+                                  registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f").
                                   encodeABI();
        //expiered
       await helpers.increaseTime(301);
 
-      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address,0);
+      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,0);
       await testSetupB.org.avatar.getPastEvents('GenericCall', {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
@@ -101,13 +101,13 @@ contract('Forwarder', accounts => {
       let testSetupA = await setup(accounts);
       let testSetupB = await setup(accounts);
       //do generic call from testSetupB controller to testSetupA controller to "registerScheme"
-      let controllerB = await ControllerInterface.at(await testSetupB.org.avatar.owner());
-      let controllerA = await ControllerInterface.at(await testSetupA.org.avatar.owner());
+      let controllerB = await Controller.at(await testSetupB.org.avatar.owner());
+      let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
       const encodeABI = await new web3.eth.Contract(controllerA.abi).
                                   methods.
-                                  registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
+                                  registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f").
                                   encodeABI();
-      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,testSetupB.org.avatar.address,0);
+      let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,0);
       await testSetupB.org.avatar.getPastEvents('GenericCall', {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
@@ -122,20 +122,20 @@ contract('Forwarder', accounts => {
     it("unregisterSelf", async () => {
       let testSetupA = await setup(accounts);
       let testSetupB = await setup(accounts);
-      let controllerA = await ControllerInterface.at(await testSetupA.org.avatar.owner());
+      let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
        // transferOwnership of testSetupA.forwarder to testSetupB avatar
       await testSetupA.forwarder.transferOwnership(testSetupB.org.avatar.address);
-      assert.equal(await controllerA.isSchemeRegistered(testSetupA.forwarder.address,testSetupA.org.avatar.address),true);
+      assert.equal(await controllerA.isSchemeRegistered(testSetupA.forwarder.address),true);
       try {
         await testSetupA.forwarder.unregisterSelf();
         assert(false, "expirationTime did not passed");
       } catch(error) {
         helpers.assertVMException(error);
       }
-      assert.equal(await controllerA.isSchemeRegistered(testSetupA.forwarder.address,testSetupA.org.avatar.address),true);
+      assert.equal(await controllerA.isSchemeRegistered(testSetupA.forwarder.address),true);
       await helpers.increaseTime(301);
       await testSetupA.forwarder.unregisterSelf();
-      assert.equal(await controllerA.isSchemeRegistered(testSetupA.forwarder.address,testSetupA.org.avatar.address),false);
+      assert.equal(await controllerA.isSchemeRegistered(testSetupA.forwarder.address),false);
 
     });
 });

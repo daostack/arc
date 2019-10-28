@@ -23,7 +23,7 @@ const setupGenericSchemeParams = async function(
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
   if (genesisProtocol === true){
-      genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress,0,helpers.NULL_ADDRESS);
+      genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress,helpers.NULL_ADDRESS);
       await genericScheme.initialize(
             avatar.address,
             genericSchemeParams.votingMachine.genesisProtocol.address,

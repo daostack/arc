@@ -1,13 +1,14 @@
 pragma solidity ^0.5.11;
 
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 import "./Agreement.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title A locker contract
  */
 
-contract Locking4Reputation is Agreement {
+contract Locking4Reputation is Agreement, Initializable {
     using SafeMath for uint256;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
@@ -54,9 +55,9 @@ contract Locking4Reputation is Agreement {
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
-        ControllerInterface(
+        Controller(
         avatar.owner())
-        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
+        .mintReputation(reputation, _beneficiary), "mint reputation should succeed");
 
         emit Redeem(_beneficiary, reputation);
     }
@@ -148,8 +149,8 @@ contract Locking4Reputation is Agreement {
         uint256 _maxLockingPeriod,
         bytes32 _agreementHash )
     internal
+    initializer
     {
-        require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         require(_lockingEndTime > _lockingStartTime, "locking end time should be greater than locking start time");
         require(_redeemEnableTime >= _lockingEndTime, "redeemEnableTime >= lockingEndTime");
