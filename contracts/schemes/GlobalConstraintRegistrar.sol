@@ -171,7 +171,13 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
         });
 
         organizationProposals[proposalId] = proposal;
-        emit RemoveGlobalConstraintsProposal(address(avatar), proposalId, address(votingMachine), _gc, _descriptionHash);
+        emit RemoveGlobalConstraintsProposal(
+        address(avatar),
+        proposalId,
+        address(votingMachine),
+        _gc,
+        _descriptionHash);
+        
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
             blockNumber: block.number,
             avatar: avatar
