@@ -2,15 +2,15 @@ pragma solidity ^0.5.11;
 
 import "@daostack/infra/contracts/Reputation.sol";
 import "./DAOToken.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "../libs/SafeERC20.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title An Avatar holds tokens, reputation and ether for a controller
  */
-contract Avatar is Ownable, Initializable {
+contract Avatar is Initializable, Ownable {
     using SafeERC20 for address;
 
     string public orgName;
@@ -36,12 +36,16 @@ contract Avatar is Ownable, Initializable {
     * @dev initialize takes organization name, native token and reputation system
     and creates an avatar for a controller
     */
-    function initialize(string calldata _orgName, DAOToken _nativeToken, Reputation _nativeReputation)
+    function initialize(string calldata _orgName,
+                        DAOToken _nativeToken,
+                        Reputation _nativeReputation,
+                        address _owner)
     external
     initializer {
         orgName = _orgName;
         nativeToken = _nativeToken;
         nativeReputation = _nativeReputation;
+        Ownable.initialize(_owner);
     }
 
     /**

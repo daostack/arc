@@ -1,6 +1,6 @@
 pragma solidity ^0.5.11;
 
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "../controller/Controller.sol";
 import "../libs/SafeERC20.sol";
 import "./Agreement.sol";

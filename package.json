@@ -76,11 +76,11 @@
   "homepage": "https://daostack.io",
   "dependencies": {
     "@daostack/infra": "0.0.1-rc.15",
-    "math": "0.0.3",
-    "openzeppelin-solidity": "2.3.0",
-    "truffle-flattener": "^1.4.2",
+    "@openzeppelin/contracts-ethereum-package": "2.3.0",
     "@openzeppelin/upgrades": "2.5.3",
-    "solidity-bytes-utils": "0.0.8"
+    "math": "0.0.3",
+    "solidity-bytes-utils": "0.0.8",
+    "truffle-flattener": "^1.4.2"
   },
   "peerDependencies": {
     "ganache-cli": "^6.4.1"

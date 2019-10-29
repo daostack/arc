@@ -1,7 +1,7 @@
 pragma solidity ^0.5.11;
 
 import "../controller/Controller.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 
 /**
  * @title A scheme to forward a call to a dao.

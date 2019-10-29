@@ -1,8 +1,8 @@
 pragma solidity ^0.5.11;
 
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20Burnable.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20Burnable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
@@ -10,7 +10,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
  * @title DAOToken, base on zeppelin contract.
  * @dev ERC20 compatible token. It is a mintable, burnable token.
  */
-contract DAOToken is ERC20, ERC20Burnable, Ownable, Initializable {
+contract DAOToken is Initializable, Ownable, ERC20, ERC20Burnable {
 
     string public name;
     string public symbol;
@@ -24,12 +24,13 @@ contract DAOToken is ERC20, ERC20Burnable, Ownable, Initializable {
     * @param _symbol - token symbol
     * @param _cap - token cap - 0 value means no cap
     */
-    function initialize(string calldata _name, string calldata _symbol, uint256 _cap)
+    function initialize(string calldata _name, string calldata _symbol, uint256 _cap, address _owner)
     external
     initializer {
         name = _name;
         symbol = _symbol;
         cap = _cap;
+        Ownable.initialize(_owner);
     }
 
     /**

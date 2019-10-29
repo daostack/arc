@@ -4,7 +4,7 @@ import "@daostack/infra/contracts/Reputation.sol";
 import "../controller/DAOToken.sol";
 import "../controller/Avatar.sol";
 import "../controller/Controller.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 
 /**
  * @title An on-chain "source of truth" for what DAOs

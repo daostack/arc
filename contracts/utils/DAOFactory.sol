@@ -108,14 +108,14 @@ contract DAOFactory is Initializable {
         for (uint256 i = 0; i < _schemesNames.length; i++) {
             address scheme = address(app.create(PACKAGE_NAME,
                             string(bytes32ToStr(_schemesNames[i])),
-                            address(this),
+                            msg.sender,
                             _schemesData.slice(startIndex, _schemesInitilizeDataLens[i])));
             startIndex = _schemesInitilizeDataLens[i];
             controller.registerScheme(scheme, _permissions[i]);
         }
         controller.metaData(_metaData);
          // Unregister self:
-        controller.unregisterScheme(address(this));
+        controller.unregisterScheme(msg.sender);
          // Remove lock:
         delete locks[address(_avatar)];
         emit InitialSchemesSet(address(_avatar));
@@ -159,15 +159,18 @@ contract DAOFactory is Initializable {
         require(_founders.length == _foundersReputationAmount.length);
         require(_founders.length > 0);
         DAOToken nativeToken =
-        DAOToken(address(app.create(PACKAGE_NAME, "DAOToken", address(this), _tokenInitData)));
-        Reputation nativeReputation = Reputation(address(app.create(PACKAGE_NAME, "Reputation", address(this), "")));
+        DAOToken(address(app.create(PACKAGE_NAME, "DAOToken", msg.sender, _tokenInitData)));
+        Reputation nativeReputation =
+        Reputation(address(app.create(PACKAGE_NAME, "Reputation", msg.sender,
+        abi.encodeWithSignature("initialize(address)", address(this)))));
 
-        Avatar avatar = Avatar(address(app.create(PACKAGE_NAME, "Avatar", address(this),
+        Avatar avatar = Avatar(address(app.create(PACKAGE_NAME, "Avatar", msg.sender,
         abi.encodeWithSignature(
-            "initialize(string,DAOToken,Reputation)",
+            "initialize(string,address,address,address)",
             _orgName,
-            nativeToken,
-            nativeReputation))));
+            address(nativeToken),
+            address(nativeReputation),
+            address(this)))));
 
          // Mint token and reputation for founders:
         for (uint256 i = 0; i < _founders.length; i++) {
@@ -184,8 +187,8 @@ contract DAOFactory is Initializable {
         Controller(address(app.create(
         PACKAGE_NAME,
         "Controller",
-        address(this),
-        abi.encodeWithSignature("initialize(Avatar)", avatar))));
+        msg.sender,
+        abi.encodeWithSignature("initialize(address)", address(avatar)))));
 
         // Add the DAO to the tracking registry
         daoTracker.track(avatar, controller);

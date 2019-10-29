@@ -1,15 +1,15 @@
 pragma solidity ^0.5.11;
 
 import "../controller/Controller.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title A fixed reputation allocation contract
  * This scheme can be used to allocate a pre define amount of reputation to whitelisted
  * beneficiaries.
  */
-contract FixedReputationAllocation is Ownable {
+contract FixedReputationAllocation is Initializable, Ownable {
     using SafeMath for uint256;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
@@ -31,12 +31,14 @@ contract FixedReputationAllocation is Ownable {
      * @param _reputationReward the total reputation this contract will reward
      * @param _redeemEnableTime time to enable redeem
      */
-    function initialize(Avatar _avatar, uint256 _reputationReward, uint256 _redeemEnableTime) external onlyOwner {
-        require(avatar == Avatar(0), "can be called only one time");
+    function initialize(Avatar _avatar, uint256 _reputationReward, uint256 _redeemEnableTime, address _owner)
+    external initializer
+    {
         require(_avatar != Avatar(0), "avatar cannot be zero");
         reputationReward = _reputationReward;
         redeemEnableTime = _redeemEnableTime;
         avatar = _avatar;
+        Ownable.initialize(_owner);
     }
 
     /**
