@@ -12,7 +12,7 @@ contract ControllerCreator {
     function create(Avatar _avatar) public returns(address) {
         Controller controller = new Controller();
         controller.initialize(_avatar);
-        controller.registerScheme(msg.sender, bytes32(0), bytes4(0x0000001f));
+        controller.registerScheme(msg.sender, bytes4(0x0000001f));
         controller.unregisterScheme(address(this));
         return address(controller);
     }
@@ -117,14 +117,12 @@ contract DaoCreator {
       * @dev Set initial schemes for the organization.
       * @param _avatar organization avatar (returns from forgeOrg)
       * @param _schemes the schemes to register for the organization
-      * @param _params the schemes's params
       * @param _permissions the schemes permissions.
       * @param _metaData dao meta data hash
       */
     function setSchemes (
         Avatar _avatar,
         address[] calldata _schemes,
-        bytes32[] calldata _params,
         bytes4[] calldata _permissions,
         string calldata _metaData
     )
@@ -136,7 +134,7 @@ contract DaoCreator {
         // register initial schemes:
         Controller controller = Controller(_avatar.owner());
         for (uint256 i = 0; i < _schemes.length; i++) {
-            controller.registerScheme(_schemes[i], _params[i], _permissions[i]);
+            controller.registerScheme(_schemes[i], _permissions[i]);
         }
         controller.metaData(_metaData);
         // Unregister self:

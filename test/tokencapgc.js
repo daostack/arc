@@ -19,7 +19,7 @@ const setup = async function (permission='0') {
   if (permission !== '0'){
     _controller = await Controller.new({from:accounts[1],gas: constants.ARC_GAS_LIMIT});
     await _controller.initialize(avatar.address,{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
-    await _controller.registerScheme(accounts[0],0,permission,{from:accounts[1]});
+    await _controller.registerScheme(accounts[0],permission,{from:accounts[1]});
     await _controller.unregisterSelf({from:accounts[1]});
   }
   else {

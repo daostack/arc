@@ -10,7 +10,6 @@ var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var ControllerCreator = artifacts.require('./ControllerCreator.sol');
 var DAOTracker = artifacts.require('./DAOTracker.sol');
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
-const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 
 // TEST_ORGANIZATION ORG parameters:
@@ -77,14 +76,12 @@ module.exports = async function(deployer) {
                           globalConstraintRegistrarInst.address,
                           upgradeSchemeInst.address,
                           contributionRewardInst.address];
-      const paramsArray = [NULL_HASH, NULL_HASH, NULL_HASH, NULL_HASH];
       const permissionArray = ['0x0000001F', '0x00000005', '0x0000000a','0x00000001'];
 
       // set DAOstack initial schmes:
       await daoCreatorInst.setSchemes(
         AvatarInst.address,
         schemesArray,
-        paramsArray,
         permissionArray,
         "metaData");
      });

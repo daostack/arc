@@ -58,7 +58,6 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    var permissions = "0x00000004";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                           [testSetup.globalConstraintRegistrar.address],
-                                          [testSetup.globalConstraintRegistrarParams.paramsHash],
                                           [permissions],"metaData");
 
    return testSetup;

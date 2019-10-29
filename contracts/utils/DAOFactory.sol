@@ -111,7 +111,7 @@ contract DAOFactory is Initializable {
                             address(this),
                             _schemesData.slice(startIndex, _schemesInitilizeDataLens[i])));
             startIndex = _schemesInitilizeDataLens[i];
-            controller.registerScheme(scheme, 0x0, _permissions[i]);
+            controller.registerScheme(scheme, _permissions[i]);
         }
         controller.metaData(_metaData);
          // Unregister self:

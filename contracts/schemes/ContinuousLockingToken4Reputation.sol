@@ -11,7 +11,6 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 /**
  * @title A scheme for continuous locking ERC20 Token for reputation
  */
-
 contract ContinuousLocking4Reputation is Agreement, Initializable {
     using SafeMath for uint256;
     using SafeERC20 for address;

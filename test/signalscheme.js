@@ -54,7 +54,7 @@ const setup = async function (accounts,genesisProtocol = false) {
    var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                         [testSetup.signalScheme.address],
-                                        [helpers.NULL_HASH],[permissions],"metaData");
+                                        [permissions],"metaData");
    return testSetup;
 };
 contract('SignalScheme', accounts => {

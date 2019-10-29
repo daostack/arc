@@ -25,7 +25,7 @@ const setup = async function (accounts,permission='0',registerScheme = accounts[
   if (permission !== '0') {
     _controller = await Controller.new({from:accounts[1],gas: constants.ARC_GAS_LIMIT});
     await _controller.initialize(avatar.address,{from:accounts[1]});
-    await _controller.registerScheme(registerScheme,"0x0000000000000000000000000000000000000000",permission,{from:accounts[1]});
+    await _controller.registerScheme(registerScheme,permission,{from:accounts[1]});
     await _controller.unregisterSelf({from:accounts[1]});
   }
   else {
@@ -104,7 +104,7 @@ contract('Controller', accounts =>  {
 
     it("register schemes", async () => {
         controller = await setup(accounts);
-        let tx =  await controller.registerScheme(accounts[1], web3.utils.asciiToHex("0"),"0x00000000");
+        let tx =  await controller.registerScheme(accounts[1], "0x00000000");
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "RegisterScheme");
     });
@@ -120,7 +120,7 @@ contract('Controller', accounts =>  {
         for(i = 0; i <= 15; i++ ){
           register = true;
           try {
-                await controller.registerScheme(accounts[1],0,'0x'+uint32.toHex(i));
+                await controller.registerScheme(accounts[1],'0x'+uint32.toHex(i));
               } catch (ex) {
                 //registered scheme has already permission to register(2) and is register(1).
                 assert.notEqual(i&(~(j|3),0));
@@ -138,12 +138,12 @@ contract('Controller', accounts =>  {
     // Check scheme has at least the permissions it is changing, and at least the current permissions.
     controller = await setup(accounts,'0x0000000F');
      // scheme with permission 0x0000000F should be able to register scheme with permission 0x00000001
-    let tx = await controller.registerScheme(accounts[0],"0x0000000000000000000000000000000000000000","0x00000001");
+    let tx = await controller.registerScheme(accounts[0],"0x00000001");
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RegisterScheme");
     controller = await setup(accounts,'0x00000001');
     try {
-      await controller.registerScheme(accounts[0],"0x0000000000000000000000000000000000000000","0x00000002");
+      await controller.registerScheme(accounts[0],"0x00000002");
       assert(false, 'scheme with permission 0x00000001 should not be able to register scheme with permission 0x00000002');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -173,11 +173,11 @@ contract('Controller', accounts =>  {
       var unregisteredScheme = accounts[2];
       for(i = 0; i <= 15; i++ ){
         //registered scheme has already permission to register(2)
-        tx = await controller.registerScheme(registeredScheme,"0x0000000000000000000000000000000000000000",'0x'+uint32.toHex(i|3));
+        tx = await controller.registerScheme(registeredScheme,'0x'+uint32.toHex(i|3));
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "RegisterScheme");
         for(j = 0; j <= 15; j++ ){
-          tx = await controller.registerScheme(unregisteredScheme,"0x0000000000000000000000000000000000000000",'0x'+uint32.toHex(j));
+          tx = await controller.registerScheme(unregisteredScheme,'0x'+uint32.toHex(j));
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "RegisterScheme");
           //try to unregisterScheme
@@ -444,7 +444,7 @@ contract('Controller', accounts =>  {
        controller = await setup(accounts);
        var globalConstraints = await constraint("registerScheme");
        try {
-       await controller.registerScheme(accounts[1], helpers.NULL_HASH,"0x00000000");
+       await controller.registerScheme(accounts[1],"0x00000000");
        assert(false,"registerScheme should fail due to the global constraint ");
        }
        catch(ex){
@@ -454,7 +454,7 @@ contract('Controller', accounts =>  {
        var globalConstraintsCount =await controller.globalConstraintsCount();
        assert.equal(globalConstraintsCount[0],0);
        assert.equal(globalConstraintsCount[1],0);
-       let tx =  await controller.registerScheme(accounts[1], helpers.NULL_HASH,"0x00000000");
+       let tx =  await controller.registerScheme(accounts[1],"0x00000000");
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "RegisterScheme");
        });

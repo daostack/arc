@@ -10,7 +10,6 @@ const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
 
-const zeroBytes32 = helpers.NULL_HASH;
 var avatar,token,reputation,daoCreator,controllerCreator;
 const setup = async function (accounts,founderToken,founderReputation,cap=0) {
   controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
@@ -72,7 +71,7 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes to none UniversalScheme", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],"metaData");
+        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],["0x0000000F"],"metaData");
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);
@@ -82,7 +81,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         var universalSchemeMock = await UniversalSchemeMock.new();
-        var tx = await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[zeroBytes32],["0x8000000F"],"metaData");
+        var tx = await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],["0x8000000F"],"metaData");
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);
@@ -92,7 +91,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         try {
-         await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],"metaData",{ from: accounts[1]});
+         await daoCreator.setSchemes(avatar.address,[accounts[1]],["0x0000000F"],"metaData",{ from: accounts[1]});
          assert(false,"should fail because accounts[1] does not hold the lock");
         }
         catch(ex){
@@ -107,7 +106,7 @@ contract('DaoCreator', function(accounts) {
         var universalSchemeMock = await UniversalSchemeMock.new();
         var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
-        await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],[zeroBytes32],["0x8000000F"],"metaData");
+        await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],["0x8000000F"],"metaData");
         allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
     });
@@ -119,7 +118,7 @@ contract('DaoCreator', function(accounts) {
         var allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
 
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],"metaData");
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],["0x0000000F"],"metaData");
         allowance = await standardTokenMock.allowance(avatar.address,accounts[1]);
         assert.equal(allowance,0);
     });
@@ -128,7 +127,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         var controllerAddress,controller;
         await setup(accounts,amountToMint,amountToMint);
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],"metaData");
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],["0x0000000F"],"metaData");
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
         var isSchemeRegistered = await controller.isSchemeRegistered(accounts[1]);
@@ -143,7 +142,7 @@ contract('DaoCreator', function(accounts) {
         controller = await Controller.at(controllerAddress);
         var isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address);
         assert.equal(isSchemeRegistered,true);
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],"metaData");
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],["0x0000000F"],"metaData");
         controllerAddress = await avatar.owner();
         controller = await Controller.at(controllerAddress);
         isSchemeRegistered = await controller.isSchemeRegistered(daoCreator.address);
@@ -153,9 +152,9 @@ contract('DaoCreator', function(accounts) {
     it("setSchemes delete lock", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],"metaData");
+        await daoCreator.setSchemes(avatar.address,[accounts[1]],["0x0000000F"],"metaData");
         try {
-         await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],"metaData",{ from: accounts[1]});
+         await daoCreator.setSchemes(avatar.address,[accounts[1]],["0x0000000F"],"metaData",{ from: accounts[1]});
          assert(false,"should fail because lock for account[0] suppose to be deleted by the first call");
         }
         catch(ex){
@@ -211,7 +210,7 @@ contract('DaoCreator', function(accounts) {
         assert.equal(rep.toNumber(),numberOfFounders);
         var founderBalance = await token.balanceOf(accounts[1]);
         assert.equal(founderBalance.toNumber(),numberOfFounders);
-        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],[zeroBytes32],["0x0000000F"],"metaData");
+        var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],["0x0000000F"],"metaData");
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
         assert.equal(tx.logs[0].args._avatar, avatar.address);

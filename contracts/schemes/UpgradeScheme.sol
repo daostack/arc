@@ -25,7 +25,6 @@ contract UpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecute
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _newUpgradeScheme,
-        bytes32 _params,
         string _descriptionHash
     );
 
@@ -35,7 +34,6 @@ contract UpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecute
     // Details of an upgrade proposal:
     struct UpgradeProposal {
         address upgradeContract; // Either the new controller we upgrade to, or the new upgrading scheme.
-        bytes32 params; // Params for the new upgrading scheme.
         uint256 proposalType; // 1: Upgrade controller, 2: change upgrade scheme.
     }
 
@@ -87,9 +85,9 @@ contract UpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecute
 
         // Changing upgrade scheme:
             if (proposal.proposalType == 2) {
-                bytes4 permissions = controller.getSchemePermissions(address(this));
+                bytes4 permissions = controller.schemesPermissions(address(this));
                 require(
-                controller.registerScheme(proposal.upgradeContract, proposal.params, permissions)
+                controller.registerScheme(proposal.upgradeContract, permissions)
                 );
                 if (proposal.upgradeContract != address(this)) {
                     require(controller.unregisterSelf());
@@ -113,8 +111,7 @@ contract UpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecute
         bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 1,
-            upgradeContract: _newController,
-            params: bytes32(0)
+            upgradeContract: _newController
         });
         organizationProposals[proposalId] = proposal;
         emit NewUpgradeProposal(
@@ -134,13 +131,11 @@ contract UpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecute
     /**
     * @dev propose to replace this scheme by another upgrading scheme
     * @param _scheme address of the new upgrading scheme
-    * @param _params the parameters of the new upgrading scheme
     * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
     function proposeChangeUpgradingScheme(
         address _scheme,
-        bytes32 _params,
         string memory _descriptionHash
     )
         public
@@ -151,8 +146,7 @@ contract UpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecute
 
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 2,
-            upgradeContract: _scheme,
-            params: _params
+            upgradeContract: _scheme
         });
         organizationProposals[proposalId] = proposal;
 
@@ -161,7 +155,6 @@ contract UpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecute
             proposalId,
             address(votingMachine),
             _scheme,
-            _params,
             _descriptionHash
         );
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({

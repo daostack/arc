@@ -51,7 +51,6 @@ const setupContributionRewardParams = async function(
                                             avatarAddress
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
-  contributionRewardParams.paramsHash = helpers.NULL_HASH;
   if (genesisProtocol === true) {
     contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     await contributionReward.initialize(   avatarAddress,
@@ -89,7 +88,7 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                         [testSetup.contributionReward.address],
-                                        [testSetup.contributionRewardParams.paramsHash],[permissions],"metaData");
+                                        [permissions],"metaData");
    return testSetup;
 };
 contract('ContributionReward', accounts => {

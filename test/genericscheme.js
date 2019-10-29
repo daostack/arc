@@ -61,7 +61,7 @@ const setup = async function (accounts,contractToCall = 0,reputationAccount=0,ge
 
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                         [testSetup.genericScheme.address],
-                                        [helpers.NULL_HASH],[permissions],"metaData");
+                                        [permissions],"metaData");
 
    return testSetup;
 };

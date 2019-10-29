@@ -17,7 +17,6 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _scheme,
-        bytes32 _parametersHash,
         bytes4 _permissions,
         string _descriptionHash
     );
@@ -36,7 +35,6 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     struct SchemeProposal {
         address scheme; //
         bool addScheme; // true: add a scheme, false: remove a scheme.
-        bytes32 parametersHash;
         bytes4 permissions;
     }
 
@@ -92,7 +90,6 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
             if (proposal.addScheme) {
                 require(controller.registerScheme(
                         proposal.scheme,
-                        proposal.parametersHash,
                         proposal.permissions)
                 );
             }
@@ -108,7 +105,6 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     /**
     * @dev create a proposal to register a scheme
     * @param _scheme the address of the scheme to be registered
-    * @param _parametersHash a hash of the configuration of the _scheme
     * @param _permissions the permission of the scheme to be registered
     * @param _descriptionHash proposal's description hash
     * @return a proposal Id
@@ -116,7 +112,6 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     */
     function proposeScheme(
         address _scheme,
-        bytes32 _parametersHash,
         bytes4 _permissions,
         string memory _descriptionHash
     )
@@ -135,7 +130,6 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
 
         SchemeProposal memory proposal = SchemeProposal({
             scheme: _scheme,
-            parametersHash: _parametersHash,
             addScheme: true,
             permissions: _permissions
         });
@@ -144,7 +138,6 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
             proposalId,
             address(votingMachine),
             _scheme,
-            _parametersHash,
             _permissions,
             _descriptionHash
         );

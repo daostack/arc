@@ -38,7 +38,7 @@ const setupNectar = async function (accounts)  {
 
 
   var permissions = "0x00000000";
-  await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[helpers.NULL_HASH],[permissions],"metaData");
+  await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[permissions],"metaData");
   return testSetup;
 };
 
@@ -62,7 +62,7 @@ const setup = async function (accounts, _initialize = true) {
    }
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[helpers.NULL_HASH],[permissions],"metaData");
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[permissions],"metaData");
    return testSetup;
 };
 const signatureType = 1;
