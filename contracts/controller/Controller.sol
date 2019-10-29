@@ -66,12 +66,6 @@ contract Controller is Initializable {
 
     event RemoveGlobalConstraint(address indexed _globalConstraint, uint256 _index, bool _isPre);
 
-    // Do not allow mistaken calls:
-     // solhint-disable-next-line payable-fallback
-    function() external {
-        revert();
-    }
-
     function initialize( Avatar _avatar) external initializer {
         avatar = _avatar;
         nativeToken = avatar.nativeToken();
