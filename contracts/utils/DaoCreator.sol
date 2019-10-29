@@ -178,7 +178,6 @@ contract DaoCreator {
         Reputation  nativeReputation = new Reputation();
         Avatar  avatar = new Avatar();
         avatar.initialize(_orgName, nativeToken, nativeReputation);
-        Controller  controller;
 
         // Mint token and reputation for founders:
         for (uint256 i = 0; i < _founders.length; i++) {
@@ -192,7 +191,7 @@ contract DaoCreator {
         }
 
         // Create Controller:
-        controller = Controller(controllerCreator.create(avatar));
+        Controller controller = Controller(controllerCreator.create(avatar));
 
         // Add the DAO to the tracking registry
         daoTracker.track(avatar, controller);
