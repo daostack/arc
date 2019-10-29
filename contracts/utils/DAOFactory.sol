@@ -17,7 +17,7 @@ contract DAOFactory is Initializable {
 
     mapping(address=>address) public locks;
     App public app;
-    string public constant PACKAGE_NAME = "ARC";
+    string public constant PACKAGE_NAME = "DAOstack";
     DAOTracker private daoTracker;
 
     function initialize(address _appContractAddress, DAOTracker _daoTracker) external initializer {
@@ -162,7 +162,7 @@ contract DAOFactory is Initializable {
         DAOToken(address(app.create(PACKAGE_NAME, "DAOToken", address(this), _tokenInitData)));
         Reputation nativeReputation = Reputation(address(app.create(PACKAGE_NAME, "Reputation", address(this), "")));
 
-        Avatar avatar = Avatar(address(app.create(PACKAGE_NAME, "Reputation", address(this),
+        Avatar avatar = Avatar(address(app.create(PACKAGE_NAME, "Avatar", address(this),
         abi.encodeWithSignature(
             "initialize(string,DAOToken,Reputation)",
             _orgName,
