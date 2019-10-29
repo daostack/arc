@@ -6,6 +6,7 @@ import "@openzeppelin/upgrades/contracts/application/ImplementationDirectory.sol
 import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 import "../controller/Controller.sol";
+import "../utils/DAOTracker.sol";
 
 
 contract DAOFactory is Initializable {
@@ -17,9 +18,12 @@ contract DAOFactory is Initializable {
     mapping(address=>address) public locks;
     App public app;
     string public constant PACKAGE_NAME = "ARC";
+    DAOTracker private daoTracker;
 
-    function initialize(address _appContractAddress) external initializer {
+    function initialize(address _appContractAddress, DAOTracker _daoTracker) external initializer {
+        require(_daoTracker != DAOTracker(0));
         app = App(_appContractAddress);
+        daoTracker = _daoTracker;
     }
 
     function createInstance(bytes calldata _data, string calldata _contractName) external returns (address proxy) {
@@ -182,6 +186,9 @@ contract DAOFactory is Initializable {
         "Controller",
         address(this),
         abi.encodeWithSignature("initialize(Avatar)", avatar))));
+
+        // Add the DAO to the tracking registry
+        daoTracker.track(avatar, controller);
 
          // Transfer ownership:
         avatar.transferOwnership(address(controller));
