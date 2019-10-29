@@ -59,7 +59,7 @@ contract('Forwarder', accounts => {
       let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
       const encodeABI = await new web3.eth.Contract(controllerA.abi).
                                   methods.
-                                  registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f").
+                                  registerScheme(accounts[1],"0x0000001f").
                                   encodeABI();
       assert.equal(await controllerA.isSchemeRegistered(accounts[1]),false);
       await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,0);
@@ -78,7 +78,7 @@ contract('Forwarder', accounts => {
       let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
       const encodeABI = await new web3.eth.Contract(controllerA.abi).
                                   methods.
-                                  registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f").
+                                  registerScheme(accounts[1],"0x0000001f").
                                   encodeABI();
        //expiered
       await helpers.increaseTime(301);
@@ -104,7 +104,7 @@ contract('Forwarder', accounts => {
       let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
       const encodeABI = await new web3.eth.Contract(controllerA.abi).
                                   methods.
-                                  registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f").
+                                  registerScheme(accounts[1],"0x0000001f").
                                   encodeABI();
       let tx = await controllerB.genericCall(testSetupA.forwarder.address,encodeABI,0);
       await testSetupB.org.avatar.getPastEvents('GenericCall', {
