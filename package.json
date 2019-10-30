@@ -75,7 +75,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra": "0.0.1-rc.15",
+    "@daostack/infra": "0.0.1-rc.16",
     "@openzeppelin/contracts-ethereum-package": "2.3.0",
     "@openzeppelin/upgrades": "2.5.3",
     "math": "0.0.3",
