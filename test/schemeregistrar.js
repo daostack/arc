@@ -3,7 +3,7 @@ const constants = require('./constants');
 const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
-const UniversalScheme = artifacts.require('./UniversalSchemeMock.sol');
+const SchemeMock = artifacts.require('./SchemeMock.sol');
 const Controller = artifacts.require('./Controller.sol');
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
@@ -72,7 +72,7 @@ contract('SchemeRegistrar', accounts => {
 
     it("execute proposeScheme  and execute -yes - fee > 0 ", async function() {
       var testSetup = await setup(accounts);
-      var universalScheme = await UniversalScheme.new();
+      var universalScheme = await SchemeMock.new();
       var tx = await testSetup.schemeRegistrar.proposeScheme(universalScheme.address,"0x00000000",helpers.NULL_HASH);
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -196,7 +196,7 @@ contract('SchemeRegistrar', accounts => {
    it("execute proposeScheme  and execute -yes - autoRegisterOrganization==TRUE arc scheme", async function() {
      var testSetup = await setup(accounts);
 
-     var universalScheme = await UniversalScheme.new();
+     var universalScheme = await SchemeMock.new();
      var tx = await testSetup.schemeRegistrar.proposeScheme(universalScheme.address,"0x00000000",helpers.NULL_HASH);
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -206,7 +206,7 @@ contract('SchemeRegistrar', accounts => {
     it("execute proposeScheme  and execute -yes - autoRegisterOrganization==FALSE arc scheme", async function() {
       var testSetup = await setup(accounts);
 
-      var universalScheme = await UniversalScheme.new();
+      var universalScheme = await SchemeMock.new();
       var tx = await testSetup.schemeRegistrar.proposeScheme(universalScheme.address,"0x00000000",helpers.NULL_HASH);
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);

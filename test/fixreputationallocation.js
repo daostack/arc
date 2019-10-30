@@ -18,7 +18,8 @@ const setup = async function (accounts,_repAllocation = 300,_initialize = true,_
     testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
     await testSetup.fixedReputationAllocation.initialize(testSetup.org.avatar.address,
                                                          _repAllocation,
-                                                         testSetup.redeemEnableTime);
+                                                         testSetup.redeemEnableTime,
+                                                         accounts[0]);
    }
 
    var permissions = "0x00000000";
@@ -108,15 +109,11 @@ contract('FixedReputationAllocation', accounts => {
       }
     });
 
-    it("cannot redeem if not initialize", async () => {
+    it("cannot addBeneficiaries if not initialize", async () => {
       let testSetup = await setup(accounts,300,false);
-      await testSetup.fixedReputationAllocation.addBeneficiaries(accounts);
-      assert.equal(await testSetup.fixedReputationAllocation.numberOfBeneficiaries(),accounts.length);
-      assert.equal(await testSetup.fixedReputationAllocation.beneficiaryReward(),0);
-      await testSetup.fixedReputationAllocation.enable();
       try {
-        await testSetup.fixedReputationAllocation.redeem(accounts[0]);
-        assert(false, "cannot redeem if not initialize");
+        await testSetup.fixedReputationAllocation.addBeneficiaries(accounts);
+        assert(false, "cannot addBeneficiaries if not initialize");
       } catch(error) {
         helpers.assertVMException(error);
       }
@@ -179,27 +176,11 @@ contract('FixedReputationAllocation', accounts => {
         try {
              await testSetup.fixedReputationAllocation.initialize(testSetup.org.avatar.address,
                                                                      100,
-                                                                    100);
+                                                                    100,
+                                                                    accounts[0]);
              assert(false, "cannot initialize twice");
            } catch(error) {
              helpers.assertVMException(error);
            }
-    });
-
-    it("initialize is onlyOwner", async () => {
-      var fixedReputationAllocation = await FixedReputationAllocation.new();
-      try {
-        await fixedReputationAllocation.initialize(accounts[0],
-                                                       100,
-                                                       100,
-                                                       {from:accounts[1]});
-        assert(false, "initialize is onlyOwner");
-      } catch(error) {
-        helpers.assertVMException(error);
-      }
-      await fixedReputationAllocation.initialize(accounts[0],
-                                                     100,
-                                                     100,
-                                                     {from:accounts[0]});
     });
 });

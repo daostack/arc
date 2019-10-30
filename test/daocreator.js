@@ -6,7 +6,7 @@ const DaoCreator = artifacts.require("./DaoCreator.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
-const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
+const SchemeMock = artifacts.require('./test/SchemeMock.sol');
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
 
@@ -68,7 +68,7 @@ contract('DaoCreator', function(accounts) {
         assert.equal(controllerReputationAddress,reputationAddress);
     });
 
-    it("setSchemes to none UniversalScheme", async function() {
+    it("setSchemes to none SchemeMock", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         var tx = await daoCreator.setSchemes(avatar.address,[accounts[1]],["0x0000000F"],"metaData");
@@ -77,10 +77,10 @@ contract('DaoCreator', function(accounts) {
         assert.equal(tx.logs[0].args._avatar, avatar.address);
       });
 
-    it("setSchemes to UniversalScheme", async function() {
+    it("setSchemes to SchemeMock", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
-        var universalSchemeMock = await UniversalSchemeMock.new();
+        var universalSchemeMock = await SchemeMock.new();
         var tx = await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],["0x8000000F"],"metaData");
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "InitialSchemesSet");
@@ -103,7 +103,7 @@ contract('DaoCreator', function(accounts) {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         var standardTokenMock = await ERC20Mock.new(avatar.address, 100);
-        var universalSchemeMock = await UniversalSchemeMock.new();
+        var universalSchemeMock = await SchemeMock.new();
         var allowance = await standardTokenMock.allowance(avatar.address,universalSchemeMock.address);
         assert.equal(allowance,0);
         await daoCreator.setSchemes(avatar.address,[universalSchemeMock.address],["0x8000000F"],"metaData");
@@ -183,7 +183,7 @@ contract('DaoCreator', function(accounts) {
          helpers.assertVMException(ex);
        }
    });
-    it("setSchemes to none UniversalScheme and addFounders", async function() {
+    it("setSchemes to none SchemeMock and addFounders", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         var foundersArray = [];

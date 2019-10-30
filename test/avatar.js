@@ -2,13 +2,13 @@ const helpers = require('./helpers');
 const Avatar = artifacts.require("./Avatar.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const ActionMock = artifacts.require('./test/ActionMock.sol');
-const UniversalSchemeMock = artifacts.require('./test/UniversalSchemeMock.sol');
+const SchemeMock = artifacts.require('./test/SchemeMock.sol');
 
 let avatar;
 
 const setup = async function (accounts) {
   avatar = await Avatar.new();
-  await avatar.initialize("0x1234", accounts[0], accounts[1]);
+  await avatar.initialize("0x1234", accounts[0], accounts[1],accounts[0]);
   return avatar;
 };
 
@@ -17,7 +17,7 @@ contract('Avatar',  accounts =>  {
     it("genericCall no owner", async () => {
         avatar = await setup(accounts);
         let actionMock = await ActionMock.new();
-        var scheme = await UniversalSchemeMock.new();
+        var scheme = await SchemeMock.new();
         let a = 7;
         let b = actionMock.address;
         let c = "0x1234";
@@ -32,7 +32,7 @@ contract('Avatar',  accounts =>  {
     it("generic call", async () => {
         avatar = await setup(accounts);
         let actionMock = await ActionMock.new();
-        var scheme = await UniversalSchemeMock.new();
+        var scheme = await SchemeMock.new();
         await avatar.transferOwnership(scheme.address);
         let a = 7;
         let b = actionMock.address;
@@ -48,7 +48,7 @@ contract('Avatar',  accounts =>  {
     it("generic call should not revert if action revert", async () => {
         avatar = await setup(accounts);
         let actionMock = await ActionMock.new();
-        var scheme = await UniversalSchemeMock.new();
+        var scheme = await SchemeMock.new();
         await avatar.transferOwnership(scheme.address);
         let a = 7;
         let b = actionMock.address;

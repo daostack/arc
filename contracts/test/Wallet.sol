@@ -11,6 +11,16 @@ contract Wallet is Ownable {
         emit ReceiveEther(msg.sender, msg.value);
     }
 
+    /**
+    * @dev initialize
+    * @param _owner contract owner
+    */
+    function initialize(address _owner)
+    public
+    initializer {
+        Ownable.initialize(_owner);
+    }
+
     function pay(address payable _beneficiary) public onlyOwner {
         uint256 amount = address(this).balance;
         _beneficiary.transfer(amount);

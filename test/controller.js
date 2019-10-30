@@ -16,21 +16,22 @@ var amountToMint = 10;
 const setup = async function (accounts,permission='0',registerScheme = accounts[0]) {
   var _controller;
   token  = await DAOToken.new();
-  await token.initialize("TEST","TST",0);
+  await token.initialize("TEST","TST",0,accounts[0]);
   // set up a reputation system
   reputation = await Reputation.new();
+  await reputation.initialize(accounts[0]);
 
   avatar = await Avatar.new();
-  await avatar.initialize('name', token.address, reputation.address);
+  await avatar.initialize('name', token.address, reputation.address,accounts[0]);
   if (permission !== '0') {
     _controller = await Controller.new({from:accounts[1],gas: constants.ARC_GAS_LIMIT});
-    await _controller.initialize(avatar.address,{from:accounts[1]});
+    await _controller.initialize(avatar.address, accounts[1]);
     await _controller.registerScheme(registerScheme,permission,{from:accounts[1]});
     await _controller.unregisterSelf({from:accounts[1]});
   }
   else {
     _controller = await Controller.new({gas: constants.ARC_GAS_LIMIT});
-    await _controller.initialize(avatar.address);
+    await _controller.initialize(avatar.address ,accounts[0]);
   }
   controller = _controller;
   return _controller;

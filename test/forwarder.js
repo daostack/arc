@@ -17,11 +17,11 @@ const setup = async function (accounts,
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.forwarder = await Forwarder.new();
-
    testSetup.expirationTime = (await web3.eth.getBlock("latest")).timestamp + _expirationTime;
 
    await testSetup.forwarder.initialize(testSetup.org.avatar.address,
-                                        testSetup.expirationTime);
+                                        testSetup.expirationTime,
+                                        accounts[0]);
 
    var permissions = "0x0000001f";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
@@ -42,7 +42,8 @@ contract('Forwarder', accounts => {
         let testSetup = await setup(accounts);
         try {
              await testSetup.forwarder.initialize(testSetup.org.avatar.address,
-                                                  testSetup.expirationTime);
+                                                  testSetup.expirationTime,
+                                                  accounts[0]);
              assert(false, "cannot initialize twice");
            } catch(error) {
              helpers.assertVMException(error);

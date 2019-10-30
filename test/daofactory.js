@@ -233,7 +233,7 @@ contract('DaoFactory', function(accounts) {
          helpers.assertVMException(ex);
        }
    });
-    it("setSchemes to none UniversalScheme and addFounders", async function() {
+    it("setSchemes to SchemeMock and addFounders", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         var foundersArray = [];
