@@ -12,8 +12,9 @@ import "../utils/DAOTracker.sol";
 contract DAOFactory is Initializable {
     using BytesLib for bytes;
 
-    event NewOrg (address _avatar);
-    event InitialSchemesSet (address _avatar);
+    event NewOrg (address indexed _avatar);
+    event InitialSchemesSet (address indexed _avatar);
+    event SchemeInstance(address indexed _scheme, string indexed _name);
 
     mapping(address=>address) public locks;
     App public app;
@@ -53,6 +54,45 @@ contract DAOFactory is Initializable {
             return _forgeOrg(_orgName, _tokenInitData, _founders, _foundersTokenAmount, _foundersReputationAmount);
         }
 
+      /**
+        * @dev addFounders add founders to the organization.
+        *      this function can be called only after forgeOrg and before setSchemes
+        * @param _avatar the organization avatar
+        * @param _founders An array with the addresses of the founders of the organization
+        * @param _foundersTokenAmount An array of amount of tokens that the founders
+        *  receive in the new organization
+        * @param _foundersReputationAmount An array of amount of reputation that the
+        *   founders receive in the new organization
+        * @return bool true or false
+        */
+    function addFounders (
+        Avatar _avatar,
+        address[] calldata _founders,
+        uint[] calldata _foundersTokenAmount,
+        uint[] calldata _foundersReputationAmount
+    )
+    external
+    returns(bool)
+    {
+        require(_founders.length == _foundersTokenAmount.length);
+        require(_founders.length == _foundersReputationAmount.length);
+        require(_founders.length > 0);
+        require(locks[address(_avatar)] == msg.sender);
+          // Mint token and reputation for founders:
+        for (uint256 i = 0; i < _founders.length; i++) {
+            require(_founders[i] != address(0));
+            if (_foundersTokenAmount[i] > 0) {
+                Controller(
+                _avatar.owner()).mintTokens(_foundersTokenAmount[i], _founders[i]);
+            }
+            if (_foundersReputationAmount[i] > 0) {
+                Controller(
+                _avatar.owner()).mintReputation(_foundersReputationAmount[i], _founders[i]);
+            }
+        }
+        return true;
+    }
+
         /**
          * @dev Set initial schemes for the organization.
          * @param _avatar organization avatar (returns from forgeOrg)
@@ -79,6 +119,18 @@ contract DAOFactory is Initializable {
                 _permissions,
                 _metaData);
         }
+
+    //this function is an helper function to concate 2 bytes vars and return its length.
+    //todo: implement that offlince and remove it from the contract
+    function bytesConcat(bytes calldata _preBytes, bytes calldata _postBytes)
+    external
+    pure
+    returns (bytes memory, uint256, uint256) {
+        if (_postBytes.length == 0) {
+            return (_preBytes, _preBytes.length, 0);
+        }
+        return (_preBytes.concat(_postBytes), _preBytes.length, _postBytes.length);
+    }
 
     /**
      * @dev Set initial schemes for the organization.
@@ -107,31 +159,37 @@ contract DAOFactory is Initializable {
         uint256 startIndex =  0;
         for (uint256 i = 0; i < _schemesNames.length; i++) {
             address scheme = address(app.create(PACKAGE_NAME,
-                            string(bytes32ToStr(_schemesNames[i])),
+                            bytes32ToStr(_schemesNames[i]),
                             msg.sender,
                             _schemesData.slice(startIndex, _schemesInitilizeDataLens[i])));
             startIndex = _schemesInitilizeDataLens[i];
             controller.registerScheme(scheme, _permissions[i]);
+            emit SchemeInstance(scheme, bytes32ToStr(_schemesNames[i]));
         }
         controller.metaData(_metaData);
          // Unregister self:
-        controller.unregisterScheme(msg.sender);
+        controller.unregisterSelf();
          // Remove lock:
         delete locks[address(_avatar)];
         emit InitialSchemesSet(address(_avatar));
     }
 
-    function bytes32ToStr(bytes32 _bytes32) private pure returns (string memory) {
-
-    // string memory str = string(_bytes32);
-    // TypeError: Explicit type conversion not allowed from "bytes32" to "string storage pointer"
-    // thus we should fist convert bytes32 to bytes (to dynamically-sized byte array)
-
-        bytes memory bytesArray = new bytes(32);
-        for (uint256 i; i < 32; i++) {
-            bytesArray[i] = _bytes32[i];
+    function bytes32ToStr(bytes32 x) private pure returns (string memory) {
+        bytes memory bytesString = new bytes(32);
+        uint charCount = 0;
+        uint j;
+        for (j = 0; j < 32; j++) {
+            byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
+            if (char != 0) {
+                bytesString[charCount] = char;
+                charCount++;
+            }
         }
-        return string(bytesArray);
+        bytes memory bytesStringTrimmed = new bytes(charCount);
+        for (j = 0; j < charCount; j++) {
+            bytesStringTrimmed[j] = bytesString[j];
+        }
+        return string(bytesStringTrimmed);
     }
 
     /**
@@ -188,7 +246,7 @@ contract DAOFactory is Initializable {
         PACKAGE_NAME,
         "Controller",
         msg.sender,
-        abi.encodeWithSignature("initialize(address)", address(avatar)))));
+        abi.encodeWithSignature("initialize(address,address)", address(avatar), address(this)))));
 
         // Add the DAO to the tracking registry
         daoTracker.track(avatar, controller);

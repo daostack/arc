@@ -1,10 +1,21 @@
 pragma solidity ^0.5.11;
 
 import "../controller/Controller.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
-contract UniversalSchemeMock {
+contract SchemeMock is Initializable {
 
+    Avatar public avatar;
+    uint256 public testData;
+
+    function initialize(Avatar _avatar, uint256 _testData)
+    external
+    initializer {
+        avatar = _avatar;
+        testData = _testData;
+    }
+    
     function genericCall(Avatar _avatar, address _contract, uint256 _a, address _b, bytes32 _c, uint256 _value)
     public returns(bool, bytes memory)
     {

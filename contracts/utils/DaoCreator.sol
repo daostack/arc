@@ -11,7 +11,7 @@ contract ControllerCreator {
 
     function create(Avatar _avatar) public returns(address) {
         Controller controller = new Controller();
-        controller.initialize(_avatar);
+        controller.initialize(_avatar, address(this));
         controller.registerScheme(msg.sender, bytes4(0x0000001f));
         controller.unregisterScheme(address(this));
         return address(controller);

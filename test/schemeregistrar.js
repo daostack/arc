@@ -21,7 +21,6 @@ const setupSchemeRegistrarParams = async function(
   var schemeRegistrarParams = new SchemeRegistrarParams();
   schemeRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,schemeRegistrar.address);
   await schemeRegistrar.initialize(avatarAddress,schemeRegistrarParams.votingMachine.absoluteVote.address,schemeRegistrarParams.votingMachine.params,schemeRegistrarParams.votingMachine.params);
-  schemeRegistrarParams.paramsHash = helpers.NULL_HASH;
   return schemeRegistrarParams;
 };
 

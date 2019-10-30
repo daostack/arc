@@ -61,11 +61,11 @@ contract Controller is Initializable {
 
     event RemoveGlobalConstraint(address indexed _globalConstraint, uint256 _index, bool _isPre);
 
-    function initialize( Avatar _avatar) external initializer {
+    function initialize( Avatar _avatar, address initialScheme ) external initializer {
         avatar = _avatar;
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
-        schemesPermissions[msg.sender] = bytes4(0x0000001F);
+        schemesPermissions[initialScheme] = bytes4(0x0000001F);
     }
 
   // Modifiers:
