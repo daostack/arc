@@ -96,8 +96,9 @@ contract('VoteInOrganizationScheme', accounts => {
        var testSetup = await setup(accounts);
 
        var anotherTestSetup =  await setup(accounts);
-       var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(testSetup.org.reputation.address,
-                                                                       anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
+       var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new();
+       await absoluteVoteExecuteMock.initialize(testSetup.org.reputation.address,
+                                               anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
 
        var tx = await absoluteVoteExecuteMock.propose(2,
                                                       anotherTestSetup.voteInOrganizationParams.votingMachine.params,
@@ -117,8 +118,9 @@ contract('VoteInOrganizationScheme', accounts => {
      var testSetup = await setup(accounts);
 
      var anotherTestSetup =  await setup(accounts);
-     var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(testSetup.org.reputation.address,
-                                                                     anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
+     var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new();
+     await absoluteVoteExecuteMock.initialize(testSetup.org.reputation.address,
+                                              anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
      var tx = await absoluteVoteExecuteMock.propose(2,
                                                                         anotherTestSetup.voteInOrganizationParams.votingMachine.params,
                                                                         anotherTestSetup.org.avatar.address,
@@ -143,8 +145,9 @@ contract('VoteInOrganizationScheme', accounts => {
       var anotherController = await Controller.at(await anotherTestSetup.org.reputation.owner());
       //mint reputation to avatar in the other dao.
       await anotherController.mintReputation(10000,testSetup.org.avatar.address,{from:accounts[3]});
-      var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(anotherTestSetup.org.reputation.address,
-                                                                      anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
+      var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new();
+      await absoluteVoteExecuteMock.initialize(anotherTestSetup.org.reputation.address,
+                                               anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
       var tx = await absoluteVoteExecuteMock.propose(2,
                                                                          anotherTestSetup.voteInOrganizationParams.votingMachine.params,
                                                                          anotherTestSetup.org.avatar.address,
@@ -168,8 +171,9 @@ contract('VoteInOrganizationScheme', accounts => {
        var testSetup = await setup(accounts);
 
        var anotherTestSetup =  await setup(accounts,testSetup.org.avatar.address);
-       var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(anotherTestSetup.org.reputation.address,
-                                                                       anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
+       var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new();
+       await absoluteVoteExecuteMock.initialize(anotherTestSetup.org.reputation.address,
+                                                anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
         var tx = await absoluteVoteExecuteMock.propose(2,
                                                                           anotherTestSetup.voteInOrganizationParams.votingMachine.params,
                                                                           anotherTestSetup.org.avatar.address,
@@ -191,11 +195,13 @@ contract('VoteInOrganizationScheme', accounts => {
 
         var anotherTestSetup =  await setup(accounts,0,true,standardTokenMock.address);
         var reputation = await Reputation.new();
+        await reputation.initialize(accounts[0]);
         await reputation.mint(testSetup.org.avatar.address,100);
 
-        var genesisProtocolCallbacksMock = await GenesisProtocolCallbacksMock.new(reputation.address,
-                                                                             standardTokenMock.address,
-                                                                             anotherTestSetup.voteInOrganizationParams.votingMachine.genesisProtocol.address);
+        var genesisProtocolCallbacksMock = await GenesisProtocolCallbacksMock.new();
+        await genesisProtocolCallbacksMock.initialize(reputation.address,
+                                                      standardTokenMock.address,
+                                                      anotherTestSetup.voteInOrganizationParams.votingMachine.genesisProtocol.address);
         await reputation.transferOwnership(genesisProtocolCallbacksMock.address);
         var tx = await genesisProtocolCallbacksMock.propose(2,
                                                                            anotherTestSetup.voteInOrganizationParams.votingMachine.params,

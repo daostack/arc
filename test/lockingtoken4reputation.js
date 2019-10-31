@@ -29,6 +29,7 @@ const setup = async function (accounts,
 
    testSetup.lockingToken4Reputation = await LockingToken4Reputation.new();
    testSetup.priceOracleMock = await PriceOracleMock.new();
+   await testSetup.priceOracleMock.initialize(accounts[0]);
    await testSetup.priceOracleMock.setTokenPrice(testSetup.lockingToken.address,100,4);
    await testSetup.priceOracleMock.setTokenPrice(testSetup.lockingToken2.address,200,4);
 

@@ -5,12 +5,13 @@ import "../controller/DAOToken.sol";
 import "../controller/Avatar.sol";
 import "../controller/Controller.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title An on-chain "source of truth" for what DAOs
  *        should be index into DAOstack's subgraph.
  */
-contract DAOTracker is Ownable {
+contract DAOTracker is Initializable, Ownable {
 
     // `blacklist` the DAO from the subgraph's cache.
     // Only able to be set by the owner of the DAOTracker.
@@ -30,6 +31,10 @@ contract DAOTracker is Ownable {
         require(blacklisted[address(avatar)] == false,
                 "The avatar has been blacklisted.");
         _;
+    }
+
+    function initialize(address _owner) public initializer {
+        Ownable.initialize(_owner);
     }
 
     /**

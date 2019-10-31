@@ -8,23 +8,24 @@ var constants = require('../test/constants');
 
 
 let reputation, avatar,token,controller;
-const setup = async function (permission='0') {
+const setup = async function (accounts,permission='0') {
   var _controller;
-  token  = await DAOToken.new("TEST","TST",0);
-  await token.initialize("TEST","TST",0);
+  token  = await DAOToken.new();
+  await token.initialize("TEST","TST",0,accounts[0]);
   // set up a reputation system
   reputation = await Reputation.new();
+  await reputation.initialize(accounts[0]);
   avatar = await Avatar.new();
-  await avatar.initialize('name', token.address, reputation.address);
+  await avatar.initialize('name', token.address, reputation.address, accounts[0]);
   if (permission !== '0'){
     _controller = await Controller.new({from:accounts[1],gas: constants.ARC_GAS_LIMIT});
-    await _controller.initialize(avatar.address,{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
+    await _controller.initialize(avatar.address,accounts[0],{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
     await _controller.registerScheme(accounts[0],permission,{from:accounts[1]});
     await _controller.unregisterSelf({from:accounts[1]});
   }
   else {
      _controller = await Controller.new({gas: constants.ARC_GAS_LIMIT});
-      await _controller.initialize(avatar.address,{gas: constants.ARC_GAS_LIMIT});
+      await _controller.initialize(avatar.address,accounts[0],{gas: constants.ARC_GAS_LIMIT});
   }
   controller = _controller;
   return _controller;
@@ -34,7 +35,8 @@ contract('TokenCapGC', accounts =>  {
     it("setParameters", async () => {
       var paramsHash;
       var tokenCapGC = await TokenCapGC.new();
-      var token  = await DAOToken.new("TEST","TST",0);
+      var token  = await DAOToken.new();
+      await token.initialize("TEST","TST",0,accounts[0]);
       await tokenCapGC.setParameters(token.address,100);
       paramsHash = await tokenCapGC.getParametersHash(token.address,100);
       var param = await tokenCapGC.parameters(paramsHash);
@@ -44,7 +46,8 @@ contract('TokenCapGC', accounts =>  {
   it("pre and post", async () => {
     var paramsHash,post,pre;
     var tokenCapGC = await TokenCapGC.new();
-    var token  = await DAOToken.new("TEST","TST",0);
+    var token  = await DAOToken.new();
+    await token.initialize("TEST","TST",0,accounts[0]);
     await tokenCapGC.setParameters(token.address,100);
     paramsHash = await tokenCapGC.getParametersHash(token.address,100);
     pre = await tokenCapGC.pre(token.address,paramsHash,helpers.NULL_HASH);
@@ -62,7 +65,8 @@ contract('TokenCapGC', accounts =>  {
   it("post with wrong paramHash", async () => {
     var post;
     var tokenCapGC = await TokenCapGC.new();
-    var token  = await DAOToken.new("TEST","TST",0);
+    var token  = await DAOToken.new();
+    await token.initialize("TEST","TST",0,accounts[0]);
     await tokenCapGC.setParameters(token.address,100);
     await tokenCapGC.getParametersHash(token.address,100);
     post = await tokenCapGC.post(token.address,"0x0001",helpers.NULL_HASH);
@@ -77,7 +81,7 @@ contract('TokenCapGC', accounts =>  {
 
   it("mintTokens check", async () => {
 
-    controller = await setup();
+    controller = await setup(accounts);
     var tokenCapGC = await TokenCapGC.new();
     await tokenCapGC.setParameters(token.address,100);
     var tokenCapGCParamsHash =  await tokenCapGC.getParametersHash(token.address,100);

@@ -27,11 +27,6 @@ contract DAOFactory is Initializable {
         daoTracker = _daoTracker;
     }
 
-    function createInstance(bytes calldata _data, string calldata _contractName) external returns (address proxy) {
-        address admin = msg.sender;
-        return address(app.create(PACKAGE_NAME, _contractName, admin, _data));
-    }
-
     /**
      * @dev Create a new organization
      * @param _orgName The name of the new organization
@@ -133,6 +128,21 @@ contract DAOFactory is Initializable {
     }
 
     /**
+     * @dev createSchemeInstance .
+     * @param _schemeName scheme name to create instance of
+     * @param _admin the scheme proxy administrator
+     * @param _data scheme data to be initialize with
+     * @param schemeInstance the proxied scheme insrtance
+     */
+    function createSchemeInstance(string memory _schemeName, address _admin, bytes memory _data)
+        public
+        returns (address schemeInstance)
+    {
+        schemeInstance = address(app.create(PACKAGE_NAME, _schemeName, _admin, _data));
+        emit SchemeInstance(schemeInstance, _schemeName);
+    }
+
+    /**
      * @dev Set initial schemes for the organization.
      * @param _avatar organization avatar (returns from forgeOrg)
      * @param _schemesNames the schemes name to register for the organization
@@ -158,13 +168,11 @@ contract DAOFactory is Initializable {
         Controller controller = Controller(_avatar.owner());
         uint256 startIndex =  0;
         for (uint256 i = 0; i < _schemesNames.length; i++) {
-            address scheme = address(app.create(PACKAGE_NAME,
-                            bytes32ToStr(_schemesNames[i]),
-                            msg.sender,
-                            _schemesData.slice(startIndex, _schemesInitilizeDataLens[i])));
-            startIndex = _schemesInitilizeDataLens[i];
+            address scheme = createSchemeInstance(bytes32ToStr(_schemesNames[i]),
+                                msg.sender,
+                                _schemesData.slice(startIndex, _schemesInitilizeDataLens[i]));
             controller.registerScheme(scheme, _permissions[i]);
-            emit SchemeInstance(scheme, bytes32ToStr(_schemesNames[i]));
+            startIndex = _schemesInitilizeDataLens[i];
         }
         controller.metaData(_metaData);
          // Unregister self:
