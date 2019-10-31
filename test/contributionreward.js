@@ -39,7 +39,7 @@ const checkRedeemedPeriodsLeft = async function(
     assert.equal(await testSetup.contributionReward.getPeriodsToPay(proposalId,web3.utils.toBN(3)),ExternalTokenPeriod);
 };
 var registration;
-const setupContributionRewardParams = async function(
+const setupContributionReward = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
@@ -86,7 +86,7 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
                                                                        accounts[2]],
                                                                        [1000,0,0],
                                                                        testSetup.reputationArray);
-   testSetup.contributionRewardParams= await setupContributionRewardParams(
+   testSetup.contributionRewardParams= await setupContributionReward(
                       accounts,genesisProtocol,
                       tokenAddress,
                       testSetup.org.avatar.address);
