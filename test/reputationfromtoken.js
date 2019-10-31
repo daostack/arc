@@ -18,6 +18,7 @@ const setupNectar = async function (accounts)  {
   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
   testSetup.nectarToken = await NectarToken.new();
+  await testSetup.nectarToken.initialize(accounts[0]);
   await testSetup.nectarToken.mint(accounts[0],100);
   await testSetup.nectarToken.mint(accounts[1],200);
   testSetup.blockReference =  await web3.eth.getBlockNumber();
@@ -49,6 +50,7 @@ const setup = async function (accounts, _initialize = true) {
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.repAllocation = await RepAllocation.new();
+   await testSetup.repAllocation.initialize(accounts[0]);
    await testSetup.repAllocation.addBeneficiary(accounts[0],100);
    await testSetup.repAllocation.addBeneficiary(accounts[1],200);
    await testSetup.repAllocation.addBeneficiary(accounts[2],300);

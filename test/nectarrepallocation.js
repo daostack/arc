@@ -11,6 +11,7 @@ const setup = async function (accounts,
                            ) {
    var testSetup = new helpers.TestSetup();
    testSetup.nectarToken = await NectarToken.new();
+   await testSetup.nectarToken.initialize(accounts[0]);
    await testSetup.nectarToken.mint(accounts[0],100);
    await testSetup.nectarToken.mint(accounts[1],200);
    testSetup.blockReference =  await web3.eth.getBlockNumber();
