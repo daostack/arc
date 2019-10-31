@@ -49,17 +49,17 @@ contract DAOFactory is Initializable {
             return _forgeOrg(_orgName, _tokenInitData, _founders, _foundersTokenAmount, _foundersReputationAmount);
         }
 
-      /**
-        * @dev addFounders add founders to the organization.
-        *      this function can be called only after forgeOrg and before setSchemes
-        * @param _avatar the organization avatar
-        * @param _founders An array with the addresses of the founders of the organization
-        * @param _foundersTokenAmount An array of amount of tokens that the founders
-        *  receive in the new organization
-        * @param _foundersReputationAmount An array of amount of reputation that the
-        *   founders receive in the new organization
-        * @return bool true or false
-        */
+  /**
+    * @dev addFounders add founders to the organization.
+    *      this function can be called only after forgeOrg and before setSchemes
+    * @param _avatar the organization avatar
+    * @param _founders An array with the addresses of the founders of the organization
+    * @param _foundersTokenAmount An array of amount of tokens that the founders
+    *  receive in the new organization
+    * @param _foundersReputationAmount An array of amount of reputation that the
+    *   founders receive in the new organization
+    * @return bool true or false
+    */
     function addFounders (
         Avatar _avatar,
         address[] calldata _founders,
@@ -88,15 +88,15 @@ contract DAOFactory is Initializable {
         return true;
     }
 
-        /**
-         * @dev Set initial schemes for the organization.
-         * @param _avatar organization avatar (returns from forgeOrg)
-         * @param _schemesNames the schemes name to register for the organization
-         * @param _schemesData the schemes initilization data
-         * @param _schemesInitilizeDataLens the schemes initilization data lens (at _schemesData)
-         * @param _permissions the schemes permissions.
-         * @param _metaData dao meta data hash
-         */
+    /**
+     * @dev Set initial schemes for the organization.
+     * @param _avatar organization avatar (returns from forgeOrg)
+     * @param _schemesNames the schemes name to register for the organization
+     * @param _schemesData the schemes initilization data
+     * @param _schemesInitilizeDataLens the schemes initilization data lens (at _schemesData)
+     * @param _permissions the schemes permissions.
+     * @param _metaData dao meta data hash
+     */
     function setSchemes (
         Avatar _avatar,
         bytes32[] calldata _schemesNames,
