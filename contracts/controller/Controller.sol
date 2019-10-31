@@ -12,11 +12,6 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
  */
 contract Controller is Initializable {
 
-    struct GlobalConstraint {
-        address gcAddress;
-        bytes32 params;
-    }
-
     struct GlobalConstraintRegister {
         bool isRegistered; //is registered
         uint256 index;    //index at globalConstraints
@@ -39,9 +34,9 @@ contract Controller is Initializable {
     address public newController;
   // globalConstraintsPre that determine pre conditions for all actions on the controller
 
-    GlobalConstraint[] public globalConstraintsPre;
+    address[] public globalConstraintsPre;
   // globalConstraintsPost that determine post conditions for all actions on the controller
-    GlobalConstraint[] public globalConstraintsPost;
+    address[] public globalConstraintsPost;
   // globalConstraintsRegisterPre indicate if a globalConstraints is registered as a pre global constraint
     mapping(address=>GlobalConstraintRegister) public globalConstraintsRegisterPre;
   // globalConstraintsRegisterPost indicate if a globalConstraints is registered as a post global constraint
@@ -56,7 +51,6 @@ contract Controller is Initializable {
 
     event AddGlobalConstraint(
         address indexed _globalConstraint,
-        bytes32 _params,
         GlobalConstraintInterface.CallPhase _when);
 
     event RemoveGlobalConstraint(address indexed _globalConstraint, uint256 _index, bool _isPre);
@@ -103,14 +97,14 @@ contract Controller is Initializable {
         uint256 idx;
         for (idx = 0; idx < globalConstraintsPre.length; idx++) {
             require(
-            (GlobalConstraintInterface(globalConstraintsPre[idx].gcAddress))
-            .pre(msg.sender, globalConstraintsPre[idx].params, func));
+            (GlobalConstraintInterface(globalConstraintsPre[idx]))
+            .pre(msg.sender, func), "not allowed by globalConstraint");
         }
         _;
         for (idx = 0; idx < globalConstraintsPost.length; idx++) {
             require(
-            (GlobalConstraintInterface(globalConstraintsPost[idx].gcAddress))
-            .post(msg.sender, globalConstraintsPost[idx].params, func));
+            (GlobalConstraintInterface(globalConstraintsPost[idx]))
+            .post(msg.sender, func), "not allowed by globalConstraint");
         }
     }
 
@@ -232,10 +226,9 @@ contract Controller is Initializable {
     /**
      * @dev add or update Global Constraint
      * @param _globalConstraint the address of the global constraint to be added.
-     * @param _params the constraint parameters hash.
      * @return bool which represents a success
      */
-    function addGlobalConstraint(address _globalConstraint, bytes32 _params)
+    function addGlobalConstraint(address _globalConstraint)
     external
     onlyGlobalConstraintsScheme
     returns(bool)
@@ -244,24 +237,20 @@ contract Controller is Initializable {
         if ((when == GlobalConstraintInterface.CallPhase.Pre)||
             (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
             if (!globalConstraintsRegisterPre[_globalConstraint].isRegistered) {
-                globalConstraintsPre.push(GlobalConstraint(_globalConstraint, _params));
+                globalConstraintsPre.push(_globalConstraint);
                 globalConstraintsRegisterPre[_globalConstraint] =
                 GlobalConstraintRegister(true, globalConstraintsPre.length-1);
-            }else {
-                globalConstraintsPre[globalConstraintsRegisterPre[_globalConstraint].index].params = _params;
             }
         }
         if ((when == GlobalConstraintInterface.CallPhase.Post)||
             (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
             if (!globalConstraintsRegisterPost[_globalConstraint].isRegistered) {
-                globalConstraintsPost.push(GlobalConstraint(_globalConstraint, _params));
+                globalConstraintsPost.push(_globalConstraint);
                 globalConstraintsRegisterPost[_globalConstraint] =
                 GlobalConstraintRegister(true, globalConstraintsPost.length-1);
-            }else {
-                globalConstraintsPost[globalConstraintsRegisterPost[_globalConstraint].index].params = _params;
             }
         }
-        emit AddGlobalConstraint(_globalConstraint, _params, when);
+        emit AddGlobalConstraint(_globalConstraint, when);
         return true;
     }
 
@@ -277,7 +266,7 @@ contract Controller is Initializable {
     returns(bool)
     {
         GlobalConstraintRegister memory globalConstraintRegister;
-        GlobalConstraint memory globalConstraint;
+        address globalConstraint;
         GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
         bool retVal = false;
 
@@ -288,7 +277,7 @@ contract Controller is Initializable {
                 if (globalConstraintRegister.index < globalConstraintsPre.length-1) {
                     globalConstraint = globalConstraintsPre[globalConstraintsPre.length-1];
                     globalConstraintsPre[globalConstraintRegister.index] = globalConstraint;
-                    globalConstraintsRegisterPre[globalConstraint.gcAddress].index = globalConstraintRegister.index;
+                    globalConstraintsRegisterPre[globalConstraint].index = globalConstraintRegister.index;
                 }
                 globalConstraintsPre.length--;
                 delete globalConstraintsRegisterPre[_globalConstraint];
@@ -302,7 +291,7 @@ contract Controller is Initializable {
                 if (globalConstraintRegister.index < globalConstraintsPost.length-1) {
                     globalConstraint = globalConstraintsPost[globalConstraintsPost.length-1];
                     globalConstraintsPost[globalConstraintRegister.index] = globalConstraint;
-                    globalConstraintsRegisterPost[globalConstraint.gcAddress].index = globalConstraintRegister.index;
+                    globalConstraintsRegisterPost[globalConstraint].index = globalConstraintRegister.index;
                 }
                 globalConstraintsPost.length--;
                 delete globalConstraintsRegisterPost[_globalConstraint];
@@ -450,21 +439,6 @@ contract Controller is Initializable {
 
     function isSchemeRegistered(address _scheme) external view returns(bool) {
         return _isSchemeRegistered(_scheme);
-    }
-
-    function getGlobalConstraintParameters(address _globalConstraint) external view returns(bytes32) {
-
-        GlobalConstraintRegister memory register = globalConstraintsRegisterPre[_globalConstraint];
-
-        if (register.isRegistered) {
-            return globalConstraintsPre[register.index].params;
-        }
-
-        register = globalConstraintsRegisterPost[_globalConstraint];
-
-        if (register.isRegistered) {
-            return globalConstraintsPost[register.index].params;
-        }
     }
 
    /**

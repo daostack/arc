@@ -41,7 +41,7 @@ const constraint = async function (method, pre=false, post=false) {
   var globalConstraints = await GlobalConstraintMock.new();
   let globalConstraintsCountOrig = await controller.globalConstraintsCount();
   await globalConstraints.setConstraint(web3.utils.asciiToHex(method),pre,post);
-  await controller.addGlobalConstraint(globalConstraints.address,web3.utils.asciiToHex("0"));
+  await controller.addGlobalConstraint(globalConstraints.address);
   let globalConstraintsCount =await controller.globalConstraintsCount();
   assert.equal(globalConstraintsCount[0].toNumber(),globalConstraintsCountOrig[0].toNumber() + (pre ? 0 : 1));
   assert.equal(globalConstraintsCount[1].toNumber(),globalConstraintsCountOrig[1].toNumber() + (post ? 0 : 1));
@@ -49,24 +49,6 @@ const constraint = async function (method, pre=false, post=false) {
 };
 
 contract('Controller', accounts =>  {
-
-     it("getGlobalConstraintParameters", async() => {
-          controller = await setup(accounts);
-          // separate cases for pre and post
-          var globalConstraints = await constraint("gcParams1", true);
-          await controller.addGlobalConstraint(globalConstraints.address,"0x1235");
-          var paramsHash = await controller.getGlobalConstraintParameters(globalConstraints.address);
-
-          assert.equal(paramsHash,"0x1235000000000000000000000000000000000000000000000000000000000000");
-          globalConstraints = await constraint("gcParams2", false, true);
-
-          await controller.addGlobalConstraint(globalConstraints.address,"0x1236");
-
-          paramsHash = await controller.getGlobalConstraintParameters(globalConstraints.address);
-
-          assert.equal(paramsHash,"0x1236000000000000000000000000000000000000000000000000000000000000");
-      });
-
       it("mint reputation via controller", async () => {
           controller = await setup(accounts);
           await reputation.transferOwnership(controller.address);
@@ -223,7 +205,7 @@ contract('Controller', accounts =>  {
       it("addGlobalConstraint ", async () => {
         controller = await setup(accounts);
         var globalConstraints = await constraint(0);
-        var tx = await controller.addGlobalConstraint(globalConstraints.address,"0x0000000000000000000000000000000000000000");
+        var tx = await controller.addGlobalConstraint(globalConstraints.address);
         assert.equal(await controller.isGlobalConstraintRegistered(globalConstraints.address),true);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "AddGlobalConstraint");
@@ -246,11 +228,11 @@ contract('Controller', accounts =>  {
          await globalConstraints4.setConstraint(web3.utils.asciiToHex("method"),false,false);
 
          assert.equal(await controller.isGlobalConstraintRegistered(globalConstraints.address),false);
-         await controller.addGlobalConstraint(globalConstraints.address,zeroBytes32);
-         await controller.addGlobalConstraint(globalConstraints1.address,zeroBytes32);
-         await controller.addGlobalConstraint(globalConstraints2.address,zeroBytes32);
-         await controller.addGlobalConstraint(globalConstraints3.address,zeroBytes32);
-         await controller.addGlobalConstraint(globalConstraints4.address,zeroBytes32);
+         await controller.addGlobalConstraint(globalConstraints.address);
+         await controller.addGlobalConstraint(globalConstraints1.address);
+         await controller.addGlobalConstraint(globalConstraints2.address);
+         await controller.addGlobalConstraint(globalConstraints3.address);
+         await controller.addGlobalConstraint(globalConstraints4.address);
          var tx = await controller.removeGlobalConstraint(globalConstraints2.address);
          assert.equal(tx.logs.length, 1);
          assert.equal(tx.logs[0].event, "RemoveGlobalConstraint");

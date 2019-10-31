@@ -4,6 +4,7 @@ import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
 import "../controller/Avatar.sol";
 import "../controller/Controller.sol";
 
+
 contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
 
     struct ProposalInfo {
@@ -15,7 +16,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         require(proposalsInfo[msg.sender][_proposalId].avatar != Avatar(address(0)), "only VotingMachine");
         _;
     }
-
+    
     // VotingMaching  ->  proposalId  ->  ProposalInfo
     mapping(address => mapping(bytes32 => ProposalInfo)) public proposalsInfo;
 

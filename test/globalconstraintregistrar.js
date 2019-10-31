@@ -37,7 +37,6 @@ const setupGlobalConstraintRegistrarParams = async function(
                                                 globalConstraintRegistrarParams.votingMachine.params,
                                                 );
   }
-  globalConstraintRegistrarParams.paramsHash = helpers.NULL_HASH;
   return globalConstraintRegistrarParams;
 };
 
@@ -81,7 +80,6 @@ contract('GlobalConstraintRegistrar', accounts => {
 
       var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(
                                                                      globalConstraintMock.address,
-                                                                     "0x1234",
                                                                      "0x1235",helpers.NULL_HASH);
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -95,7 +93,6 @@ contract('GlobalConstraintRegistrar', accounts => {
 
       var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(
                                                                      globalConstraintMock.address,
-                                                                     "0x1234",
                                                                      "0x1234",helpers.NULL_HASH);
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       var organizationProposal = await testSetup.globalConstraintRegistrar.organizationProposals(proposalId);
@@ -108,7 +105,6 @@ contract('GlobalConstraintRegistrar', accounts => {
 
       var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(
                                                                      globalConstraintMock.address,
-                                                                     "0x1234",
                                                                      "0x1234",helpers.NULL_HASH);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewGlobalConstraintsProposal");
@@ -124,7 +120,6 @@ contract('GlobalConstraintRegistrar', accounts => {
 
      var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(
                                                                     globalConstraintMock.address,
-                                                                    "0x1234",
                                                                     testSetup.globalConstraintRegistrarParams.votingMachine.params,helpers.NULL_HASH);
      assert.equal(tx.logs.length, 1);
      assert.equal(tx.logs[0].event, "NewGlobalConstraintsProposal");
@@ -144,7 +139,6 @@ contract('GlobalConstraintRegistrar', accounts => {
 
      var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(
                                                                     globalConstraintMock.address,
-                                                                    "0x1234",
                                                                     testSetup.globalConstraintRegistrarParams.votingMachine.params,helpers.NULL_HASH);
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
      await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -176,7 +170,6 @@ contract('GlobalConstraintRegistrar', accounts => {
 
         var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(
                                                                        globalConstraintMock.address,
-                                                                       "0x1234",
                                                                        testSetup.globalConstraintRegistrarParams.votingMachine.params,helpers.NULL_HASH);
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -202,7 +195,6 @@ contract('GlobalConstraintRegistrar', accounts => {
 
          var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(
                                                                         globalConstraintMock.address,
-                                                                        "0x1234",
                                                                         testSetup.globalConstraintRegistrarParams.votingMachine.params,helpers.NULL_HASH);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
          await testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
@@ -210,34 +202,25 @@ contract('GlobalConstraintRegistrar', accounts => {
          assert.equal(count[0],0);
     });
 
-
-
-
     it("proposeToRemoveGC  with genesis protocol", async function() {
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
       var testSetup = await setup(accounts,true,standardTokenMock.address);
       var globalConstraintMock =await GlobalConstraintMock.new();
       //genesisProtocol use burn reputation.
       await globalConstraintMock.setConstraint(web3.utils.asciiToHex("burnReputation"),true,true);
-
       var tx = await testSetup.globalConstraintRegistrar.proposeGlobalConstraint(
                                                                      globalConstraintMock.address,
-                                                                     "0x1234",
                                                                      testSetup.globalConstraintRegistrarParams.votingMachine.params,
                                                                      helpers.NULL_HASH);
 
-
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
       tx = await testSetup.globalConstraintRegistrar.proposeToRemoveGC(
                                                                       globalConstraintMock.address,
                                                                       helpers.NULL_HASH);
-
       proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       var rep = await testSetup.org.reputation.balanceOf(accounts[2]);
-
-      await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{gas: constants.ARC_GAS_LIMIT, from:accounts[2]});
       await helpers.checkVoteInfo(testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol,proposalId,accounts[2],[1,rep.toNumber()]);
      });
 

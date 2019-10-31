@@ -7,11 +7,14 @@ const Avatar = artifacts.require("./Avatar.sol");
 var constants = require('../test/constants');
 
 
-let reputation, avatar,token,controller;
+let reputation, avatar,token,controller,tokenCapGC;
+
 const setup = async function (accounts,permission='0') {
   var _controller;
+  tokenCapGC = await TokenCapGC.new();
   token  = await DAOToken.new();
   await token.initialize("TEST","TST",0,accounts[0]);
+  await tokenCapGC.initialize(token.address,100);
   // set up a reputation system
   reputation = await Reputation.new();
   await reputation.initialize(accounts[0]);
@@ -32,60 +35,33 @@ const setup = async function (accounts,permission='0') {
 };
 
 contract('TokenCapGC', accounts =>  {
-    it("setParameters", async () => {
-      var paramsHash;
-      var tokenCapGC = await TokenCapGC.new();
-      var token  = await DAOToken.new();
-      await token.initialize("TEST","TST",0,accounts[0]);
-      await tokenCapGC.setParameters(token.address,100);
-      paramsHash = await tokenCapGC.getParametersHash(token.address,100);
-      var param = await tokenCapGC.parameters(paramsHash);
+
+    it("initialize", async () => {
+      await setup(accounts);
+      var param = await tokenCapGC.parameters();
       assert.equal(param[1].toNumber(),100);
     });
 
   it("pre and post", async () => {
-    var paramsHash,post,pre;
-    var tokenCapGC = await TokenCapGC.new();
-    var token  = await DAOToken.new();
-    await token.initialize("TEST","TST",0,accounts[0]);
-    await tokenCapGC.setParameters(token.address,100);
-    paramsHash = await tokenCapGC.getParametersHash(token.address,100);
-    pre = await tokenCapGC.pre(token.address,paramsHash,helpers.NULL_HASH);
+    var post,pre;
+    await setup(accounts);
+    pre = await tokenCapGC.pre(token.address,helpers.NULL_HASH);
     assert.equal(pre,true);
-    post = await tokenCapGC.post(token.address,paramsHash,helpers.NULL_HASH);
+    post = await tokenCapGC.post(token.address,helpers.NULL_HASH);
     //token total supply is 0
     assert.equal(post,true);
     //increase the total supply
     await token.mint(accounts[2], 101);
-    post = await tokenCapGC.post(token.address,paramsHash,helpers.NULL_HASH);
+    post = await tokenCapGC.post(token.address,helpers.NULL_HASH);
     //token total supply is 101
     assert.equal(post,false);
-  });
-
-  it("post with wrong paramHash", async () => {
-    var post;
-    var tokenCapGC = await TokenCapGC.new();
-    var token  = await DAOToken.new();
-    await token.initialize("TEST","TST",0,accounts[0]);
-    await tokenCapGC.setParameters(token.address,100);
-    await tokenCapGC.getParametersHash(token.address,100);
-    post = await tokenCapGC.post(token.address,"0x0001",helpers.NULL_HASH);
-    //token total supply is 0
-    assert.equal(post,true);
-    //increase the total supply
-    await token.mint(accounts[2], 101);
-    post = await tokenCapGC.post(token.address,"0x0001",helpers.NULL_HASH);
-    //token total supply is 101
-    assert.equal(post,true);
   });
 
   it("mintTokens check", async () => {
 
     controller = await setup(accounts);
-    var tokenCapGC = await TokenCapGC.new();
-    await tokenCapGC.setParameters(token.address,100);
-    var tokenCapGCParamsHash =  await tokenCapGC.getParametersHash(token.address,100);
-    await controller.addGlobalConstraint(tokenCapGC.address,tokenCapGCParamsHash);
+
+    await controller.addGlobalConstraint(tokenCapGC.address);
     await token.transferOwnership(controller.address);
     await controller.mintTokens(50,accounts[0]);
     try {
