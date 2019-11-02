@@ -1,6 +1,5 @@
 pragma solidity ^0.5.11;
 
-import "@daostack/infra/contracts/Reputation.sol";
 import "../controller/DAOToken.sol";
 import "../controller/Avatar.sol";
 import "../controller/Controller.sol";

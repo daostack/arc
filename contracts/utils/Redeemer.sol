@@ -1,7 +1,7 @@
 pragma solidity ^0.5.11;
 
 import "../schemes/ContributionReward.sol";
-import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
 

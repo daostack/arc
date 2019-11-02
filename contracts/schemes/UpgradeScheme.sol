@@ -1,7 +1,7 @@
 pragma solidity ^0.5.11;
 
-import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/votingMachines/ProposalExecuteInterface.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 

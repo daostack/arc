@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/math/Math.sol";
 import "../controller/Controller.sol";
 import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
-import { RealMath } from "@daostack/infra/contracts/libs/RealMath.sol";
+import { RealMath } from "@daostack/infra-experimental/contracts/libs/RealMath.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
