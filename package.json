@@ -1,5 +1,5 @@
 {
-  "name": "@daostack/arc-expiremental",
+  "name": "@daostack/arc-experimental",
   "version": "0.0.1-rc.31",
   "description": "A platform for building DAOs",
   "files": [
@@ -75,7 +75,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra-expiremental": "0.0.1-rc.16",
+    "@daostack/infra-experimental": "0.0.1-rc.16",
     "@openzeppelin/contracts-ethereum-package": "2.3.0",
     "@openzeppelin/upgrades": "2.5.3",
     "math": "0.0.3",
