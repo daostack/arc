@@ -4,6 +4,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "@openzeppelin/upgrades/contracts/application/App.sol";
 import "@openzeppelin/upgrades/contracts/application/ImplementationDirectory.sol";
 import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
+import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 import "../controller/Controller.sol";
 import "../utils/DAOTracker.sol";
@@ -107,7 +108,7 @@ contract DAOFactory is Initializable {
         )
         external {
             _setSchemes(
-                _avatar,
+                address(_avatar),
                 _schemesNames,
                 _schemesData,
                 _schemesInitilizeDataLens,
@@ -152,7 +153,7 @@ contract DAOFactory is Initializable {
      * @param _metaData dao meta data hash
      */
     function _setSchemes (
-        Avatar _avatar,
+        address payable _avatar,
         bytes32[] memory _schemesNames,
         bytes memory _schemesData,
         uint256[] memory _schemesInitilizeDataLens,
@@ -163,13 +164,13 @@ contract DAOFactory is Initializable {
     {
        // this action can only be executed by the account that holds the lock
        // for this controller
-        require(locks[address(_avatar)] == msg.sender);
+        require(locks[_avatar] == msg.sender);
          // register initial schemes:
-        Controller controller = Controller(_avatar.owner());
+        Controller controller = Controller(Avatar(_avatar).owner());
         uint256 startIndex =  0;
         for (uint256 i = 0; i < _schemesNames.length; i++) {
             address scheme = createSchemeInstance(bytes32ToStr(_schemesNames[i]),
-                                msg.sender,
+                                _avatar,
                                 _schemesData.slice(startIndex, _schemesInitilizeDataLens[i]));
             controller.registerScheme(scheme, _permissions[i]);
             startIndex = _schemesInitilizeDataLens[i];
@@ -178,8 +179,8 @@ contract DAOFactory is Initializable {
          // Unregister self:
         controller.unregisterSelf();
          // Remove lock:
-        delete locks[address(_avatar)];
-        emit InitialSchemesSet(address(_avatar));
+        delete locks[_avatar];
+        emit InitialSchemesSet(_avatar);
     }
 
     function bytes32ToStr(bytes32 x) private pure returns (string memory) {
@@ -224,28 +225,29 @@ contract DAOFactory is Initializable {
         require(_founders.length == _foundersTokenAmount.length);
         require(_founders.length == _foundersReputationAmount.length);
         require(_founders.length > 0);
-        DAOToken nativeToken =
-        DAOToken(address(app.create(PACKAGE_NAME, "DAOToken", msg.sender, _tokenInitData)));
-        Reputation nativeReputation =
-        Reputation(address(app.create(PACKAGE_NAME, "Reputation", msg.sender,
-        abi.encodeWithSignature("initialize(address)", address(this)))));
+        AdminUpgradeabilityProxy nativeToken = app.create(PACKAGE_NAME, "DAOToken", address(this), _tokenInitData);
+        AdminUpgradeabilityProxy nativeReputation =
+        app.create(PACKAGE_NAME, "Reputation", address(this),
+        abi.encodeWithSignature("initialize(address)", address(this)));
 
-        Avatar avatar = Avatar(address(app.create(PACKAGE_NAME, "Avatar", msg.sender,
+        AdminUpgradeabilityProxy avatar = app.create(PACKAGE_NAME, "Avatar", address(this),
         abi.encodeWithSignature(
             "initialize(string,address,address,address)",
             _orgName,
             address(nativeToken),
             address(nativeReputation),
-            address(this)))));
-
+            address(this)));
+        nativeToken.changeAdmin(address(avatar));
+        nativeReputation.changeAdmin(address(avatar));
+        avatar.changeAdmin(address(avatar));
          // Mint token and reputation for founders:
         for (uint256 i = 0; i < _founders.length; i++) {
             require(_founders[i] != address(0));
             if (_foundersTokenAmount[i] > 0) {
-                nativeToken.mint(_founders[i], _foundersTokenAmount[i]);
+                DAOToken(address(nativeToken)).mint(_founders[i], _foundersTokenAmount[i]);
             }
             if (_foundersReputationAmount[i] > 0) {
-                nativeReputation.mint(_founders[i], _foundersReputationAmount[i]);
+                Reputation(address(nativeReputation)).mint(_founders[i], _foundersReputationAmount[i]);
             }
         }
          // Create Controller:
@@ -253,16 +255,16 @@ contract DAOFactory is Initializable {
         Controller(address(app.create(
         PACKAGE_NAME,
         "Controller",
-        msg.sender,
+        address(avatar),
         abi.encodeWithSignature("initialize(address,address)", address(avatar), address(this)))));
 
         // Add the DAO to the tracking registry
-        daoTracker.track(avatar, controller);
+        daoTracker.track(Avatar(address(avatar)), controller);
 
          // Transfer ownership:
-        avatar.transferOwnership(address(controller));
-        nativeToken.transferOwnership(address(controller));
-        nativeReputation.transferOwnership(address(controller));
+        Avatar(address(avatar)).transferOwnership(address(controller));
+        DAOToken(address(nativeToken)).transferOwnership(address(controller));
+        Reputation(address(nativeReputation)).transferOwnership(address(controller));
 
         locks[address(avatar)] = msg.sender;
 
