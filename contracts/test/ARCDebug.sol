@@ -1,10 +1,10 @@
 pragma solidity ^0.5.11;
 
-import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
-import "@daostack/infra/contracts/votingMachines/AbsoluteVote.sol";
-import "@daostack/infra/contracts/votingMachines/QuorumVote.sol";
-import "@daostack/infra/contracts/test/AbsoluteVoteExecuteMock.sol";
-import "@daostack/infra/contracts/test/GenesisProtocolCallbacksMock.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/AbsoluteVote.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/QuorumVote.sol";
+import "@daostack/infra-experimental/contracts/test/AbsoluteVoteExecuteMock.sol";
+import "@daostack/infra-experimental/contracts/test/GenesisProtocolCallbacksMock.sol";
 
 /*
     A contract you can inherit from that has some useful Events to print statements.

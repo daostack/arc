@@ -14,8 +14,8 @@ REFERENCE & RELATED READING
 */
 pragma solidity ^0.5.11;
 
-import "openzeppelin-solidity/contracts/utils/Address.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/utils/Address.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
 library SafeERC20 {
     using Address for address;

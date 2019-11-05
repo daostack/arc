@@ -53,7 +53,7 @@ const setup = async function (accounts,
    }
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.continuousLocking4Reputation.address],[web3.utils.asciiToHex("0")],[permissions],"metaData");
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.continuousLocking4Reputation.address],[permissions],"metaData");
    await testSetup.lockingToken.approve(testSetup.continuousLocking4Reputation.address,web3.utils.toWei('100', "ether"));
    return testSetup;
 };

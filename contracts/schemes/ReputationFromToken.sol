@@ -1,17 +1,18 @@
 pragma solidity ^0.5.11;
 
-import "../controller/ControllerInterface.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "../controller/Controller.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "./CurveInterface.sol";
-import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title A scheme for reputation allocation according to token balances
  *        This contract is assuming that the token contract is paused, and one cannot transfer its tokens.
  */
 
-contract ReputationFromToken {
+contract ReputationFromToken is Initializable {
     using ECDSA for bytes32;
     using SafeMath for uint256;
 
@@ -30,15 +31,14 @@ contract ReputationFromToken {
     ));
 
     event Redeem(address indexed _beneficiary, address indexed _sender, uint256 _amount);
-    
+
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _tokenContract the token contract
      */
-    function initialize(Avatar _avatar, IERC20 _tokenContract, CurveInterface _curve) external
+    function initialize(Avatar _avatar, IERC20 _tokenContract, CurveInterface _curve) external initializer
     {
-        require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         tokenContract = _tokenContract;
         avatar = _avatar;
@@ -113,9 +113,9 @@ contract ReputationFromToken {
             _beneficiary = _redeemer;
         }
         require(
-        ControllerInterface(
+        Controller(
         avatar.owner())
-        .mintReputation(tokenAmount, _beneficiary, address(avatar)), "mint reputation should succeed");
+        .mintReputation(tokenAmount, _beneficiary), "mint reputation should succeed");
         emit Redeem(_beneficiary, _redeemer, tokenAmount);
         return tokenAmount;
     }

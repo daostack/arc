@@ -1,5 +1,5 @@
 pragma solidity ^0.5.11;
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 
 
 contract Wallet is Ownable {
@@ -9,6 +9,16 @@ contract Wallet is Ownable {
 
     function() external payable {
         emit ReceiveEther(msg.sender, msg.value);
+    }
+
+    /**
+    * @dev initialize
+    * @param _owner contract owner
+    */
+    function initialize(address _owner)
+    public
+    initializer {
+        Ownable.initialize(_owner);
     }
 
     function pay(address payable _beneficiary) public onlyOwner {

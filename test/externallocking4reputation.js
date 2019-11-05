@@ -17,6 +17,7 @@ const setup = async function (accounts,_repAllocation = 100,_claimingStartTime =
    testSetup.lockingStartTime = block.timestamp + _claimingStartTime;
    testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
    testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
+   await testSetup.extetnalTokenLockerMock.initialize(accounts[0]);
    await testSetup.extetnalTokenLockerMock.lock(100,accounts[0]);
    await testSetup.extetnalTokenLockerMock.lock(200,accounts[1]);
    await testSetup.extetnalTokenLockerMock.lock(300,accounts[2]);
@@ -35,7 +36,7 @@ const setup = async function (accounts,_repAllocation = 100,_claimingStartTime =
    }
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.externalLocking4Reputation.address],[helpers.NULL_HASH],[permissions],"metaData");
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.externalLocking4Reputation.address],[permissions],"metaData");
    return testSetup;
 };
 

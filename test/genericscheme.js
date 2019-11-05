@@ -23,7 +23,7 @@ const setupGenericSchemeParams = async function(
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
   if (genesisProtocol === true){
-      genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress,0,helpers.NULL_ADDRESS);
+      genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress,helpers.NULL_ADDRESS);
       await genericScheme.initialize(
             avatar.address,
             genericSchemeParams.votingMachine.genesisProtocol.address,
@@ -49,7 +49,6 @@ const setup = async function (accounts,contractToCall = 0,reputationAccount=0,ge
    var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.reputationArray = [20,10,70];
-
    if (reputationAccount === 0) {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
    } else {
@@ -61,7 +60,7 @@ const setup = async function (accounts,contractToCall = 0,reputationAccount=0,ge
 
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                         [testSetup.genericScheme.address],
-                                        [helpers.NULL_HASH],[permissions],"metaData");
+                                        [permissions],"metaData");
 
    return testSetup;
 };
@@ -76,9 +75,10 @@ contract('GenericScheme', function(accounts) {
   });
 
     it("proposeCall log", async function() {
-
        var actionMock =await ActionMock.new();
+
        var testSetup = await setup(accounts,actionMock.address);
+
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
 
        var tx = await testSetup.genericScheme.proposeCall(
@@ -234,6 +234,7 @@ contract('GenericScheme', function(accounts) {
 
       it("Wallet - execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
          var wallet =await Wallet.new();
+         await wallet.initialize(accounts[0]);
          await web3.eth.sendTransaction({from:accounts[0],to:wallet.address, value: web3.utils.toWei('1', "ether")});
          var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
          var testSetup = await setup(accounts,wallet.address,0,true,standardTokenMock.address);

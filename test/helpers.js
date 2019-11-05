@@ -8,6 +8,14 @@ const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
+const DAOFactory = artifacts.require("./DAOFactory.sol");
+const SchemeMock = artifacts.require('./test/SchemeMock.sol');
+const DAOTracker = artifacts.require("./DAOTracker.sol");
+const App = artifacts.require("./App.sol");
+const Package = artifacts.require("./Package.sol");
+var ImplementationDirectory = artifacts.require("./ImplementationDirectory.sol");
+var Controller = artifacts.require("./Controller.sol");
+const ContributionReward = artifacts.require("./ContributionReward.sol");
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -26,6 +34,11 @@ export class VotingMachine {
 }
 
 export class Organization {
+  constructor() {
+  }
+}
+
+export class Registration {
   constructor() {
   }
 }
@@ -120,6 +133,33 @@ export function assertJump(error) {
   assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned' + error.message);
 }
 
+export const registerImplementation = async function () {
+  var registration = new Registration();
+  var packageName = "DAOstack";
+  var packageInstance = await Package.new();
+  var implementationDirectory = await ImplementationDirectory.new();
+  await packageInstance.addVersion([0,1,0],implementationDirectory.address,NULL_HASH);
+  registration.app = await App.new();
+  await registration.app.setPackage(packageName,packageInstance.address,[0,1,0]);
+  registration.daoToken = await DAOToken.new();
+  registration.reputation = await Reputation.new();
+  registration.avatar = await Avatar.new();
+  registration.controller = await Controller.new();
+  registration.schemeMock = await SchemeMock.new();
+  registration.contributionReward = await ContributionReward.new();
+  await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
+  await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
+  await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
+  await implementationDirectory.setImplementation("Controller",registration.controller.address);
+  await implementationDirectory.setImplementation("SchemeMock",registration.schemeMock.address);
+  await implementationDirectory.setImplementation("ContributionReward",registration.contributionReward.address);
+
+  registration.daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
+  registration.daoFactory = await DAOFactory.new({gas:constants.ARC_GAS_LIMIT});
+  registration.daoFactory.initialize(registration.app.address,registration.daoTracker.address);
+  return registration;
+};
+
 export const setupAbsoluteVote = async function (voteOnBehalf=NULL_ADDRESS, precReq=50 ) {
   var votingMachine = new VotingMachine();
   votingMachine.absoluteVote = await AbsoluteVote.new();
@@ -132,7 +172,6 @@ export const setupAbsoluteVote = async function (voteOnBehalf=NULL_ADDRESS, prec
 export const setupGenesisProtocol = async function (
    accounts,
    token,
-   avatar,
    voteOnBehalf = NULL_ADDRESS,
    _queuedVoteRequiredPercentage=50,
    _queuedVotePeriodLimit=60,
@@ -179,9 +218,9 @@ export const setupGenesisProtocol = async function (
   return votingMachine;
 };
 
-export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=NULL_ADDRESS,cap=0) {
+export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
   var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,controller,cap,{gas: constants.ARC_GAS_LIMIT});
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,cap,{gas: constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -193,9 +232,33 @@ export const setupOrganizationWithArrays = async function (daoCreator,daoCreator
   return org;
 };
 
-export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=NULL_ADDRESS,cap=0) {
+export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
+                                                                     accounts,
+                                                                     registration,
+                                                                     daoCreatorOwner,
+                                                                     founderToken,
+                                                                     founderReputation,
+                                                                     cap=0) {
   var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],controller,cap,{gas: constants.ARC_GAS_LIMIT});
+  var nativeTokenData = await new web3.eth.Contract(registration.daoToken.abi)
+                        .methods
+                        .initialize("TEST","TST",cap,registration.daoFactory.address)
+                        .encodeABI();
+  var tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,daoCreatorOwner,founderToken,founderReputation,{from:proxyAdmin,gas:constants.ARC_GAS_LIMIT});
+  assert.equal(tx.logs.length, 1);
+  assert.equal(tx.logs[0].event, "NewOrg");
+  var avatarAddress = tx.logs[0].args._avatar;
+  org.avatar = await Avatar.at(avatarAddress);
+  var tokenAddress = await org.avatar.nativeToken();
+  org.token = await DAOToken.at(tokenAddress);
+  var reputationAddress = await org.avatar.nativeReputation();
+  org.reputation = await Reputation.at(reputationAddress);
+  return org;
+};
+
+export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
+  var org = new Organization();
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],cap,{gas: constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;

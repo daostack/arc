@@ -1,6 +1,7 @@
 pragma solidity ^0.5.11;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
@@ -9,7 +10,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * beneficiaries.
  * this contract can be used as the rep mapping contract for  RepitationFromToken contract.
  */
-contract RepAllocation is Ownable {
+contract RepAllocation is Initializable, Ownable {
 
 
        // beneficiary -> amount
@@ -17,6 +18,14 @@ contract RepAllocation is Ownable {
     bool public isFreeze;
 
     event BeneficiaryAddressAdded(address indexed _beneficiary, uint256 indexed _amount);
+
+    /**
+    * @dev initialize function
+    * @param _owner contract's owner to be set
+    */
+    function initialize(address _owner) public initializer {
+        Ownable.initialize(_owner);
+    }
 
     /**
      * @dev addBeneficiary function

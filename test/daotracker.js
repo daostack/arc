@@ -4,26 +4,30 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Avatar = artifacts.require("./Avatar.sol");
-const UController = artifacts.require("./UController.sol");
+const Controller = artifacts.require("./Controller.sol");
 
 const opts = {gas: constants.ARC_GAS_LIMIT};
 
-const setup = async function () {
+const setup = async function (accounts) {
   var testSetup = new helpers.TestSetup();
   testSetup.daoTracker = await DAOTracker.new(opts);
-  testSetup.daoToken = await DAOToken.new("test", "test", 0, opts);
+  await testSetup.daoTracker.initialize(accounts[0]);
+  testSetup.daoToken = await DAOToken.new(opts);
+  await testSetup.daoToken.initialize("test", "test", 0, accounts[0],opts);
   testSetup.reputation = await Reputation.new(opts);
-  testSetup.avatar = await Avatar.new(
-    "test", testSetup.daoToken.address, testSetup.reputation.address, opts,
+  await testSetup.reputation.initialize(accounts[0]);
+  testSetup.avatar = await Avatar.new(opts);
+  await testSetup.avatar.initialize(
+    "test", testSetup.daoToken.address, testSetup.reputation.address, accounts[0]
   );
-  testSetup.controller = await UController.new(opts);
+  testSetup.controller = await Controller.new(opts);
   return testSetup;
 };
 
 contract("DAOTracker", accounts => {
 
   it("track", async () => {
-    const testSetup = await setup();
+    const testSetup = await setup(accounts);
     const avatar = testSetup.avatar.address;
     const daoToken = testSetup.daoToken.address;
     const reputation = testSetup.reputation.address;
@@ -47,7 +51,7 @@ contract("DAOTracker", accounts => {
   });
 
   it("track onlyAvatarOwner", async () => {
-    const testSetup = await setup();
+    const testSetup = await setup(accounts);
     const avatar = testSetup.avatar.address;
     const controller = testSetup.controller.address;
 
@@ -62,7 +66,7 @@ contract("DAOTracker", accounts => {
   });
 
   it("track null Avatar", async () => {
-    const testSetup = await setup();
+    const testSetup = await setup(accounts);
     const controller = testSetup.controller.address;
 
     try {
@@ -76,7 +80,7 @@ contract("DAOTracker", accounts => {
   });
 
   it("track null Controller", async () => {
-    const testSetup = await setup();
+    const testSetup = await setup(accounts);
     const avatar = testSetup.avatar.address;
 
     try {
@@ -90,14 +94,12 @@ contract("DAOTracker", accounts => {
   });
 
   it("blacklist", async () => {
-    const testSetup = await setup();
+    const testSetup = await setup(accounts);
     const avatar = testSetup.avatar.address;
 
     let blacklisted = await testSetup.daoTracker.blacklisted(avatar);
     assert.equal(blacklisted, false);
-
     const tx = await testSetup.daoTracker.blacklist(avatar, "TEST", opts);
-
     // Verify Event
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "BlacklistDAO");
@@ -110,7 +112,7 @@ contract("DAOTracker", accounts => {
   });
 
   it("blacklist onlyOwner", async () => {
-    const testSetup = await setup();
+    const testSetup = await setup(accounts);
     const avatar = testSetup.avatar.address;
 
     try {
@@ -122,7 +124,7 @@ contract("DAOTracker", accounts => {
   });
 
   it("blacklist null Avatar", async () => {
-    const testSetup = await setup();
+    const testSetup = await setup(accounts);
 
     try {
       await testSetup.daoTracker.blacklist("0x0000000000000000000000000000000000000000", "TEST", opts);
@@ -132,8 +134,8 @@ contract("DAOTracker", accounts => {
     }
   });
 
-  it("reset", async () => { 
-    const testSetup = await setup();
+  it("reset", async () => {
+    const testSetup = await setup(accounts);
     const avatar = testSetup.avatar.address;
     const controller = testSetup.controller.address;
 
@@ -163,7 +165,7 @@ contract("DAOTracker", accounts => {
   });
 
   it("reset onlyOwner", async () => {
-    const testSetup = await setup();
+    const testSetup = await setup(accounts);
     const avatar = testSetup.avatar.address;
 
     try {

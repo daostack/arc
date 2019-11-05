@@ -1,8 +1,8 @@
 pragma solidity ^0.5.11;
 
-import "../universalSchemes/ContributionReward.sol";
-import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "../schemes/ContributionReward.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
 
 contract Redeemer {
@@ -71,7 +71,7 @@ contract Redeemer {
             }
             winningVote = _genesisProtocol.winningVote(_proposalId);
             //redeem from contributionReward only if it executed
-            if (_contributionReward.getProposalExecutionTime(_proposalId, address(_avatar)) > 0) {
+            if (_contributionReward.getProposalExecutionTime(_proposalId) > 0) {
                 (crReputationReward, crNativeTokenReward, crEthReward, crExternalTokenReward) =
                 contributionRewardRedeem(_contributionReward, _proposalId, _avatar);
             }
@@ -85,17 +85,17 @@ contract Redeemer {
         bool[4] memory whatToRedeem;
         whatToRedeem[0] = true; //reputation
         whatToRedeem[1] = true; //nativeToken
-        uint256 periodsToPay = _contributionReward.getPeriodsToPay(_proposalId, address(_avatar), 2);
-        uint256 ethReward = _contributionReward.getProposalEthReward(_proposalId, address(_avatar));
-        uint256 externalTokenReward = _contributionReward.getProposalExternalTokenReward(_proposalId, address(_avatar));
-        address externalTokenAddress = _contributionReward.getProposalExternalToken(_proposalId, address(_avatar));
+        uint256 periodsToPay = _contributionReward.getPeriodsToPay(_proposalId, 2);
+        uint256 ethReward = _contributionReward.getProposalEthReward(_proposalId);
+        uint256 externalTokenReward = _contributionReward.getProposalExternalTokenReward(_proposalId);
+        address externalTokenAddress = _contributionReward.getProposalExternalToken(_proposalId);
         ethReward = periodsToPay.mul(ethReward);
         if ((ethReward == 0) || (address(_avatar).balance < ethReward)) {
             whatToRedeem[2] = false;
         } else {
             whatToRedeem[2] = true;
         }
-        periodsToPay = _contributionReward.getPeriodsToPay(_proposalId, address(_avatar), 3);
+        periodsToPay = _contributionReward.getPeriodsToPay(_proposalId, 3);
         externalTokenReward = periodsToPay.mul(externalTokenReward);
         if ((externalTokenReward == 0) ||
             (IERC20(externalTokenAddress).balanceOf(address(_avatar)) < externalTokenReward)) {
@@ -103,6 +103,6 @@ contract Redeemer {
         } else {
             whatToRedeem[3] = true;
         }
-        (reputation, nativeToken, eth, externalToken) = _contributionReward.redeem(_proposalId, _avatar, whatToRedeem);
+        (reputation, nativeToken, eth, externalToken) = _contributionReward.redeem(_proposalId, whatToRedeem);
     }
 }

@@ -1,16 +1,16 @@
 pragma solidity ^0.5.11;
 
-import "@daostack/infra/contracts/Reputation.sol";
 import "../controller/DAOToken.sol";
 import "../controller/Avatar.sol";
-import "../controller/ControllerInterface.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../controller/Controller.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title An on-chain "source of truth" for what DAOs
  *        should be index into DAOstack's subgraph.
  */
-contract DAOTracker is Ownable {
+contract DAOTracker is Initializable, Ownable {
 
     // `blacklist` the DAO from the subgraph's cache.
     // Only able to be set by the owner of the DAOTracker.
@@ -32,6 +32,10 @@ contract DAOTracker is Ownable {
         _;
     }
 
+    function initialize(address _owner) public initializer {
+        Ownable.initialize(_owner);
+    }
+
     /**
     * @dev track a new organization. This function will tell the subgraph
     *      to start ingesting events from the DAO's contracts.
@@ -43,14 +47,14 @@ contract DAOTracker is Ownable {
     * @param _avatar the organization avatar
     * @param _controller the organization controller
     */
-    function track(Avatar _avatar, ControllerInterface _controller)
+    function track(Avatar _avatar, Controller _controller)
     public
     onlyAvatarOwner(_avatar)
     notBlacklisted(_avatar) {
         // Only allow the information to be set once. In the case of a controller upgrades,
         // the subgraph will be updated via the UpgradeController event.
         require(_avatar != Avatar(0));
-        require(_controller != ControllerInterface(0));
+        require(_controller != Controller(0));
 
         emit TrackDAO(
             address(_avatar),

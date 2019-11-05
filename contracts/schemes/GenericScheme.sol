@@ -1,8 +1,9 @@
 pragma solidity ^0.5.11;
 
-import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
-import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
@@ -10,7 +11,7 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  * @dev  A scheme for proposing and executing calls to an arbitrary function
  * on a specific contract on behalf of the organization avatar.
  */
-contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
+contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
     event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -62,8 +63,8 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         address _contractToCall
     )
     external
+    initializer
     {
-        require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
@@ -108,9 +109,9 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
-        ControllerInterface controller = ControllerInterface(avatar.owner());
+        Controller controller = Controller(avatar.owner());
         (success, genericCallReturnValue) =
-        controller.genericCall(contractToCall, proposal.callData, avatar, proposal.value);
+        controller.genericCall(contractToCall, proposal.callData, proposal.value);
         if (success) {
             delete organizationProposals[_proposalId];
             emit ProposalDeleted(address(avatar), _proposalId);

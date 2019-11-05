@@ -30,11 +30,11 @@ contract GlobalConstraintMock {
         return true;
     }
 
-    function pre(address, bytes32, bytes32 method) public view returns(bool) {
+    function pre(address, bytes32 method) public view returns(bool) {
         return testParams[method].pre;
     }
 
-    function post(address, bytes32, bytes32 method) public view returns(bool) {
+    function post(address, bytes32 method) public view returns(bool) {
         return testParams[method].post;
     }
 

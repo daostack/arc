@@ -29,6 +29,7 @@ const setup = async function (accounts,
 
    testSetup.lockingToken4Reputation = await LockingToken4Reputation.new();
    testSetup.priceOracleMock = await PriceOracleMock.new();
+   await testSetup.priceOracleMock.initialize(accounts[0]);
    await testSetup.priceOracleMock.setTokenPrice(testSetup.lockingToken.address,100,4);
    await testSetup.priceOracleMock.setTokenPrice(testSetup.lockingToken2.address,200,4);
 
@@ -44,7 +45,7 @@ const setup = async function (accounts,
   }
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.lockingToken4Reputation.address],[helpers.NULL_HASH],[permissions],"metaData");
+   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.lockingToken4Reputation.address],[permissions],"metaData");
    await testSetup.lockingToken.approve(testSetup.lockingToken4Reputation.address,web3.utils.toWei('100', "ether"));
    return testSetup;
 };

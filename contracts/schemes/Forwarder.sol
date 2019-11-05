@@ -1,15 +1,15 @@
 pragma solidity ^0.5.11;
 
-import "../controller/ControllerInterface.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../controller/Controller.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "@openzeppelin/upgrades/contracts/Initializable.sol";
+
 
 /**
  * @title A scheme to forward a call to a dao.
  *        The scheme can unregister itself when its expirationTime reached.
  */
-
-
-contract Forwarder is Ownable {
+contract Forwarder is Initializable, Ownable {
 
     Avatar public avatar;
     uint256 public expirationTime;
@@ -31,11 +31,11 @@ contract Forwarder is Ownable {
      * @param _avatar the avatar of the dao to forward the call to
      * @param _expirationTime the expirationTime to forwardCall
      */
-    function initialize(Avatar _avatar, uint256 _expirationTime) external onlyOwner {
-        require(avatar == Avatar(0), "can be called only one time");
+    function initialize(Avatar _avatar, uint256 _expirationTime, address _owner) external initializer {
         require(_avatar != Avatar(0), "avatar cannot be zero");
         avatar = _avatar;
         expirationTime = _expirationTime;
+        Ownable.initialize(_owner);
     }
 
     /**
@@ -45,6 +45,6 @@ contract Forwarder is Ownable {
     function unregisterSelf() public returns(bool) {
        // solhint-disable-next-line not-rely-on-time
         require(expirationTime <= now, "expirationTime <= now");
-        return ControllerInterface(avatar.owner()).unregisterSelf(address(avatar));
+        return Controller(avatar.owner()).unregisterSelf();
     }
 }
