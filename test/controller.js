@@ -20,16 +20,25 @@ const setup = async function (accounts,permission='0',registerScheme = accounts[
   reputation = await Reputation.new();
 
   avatar = await Avatar.new('name', token.address, reputation.address);
+  var sender = accounts[0];
   if (permission !== '0') {
-    _controller = await Controller.new(avatar.address,{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
+    sender = accounts[1];
+    _controller = await Controller.new(avatar.address,{from:sender, gas: constants.ARC_GAS_LIMIT});
     await _controller.registerScheme(registerScheme,"0x0000000000000000000000000000000000000000",permission,avatar.address,{from:accounts[1]});
-    await _controller.unregisterSelf(avatar.address,{from:accounts[1]});
+    await _controller.unregisterSelf(avatar.address,{from:sender});
   }
   else {
 
-    _controller = await Controller.new(avatar.address,{gas: constants.ARC_GAS_LIMIT});
-
+    _controller = await Controller.new(avatar.address,{from:sender, gas: constants.ARC_GAS_LIMIT});
   }
+  await _controller.getPastEvents('RegisterScheme', {
+        fromBlock: 0,
+        toBlock: 'latest'
+    })
+    .then(function(events){
+        assert.equal(events[0].event,"RegisterScheme");
+        assert.equal(events[0].args._scheme,sender);
+    });
   controller = _controller;
   return _controller;
 };
@@ -105,7 +114,7 @@ contract('Controller', accounts =>  {
         let tx =  await controller.registerScheme(accounts[1], web3.utils.asciiToHex("0"),"0x00000000",avatar.address);
         assert.equal(tx.logs.length, 1);
         assert.equal(tx.logs[0].event, "RegisterScheme");
-    });
+     });
 
     it("register schemes - check permissions for register new scheme", async () => {
       // Check scheme has at least the permissions it is changing, and at least the current permissions.
@@ -113,7 +122,7 @@ contract('Controller', accounts =>  {
     //  controller;
       for(j = 0; j <= 15; j++ ){
         //registered scheme has already permission to register(2)
-        controller = await setup('0x'+uint32.toHex(j|2));
+        controller = await setup(accounts,'0x'+uint32.toHex(j|2));
         var  register;
         for(i = 0; i <= 15; i++ ){
           register = true;
@@ -632,6 +641,4 @@ contract('Controller', accounts =>  {
      globalConstraintsCount =await controller.globalConstraintsCount(avatar.address);
      assert.equal(globalConstraintsCount[0],0);
      });
-
-
 });
