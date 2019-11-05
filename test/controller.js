@@ -31,7 +31,10 @@ const setup = async function (accounts,permission='0',registerScheme = accounts[
   }
   else {
     _controller = await Controller.new({gas: constants.ARC_GAS_LIMIT});
-    await _controller.initialize(avatar.address ,accounts[0]);
+    var tx = await _controller.initialize(avatar.address ,accounts[0]);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "RegisterScheme");
+    assert.equal(tx.logs[0].args._scheme, accounts[0]);
   }
   controller = _controller;
   return _controller;

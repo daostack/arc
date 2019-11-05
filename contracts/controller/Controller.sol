@@ -60,6 +60,7 @@ contract Controller is Initializable {
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
         schemesPermissions[initialScheme] = bytes4(0x0000001F);
+        emit RegisterScheme(msg.sender, initialScheme);
     }
 
   // Modifiers:
