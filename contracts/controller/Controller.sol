@@ -71,6 +71,7 @@ contract Controller is ControllerInterface {
         nativeToken = avatar.nativeToken();
         nativeReputation = avatar.nativeReputation();
         schemes[msg.sender] = Scheme({paramsHash: bytes32(0), permissions: bytes4(0x0000001F)});
+        emit RegisterScheme (msg.sender, msg.sender);
     }
 
   // Do not allow mistaken calls:
