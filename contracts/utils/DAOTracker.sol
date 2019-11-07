@@ -16,9 +16,24 @@ contract DAOTracker is Ownable {
     // Only able to be set by the owner of the DAOTracker.
     mapping(address=>bool) public blacklisted;
 
-    event TrackDAO(address indexed _avatar, address _controller, address _reputation, address _daoToken);
-    event BlacklistDAO(address indexed _avatar, string _explanationHash);
-    event ResetDAO(address indexed _avatar, string _explanationHash);
+    event TrackDAO(
+        address indexed _avatar,
+        address _controller,
+        address _reputation,
+        address _daoToken,
+        address _sender,
+        string _arcVersion
+    );
+
+    event BlacklistDAO(
+        address indexed _avatar,
+        string _explanationHash
+    );
+
+    event ResetDAO(
+        address indexed _avatar,
+        string _explanationHash
+    );
 
     modifier onlyAvatarOwner(Avatar avatar) {
         require(avatar.owner() == msg.sender,
@@ -43,7 +58,7 @@ contract DAOTracker is Ownable {
     * @param _avatar the organization avatar
     * @param _controller the organization controller
     */
-    function track(Avatar _avatar, ControllerInterface _controller)
+    function track(Avatar _avatar, ControllerInterface _controller, string memory _arcVersion)
     public
     onlyAvatarOwner(_avatar)
     notBlacklisted(_avatar) {
@@ -56,7 +71,9 @@ contract DAOTracker is Ownable {
             address(_avatar),
             address(_controller),
             address(_avatar.nativeReputation()),
-            address(_avatar.nativeToken())
+            address(_avatar.nativeToken()),
+            msg.sender,
+            _arcVersion
         );
     }
 

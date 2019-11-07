@@ -22,6 +22,8 @@ const setup = async function () {
 
 contract("DAOTracker", accounts => {
 
+  const arcVersionStub = "v0.0";
+
   it("track", async () => {
     const testSetup = await setup();
     const avatar = testSetup.avatar.address;
@@ -30,7 +32,7 @@ contract("DAOTracker", accounts => {
     const controller = testSetup.controller.address;
 
     const tx = await testSetup.daoTracker.track(
-      avatar, controller, opts
+      avatar, controller, arcVersionStub, opts
     );
 
     // Verify Event
@@ -40,6 +42,8 @@ contract("DAOTracker", accounts => {
     assert.equal(tx.logs[0].args._controller, controller);
     assert.equal(tx.logs[0].args._reputation, reputation);
     assert.equal(tx.logs[0].args._daoToken, daoToken);
+    assert.equal(tx.logs[0].args._sender, accounts[0]);
+    assert.equal(tx.logs[0].args._arcVersion, arcVersionStub);
 
     // Verify Storage
     const blacklisted = await testSetup.daoTracker.blacklisted(avatar);
@@ -53,7 +57,7 @@ contract("DAOTracker", accounts => {
 
     try {
       await testSetup.daoTracker.track(
-        avatar, controller, {gas: opts.gas, from: accounts[1]}
+        avatar, controller, arcVersionStub, {gas: opts.gas, from: accounts[1]}
       );
       assert.fail("This should never happen.");
     } catch (e) {
@@ -67,7 +71,7 @@ contract("DAOTracker", accounts => {
 
     try {
       await testSetup.daoTracker.track(
-        "0x0000000000000000000000000000000000000000", controller, opts
+        "0x0000000000000000000000000000000000000000", controller, arcVersionStub, opts
       );
       assert.fail("This should never happen.");
     } catch (e) {
@@ -81,7 +85,7 @@ contract("DAOTracker", accounts => {
 
     try {
       await testSetup.daoTracker.track(
-        avatar, "0x0000000000000000000000000000000000000000", opts
+        avatar, "0x0000000000000000000000000000000000000000", arcVersionStub, opts
       );
       assert.fail("This should never happen.");
     } catch (e) {
@@ -138,7 +142,7 @@ contract("DAOTracker", accounts => {
     const controller = testSetup.controller.address;
 
     await testSetup.daoTracker.track(
-      avatar, controller, opts
+      avatar, controller, arcVersionStub, opts
     );
 
     let blacklisted = await testSetup.daoTracker.blacklisted(avatar);

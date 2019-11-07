@@ -205,7 +205,7 @@ contract DaoCreator {
         }
 
         // Add the DAO to the tracking registry
-        daoTracker.track(avatar, controller);
+        daoTracker.track(avatar, controller, "");
 
         // Transfer ownership:
         avatar.transferOwnership(address(controller));
