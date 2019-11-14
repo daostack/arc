@@ -137,7 +137,7 @@ contract DAOFactory is Initializable {
                 _schemesInitilizeDataLens,
                 _permissions,
                 _metaData);
-    }
+        }
 
     /**
    * @dev Creates a new proxy for the given contract and forwards a function call to it.

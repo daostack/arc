@@ -196,8 +196,8 @@ contract('DaoFactory', function(accounts) {
           await registration.daoFactory.setSchemes(
                                   avatar.address,
                                   [web3.utils.fromAscii("SchemeMock")],
-                                   bytesConcate[0],
-                                   [bytesConcate[1]],
+                                  schemeMockData1,
+                                  [helpers.getBytesLength(schemeMockData1)],
                                   ["0x0000000F"],
                                   "metaData");
          assert(false,"should fail because lock for account[0] suppose to be deleted by the first call");
