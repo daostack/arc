@@ -355,3 +355,11 @@ export const increaseTime = async function(duration) {
     });
   });
 };
+
+export const concatBytes = function (bytes1, bytes2) {
+  return bytes1 + (bytes2.slice(2));
+};
+
+export const getBytesLength = function (bytes) {
+  return web3.utils.toBN(Number(bytes.slice(2).length) / 2);
+};

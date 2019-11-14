@@ -137,18 +137,6 @@ contract DAOFactory is Initializable {
                 _schemesInitilizeDataLens,
                 _permissions,
                 _metaData);
-        }
-
-    //this function is an helper function to concate 2 bytes vars and return its length.
-    //todo: implement that offlince and remove it from the contract
-    function bytesConcat(bytes calldata _preBytes, bytes calldata _postBytes)
-    external
-    pure
-    returns (bytes memory, uint256, uint256) {
-        if (_postBytes.length == 0) {
-            return (_preBytes, _preBytes.length, 0);
-        }
-        return (_preBytes.concat(_postBytes), _preBytes.length, _postBytes.length);
     }
 
     /**

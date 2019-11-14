@@ -84,13 +84,11 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,2)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,schemeMockData2);
-
         var tx = await registration.daoFactory.setSchemes(
                     avatar.address,
                     [web3.utils.fromAscii("SchemeMock"),web3.utils.fromAscii("SchemeMock")],
-                     bytesConcate[0],
-                     [bytesConcate[1],bytesConcate[2]],
+                    helpers.concatBytes(schemeMockData1,schemeMockData2),
+                    [helpers.getBytesLength(schemeMockData1), helpers.getBytesLength(schemeMockData2)],
                     ["0x0000000F","0x0000000F"],
                     "metaData");
         assert.equal(tx.logs.length, 5);
@@ -116,14 +114,13 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,2)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,schemeMockData2);
 
         try {
           await registration.daoFactory.setSchemes(
                       avatar.address,
                       [web3.utils.fromAscii("SchemeMock"),web3.utils.fromAscii("SchemeMock")],
-                       bytesConcate[0],
-                       [bytesConcate[1],bytesConcate[2]],
+                      helpers.concatBytes(schemeMockData1, schemeMockData2),
+                      [helpers.getBytesLength(schemeMockData1), helpers.getBytesLength(schemeMockData2)],
                       ["0x0000000F","0x0000000F"],
                       "metaData",{from:accounts[1]});
          assert(false,"should fail because accounts[1] does not hold the lock");
@@ -141,13 +138,12 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,"0x");
 
         var tx = await registration.daoFactory.setSchemes(
                                 avatar.address,
                                 [web3.utils.fromAscii("SchemeMock")],
-                                 bytesConcate[0],
-                                 [bytesConcate[1]],
+                                schemeMockData1,
+                                [helpers.getBytesLength(schemeMockData1)],
                                 ["0x0000000F"],
                                 "metaData");
         controllerAddress = await avatar.owner({from:accounts[1]});
@@ -169,13 +165,12 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,"0x");
 
         await registration.daoFactory.setSchemes(
                                 avatar.address,
                                 [web3.utils.fromAscii("SchemeMock")],
-                                 bytesConcate[0],
-                                 [bytesConcate[1]],
+                                schemeMockData1,
+                                [helpers.getBytesLength(schemeMockData1)],
                                 ["0x0000000F"],
                                 "metaData");
         isSchemeRegistered = await controller.isSchemeRegistered(registration.daoFactory.address,{from:accounts[1]});
@@ -189,13 +184,12 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,"0x");
 
          await registration.daoFactory.setSchemes(
                                 avatar.address,
                                 [web3.utils.fromAscii("SchemeMock")],
-                                 bytesConcate[0],
-                                 [bytesConcate[1]],
+                                schemeMockData1,
+                                [helpers.getBytesLength(schemeMockData1)],
                                 ["0x0000000F"],
                                 "metaData");
         try {
@@ -271,13 +265,12 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,"0x");
 
         var tx = await registration.daoFactory.setSchemes(
                                 avatar.address,
                                 [web3.utils.fromAscii("SchemeMock")],
-                                 bytesConcate[0],
-                                 [bytesConcate[1]],
+                                schemeMockData1,
+                                [helpers.getBytesLength(schemeMockData1)],
                                 ["0x0000000F"],
                                 "metaData");
         assert.equal(tx.logs.length, 3);
