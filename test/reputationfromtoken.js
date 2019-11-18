@@ -12,7 +12,7 @@ var NectarRepAllocation = artifacts.require("./NectarRepAllocation.sol");
 const NectarToken = artifacts.require('./Reputation.sol');
 var ethereumjs = require('ethereumjs-abi');
 
-const setupNectar = async function (accounts)  {
+const setupNectar = async function (accounts,_agreementHash = helpers.SOME_HASH)  {
   var testSetup = new helpers.TestSetup();
   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
@@ -30,20 +30,19 @@ const setupNectar = async function (accounts)  {
                                                   0,
                                                   testSetup.blockReference,
                                                   testSetup.nectarToken.address);
-
   testSetup.reputationFromToken = await ReputationFromToken.new();
   testSetup.curve = helpers.NULL_ADDRESS;
   await testSetup.reputationFromToken.initialize(testSetup.org.avatar.address,
                                                    testSetup.nectarRepAllocation.address,
-                                                   helpers.NULL_ADDRESS);
-
-
+                                                   helpers.NULL_ADDRESS,
+                                                   _agreementHash);
+  testSetup.agreementHash = _agreementHash;
   var permissions = "0x00000000";
   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[helpers.NULL_HASH],[permissions],"metaData");
   return testSetup;
 };
 
-const setup = async function (accounts, _initialize = true) {
+const setup = async function (accounts, _initialize = true, _agreementHash = helpers.SOME_HASH) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
@@ -59,18 +58,19 @@ const setup = async function (accounts, _initialize = true) {
    if (_initialize === true) {
      await testSetup.reputationFromToken.initialize(testSetup.org.avatar.address,
                                                     testSetup.repAllocation.address,
-                                                    testSetup.curve.address);
+                                                    testSetup.curve.address,
+                                                    _agreementHash);
    }
-
+   testSetup.agreementHash = _agreementHash;
    var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[helpers.NULL_HASH],[permissions],"metaData");
    return testSetup;
 };
 const signatureType = 1;
-const redeem = async function(_testSetup,_beneficiary,_redeemer,_fromAccount) {
+const redeem = async function(_testSetup,_beneficiary,_redeemer,_agreementHash,_fromAccount) {
   var textMsg = "0x"+ethereumjs.soliditySHA3(
-    ["address","address"],
-    [_testSetup.reputationFromToken.address, _beneficiary]
+    ["address","address","bytes32"],
+    [_testSetup.reputationFromToken.address, _beneficiary,_agreementHash]
   ).toString("hex");
   //https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
   let signature = await web3.eth.sign(textMsg , _redeemer);
@@ -82,7 +82,7 @@ const redeem = async function(_testSetup,_beneficiary,_redeemer,_fromAccount) {
  } else {
    signature = signature1+'1c';
  }
-  return (await _testSetup.reputationFromToken.redeemWithSignature(_beneficiary,signatureType,signature
+  return (await _testSetup.reputationFromToken.redeemWithSignature(_beneficiary,_agreementHash,signatureType,signature
     ,{from:_fromAccount}));
 };
 contract('ReputationFromToken and RepAllocation', accounts => {
@@ -136,7 +136,7 @@ contract('ReputationFromToken and RepAllocation', accounts => {
 
     it("redeem", async () => {
       let testSetup = await setup(accounts);
-      var tx = await testSetup.reputationFromToken.redeem(accounts[1]);
+      var tx = await testSetup.reputationFromToken.redeem(accounts[1],testSetup.agreementHash);
       var total_reputation = await testSetup.curve.TOTAL_REPUTATION();
       var sum_of_sqrt = await testSetup.curve.SUM_OF_SQRTS();
       var expected = Math.floor(((10*total_reputation)/sum_of_sqrt) * 1000000000) * 1000000000;
@@ -152,7 +152,7 @@ contract('ReputationFromToken and RepAllocation', accounts => {
 
     it("redeemWithSignature", async () => {
       let testSetup = await setup(accounts);
-      var tx = await redeem(testSetup,accounts[1],accounts[0],accounts[2]);
+      var tx = await redeem(testSetup,accounts[1],accounts[0],testSetup.agreementHash,accounts[2]);
       var total_reputation = await testSetup.curve.TOTAL_REPUTATION();
       var sum_of_sqrt = await testSetup.curve.SUM_OF_SQRTS();
       var expected = Math.floor(((10*total_reputation)/sum_of_sqrt) * 1000000000) * 1000000000;
@@ -168,7 +168,7 @@ contract('ReputationFromToken and RepAllocation', accounts => {
 
     it("redeem with no beneficiary", async () => {
       let testSetup = await setup(accounts);
-      var tx = await testSetup.reputationFromToken.redeem(helpers.NULL_ADDRESS);
+      var tx = await testSetup.reputationFromToken.redeem(helpers.NULL_ADDRESS,testSetup.agreementHash);
       var total_reputation = await testSetup.curve.TOTAL_REPUTATION();
       var sum_of_sqrt = await testSetup.curve.SUM_OF_SQRTS();
       var expected = Math.floor(((10*total_reputation)/sum_of_sqrt) * 1000000000) * 1000000000;
@@ -187,8 +187,8 @@ contract('ReputationFromToken and RepAllocation', accounts => {
         try {
              await testSetup.reputationFromToken.initialize(testSetup.org.avatar.address,
                                                             testSetup.repAllocation.address,
-                                                            testSetup.curve.address
-                                                            );
+                                                            testSetup.curve.address,
+                                                            testSetup.agreementHash);
              assert(false, "cannot initialize twice");
            } catch(error) {
              helpers.assertVMException(error);
@@ -197,7 +197,13 @@ contract('ReputationFromToken and RepAllocation', accounts => {
 
     it("redeem nectar", async () => {
       let testSetup = await setupNectar(accounts);
-      var tx = await testSetup.reputationFromToken.redeem(accounts[1],{from:accounts[1]});
+      try {
+           await testSetup.reputationFromToken.redeem(accounts[1],helpers.NULL_HASH,{from:accounts[1]});
+           assert(false, "redeem with wrong agreement hash should fail");
+         } catch(error) {
+           helpers.assertVMException(error);
+         }
+      var tx = await testSetup.reputationFromToken.redeem(accounts[1],testSetup.agreementHash,{from:accounts[1]});
       var expected = Math.floor((200*testSetup.reputationReward)/300);
       assert.equal(tx.logs.length,1);
       assert.equal(tx.logs[0].event,"Redeem");
