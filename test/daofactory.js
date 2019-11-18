@@ -20,10 +20,10 @@ const setup = async function (accounts,founderToken,founderReputation,cap=0) {
                         .initialize("TEST","TST",cap,registration.daoFactory.address)
                         .encodeABI();
 
-  var tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[founderToken],[founderReputation],{gas:constants.ARC_GAS_LIMIT});
-  assert.equal(tx.logs.length, 1);
-  assert.equal(tx.logs[0].event, "NewOrg");
-  var avatarAddress = tx.logs[0].args._avatar;
+  var tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[founderToken],[founderReputation],[0,0,0],{gas:constants.ARC_GAS_LIMIT});
+  assert.equal(tx.logs.length, 5);
+  assert.equal(tx.logs[4].event, "NewOrg");
+  var avatarAddress = tx.logs[4].args._avatar;
   avatar = await Avatar.at(avatarAddress);
   var tokenAddress = await avatar.nativeToken({from:accounts[1]});
   daoToken = await DAOToken.at(tokenAddress);
@@ -93,13 +93,13 @@ contract('DaoFactory', function(accounts) {
                      [bytesConcate[1],bytesConcate[2]],
                     ["0x0000000F","0x0000000F"],
                     "metaData");
-        assert.equal(tx.logs.length, 3);
-        assert.equal(tx.logs[2].event, "InitialSchemesSet");
-        assert.equal(tx.logs[2].args._avatar, avatar.address);
+        assert.equal(tx.logs.length, 5);
+        assert.equal(tx.logs[4].event, "InitialSchemesSet");
+        assert.equal(tx.logs[4].args._avatar, avatar.address);
 
-        assert.equal(tx.logs[0].event, "SchemeInstance");
-        var scheme1Instance =  new SchemeMock(tx.logs[0].args._scheme);
-        var scheme2Instance =  new SchemeMock(tx.logs[1].args._scheme);
+        assert.equal(tx.logs[1].event, "SchemeInstance");
+        var scheme1Instance =  new SchemeMock(tx.logs[1].args._scheme);
+        var scheme2Instance =  new SchemeMock(tx.logs[3].args._scheme);
         assert.equal(await scheme1Instance.testData({from:accounts[1]}), 1);
         assert.equal(await scheme2Instance.testData({from:accounts[1]}), 2);
 
@@ -152,7 +152,7 @@ contract('DaoFactory', function(accounts) {
                                 "metaData");
         controllerAddress = await avatar.owner({from:accounts[1]});
         controller = await Controller.at(controllerAddress);
-        var isSchemeRegistered = await controller.isSchemeRegistered(tx.logs[0].args._scheme,{from:accounts[1]});
+        var isSchemeRegistered = await controller.isSchemeRegistered(tx.logs[1].args._scheme,{from:accounts[1]});
         assert.equal(isSchemeRegistered,true);
     });
 
@@ -218,7 +218,7 @@ contract('DaoFactory', function(accounts) {
        await setup(accounts,amountToMint,amountToMint);
 
        try {
-        await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[11],[],{gas:constants.ARC_GAS_LIMIT});
+        await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[11],[],[0,0,0],{gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert  because reputation array size is 0");
        }
        catch(ex){
@@ -226,7 +226,13 @@ contract('DaoFactory', function(accounts) {
        }
 
        try {
-        await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0],helpers.NULL_ADDRESS],[amountToMint,amountToMint],[amountToMint,amountToMint],{gas:constants.ARC_GAS_LIMIT});
+        await registration.daoFactory.forgeOrg("testOrg",
+                       nativeTokenData,[accounts[0],
+                       helpers.NULL_ADDRESS],
+                       [amountToMint,amountToMint],
+                       [amountToMint,amountToMint],
+                       [0,0,0],
+                       {gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert  because account is 0");
        }
        catch(ex){
@@ -274,9 +280,35 @@ contract('DaoFactory', function(accounts) {
                                  [bytesConcate[1]],
                                 ["0x0000000F"],
                                 "metaData");
-        assert.equal(tx.logs.length, 2);
-        assert.equal(tx.logs[1].event, "InitialSchemesSet");
-        assert.equal(tx.logs[1].args._avatar, avatar.address);
+        assert.equal(tx.logs.length, 3);
+        assert.equal(tx.logs[2].event, "InitialSchemesSet");
+        assert.equal(tx.logs[2].args._avatar, avatar.address);
       });
+
+      it("forgeOrg different version", async function() {
+          var amountToMint = 10;
+          await setup(accounts,amountToMint,amountToMint);
+          var newVer = [0,2,0];
+          await helpers.registrationAddVersionToPackege(registration,newVer);
+          nativeTokenData = await new web3.eth.Contract(registration.daoToken.abi)
+                                .methods
+                                .initialize("TEST","TST",0,registration.daoFactory.address)
+                                .encodeABI();
+
+          var tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[amountToMint],[amountToMint],[0,1,0],{gas:constants.ARC_GAS_LIMIT});
+          assert.equal(tx.logs.length, 5);
+          var avatarAddress = tx.logs[4].args._avatar;
+          assert.equal(tx.logs[2].event, "ProxyCreated");
+          assert.equal(tx.logs[2].args._proxy, avatarAddress);
+          assert.equal(tx.logs[2].args._version[1].toNumber(),1);
+
+          tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[amountToMint],[amountToMint],[0,0,0],{gas:constants.ARC_GAS_LIMIT});
+          assert.equal(tx.logs.length, 5);
+          avatarAddress = tx.logs[4].args._avatar;
+          assert.equal(tx.logs[2].event, "ProxyCreated");
+          assert.equal(tx.logs[2].args._proxy, avatarAddress);
+          assert.equal(tx.logs[2].args._version[1].toNumber(),2);
+
+        });
 
 });

@@ -132,15 +132,12 @@ export function assertInternalFunctionException(error) {
 export function assertJump(error) {
   assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned' + error.message);
 }
-
-export const registerImplementation = async function () {
-  var registration = new Registration();
+export const registrationAddVersionToPackege = async function (registration,version = [0,1,0]) {
   var packageName = "DAOstack";
-  var packageInstance = await Package.new();
+
   var implementationDirectory = await ImplementationDirectory.new();
-  await packageInstance.addVersion([0,1,0],implementationDirectory.address,NULL_HASH);
-  registration.app = await App.new();
-  await registration.app.setPackage(packageName,packageInstance.address,[0,1,0]);
+  await registration.packageInstance.addVersion(version,implementationDirectory.address,NULL_HASH);
+  await registration.app.setPackage(packageName,registration.packageInstance.address,version);
   registration.daoToken = await DAOToken.new();
   registration.reputation = await Reputation.new();
   registration.avatar = await Avatar.new();
@@ -153,7 +150,14 @@ export const registerImplementation = async function () {
   await implementationDirectory.setImplementation("Controller",registration.controller.address);
   await implementationDirectory.setImplementation("SchemeMock",registration.schemeMock.address);
   await implementationDirectory.setImplementation("ContributionReward",registration.contributionReward.address);
+  return registration;
+};
 
+export const registerImplementation = async function (version = [0,1,0]) {
+  var registration = new Registration();
+  registration.packageInstance = await Package.new();
+  registration.app = await App.new();
+  registration = await registrationAddVersionToPackege(registration,version);
   registration.daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
   registration.daoFactory = await DAOFactory.new({gas:constants.ARC_GAS_LIMIT});
   registration.daoFactory.initialize(registration.app.address,registration.daoTracker.address);
@@ -244,10 +248,16 @@ export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
                         .methods
                         .initialize("TEST","TST",cap,registration.daoFactory.address)
                         .encodeABI();
-  var tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,daoCreatorOwner,founderToken,founderReputation,{from:proxyAdmin,gas:constants.ARC_GAS_LIMIT});
-  assert.equal(tx.logs.length, 1);
-  assert.equal(tx.logs[0].event, "NewOrg");
-  var avatarAddress = tx.logs[0].args._avatar;
+  var tx = await registration.daoFactory.forgeOrg("testOrg",
+                                                  nativeTokenData,
+                                                  daoCreatorOwner,
+                                                  founderToken,
+                                                  founderReputation,
+                                                  [0,0,0],
+                                                  {from:proxyAdmin,gas:constants.ARC_GAS_LIMIT});
+  assert.equal(tx.logs.length, 5);
+  assert.equal(tx.logs[4].event, "NewOrg");
+  var avatarAddress = tx.logs[4].args._avatar;
   org.avatar = await Avatar.at(avatarAddress);
   var tokenAddress = await org.avatar.nativeToken();
   org.token = await DAOToken.at(tokenAddress);
