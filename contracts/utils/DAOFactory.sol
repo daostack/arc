@@ -1,4 +1,4 @@
-pragma solidity ^0.5.11;
+pragma solidity ^0.5.13;
 
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "@openzeppelin/upgrades/contracts/application/App.sol";
@@ -32,6 +32,7 @@ contract DAOFactory is Initializable {
     App public app;
     string public constant PACKAGE_NAME = "DAOstack";
     DAOTracker private daoTracker;
+    //this is here due to "stack too deep issue"
     uint64[3] private packageVersion;
 
     function initialize(address _appContractAddress, DAOTracker _daoTracker) external initializer {
