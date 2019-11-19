@@ -5,13 +5,14 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./CurveInterface.sol";
 import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "./Agreement.sol";
 
 /**
  * @title A scheme for reputation allocation according to token balances
  *        This contract is assuming that the token contract is paused, and one cannot transfer its tokens.
  */
 
-contract ReputationFromToken {
+contract ReputationFromToken is Agreement {
     using ECDSA for bytes32;
     using SafeMath for uint256;
 
@@ -26,32 +27,36 @@ contract ReputationFromToken {
     bytes32 public constant DELEGATION_HASH_EIP712 =
     keccak256(abi.encodePacked(
     "address ReputationFromTokenAddress",
-    "address Beneficiary"
+    "address Beneficiary",
+    "bytes32 AgreementHash"
     ));
 
     event Redeem(address indexed _beneficiary, address indexed _sender, uint256 _amount);
-    
+
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _tokenContract the token contract
+     * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
-    function initialize(Avatar _avatar, IERC20 _tokenContract, CurveInterface _curve) external
+    function initialize(Avatar _avatar, IERC20 _tokenContract, CurveInterface _curve, bytes32 _agreementHash) external
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         tokenContract = _tokenContract;
         avatar = _avatar;
         curve = _curve;
+        super.setAgreementHash(_agreementHash);
     }
 
     /**
      * @dev redeem function
      * @param _beneficiary the beneficiary address to redeem for
+     * @param _agreementHash the agreementHash hash
      * @return uint256 minted reputation
      */
-    function redeem(address _beneficiary) external returns(uint256) {
-        return _redeem(_beneficiary, msg.sender);
+    function redeem(address _beneficiary, bytes32 _agreementHash) external returns(uint256) {
+        return _redeem(_beneficiary, msg.sender, _agreementHash);
     }
 
     /**
@@ -65,6 +70,7 @@ contract ReputationFromToken {
      */
     function redeemWithSignature(
         address _beneficiary,
+        bytes32 _agreementHash,
         uint256 _signatureType,
         bytes calldata _signature
         )
@@ -79,7 +85,8 @@ contract ReputationFromToken {
                     DELEGATION_HASH_EIP712, keccak256(
                         abi.encodePacked(
                         address(this),
-                        _beneficiary)
+                        _beneficiary,
+                        _agreementHash)
                     )
                 )
             );
@@ -87,12 +94,13 @@ contract ReputationFromToken {
             delegationDigest = keccak256(
                         abi.encodePacked(
                         address(this),
-                        _beneficiary)
+                        _beneficiary,
+                        _agreementHash)
                     ).toEthSignedMessageHash();
         }
         address redeemer = delegationDigest.recover(_signature);
         require(redeemer != address(0), "redeemer address cannot be 0");
-        return _redeem(_beneficiary, redeemer);
+        return _redeem(_beneficiary, redeemer, _agreementHash);
     }
 
     /**
@@ -101,7 +109,10 @@ contract ReputationFromToken {
      * @param _redeemer the redeemer address
      * @return uint256 minted reputation
      */
-    function _redeem(address _beneficiary, address _redeemer) private returns(uint256) {
+    function _redeem(address _beneficiary, address _redeemer, bytes32 _agreementHash)
+    private
+    onlyAgree(_agreementHash)
+    returns(uint256) {
         require(avatar != Avatar(0), "should initialize first");
         require(redeems[_redeemer] == false, "redeeming twice from the same account is not allowed");
         redeems[_redeemer] = true;
