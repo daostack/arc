@@ -102,7 +102,7 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
                            [permissions],
                            "metaData",{from:testSetup.proxyAdmin});
 
-   testSetup.contributionReward = await ContributionReward.at(tx.logs[0].args._scheme);
+   testSetup.contributionReward = await ContributionReward.at(tx.logs[1].args._scheme);
    return testSetup;
 };
 contract('ContributionReward', accounts => {
