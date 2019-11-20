@@ -5,7 +5,7 @@ const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const Controller = artifacts.require("./Controller.sol");
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
-
+const Wallet = artifacts.require('./test/Wallet.sol');
 
 var avatar;
 var daoToken;
@@ -73,7 +73,7 @@ contract('DaoFactory', function(accounts) {
         assert.equal(controllerReputationAddress,reputationAddress);
     });
 
-    it("setSchemes", async function() {
+      it("setSchemes", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         var schemeMockData1 = await new web3.eth.Contract(registration.schemeMock.abi)
@@ -111,6 +111,7 @@ contract('DaoFactory', function(accounts) {
         assert.equal(await walletInstance.owner({from:accounts[1]}), avatar.address);
 
       });
+
 
     it("setSchemes from account that does not hold the lock", async function() {
         var amountToMint = 10;

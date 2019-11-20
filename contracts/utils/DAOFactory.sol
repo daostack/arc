@@ -8,10 +8,12 @@ import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 import "../controller/Controller.sol";
 import "../utils/DAOTracker.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 
 contract DAOFactory is Initializable {
     using BytesLib for bytes;
+    using SafeMath for uint256;
 
     event NewOrg (address indexed _avatar);
     event InitialSchemesSet (address indexed _avatar);
@@ -200,7 +202,7 @@ contract DAOFactory is Initializable {
                                 _schemesData.slice(startIndex, _schemesInitilizeDataLens[i])));
             emit SchemeInstance(scheme, bytes32ToStr(_schemesNames[i]));
             controller.registerScheme(scheme, _permissions[i]);
-            startIndex = _schemesInitilizeDataLens[i];
+            startIndex = startIndex.add(_schemesInitilizeDataLens[i]);
         }
         controller.metaData(_metaData);
          // Unregister self:
