@@ -99,17 +99,16 @@ contract('DaoFactory', function(accounts) {
                     [helpers.getBytesLength(walletData), helpers.getBytesLength(schemeMockData1),helpers.getBytesLength(schemeMockData2)],
                     ["0x0000000F","0x0000000F","0x0000000F"],
                     "metaData");
-        assert.equal(tx.logs.length, 5);
-        assert.equal(tx.logs[4].event, "InitialSchemesSet");
-        assert.equal(tx.logs[4].args._avatar, avatar.address);
-
+        assert.equal(tx.logs.length, 7);
+        assert.equal(tx.logs[6].event, "InitialSchemesSet");
+        assert.equal(tx.logs[6].args._avatar, avatar.address);
         assert.equal(tx.logs[1].event, "SchemeInstance");
-        var scheme1Instance =  new SchemeMock(tx.logs[1].args._scheme);
-        var scheme2Instance =  new SchemeMock(tx.logs[3].args._scheme);
+        var walletInstance = new Wallet(tx.logs[1].args._scheme);
+        var scheme1Instance = new SchemeMock(tx.logs[3].args._scheme);
+        var scheme2Instance = new SchemeMock(tx.logs[5].args._scheme);
         assert.equal(await scheme1Instance.testData({from:accounts[1]}), 1);
         assert.equal(await scheme2Instance.testData({from:accounts[1]}), 2);
         assert.equal(await walletInstance.owner({from:accounts[1]}), avatar.address);
-
       });
 
 
