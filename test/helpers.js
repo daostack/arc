@@ -10,6 +10,7 @@ const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
+const Wallet = artifacts.require('./test/Wallet.sol');
 const DAOTracker = artifacts.require("./DAOTracker.sol");
 const App = artifacts.require("./App.sol");
 const Package = artifacts.require("./Package.sol");
@@ -143,12 +144,14 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.avatar = await Avatar.new();
   registration.controller = await Controller.new();
   registration.schemeMock = await SchemeMock.new();
+  registration.wallet = await Wallet.new();
   registration.contributionReward = await ContributionReward.new();
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
   await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
   await implementationDirectory.setImplementation("Controller",registration.controller.address);
   await implementationDirectory.setImplementation("SchemeMock",registration.schemeMock.address);
+  await implementationDirectory.setImplementation("Wallet",registration.wallet.address);
   await implementationDirectory.setImplementation("ContributionReward",registration.contributionReward.address);
   return registration;
 };
@@ -354,4 +357,12 @@ export const increaseTime = async function(duration) {
       });
     });
   });
+};
+
+export const concatBytes = function (bytes1, bytes2) {
+  return bytes1 + (bytes2.slice(2));
+};
+
+export const getBytesLength = function (bytes) {
+  return web3.utils.toBN(Number(bytes.slice(2).length) / 2);
 };

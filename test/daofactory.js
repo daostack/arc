@@ -5,7 +5,7 @@ const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const Controller = artifacts.require("./Controller.sol");
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
-
+const Wallet = artifacts.require('./test/Wallet.sol');
 
 var avatar;
 var daoToken;
@@ -73,37 +73,44 @@ contract('DaoFactory', function(accounts) {
         assert.equal(controllerReputationAddress,reputationAddress);
     });
 
-    it("setSchemes", async function() {
+      it("setSchemes", async function() {
         var amountToMint = 10;
         await setup(accounts,amountToMint,amountToMint);
         var schemeMockData1 = await new web3.eth.Contract(registration.schemeMock.abi)
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
+
         var schemeMockData2 = await new web3.eth.Contract(registration.schemeMock.abi)
                               .methods
                               .initialize(avatar.address,2)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,schemeMockData2);
+        var walletData = await new web3.eth.Contract(registration.wallet.abi)
+                                                    .methods
+                                                    .initialize(avatar.address)
+                                                    .encodeABI();
 
         var tx = await registration.daoFactory.setSchemes(
                     avatar.address,
-                    [web3.utils.fromAscii("SchemeMock"),web3.utils.fromAscii("SchemeMock")],
-                     bytesConcate[0],
-                     [bytesConcate[1],bytesConcate[2]],
-                    ["0x0000000F","0x0000000F"],
+                    [web3.utils.fromAscii("Wallet"),
+                    web3.utils.fromAscii("SchemeMock"),
+                    web3.utils.fromAscii("SchemeMock")],
+                    helpers.concatBytes(helpers.concatBytes(walletData,schemeMockData1),schemeMockData2),
+                    [helpers.getBytesLength(walletData), helpers.getBytesLength(schemeMockData1),helpers.getBytesLength(schemeMockData2)],
+                    ["0x0000000F","0x0000000F","0x0000000F"],
                     "metaData");
-        assert.equal(tx.logs.length, 5);
-        assert.equal(tx.logs[4].event, "InitialSchemesSet");
-        assert.equal(tx.logs[4].args._avatar, avatar.address);
-
+        assert.equal(tx.logs.length, 7);
+        assert.equal(tx.logs[6].event, "InitialSchemesSet");
+        assert.equal(tx.logs[6].args._avatar, avatar.address);
         assert.equal(tx.logs[1].event, "SchemeInstance");
-        var scheme1Instance =  new SchemeMock(tx.logs[1].args._scheme);
-        var scheme2Instance =  new SchemeMock(tx.logs[3].args._scheme);
+        var walletInstance = new Wallet(tx.logs[1].args._scheme);
+        var scheme1Instance = new SchemeMock(tx.logs[3].args._scheme);
+        var scheme2Instance = new SchemeMock(tx.logs[5].args._scheme);
         assert.equal(await scheme1Instance.testData({from:accounts[1]}), 1);
         assert.equal(await scheme2Instance.testData({from:accounts[1]}), 2);
-
+        assert.equal(await walletInstance.owner({from:accounts[1]}), avatar.address);
       });
+
 
     it("setSchemes from account that does not hold the lock", async function() {
         var amountToMint = 10;
@@ -116,14 +123,13 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,2)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,schemeMockData2);
 
         try {
           await registration.daoFactory.setSchemes(
                       avatar.address,
                       [web3.utils.fromAscii("SchemeMock"),web3.utils.fromAscii("SchemeMock")],
-                       bytesConcate[0],
-                       [bytesConcate[1],bytesConcate[2]],
+                      helpers.concatBytes(schemeMockData1, schemeMockData2),
+                      [helpers.getBytesLength(schemeMockData1), helpers.getBytesLength(schemeMockData2)],
                       ["0x0000000F","0x0000000F"],
                       "metaData",{from:accounts[1]});
          assert(false,"should fail because accounts[1] does not hold the lock");
@@ -141,13 +147,12 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,"0x");
 
         var tx = await registration.daoFactory.setSchemes(
                                 avatar.address,
                                 [web3.utils.fromAscii("SchemeMock")],
-                                 bytesConcate[0],
-                                 [bytesConcate[1]],
+                                schemeMockData1,
+                                [helpers.getBytesLength(schemeMockData1)],
                                 ["0x0000000F"],
                                 "metaData");
         controllerAddress = await avatar.owner({from:accounts[1]});
@@ -169,13 +174,12 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,"0x");
 
         await registration.daoFactory.setSchemes(
                                 avatar.address,
                                 [web3.utils.fromAscii("SchemeMock")],
-                                 bytesConcate[0],
-                                 [bytesConcate[1]],
+                                schemeMockData1,
+                                [helpers.getBytesLength(schemeMockData1)],
                                 ["0x0000000F"],
                                 "metaData");
         isSchemeRegistered = await controller.isSchemeRegistered(registration.daoFactory.address,{from:accounts[1]});
@@ -189,21 +193,20 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,"0x");
 
          await registration.daoFactory.setSchemes(
                                 avatar.address,
                                 [web3.utils.fromAscii("SchemeMock")],
-                                 bytesConcate[0],
-                                 [bytesConcate[1]],
+                                schemeMockData1,
+                                [helpers.getBytesLength(schemeMockData1)],
                                 ["0x0000000F"],
                                 "metaData");
         try {
           await registration.daoFactory.setSchemes(
                                   avatar.address,
                                   [web3.utils.fromAscii("SchemeMock")],
-                                   bytesConcate[0],
-                                   [bytesConcate[1]],
+                                  schemeMockData1,
+                                  [helpers.getBytesLength(schemeMockData1)],
                                   ["0x0000000F"],
                                   "metaData");
          assert(false,"should fail because lock for account[0] suppose to be deleted by the first call");
@@ -271,13 +274,12 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-        var bytesConcate = await registration.daoFactory.bytesConcat(schemeMockData1,"0x");
 
         var tx = await registration.daoFactory.setSchemes(
                                 avatar.address,
                                 [web3.utils.fromAscii("SchemeMock")],
-                                 bytesConcate[0],
-                                 [bytesConcate[1]],
+                                schemeMockData1,
+                                [helpers.getBytesLength(schemeMockData1)],
                                 ["0x0000000F"],
                                 "metaData");
         assert.equal(tx.logs.length, 3);

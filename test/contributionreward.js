@@ -91,14 +91,12 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
                       tokenAddress,
                       testSetup.org.avatar.address);
    var permissions = "0x00000000";
-
-   var bytesConcate = await registration.daoFactory.bytesConcat(testSetup.contributionRewardParams.initdata,"0x");
-
+  
    var tx = await registration.daoFactory.setSchemes(
                            testSetup.org.avatar.address,
                            [web3.utils.fromAscii("ContributionReward")],
-                            bytesConcate[0],
-                            [bytesConcate[1]],
+                           testSetup.contributionRewardParams.initdata,
+                           [helpers.getBytesLength(testSetup.contributionRewardParams.initdata)],
                            [permissions],
                            "metaData",{from:testSetup.proxyAdmin});
 
