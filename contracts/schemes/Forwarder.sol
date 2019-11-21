@@ -1,6 +1,6 @@
 pragma solidity ^0.5.11;
 
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /**
@@ -45,6 +45,6 @@ contract Forwarder is Ownable {
     function unregisterSelf() public returns(bool) {
        // solhint-disable-next-line not-rely-on-time
         require(expirationTime <= now, "expirationTime <= now");
-        return ControllerInterface(avatar.owner()).unregisterSelf(address(avatar));
+        return Controller(avatar.owner()).unregisterSelf(address(avatar));
     }
 }

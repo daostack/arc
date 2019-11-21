@@ -1,6 +1,6 @@
 pragma solidity ^0.5.11;
 
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
@@ -51,7 +51,7 @@ contract FixedReputationAllocation is Ownable {
         // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "require now > redeemEnableTime");
         require(
-        ControllerInterface(
+        Controller(
         avatar.owner())
         .mintReputation(beneficiaryReward, _beneficiary, address(avatar)), "mint reputation failed");
 

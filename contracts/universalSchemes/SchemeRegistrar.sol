@@ -66,7 +66,7 @@ contract SchemeRegistrar is UniversalScheme, VotingMachineCallbacks, ProposalExe
         if (_param == 1) {
 
           // Define controller and get the params:
-            ControllerInterface controller = ControllerInterface(avatar.owner());
+            Controller controller = Controller(avatar.owner());
 
           // Add a scheme:
             if (proposal.addScheme) {

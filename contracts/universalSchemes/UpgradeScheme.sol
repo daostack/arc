@@ -66,7 +66,7 @@ contract UpgradeScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecu
         if (_param == 1) {
 
         // Define controller and get the params:
-            ControllerInterface controller = ControllerInterface(avatar.owner());
+            Controller controller = Controller(avatar.owner());
         // Upgrading controller:
             if (proposal.proposalType == 1) {
                 require(controller.upgradeController(proposal.upgradeContract, avatar));

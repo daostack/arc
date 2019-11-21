@@ -2,8 +2,6 @@ pragma solidity ^0.5.11;
 
 import "./Avatar.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
-import "./ControllerInterface.sol";
-
 
 /**
  * @title Controller contract
@@ -11,7 +9,7 @@ import "./ControllerInterface.sol";
  * It is subject to a set of schemes and constraints that determine its behavior.
  * Each scheme has it own parameters and operation permissions.
  */
-contract Controller is ControllerInterface {
+contract Controller {
 
     struct Scheme {
         bytes32 paramsHash;  // a hash "configuration" of the scheme

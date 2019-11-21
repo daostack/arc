@@ -108,7 +108,7 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
-        ControllerInterface controller = ControllerInterface(avatar.owner());
+        Controller controller = Controller(avatar.owner());
         (success, genericCallReturnValue) =
         controller.genericCall(contractToCall, proposal.callData, avatar, proposal.value);
         if (success) {

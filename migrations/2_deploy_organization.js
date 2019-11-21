@@ -1,7 +1,6 @@
 //this migration file is used only for testing purpose
 var constants = require('../test/constants');
 var Avatar = artifacts.require('./Avatar.sol');
-var UController = artifacts.require('./UController.sol');
 var DaoCreator = artifacts.require('./DaoCreator.sol');
 var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.sol');
 var SchemeRegistrar = artifacts.require('./SchemeRegistrar.sol');
@@ -46,7 +45,7 @@ module.exports = async function(deployer) {
       await web3.eth.getAccounts(function(err,res) { accounts = res; });
       founders[0] = accounts[0];
       var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,NULL_ADDRESS,cap,{gas: constants.ARC_GAS_LIMIT});
+          initTokenInWei, initRepInWei,cap,{gas: constants.ARC_GAS_LIMIT});
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
       await deployer.deploy(AbsoluteVote,{gas: constants.ARC_GAS_LIMIT});
       // Deploy AbsoluteVote:
@@ -91,17 +90,5 @@ module.exports = async function(deployer) {
         paramsArray,
         permissionArray,
         "metaData");
-      //now deploy with universal controller
-      await deployer.deploy(UController, {gas: constants.ARC_GAS_LIMIT});
-      var uController = await UController.deployed();
-      returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,uController.address,cap,{gas: constants.ARC_GAS_LIMIT});
-      AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
-      await daoCreatorInst.setSchemes(
-          AvatarInst.address,
-          schemesArray,
-          paramsArray,
-          permissionArray,
-          "metaData");
      });
   };

@@ -1,7 +1,6 @@
 pragma solidity ^0.5.11;
 
 import "./UniversalScheme.sol";
-import "../controller/UController.sol";
 import "../controller/Controller.sol";
 import "../utils/DAOTracker.sol";
 
@@ -67,11 +66,11 @@ contract DaoCreator {
         for (uint256 i = 0; i < _founders.length; i++) {
             require(_founders[i] != address(0));
             if (_foundersTokenAmount[i] > 0) {
-                ControllerInterface(
+                Controller(
                 _avatar.owner()).mintTokens(_foundersTokenAmount[i], _founders[i], address(_avatar));
             }
             if (_foundersReputationAmount[i] > 0) {
-                ControllerInterface(
+                Controller(
                 _avatar.owner()).mintReputation(_foundersReputationAmount[i], _founders[i], address(_avatar));
             }
         }
@@ -88,8 +87,6 @@ contract DaoCreator {
     *  receive in the new organization
     * @param _foundersReputationAmount An array of amount of reputation that the
     *   founders receive in the new organization
-    * @param  _uController universal controller instance
-    *         if _uController address equal to zero the organization will use none universal controller.
     * @param  _cap token cap - 0 for no cap.
     * @return The address of the avatar of the controller
     */
@@ -100,7 +97,6 @@ contract DaoCreator {
         address[] calldata _founders,
         uint[] calldata _foundersTokenAmount,
         uint[] calldata _foundersReputationAmount,
-        UController _uController,
         uint256 _cap
     )
     external
@@ -114,7 +110,6 @@ contract DaoCreator {
             _founders,
             _foundersTokenAmount,
             _foundersReputationAmount,
-            _uController,
             _cap);
     }
 
@@ -139,7 +134,7 @@ contract DaoCreator {
         // for this controller
         require(locks[address(_avatar)] == msg.sender);
         // register initial schemes:
-        ControllerInterface controller = ControllerInterface(_avatar.owner());
+        Controller controller = Controller(_avatar.owner());
         for (uint256 i = 0; i < _schemes.length; i++) {
             controller.registerScheme(_schemes[i], _params[i], _permissions[i], address(_avatar));
         }
@@ -161,8 +156,6 @@ contract DaoCreator {
      *  receive in the new organization
      * @param _foundersReputationAmount An array of amount of reputation that the
      *   founders receive in the new organization
-     * @param  _uController universal controller instance
-     *         if _uController address equal to zero the organization will use none universal controller.
      * @param  _cap token cap - 0 for no cap.
      * @return The address of the avatar of the controller
      */
@@ -173,7 +166,6 @@ contract DaoCreator {
         address[] memory _founders,
         uint[] memory _foundersTokenAmount,
         uint[] memory _foundersReputationAmount,
-        UController _uController,
         uint256 _cap
     ) private returns(address)
     {
@@ -181,10 +173,10 @@ contract DaoCreator {
         require(_founders.length == _foundersTokenAmount.length);
         require(_founders.length == _foundersReputationAmount.length);
         require(_founders.length > 0);
-        DAOToken  nativeToken = new DAOToken(_tokenName, _tokenSymbol, _cap);
-        Reputation  nativeReputation = new Reputation();
-        Avatar  avatar = new Avatar(_orgName, nativeToken, nativeReputation);
-        ControllerInterface  controller;
+        DAOToken nativeToken = new DAOToken(_tokenName, _tokenSymbol, _cap);
+        Reputation nativeReputation = new Reputation();
+        Avatar avatar = new Avatar(_orgName, nativeToken, nativeReputation);
+
 
         // Mint token and reputation for founders:
         for (uint256 i = 0; i < _founders.length; i++) {
@@ -197,12 +189,7 @@ contract DaoCreator {
             }
         }
 
-        // Create Controller:
-        if (UController(0) == _uController) {
-            controller = ControllerInterface(controllerCreator.create(avatar));
-        } else {
-            controller = _uController;
-        }
+        Controller controller = Controller(controllerCreator.create(avatar));
 
         // Add the DAO to the tracking registry
         daoTracker.track(avatar, controller, "");
@@ -211,10 +198,6 @@ contract DaoCreator {
         avatar.transferOwnership(address(controller));
         nativeToken.transferOwnership(address(controller));
         nativeReputation.transferOwnership(address(controller));
-
-        if (controller == _uController) {
-            _uController.newOrganization(avatar);
-        }
 
         locks[address(avatar)] = msg.sender;
 

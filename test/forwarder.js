@@ -5,7 +5,7 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 const constants = require("./constants");
 const ERC20Mock = artifacts.require("./test/ERC20Mock.sol");
 var Forwarder = artifacts.require("./Forwarder.sol");
-var ControllerInterface = artifacts.require("./ControllerInterface.sol");
+var Controller = artifacts.require("./Controller.sol");
 
 const setup = async function (accounts,
                              _expirationTime = 300)
@@ -56,8 +56,8 @@ contract('Forwarder', accounts => {
        // transferOwnership of testSetupA.forwarder to testSetupB avatar
       await testSetupA.forwarder.transferOwnership(testSetupB.org.avatar.address);
       //do generic call from testSetupB controller to testSetupA controller to "registerScheme"
-      let controllerB = await ControllerInterface.at(await testSetupB.org.avatar.owner());
-      let controllerA = await ControllerInterface.at(await testSetupA.org.avatar.owner());
+      let controllerB = await Controller.at(await testSetupB.org.avatar.owner());
+      let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
       const encodeABI = await new web3.eth.Contract(controllerA.abi).
                                   methods.
                                   registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
@@ -75,8 +75,8 @@ contract('Forwarder', accounts => {
        // transferOwnership of testSetupA.forwarder to testSetupB avatar
       await testSetupA.forwarder.transferOwnership(testSetupB.org.avatar.address);
       //do generic call from testSetupB controller to testSetupA controller to "registerScheme"
-      let controllerB = await ControllerInterface.at(await testSetupB.org.avatar.owner());
-      let controllerA = await ControllerInterface.at(await testSetupA.org.avatar.owner());
+      let controllerB = await Controller.at(await testSetupB.org.avatar.owner());
+      let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
       const encodeABI = await new web3.eth.Contract(controllerA.abi).
                                   methods.
                                   registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
@@ -101,8 +101,8 @@ contract('Forwarder', accounts => {
       let testSetupA = await setup(accounts);
       let testSetupB = await setup(accounts);
       //do generic call from testSetupB controller to testSetupA controller to "registerScheme"
-      let controllerB = await ControllerInterface.at(await testSetupB.org.avatar.owner());
-      let controllerA = await ControllerInterface.at(await testSetupA.org.avatar.owner());
+      let controllerB = await Controller.at(await testSetupB.org.avatar.owner());
+      let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
       const encodeABI = await new web3.eth.Contract(controllerA.abi).
                                   methods.
                                   registerScheme(accounts[1],helpers.NULL_HASH,"0x0000001f",testSetupA.org.avatar.address).
@@ -122,7 +122,7 @@ contract('Forwarder', accounts => {
     it("unregisterSelf", async () => {
       let testSetupA = await setup(accounts);
       let testSetupB = await setup(accounts);
-      let controllerA = await ControllerInterface.at(await testSetupA.org.avatar.owner());
+      let controllerA = await Controller.at(await testSetupA.org.avatar.owner());
        // transferOwnership of testSetupA.forwarder to testSetupB avatar
       await testSetupA.forwarder.transferOwnership(testSetupB.org.avatar.address);
       assert.equal(await controllerA.isSchemeRegistered(testSetupA.forwarder.address,testSetupA.org.avatar.address),true);

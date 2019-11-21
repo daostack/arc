@@ -2,7 +2,7 @@ pragma solidity ^0.5.11;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
 import { RealMath } from "@daostack/infra/contracts/libs/RealMath.sol";
@@ -151,7 +151,7 @@ contract ContinuousLocking4Reputation is Agreement {
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
-        ControllerInterface(avatar.owner())
+        Controller(avatar.owner())
         .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
     }
 
