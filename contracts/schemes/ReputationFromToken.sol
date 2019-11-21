@@ -1,6 +1,6 @@
 pragma solidity ^0.5.11;
 
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "./CurveInterface.sol";
 import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
@@ -124,7 +124,7 @@ contract ReputationFromToken is Agreement {
             _beneficiary = _redeemer;
         }
         require(
-        ControllerInterface(
+        Controller(
         avatar.owner())
         .mintReputation(tokenAmount, _beneficiary, address(avatar)), "mint reputation should succeed");
         emit Redeem(_beneficiary, _redeemer, tokenAmount);

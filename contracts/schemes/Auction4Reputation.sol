@@ -1,7 +1,7 @@
 pragma solidity ^0.5.11;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
 
@@ -104,7 +104,7 @@ contract Auction4Reputation is Agreement {
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
-        ControllerInterface(avatar.owner())
+        Controller(avatar.owner())
         .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
         emit Redeem(_auctionId, _beneficiary, reputation);
     }

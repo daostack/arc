@@ -200,11 +200,11 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         reputation = int(periodsToPay) * _proposal.reputationChange;
         if (reputation > 0) {
             require(
-            ControllerInterface(
+            Controller(
             _avatar.owner()).mintReputation(uint(reputation), _proposal.beneficiary, address(_avatar)));
         } else if (reputation < 0) {
             require(
-            ControllerInterface(
+            Controller(
             _avatar.owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary, address(_avatar)));
         }
         if (reputation != 0) {
@@ -232,7 +232,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
 
         amount = periodsToPay.mul(_proposal.nativeTokenReward);
         if (amount > 0) {
-            require(ControllerInterface(_avatar.owner()).mintTokens(amount, _proposal.beneficiary, address(_avatar)));
+            require(Controller(_avatar.owner()).mintTokens(amount, _proposal.beneficiary, address(_avatar)));
             proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
             emit RedeemNativeToken(address(_avatar), _proposalId, _proposal.beneficiary, amount);
         }
@@ -258,7 +258,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         amount = periodsToPay.mul(_proposal.ethReward);
 
         if (amount > 0) {
-            require(ControllerInterface(_avatar.owner()).sendEther(amount, _proposal.beneficiary, _avatar));
+            require(Controller(_avatar.owner()).sendEther(amount, _proposal.beneficiary, _avatar));
             proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
             emit RedeemEther(address(_avatar), _proposalId, _proposal.beneficiary, amount);
         }
@@ -286,7 +286,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
             amount = periodsToPay.mul(_proposal.externalTokenReward);
             if (amount > 0) {
                 require(
-                ControllerInterface(
+                Controller(
                 _avatar.owner())
                 .externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount, _avatar));
                 proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);

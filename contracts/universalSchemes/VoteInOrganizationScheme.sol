@@ -61,7 +61,7 @@ contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, Pr
         // If no decision do nothing:
         if (_param == 1) {
 
-            ControllerInterface controller = ControllerInterface(avatar.owner());
+            Controller controller = Controller(avatar.owner());
             (success, callReturnValue) = controller.genericCall(
             address(proposal.originalIntVote),
             abi.encodeWithSignature("vote(bytes32,uint256,uint256,address)",

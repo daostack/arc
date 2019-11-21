@@ -74,7 +74,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     external
     returns(bytes32)
     {
-        require(ControllerInterface(params.avatar.owner()).isSchemeRegistered(address(this), address(params.avatar)),
+        require(Controller(params.avatar.owner()).isSchemeRegistered(address(this), address(params.avatar)),
         "scheme is not registered");
 
         bytes32 proposalId = params.intVote.propose(

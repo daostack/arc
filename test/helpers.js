@@ -179,9 +179,9 @@ export const setupGenesisProtocol = async function (
   return votingMachine;
 };
 
-export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=NULL_ADDRESS,cap=0) {
+export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
   var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,controller,cap,{gas: constants.ARC_GAS_LIMIT});
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,cap,{gas: constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -193,9 +193,9 @@ export const setupOrganizationWithArrays = async function (daoCreator,daoCreator
   return org;
 };
 
-export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,controller=NULL_ADDRESS,cap=0) {
+export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
   var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],controller,cap,{gas: constants.ARC_GAS_LIMIT});
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],cap,{gas: constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;

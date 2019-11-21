@@ -1,6 +1,6 @@
 pragma solidity ^0.5.11;
 
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 import "./Agreement.sol";
 
 /**
@@ -54,7 +54,7 @@ contract Locking4Reputation is Agreement {
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
         require(
-        ControllerInterface(
+        Controller(
         avatar.owner())
         .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
 

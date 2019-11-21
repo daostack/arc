@@ -1,7 +1,7 @@
 pragma solidity ^0.5.11;
 
 import "../universalSchemes/UniversalScheme.sol";
-import "../controller/ControllerInterface.sol";
+import "../controller/Controller.sol";
 
 
 contract UniversalSchemeMock is UniversalScheme {
@@ -11,7 +11,7 @@ contract UniversalSchemeMock is UniversalScheme {
     {
 
         address controller = _avatar.owner();
-        return ControllerInterface(controller).genericCall(
+        return Controller(controller).genericCall(
         _contract, abi.encodeWithSignature("test(uint256,address,bytes32)", _a, _b, _c), _avatar, _value);
     }
 
