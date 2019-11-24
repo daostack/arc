@@ -1,4 +1,4 @@
-pragma solidity ^0.5.11;
+pragma solidity 0.5.13;
 
 import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
 import "@daostack/infra/contracts/votingMachines/AbsoluteVote.sol";
