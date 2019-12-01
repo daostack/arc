@@ -119,7 +119,7 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         testSetup.reputationReward,
                                                         testSetup.startTime,
                                                         testSetup.periodsUnit,
-                                                        testSetup.startTime,
+                                                        testSetup.redeemEnableTime,
                                                         testSetup.maxLockingPeriod,
                                                         testSetup.repRewardConstA,
                                                         testSetup.repRewardConstB,
@@ -128,6 +128,28 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         testSetup.agreementHash,
                                                         {gas : constants.ARC_GAS_LIMIT});
         assert(false, "period cap cannot be greater than 100");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("repRewardConstA < reputationReward", async () => {
+      let testSetup = await setup(accounts,false);
+
+      try {
+        await testSetup.continuousLocking4Reputation.initialize(testSetup.org.avatar.address,
+                                                        testSetup.reputationReward,
+                                                        testSetup.startTime,
+                                                        testSetup.periodsUnit,
+                                                        testSetup.redeemEnableTime,
+                                                        testSetup.maxLockingPeriod,
+                                                        testSetup.reputationReward,
+                                                        testSetup.repRewardConstB,
+                                                        testSetup.periodsCap,
+                                                        testSetup.lockingToken.address,
+                                                        testSetup.agreementHash,
+                                                        {gas : constants.ARC_GAS_LIMIT});
+        assert(false, "repRewardConstA < reputationReward");
       } catch(error) {
         helpers.assertVMException(error);
       }
