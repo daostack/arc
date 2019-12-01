@@ -112,7 +112,7 @@ contract ContinuousLocking4Reputation is Agreement {
         maxLockingBatches = _maxLockingBatches;
         batchTime = _batchTime;
         require(_repRewardConstB < 1000, "_repRewardConstB should be < 1000");
-        require(repRewardConstA < _reputationReward, "repRewardConstA should be < _reputationReward");
+        require(_repRewardConstA < _reputationReward, "repRewardConstA should be < _reputationReward");
         repRewardConstA = toReal(uint216(_repRewardConstA));
         repRewardConstB = uint216(_repRewardConstB).fraction(uint216(1000));
         batchesIndexCap = _batchesIndexCap;
