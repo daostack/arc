@@ -137,6 +137,7 @@ contract('ContinuousLocking4Reputation', accounts => {
       let testSetup = await setup(accounts,false);
 
       try {
+        //try to init with repRewardConstA == reputationReward
         await testSetup.continuousLocking4Reputation.initialize(testSetup.org.avatar.address,
                                                         testSetup.reputationReward,
                                                         testSetup.startTime,
