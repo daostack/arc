@@ -437,6 +437,14 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         return address(organizationProposals[_proposalId].externalToken);
     }
 
+    function getProposalReputationReward(bytes32 _proposalId) public view returns (int256) {
+        return organizationProposals[_proposalId].reputationChange;
+    }
+
+    function getProposalNativeTokenReward(bytes32 _proposalId) public view returns (uint256) {
+        return organizationProposals[_proposalId].nativeTokenReward;
+    }
+
     function getProposalExecutionTime(bytes32 _proposalId) public view returns (uint256) {
         return organizationProposals[_proposalId].executionTime;
     }
