@@ -11,7 +11,6 @@ const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
 const Wallet = artifacts.require('./test/Wallet.sol');
-const DAOTracker = artifacts.require("./DAOTracker.sol");
 const App = artifacts.require("./App.sol");
 const Package = artifacts.require("./Package.sol");
 var ImplementationDirectory = artifacts.require("./ImplementationDirectory.sol");
@@ -161,9 +160,8 @@ export const registerImplementation = async function (version = [0,1,0]) {
   registration.packageInstance = await Package.new();
   registration.app = await App.new();
   registration = await registrationAddVersionToPackege(registration,version);
-  registration.daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
   registration.daoFactory = await DAOFactory.new({gas:constants.ARC_GAS_LIMIT});
-  registration.daoFactory.initialize(registration.app.address,registration.daoTracker.address);
+  registration.daoFactory.initialize(registration.app.address);
   return registration;
 };
 
