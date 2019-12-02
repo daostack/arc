@@ -3,6 +3,7 @@ pragma solidity 0.5.13;
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
+import "../libs/SafeERC20.sol";
 
 
 /**
@@ -12,6 +13,7 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  */
 contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterface {
     using SafeMath for uint;
+    using SafeERC20 for address;
 
     event NewContributionProposal(
         address indexed _avatar,
@@ -77,6 +79,12 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     address public contractToCall;
     Avatar public avatar;
     address public redeemer;
+
+    /**
+    * @dev enables this contract to receive ethers
+    */
+    function() external payable {
+    }
 
     /**
      * @dev initialize
@@ -202,10 +210,8 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         proposal.reputationChange = 0;
 
         if (_proposal.beneficiary == address(this)) {
-            if (_proposal.reputationChange != 0) {
-                if (_proposal.reputationChange > 0) {//for now only mint(not burn) rep allowed from ext contract.
-                    proposal.reputationChangeLeft = uint256(_proposal.reputationChange);
-                }
+            if (_proposal.reputationChange > 0) {//for now only mint(not burn) rep allowed from ext contract.
+                proposal.reputationChangeLeft = uint256(_proposal.reputationChange);
             }
         } else {
             reputation = _proposal.reputationChange;
@@ -222,28 +228,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         }
         if (reputation != 0) {
             emit RedeemReputation(address(avatar), _proposalId, _proposal.beneficiary, reputation);
-        }
-    }
-
-    /**
-    * @dev redeemReputationFromExtContract redeem reward for proposal
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _beneficiary the beneficiary to mint reputation to.
-    * @param _reputation the reputation amount to mint
-    */
-    function redeemReputationFromExtContract(bytes32 _proposalId, address _beneficiary, uint256 _reputation)
-    public
-    onlyRedeemer
-    {
-        ContributionProposal storage proposal = organizationProposals[_proposalId];
-        require(proposal.executionTime != 0);
-        //this will ensure sum zero of reputation.
-        proposal.reputationChangeLeft = proposal.reputationChangeLeft.sub(_reputation);
-        require(
-        Controller(
-        avatar.owner()).mintReputation(_reputation, _beneficiary, address(avatar)));
-        if (_reputation != 0) {
-            emit RedeemReputation(address(avatar), _proposalId, _beneficiary, int256(_reputation));
         }
     }
 
@@ -273,27 +257,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     }
 
     /**
-    * @dev redeemNativeTokenFromExtContract redeem reward for proposal
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _beneficiary the beneficiary to mint tokens to.
-    * @param _amount the tokens amount to mint
-    */
-    function redeemNativeTokenFromExtContract(bytes32 _proposalId, address _beneficiary, uint256 _amount)
-    public
-    onlyRedeemer
-    {
-        ContributionProposal storage proposal = organizationProposals[_proposalId];
-        require(proposal.executionTime != 0);
-        //this will ensure sum zero of reputation.
-        proposal.nativeTokenRewardLeft = proposal.nativeTokenRewardLeft.sub(_amount);
-
-        if (_amount > 0) {
-            require(Controller(avatar.owner()).mintTokens(_amount, _beneficiary, address(avatar)));
-            emit RedeemNativeToken(address(avatar), _proposalId, _beneficiary, _amount);
-        }
-    }
-
-    /**
     * @dev RedeemEther reward for proposal
     * @param _proposalId the ID of the voting in the voting machine
     * @return amount ether redeemed amount
@@ -314,27 +277,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         if (amount > 0) {
             require(Controller(avatar.owner()).sendEther(amount, _proposal.beneficiary, avatar));
             emit RedeemEther(address(avatar), _proposalId, _proposal.beneficiary, amount);
-        }
-    }
-
-    /**
-    * @dev redeemEtherFromExtContract redeem reward for proposal
-    * @param _proposalId the ID of the voting in the voting machine
-    * @param _beneficiary the beneficiary to send eth to.
-    * @param _amount eth amount to send
-    */
-    function redeemEtherFromExtContract(bytes32 _proposalId, address payable _beneficiary, uint256 _amount)
-    public
-    onlyRedeemer
-    {
-        ContributionProposal storage proposal = organizationProposals[_proposalId];
-        require(proposal.executionTime != 0);
-        //this will ensure sum zero of reputation.
-        proposal.ethRewardLeft = proposal.ethRewardLeft.sub(_amount);
-
-        if (_amount > 0) {
-            require(Controller(avatar.owner()).sendEther(_amount, _beneficiary, avatar));
-            emit RedeemEther(address(avatar), _proposalId, _beneficiary, _amount);
         }
     }
 
@@ -369,6 +311,70 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     }
 
     /**
+    * @dev redeemReputationFromExtContract redeem reward for proposal
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _beneficiary the beneficiary to mint reputation to.
+    * @param _reputation the reputation amount to mint
+    */
+    function redeemReputationFromExtContract(bytes32 _proposalId, address _beneficiary, uint256 _reputation)
+    public
+    onlyRedeemer
+    {
+        ContributionProposal storage proposal = organizationProposals[_proposalId];
+        require(proposal.executionTime != 0);
+        //this will ensure sum zero of reputation.
+        proposal.reputationChangeLeft = proposal.reputationChangeLeft.sub(_reputation);
+        require(
+        Controller(
+        avatar.owner()).mintReputation(_reputation, _beneficiary, address(avatar)));
+        if (_reputation != 0) {
+            emit RedeemReputation(address(avatar), _proposalId, _beneficiary, int256(_reputation));
+        }
+    }
+
+    /**
+    * @dev redeemNativeTokenFromExtContract redeem reward for proposal
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _beneficiary the beneficiary to mint tokens to.
+    * @param _amount the tokens amount to mint
+    */
+    function redeemNativeTokenFromExtContract(bytes32 _proposalId, address _beneficiary, uint256 _amount)
+    public
+    onlyRedeemer
+    {
+        ContributionProposal storage proposal = organizationProposals[_proposalId];
+        require(proposal.executionTime != 0);
+        //this will ensure sum zero of reputation.
+        proposal.nativeTokenRewardLeft = proposal.nativeTokenRewardLeft.sub(_amount);
+
+        if (_amount > 0) {
+            address(avatar.nativeToken()).safeTransfer(_beneficiary, _amount);
+            emit RedeemNativeToken(address(avatar), _proposalId, _beneficiary, _amount);
+        }
+    }
+
+    /**
+    * @dev redeemEtherFromExtContract redeem reward for proposal
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _beneficiary the beneficiary to send eth to.
+    * @param _amount eth amount to send
+    */
+    function redeemEtherFromExtContract(bytes32 _proposalId, address payable _beneficiary, uint256 _amount)
+    public
+    onlyRedeemer
+    {
+        ContributionProposal storage proposal = organizationProposals[_proposalId];
+        require(proposal.executionTime != 0);
+        //this will ensure sum zero of reputation.
+        proposal.ethRewardLeft = proposal.ethRewardLeft.sub(_amount);
+
+        if (_amount > 0) {
+            _beneficiary.transfer(_amount);
+            emit RedeemEther(address(avatar), _proposalId, _beneficiary, _amount);
+        }
+    }
+
+    /**
     * @dev redeemExternalTokenFromExtContract redeem reward for proposal
     * @param _proposalId the ID of the voting in the voting machine
     * @param _beneficiary the beneficiary to send the external token to.
@@ -384,10 +390,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
 
         if (proposal.externalToken != IERC20(0)) {
             if (_amount > 0) {
-                require(
-                Controller(
-                avatar.owner())
-                .externalTokenTransfer(proposal.externalToken, _beneficiary, _amount, avatar));
+                address(proposal.externalToken).safeTransfer(_beneficiary, _amount);
                 emit RedeemExternalToken(address(avatar), _proposalId, _beneficiary, _amount);
             }
         }
