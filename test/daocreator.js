@@ -8,13 +8,13 @@ const Controller = artifacts.require("./Controller.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-const DAOTracker = artifacts.require("./DAOTracker.sol");
+
 
 var avatar,token,reputation,daoCreator,controllerCreator;
 const setup = async function (accounts,founderToken,founderReputation,cap=0) {
   controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-  var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-  daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+
+  daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
   var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[founderToken],[founderReputation],cap,{gas:constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
@@ -165,8 +165,8 @@ contract('DaoCreator', function(accounts) {
     it("forgeOrg with different params length should revert", async function() {
        var amountToMint = 10;
        var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-       var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-       daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+
+       daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
        try {
         await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[amountToMint],[],helpers.NULL_ADDRESS,{gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert  because reputation array size is 0");

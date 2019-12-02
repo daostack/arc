@@ -7,7 +7,6 @@ import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
 import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 import "../controller/Controller.sol";
-import "../utils/DAOTracker.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 
@@ -33,14 +32,11 @@ contract DAOFactory is Initializable {
     mapping(address=>Locks) public locks;
     App public app;
     string public constant PACKAGE_NAME = "DAOstack";
-    DAOTracker private daoTracker;
     //this is here due to "stack too deep issue"
     uint64[3] private packageVersion;
 
-    function initialize(address _appContractAddress, DAOTracker _daoTracker) external initializer {
-        require(_daoTracker != DAOTracker(0));
+    function initialize(address _appContractAddress) external initializer {
         app = App(_appContractAddress);
-        daoTracker = _daoTracker;
     }
 
     /**
@@ -287,8 +283,6 @@ contract DAOFactory is Initializable {
         "Controller",
         address(avatar),
         abi.encodeWithSignature("initialize(address,address)", address(avatar), address(this)))));
-        // Add the DAO to the tracking registry
-        daoTracker.track(Avatar(address(avatar)), controller);
          // Transfer ownership:
         Avatar(address(avatar)).transferOwnership(address(controller));
         DAOToken(address(nativeToken)).transferOwnership(address(controller));

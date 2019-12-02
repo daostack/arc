@@ -1,7 +1,7 @@
 const helpers = require('./helpers');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-const DAOTracker = artifacts.require("./DAOTracker.sol");
+
 const constants = require('./constants');
 var ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
 var RepAllocation = artifacts.require("./RepAllocation.sol");
@@ -14,8 +14,8 @@ var ethereumjs = require('ethereumjs-abi');
 const setupNectar = async function (accounts)  {
   var testSetup = new helpers.TestSetup();
   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-  var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-  testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+  
+  testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
   testSetup.nectarToken = await NectarToken.new();
   await testSetup.nectarToken.initialize(accounts[0]);
@@ -46,8 +46,8 @@ const setupNectar = async function (accounts)  {
 const setup = async function (accounts, _initialize = true) {
    var testSetup = new helpers.TestSetup();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+   
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.repAllocation = await RepAllocation.new();
    await testSetup.repAllocation.initialize(accounts[0]);
