@@ -73,163 +73,153 @@ contract('ContributionRewardExt', accounts => {
        assert.equal(await testSetup.contributionRewardExt.votingMachine(),testSetup.contributionRewardExtParams.votingMachine.absoluteVote.address);
     });
 
-   //  it("proposeContributionReward log", async function() {
-   //    var testSetup = await setup(accounts);
-   //    var periodLength = 1;
-   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
-   //                                                                   "description-hash",
-   //                                                                   10,
-   //                                                                   [1,2,3,periodLength,5],
-   //                                                                   testSetup.standardTokenMock.address,
-   //                                                                   accounts[0]);
-   //    assert.equal(tx.logs.length, 1);
-   //    assert.equal(tx.logs[0].event, "NewContributionProposal");
-   //    assert.equal(await helpers.getValueFromLogs(tx, '_avatar',0), testSetup.org.avatar.address, "Wrong log: _avatar");
-   //    assert.equal(await helpers.getValueFromLogs(tx, '_intVoteInterface',0), testSetup.contributionRewardExtParams.votingMachine.absoluteVote.address, "Wrong log: _intVoteInterface");
-   //    assert.equal(await helpers.getValueFromLogs(tx, '_descriptionHash',15), "description-hash", "Wrong log: _contributionDescription");
-   //    assert.equal(await helpers.getValueFromLogs(tx, '_reputationChange',0), 10, "Wrong log: _reputationChange");
-   //    var arr = await helpers.getValueFromLogs(tx, '_rewards',0);
-   //    assert.equal(arr[0].words[0], 1, "Wrong log: _rewards");
-   //    assert.equal(arr[1].words[0], 2, "Wrong log: _rewards");
-   //    assert.equal(arr[2].words[0], 3, "Wrong log: _rewards");
-   //    assert.equal(arr[3].words[0], periodLength, "Wrong log: _rewards");
-   //    assert.equal(arr[4].words[0], 5, "Wrong log: _rewards");
-   //    assert.equal(await helpers.getValueFromLogs(tx, '_externalToken',0), testSetup.standardTokenMock.address, "Wrong log: _externalToken");
-   //    assert.equal(await helpers.getValueFromLogs(tx, '_beneficiary',0), accounts[0], "Wrong log: _beneficiary");
-   //   });
-   //
-   //  it("proposeContributionReward check beneficiary==0", async() => {
-   //     var testSetup = await setup(accounts);
-   //     var beneficiary = helpers.NULL_ADDRESS;
-   //     var periodLength = 1;
-   //     var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
-   //                                                                    web3.utils.asciiToHex("description"),
-   //                                                                    0,
-   //                                                                    [0,0,0,periodLength,0],
-   //                                                                    testSetup.standardTokenMock.address,
-   //                                                                    beneficiary
-   //                                                                  );
-   //     assert.equal(await helpers.getValueFromLogs(tx, '_beneficiary'),accounts[0]);
-   //  });
-   //
-   //  it("execute proposeContributionReward  yes ", async function() {
-   //    var testSetup = await setup(accounts);
-   //    var periodLength = 1;
-   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
-   //                                                                   web3.utils.asciiToHex("description"),
-   //                                                                   0,
-   //                                                                  [0,0,0,periodLength,0],
-   //                                                                   testSetup.standardTokenMock.address,
-   //                                                                   accounts[0]
-   //                                                                 );
-   //    //Vote with reputation to trigger execution
-   //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-   //    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-   //    var organizationProposal = await testSetup.contributionRewardExt.organizationsProposals(testSetup.org.avatar.address,proposalId);
-   //    assert.notEqual(organizationProposal[8],0);//executionTime
-   //   });
-   //
-   //  it("execute proposeContributionReward  mint reputation ", async function() {
-   //    var testSetup = await setup(accounts);
-   //    var reputationReward = 12;
-   //    var periodLength = 50;
-   //    var numberOfPeriods = 1;
-   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
-   //                                                                   web3.utils.asciiToHex("description"),
-   //                                                                   reputationReward,
-   //                                                                   [0,0,0,periodLength,numberOfPeriods],
-   //                                                                   testSetup.standardTokenMock.address,
-   //                                                                   accounts[1]
-   //                                                                 );
-   //    //Vote with reputation to trigger execution
-   //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-   //    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-   //    await helpers.increaseTime(periodLength+1);
-   //    tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
-   //    assert.equal(tx.logs.length, 1);
-   //    assert.equal(tx.logs[0].event, "RedeemReputation");
-   //    assert.equal(tx.logs[0].args._amount, reputationReward);
-   //    var rep = await testSetup.org.reputation.balanceOf(accounts[1]);
-   //    assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
-   //   });
-   //
-   //  it("execute proposeContributionReward  mint tokens ", async function() {
-   //     var testSetup = await setup(accounts);
-   //     var reputationReward = 12;
-   //     var nativeTokenReward = 12;
-   //     var periodLength = 50;
-   //     var numberOfPeriods = 1;
-   //     var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
-   //                                                                    web3.utils.asciiToHex("description"),
-   //                                                                    reputationReward,
-   //                                                                    [nativeTokenReward,0,0,periodLength,numberOfPeriods],
-   //                                                                    testSetup.standardTokenMock.address,
-   //                                                                    accounts[1]
-   //                                                                  );
-   //     //Vote with reputation to trigger execution
-   //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-   //     await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-   //     await helpers.increaseTime(periodLength+1);
-   //     tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,true,false,false]);
-   //     var tokens = await testSetup.org.token.balanceOf(accounts[1]);
-   //     assert.equal(tokens.toNumber(),nativeTokenReward);
-   //  });
-   //
-   //  it("execute proposeContributionReward  send ethers ", async function() {
-   //    var testSetup = await setup(accounts);
-   //    var reputationReward = 12;
-   //    var nativeTokenReward = 12;
-   //    var ethReward = 12;
-   //    var periodLength = 50;
-   //    var numberOfPeriods = 1;
-   //    //send some ether to the org avatar
-   //    var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-   //    await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
-   //                                                                   web3.utils.asciiToHex("description"),
-   //                                                                   reputationReward,
-   //                                                                   [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
-   //                                                                   testSetup.standardTokenMock.address,
-   //                                                                   otherAvatar.address
-   //                                                                 );
-   //    //Vote with reputation to trigger execution
-   //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-   //    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-   //    await helpers.increaseTime(periodLength+1);
-   //    await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
-   //    var eth = await web3.eth.getBalance(otherAvatar.address);
-   //    assert.equal(eth,ethReward);
-   //   });
-   //
-   //   it("execute proposeContributionReward  send externalToken ", async function() {
-   //     var testSetup = await setup(accounts);
-   //     //give some tokens to organization avatar
-   //     await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
-   //     var reputationReward = 12;
-   //     var nativeTokenReward = 12;
-   //     var ethReward = 12;
-   //     var externalTokenReward = 12;
-   //     var periodLength = 50;
-   //     var numberOfPeriods = 1;
-   //     //send some ether to the org avatar
-   //     var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-   //     await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-   //     var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
-   //                                                                    web3.utils.asciiToHex("description"),
-   //                                                                    reputationReward,
-   //                                                                    [nativeTokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
-   //                                                                    testSetup.standardTokenMock.address,
-   //                                                                    otherAvatar.address
-   //                                                                  );
-   //     //Vote with reputation to trigger execution
-   //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-   //     await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-   //     await helpers.increaseTime(periodLength+1);
-   //     await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,false,false,true]);
-   //     var tokens = await testSetup.standardTokenMock.balanceOf(otherAvatar.address);
-   //     assert.equal(tokens.toNumber(),externalTokenReward);
-   //    });
-   //
+    it("proposeContributionReward log", async function() {
+      var testSetup = await setup(accounts);
+      var tx = await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                     "description-hash",
+                                                                     10,
+                                                                     [1,2,3],
+                                                                     testSetup.standardTokenMock.address,
+                                                                     accounts[0],
+                                                                     helpers.NULL_ADDRESS);
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "NewContributionProposal");
+      assert.equal(await helpers.getValueFromLogs(tx, '_avatar',0), testSetup.org.avatar.address, "Wrong log: _avatar");
+      assert.equal(await helpers.getValueFromLogs(tx, '_intVoteInterface',0), testSetup.contributionRewardExtParams.votingMachine.absoluteVote.address, "Wrong log: _intVoteInterface");
+      assert.equal(await helpers.getValueFromLogs(tx, '_descriptionHash',15), "description-hash", "Wrong log: _contributionDescription");
+      assert.equal(await helpers.getValueFromLogs(tx, '_reputationChange',0), 10, "Wrong log: _reputationChange");
+      var arr = await helpers.getValueFromLogs(tx, '_rewards',0);
+      assert.equal(arr[0].words[0], 1, "Wrong log: _rewards");
+      assert.equal(arr[1].words[0], 2, "Wrong log: _rewards");
+      assert.equal(arr[2].words[0], 3, "Wrong log: _rewards");
+      assert.equal(await helpers.getValueFromLogs(tx, '_externalToken',0), testSetup.standardTokenMock.address, "Wrong log: _externalToken");
+      assert.equal(await helpers.getValueFromLogs(tx, '_beneficiary',0), accounts[0], "Wrong log: _beneficiary");
+     });
+
+    it("proposeContributionReward check beneficiary==0", async() => {
+       var testSetup = await setup(accounts);
+       var beneficiary = helpers.NULL_ADDRESS;
+       var tx = await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                      web3.utils.asciiToHex("description"),
+                                                                      0,
+                                                                      [0,0,0],
+                                                                      testSetup.standardTokenMock.address,
+                                                                      beneficiary,
+                                                                      helpers.NULL_ADDRESS
+                                                                    );
+       assert.equal(await helpers.getValueFromLogs(tx, '_beneficiary'),accounts[0]);
+    });
+
+    it("execute proposeContributionReward  yes ", async function() {
+      var testSetup = await setup(accounts);
+      var tx = await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                     web3.utils.asciiToHex("description"),
+                                                                     0,
+                                                                    [0,0,0],
+                                                                     testSetup.standardTokenMock.address,
+                                                                     accounts[0],
+                                                                     helpers.NULL_ADDRESS
+                                                                   );
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      var organizationProposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
+      assert.notEqual(organizationProposal.executionTime,0);//executionTime
+     });
+
+    it("execute proposeContributionReward  mint reputation ", async function() {
+      var testSetup = await setup(accounts);
+      var reputationReward = 12;
+      var tx = await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                     web3.utils.asciiToHex("description"),
+                                                                     reputationReward,
+                                                                     [0,0,0],
+                                                                     testSetup.standardTokenMock.address,
+                                                                     accounts[1],
+                                                                     helpers.NULL_ADDRESS
+                                                                   );
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.contributionRewardExt.redeem(proposalId,[true,false,false,false]);
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "RedeemReputation");
+      assert.equal(tx.logs[0].args._amount, reputationReward);
+      var rep = await testSetup.org.reputation.balanceOf(accounts[1]);
+      assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
+     });
+
+    it("execute proposeContributionReward  mint tokens ", async function() {
+       var testSetup = await setup(accounts);
+       var reputationReward = 12;
+       var nativeTokenReward = 12;
+       var tx = await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                      web3.utils.asciiToHex("description"),
+                                                                      reputationReward,
+                                                                      [nativeTokenReward,0,0],
+                                                                      testSetup.standardTokenMock.address,
+                                                                      accounts[1],
+                                                                      helpers.NULL_ADDRESS
+                                                                    );
+       //Vote with reputation to trigger execution
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+       await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       tx = await testSetup.contributionRewardExt.redeem(proposalId,[false,true,false,false]);
+       var tokens = await testSetup.org.token.balanceOf(accounts[1]);
+       assert.equal(tokens.toNumber(),nativeTokenReward);
+    });
+
+    it("execute proposeContributionReward  send ethers ", async function() {
+      var testSetup = await setup(accounts);
+      var reputationReward = 12;
+      var nativeTokenReward = 12;
+      var ethReward = 12;
+      //send some ether to the org avatar
+      var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
+      await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+      var tx = await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                     web3.utils.asciiToHex("description"),
+                                                                     reputationReward,
+                                                                     [nativeTokenReward,ethReward,0],
+                                                                     testSetup.standardTokenMock.address,
+                                                                     otherAvatar.address,
+                                                                     helpers.NULL_ADDRESS
+                                                                   );
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.contributionRewardExt.redeem(proposalId,[false,false,true,false]);
+      var eth = await web3.eth.getBalance(otherAvatar.address);
+      assert.equal(eth,ethReward);
+     });
+
+     it("execute proposeContributionReward  send externalToken ", async function() {
+       var testSetup = await setup(accounts);
+       //give some tokens to organization avatar
+       await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
+       var reputationReward = 12;
+       var nativeTokenReward = 12;
+       var ethReward = 12;
+       var externalTokenReward = 12;
+       //send some ether to the org avatar
+       var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
+       await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+       var tx = await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                      web3.utils.asciiToHex("description"),
+                                                                      reputationReward,
+                                                                      [nativeTokenReward,ethReward,externalTokenReward],
+                                                                      testSetup.standardTokenMock.address,
+                                                                      otherAvatar.address,
+                                                                      helpers.NULL_ADDRESS
+                                                                    );
+       //Vote with reputation to trigger execution
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+       await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.contributionRewardExt.redeem(proposalId,[false,false,false,true]);
+       var tokens = await testSetup.standardTokenMock.balanceOf(otherAvatar.address);
+       assert.equal(tokens.toNumber(),externalTokenReward);
+      });
+
    //    it("execute proposeContributionReward proposal decision=='no' send externalToken  ", async function() {
    //      var testSetup = await setup(accounts);
    //      var reputationReward = 12;
@@ -241,7 +231,7 @@ contract('ContributionRewardExt', accounts => {
    //      //send some ether to the org avatar
    //      var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
    //      await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-   //      var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //      var tx = await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                     web3.utils.asciiToHex("description"),
    //                                                                     reputationReward,
    //                                                                     [nativeTokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
@@ -250,12 +240,12 @@ contract('ContributionRewardExt', accounts => {
    //                                                                   );
    //      //Vote with reputation to trigger execution
    //      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-   //      var organizationProposal = await testSetup.contributionRewardExt.organizationsProposals(testSetup.org.avatar.address,proposalId);
+   //      var organizationProposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
    //      assert.equal(organizationProposal[5],otherAvatar.address);//beneficiary
    //      await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
    //      await helpers.increaseTime(periodLength+1);
    //      try {
-   //        await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[true,true,true,true]);
+   //        await testSetup.contributionRewardExt.redeem(proposalId,[true,true,true,true]);
    //        assert(false, 'redeem should revert because there was no positive voting');
    //      } catch (ex) {
    //        helpers.assertVMException(ex);
@@ -273,7 +263,7 @@ contract('ContributionRewardExt', accounts => {
    //   //send some ether to the org avatar
    //   var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
    //   await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:12});
-   //   var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //   var tx = await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                  web3.utils.asciiToHex("description"),
    //                                                                  reputationReward,
    //                                                                  [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
@@ -285,7 +275,7 @@ contract('ContributionRewardExt', accounts => {
    //   await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
    //   await helpers.increaseTime(periodLength+1);
    //
-   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
+   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,[false,false,true,false]);
    //
    //   assert.equal(tx.logs.length, 1);
    //   assert.equal(tx.logs[0].event, "RedeemEther");
@@ -294,7 +284,7 @@ contract('ContributionRewardExt', accounts => {
    //   assert.equal(eth,ethReward);
    //
    //   //now try again on the same period
-   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
+   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,[false,false,true,false]);
    //   assert.equal(tx.logs.length, 0);
    //   eth = await web3.eth.getBalance(otherAvatar.address);
    //   assert.equal(eth,ethReward);
@@ -303,7 +293,7 @@ contract('ContributionRewardExt', accounts => {
    //   await helpers.increaseTime(periodLength+1);
    //
    //
-   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
+   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,[false,false,true,false]);
    //   assert.equal(tx.logs.length, 1);
    //   assert.equal(tx.logs[0].event, "RedeemEther");
    //   assert.equal(tx.logs[0].args._amount, ethReward);
@@ -314,7 +304,7 @@ contract('ContributionRewardExt', accounts => {
    //   await helpers.increaseTime((periodLength*2)+1);
    //
    //
-   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
+   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,[false,false,true,false]);
    //   assert.equal(tx.logs.length, 1);
    //   assert.equal(tx.logs[0].event, "RedeemEther");
    //   assert.equal(tx.logs[0].args._amount, ethReward*2);
@@ -324,7 +314,7 @@ contract('ContributionRewardExt', accounts => {
    //   //now try again on 5th period - no ether on avatar should revert
    //   await helpers.increaseTime(periodLength+1);
    //   try {
-   //        await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
+   //        await testSetup.contributionRewardExt.redeem(proposalId,[false,false,true,false]);
    //        assert(false, 'redeem should revert because no ether left on avatar');
    //        } catch (ex) {
    //         helpers.assertVMException(ex);
@@ -332,7 +322,7 @@ contract('ContributionRewardExt', accounts => {
    //   await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:ethReward});
    //
    //
-   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
+   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,[false,false,true,false]);
    //   assert.equal(tx.logs.length, 1);
    //   assert.equal(tx.logs[0].event, "RedeemEther");
    //   assert.equal(tx.logs[0].args._amount, ethReward);
@@ -343,7 +333,7 @@ contract('ContributionRewardExt', accounts => {
    //
    //   //cannot redeem any more..
    //   await helpers.increaseTime(periodLength+1);
-   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[false,false,true,false]);
+   //   tx = await testSetup.contributionRewardExt.redeem(proposalId,[false,false,true,false]);
    //   assert.equal(tx.logs.length, 0);
    //   eth = await web3.eth.getBalance(otherAvatar.address);
    //   assert.equal(eth,ethReward*5);
@@ -355,7 +345,7 @@ contract('ContributionRewardExt', accounts => {
    //    var reputationReward = -12;
    //    var periodLength = 50;
    //    var numberOfPeriods = 1;
-   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                   web3.utils.asciiToHex("description"),
    //                                                                   reputationReward,
    //                                                                   [0,0,0,periodLength,numberOfPeriods],
@@ -366,7 +356,7 @@ contract('ContributionRewardExt', accounts => {
    //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
    //    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
    //    await helpers.increaseTime(periodLength+1);
-   //    tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
+   //    tx = await testSetup.contributionRewardExt.redeem(proposalId,[true,false,false,false]);
    //    assert.equal(tx.logs.length, 1);
    //    assert.equal(tx.logs[0].event, "RedeemReputation");
    //    assert.equal(tx.logs[0].args._amount, reputationReward);
@@ -380,7 +370,7 @@ contract('ContributionRewardExt', accounts => {
    //     var reputationReward = -12;
    //     var periodLength = 50;
    //     var numberOfPeriods = 1;
-   //     var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //     var tx = await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                    web3.utils.asciiToHex("description"),
    //                                                                    reputationReward,
    //                                                                    [0,0,0,periodLength,numberOfPeriods],
@@ -409,7 +399,7 @@ contract('ContributionRewardExt', accounts => {
    //   //send some ether to the org avatar
    //   var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
    //   await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-   //   var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //   var tx = await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                  web3.utils.asciiToHex("description"),
    //                                                                  reputationReward,
    //                                                                  [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
@@ -463,7 +453,7 @@ contract('ContributionRewardExt', accounts => {
    //    //send some ether to the org avatar
    //    var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
    //    await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                   web3.utils.asciiToHex("description"),
    //                                                                   reputationReward,
    //                                                                   [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
@@ -520,7 +510,7 @@ contract('ContributionRewardExt', accounts => {
    //    //send some ether to the org avatar
    //    var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
    //    await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
-   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //    var tx = await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                   web3.utils.asciiToHex("description"),
    //                                                                   reputationReward,
    //                                                                   [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
@@ -557,7 +547,7 @@ contract('ContributionRewardExt', accounts => {
    //     var numberOfPeriods = 1;
    //     //send some ether to the org avatar
    //     var otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS);
-   //     var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //     var tx = await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                    web3.utils.asciiToHex("description"),
    //                                                                    reputationReward,
    //                                                                    [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
@@ -585,7 +575,7 @@ contract('ContributionRewardExt', accounts => {
    //     var reputationReward = 12;
    //     var periodLength = 0;
    //     var numberOfPeriods = 1;
-   //     var tx = await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //     var tx = await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                               web3.utils.asciiToHex("description"),
    //                                                               reputationReward,
    //                                                               [0,0,0,periodLength,numberOfPeriods],
@@ -594,7 +584,7 @@ contract('ContributionRewardExt', accounts => {
    //                                                               {from:accounts[2]}
    //                                                             );
    //     try {
-   //          await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //          await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                 web3.utils.asciiToHex("description"),
    //                                                                 reputationReward,
    //                                                                 [0,0,0,periodLength,2],
@@ -610,14 +600,14 @@ contract('ContributionRewardExt', accounts => {
    //     //Vote with reputation to trigger execution
    //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
    //     await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-   //     tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
+   //     tx = await testSetup.contributionRewardExt.redeem(proposalId,[true,false,false,false]);
    //     assert.equal(tx.logs.length, 1);
    //     assert.equal(tx.logs[0].event, "RedeemReputation");
    //     assert.equal(tx.logs[0].args._amount, reputationReward);
    //     var rep = await testSetup.org.reputation.balanceOf(accounts[1]);
    //     assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
    //     //try to redeem again.
-   //     tx = await testSetup.contributionRewardExt.redeem(proposalId,testSetup.org.avatar.address,[true,false,false,false]);
+   //     tx = await testSetup.contributionRewardExt.redeem(proposalId,[true,false,false,false]);
    //     assert.equal(tx.logs.length, 0);
    //     rep = await testSetup.org.reputation.balanceOf(accounts[1]);
    //     assert.equal(rep.toNumber(),testSetup.reputationArray[1]+reputationReward);
@@ -632,7 +622,7 @@ contract('ContributionRewardExt', accounts => {
    //     var numberOfPeriods = 2;
    //
    //     try {
-   //       await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //       await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                 web3.utils.asciiToHex("description"),
    //                                                                 reputationReward,
    //                                                                 [0,0,0,periodLength,numberOfPeriods],
@@ -651,7 +641,7 @@ contract('ContributionRewardExt', accounts => {
    //     var externalTokenReward = 0;
    //
    //     try {
-   //       await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //       await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                 web3.utils.asciiToHex("description"),
    //                                                                 reputationReward,
    //                                                                 [tokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
@@ -669,7 +659,7 @@ contract('ContributionRewardExt', accounts => {
    //      externalTokenReward = 0;
    //
    //     try {
-   //       await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //       await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                 web3.utils.asciiToHex("description"),
    //                                                                 reputationReward,
    //                                                                 [tokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
@@ -687,7 +677,7 @@ contract('ContributionRewardExt', accounts => {
    //     externalTokenReward = ((new BigNumber(2)).toPower(256).sub(1)).toString(10);
    //
    //    try {
-   //      await testSetup.contributionRewardExt.proposeContributionReward(testSetup.org.avatar.address,
+   //      await testSetup.contributionRewardExt.proposeContributionReward(
    //                                                                web3.utils.asciiToHex("description"),
    //                                                                reputationReward,
    //                                                                [tokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
