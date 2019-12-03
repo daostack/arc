@@ -65,9 +65,9 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         uint256 externalTokenRewardLeft;
     }
 
-    modifier onlyRedeemer() {
-        if (redeemer != address(0)) {
-            require(msg.sender == redeemer, "only redeemer allowed to redeem");
+    modifier onlyRewarder() {
+        if (rewarder != address(0)) {
+            require(msg.sender == rewarder, "only rewarder allowed to redeem");
         }
         _;
     }
@@ -78,7 +78,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     bytes32 public voteParams;
     address public contractToCall;
     Avatar public avatar;
-    address public redeemer;
+    address public rewarder;
 
     /**
     * @dev enables this contract to receive ethers
@@ -91,14 +91,14 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
      * @param _avatar the avatar to mint reputation from
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
-     * @param _redeemer an address which allowed to redeem the contribution.
-       if _redeemer is 0 this param is agnored.
+     * @param _rewarder an address which allowed to redeem the contribution.
+       if _rewarder is 0 this param is agnored.
      */
     function initialize(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams,
-        address _redeemer
+        address _rewarder
     )
     external
     {
@@ -107,7 +107,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
-        redeemer = _redeemer;
+        rewarder = _rewarder;
     }
 
     /**
@@ -318,7 +318,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     */
     function redeemReputationFromExtContract(bytes32 _proposalId, address _beneficiary, uint256 _reputation)
     public
-    onlyRedeemer
+    onlyRewarder
     {
         ContributionProposal storage proposal = organizationProposals[_proposalId];
         require(proposal.executionTime != 0);
@@ -340,7 +340,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     */
     function redeemNativeTokenFromExtContract(bytes32 _proposalId, address _beneficiary, uint256 _amount)
     public
-    onlyRedeemer
+    onlyRewarder
     {
         ContributionProposal storage proposal = organizationProposals[_proposalId];
         require(proposal.executionTime != 0);
@@ -361,7 +361,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     */
     function redeemEtherFromExtContract(bytes32 _proposalId, address payable _beneficiary, uint256 _amount)
     public
-    onlyRedeemer
+    onlyRewarder
     {
         ContributionProposal storage proposal = organizationProposals[_proposalId];
         require(proposal.executionTime != 0);
@@ -382,7 +382,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     */
     function redeemExternalTokenFromExtContract(bytes32 _proposalId, address _beneficiary, uint256 _amount)
     public
-    onlyRedeemer {
+    onlyRewarder {
         ContributionProposal storage proposal = organizationProposals[_proposalId];
         require(proposal.executionTime != 0);
         //this will ensure sum zero of reputation.
