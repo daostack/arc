@@ -41,7 +41,7 @@ const setupContributionRewardParams = async function(
 
 const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,service=helpers.NULL_ADDRESS) {
    var testSetup = new helpers.TestSetup();
-   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
+   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100000);
    testSetup.contributionRewardExt = await ContributionRewardExt.new();
    var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
@@ -86,13 +86,13 @@ const proposeCompetition = async function(
     var tx = await _testSetup.competition.proposeCompetition(
                                    _descriptionHash,
                                    _reputationChange,
-                                   _rewards = [1,2,3],
+                                   _rewards,
                                    _testSetup.standardTokenMock.address,
                                    _rewardSplit,
-                                   _testSetup.startTime,
+                                   [_testSetup.startTime,
                                    _testSetup.votingStartTime,
                                    _testSetup.endTime,
-                                   _numberOfVotesPerVoters,
+                                   _numberOfVotesPerVoters],
                                    _testSetup.contributionRewardExt.address
                                  );
 
@@ -109,7 +109,7 @@ const proposeCompetition = async function(
     assert.equal(tx.logs[0].args._votingStartTime,_testSetup.votingStartTime);
     assert.equal(tx.logs[0].args._endTime,_testSetup.endTime);
     assert.equal(tx.logs[0].args._numberOfVotesPerVoters,_numberOfVotesPerVoters);
-    assert.equal(tx.logs[0].args._contributionReward,_testSetup.contributionRewardExt.address);
+    assert.equal(tx.logs[0].args._contributionRewardExt,_testSetup.contributionRewardExt.address);
 
     return proposalId;
 };
@@ -345,17 +345,167 @@ contract('Competition', accounts => {
         await testSetup.competition.suggest(proposalId,"suggestion");
      }
      await helpers.increaseTime(650);
-     await testSetup.competition.vote(10,{from:accounts[0]});
-     await testSetup.competition.vote(16,{from:accounts[0]});
+     await testSetup.competition.vote(10,{from:accounts[1]});
+     await testSetup.competition.vote(16,{from:accounts[1]});
      await testSetup.competition.vote(5,{from:accounts[0]});
 
      assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,10),0);
-
      assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,16),0);
-
-     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,5),0);
-
+     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,5),2);
      assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,0),3);
 
    });
+
+  it("redeem", async function() {
+    var testSetup = await setup(accounts);
+    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
+    await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+    var proposalId = await proposeCompetition(testSetup);
+    await testSetup.competition.suggest(proposalId,"suggestion");
+    try {
+            await testSetup.competition.redeem(1,accounts[0]);
+            assert(false, 'cannot redeem if no vote');
+       } catch (ex) {
+            helpers.assertVMException(ex);
+      }
+    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+    await testSetup.contributionRewardExt.redeem(proposalId,[true,true,true,true]);
+    await helpers.increaseTime(650);
+    await testSetup.competition.vote(1,{from:accounts[1]});
+    try {
+            await testSetup.competition.redeem(1,accounts[0]);
+            assert(false, 'cannot redeem if competion not ended yet');
+       } catch (ex) {
+            helpers.assertVMException(ex);
+      }
+    await helpers.increaseTime(650);
+    var tx = await testSetup.competition.redeem(1,accounts[0]);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "Redeem");
+    assert.equal(tx.logs[0].args._proposalId,proposalId);
+    assert.equal(tx.logs[0].args._rewardPercentage,100);
+
+    await testSetup.contributionRewardExt.getPastEvents('RedeemReputation', {
+          fromBlock: tx.blockNumber,
+          toBlock: 'latest'
+      })
+      .then(function(events){
+          assert.equal(events[0].event,"RedeemReputation");
+          assert.equal(events[0].args._beneficiary,accounts[0]);
+          assert.equal(events[0].args._amount,10);
+      });
+
+      await testSetup.contributionRewardExt.getPastEvents('RedeemEther', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"RedeemEther");
+            assert.equal(events[0].args._beneficiary,accounts[0]);
+            assert.equal(events[0].args._amount,2);
+        });
+
+        await testSetup.contributionRewardExt.getPastEvents('RedeemNativeToken', {
+              fromBlock: tx.blockNumber,
+              toBlock: 'latest'
+          })
+          .then(function(events){
+              assert.equal(events[0].event,"RedeemNativeToken");
+              assert.equal(events[0].args._beneficiary,accounts[0]);
+              assert.equal(events[0].args._amount,1);
+          });
+
+          await testSetup.contributionRewardExt.getPastEvents('RedeemExternalToken', {
+                fromBlock: tx.blockNumber,
+                toBlock: 'latest'
+            })
+            .then(function(events){
+                assert.equal(events[0].event,"RedeemExternalToken");
+                assert.equal(events[0].args._beneficiary,accounts[0]);
+                assert.equal(events[0].args._amount,3);
+            });
+
+  });
+
+  it("redeem multipe suggestions", async function() {
+    var testSetup = await setup(accounts);
+    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,3000,{from:accounts[1]});
+    await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:2000});
+    var proposalId = await proposeCompetition(testSetup,"description-hash",1000,[1000,2000,3000]);
+
+    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion");
+
+    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+    await testSetup.contributionRewardExt.redeem(proposalId,[true,true,true,true]);
+    await helpers.increaseTime(650);
+    await testSetup.competition.vote(1,{from:accounts[0]});
+    await testSetup.competition.vote(2,{from:accounts[1]});
+    await testSetup.competition.vote(3,{from:accounts[2]});
+
+    await helpers.increaseTime(650);
+    var tx = await testSetup.competition.redeem(1,accounts[0]);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "Redeem");
+    assert.equal(tx.logs[0].args._proposalId,proposalId);
+    assert.equal(tx.logs[0].args._rewardPercentage,18);
+
+    await testSetup.contributionRewardExt.getPastEvents('RedeemReputation', {
+          fromBlock: tx.blockNumber,
+          toBlock: 'latest'
+      })
+      .then(function(events){
+          assert.equal(events[0].event,"RedeemReputation");
+          assert.equal(events[0].args._beneficiary,accounts[0]);
+          assert.equal(events[0].args._amount,180);
+      });
+
+      await testSetup.contributionRewardExt.getPastEvents('RedeemEther', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"RedeemEther");
+            assert.equal(events[0].args._beneficiary,accounts[0]);
+            assert.equal(events[0].args._amount,(2000*18/100));
+        });
+
+        await testSetup.contributionRewardExt.getPastEvents('RedeemNativeToken', {
+              fromBlock: tx.blockNumber,
+              toBlock: 'latest'
+          })
+          .then(function(events){
+              assert.equal(events[0].event,"RedeemNativeToken");
+              assert.equal(events[0].args._beneficiary,accounts[0]);
+              assert.equal(events[0].args._amount,(1000*18/100));
+          });
+
+          await testSetup.contributionRewardExt.getPastEvents('RedeemExternalToken', {
+                fromBlock: tx.blockNumber,
+                toBlock: 'latest'
+            })
+            .then(function(events){
+                assert.equal(events[0].event,"RedeemExternalToken");
+                assert.equal(events[0].args._beneficiary,accounts[0]);
+                assert.equal(events[0].args._amount,(3000*18/100));
+            });
+      tx = await testSetup.competition.redeem(2,accounts[0]);
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "Redeem");
+      assert.equal(tx.logs[0].args._proposalId,proposalId);
+      assert.equal(tx.logs[0].args._rewardPercentage,28);
+
+      tx = await testSetup.competition.redeem(3,accounts[0]);
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "Redeem");
+      assert.equal(tx.logs[0].args._proposalId,proposalId);
+      assert.equal(tx.logs[0].args._rewardPercentage,53);
+
+  });
 });

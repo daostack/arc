@@ -16,14 +16,20 @@ contract Competition {
         uint256 _votingStartTime,
         uint256 _endTime,
         uint256 _numberOfVotesPerVoters,
-        address payable _contributionReward //address of the contract to redeem from.
+        address payable _contributionRewardExt //address of the contract to redeem from.
+    );
+
+    event Redeem(
+        bytes32 indexed _proposalId,
+        uint256 indexed _suggestionId,
+        uint256 _rewardPercentage
     );
 
     event NewSuggestion(
         bytes32 indexed _proposalId,
         uint256 indexed _suggestionId,
         string indexed _descriptionHash,
-        address suggester
+        address payable suggester
     );
 
     event NewVote(
@@ -46,8 +52,14 @@ contract Competition {
         uint256 votingStartTime;
         uint256 endTime;
         uint256 numberOfVotesPerVoters;
-        address payable contributionReward; //address of the contract to redeem from.
+        address payable contributionRewardExt;
         uint256 snapshotBlock;
+        //contributionRewardExt
+        uint256 reputationReward;
+        uint256 ethReward;
+        uint256 nativeTokenReward;
+        uint256 externalTokenReward;
+
         uint256[] topSuggestionsOrdered;
         //mapping from suggestions totalVotes to the number of suggestions with the same totalVotes.
         mapping(uint256=>uint256) tiesSuggestions;
@@ -57,44 +69,55 @@ contract Competition {
     struct Suggestion {
         uint256 totalVotes;
         bytes32 proposalId;
-        address suggester;
+        address payable suggester;
         mapping(address=>uint256) votes;
     }
 
     //mapping from proposalID to Proposal
-    //this is private due to avoid use of pragma experimental ABIEncoderV2;
     mapping(bytes32=>Proposal) public proposals;
-
     //mapping from suggestionId to Suggestion
     mapping(uint256=>Suggestion) public suggestions;
-
-
     uint256 public suggestionsCounter;
 
+    /**
+    * @dev Submit a competion proposal
+    * @param _descriptionHash A hash of the proposal's description
+    * @param _reputationChange - Amount of reputation change requested .Can be negative.
+    * @param _rewards rewards array:
+    *         rewards[0] - Amount of tokens requested per period
+    *         rewards[1] - Amount of ETH requested per period
+    *         rewards[2] - Amount of external tokens requested per period
+    * @param _externalToken Address of external token, if reward is requested there
+    * @param _rewardSplit an array of precentages which specify how to split the rewards
+    *         between the winning suggestions
+    * @param _competitionParams competition parameters :
+    *         _competitionParams[0] - competition startTime
+    *         _competitionParams[1] - _votingStartTime competition voting start time
+    *         _competitionParams[2] - _endTime competition end time
+    *         _competitionParams[3] - _numberOfVotesPerVoters on how many suggestions a voter can vote
+    * @param _contributionRewardExt the contributionRewardExt scheme which
+    *        manage and allocate the rewards for the competition.
+    * @return proposalId the proposal id.
+    */
     function proposeCompetition(
-            string memory _descriptionHash,
+            string calldata _descriptionHash,
             int256 _reputationChange,
-            uint[3] memory _rewards,
+            uint[3] calldata _rewards,
             IERC20 _externalToken,
-            uint256[] memory _rewardSplit,
-            uint256 _startTime,
-            uint256 _votingStartTime,
-            uint256 _endTime,
-            uint256 _numberOfVotesPerVoters,
-            address payable _contributionReward //address of the contract to redeem from.
+            uint256[] calldata _rewardSplit,
+            uint256[4] calldata _competitionParams,
+            // uint256 _votingStartTime,
+            // uint256 _endTime,
+            // uint256 _numberOfVotesPerVoters,
+            address payable _contributionRewardExt //address of the contract to redeem from.
     )
-    public
-    returns(bytes32 proposalId)
-    {
+    external
+    returns(bytes32 proposalId) {
         uint256 numberOfWinners = _rewardSplit.length;
-        require(numberOfWinners <= MAX_NUMBER_OF_WINNERS,
-        "number of winners greater than max allowed");
-        require(_votingStartTime < _endTime,
-        "voting start time greater than end time");
-        require(_votingStartTime >= _startTime,
-        "voting start time smaller than start time");
-        require(_numberOfVotesPerVoters > 0,
-        "numberOfVotesPerVoters should be greater than 0");
+        require(numberOfWinners <= MAX_NUMBER_OF_WINNERS, "number of winners greater than max allowed");
+        require(_competitionParams[1] < _competitionParams[2], "voting start time greater than end time");
+        require(_competitionParams[1] >= _competitionParams[0], "voting start time smaller than start time");
+        require(_competitionParams[3] > 0, "numberOfVotesPerVoters should be greater than 0");
 
         uint256 totalRewardSplit;
         for (uint256 i = 0; i < numberOfWinners; i++) {
@@ -102,47 +125,54 @@ contract Competition {
         }
         require(totalRewardSplit == 100, "total rewards split is not 100%");
 
-        proposalId = ContributionRewardExt(_contributionReward).proposeContributionReward(
+        proposalId = ContributionRewardExt(_contributionRewardExt).proposeContributionReward(
                 _descriptionHash,
                 _reputationChange,
                 _rewards,
                 _externalToken,
-                _contributionReward,
+                _contributionRewardExt,
                 msg.sender);
-        uint256 startTime = _startTime;
+        uint256 startTime = _competitionParams[0];
         if (startTime == 0) {
           // solhint-disable-next-line not-rely-on-time
             startTime = now;
         }
-        proposals[proposalId] = Proposal({
-            numberOfWinners: numberOfWinners,
-            rewardSplit: _rewardSplit,
-            startTime: startTime,
-            votingStartTime: _votingStartTime,
-            endTime: _endTime,
-            numberOfVotesPerVoters: _numberOfVotesPerVoters,
-            contributionReward: _contributionReward,
-            snapshotBlock: 0,
-            topSuggestionsOrdered: new uint256[](numberOfWinners)
-        });
+
+        proposals[proposalId].numberOfWinners = numberOfWinners;
+        proposals[proposalId].rewardSplit = _rewardSplit;
+        proposals[proposalId].startTime = startTime;
+        proposals[proposalId].votingStartTime = _competitionParams[1];
+        proposals[proposalId].endTime = _competitionParams[2];
+        proposals[proposalId].numberOfVotesPerVoters = _competitionParams[3];
+        proposals[proposalId].contributionRewardExt = _contributionRewardExt;
+        proposals[proposalId].reputationReward = uint256(_reputationChange);
+        proposals[proposalId].nativeTokenReward = _rewards[0];
+        proposals[proposalId].ethReward = _rewards[1];
+        proposals[proposalId].externalTokenReward = _rewards[2];
 
         emit NewCompetitionProposal(
             proposalId,
             numberOfWinners,
-            _rewardSplit,
+            proposals[proposalId].rewardSplit,
             startTime,
-            _votingStartTime,
-            _endTime,
-            _numberOfVotesPerVoters,
-            _contributionReward
+            proposals[proposalId].votingStartTime,
+            proposals[proposalId].endTime,
+            proposals[proposalId].numberOfVotesPerVoters,
+            _contributionRewardExt
         );
     }
 
+    /**
+    * @dev suggest a competion suggestion
+    * @param _proposalId the proposal id this suggestion is referring to.
+    * @param _descriptionHash a descriptionHash of the suggestion.
+    * @return suggestionId the suggestionId.
+    */
     function suggest(
             bytes32 _proposalId,
-            string memory _descriptionHash
+            string calldata _descriptionHash
     )
-    public
+    external
     returns(uint256)
     {
       // solhint-disable-next-line not-rely-on-time
@@ -156,17 +186,13 @@ contract Competition {
         return suggestionsCounter;
     }
 
-    function setSnapshotBlock(bytes32 _proposalId) public {
-        // solhint-disable-next-line not-rely-on-time
-        require(proposals[_proposalId].votingStartTime < now, "voting period not started yet");
-        if (proposals[_proposalId].snapshotBlock == 0) {
-            proposals[_proposalId].snapshotBlock = block.number;
-            emit SnapshotBlock(_proposalId, block.number);
-        }
-    }
-
+    /**
+    * @dev vote on a suggestion
+    * @param _suggestionId suggestionId
+    * @return bool
+    */
     function vote(uint256 _suggestionId)
-    public
+    external
     returns(bool)
     {
         bytes32 proposalId = suggestions[_suggestionId].proposalId;
@@ -181,7 +207,7 @@ contract Competition {
         "exceed number of votes allowed");
         proposal.votesPerVoter[msg.sender] = proposal.votesPerVoter[msg.sender].add(1);
         suggestion.votes[msg.sender] = suggestion.votes[msg.sender].add(1);
-        Avatar avatar = ContributionRewardExt(proposal.contributionReward).avatar();
+        Avatar avatar = ContributionRewardExt(proposal.contributionRewardExt).avatar();
         uint256 reputation = avatar.nativeReputation().balanceOfAt(msg.sender, proposals[proposalId].snapshotBlock);
         require(reputation > 0, "voter has no reputation");
         suggestion.totalVotes = suggestion.totalVotes.add(reputation);
@@ -192,59 +218,42 @@ contract Competition {
         return true;
     }
 
-    function redeem(uint256 _suggestionId, address payable _beneficiary) public {
-        require(suggestions[_suggestionId].totalVotes > 0, "no one vote for this suggestion");
-        bytes32 proposalId = suggestions[_suggestionId].proposalId;
-        require(proposalId != bytes32(0), "suggestion not exist");
-        Proposal storage proposal = proposals[proposalId];
-        // solhint-disable-next-line not-rely-on-time
-        require(proposal.endTime > now, "competition is still on");
-        uint256 amount;
-        //check if there is a win
-        for (uint256 i = 0; i < proposal.numberOfWinners; i++) {
-            if (suggestions[proposal.topSuggestionsOrdered[i]].suggester == _beneficiary) {
-                uint256 orderIndex = getOrderedIndexOfSuggestion(proposalId, _suggestionId);
-                suggestions[_suggestionId].suggester = address(0);
-                uint256 rewardPercentage = 0;
-                uint256 numberOfTieSuggestions = proposal.tiesSuggestions[suggestions[_suggestionId].totalVotes];
-                //calc the reward percentage for this suggestion
-                for (uint256 j=orderIndex; j < (orderIndex+numberOfTieSuggestions); j++) {
-                    rewardPercentage = rewardPercentage.add(proposal.rewardSplit[j]);
-                }
-                rewardPercentage = rewardPercentage.div(numberOfTieSuggestions);
-
-                amount = ContributionRewardExt(proposal.contributionReward)
-                .getProposalExternalTokenReward(proposalId).mul(rewardPercentage).div(100);
-                ContributionRewardExt(proposal.contributionReward).redeemExternalTokenFromExtContract(
-                proposalId,
-                _beneficiary,
-                amount);
-
-                amount = uint256(ContributionRewardExt(proposal.contributionReward)
-                .getProposalReputationReward(proposalId)).mul(rewardPercentage).div(100);
-                ContributionRewardExt(proposal.contributionReward).redeemReputationFromExtContract(
-                proposalId,
-                _beneficiary,
-                amount);
-
-                amount = ContributionRewardExt(proposal.contributionReward)
-                .getProposalEthReward(proposalId).mul(rewardPercentage).div(100);
-                ContributionRewardExt(proposal.contributionReward).redeemEtherFromExtContract(
-                proposalId,
-                _beneficiary,
-                amount);
-
-                amount = ContributionRewardExt(proposal.contributionReward)
-                .getProposalNativeTokenReward(proposalId).mul(rewardPercentage).div(100);
-                ContributionRewardExt(proposal.contributionReward).redeemNativeTokenFromExtContract(
-                proposalId,
-                _beneficiary,
-                amount);
-                break;
+    /**
+    * @dev redeem a winning suggestion reward
+    * @param _suggestionId suggestionId
+    * @param _beneficiary - the reward beneficiary.
+    *        this parameter is take into account only if the msg.sender is the suggestion's suggester,
+    *        otherwise the _beneficiary param is ignored and the beneficiary is suggestion's suggester.
+    */
+    function redeem(uint256 _suggestionId, address payable _beneficiary) external {
+        address payable beneficiary = suggestions[_suggestionId].suggester;
+        if (msg.sender == suggestions[_suggestionId].suggester) {
+            //only suggester can redeem to other address
+            if (beneficiary != address(0)) {
+                beneficiary = _beneficiary;
             }
         }
+        _redeem(_suggestionId, beneficiary);
     }
 
+    /**
+    * @dev setSnapshotBlock set the block for the reputaion snapshot
+    * @param _proposalId the proposal id
+    */
+    function setSnapshotBlock(bytes32 _proposalId) public {
+        // solhint-disable-next-line not-rely-on-time
+        require(proposals[_proposalId].votingStartTime < now, "voting period not started yet");
+        if (proposals[_proposalId].snapshotBlock == 0) {
+            proposals[_proposalId].snapshotBlock = block.number;
+            emit SnapshotBlock(_proposalId, block.number);
+        }
+    }
+    
+    /**
+    * @dev getOrderedIndexOfSuggestion return the index of specific suggestion in the winners list.
+    * @param _proposalId proposal id
+    * @param _suggestionId suggestion id
+    */
     function getOrderedIndexOfSuggestion(bytes32 _proposalId, uint256 _suggestionId)
     public
     view
@@ -252,25 +261,92 @@ contract Competition {
         uint256[] memory topSuggestionsOrdered = proposals[_proposalId].topSuggestionsOrdered;
         /** get how many elements are greater than a given element
            + how many elements are equal to agiven element **/
-        for (uint256 i; i < proposals[_proposalId].numberOfWinners; i++) {
+        for (uint256 i; i < topSuggestionsOrdered.length; i++) {
             if (suggestions[topSuggestionsOrdered[i]].totalVotes > suggestions[_suggestionId].totalVotes) {
                 index++;
             }
         }
     }
 
-    function refreshTopSuggestions(bytes32 _proposalId, uint256 _suggestionId) internal {
+    /**
+    * @dev refreshTopSuggestions this function maintain a winners list array.
+    * @param _proposalId proposal id
+    * @param _suggestionId suggestion id
+    */
+    function refreshTopSuggestions(bytes32 _proposalId, uint256 _suggestionId) private {
         uint256[] storage topSuggestionsOrdered = proposals[_proposalId].topSuggestionsOrdered;
-        /** get the index of the smallest element **/
-        uint256 smallest = 0;
-        for (uint256 i; i < proposals[_proposalId].numberOfWinners; i++) {
-            if (suggestions[topSuggestionsOrdered[i]].totalVotes > smallest) {
-                smallest++;
+        if (topSuggestionsOrdered.length < proposals[_proposalId].numberOfWinners) {
+            topSuggestionsOrdered.push(_suggestionId);
+        } else {
+         /** get the index of the smallest element **/
+            uint256 smallest = 0;
+            for (uint256 i; i < proposals[_proposalId].numberOfWinners; i++) {
+                if (suggestions[topSuggestionsOrdered[i]].totalVotes > smallest) {
+                    smallest++;
+                }
+            }
+
+            if (suggestions[topSuggestionsOrdered[smallest]].totalVotes < suggestions[_suggestionId].totalVotes) {
+                topSuggestionsOrdered[smallest] = _suggestionId;
             }
         }
+    }
 
-        if (suggestions[topSuggestionsOrdered[smallest]].totalVotes < suggestions[_suggestionId].totalVotes) {
-            topSuggestionsOrdered[smallest] = _suggestionId;
+    /**
+    * @dev redeem a winning suggestion reward
+    * @param _suggestionId suggestionId
+    * @param _beneficiary - the reward beneficiary
+    */
+    function _redeem(uint256 _suggestionId, address payable _beneficiary) private {
+        bytes32 proposalId = suggestions[_suggestionId].proposalId;
+        require(proposalId != bytes32(0), "suggestion not exist");
+        Proposal storage proposal = proposals[proposalId];
+        // solhint-disable-next-line not-rely-on-time
+        require(proposal.endTime < now, "competition is still on");
+        uint256 amount;
+        //check if there is a win
+        for (uint256 i = 0; i < proposal.topSuggestionsOrdered.length; i++) {
+            if (suggestions[proposal.topSuggestionsOrdered[i]].suggester != address(0)) {
+                uint256 orderIndex = getOrderedIndexOfSuggestion(proposalId, _suggestionId);
+                suggestions[_suggestionId].suggester = address(0);
+                uint256 rewardPercentage = 0;
+                uint256 numberOfTieSuggestions = proposal.tiesSuggestions[suggestions[_suggestionId].totalVotes];
+                uint256 j;
+                //calc the reward percentage for this suggestion
+                for (j = orderIndex; j < (orderIndex+numberOfTieSuggestions); j++) {
+                    rewardPercentage = rewardPercentage.add(proposal.rewardSplit[j]);
+                }
+                rewardPercentage = rewardPercentage.div(numberOfTieSuggestions);
+                uint256 rewardPercentageLeft = 0;
+                if (proposal.topSuggestionsOrdered.length < proposal.numberOfWinners) {
+                    for (j = proposal.topSuggestionsOrdered.length; j < proposal.numberOfWinners; j++) {
+                        rewardPercentageLeft = rewardPercentageLeft.add(proposal.rewardSplit[j]);
+                    }
+                    //if there are less winners than the proposal number of winners so divide the pre allocated
+                    //left reward equally between the winners
+                    rewardPercentage =
+                    rewardPercentage.add(rewardPercentageLeft.div(proposal.topSuggestionsOrdered.length));
+                }
+
+                amount = proposal.externalTokenReward.mul(rewardPercentage).div(100);
+                ContributionRewardExt(proposal.contributionRewardExt).redeemExternalTokenFromExtContract(
+                proposalId, _beneficiary, amount);
+
+                amount = proposal.reputationReward.mul(rewardPercentage).div(100);
+                ContributionRewardExt(proposal.contributionRewardExt).redeemReputationFromExtContract(
+                proposalId, _beneficiary, amount);
+
+                amount = proposal.ethReward.mul(rewardPercentage).div(100);
+                ContributionRewardExt(proposal.contributionRewardExt).redeemEtherFromExtContract(
+                proposalId, _beneficiary, amount);
+
+                amount = proposal.nativeTokenReward.mul(rewardPercentage).div(100);
+                ContributionRewardExt(proposal.contributionRewardExt).redeemNativeTokenFromExtContract(
+                proposalId, _beneficiary, amount);
+                emit Redeem(proposalId, _suggestionId, rewardPercentage);
+                break;
+            }
         }
     }
+
 }
