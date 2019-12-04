@@ -77,13 +77,15 @@ const proposeCompetition = async function(
                                           _startTime = 0,
                                           _votingStartTime = 600,
                                           _endTime = 1200,
-                                          _numberOfVotesPerVoters = 3,
+                                          _maxNumberOfVotesPerVoter = 3,
+                                          _suggestionsEndTime = 1200
                                           ) {
 
     var block = await web3.eth.getBlock("latest");
     _testSetup.startTime = block.timestamp + _startTime;
     _testSetup.votingStartTime = block.timestamp + _votingStartTime;
     _testSetup.endTime = block.timestamp + _endTime;
+    _testSetup.suggestionsEndTime = block.timestamp + _suggestionsEndTime;
     var tx = await _testSetup.competition.proposeCompetition(
                                    _descriptionHash,
                                    _reputationChange,
@@ -93,7 +95,8 @@ const proposeCompetition = async function(
                                    [_testSetup.startTime,
                                    _testSetup.votingStartTime,
                                    _testSetup.endTime,
-                                   _numberOfVotesPerVoters]
+                                   _maxNumberOfVotesPerVoter,
+                                   _testSetup.suggestionsEndTime]
                                 );
 
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -108,8 +111,10 @@ const proposeCompetition = async function(
     assert.equal(tx.logs[0].args._startTime,_testSetup.startTime);
     assert.equal(tx.logs[0].args._votingStartTime,_testSetup.votingStartTime);
     assert.equal(tx.logs[0].args._endTime,_testSetup.endTime);
-    assert.equal(tx.logs[0].args._numberOfVotesPerVoters,_numberOfVotesPerVoters);
+    assert.equal(tx.logs[0].args._maxNumberOfVotesPerVoter,_maxNumberOfVotesPerVoter);
     assert.equal(tx.logs[0].args._contributionRewardExt,_testSetup.contributionRewardExt.address);
+    assert.equal(tx.logs[0].args._suggestionsEndTime,_testSetup.suggestionsEndTime);
+
 
     return proposalId;
 };
@@ -193,7 +198,7 @@ contract('Competition', accounts => {
                                           votingStartTime,
                                           endTime,
                                           0);//votingStartTime
-                 assert(false, 'numberOfVotesPerVoters > 0');
+                 assert(false, 'maxNumberOfVotesPerVoter > 0');
             } catch (ex) {
                  helpers.assertVMException(ex);
            }
@@ -331,9 +336,9 @@ contract('Competition', accounts => {
      await testSetup.competition.vote(16,{from:accounts[2]});
      await testSetup.competition.vote(5,{from:accounts[1]});
 
-     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,10),2);
-     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,5),1);
-     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,16),0);
+     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(10),2);
+     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(5),1);
+     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(16),0);
 
    });
 
@@ -349,11 +354,22 @@ contract('Competition', accounts => {
      await testSetup.competition.vote(16,{from:accounts[1]});
      await testSetup.competition.vote(5,{from:accounts[0]});
 
-     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,10),0);
-     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,16),0);
-     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,5),2);
-     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(proposalId,0),3);
-
+     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(10),0);
+     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(16),0);
+     assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(5),2);
+     try {
+            await testSetup.competition.getOrderedIndexOfSuggestion(0);
+            assert(false, 'revert if suggestion does not exist');
+       } catch (ex) {
+            helpers.assertVMException(ex);
+      }
+      try {
+             await testSetup.competition.getOrderedIndexOfSuggestion(21);
+             assert(false, 'revert if suggestion does not exist');
+        } catch (ex) {
+             helpers.assertVMException(ex);
+       }
+       assert.equal(await testSetup.competition.getOrderedIndexOfSuggestion(1),3);
    });
 
   it("redeem", async function() {
