@@ -64,6 +64,7 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,se
                                         [helpers.NULL_HASH],[permissions],"metaData");
 
    testSetup.competition =  await Competition.new();
+   testSetup.competition.initialize(testSetup.contributionRewardExt.address);
    return testSetup;
 };
 
@@ -92,9 +93,8 @@ const proposeCompetition = async function(
                                    [_testSetup.startTime,
                                    _testSetup.votingStartTime,
                                    _testSetup.endTime,
-                                   _numberOfVotesPerVoters],
-                                   _testSetup.contributionRewardExt.address
-                                 );
+                                   _numberOfVotesPerVoters]
+                                );
 
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
     assert.equal(tx.logs.length, 1);
