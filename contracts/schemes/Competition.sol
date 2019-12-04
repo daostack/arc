@@ -262,6 +262,37 @@ contract Competition {
     }
 
     /**
+    * @dev sendLeftOverFund send letf over funds back to the dao.
+    * @param _proposalId the proposal id
+    */
+    function sendLeftOverFunds(bytes32 _proposalId) public {
+        // solhint-disable-next-line not-rely-on-time
+        require(proposals[_proposalId].endTime < now, "competition is still on");
+        uint256[] memory topSuggestions = proposals[_proposalId].topSuggestions;
+        for (uint256 i; i < topSuggestions.length; i++) {
+            require(suggestions[topSuggestions[i]].suggester == address(0), "not all winning suggestions redeemed");
+        }
+
+        (, , , , , , ,
+        uint256 nativeTokenRewardLeft,
+        ,
+        uint256 ethRewardLeft,
+        uint256 externalTokenRewardLeft)
+        = ContributionRewardExt(contributionRewardExt).organizationProposals(_proposalId);
+
+        Avatar avatar = ContributionRewardExt(contributionRewardExt).avatar();
+
+        ContributionRewardExt(contributionRewardExt).redeemExternalTokenFromExtContract(
+        _proposalId, address(avatar), externalTokenRewardLeft);
+
+        ContributionRewardExt(contributionRewardExt).redeemEtherFromExtContract(
+        _proposalId, address(avatar), ethRewardLeft);
+
+        ContributionRewardExt(contributionRewardExt).redeemNativeTokenFromExtContract(
+        _proposalId, address(avatar), nativeTokenRewardLeft);
+    }
+
+    /**
     * @dev getOrderedIndexOfSuggestion return the index of specific suggestion in the winners list.
     * @param _suggestionId suggestion id
     */

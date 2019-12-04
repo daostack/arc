@@ -299,13 +299,11 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
 
         if (proposal.externalToken != IERC20(0) && _proposal.externalTokenReward > 0) {
             amount = _proposal.externalTokenReward;
-            if (amount > 0) {
-                require(
-                Controller(
-                avatar.owner())
-                .externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount, avatar));
-                emit RedeemExternalToken(address(avatar), _proposalId, _proposal.beneficiary, amount);
-            }
+            require(
+            Controller(
+            avatar.owner())
+            .externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount, avatar));
+            emit RedeemExternalToken(address(avatar), _proposalId, _proposal.beneficiary, amount);
         }
     }
 

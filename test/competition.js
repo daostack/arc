@@ -517,11 +517,31 @@ contract('Competition', accounts => {
       assert.equal(tx.logs[0].args._proposalId,proposalId);
       assert.equal(tx.logs[0].args._rewardPercentage,28);
 
+      try {
+              await testSetup.competition.sendLeftOverFunds(proposalId);
+              assert(false, 'cannot sendLeftOverFunds because not all proposals redeemed yet');
+         } catch (ex) {
+              helpers.assertVMException(ex);
+        }
+
       tx = await testSetup.competition.redeem(3,accounts[0]);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "Redeem");
       assert.equal(tx.logs[0].args._proposalId,proposalId);
       assert.equal(tx.logs[0].args._rewardPercentage,53);
+
+      var proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
+
+      tx = await testSetup.competition.sendLeftOverFunds(proposalId);
+      await testSetup.contributionRewardExt.getPastEvents('RedeemExternalToken', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"RedeemExternalToken");
+            assert.equal(events[0].args._beneficiary,testSetup.org.avatar.address);
+            assert.equal(events[0].args._amount.toNumber(),proposal.externalTokenRewardLeft.toNumber());
+        });
 
   });
 });
