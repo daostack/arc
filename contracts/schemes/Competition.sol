@@ -29,7 +29,7 @@ contract Competition {
         bytes32 indexed _proposalId,
         uint256 indexed _suggestionId,
         string indexed _descriptionHash,
-        address payable suggester
+        address payable _suggester
     );
 
     event NewVote(
