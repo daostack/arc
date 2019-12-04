@@ -78,6 +78,18 @@ contract Competition {
     //mapping from suggestionId to Suggestion
     mapping(uint256=>Suggestion) public suggestions;
     uint256 public suggestionsCounter;
+    address payable public contributionRewardExt; //address of the contract to redeem from.
+
+    /**
+     * @dev initialize
+     * @param _contributionRewardExt the contributionRewardExt scheme which
+     *        manage and allocate the rewards for the competition.
+     */
+    function initialize(address payable _contributionRewardExt) external {
+        require(contributionRewardExt == address(0), "can be called only one time");
+        require(_contributionRewardExt != address(0), "contributionRewardExt cannot be zero");
+        contributionRewardExt = _contributionRewardExt;
+    }
 
     /**
     * @dev Submit a competion proposal
@@ -95,8 +107,6 @@ contract Competition {
     *         _competitionParams[1] - _votingStartTime competition voting start time
     *         _competitionParams[2] - _endTime competition end time
     *         _competitionParams[3] - _numberOfVotesPerVoters on how many suggestions a voter can vote
-    * @param _contributionRewardExt the contributionRewardExt scheme which
-    *        manage and allocate the rewards for the competition.
     * @return proposalId the proposal id.
     */
     function proposeCompetition(
@@ -105,8 +115,7 @@ contract Competition {
             uint[3] calldata _rewards,
             IERC20 _externalToken,
             uint256[] calldata _rewardSplit,
-            uint256[4] calldata _competitionParams,
-            address payable _contributionRewardExt //address of the contract to redeem from.
+            uint256[4] calldata _competitionParams
     )
     external
     returns(bytes32 proposalId) {
@@ -122,12 +131,12 @@ contract Competition {
         }
         require(totalRewardSplit == 100, "total rewards split is not 100%");
 
-        proposalId = ContributionRewardExt(_contributionRewardExt).proposeContributionReward(
+        proposalId = ContributionRewardExt(contributionRewardExt).proposeContributionReward(
                 _descriptionHash,
                 _reputationChange,
                 _rewards,
                 _externalToken,
-                _contributionRewardExt,
+                contributionRewardExt,
                 msg.sender);
         uint256 startTime = _competitionParams[0];
         if (startTime == 0) {
@@ -141,7 +150,6 @@ contract Competition {
         proposals[proposalId].votingStartTime = _competitionParams[1];
         proposals[proposalId].endTime = _competitionParams[2];
         proposals[proposalId].numberOfVotesPerVoters = _competitionParams[3];
-        proposals[proposalId].contributionRewardExt = _contributionRewardExt;
         proposals[proposalId].reputationReward = uint256(_reputationChange);
         proposals[proposalId].nativeTokenReward = _rewards[0];
         proposals[proposalId].ethReward = _rewards[1];
@@ -155,7 +163,7 @@ contract Competition {
             proposals[proposalId].votingStartTime,
             proposals[proposalId].endTime,
             proposals[proposalId].numberOfVotesPerVoters,
-            _contributionRewardExt
+            contributionRewardExt
         );
     }
 
@@ -204,7 +212,7 @@ contract Competition {
         "exceed number of votes allowed");
         proposal.votesPerVoter[msg.sender] = proposal.votesPerVoter[msg.sender].add(1);
         suggestion.votes[msg.sender] = suggestion.votes[msg.sender].add(1);
-        Avatar avatar = ContributionRewardExt(proposal.contributionRewardExt).avatar();
+        Avatar avatar = ContributionRewardExt(contributionRewardExt).avatar();
         uint256 reputation = avatar.nativeReputation().balanceOfAt(msg.sender, proposals[proposalId].snapshotBlock);
         require(reputation > 0, "voter has no reputation");
         suggestion.totalVotes = suggestion.totalVotes.add(reputation);
@@ -326,19 +334,19 @@ contract Competition {
                 }
 
                 amount = proposal.externalTokenReward.mul(rewardPercentage).div(100);
-                ContributionRewardExt(proposal.contributionRewardExt).redeemExternalTokenFromExtContract(
+                ContributionRewardExt(contributionRewardExt).redeemExternalTokenFromExtContract(
                 proposalId, _beneficiary, amount);
 
                 amount = proposal.reputationReward.mul(rewardPercentage).div(100);
-                ContributionRewardExt(proposal.contributionRewardExt).redeemReputationFromExtContract(
+                ContributionRewardExt(contributionRewardExt).redeemReputationFromExtContract(
                 proposalId, _beneficiary, amount);
 
                 amount = proposal.ethReward.mul(rewardPercentage).div(100);
-                ContributionRewardExt(proposal.contributionRewardExt).redeemEtherFromExtContract(
+                ContributionRewardExt(contributionRewardExt).redeemEtherFromExtContract(
                 proposalId, _beneficiary, amount);
 
                 amount = proposal.nativeTokenReward.mul(rewardPercentage).div(100);
-                ContributionRewardExt(proposal.contributionRewardExt).redeemNativeTokenFromExtContract(
+                ContributionRewardExt(contributionRewardExt).redeemNativeTokenFromExtContract(
                 proposalId, _beneficiary, amount);
                 emit Redeem(proposalId, _suggestionId, rewardPercentage);
                 break;
