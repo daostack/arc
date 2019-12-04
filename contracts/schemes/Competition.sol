@@ -211,7 +211,6 @@ contract Competition {
         require(proposal.votesPerVoter[msg.sender] < proposal.numberOfVotesPerVoters,
         "exceed number of votes allowed");
         proposal.votesPerVoter[msg.sender] = proposal.votesPerVoter[msg.sender].add(1);
-        suggestion.votes[msg.sender] = suggestion.votes[msg.sender].add(1);
         Avatar avatar = ContributionRewardExt(contributionRewardExt).avatar();
         uint256 reputation = avatar.nativeReputation().balanceOfAt(msg.sender, proposals[proposalId].snapshotBlock);
         require(reputation > 0, "voter has no reputation");
