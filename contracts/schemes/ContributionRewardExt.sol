@@ -76,7 +76,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
-    address public contractToCall;
     Avatar public avatar;
     address public rewarder;
 

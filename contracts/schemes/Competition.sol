@@ -106,9 +106,6 @@ contract Competition {
             IERC20 _externalToken,
             uint256[] calldata _rewardSplit,
             uint256[4] calldata _competitionParams,
-            // uint256 _votingStartTime,
-            // uint256 _endTime,
-            // uint256 _numberOfVotesPerVoters,
             address payable _contributionRewardExt //address of the contract to redeem from.
     )
     external
@@ -248,7 +245,7 @@ contract Competition {
             emit SnapshotBlock(_proposalId, block.number);
         }
     }
-    
+
     /**
     * @dev getOrderedIndexOfSuggestion return the index of specific suggestion in the winners list.
     * @param _proposalId proposal id
@@ -259,8 +256,7 @@ contract Competition {
     view
     returns(uint256 index) {
         uint256[] memory topSuggestionsOrdered = proposals[_proposalId].topSuggestionsOrdered;
-        /** get how many elements are greater than a given element
-           + how many elements are equal to agiven element **/
+        /** get how many elements are greater than a given element*/
         for (uint256 i; i < topSuggestionsOrdered.length; i++) {
             if (suggestions[topSuggestionsOrdered[i]].totalVotes > suggestions[_suggestionId].totalVotes) {
                 index++;
@@ -281,8 +277,9 @@ contract Competition {
          /** get the index of the smallest element **/
             uint256 smallest = 0;
             for (uint256 i; i < proposals[_proposalId].numberOfWinners; i++) {
-                if (suggestions[topSuggestionsOrdered[i]].totalVotes > smallest) {
-                    smallest++;
+                if (suggestions[topSuggestionsOrdered[i]].totalVotes <
+                    suggestions[topSuggestionsOrdered[smallest]].totalVotes) {
+                    smallest = i;
                 }
             }
 
