@@ -273,22 +273,21 @@ contract Competition {
             require(suggestions[topSuggestions[i]].suggester == address(0), "not all winning suggestions redeemed");
         }
 
-        (, , , , , , ,
-        uint256 nativeTokenRewardLeft,
-        ,
+        (, , , , , ,
+        uint256 nativeTokenRewardLeft, ,
         uint256 ethRewardLeft,
-        uint256 externalTokenRewardLeft)
+        uint256 externalTokenRewardLeft,)
         = ContributionRewardExt(contributionRewardExt).organizationProposals(_proposalId);
 
         Avatar avatar = ContributionRewardExt(contributionRewardExt).avatar();
 
-        ContributionRewardExt(contributionRewardExt).redeemExternalTokenFromExtContract(
+        ContributionRewardExt(contributionRewardExt).redeemExternalTokenByRewarder(
         _proposalId, address(avatar), externalTokenRewardLeft);
 
-        ContributionRewardExt(contributionRewardExt).redeemEtherFromExtContract(
+        ContributionRewardExt(contributionRewardExt).redeemEtherByRewarder(
         _proposalId, address(avatar), ethRewardLeft);
 
-        ContributionRewardExt(contributionRewardExt).redeemNativeTokenFromExtContract(
+        ContributionRewardExt(contributionRewardExt).redeemNativeTokenByRewarder(
         _proposalId, address(avatar), nativeTokenRewardLeft);
     }
 
@@ -359,8 +358,8 @@ contract Competition {
         uint256 rewardPercentage = 0;
         uint256 numberOfTieSuggestions = proposal.suggestionsPerVote[suggestions[_suggestionId].totalVotes];
         uint256 j;
-          //calc the reward percentage for this suggestion
-        for (j = orderIndex; j < (orderIndex+numberOfTieSuggestions); j++) {
+        //calc the reward percentage for this suggestion
+        for (j = orderIndex; j < (orderIndex+numberOfTieSuggestions) && j < proposal.rewardSplit.length; j++) {
             rewardPercentage = rewardPercentage.add(proposal.rewardSplit[j]);
         }
         rewardPercentage = rewardPercentage.div(numberOfTieSuggestions);
@@ -376,19 +375,19 @@ contract Competition {
         }
         uint256 amount;
         amount = proposal.externalTokenReward.mul(rewardPercentage).div(100);
-        ContributionRewardExt(contributionRewardExt).redeemExternalTokenFromExtContract(
+        ContributionRewardExt(contributionRewardExt).redeemExternalTokenByRewarder(
         proposalId, _beneficiary, amount);
 
         amount = proposal.reputationReward.mul(rewardPercentage).div(100);
-        ContributionRewardExt(contributionRewardExt).redeemReputationFromExtContract(
+        ContributionRewardExt(contributionRewardExt).redeemReputationByRewarder(
         proposalId, _beneficiary, amount);
 
         amount = proposal.ethReward.mul(rewardPercentage).div(100);
-        ContributionRewardExt(contributionRewardExt).redeemEtherFromExtContract(
+        ContributionRewardExt(contributionRewardExt).redeemEtherByRewarder(
         proposalId, _beneficiary, amount);
 
         amount = proposal.nativeTokenReward.mul(rewardPercentage).div(100);
-        ContributionRewardExt(contributionRewardExt).redeemNativeTokenFromExtContract(
+        ContributionRewardExt(contributionRewardExt).redeemNativeTokenByRewarder(
         proposalId, _beneficiary, amount);
         emit Redeem(proposalId, _suggestionId, rewardPercentage);
     }

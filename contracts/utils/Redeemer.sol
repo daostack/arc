@@ -114,7 +114,7 @@ contract Redeemer {
         genesisProtocolRedeem(_genesisProtocol, _proposalId, _beneficiary);
         if (callContributionReward) {
                //redeem from contributionReward only if it executed
-            if (_contributionRewardExt.getProposalExecutionTime(_proposalId) > 0) {
+            if (_contributionRewardExt.getProposalAcceptedByVotingMachine(_proposalId)) {
                 (crReputationReward, crNativeTokenReward, crEthReward, crExternalTokenReward) =
                 contributionRewardExtRedeem(_contributionRewardExt, _proposalId);
             }

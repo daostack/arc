@@ -125,7 +125,7 @@ contract('ContributionRewardExt', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
-      assert.notEqual(organizationProposal.executionTime,0);//executionTime
+      assert.notEqual(organizationProposal.acceptedByVotingMachine,0);//acceptedByVotingMachine
      });
 
     it("execute proposeContributionReward  mint reputation ", async function() {
@@ -558,12 +558,12 @@ contract('ContributionRewardExt', accounts => {
 
        //redeem ether
        try {
-           await testSetup.contributionRewardExt.redeemEtherFromExtContract(proposalId,otherAvatar.address,1,{from:accounts[1]});
+           await testSetup.contributionRewardExt.redeemEtherByRewarder(proposalId,otherAvatar.address,1,{from:accounts[1]});
            assert(false, 'only service contract can redeem');
          } catch (ex) {
            helpers.assertVMException(ex);
          }
-       tx = await testSetup.contributionRewardExt.redeemEtherFromExtContract(proposalId,otherAvatar.address,1);
+       tx = await testSetup.contributionRewardExt.redeemEtherByRewarder(proposalId,otherAvatar.address,1);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "RedeemEther");
        assert.equal(tx.logs[0].args._amount, 1);
@@ -572,24 +572,24 @@ contract('ContributionRewardExt', accounts => {
        var proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.ethRewardLeft, ethReward - 1);
        try {
-           await testSetup.contributionRewardExt.redeemEtherFromExtContract(proposalId,otherAvatar.address,proposal.ethRewardLeft+1);
+           await testSetup.contributionRewardExt.redeemEtherByRewarder(proposalId,otherAvatar.address,proposal.ethRewardLeft+1);
            assert(false, 'cannot redeem more than the proposal reward');
         } catch (ex) {
            helpers.assertVMException(ex);
        }
-       await testSetup.contributionRewardExt.redeemEtherFromExtContract(proposalId,otherAvatar.address,proposal.ethRewardLeft);
+       await testSetup.contributionRewardExt.redeemEtherByRewarder(proposalId,otherAvatar.address,proposal.ethRewardLeft);
        assert.equal(await web3.eth.getBalance(otherAvatar.address),ethReward);
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.ethRewardLeft, 0);
 
        //redeem nativeToken
        try {
-           await testSetup.contributionRewardExt.redeemNativeTokenFromExtContract(proposalId,otherAvatar.address,1,{from:accounts[1]});
+           await testSetup.contributionRewardExt.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,1,{from:accounts[1]});
            assert(false, 'only service contract can redeem');
          } catch (ex) {
            helpers.assertVMException(ex);
          }
-       tx = await testSetup.contributionRewardExt.redeemNativeTokenFromExtContract(proposalId,otherAvatar.address,1);
+       tx = await testSetup.contributionRewardExt.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,1);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "RedeemNativeToken");
        assert.equal(tx.logs[0].args._amount, 1);
@@ -599,12 +599,12 @@ contract('ContributionRewardExt', accounts => {
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.nativeTokenRewardLeft, nativeTokenReward - 1);
        try {
-           await testSetup.contributionRewardExt.redeemNativeTokenFromExtContract(proposalId,otherAvatar.address,proposal.nativeTokenRewardLeft+1);
+           await testSetup.contributionRewardExt.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,proposal.nativeTokenRewardLeft+1);
            assert(false, 'cannot redeem more than the proposal reward');
         } catch (ex) {
            helpers.assertVMException(ex);
        }
-       await testSetup.contributionRewardExt.redeemNativeTokenFromExtContract(proposalId,otherAvatar.address,proposal.nativeTokenRewardLeft);
+       await testSetup.contributionRewardExt.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,proposal.nativeTokenRewardLeft);
        assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.nativeTokenRewardLeft, 0);
@@ -612,12 +612,12 @@ contract('ContributionRewardExt', accounts => {
 
        //redeem externalToken
        try {
-           await testSetup.contributionRewardExt.redeemExternalTokenFromExtContract(proposalId,otherAvatar.address,1,{from:accounts[1]});
+           await testSetup.contributionRewardExt.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,1,{from:accounts[1]});
            assert(false, 'only service contract can redeem');
          } catch (ex) {
            helpers.assertVMException(ex);
          }
-       tx = await testSetup.contributionRewardExt.redeemExternalTokenFromExtContract(proposalId,otherAvatar.address,1);
+       tx = await testSetup.contributionRewardExt.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,1);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "RedeemExternalToken");
        assert.equal(tx.logs[0].args._amount, 1);
@@ -627,12 +627,12 @@ contract('ContributionRewardExt', accounts => {
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.externalTokenRewardLeft, externalTokenReward - 1);
        try {
-           await testSetup.contributionRewardExt.redeemExternalTokenFromExtContract(proposalId,otherAvatar.address,proposal.externalTokenRewardLeft+1);
+           await testSetup.contributionRewardExt.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,proposal.externalTokenRewardLeft+1);
            assert(false, 'cannot redeem more than the proposal reward');
         } catch (ex) {
            helpers.assertVMException(ex);
        }
-       await testSetup.contributionRewardExt.redeemExternalTokenFromExtContract(proposalId,otherAvatar.address,proposal.externalTokenRewardLeft);
+       await testSetup.contributionRewardExt.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,proposal.externalTokenRewardLeft);
        assert.equal(await testSetup.standardTokenMock.balanceOf(otherAvatar.address),externalTokenReward);
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.externalTokenRewardLeft, 0);
@@ -640,12 +640,12 @@ contract('ContributionRewardExt', accounts => {
 
        //redeem reputation
        try {
-           await testSetup.contributionRewardExt.redeemReputationFromExtContract(proposalId,otherAvatar.address,1,{from:accounts[1]});
+           await testSetup.contributionRewardExt.redeemReputationByRewarder(proposalId,otherAvatar.address,1,{from:accounts[1]});
            assert(false, 'only service contract can redeem');
          } catch (ex) {
            helpers.assertVMException(ex);
          }
-       tx = await testSetup.contributionRewardExt.redeemReputationFromExtContract(proposalId,otherAvatar.address,1);
+       tx = await testSetup.contributionRewardExt.redeemReputationByRewarder(proposalId,otherAvatar.address,1);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "RedeemReputation");
        assert.equal(tx.logs[0].args._amount, 1);
@@ -655,12 +655,12 @@ contract('ContributionRewardExt', accounts => {
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.reputationChangeLeft, reputationReward - 1);
        try {
-           await testSetup.contributionRewardExt.redeemReputationFromExtContract(proposalId,otherAvatar.address,proposal.reputationChangeLeft+1);
+           await testSetup.contributionRewardExt.redeemReputationByRewarder(proposalId,otherAvatar.address,proposal.reputationChangeLeft+1);
            assert(false, 'cannot redeem more than the proposal reward');
         } catch (ex) {
            helpers.assertVMException(ex);
        }
-       await testSetup.contributionRewardExt.redeemReputationFromExtContract(proposalId,otherAvatar.address,proposal.reputationChangeLeft);
+       await testSetup.contributionRewardExt.redeemReputationByRewarder(proposalId,otherAvatar.address,proposal.reputationChangeLeft);
        assert.equal(await testSetup.org.reputation.balanceOf(otherAvatar.address),reputationReward);
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.reputationChangeLeft, 0);
