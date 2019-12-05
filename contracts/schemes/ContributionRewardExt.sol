@@ -10,7 +10,8 @@ import "../libs/SafeERC20.sol";
  * @title A scheme for proposing and rewarding contributions to an organization
  * @dev An agent can ask an organization to recognize a contribution and reward
  * him with token, reputation, ether or any combination.
- * The contract enable to assign a rewarder, which, after the contributionreward has been accepted,
+ * This scheme extend the functionality of the ContributionReward scheme.
+ * It enable to assign a rewarder, which, after the contributionreward has been accepted,
  * can then later distribute the assets as it would like.
  */
 contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterface {
