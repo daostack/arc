@@ -121,7 +121,7 @@ const proposeCompetition = async function(
 
 
 contract('Competition', accounts => {
-  
+
     it("proposeCompetition log", async function() {
       var testSetup = await setup(accounts);
       await proposeCompetition(testSetup);
@@ -241,7 +241,7 @@ contract('Competition', accounts => {
        var testSetup = await setup(accounts);
        var proposalId = await proposeCompetition(testSetup);//votingStartTime
        await testSetup.competition.suggest(proposalId,"suggestion");
-       await helpers.increaseTime(1200+1);
+       await helpers.increaseTime(1200+100);
        try {
               await testSetup.competition.suggest(proposalId,"suggestion");
               assert(false, 'cannot suggest after competition end');
