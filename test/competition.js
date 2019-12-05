@@ -74,7 +74,7 @@ const proposeCompetition = async function(
                                           _reputationChange = 10,
                                           _rewards = [1,2,3],
                                           _rewardSplit = [50,25,15,10],
-                                          _startTime = 0,
+                                          _startTime = 10,
                                           _votingStartTime = 600,
                                           _endTime = 1200,
                                           _maxNumberOfVotesPerVoter = 3,
@@ -114,7 +114,6 @@ const proposeCompetition = async function(
     assert.equal(tx.logs[0].args._maxNumberOfVotesPerVoter,_maxNumberOfVotesPerVoter);
     assert.equal(tx.logs[0].args._contributionRewardExt,_testSetup.contributionRewardExt.address);
     assert.equal(tx.logs[0].args._suggestionsEndTime,_testSetup.suggestionsEndTime);
-
 
     return proposalId;
 };
@@ -197,7 +196,7 @@ contract('Competition', accounts => {
                                           startTime,//startTime
                                           votingStartTime,
                                           endTime,
-                                          0);//votingStartTime
+                                          0);
                  assert(false, 'maxNumberOfVotesPerVoter > 0');
             } catch (ex) {
                  helpers.assertVMException(ex);
@@ -207,11 +206,46 @@ contract('Competition', accounts => {
      it("suggest", async function() {
        var testSetup = await setup(accounts);
        var proposalId = await proposeCompetition(testSetup);
+       await helpers.increaseTime(20);
        var tx = await testSetup.competition.suggest(proposalId,"suggestion");
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "NewSuggestion");
        assert.equal(tx.logs[0].args._suggestionId,1);
       });
+
+    it("cannot suggest after suggestionEndTime", async function() {
+      var descriptionHash = "description-hash";
+      var reputationChange = 10;
+      var rewards = [1,2,3];
+      var rewardSplit = [100];
+      var startTime = 10;
+      var votingStartTime = 600;
+      var endTime = 1200;
+      var maxNumberOfVotesPerVoter = 3;
+      var testSetup = await setup(accounts);
+      var proposalId = await proposeCompetition(testSetup,
+                               descriptionHash,
+                               reputationChange,
+                               rewards,
+                               rewardSplit,
+                               startTime,
+                               votingStartTime,
+                               endTime,
+                               maxNumberOfVotesPerVoter,
+                               200);//suggestionEndTime
+      await helpers.increaseTime(20);//increase time for suggestion
+      await testSetup.competition.suggest(proposalId,"suggestion");
+      //increase time after suggestion end time
+      await helpers.increaseTime(250);
+      try {
+
+             await testSetup.competition.suggest(proposalId,"suggestion");
+             assert(false, 'cannot suggest after suggestionEndTime');
+        } catch (ex) {
+             helpers.assertVMException(ex);
+       }
+
+    });
 
     it("cannot suggest before start time", async function() {
       var testSetup = await setup(accounts);
@@ -224,7 +258,7 @@ contract('Competition', accounts => {
                                   reputationChange,
                                   rewards,
                                   rewardSplit,
-                                  10//startTime
+                                  20//startTime
                                  );//votingStartTime
       try {
 
@@ -233,13 +267,14 @@ contract('Competition', accounts => {
         } catch (ex) {
              helpers.assertVMException(ex);
        }
-       await helpers.increaseTime(10+1);
+       await helpers.increaseTime(20);
        await testSetup.competition.suggest(proposalId,"suggestion");
      });
 
      it("cannot suggest after competition end", async function() {
        var testSetup = await setup(accounts);
        var proposalId = await proposeCompetition(testSetup);//votingStartTime
+       await helpers.increaseTime(20);
        await testSetup.competition.suggest(proposalId,"suggestion");
        await helpers.increaseTime(1200+100);
        try {
@@ -253,6 +288,7 @@ contract('Competition', accounts => {
   it("vote", async function() {
     var testSetup = await setup(accounts);
     var proposalId = await proposeCompetition(testSetup);
+    await helpers.increaseTime(20);
     var tx = await testSetup.competition.suggest(proposalId,"suggestion");
     var suggestionId = tx.logs[0].args._suggestionId;
 
@@ -314,6 +350,7 @@ contract('Competition', accounts => {
    it("total votes", async function() {
      var testSetup = await setup(accounts);
      var proposalId = await proposeCompetition(testSetup);
+     await helpers.increaseTime(20);
      var tx = await testSetup.competition.suggest(proposalId,"suggestion");
      var suggestionId = tx.logs[0].args._suggestionId;
      await helpers.increaseTime(650);
@@ -327,6 +364,7 @@ contract('Competition', accounts => {
    it("getOrderedIndexOfSuggestion", async function() {
      var testSetup = await setup(accounts);
      var proposalId = await proposeCompetition(testSetup);
+     await helpers.increaseTime(20);
      for (var i=0;i<20;i++) {
          //submit 20 suggestion
         await testSetup.competition.suggest(proposalId,"suggestion");
@@ -345,6 +383,7 @@ contract('Competition', accounts => {
    it("getOrderedIndexOfSuggestion equality case", async function() {
      var testSetup = await setup(accounts);
      var proposalId = await proposeCompetition(testSetup);
+     await helpers.increaseTime(20);
      for (var i=0;i<20;i++) {
          //submit 20 suggestion
         await testSetup.competition.suggest(proposalId,"suggestion");
@@ -377,6 +416,7 @@ contract('Competition', accounts => {
     await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
     await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
     var proposalId = await proposeCompetition(testSetup);
+    await helpers.increaseTime(20);
     await testSetup.competition.suggest(proposalId,"suggestion");
     try {
             await testSetup.competition.redeem(1,accounts[0]);
@@ -449,6 +489,7 @@ contract('Competition', accounts => {
     await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,3000,{from:accounts[1]});
     await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:2000});
     var proposalId = await proposeCompetition(testSetup,"description-hash",1000,[1000,2000,3000]);
+    await helpers.increaseTime(20);
 
     await testSetup.competition.suggest(proposalId,"suggestion");
     await testSetup.competition.suggest(proposalId,"suggestion");
@@ -550,6 +591,7 @@ contract('Competition', accounts => {
     await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,3000,{from:accounts[1]});
     await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:2000});
     var proposalId = await proposeCompetition(testSetup,"description-hash",1000,[1000,2000,3000]);
+    await helpers.increaseTime(20);
 
     await testSetup.competition.suggest(proposalId,"suggestion");
     await testSetup.competition.suggest(proposalId,"suggestion");
