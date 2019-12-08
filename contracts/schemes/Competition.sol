@@ -359,7 +359,7 @@ contract Competition {
         uint256 numberOfTieSuggestions = proposal.suggestionsPerVote[suggestions[_suggestionId].totalVotes];
         uint256 j;
         //calc the reward percentage for this suggestion
-        for (j = orderIndex; j < (orderIndex+numberOfTieSuggestions) && j < proposal.rewardSplit.length; j++) {
+        for (j = orderIndex; j < (orderIndex+numberOfTieSuggestions) && j < proposal.numberOfWinners; j++) {
             rewardPercentage = rewardPercentage.add(proposal.rewardSplit[j]);
         }
         rewardPercentage = rewardPercentage.div(numberOfTieSuggestions);
