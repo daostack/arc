@@ -29,8 +29,8 @@ contract Competition {
     event NewSuggestion(
         bytes32 indexed _proposalId,
         uint256 indexed _suggestionId,
-        string indexed _descriptionHash,
-        address payable _suggester
+        string _descriptionHash,
+        address payable indexed _suggester
     );
 
     event NewVote(
