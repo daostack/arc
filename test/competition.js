@@ -211,6 +211,7 @@ contract('Competition', accounts => {
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "NewSuggestion");
        assert.equal(tx.logs[0].args._suggestionId,1);
+       assert.equal(tx.logs[0].args._descriptionHash,"suggestion");
       });
 
     it("cannot suggest after suggestionEndTime", async function() {

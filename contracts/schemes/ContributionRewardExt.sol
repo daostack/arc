@@ -313,7 +313,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     * @param _proposalId the ID of the voting in the voting machine
     * @param _beneficiary the beneficiary to mint reputation to.
     * @param _reputation the reputation amount to mint
-    *        note: burn reputation is not supported via this function 
+    *        note: burn reputation is not supported via this function
     */
     function redeemReputationByRewarder(bytes32 _proposalId, address _beneficiary, uint256 _reputation)
     public
