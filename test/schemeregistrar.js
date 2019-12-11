@@ -224,9 +224,8 @@ contract('SchemeRegistrar', accounts => {
 
       tx = await testSetup.schemeRegistrar.propose(testSetup.org.avatar.address,accounts[1],accounts[0],helpers.NULL_HASH,permissions,helpers.NULL_HASH);
       //Vote with reputation to trigger execution
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-      var controller = await Controller.at(await testSetup.org.avatar.owner());
       assert.equal(await controller.isSchemeRegistered(accounts[0],testSetup.org.avatar.address),false);
       assert.equal(await controller.isSchemeRegistered(accounts[1],testSetup.org.avatar.address),true);
 
