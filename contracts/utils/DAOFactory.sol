@@ -16,7 +16,7 @@ contract DAOFactory is Initializable {
 
     event NewOrg (address indexed _avatar);
     event InitialSchemesSet (address indexed _avatar);
-    event SchemeInstance(address indexed _scheme, string indexed _name);
+    event SchemeInstance(address indexed _scheme, string _name);
     /**
     * @dev Emitted when a new proxy is created.
     * @param _proxy Address of the created proxy.
