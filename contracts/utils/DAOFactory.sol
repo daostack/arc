@@ -22,7 +22,7 @@ contract DAOFactory is Initializable {
     * @param _proxy Address of the created proxy.
     * @param _version of the created proxy.
     */
-    event ProxyCreated(address _proxy, uint64[3] _version);
+    event ProxyCreated(address _proxy, address _implementation, string _contractName, uint64[3] _version);
 
     struct Locks {
         address sender;
@@ -162,7 +162,7 @@ contract DAOFactory is Initializable {
         ImplementationProvider provider = ImplementationProvider(package.getContract(_packageVersion));
         address implementation = provider.getImplementation(_contractName);
         AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy).value(msg.value)(implementation, _admin, _data);
-        emit ProxyCreated(address(proxy), _packageVersion);
+        emit ProxyCreated(address(proxy), implementation, _contractName, _packageVersion);
         return proxy;
     }
 
