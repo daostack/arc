@@ -302,6 +302,8 @@ contract('DaoFactory', function(accounts) {
           var avatarAddress = tx.logs[4].args._avatar;
           assert.equal(tx.logs[2].event, "ProxyCreated");
           assert.equal(tx.logs[2].args._proxy, avatarAddress);
+          assert.equal(tx.logs[2].args._implementation, registration.avatar.address);
+          assert.equal(tx.logs[2].args._contractName, "Avatar");
           assert.equal(tx.logs[2].args._version[1].toNumber(),1);
 
           tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[amountToMint],[amountToMint],[0,0,0],{gas:constants.ARC_GAS_LIMIT});
@@ -309,6 +311,8 @@ contract('DaoFactory', function(accounts) {
           avatarAddress = tx.logs[4].args._avatar;
           assert.equal(tx.logs[2].event, "ProxyCreated");
           assert.equal(tx.logs[2].args._proxy, avatarAddress);
+          assert.equal(tx.logs[2].args._implementation, avatarAddress);
+          assert.equal(tx.logs[2].args._contractName, "Avatar");
           assert.equal(tx.logs[2].args._version[1].toNumber(),2);
 
         });
