@@ -311,7 +311,7 @@ contract('DaoFactory', function(accounts) {
           avatarAddress = tx.logs[4].args._avatar;
           assert.equal(tx.logs[2].event, "ProxyCreated");
           assert.equal(tx.logs[2].args._proxy, avatarAddress);
-          assert.equal(tx.logs[2].args._implementation, avatarAddress);
+          assert.equal(tx.logs[2].args._implementation, registration.avatar.address);
           assert.equal(tx.logs[2].args._contractName, "Avatar");
           assert.equal(tx.logs[2].args._version[1].toNumber(),2);
 
