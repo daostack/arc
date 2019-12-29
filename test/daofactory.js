@@ -291,7 +291,9 @@ contract('DaoFactory', function(accounts) {
           var amountToMint = 10;
           await setup(accounts,amountToMint,amountToMint);
           var newVer = [0,2,0];
+          const oldAvatarImplementation = registration.avatar.address;
           await helpers.registrationAddVersionToPackege(registration,newVer);
+
           nativeTokenData = await new web3.eth.Contract(registration.daoToken.abi)
                                 .methods
                                 .initialize("TEST","TST",0,registration.daoFactory.address)
@@ -302,13 +304,17 @@ contract('DaoFactory', function(accounts) {
           var avatarAddress = tx.logs[4].args._avatar;
           assert.equal(tx.logs[2].event, "ProxyCreated");
           assert.equal(tx.logs[2].args._proxy, avatarAddress);
+          assert.equal(tx.logs[2].args._implementation, oldAvatarImplementation);
+          assert.equal(tx.logs[2].args._contractName, "Avatar");
           assert.equal(tx.logs[2].args._version[1].toNumber(),1);
 
-          tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[amountToMint],[amountToMint],[0,0,0],{gas:constants.ARC_GAS_LIMIT});
+          tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[amountToMint],[amountToMint],[0,2,0],{gas:constants.ARC_GAS_LIMIT});
           assert.equal(tx.logs.length, 5);
           avatarAddress = tx.logs[4].args._avatar;
           assert.equal(tx.logs[2].event, "ProxyCreated");
           assert.equal(tx.logs[2].args._proxy, avatarAddress);
+          assert.equal(tx.logs[2].args._implementation, registration.avatar.address);
+          assert.equal(tx.logs[2].args._contractName, "Avatar");
           assert.equal(tx.logs[2].args._version[1].toNumber(),2);
 
         });
