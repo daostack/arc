@@ -14,7 +14,12 @@ contract DAOFactory is Initializable {
     using BytesLib for bytes;
     using SafeMath for uint256;
 
-    event NewOrg (address indexed _avatar);
+    event NewOrg (
+        address indexed _avatar,
+        address _controller,
+        address _daotoken,
+        address _reputation
+    );
     event InitialSchemesSet (address indexed _avatar);
     event SchemeInstance(address indexed _scheme, string _name);
     /**
@@ -291,7 +296,7 @@ contract DAOFactory is Initializable {
         locks[address(avatar)].sender = msg.sender;
         locks[address(avatar)].packageVersion = packageVersion;
 
-        emit NewOrg (address(avatar));
+        emit NewOrg (address(avatar), address(controller), address(nativeToken), address(nativeReputation));
         return (address(avatar));
     }
 
