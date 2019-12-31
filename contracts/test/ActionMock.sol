@@ -1,6 +1,6 @@
 pragma solidity 0.5.15;
 
-import "../controller/Avatar.sol";
+import "../dao/DAO.sol";
 
 
 contract ActionMock {

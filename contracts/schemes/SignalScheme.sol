@@ -3,7 +3,7 @@ pragma solidity 0.5.15;
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "../controller/Avatar.sol";
+import "../dao/DAO.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
@@ -36,7 +36,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
         bytes32 voteApproveParams;
         IntVoteInterface intVote;
         uint256 signalType;
-        Avatar avatar;
+        DAO avatar;
     }
 
     mapping(bytes32  =>  Proposal) public proposals;
@@ -50,13 +50,13 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
      * @param _voteApproveParams voting machine params
      * @param _intVote  voting machine address
      */
-    function initialize(Avatar _avatar,
+    function initialize(DAO _avatar,
                         uint256 _signalType,
                         bytes32 _voteApproveParams,
                         IntVoteInterface _intVote)
     external
     initializer {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_avatar != DAO(0), "avatar cannot be zero");
         params = Parameters({
             voteApproveParams: _voteApproveParams,
             signalType: _signalType,

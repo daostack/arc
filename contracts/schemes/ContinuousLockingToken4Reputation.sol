@@ -2,7 +2,7 @@ pragma solidity 0.5.15;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/Math.sol";
-import "../controller/Controller.sol";
+import "../libs/DAOCallerHelper.sol";
 import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
 import { RealMath } from "@daostack/infra-experimental/contracts/libs/RealMath.sol";
@@ -17,6 +17,7 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
     using RealMath for uint216;
     using RealMath for uint256;
     using Math for uint256;
+    using DAOCallerHelper for DAO;
 
     event Redeem(uint256 indexed _lockingId, address indexed _beneficiary, uint256 _amount, uint256 _batchIndex);
     event Release(uint256 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
@@ -40,7 +41,7 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
     // A mapping from batch index to batch
     mapping(uint256 => Batch) public batches;
 
-    Avatar public avatar;
+    DAO public dao;
     uint256 public reputationRewardLeft; // the amount of reputation that is still left to distribute
     uint256 public startTime; // the time (in secs since epoch) that locking can start (is enable)
     uint256 public redeemEnableTime;
@@ -64,7 +65,7 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
 
     /**
      * @dev initialize
-     * @param _avatar the avatar to mint reputation from
+     * @param _dao the dao to mint reputation from
      * @param _reputationReward the total amount of reputation that can be minted by this contract
      * @param _startTime locking period start time, in seconds since epoch
      * @param _redeemEnableTime redeem enable time
@@ -82,7 +83,7 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
      * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
     function initialize(
-        Avatar _avatar,
+        DAO _dao,
         uint256 _reputationReward,
         uint256 _startTime,
         uint256 _batchTime,
@@ -96,7 +97,7 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
     external
     initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_dao != DAO(0), "dao cannot be zero");
         // _batchTime should be greater than block interval
         require(_batchTime > 15, "batchTime should be > 15");
         require(_maxLockingBatches <= MAX_LOCKING_BATCHES_HARDCAP,
@@ -105,7 +106,7 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
         "_redeemEnableTime >= _startTime+_batchTime");
         require(_batchesIndexCap <= BATCHES_INDEX_HARDCAP, "_batchesIndexCap > BATCHES_INDEX_HARDCAP");
         token = _token;
-        avatar = _avatar;
+        dao = _dao;
         startTime = _startTime;
         reputationRewardLeft = _reputationReward;
         redeemEnableTime = _redeemEnableTime;
@@ -150,9 +151,7 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
         require(reputation > 0, "reputation to redeem is 0");
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(
-        Controller(avatar.owner())
-        .mintReputation(reputation, _beneficiary), "mint reputation should succeed");
+        dao.reputationMint(_beneficiary, reputation);
     }
 
     /**

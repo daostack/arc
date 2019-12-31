@@ -1,8 +1,10 @@
 pragma solidity 0.5.15;
 
-import "../controller/Controller.sol";
+import "../dao/DAO.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "../libs/DAOCallerHelper.sol";
+
 
 /**
  * @title A fixed reputation allocation contract
@@ -11,6 +13,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
  */
 contract FixedReputationAllocation is Initializable, Ownable {
     using SafeMath for uint256;
+    using DAOCallerHelper for dao;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
     event BeneficiaryAddressAdded(address indexed _beneficiary);
@@ -18,7 +21,7 @@ contract FixedReputationAllocation is Initializable, Ownable {
     // beneficiary -> exist
     mapping(address => bool) public beneficiaries;
 
-    Avatar public avatar;
+    DAO public dao;
     uint256 public reputationReward;
     bool public isEnable;
     uint256 public numberOfBeneficiaries;
@@ -27,17 +30,17 @@ contract FixedReputationAllocation is Initializable, Ownable {
 
     /**
      * @dev initialize
-     * @param _avatar the avatar to mint reputation from
+     * @param _dao the dao to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      * @param _redeemEnableTime time to enable redeem
      */
-    function initialize(Avatar _avatar, uint256 _reputationReward, uint256 _redeemEnableTime, address _owner)
+    function initialize(DAO _dao, uint256 _reputationReward, uint256 _redeemEnableTime, address _owner)
     external initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_dao != DAO(0), "dao cannot be zero");
         reputationReward = _reputationReward;
         redeemEnableTime = _redeemEnableTime;
-        avatar = _avatar;
+        dao = _dao;
         Ownable.initialize(_owner);
     }
 
@@ -52,13 +55,8 @@ contract FixedReputationAllocation is Initializable, Ownable {
         beneficiaries[_beneficiary] = false;
         // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "require now > redeemEnableTime");
-        require(
-        Controller(
-        avatar.owner())
-        .mintReputation(beneficiaryReward, _beneficiary), "mint reputation failed");
-
+        dao.reputationMint(_beneficiary, beneficiaryReward);
         emit Redeem(_beneficiary, beneficiaryReward);
-
         return true;
     }
 

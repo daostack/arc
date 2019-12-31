@@ -6,7 +6,7 @@ import "@openzeppelin/upgrades/contracts/application/ImplementationDirectory.sol
 import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
 import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
-import "../controller/Controller.sol";
+import "../dao/DAO.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 
@@ -88,7 +88,7 @@ contract DAOFactory is Initializable {
     * @return bool true or false
     */
     function addFounders (
-        Avatar _avatar,
+        DAO _avatar,
         address[] calldata _founders,
         uint[] calldata _foundersTokenAmount,
         uint[] calldata _foundersReputationAmount
@@ -125,7 +125,7 @@ contract DAOFactory is Initializable {
      * @param _metaData dao meta data hash
      */
     function setSchemes (
-        Avatar _avatar,
+        DAO _avatar,
         bytes32[] calldata _schemesNames,
         bytes calldata _schemesData,
         uint256[] calldata _schemesInitilizeDataLens,
@@ -194,7 +194,7 @@ contract DAOFactory is Initializable {
        // for this controller
         require(locks[_avatar].sender == msg.sender);
          // register initial schemes:
-        Controller controller = Controller(Avatar(_avatar).owner());
+        Controller controller = Controller(DAO(_avatar).owner());
         uint256 startIndex =  0;
         for (uint256 i = 0; i < _schemesNames.length; i++) {
             address scheme = address(createInstance(locks[_avatar].packageVersion,
@@ -251,7 +251,7 @@ contract DAOFactory is Initializable {
     )
     private
     returns(address) {
-         // Create Token, Reputation and Avatar:
+         // Create Token, Reputation and DAO:
         require(_founders.length == _foundersTokenAmount.length);
         require(_founders.length == _foundersReputationAmount.length);
         require(_founders.length > 0);
@@ -261,7 +261,7 @@ contract DAOFactory is Initializable {
         createInstance(packageVersion, "Reputation", address(this),
         abi.encodeWithSignature("initialize(address)", address(this)));
 
-        AdminUpgradeabilityProxy avatar = createInstance(packageVersion, "Avatar", address(this),
+        AdminUpgradeabilityProxy avatar = createInstance(packageVersion, "DAO", address(this),
         abi.encodeWithSignature(
             "initialize(string,address,address,address)",
             _orgName,
@@ -289,7 +289,7 @@ contract DAOFactory is Initializable {
         address(avatar),
         abi.encodeWithSignature("initialize(address,address)", address(avatar), address(this)))));
          // Transfer ownership:
-        Avatar(address(avatar)).transferOwnership(address(controller));
+        DAO(address(avatar)).transferOwnership(address(controller));
         DAOToken(address(nativeToken)).transferOwnership(address(controller));
         Reputation(address(nativeReputation)).transferOwnership(address(controller));
 

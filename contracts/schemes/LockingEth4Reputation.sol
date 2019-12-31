@@ -21,7 +21,7 @@ contract LockingEth4Reputation is Locking4Reputation {
      * @param _maxLockingPeriod maximum locking period allowed.
      */
     function initialize(
-        Avatar _avatar,
+        DAO _avatar,
         uint256 _reputationReward,
         uint256 _lockingStartTime,
         uint256 _lockingEndTime,

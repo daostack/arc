@@ -1,19 +1,20 @@
 pragma solidity 0.5.15;
 
 import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.sol";
-import "../controller/Avatar.sol";
-import "../controller/Controller.sol";
+import "@daostack/infra-experimental/contracts/Reputation.sol";
+import "../libs/DAOCallerHelper.sol";
 
 
 contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
+    using DAOCallerHelper for DAO;
 
     struct ProposalInfo {
         uint256 blockNumber; // the proposal's block number
-        Avatar avatar; // the proposal's avatar
+        DAO dao; // the proposal's dao
     }
 
     modifier onlyVotingMachine(bytes32 _proposalId) {
-        require(proposalsInfo[msg.sender][_proposalId].avatar != Avatar(address(0)), "only VotingMachine");
+        require(proposalsInfo[msg.sender][_proposalId].dao != DAO(address(0)), "only VotingMachine");
         _;
     }
 
@@ -25,11 +26,11 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
     onlyVotingMachine(_proposalId)
     returns(bool)
     {
-        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
-        if (avatar == Avatar(0)) {
+        DAO dao = proposalsInfo[msg.sender][_proposalId].dao;
+        if (dao == DAO(0)) {
             return false;
         }
-        return Controller(avatar.owner()).mintReputation(_amount, _beneficiary);
+        return dao.reputationMint(_beneficiary, _amount);
     }
 
     function burnReputation(uint256 _amount, address _beneficiary, bytes32 _proposalId)
@@ -37,11 +38,11 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
     onlyVotingMachine(_proposalId)
     returns(bool)
     {
-        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
-        if (avatar == Avatar(0)) {
+        DAO dao = proposalsInfo[msg.sender][_proposalId].dao;
+        if (dao == DAO(0)) {
             return false;
         }
-        return Controller(avatar.owner()).burnReputation(_amount, _beneficiary);
+        return dao.reputationBurn(_beneficiary, _amount);
     }
 
     function stakingTokenTransfer(
@@ -53,34 +54,34 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
     onlyVotingMachine(_proposalId)
     returns(bool)
     {
-        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
-        if (avatar == Avatar(0)) {
+        DAO dao = proposalsInfo[msg.sender][_proposalId].dao;
+        if (dao == DAO(0)) {
             return false;
         }
-        return Controller(avatar.owner()).externalTokenTransfer(_stakingToken, _beneficiary, _amount);
+        return dao.externalTokenTransfer(_stakingToken, _beneficiary, _amount);
     }
 
     function balanceOfStakingToken(IERC20 _stakingToken, bytes32 _proposalId) external view returns(uint256) {
-        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
-        if (proposalsInfo[msg.sender][_proposalId].avatar == Avatar(0)) {
+        DAO dao = proposalsInfo[msg.sender][_proposalId].dao;
+        if (proposalsInfo[msg.sender][_proposalId].dao == DAO(0)) {
             return 0;
         }
-        return _stakingToken.balanceOf(address(avatar));
+        return _stakingToken.balanceOf(address(dao));
     }
 
     function getTotalReputationSupply(bytes32 _proposalId) external view returns(uint256) {
         ProposalInfo memory proposal = proposalsInfo[msg.sender][_proposalId];
-        if (proposal.avatar == Avatar(0)) {
+        if (proposal.dao == DAO(0)) {
             return 0;
         }
-        return proposal.avatar.nativeReputation().totalSupplyAt(proposal.blockNumber);
+        return Reputation(proposal.dao.nativeReputation()).totalSupplyAt(proposal.blockNumber);
     }
 
     function reputationOf(address _owner, bytes32 _proposalId) external view returns(uint256) {
         ProposalInfo memory proposal = proposalsInfo[msg.sender][_proposalId];
-        if (proposal.avatar == Avatar(0)) {
+        if (proposal.dao == DAO(0)) {
             return 0;
         }
-        return proposal.avatar.nativeReputation().balanceOfAt(_owner, proposal.blockNumber);
+        return Reputation(proposal.dao.nativeReputation()).balanceOfAt(_owner, proposal.blockNumber);
     }
 }

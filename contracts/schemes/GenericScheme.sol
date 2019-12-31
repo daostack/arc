@@ -47,7 +47,7 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
     address public contractToCall;
-    Avatar public avatar;
+    DAO public avatar;
 
     /**
      * @dev initialize
@@ -57,7 +57,7 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
      * @param _contractToCall the target contract this scheme will call to
      */
     function initialize(
-        Avatar _avatar,
+        DAO _avatar,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams,
         address _contractToCall
@@ -65,7 +65,7 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     external
     initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_avatar != DAO(0), "avatar cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;

@@ -68,7 +68,7 @@ contract ContributionReward is
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
-    Avatar public avatar;
+    DAO public avatar;
 
     /**
      * @dev initialize
@@ -77,14 +77,14 @@ contract ContributionReward is
      * @param _voteParams voting machine parameters.
      */
     function initialize(
-        Avatar _avatar,
+        DAO _avatar,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams
     )
     external
     initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_avatar != DAO(0), "avatar cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;

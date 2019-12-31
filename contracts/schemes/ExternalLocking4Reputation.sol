@@ -33,7 +33,7 @@ contract ExternalLocking4Reputation is Locking4Reputation {
      *        e.g "lockedTokenBalances(address)"
      */
     function initialize(
-        Avatar _avatar,
+        DAO _avatar,
         uint256 _reputationReward,
         uint256 _claimingStartTime,
         uint256 _claimingEndTime,
@@ -63,7 +63,7 @@ contract ExternalLocking4Reputation is Locking4Reputation {
      * @return claimId
      */
     function claim(address _beneficiary, bytes32 _agreementHash) public returns(bytes32) {
-        require(avatar != Avatar(0), "should initialize first");
+        require(avatar != DAO(0), "should initialize first");
         address beneficiary;
         if (_beneficiary == address(0)) {
             beneficiary = msg.sender;

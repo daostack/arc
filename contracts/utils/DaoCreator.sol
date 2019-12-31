@@ -1,13 +1,13 @@
 pragma solidity 0.5.15;
 
-import "../controller/Controller.sol";
+import "../dao/DAO.sol";
 
 /**
  * @title ControllerCreator for creating a single controller.
  */
 contract ControllerCreator {
 
-    function create(Avatar _avatar) public returns(address) {
+    function create(DAO _avatar) public returns(address) {
         Controller controller = new Controller();
         controller.initialize(_avatar, address(this));
         controller.registerScheme(msg.sender, bytes4(0x0000001f));
@@ -45,7 +45,7 @@ contract DaoCreator {
       * @return bool true or false
       */
     function addFounders (
-        Avatar _avatar,
+        DAO _avatar,
         address[] calldata _founders,
         uint[] calldata _foundersTokenAmount,
         uint[] calldata _foundersReputationAmount
@@ -116,7 +116,7 @@ contract DaoCreator {
       * @param _metaData dao meta data hash
       */
     function setSchemes (
-        Avatar _avatar,
+        DAO _avatar,
         address[] calldata _schemes,
         bytes4[] calldata _permissions,
         string calldata _metaData
@@ -162,7 +162,7 @@ contract DaoCreator {
         uint256 _cap
     ) private returns(address)
     {
-        // Create Token, Reputation and Avatar:
+        // Create Token, Reputation and DAO:
         require(_founders.length == _foundersTokenAmount.length);
         require(_founders.length == _foundersReputationAmount.length);
         require(_founders.length > 0);
@@ -170,7 +170,7 @@ contract DaoCreator {
         nativeToken.initialize(_tokenName, _tokenSymbol, _cap, address(this));
         Reputation  nativeReputation = new Reputation();
         nativeReputation.initialize(address(this));
-        Avatar  avatar = new Avatar();
+        DAO  avatar = new DAO();
         avatar.initialize(_orgName, nativeToken, nativeReputation, address(this));
 
         // Mint token and reputation for founders:

@@ -1,6 +1,6 @@
 pragma solidity 0.5.15;
 
-import "../controller/Controller.sol";
+import "../dao/DAO.sol";
 import "./Agreement.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
@@ -20,7 +20,7 @@ contract Locking4Reputation is Agreement, Initializable {
         uint256 releaseTime;
     }
 
-    Avatar public avatar;
+    DAO public dao;
 
     // A mapping from lockers addresses their lock balances.
     mapping(address => mapping(bytes32=>Locker)) public lockers;
@@ -54,11 +54,7 @@ contract Locking4Reputation is Agreement, Initializable {
 
         //check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(
-        Controller(
-        avatar.owner())
-        .mintReputation(reputation, _beneficiary), "mint reputation should succeed");
-
+        dao.reputationMint(_beneficiary, reputation);
         emit Redeem(_beneficiary, reputation);
     }
 
@@ -130,7 +126,7 @@ contract Locking4Reputation is Agreement, Initializable {
 
     /**
      * @dev _initialize
-     * @param _avatar the avatar to mint reputation from
+     * @param _dao the dao to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for eth/token locking
      * @param _lockingStartTime the locking start time.
@@ -141,7 +137,7 @@ contract Locking4Reputation is Agreement, Initializable {
      * @param _maxLockingPeriod maximum locking period allowed.
      */
     function _initialize(
-        Avatar _avatar,
+        DAO _dao,
         uint256 _reputationReward,
         uint256 _lockingStartTime,
         uint256 _lockingEndTime,
@@ -151,7 +147,7 @@ contract Locking4Reputation is Agreement, Initializable {
     internal
     initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_dao != DAO(0), "dao cannot be zero");
         require(_lockingEndTime > _lockingStartTime, "locking end time should be greater than locking start time");
         require(_redeemEnableTime >= _lockingEndTime, "redeemEnableTime >= lockingEndTime");
 
@@ -159,7 +155,7 @@ contract Locking4Reputation is Agreement, Initializable {
         reputationRewardLeft = _reputationReward;
         lockingEndTime = _lockingEndTime;
         maxLockingPeriod = _maxLockingPeriod;
-        avatar = _avatar;
+        dao = _dao;
         lockingStartTime = _lockingStartTime;
         redeemEnableTime = _redeemEnableTime;
         super.setAgreementHash(_agreementHash);

@@ -1,6 +1,6 @@
 pragma solidity 0.5.15;
 
-import "../controller/Controller.sol";
+import "../dao/DAO.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "./CurveInterface.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/cryptography/ECDSA.sol";
@@ -20,7 +20,7 @@ contract ReputationFromToken is Initializable {
     CurveInterface public curve;
     //      beneficiary -> bool
     mapping(address     => bool) public redeems;
-    Avatar public avatar;
+    DAO public avatar;
 
     // Digest describing the data the user signs according EIP 712.
     // Needs to match what is passed to Metamask.
@@ -37,9 +37,9 @@ contract ReputationFromToken is Initializable {
      * @param _avatar the avatar to mint reputation from
      * @param _tokenContract the token contract
      */
-    function initialize(Avatar _avatar, IERC20 _tokenContract, CurveInterface _curve) external initializer
+    function initialize(DAO _avatar, IERC20 _tokenContract, CurveInterface _curve) external initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_avatar != DAO(0), "avatar cannot be zero");
         tokenContract = _tokenContract;
         avatar = _avatar;
         curve = _curve;
@@ -102,7 +102,7 @@ contract ReputationFromToken is Initializable {
      * @return uint256 minted reputation
      */
     function _redeem(address _beneficiary, address _redeemer) private returns(uint256) {
-        require(avatar != Avatar(0), "should initialize first");
+        require(avatar != DAO(0), "should initialize first");
         require(redeems[_redeemer] == false, "redeeming twice from the same account is not allowed");
         redeems[_redeemer] = true;
         uint256 tokenAmount = tokenContract.balanceOf(_redeemer);

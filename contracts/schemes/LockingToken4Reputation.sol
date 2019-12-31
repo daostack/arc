@@ -33,7 +33,7 @@ contract LockingToken4Reputation is Locking4Reputation {
      *        validated against
      */
     function initialize(
-        Avatar _avatar,
+        DAO _avatar,
         uint256 _reputationReward,
         uint256 _lockingStartTime,
         uint256 _lockingEndTime,

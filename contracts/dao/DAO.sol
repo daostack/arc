@@ -31,33 +31,50 @@ contract ActorsRegistry is Ownable {
  */
 contract AssetsConstraintRegistery is Ownable {
 
-    //a mapping from asset to actors and its constraint
-    mapping(address=>mapping(address=>address)) public assetsConstraintRegistery;
-
-    event ConstraintAdded(address indexed _asset, address indexed _actor, address indexed _constraint);
-    event ConstraintRemoved(address indexed _asset, address indexed _actor);
-
-    function addAssetConstraint(address _asset, address _actor, address _constraint) public onlyOwner {
-        assetsConstraintRegistery[_asset][_actor] = _constraint;
-        emit ConstraintAdded(_asset, _actor, _constraint);
+    struct Asset {
+        address asset;
+        // A mapping from actors to its constraint
+        mapping(address=>address) actorsConstraint;
     }
 
-    function removeAssetConstraint(address _asset, address _actor) public onlyOwner {
-        assetsConstraintRegistery[_asset][_actor] = address(0);
-        emit ConstraintRemoved(_asset, _actor);
+    mapping(string=>Asset) public assetsConstraintRegistery;
+
+
+    event ConstraintAdded(string _assetName, address indexed _actor, address indexed _constraint);
+    event ConstraintRemoved(string  _assetName, address indexed _actor);
+
+    function addAssetConstraint(string memory _assetName,
+                                address _asset,
+                                address _actor,
+                                address _constraint)
+    public
+    onlyOwner
+    {
+        assetsConstraintRegistery[_assetName].actorsConstraint[_actor] = _constraint;
+        assetsConstraintRegistery[_assetName].asset = _asset;
+        emit ConstraintAdded(_assetName, _actor, _constraint);
     }
 
-    function isOkToCall(address _actor,
-                        address _asset,
+    function removeAssetConstraint(string memory _assetName, address _actor) public onlyOwner {
+        assetsConstraintRegistery[_assetName].actorsConstraint[_actor] = address(0);
+        emit ConstraintRemoved(_assetName, _actor);
+    }
+
+    function isOkToCall(string memory _assetName,
+                        address _actor,
                         bytes memory _data,
                         uint256 _value) public returns(bool okToCall) {
-        if (assetsConstraintRegistery[_asset][_actor] == address(0)) {
+        if (assetsConstraintRegistery[_assetName].actorsConstraint[_actor] == address(0)) {
            //todo: maybe default to false
-            okToCall = true;
+            okToCall = false;
         } else {
         // solhint-disable-next-line avoid-call-value
-            (okToCall,) = assetsConstraintRegistery[_asset][_actor].call.value(_value)(_data);
+            (okToCall,) = assetsConstraintRegistery[_assetName].actorsConstraint[_actor].call.value(_value)(_data);
         }
+    }
+
+    function getAssetAddress(string memory _assetName) public returns(address) {
+        return assetsConstraintRegistery[_assetName].asset;
     }
 }
 
@@ -92,20 +109,21 @@ contract DAO is Initializable {
 
     /**
     * @dev perform a generic call to an arbitrary contract
-    * @param _contract  the contract's address to call
+    * @param _assetName asset name to call
     * @param _data ABI-encoded contract call to call `_contract` address.
     * @param _value value (ETH) to transfer with the transaction
     * @return bool    success or fail
     *         bytes - the return bytes of the called contract's function.
     */
-    function genericCall(address _contract, bytes calldata _data, uint256 _value)
+    function genericCall(string calldata _assetName, bytes calldata _data, uint256 _value)
     external
     returns(bool success, bytes memory returnValue) {
         require(actorsRegistry.actorsRegistry(msg.sender), "caller is not a registered actor");
-        require(assetsConstraintRegistery.isOkToCall(msg.sender, _contract, _data, _value),
+        require(assetsConstraintRegistery.isOkToCall(_assetName, msg.sender, _data, _value),
         "there is a constraint on this call");
+        address assetAddress = assetsConstraintRegistery.getAssetAddress(_assetName);
       // solhint-disable-next-line avoid-call-value
-        (success, returnValue) = _contract.call.value(_value)(_data);
-        emit GenericCall(_contract, _data, _value, success);
+        (success, returnValue) = assetAddress.call.value(_value)(_data);
+        emit GenericCall(assetAddress, _data, _value, success);
     }
 }

@@ -43,7 +43,7 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     IntVoteInterface public votingMachine;
     bytes32 public voteRegisterParams;
     bytes32 public voteRemoveParams;
-    Avatar public avatar;
+    DAO public avatar;
 
     /**
      * @dev initialize
@@ -53,7 +53,7 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
      * @param _voteRemoveParams voting machine parameters to remove scheme.
      */
     function initialize(
-        Avatar _avatar,
+        DAO _avatar,
         IntVoteInterface _votingMachine,
         bytes32 _voteRegisterParams,
         bytes32 _voteRemoveParams
@@ -61,7 +61,7 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     external
     initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_avatar != DAO(0), "avatar cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteRegisterParams = _voteRegisterParams;

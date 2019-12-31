@@ -41,7 +41,7 @@ contract Redeemer {
     function redeem(ContributionReward _contributionReward,
                     GenesisProtocol _genesisProtocol,
                     bytes32 _proposalId,
-                    Avatar _avatar,
+                    DAO _avatar,
                     address _beneficiary)
     external
     returns(uint[3] memory gpRewards,
@@ -78,7 +78,7 @@ contract Redeemer {
         }
     }
 
-    function contributionRewardRedeem(ContributionReward _contributionReward, bytes32 _proposalId, Avatar _avatar)
+    function contributionRewardRedeem(ContributionReward _contributionReward, bytes32 _proposalId, DAO _avatar)
     private
     returns (int256 reputation, uint256 nativeToken, uint256 eth, uint256 externalToken)
     {

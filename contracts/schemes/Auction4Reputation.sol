@@ -1,19 +1,19 @@
 pragma solidity 0.5.15;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "../controller/Controller.sol";
 import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "../libs/DAOCallerHelper.sol";
+
 
 /**
  * @title A scheme for conduct ERC20 Tokens auction for reputation
  */
-
-
 contract Auction4Reputation is Agreement, Initializable {
     using SafeMath for uint256;
     using SafeERC20 for address;
+    using DAOCallerHelper for DAO;
 
     event Bid(address indexed _bidder, uint256 indexed _auctionId, uint256 _amount);
     event Redeem(uint256 indexed _auctionId, address indexed _beneficiary, uint256 _amount);
@@ -27,7 +27,7 @@ contract Auction4Reputation is Agreement, Initializable {
     // A mapping from auction index to auction.
     mapping(uint=>Auction) public auctions;
 
-    Avatar public avatar;
+    DAO public dao;
     uint256 public reputationRewardLeft;
     uint256 public auctionsEndTime;
     uint256 public auctionsStartTime;
@@ -40,7 +40,7 @@ contract Auction4Reputation is Agreement, Initializable {
 
     /**
      * @dev initialize
-     * @param _avatar the avatar to mint reputation from
+     * @param _dao the dao to mint reputation from
      * @param _auctionReputationReward the reputation reward per auction this contract will reward
      *        for the token locking
      * @param _auctionsStartTime auctions period start time
@@ -53,11 +53,11 @@ contract Auction4Reputation is Agreement, Initializable {
      * @param _token the bidding token
      * @param  _wallet the address of the wallet the token will be transfer to.
      *         Please note that _wallet address should be a trusted account.
-     *         Normally this address should be set as the DAO's avatar address.
+     *         Normally this address should be set as the DAO's dao address.
      * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
     function initialize(
-        Avatar _avatar,
+        DAO _dao,
         uint256 _auctionReputationReward,
         uint256 _auctionsStartTime,
         uint256 _auctionPeriod,
@@ -69,7 +69,7 @@ contract Auction4Reputation is Agreement, Initializable {
     external
     initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_dao != DAO(0), "dao cannot be zero");
         require(_numberOfAuctions > 0, "number of auctions cannot be zero");
         //_auctionPeriod should be greater than block interval
         require(_auctionPeriod > 15, "auctionPeriod should be > 15");
@@ -77,7 +77,7 @@ contract Auction4Reputation is Agreement, Initializable {
         auctionsEndTime = _auctionsStartTime + _auctionPeriod.mul(_numberOfAuctions);
         require(_redeemEnableTime >= auctionsEndTime, "_redeemEnableTime >= auctionsEndTime");
         token = _token;
-        avatar = _avatar;
+        dao = _dao;
         auctionsStartTime = _auctionsStartTime;
         numberOfAuctions = _numberOfAuctions;
         wallet = _wallet;
@@ -104,9 +104,7 @@ contract Auction4Reputation is Agreement, Initializable {
         reputation = repRelation.div(auction.totalBid);
         // check that the reputation is sum zero
         reputationRewardLeft = reputationRewardLeft.sub(reputation);
-        require(
-        Controller(avatar.owner())
-        .mintReputation(reputation, _beneficiary), "mint reputation should succeed");
+        dao.reputationMint(_beneficiary, reputation);
         emit Redeem(_auctionId, _beneficiary, reputation);
     }
 
