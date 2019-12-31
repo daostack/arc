@@ -26,20 +26,28 @@ contract ActorsRegistry is Ownable {
  */
 contract AssetsConstraintRegistery is Ownable {
 
-    //a mapping from asset to its constraint contract
-    mapping(address=>address) public assetsConstraintRegistery;
+    //a mapping from asset to actors and its constraint
+    mapping(address=>mapping(address=>address)) public assetsConstraintRegistery;
 
-    function addAssetConstraint(address _asset, address _constraint) public onlyOwner {
-        assetsConstraintRegistery[_asset] = _constraint;
+    function addAssetConstraint(address _asset, address _actor, address _constraint) public onlyOwner {
+        assetsConstraintRegistery[_asset][_actor] = _constraint;
     }
 
-    function removeAssetConstraint(address _asset) public onlyOwner {
-        assetsConstraintRegistery[_asset] = address(0);
+    function removeAssetConstraint(address _asset, address _actor) public onlyOwner {
+        assetsConstraintRegistery[_asset][_actor] = address(0);
     }
 
-    function isOkToCall(address _asset, bytes memory _data, uint256 _value) public returns(bool okToCall) {
+    function isOkToCall(address _actor,
+                        address _asset,
+                        bytes memory _data,
+                        uint256 _value) public returns(bool okToCall) {
+        if (assetsConstraintRegistery[_asset][_actor] == address(0)) {
+           //todo: maybe default to false
+            okToCall = true;
+        } else {
         // solhint-disable-next-line avoid-call-value
-        (okToCall,) = assetsConstraintRegistery[_asset].call.value(_value)(_data);
+            (okToCall,) = assetsConstraintRegistery[_asset][_actor].call.value(_value)(_data);
+        }
     }
 }
 
@@ -82,7 +90,8 @@ contract DAO is Initializable {
     external
     returns(bool success, bytes memory returnValue) {
         require(actorsRegistry.actorsRegistry(msg.sender), "caller is not a registered actor");
-        require(assetsConstraintRegistery.isOkToCall(_contract, _data, _value), "there is a constraint on this call");
+        require(assetsConstraintRegistery.isOkToCall(msg.sender, _contract, _data, _value),
+        "there is a constraint on this call");
       // solhint-disable-next-line avoid-call-value
         (success, returnValue) = _contract.call.value(_value)(_data);
         emit GenericCall(_contract, _data, _value, success);
