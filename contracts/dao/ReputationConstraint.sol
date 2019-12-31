@@ -11,7 +11,8 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 contract ReputationConstraint is  Initializable {
     using SafeMath for uint256;
 
-    Reputation reputation;
+    Reputation public reputation;
+
     /**
     * @dev initialize
     */
@@ -35,7 +36,6 @@ contract ReputationConstraint is  Initializable {
       /// @param _amount The quantity of reputation to burn
       /// @return True if the reputation are burned correctly
     function burn(address _user, uint256 _amount) public returns (bool) {
-
         return true;
     }
 }

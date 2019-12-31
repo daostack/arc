@@ -11,12 +11,17 @@ contract ActorsRegistry is Ownable {
 
     mapping(address=>bool) public actorsRegistry;
 
-    function registerActor(address _actor) public onlyOwner {
+    event RegisterActor(address indexed _actor);
+    event UnRegisterActor(address indexed _actor);
+
+    function register(address _actor) public onlyOwner {
         actorsRegistry[_actor] = true;
+        emit RegisterActor(_actor);
     }
 
-    function unregisterActor(address _actor) public onlyOwner {
+    function unRegister(address _actor) public onlyOwner {
         actorsRegistry[_actor] = false;
+        emit UnRegisterActor(_actor);
     }
 }
 
@@ -29,12 +34,17 @@ contract AssetsConstraintRegistery is Ownable {
     //a mapping from asset to actors and its constraint
     mapping(address=>mapping(address=>address)) public assetsConstraintRegistery;
 
+    event ConstraintAdded(address indexed _asset, address indexed _actor, address indexed _constraint);
+    event ConstraintRemoved(address indexed _asset, address indexed _actor);
+
     function addAssetConstraint(address _asset, address _actor, address _constraint) public onlyOwner {
         assetsConstraintRegistery[_asset][_actor] = _constraint;
+        emit ConstraintAdded(_asset, _actor, _constraint);
     }
 
     function removeAssetConstraint(address _asset, address _actor) public onlyOwner {
         assetsConstraintRegistery[_asset][_actor] = address(0);
+        emit ConstraintRemoved(_asset, _actor);
     }
 
     function isOkToCall(address _actor,
@@ -70,12 +80,14 @@ contract DAO is Initializable {
     */
     function initialize(string calldata _orgName,
                         ActorsRegistry _actorsRegistry,
-                        AssetsConstraintRegistery _assetsConstraintRegistery)
+                        AssetsConstraintRegistery _assetsConstraintRegistery,
+                        address _initialActor)
     external
     initializer {
         orgName = _orgName;
         actorsRegistry = _actorsRegistry;
         assetsConstraintRegistery = _assetsConstraintRegistery;
+        actorsRegistry.register(_initialActor);
     }
 
     /**
