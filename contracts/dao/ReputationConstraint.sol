@@ -26,7 +26,7 @@ contract ReputationConstraint is  Initializable {
       /// @param _user The address that will be assigned the new reputation
       /// @param _amount The quantity of reputation generated
       /// @return True if the mint operation is allowed
-    function mint(address _user, uint256 _amount) public returns (bool) {
+    function mint(address, uint256 _amount) public returns (bool) {
         uint256 curTotalSupply = reputation.totalSupply();
         return (curTotalSupply.add(_amount) < curTotalSupply.mul(110).div(100));
     }
@@ -35,7 +35,7 @@ contract ReputationConstraint is  Initializable {
       /// @param _user The address that will lose the reputation
       /// @param _amount The quantity of reputation to burn
       /// @return True if the reputation are burned correctly
-    function burn(address _user, uint256 _amount) public returns (bool) {
+    function burn(address, uint256) public returns (bool) {
         return true;
     }
 }

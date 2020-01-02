@@ -27,9 +27,9 @@ contract ActorsRegistry is Ownable {
 
 
 /**
- * @title AssetsConstraintRegistery
+ * @title AssetsRegistery
  */
-contract AssetsConstraintRegistery is Ownable {
+contract AssetsRegistery is Ownable {
 
     struct Asset {
         address asset;
@@ -37,26 +37,39 @@ contract AssetsConstraintRegistery is Ownable {
         mapping(address=>address) actorsConstraint;
     }
 
-    mapping(string=>Asset) public assetsConstraintRegistery;
+    mapping(string=>Asset) public assetsRegistery;
 
 
     event ConstraintAdded(string _assetName, address indexed _actor, address indexed _constraint);
     event ConstraintRemoved(string  _assetName, address indexed _actor);
+    event RegisterAsset(string  _assetName, address indexed _actor);
+    event UnRegisterAsset(string  _assetName);
 
-    function addAssetConstraint(string memory _assetName,
-                                address _asset,
+    function register(string memory _assetName, address _asset) public onlyOwner
+    {
+        assetsRegistery[_assetName].asset = _asset;
+        emit RegisterAsset(_assetName, _asset);
+    }
+
+    function unRegister(string memory _assetName) public onlyOwner
+    {
+        delete (assetsRegistery[_assetName]);
+        emit UnRegisterAsset(_assetName);
+    }
+
+    function addConstraint(string memory _assetName,
                                 address _actor,
                                 address _constraint)
     public
     onlyOwner
     {
-        assetsConstraintRegistery[_assetName].actorsConstraint[_actor] = _constraint;
-        assetsConstraintRegistery[_assetName].asset = _asset;
+        require(assetsRegistery[_assetName].asset != address(0), "asset does not exist");
+        assetsRegistery[_assetName].actorsConstraint[_actor] = _constraint;
         emit ConstraintAdded(_assetName, _actor, _constraint);
     }
 
-    function removeAssetConstraint(string memory _assetName, address _actor) public onlyOwner {
-        assetsConstraintRegistery[_assetName].actorsConstraint[_actor] = address(0);
+    function removeConstraint(string memory _assetName, address _actor) public onlyOwner {
+        assetsRegistery[_assetName].actorsConstraint[_actor] = address(0);
         emit ConstraintRemoved(_assetName, _actor);
     }
 
@@ -64,17 +77,17 @@ contract AssetsConstraintRegistery is Ownable {
                         address _actor,
                         bytes memory _data,
                         uint256 _value) public returns(bool okToCall) {
-        if (assetsConstraintRegistery[_assetName].actorsConstraint[_actor] == address(0)) {
+        if (assetsRegistery[_assetName].actorsConstraint[_actor] == address(0)) {
            //todo: maybe default to false
-            okToCall = false;
+            okToCall = true;
         } else {
         // solhint-disable-next-line avoid-call-value
-            (okToCall,) = assetsConstraintRegistery[_assetName].actorsConstraint[_actor].call.value(_value)(_data);
+            (okToCall,) = assetsRegistery[_assetName].actorsConstraint[_actor].call.value(_value)(_data);
         }
     }
 
-    function getAssetAddress(string memory _assetName) public returns(address) {
-        return assetsConstraintRegistery[_assetName].asset;
+    function getAssetAddress(string memory _assetName) public view returns(address) {
+        return assetsRegistery[_assetName].asset;
     }
 }
 
@@ -86,7 +99,7 @@ contract DAO is Initializable {
 
     string public orgName;
     ActorsRegistry public actorsRegistry;
-    AssetsConstraintRegistery public assetsConstraintRegistery;
+    AssetsRegistery public assetsRegistery;
 
 
     event GenericCall(address indexed _contract, bytes _data, uint _value, bool _success);
@@ -97,13 +110,13 @@ contract DAO is Initializable {
     */
     function initialize(string calldata _orgName,
                         ActorsRegistry _actorsRegistry,
-                        AssetsConstraintRegistery _assetsConstraintRegistery,
+                        AssetsRegistery _assetsRegistery,
                         address _initialActor)
     external
     initializer {
         orgName = _orgName;
         actorsRegistry = _actorsRegistry;
-        assetsConstraintRegistery = _assetsConstraintRegistery;
+        assetsRegistery = _assetsRegistery;
         actorsRegistry.register(_initialActor);
     }
 
@@ -119,9 +132,9 @@ contract DAO is Initializable {
     external
     returns(bool success, bytes memory returnValue) {
         require(actorsRegistry.actorsRegistry(msg.sender), "caller is not a registered actor");
-        require(assetsConstraintRegistery.isOkToCall(_assetName, msg.sender, _data, _value),
+        require(assetsRegistery.isOkToCall(_assetName, msg.sender, _data, _value),
         "there is a constraint on this call");
-        address assetAddress = assetsConstraintRegistery.getAssetAddress(_assetName);
+        address assetAddress = assetsRegistery.getAssetAddress(_assetName);
       // solhint-disable-next-line avoid-call-value
         (success, returnValue) = assetAddress.call.value(_value)(_data);
         emit GenericCall(assetAddress, _data, _value, success);

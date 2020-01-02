@@ -6,22 +6,25 @@ import "@openzeppelin/upgrades/contracts/application/ImplementationDirectory.sol
 import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
 import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
-import "../dao/DAO.sol";
+import "../libs/DAOCallerHelper.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+import "@daostack/infra-experimental/contracts/Reputation.sol";
+import "../dao/DAOToken.sol";
 
 
 contract DAOFactory is Initializable {
     using BytesLib for bytes;
     using SafeMath for uint256;
+    using DAOCallerHelper for DAO;
 
     event NewOrg (
-        address indexed _avatar,
-        address indexed _controller,
+        address indexed _dao,
         address indexed _reputation,
-        address _daotoken
+        address indexed _daotoken
     );
-    event InitialSchemesSet (address indexed _avatar);
-    event SchemeInstance(address indexed _scheme, string _name);
+
+    event InitialActorsSet (address indexed _dao);
+    event ActorInstance(address indexed _actor, string _name);
     /**
     * @dev Emitted when a new proxy is created.
     * @param _proxy Address of the created proxy.
@@ -53,7 +56,7 @@ contract DAOFactory is Initializable {
      *  receive in the new organization
      * @param _foundersReputationAmount An array of amount of reputation that the
      *   founders receive in the new organization
-     * @return The address of the avatar of the controller
+     * @return The address of the dao of the controller
      */
     function forgeOrg (
         string calldata _orgName,
@@ -78,8 +81,8 @@ contract DAOFactory is Initializable {
 
   /**
     * @dev addFounders add founders to the organization.
-    *      this function can be called only after forgeOrg and before setSchemes
-    * @param _avatar the organization avatar
+    *      this function can be called only after forgeOrg and before setActors
+    * @param _dao the organization dao
     * @param _founders An array with the addresses of the founders of the organization
     * @param _foundersTokenAmount An array of amount of tokens that the founders
     *  receive in the new organization
@@ -88,7 +91,7 @@ contract DAOFactory is Initializable {
     * @return bool true or false
     */
     function addFounders (
-        DAO _avatar,
+        DAO _dao,
         address[] calldata _founders,
         uint[] calldata _foundersTokenAmount,
         uint[] calldata _foundersReputationAmount
@@ -99,47 +102,39 @@ contract DAOFactory is Initializable {
         require(_founders.length == _foundersTokenAmount.length);
         require(_founders.length == _foundersReputationAmount.length);
         require(_founders.length > 0);
-        require(locks[address(_avatar)].sender == msg.sender);
+        require(locks[address(_dao)].sender == msg.sender);
           // Mint token and reputation for founders:
         for (uint256 i = 0; i < _founders.length; i++) {
             require(_founders[i] != address(0));
             if (_foundersTokenAmount[i] > 0) {
-                Controller(
-                _avatar.owner()).mintTokens(_foundersTokenAmount[i], _founders[i]);
+                _dao.nativeTokenMint(_founders[i], _foundersTokenAmount[i]);
             }
             if (_foundersReputationAmount[i] > 0) {
-                Controller(
-                _avatar.owner()).mintReputation(_foundersReputationAmount[i], _founders[i]);
+                _dao.reputationMint(_founders[i], _foundersTokenAmount[i]);
             }
         }
         return true;
     }
 
     /**
-     * @dev Set initial schemes for the organization.
-     * @param _avatar organization avatar (returns from forgeOrg)
-     * @param _schemesNames the schemes name to register for the organization
-     * @param _schemesData the schemes initilization data
-     * @param _schemesInitilizeDataLens the schemes initilization data lens (at _schemesData)
-     * @param _permissions the schemes permissions.
-     * @param _metaData dao meta data hash
+     * @dev Set initial actors for the organization.
+     * @param _dao organization dao (returns from forgeOrg)
+     * @param _actorsNames the actors name to register for the organization
+     * @param _actorsData the actors initilization data
+     * @param _actorsInitilizeDataLens the actors initilization data lens (at _actorsData)
      */
-    function setSchemes (
-        DAO _avatar,
-        bytes32[] calldata _schemesNames,
-        bytes calldata _schemesData,
-        uint256[] calldata _schemesInitilizeDataLens,
-        bytes4[] calldata _permissions,
-        string calldata _metaData
+    function setActors (
+        DAO _dao,
+        bytes32[] calldata _actorsNames,
+        bytes calldata _actorsData,
+        uint256[] calldata _actorsInitilizeDataLens
         )
         external {
-            _setSchemes(
-                address(_avatar),
-                _schemesNames,
-                _schemesData,
-                _schemesInitilizeDataLens,
-                _permissions,
-                _metaData);
+            _setActors(
+                address(_dao),
+                _actorsNames,
+                _actorsData,
+                _actorsInitilizeDataLens);
         }
 
     /**
@@ -161,56 +156,60 @@ contract DAOFactory is Initializable {
     public
     payable
     returns (AdminUpgradeabilityProxy) {
-        Package package;
-
-        (package, ) = app.getPackage(PACKAGE_NAME);
-        ImplementationProvider provider = ImplementationProvider(package.getContract(_packageVersion));
-        address implementation = provider.getImplementation(_contractName);
+        address implementation = getImplementation(_contractName, _packageVersion);
         AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy).value(msg.value)(implementation, _admin, _data);
         emit ProxyCreated(address(proxy), implementation, _contractName, _packageVersion);
         return proxy;
     }
 
+    function getLatestPackageVersion() public view returns (uint64[3] memory latestVersion) {
+        (, latestVersion) = app.getPackage(PACKAGE_NAME);
+    }
+
+    function getImplementation(string memory _contractName, uint64[3] memory _packageVersion)
+    public
+    view
+    returns (address) {
+        Package package;
+        (package, ) = app.getPackage(PACKAGE_NAME);
+        ImplementationProvider provider = ImplementationProvider(package.getContract(_packageVersion));
+        return provider.getImplementation(_contractName);
+    }
+
     /**
-     * @dev Set initial schemes for the organization.
-     * @param _avatar organization avatar (returns from forgeOrg)
-     * @param _schemesNames the schemes name to register for the organization
-     * @param _schemesData the schemes initilization data
-     * @param _schemesInitilizeDataLens the schemes initilization data lens (at _schemesData)
-     * @param _permissions the schemes permissions.
-     * @param _metaData dao meta data hash
+     * @dev Set initial actors for the organization.
+     * @param _dao organization dao (returns from forgeOrg)
+     * @param _actorsNames the actors name to register for the organization
+     * @param _actorsData the actors initilization data
+     * @param _actorsInitilizeDataLens the actors initilization data lens (at _actorsData)
      */
-    function _setSchemes (
-        address payable _avatar,
-        bytes32[] memory _schemesNames,
-        bytes memory _schemesData,
-        uint256[] memory _schemesInitilizeDataLens,
-        bytes4[] memory _permissions,
-        string memory _metaData
+    function _setActors (
+        address _dao,
+        bytes32[] memory _actorsNames,
+        bytes memory _actorsData,
+        uint256[] memory _actorsInitilizeDataLens
     )
         private
     {
        // this action can only be executed by the account that holds the lock
-       // for this controller
-        require(locks[_avatar].sender == msg.sender);
-         // register initial schemes:
-        Controller controller = Controller(DAO(_avatar).owner());
+       // for this dao
+        require(locks[_dao].sender == msg.sender);
+         // register initial actors:
         uint256 startIndex =  0;
-        for (uint256 i = 0; i < _schemesNames.length; i++) {
-            address scheme = address(createInstance(locks[_avatar].packageVersion,
-                                bytes32ToStr(_schemesNames[i]),
-                                _avatar,
-                                _schemesData.slice(startIndex, _schemesInitilizeDataLens[i])));
-            emit SchemeInstance(scheme, bytes32ToStr(_schemesNames[i]));
-            controller.registerScheme(scheme, _permissions[i]);
-            startIndex = startIndex.add(_schemesInitilizeDataLens[i]);
+        for (uint256 i = 0; i < _actorsNames.length; i++) {
+            address actor = address(createInstance(locks[_dao].packageVersion,
+                                bytes32ToStr(_actorsNames[i]),
+                                _dao,
+                                _actorsData.slice(startIndex, _actorsInitilizeDataLens[i])));
+            emit ActorInstance(actor, bytes32ToStr(_actorsNames[i]));
+            DAO(_dao).registerActor(actor);
+            startIndex = startIndex.add(_actorsInitilizeDataLens[i]);
         }
-        controller.metaData(_metaData);
          // Unregister self:
-        controller.unregisterSelf();
+        DAO(_dao).unRegisterActor(address(this));
          // Remove lock:
-        delete locks[_avatar];
-        emit InitialSchemesSet(_avatar);
+        delete locks[_dao];
+        emit InitialActorsSet(_dao);
     }
 
     function bytes32ToStr(bytes32 x) private pure returns (string memory) {
@@ -240,7 +239,7 @@ contract DAOFactory is Initializable {
      *  receive in the new organization
      * @param _foundersReputationAmount An array of amount of reputation that the
      *   founders receive in the new organization
-     * @return The address of the avatar of the controller
+     * @return The address of the dao of the controller
      */
     function _forgeOrg (
         string memory _orgName,
@@ -261,16 +260,20 @@ contract DAOFactory is Initializable {
         createInstance(packageVersion, "Reputation", address(this),
         abi.encodeWithSignature("initialize(address)", address(this)));
 
-        AdminUpgradeabilityProxy avatar = createInstance(packageVersion, "DAO", address(this),
+        AdminUpgradeabilityProxy actorsRegistry = createInstance(packageVersion, "ActorsRegistry", address(this),
+        abi.encodeWithSignature("initialize(address)", address(this)));
+
+        AdminUpgradeabilityProxy assetsRegistery = createInstance(packageVersion, "AssetsRegistery", address(this),
+        abi.encodeWithSignature("initialize(address)", address(this)));
+
+        AdminUpgradeabilityProxy dao = createInstance(packageVersion, "DAO", address(this),
         abi.encodeWithSignature(
             "initialize(string,address,address,address)",
             _orgName,
-            address(nativeToken),
-            address(nativeReputation),
+            address(actorsRegistry),
+            address(assetsRegistery),
             address(this)));
-        nativeToken.changeAdmin(address(avatar));
-        nativeReputation.changeAdmin(address(avatar));
-        avatar.changeAdmin(address(avatar));
+
          // Mint token and reputation for founders:
         for (uint256 i = 0; i < _founders.length; i++) {
             require(_founders[i] != address(0));
@@ -281,23 +284,27 @@ contract DAOFactory is Initializable {
                 Reputation(address(nativeReputation)).mint(_founders[i], _foundersReputationAmount[i]);
             }
         }
-         // Create Controller:
-        Controller controller =
-        Controller(address(createInstance(
-        packageVersion,
-        "Controller",
-        address(avatar),
-        abi.encodeWithSignature("initialize(address,address)", address(avatar), address(this)))));
+        AssetsRegistery(address(assetsRegistery)).register("AssetsRegistery", address(assetsRegistery));
+        AssetsRegistery(address(assetsRegistery)).register("ActorsRegistry", address(actorsRegistry));
+        AssetsRegistery(address(assetsRegistery)).register("NativeToken", address(nativeToken));
+        AssetsRegistery(address(assetsRegistery)).register("Reputation", address(nativeReputation));
+
          // Transfer ownership:
-        DAO(address(avatar)).transferOwnership(address(controller));
-        DAOToken(address(nativeToken)).transferOwnership(address(controller));
-        Reputation(address(nativeReputation)).transferOwnership(address(controller));
+        transferOwnershipAndAdmin([assetsRegistery, actorsRegistry, nativeToken,
+                                    nativeReputation], address(dao));
+        dao.changeAdmin(address(dao));
+        locks[address(dao)].sender = msg.sender;
+        locks[address(dao)].packageVersion = packageVersion;
 
-        locks[address(avatar)].sender = msg.sender;
-        locks[address(avatar)].packageVersion = packageVersion;
+        emit NewOrg (address(dao), address(nativeReputation), address(nativeToken));
+        return (address(dao));
+    }
 
-        emit NewOrg (address(avatar), address(controller), address(nativeReputation), address(nativeToken));
-        return (address(avatar));
+    function transferOwnershipAndAdmin(AdminUpgradeabilityProxy[4] memory _assets, address _dao) private {
+        for (uint256 i = 0; i < 4; i++) {
+            _assets[i].changeAdmin(_dao);
+            Ownable(address(_assets[i])).transferOwnership(_dao);
+        }
     }
 
 }

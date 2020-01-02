@@ -1,6 +1,6 @@
 pragma solidity 0.5.15;
 
-import "../dao/DAO.sol";
+import "../libs/DAOCallerHelper.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "./CurveInterface.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/cryptography/ECDSA.sol";
@@ -15,12 +15,13 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 contract ReputationFromToken is Initializable {
     using ECDSA for bytes32;
     using SafeMath for uint256;
+    using DAOCallerHelper for DAO;
 
     IERC20 public tokenContract;
     CurveInterface public curve;
     //      beneficiary -> bool
     mapping(address     => bool) public redeems;
-    DAO public avatar;
+    DAO public dao;
 
     // Digest describing the data the user signs according EIP 712.
     // Needs to match what is passed to Metamask.
@@ -34,14 +35,14 @@ contract ReputationFromToken is Initializable {
 
     /**
      * @dev initialize
-     * @param _avatar the avatar to mint reputation from
+     * @param _dao the dao to mint reputation from
      * @param _tokenContract the token contract
      */
-    function initialize(DAO _avatar, IERC20 _tokenContract, CurveInterface _curve) external initializer
+    function initialize(DAO _dao, IERC20 _tokenContract, CurveInterface _curve) external initializer
     {
-        require(_avatar != DAO(0), "avatar cannot be zero");
+        require(_dao != DAO(0), "dao cannot be zero");
         tokenContract = _tokenContract;
-        avatar = _avatar;
+        dao = _dao;
         curve = _curve;
     }
 
@@ -102,7 +103,7 @@ contract ReputationFromToken is Initializable {
      * @return uint256 minted reputation
      */
     function _redeem(address _beneficiary, address _redeemer) private returns(uint256) {
-        require(avatar != DAO(0), "should initialize first");
+        require(dao != DAO(0), "should initialize first");
         require(redeems[_redeemer] == false, "redeeming twice from the same account is not allowed");
         redeems[_redeemer] = true;
         uint256 tokenAmount = tokenContract.balanceOf(_redeemer);
@@ -112,10 +113,7 @@ contract ReputationFromToken is Initializable {
         if (_beneficiary == address(0)) {
             _beneficiary = _redeemer;
         }
-        require(
-        Controller(
-        avatar.owner())
-        .mintReputation(tokenAmount, _beneficiary), "mint reputation should succeed");
+        dao.reputationMint(_beneficiary, tokenAmount);
         emit Redeem(_beneficiary, _redeemer, tokenAmount);
         return tokenAmount;
     }

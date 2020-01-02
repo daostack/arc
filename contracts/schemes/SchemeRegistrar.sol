@@ -4,38 +4,35 @@ import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.s
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
-
+import "../libs/DAOCallerHelper.sol";
+import "../utils/DAOFactory.sol";
 
 /**
  * @title A registrar for Schemes for organizations
- * @dev The SchemeRegistrar is used for registering and unregistering schemes at organizations
+ * @dev The SchemeRegistrar is used for registering and unregistering actors at organizations
  */
 
 contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+    using DAOCallerHelper for DAO;
+
     event NewSchemeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
-        address _scheme,
-        bytes4 _permissions,
+        string _actorToRegister,
+        address _actorToUnRegister,
         string _descriptionHash
     );
 
-    event RemoveSchemeProposal(address indexed _avatar,
-        bytes32 indexed _proposalId,
-        address indexed _intVoteInterface,
-        address _scheme,
-        string _descriptionHash
-    );
+    event ProposalExecuted(address indexed _dao, bytes32 indexed _proposalId, int256 _param);
+    event ProposalDeleted(address indexed _dao, bytes32 indexed _proposalId);
 
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
-    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
-
-    // a SchemeProposal is a  proposal to add or remove a scheme to/from the an organization
+    // a SchemeProposal is a  proposal to add or remove a actor to/from the an organization
     struct SchemeProposal {
-        address scheme; //
-        bool addScheme; // true: add a scheme, false: remove a scheme.
-        bytes4 permissions;
+        string actorToRegister; //
+        address actorToUnregister;
+        uint64[3] packageVersion;
+        bytes initilizeData;
     }
 
     mapping(bytes32=>SchemeProposal) public organizationProposals;
@@ -43,29 +40,33 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     IntVoteInterface public votingMachine;
     bytes32 public voteRegisterParams;
     bytes32 public voteRemoveParams;
-    DAO public avatar;
+    DAO public dao;
+    DAOFactory public daoFactory;
 
     /**
      * @dev initialize
-     * @param _avatar the avatar this scheme referring to.
+     * @param _dao the dao this actor referring to.
      * @param _votingMachine the voting machines address to
-     * @param _voteRegisterParams voting machine parameters to register scheme.
-     * @param _voteRemoveParams voting machine parameters to remove scheme.
+     * @param _voteRegisterParams voting machine parameters to register actor.
+     * @param _voteRemoveParams voting machine parameters to remove actor.
+     * @param _daoFactory daostack daoFactory contract.
      */
     function initialize(
-        DAO _avatar,
+        DAO _dao,
         IntVoteInterface _votingMachine,
         bytes32 _voteRegisterParams,
-        bytes32 _voteRemoveParams
+        bytes32 _voteRemoveParams,
+        DAOFactory _daoFactory
     )
     external
     initializer
     {
-        require(_avatar != DAO(0), "avatar cannot be zero");
-        avatar = _avatar;
+        require(_dao != DAO(0), "dao cannot be zero");
+        dao = _dao;
         votingMachine = _votingMachine;
         voteRegisterParams = _voteRegisterParams;
         voteRemoveParams = _voteRemoveParams;
+        daoFactory = _daoFactory;
     }
 
     /**
@@ -78,95 +79,81 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     onlyVotingMachine(_proposalId)
     returns(bool) {
         SchemeProposal memory proposal = organizationProposals[_proposalId];
-        require(proposal.scheme != address(0));
         delete organizationProposals[_proposalId];
-        emit ProposalDeleted(address(avatar), _proposalId);
+        emit ProposalDeleted(address(dao), _proposalId);
         if (_decision == 1) {
-
-          // Define controller and get the params:
-            Controller controller = Controller(avatar.owner());
-
-          // Add a scheme:
-            if (proposal.addScheme) {
-                require(controller.registerScheme(
-                        proposal.scheme,
-                        proposal.permissions)
-                );
+          // Add a actor:
+            bytes memory tempEmptyStringTest = bytes(proposal.actorToRegister); // Uses memory
+            if (tempEmptyStringTest.length != 0) {
+                address actorInstance = address(daoFactory.createInstance(proposal.packageVersion,
+                                                proposal.actorToRegister,
+                                                address(dao),
+                                                proposal.initilizeData));
+                dao.registerActor(actorInstance);
             }
-          // Remove a scheme:
-            if (!proposal.addScheme) {
-                require(controller.unregisterScheme(proposal.scheme));
+          // Remove a actor:
+            if (proposal.actorToUnregister != address(0)) {
+                dao.unRegisterActor(proposal.actorToUnregister);
             }
         }
-        emit ProposalExecuted(address(avatar), _proposalId, _decision);
+        emit ProposalExecuted(address(dao), _proposalId, _decision);
         return true;
     }
 
     /**
-    * @dev create a proposal to register a scheme
-    * @param _scheme the address of the scheme to be registered
-    * @param _permissions the permission of the scheme to be registered
+    * @dev create a proposal to register a actor
+    * @param _actorToRegister the actor's name to be registered
+    * @param _actorToUnRegister the actor's name to be unregistered
     * @param _descriptionHash proposal's description hash
     * @return a proposal Id
     * @dev NB: not only proposes the vote, but also votes for it
     */
     function proposeScheme(
-        address _scheme,
-        bytes4 _permissions,
-        string memory _descriptionHash
+        string memory _actorToRegister,
+        address _actorToUnRegister,
+        string memory _descriptionHash,
+        uint64[3] memory _packageVersion,
+        bytes memory _initilizeData
     )
     public
     returns(bytes32)
     {
-        // propose
-        require(_scheme != address(0), "scheme cannot be zero");
+        bytes memory tempEmptyStringTest = bytes(_actorToRegister); // Uses memory
+        require(tempEmptyStringTest.length != 0 || _actorToUnRegister != address(0),
+        "actor to register or unregister cannot be zero");
 
         bytes32 proposalId = votingMachine.propose(
             2,
             voteRegisterParams,
             msg.sender,
-            address(avatar)
+            address(dao)
         );
 
+        uint64[3] memory packageVersion;
+        if (_packageVersion[0] == 0 && _packageVersion[1] == 0 && _packageVersion[2] == 0) {
+            packageVersion = daoFactory.getLatestPackageVersion();
+        } else {
+            packageVersion = _packageVersion;
+        }
+
         SchemeProposal memory proposal = SchemeProposal({
-            scheme: _scheme,
-            addScheme: true,
-            permissions: _permissions
+            actorToRegister: _actorToRegister,
+            actorToUnregister: _actorToUnRegister,
+            packageVersion: packageVersion,
+            initilizeData: _initilizeData
         });
         emit NewSchemeProposal(
-            address(avatar),
+            address(dao),
             proposalId,
             address(votingMachine),
-            _scheme,
-            _permissions,
+            _actorToRegister,
+            _actorToUnRegister,
             _descriptionHash
         );
         organizationProposals[proposalId] = proposal;
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:avatar
-        });
-        return proposalId;
-    }
-
-    /**
-    * @dev propose to remove a scheme for a controller
-    * @param _scheme the address of the scheme we want to remove
-    * @param _descriptionHash proposal description hash
-    * NB: not only registers the proposal, but also votes for it
-    */
-    function proposeToRemoveScheme(address _scheme, string memory _descriptionHash)
-    public
-    returns(bytes32)
-    {
-        require(_scheme != address(0), "scheme cannot be zero");
-
-        bytes32 proposalId = votingMachine.propose(2, voteRemoveParams, msg.sender, address(avatar));
-        organizationProposals[proposalId].scheme = _scheme;
-        emit RemoveSchemeProposal(address(avatar), proposalId, address(votingMachine), _scheme, _descriptionHash);
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
+            dao:dao
         });
         return proposalId;
     }

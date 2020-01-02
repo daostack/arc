@@ -9,11 +9,13 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 /**
  * @title GenericScheme.
  * @dev  A scheme for proposing and executing calls to an arbitrary function
- * on a specific contract on behalf of the organization avatar.
+ * on a specific contract on behalf of the organization dao.
  */
 contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
+    using DAOCallerHelper for DAO;
+
     event NewCallProposal(
-        address indexed _avatar,
+        address indexed _dao,
         bytes32 indexed _proposalId,
         bytes   _callData,
         uint256 _value,
@@ -21,18 +23,18 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     );
 
     event ProposalExecuted(
-        address indexed _avatar,
+        address indexed _dao,
         bytes32 indexed _proposalId,
         bytes _genericCallReturnValue
     );
 
     event ProposalExecutedByVotingMachine(
-        address indexed _avatar,
+        address indexed _dao,
         bytes32 indexed _proposalId,
         int256 _param
     );
 
-    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalDeleted(address indexed _dao, bytes32 indexed _proposalId);
 
     // Details of a voting proposal:
     struct CallProposal {
@@ -47,17 +49,17 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
     address public contractToCall;
-    DAO public avatar;
+    DAO public dao;
 
     /**
      * @dev initialize
-     * @param _avatar the avatar to mint reputation from
+     * @param _dao the dao to mint reputation from
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
      * @param _contractToCall the target contract this scheme will call to
      */
     function initialize(
-        DAO _avatar,
+        DAO _dao,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams,
         address _contractToCall
@@ -65,8 +67,8 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     external
     initializer
     {
-        require(_avatar != DAO(0), "avatar cannot be zero");
-        avatar = _avatar;
+        require(_dao != DAO(0), "dao cannot be zero");
+        dao = _dao;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
         contractToCall = _contractToCall;
@@ -91,10 +93,10 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
             execute(_proposalId);
         } else {
             delete organizationProposals[_proposalId];
-            emit ProposalDeleted(address(avatar), _proposalId);
+            emit ProposalDeleted(address(dao), _proposalId);
         }
 
-        emit ProposalExecutedByVotingMachine(address(avatar), _proposalId, _decision);
+        emit ProposalExecutedByVotingMachine(address(dao), _proposalId, _decision);
         return true;
     }
 
@@ -109,20 +111,19 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
-        Controller controller = Controller(avatar.owner());
         (success, genericCallReturnValue) =
-        controller.genericCall(contractToCall, proposal.callData, proposal.value);
+        dao.genericCall(contractToCall, proposal.callData, proposal.value);
         if (success) {
             delete organizationProposals[_proposalId];
-            emit ProposalDeleted(address(avatar), _proposalId);
-            emit ProposalExecuted(address(avatar), _proposalId, genericCallReturnValue);
+            emit ProposalDeleted(address(dao), _proposalId);
+            emit ProposalExecuted(address(dao), _proposalId, genericCallReturnValue);
         } else {
             proposal.exist = true;
         }
     }
 
     /**
-    * @dev propose to call on behalf of the _avatar
+    * @dev propose to call on behalf of the _dao
     *      The function trigger NewCallProposal event
     * @param _callData - The abi encode data for the call
     * @param _value value(ETH) to transfer with the call
@@ -133,7 +134,7 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     public
     returns(bytes32)
     {
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(dao));
 
         organizationProposals[proposalId] = CallProposal({
             callData: _callData,
@@ -143,9 +144,9 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
         });
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:avatar
+            dao:dao
         });
-        emit NewCallProposal(address(avatar), proposalId, _callData, _value, _descriptionHash);
+        emit NewCallProposal(address(dao), proposalId, _callData, _value, _descriptionHash);
         return proposalId;
     }
 

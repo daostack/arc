@@ -58,7 +58,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         if (dao == DAO(0)) {
             return false;
         }
-        return dao.externalTokenTransfer(_stakingToken, _beneficiary, _amount);
+        return dao.externalTokenTransfer(address(_stakingToken), _beneficiary, _amount);
     }
 
     function balanceOfStakingToken(IERC20 _stakingToken, bytes32 _proposalId) external view returns(uint256) {

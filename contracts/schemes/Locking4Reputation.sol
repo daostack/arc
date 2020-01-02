@@ -1,8 +1,9 @@
 pragma solidity 0.5.15;
 
-import "../dao/DAO.sol";
+import "../libs/DAOCallerHelper.sol";
 import "./Agreement.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 /**
  * @title A locker contract
@@ -10,6 +11,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 contract Locking4Reputation is Agreement, Initializable {
     using SafeMath for uint256;
+    using DAOCallerHelper for DAO;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
     event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);

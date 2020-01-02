@@ -5,10 +5,10 @@ import "../votingMachines/VotingMachineCallbacks.sol";
 
 contract ARCVotingMachineCallbacksMock is VotingMachineCallbacks {
 
-    function propose(bytes32 _proposalId, DAO _avatar, address _votingMachine) public {
+    function propose(bytes32 _proposalId, DAO _dao, address _votingMachine) public {
         proposalsInfo[_votingMachine][_proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:_avatar
+            dao:_dao
         });
     }
 }

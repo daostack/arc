@@ -9,8 +9,10 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
  * @dev A scheme to allow an organization to vote in a proposal.
  */
 contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+    using DAOCallerHelper for DAO;
+    
     event NewVoteProposal(
-        address indexed _avatar,
+        address indexed _dao,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         IntVoteInterface _originalIntVote,
@@ -19,8 +21,8 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
         string _descriptionHash
     );
 
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param, bytes _callReturnValue);
-    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+    event ProposalExecuted(address indexed _dao, bytes32 indexed _proposalId, int256 _param, bytes _callReturnValue);
+    event ProposalDeleted(address indexed _dao, bytes32 indexed _proposalId);
 
     // Details of a voting proposal:
     struct VoteProposal {
@@ -34,24 +36,24 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
-    DAO public avatar;
+    DAO public dao;
 
     /**
      * @dev initialize
-     * @param _avatar the avatar this scheme referring to.
+     * @param _dao the dao this scheme referring to.
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
      */
     function initialize(
-        DAO _avatar,
+        DAO _dao,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams
     )
     external
     initializer
     {
-        require(_avatar != DAO(0), "avatar cannot be zero");
-        avatar = _avatar;
+        require(_dao != DAO(0), "dao cannot be zero");
+        dao = _dao;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
     }
@@ -70,14 +72,12 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
         VoteProposal memory proposal = organizationProposals[_proposalId];
         require(proposal.exist);
         delete organizationProposals[_proposalId];
-        emit ProposalDeleted(address(avatar), _proposalId);
+        emit ProposalDeleted(address(dao), _proposalId);
         bytes memory callReturnValue;
         bool success;
         // If no decision do nothing:
         if (_decision == 1) {
-
-            Controller controller = Controller(avatar.owner());
-            (success, callReturnValue) = controller.genericCall(
+            (success, callReturnValue) = dao.genericCall(
             address(proposal.originalIntVote),
             abi.encodeWithSignature("vote(bytes32,uint256,uint256,address)",
             proposal.originalProposalId,
@@ -88,7 +88,7 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
             );
             require(success);
         }
-        emit ProposalExecuted(address(avatar), _proposalId, _decision, callReturnValue);
+        emit ProposalExecuted(address(dao), _proposalId, _decision, callReturnValue);
         return true;
     }
 
@@ -114,7 +114,7 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
         require(_vote <= _originalIntVote.getNumberOfChoices(_originalProposalId),
         "vote should be <= original proposal number of choices");
 
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(dao));
 
         organizationProposals[proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
@@ -123,7 +123,7 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
             exist: true
         });
         emit NewVoteProposal(
-            address(avatar),
+            address(dao),
             proposalId,
             address(votingMachine),
             _originalIntVote,
@@ -133,7 +133,7 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
         );
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:avatar
+            dao:dao
         });
         return proposalId;
     }

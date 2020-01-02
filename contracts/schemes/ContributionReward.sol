@@ -15,9 +15,10 @@ contract ContributionReward is
         ProposalExecuteInterface,
         Initializable {
     using SafeMath for uint;
+    using DAOCallerHelper for DAO;
 
     event NewContributionProposal(
-        address indexed _avatar,
+        address indexed _dao,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         string _descriptionHash,
@@ -27,25 +28,25 @@ contract ContributionReward is
         address _beneficiary
     );
 
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
+    event ProposalExecuted(address indexed _dao, bytes32 indexed _proposalId, int256 _param);
 
     event RedeemReputation(
-        address indexed _avatar,
+        address indexed _dao,
         bytes32 indexed _proposalId,
         address indexed _beneficiary,
         int256 _amount);
 
-    event RedeemEther(address indexed _avatar,
+    event RedeemEther(address indexed _dao,
         bytes32 indexed _proposalId,
         address indexed _beneficiary,
         uint256 _amount);
 
-    event RedeemNativeToken(address indexed _avatar,
+    event RedeemNativeToken(address indexed _dao,
         bytes32 indexed _proposalId,
         address indexed _beneficiary,
         uint256 _amount);
 
-    event RedeemExternalToken(address indexed _avatar,
+    event RedeemExternalToken(address indexed _dao,
         bytes32 indexed _proposalId,
         address indexed _beneficiary,
         uint256 _amount);
@@ -68,24 +69,24 @@ contract ContributionReward is
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
-    DAO public avatar;
+    DAO public dao;
 
     /**
      * @dev initialize
-     * @param _avatar the avatar this scheme referring to.
+     * @param _dao the dao this scheme referring to.
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
      */
     function initialize(
-        DAO _avatar,
+        DAO _dao,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams
     )
     external
     initializer
     {
-        require(_avatar != DAO(0), "avatar cannot be zero");
-        avatar = _avatar;
+        require(_dao != DAO(0), "dao cannot be zero");
+        dao = _dao;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
     }
@@ -107,7 +108,7 @@ contract ContributionReward is
           // solhint-disable-next-line not-rely-on-time
             organizationProposals[_proposalId].executionTime = now;
         }
-        emit ProposalExecuted(address(proposal.avatar), _proposalId, _decision);
+        emit ProposalExecuted(address(proposal.dao), _proposalId, _decision);
         return true;
     }
 
@@ -135,7 +136,7 @@ contract ContributionReward is
     returns(bytes32)
     {
         validateProposalParams(_reputationChange, _rewards);
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(dao));
         address payable beneficiary = _beneficiary;
         if (beneficiary == address(0)) {
             beneficiary = msg.sender;
@@ -156,7 +157,7 @@ contract ContributionReward is
         organizationProposals[proposalId] = proposal;
 
         emit NewContributionProposal(
-            address(avatar),
+            address(dao),
             proposalId,
             address(votingMachine),
             _descriptionHash,
@@ -168,7 +169,7 @@ contract ContributionReward is
 
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:avatar
+            dao:dao
         });
         return proposalId;
     }
@@ -189,17 +190,13 @@ contract ContributionReward is
         proposal.reputationChange = 0;
         reputation = int(periodsToPay) * _proposal.reputationChange;
         if (reputation > 0) {
-            require(
-            Controller(
-            avatar.owner()).mintReputation(uint(reputation), _proposal.beneficiary));
+            dao.reputationMint(_proposal.beneficiary, uint(reputation));
         } else if (reputation < 0) {
-            require(
-            Controller(
-            avatar.owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary));
+            dao.reputationBurn(_proposal.beneficiary, uint(reputation*(-1)));
         }
         if (reputation != 0) {
             proposal.redeemedPeriods[0] = proposal.redeemedPeriods[0].add(periodsToPay);
-            emit RedeemReputation(address(avatar), _proposalId, _proposal.beneficiary, reputation);
+            emit RedeemReputation(address(dao), _proposalId, _proposal.beneficiary, reputation);
         }
         //restore proposal reward.
         proposal.reputationChange = _proposal.reputationChange;
@@ -221,9 +218,9 @@ contract ContributionReward is
 
         amount = periodsToPay.mul(_proposal.nativeTokenReward);
         if (amount > 0) {
-            require(Controller(avatar.owner()).mintTokens(amount, _proposal.beneficiary));
+            dao.nativeTokenMint(_proposal.beneficiary, amount);
             proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
-            emit RedeemNativeToken(address(avatar), _proposalId, _proposal.beneficiary, amount);
+            emit RedeemNativeToken(address(dao), _proposalId, _proposal.beneficiary, amount);
         }
 
         //restore proposal reward.
@@ -246,9 +243,9 @@ contract ContributionReward is
         amount = periodsToPay.mul(_proposal.ethReward);
 
         if (amount > 0) {
-            require(Controller(avatar.owner()).sendEther(amount, _proposal.beneficiary));
+            dao.sendEther(_proposal.beneficiary, amount);
             proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
-            emit RedeemEther(address(avatar), _proposalId, _proposal.beneficiary, amount);
+            emit RedeemEther(address(dao), _proposalId, _proposal.beneficiary, amount);
         }
 
         //restore proposal reward.
@@ -272,12 +269,9 @@ contract ContributionReward is
         if (proposal.externalToken != IERC20(0) && _proposal.externalTokenReward > 0) {
             amount = periodsToPay.mul(_proposal.externalTokenReward);
             if (amount > 0) {
-                require(
-                Controller(
-                avatar.owner())
-                .externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount));
+                dao.externalTokenTransfer(address(_proposal.externalToken), _proposal.beneficiary, amount);
                 proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);
-                emit RedeemExternalToken(address(avatar), _proposalId, _proposal.beneficiary, amount);
+                emit RedeemExternalToken(address(dao), _proposalId, _proposal.beneficiary, amount);
             }
         }
         //restore proposal reward.

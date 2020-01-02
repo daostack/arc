@@ -20,7 +20,7 @@ contract ExternalLocking4Reputation is Locking4Reputation {
 
     /**
      * @dev initialize
-     * @param _avatar the avatar to mint reputation from
+     * @param _dao the dao to mint reputation from
      * @param _reputationReward the total reputation this contract will reward
      *        for the token locking
      * @param _claimingStartTime claiming starting period time.
@@ -33,7 +33,7 @@ contract ExternalLocking4Reputation is Locking4Reputation {
      *        e.g "lockedTokenBalances(address)"
      */
     function initialize(
-        DAO _avatar,
+        DAO _dao,
         uint256 _reputationReward,
         uint256 _claimingStartTime,
         uint256 _claimingEndTime,
@@ -47,7 +47,7 @@ contract ExternalLocking4Reputation is Locking4Reputation {
         externalLockingContract = _externalLockingContract;
         getBalanceFuncSignature = _getBalanceFuncSignature;
         super._initialize(
-        _avatar,
+        _dao,
         _reputationReward,
         _claimingStartTime,
         _claimingEndTime,
@@ -63,7 +63,7 @@ contract ExternalLocking4Reputation is Locking4Reputation {
      * @return claimId
      */
     function claim(address _beneficiary, bytes32 _agreementHash) public returns(bytes32) {
-        require(avatar != DAO(0), "should initialize first");
+        require(dao != DAO(0), "should initialize first");
         address beneficiary;
         if (_beneficiary == address(0)) {
             beneficiary = msg.sender;

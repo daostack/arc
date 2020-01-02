@@ -1,9 +1,9 @@
 pragma solidity 0.5.15;
 
-import "../dao/DAO.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "../libs/DAOCallerHelper.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 
 /**
@@ -13,7 +13,7 @@ import "../libs/DAOCallerHelper.sol";
  */
 contract FixedReputationAllocation is Initializable, Ownable {
     using SafeMath for uint256;
-    using DAOCallerHelper for dao;
+    using DAOCallerHelper for DAO;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
     event BeneficiaryAddressAdded(address indexed _beneficiary);

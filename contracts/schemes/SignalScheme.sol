@@ -3,7 +3,7 @@ pragma solidity 0.5.15;
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "../dao/DAO.sol";
+import "../libs/DAOCallerHelper.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
@@ -14,14 +14,14 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
 
     event NewSignalProposal(
-        address indexed _avatar,
+        address indexed _dao,
         bytes32 indexed _proposalId,
         uint256 indexed _signalType,
         string _descriptionHash
     );
 
     event Signal(
-        address indexed _avatar,
+        address indexed _dao,
         bytes32 indexed _proposalId,
         uint256 indexed _signalType,
         string _descriptionHash
@@ -36,7 +36,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
         bytes32 voteApproveParams;
         IntVoteInterface intVote;
         uint256 signalType;
-        DAO avatar;
+        DAO dao;
     }
 
     mapping(bytes32  =>  Proposal) public proposals;
@@ -45,23 +45,23 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
 
     /**
      * @dev initialize
-     * @param  _avatar the scheme avatar
+     * @param  _dao the scheme dao
      * @param _signalType - signal types
      * @param _voteApproveParams voting machine params
      * @param _intVote  voting machine address
      */
-    function initialize(DAO _avatar,
+    function initialize(DAO _dao,
                         uint256 _signalType,
                         bytes32 _voteApproveParams,
                         IntVoteInterface _intVote)
     external
     initializer {
-        require(_avatar != DAO(0), "avatar cannot be zero");
+        require(_dao != DAO(0), "dao cannot be zero");
         params = Parameters({
             voteApproveParams: _voteApproveParams,
             signalType: _signalType,
             intVote: _intVote,
-            avatar: _avatar
+            dao: _dao
         });
     }
 
@@ -75,20 +75,20 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
     external
     returns(bytes32)
     {
-        require(Controller(params.avatar.owner()).isSchemeRegistered(address(this)),
+        require(params.dao.actorsRegistry().actorsRegistry(address(this)),
         "scheme is not registered");
 
         bytes32 proposalId = params.intVote.propose(
         2,
         params.voteApproveParams,
         msg.sender,
-        address(params.avatar)
+        address(params.dao)
         );
 
         proposals[proposalId].descriptionHash = _descriptionHash;
 
         emit NewSignalProposal(
-            address(params.avatar),
+            address(params.dao),
             proposalId,
             params.signalType,
             _descriptionHash
@@ -96,7 +96,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
 
         proposalsInfo[address(params.intVote)][proposalId] = ProposalInfo({
             blockNumber:block.number,
-            avatar:params.avatar
+            dao:params.dao
         });
         return proposalId;
     }
@@ -111,7 +111,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
         proposals[_proposalId].executed = true;
         // Check if vote was successful:
         if (_param == 1) {
-            emit Signal(address(params.avatar),
+            emit Signal(address(params.dao),
                         _proposalId,
                         params.signalType,
                         proposals[_proposalId].descriptionHash);
