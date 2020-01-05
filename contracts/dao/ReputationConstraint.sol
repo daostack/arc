@@ -23,7 +23,6 @@ contract ReputationConstraint is  Initializable {
     }
 
       /// @notice mint - check that there is no inflation of more than 10% in a single mint operation
-      /// @param _user The address that will be assigned the new reputation
       /// @param _amount The quantity of reputation generated
       /// @return True if the mint operation is allowed
     function mint(address, uint256 _amount) public returns (bool) {
@@ -32,8 +31,6 @@ contract ReputationConstraint is  Initializable {
     }
 
       /// @notice Burns `_amount` reputation from `_owner`
-      /// @param _user The address that will lose the reputation
-      /// @param _amount The quantity of reputation to burn
       /// @return True if the reputation are burned correctly
     function burn(address, uint256) public returns (bool) {
         return true;

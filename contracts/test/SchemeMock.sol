@@ -17,19 +17,10 @@ contract SchemeMock is Initializable {
         testData = _testData;
     }
 
-    function genericCall(DAO _dao, address _contract, uint256 _a, address _b, bytes32 _c, uint256 _value)
+    function genericCall(DAO _dao, string memory _assetName, uint256 _a, address _b, bytes32 _c, uint256 _value)
     public returns(bool, bytes memory)
     {
         return _dao.genericCall(
-        _contract, abi.encodeWithSignature("test(uint256,address,bytes32)", _a, _b, _c), _value);
-    }
-
-    function genericCallDirect(DAO _dao, address _contract, uint256 _a, address _b, bytes32 _c, uint256 _value)
-    public returns(bool, bytes memory)
-    {
-        return _dao.genericCall(
-        _contract,
-        abi.encodeWithSignature("test(uint256,address,bytes32)", _a, _b, _c),
-        _value);
+        _assetName, abi.encodeWithSignature("test(uint256,address,bytes32)", _a, _b, _c), _value);
     }
 }

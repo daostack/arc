@@ -2,7 +2,7 @@
     helpers for tests
 */
 
-const Avatar = artifacts.require("./Avatar.sol");
+const DAO = artifacts.require("./DAO.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
@@ -14,7 +14,6 @@ const Wallet = artifacts.require('./test/Wallet.sol');
 const App = artifacts.require("./App.sol");
 const Package = artifacts.require("./Package.sol");
 var ImplementationDirectory = artifacts.require("./ImplementationDirectory.sol");
-var Controller = artifacts.require("./Controller.sol");
 const ContributionReward = artifacts.require("./ContributionReward.sol");
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -140,14 +139,14 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await registration.app.setPackage(packageName,registration.packageInstance.address,version);
   registration.daoToken = await DAOToken.new();
   registration.reputation = await Reputation.new();
-  registration.avatar = await Avatar.new();
+  registration.avatar = await DAO.new();
   registration.controller = await Controller.new();
   registration.schemeMock = await SchemeMock.new();
   registration.wallet = await Wallet.new();
   registration.contributionReward = await ContributionReward.new();
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
-  await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
+  await implementationDirectory.setImplementation("DAO",registration.avatar.address);
   await implementationDirectory.setImplementation("Controller",registration.controller.address);
   await implementationDirectory.setImplementation("SchemeMock",registration.schemeMock.address);
   await implementationDirectory.setImplementation("Wallet",registration.wallet.address);
@@ -229,7 +228,7 @@ export const setupOrganizationWithArrays = async function (daoCreator,daoCreator
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
-  org.avatar = await Avatar.at(avatarAddress);
+  org.avatar = await DAO.at(avatarAddress);
   var tokenAddress = await org.avatar.nativeToken();
   org.token = await DAOToken.at(tokenAddress);
   var reputationAddress = await org.avatar.nativeReputation();
@@ -259,7 +258,7 @@ export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
   assert.equal(tx.logs.length, 5);
   assert.equal(tx.logs[4].event, "NewOrg");
   var avatarAddress = tx.logs[4].args._avatar;
-  org.avatar = await Avatar.at(avatarAddress);
+  org.avatar = await DAO.at(avatarAddress);
   var tokenAddress = await org.avatar.nativeToken();
   org.token = await DAOToken.at(tokenAddress);
   var reputationAddress = await org.avatar.nativeReputation();
@@ -273,7 +272,7 @@ export const setupOrganization = async function (daoCreator,daoCreatorOwner,foun
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
-  org.avatar = await Avatar.at(avatarAddress);
+  org.avatar = await DAO.at(avatarAddress);
   var tokenAddress = await org.avatar.nativeToken();
   org.token = await DAOToken.at(tokenAddress);
   var reputationAddress = await org.avatar.nativeReputation();

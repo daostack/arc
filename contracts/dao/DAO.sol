@@ -118,6 +118,8 @@ contract DAO is Initializable {
         actorsRegistry = _actorsRegistry;
         assetsRegistery = _assetsRegistery;
         actorsRegistry.register(_initialActor);
+        assetsRegistery.register("ActorsRegistry", address(actorsRegistry));
+        assetsRegistery.register("AssetsRegistery", address(assetsRegistery));
     }
 
     /**
