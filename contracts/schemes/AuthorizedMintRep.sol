@@ -1,5 +1,6 @@
 pragma solidity 0.5.13;
 
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/Controller.sol";
 
@@ -7,23 +8,14 @@ import "../controller/Controller.sol";
  * @title A scheme for reputation allocation by an authorized account
  */
 
-contract AuthorizedMintRep {
+contract AuthorizedMintRep is Ownable {
     using SafeMath for uint256;
 
     Avatar public avatar;
     uint256 public activationStartTime;
     uint256 public activationEndTime;
     uint256 public repRewardLeft;
-    address public authorizedAddress;
     bool public limitRepReward;
-
-    /**
-     * @dev Throws if called by an unauthorized account.
-     */
-    modifier onlyAuthorized() {
-        require(msg.sender == authorizedAddress, "Caller is not authorized");
-        _;
-    }
 
     /**
      * @dev initialize
@@ -31,15 +23,13 @@ contract AuthorizedMintRep {
      * @param _activationStartTime start time for allowing minting
      * @param _activationEndTime end time for allowing minting
      * @param _maxRepReward maximum reputation mintable by this scheme
-     * @param _authorizedAddress address authorized for minting reputation
      */
     function initialize(
         Avatar _avatar,
         uint256 _activationStartTime,
         uint256 _activationEndTime,
-        uint256 _maxRepReward,
-        address _authorizedAddress
-    ) external {
+        uint256 _maxRepReward
+    ) external onlyOwner {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
         require(_activationStartTime < _activationEndTime, "_activationStartTime < _activationEndTime");
@@ -47,16 +37,15 @@ contract AuthorizedMintRep {
         activationStartTime = _activationStartTime;
         activationEndTime = _activationEndTime;
         repRewardLeft = _maxRepReward;
-        authorizedAddress = _authorizedAddress;
         limitRepReward = _maxRepReward != 0;
     }
 
     /**
      * @dev reputationMint function
-     * @param _beneficiary the beneficiary address to redeem for
-     * @param _amount the agreementHash hash
+     * @param _beneficiary the beneficiary address to mint reputation for
+     * @param _amount the amount of reputation to mint the the beneficirary
      */
-    function reputationMint(address _beneficiary, uint256 _amount) external onlyAuthorized {
+    function reputationMint(address _beneficiary, uint256 _amount) external onlyOwner {
         // solhint-disable-next-line not-rely-on-time
         require(now >= activationStartTime, "Minting period did not start yet");
         // solhint-disable-next-line not-rely-on-time
