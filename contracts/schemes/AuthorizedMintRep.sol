@@ -4,8 +4,7 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/Controller.sol";
 
 /**
- * @title A scheme for reputation allocation according to token balances
- *        This contract is assuming that the token contract is paused, and one cannot transfer its tokens.
+ * @title A scheme for reputation allocation by an authorized account
  */
 
 contract AuthorizedMintRep {
