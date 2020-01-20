@@ -317,14 +317,22 @@ contract Competition {
     * @param _proposalId proposal id
     * @param _suggestionId suggestion id
     */
+    // solhint-disable-next-line code-complexity
     function refreshTopSuggestions(bytes32 _proposalId, uint256 _suggestionId) private {
         uint256[] storage topSuggestions = proposals[_proposalId].topSuggestions;
-        if (topSuggestions.length < proposals[_proposalId].numberOfWinners) {
+        uint256 topSuggestionsLength = topSuggestions.length;
+        uint256 i;
+        if (topSuggestionsLength < proposals[_proposalId].numberOfWinners) {
+            for (i = 0; i < topSuggestionsLength; i++) {
+                if (topSuggestions[i] == _suggestionId) {
+                    return;
+                }
+            }
             topSuggestions.push(_suggestionId);
         } else {
          /** get the index of the smallest element **/
             uint256 smallest = 0;
-            for (uint256 i; i < proposals[_proposalId].numberOfWinners; i++) {
+            for (i = 0; i < proposals[_proposalId].numberOfWinners; i++) {
                 if (suggestions[topSuggestions[i]].totalVotes <
                     suggestions[topSuggestions[smallest]].totalVotes) {
                     smallest = i;

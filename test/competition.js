@@ -630,4 +630,29 @@ contract('Competition', accounts => {
     assert.equal(tx.logs[0].args._proposalId,proposalId);
     assert.equal(tx.logs[0].args._rewardPercentage,3);
   });
+
+  it("multiple users vote on the same suggestion ", async function() {
+    var testSetup = await setup(accounts);
+    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,3000,{from:accounts[1]});
+    await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:2000});
+    var proposalId = await proposeCompetition(testSetup,"description-hash",1000,[1000,2000,3000],[50,30,10,10]);
+    await helpers.increaseTime(20);
+
+    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion");
+
+    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+    await testSetup.contributionRewardExt.redeem(proposalId,[true,true,true,true]);
+    await helpers.increaseTime(650);
+    await testSetup.competition.vote(1,{from:accounts[1]});
+    await testSetup.competition.vote(2,{from:accounts[0]});
+    await testSetup.competition.vote(2,{from:accounts[2]});
+    await helpers.increaseTime(650);
+    var tx = await testSetup.competition.redeem(2,accounts[0]);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "Redeem");
+    assert.equal(tx.logs[0].args._proposalId,proposalId);
+    assert.equal(tx.logs[0].args._rewardPercentage,60);
+  });
 });
