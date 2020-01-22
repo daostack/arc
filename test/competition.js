@@ -65,6 +65,7 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,se
 
    testSetup.competition =  await Competition.new();
    testSetup.competition.initialize(testSetup.contributionRewardExt.address);
+   testSetup.admin = accounts[0];
    return testSetup;
 };
 
@@ -78,7 +79,8 @@ const proposeCompetition = async function(
                                           _votingStartTime = 600,
                                           _endTime = 1200,
                                           _maxNumberOfVotesPerVoter = 3,
-                                          _suggestionsEndTime = 1200
+                                          _suggestionsEndTime = 1200,
+                                          _admin = helpers.NULL_ADDRESS
                                           ) {
 
     var block = await web3.eth.getBlock("latest");
@@ -86,6 +88,10 @@ const proposeCompetition = async function(
     _testSetup.votingStartTime = block.timestamp + _votingStartTime;
     _testSetup.endTime = block.timestamp + _endTime;
     _testSetup.suggestionsEndTime = block.timestamp + _suggestionsEndTime;
+    var sender = _testSetup.admin;
+    if (_admin !== helpers.NULL_ADDRESS) {
+        sender = _admin;
+    }
     var tx = await _testSetup.competition.proposeCompetition(
                                    _descriptionHash,
                                    _reputationChange,
@@ -96,7 +102,9 @@ const proposeCompetition = async function(
                                    _testSetup.votingStartTime,
                                    _testSetup.endTime,
                                    _maxNumberOfVotesPerVoter,
-                                   _testSetup.suggestionsEndTime]
+                                   _testSetup.suggestionsEndTime],
+                                   (_admin !== helpers.NULL_ADDRESS),
+                                   {from:sender}
                                 );
 
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -114,6 +122,11 @@ const proposeCompetition = async function(
     assert.equal(tx.logs[0].args._maxNumberOfVotesPerVoter,_maxNumberOfVotesPerVoter);
     assert.equal(tx.logs[0].args._contributionRewardExt,_testSetup.contributionRewardExt.address);
     assert.equal(tx.logs[0].args._suggestionsEndTime,_testSetup.suggestionsEndTime);
+    if (_admin !== helpers.NULL_ADDRESS) {
+      assert.equal(tx.logs[0].args._admin,sender);
+    } else {
+      assert.equal(tx.logs[0].args._admin,helpers.NULL_ADDRESS);
+    }
 
     return proposalId;
 };
@@ -207,12 +220,32 @@ contract('Competition', accounts => {
        var testSetup = await setup(accounts);
        var proposalId = await proposeCompetition(testSetup);
        await helpers.increaseTime(20);
-       var tx = await testSetup.competition.suggest(proposalId,"suggestion");
+       var tx = await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "NewSuggestion");
        assert.equal(tx.logs[0].args._suggestionId,1);
        assert.equal(tx.logs[0].args._descriptionHash,"suggestion");
       });
+
+      it("suggest only admin", async function() {
+        var testSetup = await setup(accounts);
+        var admin = accounts[1];
+        var proposalId = await proposeCompetition(testSetup,
+          "description-hash",10,[1,2,3],[50,25,15,10],10,600,1200,3,1200,admin);
+        await helpers.increaseTime(20);
+        try {
+               await testSetup.competition.suggest(proposalId,"suggestion",accounts[3]);
+               assert(false, 'only admin can suggest');
+          } catch (ex) {
+               helpers.assertVMException(ex);
+         }
+        var tx = await testSetup.competition.suggest(proposalId,"suggestion",accounts[3],{from:admin});
+        assert.equal(tx.logs.length, 1);
+        assert.equal(tx.logs[0].event, "NewSuggestion");
+        assert.equal(tx.logs[0].args._suggestionId,1);
+        assert.equal(tx.logs[0].args._descriptionHash,"suggestion");
+        assert.equal(tx.logs[0].args._beneficiary,accounts[3]);
+       });
 
     it("cannot suggest after suggestionEndTime", async function() {
       var descriptionHash = "description-hash";
@@ -235,12 +268,12 @@ contract('Competition', accounts => {
                                maxNumberOfVotesPerVoter,
                                200);//suggestionEndTime
       await helpers.increaseTime(20);//increase time for suggestion
-      await testSetup.competition.suggest(proposalId,"suggestion");
+      await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
       //increase time after suggestion end time
       await helpers.increaseTime(250);
       try {
 
-             await testSetup.competition.suggest(proposalId,"suggestion");
+             await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
              assert(false, 'cannot suggest after suggestionEndTime');
         } catch (ex) {
              helpers.assertVMException(ex);
@@ -263,23 +296,23 @@ contract('Competition', accounts => {
                                  );//votingStartTime
       try {
 
-             await testSetup.competition.suggest(proposalId,"suggestion");
+             await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
              assert(false, 'cannot suggest before start time');
         } catch (ex) {
              helpers.assertVMException(ex);
        }
        await helpers.increaseTime(20);
-       await testSetup.competition.suggest(proposalId,"suggestion");
+       await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
      });
 
      it("cannot suggest after competition end", async function() {
        var testSetup = await setup(accounts);
        var proposalId = await proposeCompetition(testSetup);//votingStartTime
        await helpers.increaseTime(20);
-       await testSetup.competition.suggest(proposalId,"suggestion");
+       await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
        await helpers.increaseTime(1200+100);
        try {
-              await testSetup.competition.suggest(proposalId,"suggestion");
+              await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
               assert(false, 'cannot suggest after competition end');
          } catch (ex) {
               helpers.assertVMException(ex);
@@ -290,7 +323,7 @@ contract('Competition', accounts => {
     var testSetup = await setup(accounts);
     var proposalId = await proposeCompetition(testSetup);
     await helpers.increaseTime(20);
-    var tx = await testSetup.competition.suggest(proposalId,"suggestion");
+    var tx = await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
     var suggestionId = tx.logs[0].args._suggestionId;
 
     try {
@@ -327,15 +360,15 @@ contract('Competition', accounts => {
     assert.equal(tx.logs[1].args._reputation,testSetup.reputationArray[0]);
 
     //first vote set the snapshotBlock
-    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
     await testSetup.competition.vote(2);
     proposal =  await testSetup.competition.proposals(proposalId);
     assert.equal(proposal.snapshotBlock, tx.logs[0].blockNumber);
 
     //3rd suggestion
-    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
     //4th suggestion
-    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
     await testSetup.competition.vote(3);
 
     try {
@@ -352,7 +385,7 @@ contract('Competition', accounts => {
      var testSetup = await setup(accounts);
      var proposalId = await proposeCompetition(testSetup);
      await helpers.increaseTime(20);
-     var tx = await testSetup.competition.suggest(proposalId,"suggestion");
+     var tx = await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
      var suggestionId = tx.logs[0].args._suggestionId;
      await helpers.increaseTime(650);
      await testSetup.competition.vote(suggestionId);
@@ -368,7 +401,7 @@ contract('Competition', accounts => {
      await helpers.increaseTime(20);
      for (var i=0;i<20;i++) {
          //submit 20 suggestion
-        await testSetup.competition.suggest(proposalId,"suggestion");
+        await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
      }
      await helpers.increaseTime(650);
      await testSetup.competition.vote(10,{from:accounts[0]});
@@ -387,7 +420,7 @@ contract('Competition', accounts => {
      await helpers.increaseTime(20);
      for (var i=0;i<20;i++) {
          //submit 20 suggestion
-        await testSetup.competition.suggest(proposalId,"suggestion");
+        await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
      }
      await helpers.increaseTime(650);
      await testSetup.competition.vote(10,{from:accounts[1]});
@@ -418,9 +451,9 @@ contract('Competition', accounts => {
     await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
     var proposalId = await proposeCompetition(testSetup);
     await helpers.increaseTime(20);
-    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
     try {
-            await testSetup.competition.redeem(1,accounts[0]);
+            await testSetup.competition.redeem(1);
             assert(false, 'cannot redeem if no vote');
        } catch (ex) {
             helpers.assertVMException(ex);
@@ -431,13 +464,13 @@ contract('Competition', accounts => {
     await helpers.increaseTime(650);
     await testSetup.competition.vote(1,{from:accounts[1]});
     try {
-            await testSetup.competition.redeem(1,accounts[0]);
+            await testSetup.competition.redeem(1);
             assert(false, 'cannot redeem if competion not ended yet');
        } catch (ex) {
             helpers.assertVMException(ex);
       }
     await helpers.increaseTime(650);
-    var tx = await testSetup.competition.redeem(1,accounts[0]);
+    var tx = await testSetup.competition.redeem(1);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "Redeem");
     assert.equal(tx.logs[0].args._proposalId,proposalId);
@@ -492,12 +525,12 @@ contract('Competition', accounts => {
     var proposalId = await proposeCompetition(testSetup,"description-hash",1000,[1000,2000,3000]);
     await helpers.increaseTime(20);
 
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
 
     await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
@@ -508,7 +541,7 @@ contract('Competition', accounts => {
     await testSetup.competition.vote(3,{from:accounts[2]});
 
     await helpers.increaseTime(650);
-    var tx = await testSetup.competition.redeem(1,accounts[0]);
+    var tx = await testSetup.competition.redeem(1);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "Redeem");
     assert.equal(tx.logs[0].args._proposalId,proposalId);
@@ -553,7 +586,7 @@ contract('Competition', accounts => {
                 assert.equal(events[0].args._beneficiary,accounts[0]);
                 assert.equal(events[0].args._amount,(3000*18/100));
             });
-      tx = await testSetup.competition.redeem(2,accounts[0]);
+      tx = await testSetup.competition.redeem(2);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "Redeem");
       assert.equal(tx.logs[0].args._proposalId,proposalId);
@@ -566,7 +599,7 @@ contract('Competition', accounts => {
               helpers.assertVMException(ex);
         }
 
-      tx = await testSetup.competition.redeem(3,accounts[0]);
+      tx = await testSetup.competition.redeem(3);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "Redeem");
       assert.equal(tx.logs[0].args._proposalId,proposalId);
@@ -594,12 +627,12 @@ contract('Competition', accounts => {
     var proposalId = await proposeCompetition(testSetup,"description-hash",1000,[1000,2000,3000]);
     await helpers.increaseTime(20);
 
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
 
     await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
@@ -612,19 +645,19 @@ contract('Competition', accounts => {
     await testSetup.competition.vote(5,{from:accounts[0]});
     await testSetup.competition.vote(6,{from:accounts[0]});
     await helpers.increaseTime(650);
-    var tx = await testSetup.competition.redeem(4,accounts[0]);
+    var tx = await testSetup.competition.redeem(4);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "Redeem");
     assert.equal(tx.logs[0].args._proposalId,proposalId);
     assert.equal(tx.logs[0].args._rewardPercentage,3);
 
-    tx = await testSetup.competition.redeem(5,accounts[0]);
+    tx = await testSetup.competition.redeem(5);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "Redeem");
     assert.equal(tx.logs[0].args._proposalId,proposalId);
     assert.equal(tx.logs[0].args._rewardPercentage,3);
 
-    tx = await testSetup.competition.redeem(6,accounts[0]);
+    tx = await testSetup.competition.redeem(6);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "Redeem");
     assert.equal(tx.logs[0].args._proposalId,proposalId);
@@ -638,8 +671,8 @@ contract('Competition', accounts => {
     var proposalId = await proposeCompetition(testSetup,"description-hash",1000,[1000,2000,3000],[50,30,10,10]);
     await helpers.increaseTime(20);
 
-    await testSetup.competition.suggest(proposalId,"suggestion");
-    await testSetup.competition.suggest(proposalId,"suggestion");
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
 
     await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
@@ -649,7 +682,7 @@ contract('Competition', accounts => {
     await testSetup.competition.vote(2,{from:accounts[0]});
     await testSetup.competition.vote(2,{from:accounts[2]});
     await helpers.increaseTime(650);
-    var tx = await testSetup.competition.redeem(2,accounts[0]);
+    var tx = await testSetup.competition.redeem(2);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "Redeem");
     assert.equal(tx.logs[0].args._proposalId,proposalId);
