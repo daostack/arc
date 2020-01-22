@@ -15,7 +15,7 @@ contract AuthorizedMintRep is Ownable {
     uint256 public activationStartTime;
     uint256 public activationEndTime;
     uint256 public repRewardLeft;
-    bool public limitRepReward;
+    uint256 public limitRepReward;
 
     /**
      * @dev initialize
@@ -37,7 +37,31 @@ contract AuthorizedMintRep is Ownable {
         activationStartTime = _activationStartTime;
         activationEndTime = _activationEndTime;
         repRewardLeft = _maxRepReward;
-        limitRepReward = _maxRepReward != 0;
+        limitRepReward = _maxRepReward;
+    }
+
+    /**
+     * @dev reputationBurn function
+     * @param _beneficiaries the beneficiaries address to mint reputation from
+     * @param _amounts the amounts of reputation to mint for beneficiaries
+     */
+    function reputationMint(address[] calldata _beneficiaries, uint256[] calldata _amounts) external onlyOwner {
+        require(_beneficiaries.length == _amounts.length, "Arrays length mismuch");
+        for (uint256 i=0; i < _beneficiaries.length; i++) {
+            _reputationMint(_beneficiaries[i], _amounts[i]);
+        }
+    }
+
+    /**
+     * @dev reputationBurn function
+     * @param _beneficiaries the beneficiaries address to burm reputation from
+     * @param _amounts the amounts of reputation to burn for beneficiaries
+     */
+    function reputationBurn(address[] calldata _beneficiaries, uint256[] calldata _amounts) external onlyOwner {
+        require(_beneficiaries.length == _amounts.length, "Arrays length mismuch");
+        for (uint256 i=0; i < _beneficiaries.length; i++) {
+            _reputationBurn(_beneficiaries[i], _amounts[i]);
+        }
     }
 
     /**
@@ -45,19 +69,41 @@ contract AuthorizedMintRep is Ownable {
      * @param _beneficiary the beneficiary address to mint reputation for
      * @param _amount the amount of reputation to mint the the beneficirary
      */
-    function reputationMint(address _beneficiary, uint256 _amount) external onlyOwner {
+    function _reputationMint(address _beneficiary, uint256 _amount) private {
         // solhint-disable-next-line not-rely-on-time
         require(now >= activationStartTime, "Minting period did not start yet");
         // solhint-disable-next-line not-rely-on-time
         require(now < activationEndTime, "Minting period ended.");
 
-        if (limitRepReward) {
+        if (limitRepReward > 0) {
             repRewardLeft = repRewardLeft.sub(_amount);
         }
 
         require(
             Controller(avatar.owner()).mintReputation(_amount, _beneficiary, address(avatar)),
             "Minting reputation should succeed"
+        );
+    }
+
+    /**
+     * @dev reputationBurn function
+     * @param _beneficiary the beneficiary address to burm reputation from
+     * @param _amount the amount of reputation to burn for a beneficirary
+     */
+    function _reputationBurn(address _beneficiary, uint256 _amount) private {
+        // solhint-disable-next-line not-rely-on-time
+        require(now >= activationStartTime, "Burning period did not start yet");
+        // solhint-disable-next-line not-rely-on-time
+        require(now < activationEndTime, "Burning period ended.");
+
+        if (limitRepReward > 0) {
+            require(_amount <= limitRepReward.sub(repRewardLeft), "Cannot burn more than minted");
+            repRewardLeft = repRewardLeft.add(_amount);
+        }
+
+        require(
+            Controller(avatar.owner()).burnReputation(_amount, _beneficiary, address(avatar)),
+            "Burn reputation should succeed"
         );
     }
 }
