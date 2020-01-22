@@ -5,10 +5,10 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../controller/Controller.sol";
 
 /**
- * @title A scheme for reputation allocation by an authorized account
+ * @title A scheme for reputation minting/burning by an authorized account
  */
 
-contract AuthorizedMintRep is Ownable {
+contract ReputationAdmin is Ownable {
     using SafeMath for uint256;
 
     Avatar public avatar;
