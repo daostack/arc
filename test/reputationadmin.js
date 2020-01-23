@@ -3,7 +3,7 @@ const DaoCreator = artifacts.require('./DaoCreator.sol');
 const ControllerCreator = artifacts.require('./ControllerCreator.sol');
 const DAOTracker = artifacts.require('./DAOTracker.sol');
 const constants = require('./constants');
-var AuthorizedMintRep = artifacts.require('./AuthorizedMintRep.sol');
+var ReputationAdmin = artifacts.require('./ReputationAdmin.sol');
 
 const setup = async function(
   accounts,
@@ -34,9 +34,9 @@ const setup = async function(
   testSetup.activationEndTime =
     (await web3.eth.getBlock('latest')).timestamp + _activationEndTime;
   testSetup.maxRepReward = _maxRepReward;
-  testSetup.authorizedMintRep = await AuthorizedMintRep.new();
+  testSetup.reputationAdmin = await ReputationAdmin.new();
   if (_initialize === true) {
-    await testSetup.authorizedMintRep.initialize(
+    await testSetup.reputationAdmin.initialize(
       testSetup.org.avatar.address,
       testSetup.activationStartTime,
       testSetup.activationEndTime,
@@ -48,7 +48,7 @@ const setup = async function(
   var permissions = '0x00000000';
   await testSetup.daoCreator.setSchemes(
     testSetup.org.avatar.address,
-    [testSetup.authorizedMintRep.address],
+    [testSetup.reputationAdmin.address],
     [web3.utils.asciiToHex('0')],
     [permissions],
     'metaData'
@@ -57,30 +57,30 @@ const setup = async function(
   return testSetup;
 };
 
-contract('AuthorizedMintRep', accounts => {
+contract('reputationAdmin', accounts => {
   it('initialize', async () => {
     let testSetup = await setup(accounts);
 
     assert.equal(
-      await testSetup.authorizedMintRep.repRewardLeft(),
+      await testSetup.reputationAdmin.repRewardLeft(),
       testSetup.maxRepReward
     );
     assert.equal(
-      await testSetup.authorizedMintRep.activationStartTime(),
+      await testSetup.reputationAdmin.activationStartTime(),
       testSetup.activationStartTime
     );
     assert.equal(
-      await testSetup.authorizedMintRep.activationEndTime(),
+      await testSetup.reputationAdmin.activationEndTime(),
       testSetup.activationEndTime
     );
-    assert.equal(await testSetup.authorizedMintRep.owner(), accounts[0]);
+    assert.equal(await testSetup.reputationAdmin.owner(), accounts[0]);
   });
 
   it('initialize _activationStartTime >= activationEndTime is not allowed', async () => {
     let testSetup = await setup(accounts);
-    let authorizedMintRep = await AuthorizedMintRep.new();
+    let reputationAdmin = await ReputationAdmin.new();
     try {
-      await authorizedMintRep.initialize(
+      await reputationAdmin.initialize(
         testSetup.org.avatar.address,
         testSetup.activationStartTime,
         testSetup.activationStartTime - 1,
@@ -95,15 +95,36 @@ contract('AuthorizedMintRep', accounts => {
 
   it('mint reputation', async () => {
     let testSetup = await setup(accounts);
-    await testSetup.authorizedMintRep.reputationMint(accounts[2], 1);
+    await testSetup.reputationAdmin.reputationMint([accounts[2]],[1]);
 
     assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 1);
+  });
+
+  it('burn reputation', async () => {
+    let testSetup = await setup(accounts);
+    await testSetup.reputationAdmin.reputationMint([accounts[2]],[1]);
+
+    assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 1);
+    await testSetup.reputationAdmin.reputationBurn([accounts[2]],[1]);
+    assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 0);
+
+  });
+
+  it('burn only  if minted reputation', async () => {
+    let testSetup = await setup(accounts);
+    try {
+        await testSetup.reputationAdmin.reputationBurn([accounts[2]],[1]);
+      assert(false, 'burn only  if minted reputation');
+    } catch (error) {
+      helpers.assertVMException(error);
+    }
+
   });
 
   it('mint reputation by unauthorized account should fail', async () => {
     let testSetup = await setup(accounts);
     try {
-      await testSetup.authorizedMintRep.reputationMint(accounts[2], 1, {
+      await testSetup.reputationAdmin.reputationMint([accounts[2]], [1], {
         from: accounts[1]
       });
       assert(false, 'mint reputation by unauthorized account should fail');
@@ -115,7 +136,7 @@ contract('AuthorizedMintRep', accounts => {
   it('mint without initialize should fail', async () => {
     let testSetup = await setup(accounts, 0, 3000, 100, false);
     try {
-      await testSetup.authorizedMintRep.reputationMint(accounts[2], 1);
+      await testSetup.reputationAdmin.reputationMint([accounts[2]], [1]);
       assert(false, 'mint without initialize should fail');
     } catch (error) {
       helpers.assertVMException(error);
@@ -125,7 +146,7 @@ contract('AuthorizedMintRep', accounts => {
   it('mint before _activationStartTime should fail', async () => {
     let testSetup = await setup(accounts, 2000, 3000, 100, true);
     try {
-      await testSetup.authorizedMintRep.reputationMint(accounts[2], 1);
+      await testSetup.reputationAdmin.reputationMint([accounts[2]],[1]);
       assert(false, 'mint before _activationStartTime should fail');
     } catch (error) {
       helpers.assertVMException(error);
@@ -136,7 +157,7 @@ contract('AuthorizedMintRep', accounts => {
     let testSetup = await setup(accounts);
     await helpers.increaseTime(3001);
     try {
-      await testSetup.authorizedMintRep.reputationMint(accounts[2], 1);
+      await testSetup.reputationAdmin.reputationMint([accounts[2]], [1]);
       assert(false, 'mint after _activationEndTime should revert');
     } catch (error) {
       helpers.assertVMException(error);
@@ -146,7 +167,7 @@ contract('AuthorizedMintRep', accounts => {
   it('mint more than _maxRepReward should fail', async () => {
     let testSetup = await setup(accounts);
     try {
-      await testSetup.authorizedMintRep.reputationMint(accounts[2], 101);
+      await testSetup.reputationAdmin.reputationMint([accounts[2]], [101]);
       assert(false, 'mint more than _maxRepReward should fail');
     } catch (error) {
       helpers.assertVMException(error);
@@ -155,7 +176,7 @@ contract('AuthorizedMintRep', accounts => {
 
   it('mint reputation with 0 _maxRepReward should allow any amount', async () => {
     let testSetup = await setup(accounts, 0, 3000, 0, true);
-    await testSetup.authorizedMintRep.reputationMint(accounts[2], 1000);
+    await testSetup.reputationAdmin.reputationMint([accounts[2]], [1000]);
 
     assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 1000);
   });
@@ -163,7 +184,7 @@ contract('AuthorizedMintRep', accounts => {
   it('cannot initialize twice', async () => {
     let testSetup = await setup(accounts);
     try {
-      await testSetup.authorizedMintRep.initialize(
+      await testSetup.reputationAdmin.initialize(
         testSetup.org.avatar.address,
         testSetup.activationStartTime,
         testSetup.activationEndTime,
