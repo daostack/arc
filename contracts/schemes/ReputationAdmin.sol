@@ -46,7 +46,7 @@ contract ReputationAdmin is Ownable {
      * @param _amounts the amounts of reputation to mint for beneficiaries
      */
     function reputationMint(address[] calldata _beneficiaries, uint256[] calldata _amounts) external onlyOwner {
-        require(_beneficiaries.length == _amounts.length, "Arrays length mismuch");
+        require(_beneficiaries.length == _amounts.length, "Arrays length mismatch");
         for (uint256 i=0; i < _beneficiaries.length; i++) {
             _reputationMint(_beneficiaries[i], _amounts[i]);
         }
@@ -58,7 +58,7 @@ contract ReputationAdmin is Ownable {
      * @param _amounts the amounts of reputation to burn for beneficiaries
      */
     function reputationBurn(address[] calldata _beneficiaries, uint256[] calldata _amounts) external onlyOwner {
-        require(_beneficiaries.length == _amounts.length, "Arrays length mismuch");
+        require(_beneficiaries.length == _amounts.length, "Arrays length mismatch");
         for (uint256 i=0; i < _beneficiaries.length; i++) {
             _reputationBurn(_beneficiaries[i], _amounts[i]);
         }

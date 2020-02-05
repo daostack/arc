@@ -18,7 +18,7 @@ const setupContributionRewardParams = async function(
                                             genesisProtocol,
                                             token,
                                             avatar,
-                                            redeemer = helpers.NULL_ADDRESS
+                                            redeemer
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
   if (genesisProtocol === true) {
@@ -39,7 +39,7 @@ const setupContributionRewardParams = async function(
   return contributionRewardParams;
 };
 
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,service=helpers.NULL_ADDRESS) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100000);
    testSetup.contributionRewardExt = await ContributionRewardExt.new();
@@ -52,20 +52,21 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,se
       testSetup.reputationArray = [2000,5000,7000];
    }
    testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
+   testSetup.competition =  await Competition.new();
+   testSetup.competition.initialize(testSetup.contributionRewardExt.address);
+   testSetup.admin = accounts[0];
    testSetup.contributionRewardExtParams= await setupContributionRewardParams(
                       testSetup.contributionRewardExt,
                       accounts,genesisProtocol,
                       tokenAddress,
                       testSetup.org.avatar,
-                      service);
+                      testSetup.competition.address);
    var permissions = "0x00000000";
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
                                         [testSetup.contributionRewardExt.address],
                                         [helpers.NULL_HASH],[permissions],"metaData");
 
-   testSetup.competition =  await Competition.new();
-   testSetup.competition.initialize(testSetup.contributionRewardExt.address);
-   testSetup.admin = accounts[0];
+
    return testSetup;
 };
 
