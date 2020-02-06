@@ -269,7 +269,7 @@ contract Competition {
     }
 
     /**
-    * @dev sendLeftOverFund send letfover funds back to the dao.
+    * @dev sendLeftOverFund send leftover funds back to the dao.
     * @param _proposalId the proposal id
     */
     function sendLeftOverFunds(bytes32 _proposalId) public {
