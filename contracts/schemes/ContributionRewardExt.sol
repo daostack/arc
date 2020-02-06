@@ -69,9 +69,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     }
 
     modifier onlyRewarder() {
-        if (rewarder != address(0)) {
-            require(msg.sender == rewarder, "msg.sender is not authorized");
-        }
+        require(msg.sender == rewarder, "msg.sender is not authorized");
         _;
     }
 
@@ -106,6 +104,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_votingMachine != IntVoteInterface(0), "votingMachine cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
@@ -162,6 +161,9 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         if (beneficiary == address(0)) {
             beneficiary = msg.sender;
         }
+        if (beneficiary == address(this)) {
+            require(_reputationChange > 0, "only positive rep change(minting) allowed for this case");
+        }
 
         ContributionProposal memory proposal = ContributionProposal({
             nativeTokenReward: _rewards[0],
@@ -211,6 +213,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         if (proposal.beneficiary == address(this)) {
             if (proposal.reputationChangeLeft == 0) {//for now only mint(not burn) rep allowed from ext contract.
                 proposal.reputationChangeLeft = uint256(proposal.reputationChange);
+                proposal.reputationChange = 0;
             }
         } else {
             reputation = proposal.reputationChange;

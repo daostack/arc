@@ -109,7 +109,7 @@ contract Competition {
     *         _competitionParams[1] - _votingStartTime competition voting start time
     *         _competitionParams[2] - _endTime competition end time
     *         _competitionParams[3] - _maxNumberOfVotesPerVoter on how many suggestions a voter can vote
-    *         _competitionParams[4] - _suggestionsEndTime suggestion submition end time
+    *         _competitionParams[4] - _suggestionsEndTime suggestion submission end time
     *        _proposerIsAdmin -
     *          true -  proposer is an admin.
     *          false no admin.
@@ -126,6 +126,7 @@ contract Competition {
             bool _proposerIsAdmin
     )
     external
+    // solhint-disable-next-line function-max-lines
     returns(bytes32 proposalId) {
         uint256 numberOfWinners = _rewardSplit.length;
         uint256 startTime = _competitionParams[0];
@@ -142,6 +143,10 @@ contract Competition {
         require(_competitionParams[4] <= _competitionParams[2],
         "suggestionsEndTime should be earlier than proposal end time");
         require(_competitionParams[4] > startTime, "suggestionsEndTime should be later than proposal start time");
+        if (_rewards[2] > 0) {
+            require(_externalToken != ERC20(0), "extenal token cannot be zero");
+        }
+        require(_reputationChange > 0, "only positive rep change(minting) allowed for a competition");
         uint256 totalRewardSplit;
         for (uint256 i = 0; i < numberOfWinners; i++) {
             totalRewardSplit = totalRewardSplit.add(_rewardSplit[i]);
@@ -160,6 +165,7 @@ contract Competition {
         proposals[proposalId].nativeTokenReward = _rewards[0];
         proposals[proposalId].ethReward = _rewards[1];
         proposals[proposalId].externalTokenReward = _rewards[2];
+        proposals[proposalId].snapshotBlock = 0;
         if (_proposerIsAdmin) {
             proposals[proposalId].admin = msg.sender;
         }
@@ -198,7 +204,7 @@ contract Competition {
         // solhint-disable-next-line not-rely-on-time
         require(proposals[_proposalId].startTime <= now, "competition not started yet");
         // solhint-disable-next-line not-rely-on-time
-        require(proposals[_proposalId].suggestionsEndTime > now, "suggestions submition time is over");
+        require(proposals[_proposalId].suggestionsEndTime > now, "suggestions submission time is over");
         suggestionsCounter = suggestionsCounter.add(1);
         suggestions[suggestionsCounter].proposalId = _proposalId;
         address payable beneficiary;
@@ -249,11 +255,13 @@ contract Competition {
 
     /**
     * @dev setSnapshotBlock set the block for the reputaion snapshot
+    * this function is public in order to externaly set snapshot block regardless of the first voting event.
     * @param _proposalId the proposal id
     */
     function setSnapshotBlock(bytes32 _proposalId) public {
         // solhint-disable-next-line not-rely-on-time
         require(proposals[_proposalId].votingStartTime < now, "voting period not started yet");
+        require(proposals[_proposalId].maxNumberOfVotesPerVoter > 0, "proposal does not exist");
         if (proposals[_proposalId].snapshotBlock == 0) {
             proposals[_proposalId].snapshotBlock = block.number;
             emit SnapshotBlock(_proposalId, block.number);
@@ -261,14 +269,16 @@ contract Competition {
     }
 
     /**
-    * @dev sendLeftOverFund send letf over funds back to the dao.
+    * @dev sendLeftOverFund send leftover funds back to the dao.
     * @param _proposalId the proposal id
     */
     function sendLeftOverFunds(bytes32 _proposalId) public {
         // solhint-disable-next-line not-rely-on-time
         require(proposals[_proposalId].endTime < now, "competition is still on");
+        require(proposals[_proposalId].maxNumberOfVotesPerVoter > 0, "proposal does not exist");
+        require(_proposalId != bytes32(0), "proposalId is zero");
         uint256[] memory topSuggestions = proposals[_proposalId].topSuggestions;
-        for (uint256 i; i < topSuggestions.length; i++) {
+        for (uint256 i = 0; i < topSuggestions.length; i++) {
             require(suggestions[topSuggestions[i]].beneficiary == address(0), "not all winning suggestions redeemed");
         }
 
@@ -296,9 +306,12 @@ contract Competition {
     */
     function redeem(uint256 _suggestionId) public {
         bytes32 proposalId = suggestions[_suggestionId].proposalId;
+        require(proposalId != bytes32(0), "proposalId is zero");
         Proposal storage proposal = proposals[proposalId];
+        require(_suggestionId > 0, "suggestionId is zero");
         // solhint-disable-next-line not-rely-on-time
         require(proposal.endTime < now, "competition is still on");
+        require(proposal.maxNumberOfVotesPerVoter > 0, "proposal does not exist");
         require(suggestions[_suggestionId].beneficiary != address(0),
         "suggestion was already redeemed");
         address payable beneficiary = suggestions[_suggestionId].beneficiary;
@@ -344,6 +357,8 @@ contract Competition {
 
     /**
     * @dev getOrderedIndexOfSuggestion return the index of specific suggestion in the winners list.
+    * for the case when the suggestion is NOT in the winners list,
+    * this method will return topSuggestions.length
     * @param _suggestionId suggestion id
     */
     function getOrderedIndexOfSuggestion(uint256 _suggestionId)
@@ -354,7 +369,7 @@ contract Competition {
         require(proposalId != bytes32(0), "suggestion does not exist");
         uint256[] memory topSuggestions = proposals[proposalId].topSuggestions;
         /** get how many elements are greater than a given element*/
-        for (uint256 i; i < topSuggestions.length; i++) {
+        for (uint256 i = 0; i < topSuggestions.length; i++) {
             if (suggestions[topSuggestions[i]].totalVotes > suggestions[_suggestionId].totalVotes) {
                 index++;
             }
