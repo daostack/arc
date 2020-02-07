@@ -519,6 +519,17 @@ contract('Competition', accounts => {
 
   });
 
+  it("negative reputation change is not allowed", async function() {
+    var testSetup = await setup(accounts);
+    try {
+          await proposeCompetition(testSetup,"description-hash",-1000);
+          assert(false, 'negative reputation change is not allowed');
+       } catch (ex) {
+            helpers.assertVMException(ex);
+      }
+    await proposeCompetition(testSetup,"description-hash",0);
+  });
+
   it("redeem multipe suggestions", async function() {
     var testSetup = await setup(accounts);
     await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,3000,{from:accounts[1]});
