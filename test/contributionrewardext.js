@@ -667,4 +667,33 @@ contract('ContributionRewardExt', accounts => {
 
       });
 
+      it("negativ rep change is not allowed for rewarder to set ", async function() {
+        var testSetup = await setup(accounts,false,0,accounts[0]);
+        var reputationReward = -12;
+        var nativeTokenReward = 12;
+        var ethReward = 12;
+        var externalTokenReward = 12;
+        try {
+             await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                         web3.utils.asciiToHex("description"),
+                                                                         reputationReward,
+                                                                         [nativeTokenReward,ethReward,externalTokenReward],
+                                                                         testSetup.standardTokenMock.address,
+                                                                         testSetup.contributionRewardExt.address,
+                                                                         helpers.NULL_ADDRESS
+                                                                       );
+             assert(false, 'negativ rep change is not allowed for rewarder to set');
+         } catch (ex) {
+            helpers.assertVMException(ex);
+        }
+         await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                       web3.utils.asciiToHex("description"),
+                                                                       0,
+                                                                       [nativeTokenReward,ethReward,externalTokenReward],
+                                                                       testSetup.standardTokenMock.address,
+                                                                       testSetup.contributionRewardExt.address,
+                                                                       helpers.NULL_ADDRESS
+                                                                     );
+    });
+
 });

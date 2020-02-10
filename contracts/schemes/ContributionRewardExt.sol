@@ -162,7 +162,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
             beneficiary = msg.sender;
         }
         if (beneficiary == address(this)) {
-            require(_reputationChange > 0, "only positive rep change(minting) allowed for this case");
+            require(_reputationChange >= 0, "negative rep change not allowed for this case");
         }
 
         ContributionProposal memory proposal = ContributionProposal({

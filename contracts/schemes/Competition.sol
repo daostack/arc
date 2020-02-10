@@ -96,7 +96,7 @@ contract Competition {
     /**
     * @dev Submit a competion proposal
     * @param _descriptionHash A hash of the proposal's description
-    * @param _reputationChange - Amount of reputation change requested .Can be negative.
+    * @param _reputationChange - Amount of reputation change requested.
     * @param _rewards rewards array:
     *         rewards[0] - Amount of tokens requested per period
     *         rewards[1] - Amount of ETH requested per period
@@ -146,7 +146,7 @@ contract Competition {
         if (_rewards[2] > 0) {
             require(_externalToken != ERC20(0), "extenal token cannot be zero");
         }
-        require(_reputationChange > 0, "only positive rep change(minting) allowed for a competition");
+        require(_reputationChange >= 0, "negative reputation change is not allowed for a competition");
         uint256 totalRewardSplit;
         for (uint256 i = 0; i < numberOfWinners; i++) {
             totalRewardSplit = totalRewardSplit.add(_rewardSplit[i]);
