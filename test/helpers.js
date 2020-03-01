@@ -18,6 +18,7 @@ var Controller = artifacts.require("./Controller.sol");
 const ContributionReward = artifacts.require("./ContributionReward.sol");
 const Competition = artifacts.require("./Competition.sol");
 const ContributionRewardExt = artifacts.require("./ContributionRewardExt.sol");
+const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -149,6 +150,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.contributionReward = await ContributionReward.new();
   registration.competition = await Competition.new();
   registration.contributionRewardExt = await ContributionRewardExt.new();
+  registration.schemeRegistrar = await SchemeRegistrar.new();
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
   await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
@@ -158,6 +160,8 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("ContributionReward",registration.contributionReward.address);
   await implementationDirectory.setImplementation("Competition",registration.competition.address);
   await implementationDirectory.setImplementation("ContributionRewardExt",registration.contributionRewardExt.address);
+  await implementationDirectory.setImplementation("SchemeRegistrar",registration.schemeRegistrar.address);
+
   return registration;
 };
 
@@ -231,7 +235,9 @@ export const setupGenesisProtocol = async function (
 
 export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
   var org = new Organization();
+  console.log("a")
   var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,cap,{gas: constants.ARC_GAS_LIMIT});
+    console.log("b")
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;

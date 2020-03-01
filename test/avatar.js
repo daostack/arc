@@ -38,7 +38,6 @@ contract('Avatar',  accounts =>  {
         let b = actionMock.address;
         let c = "0x1234";
         await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('1', "ether")});
-        var vault = await avatar.vault();
         var result = await scheme.genericCallDirect.call(avatar.address,actionMock.address,a,b,c,100);
         assert.equal(result[1],a*2);
         await scheme.genericCallDirect(avatar.address,actionMock.address,a,b,c,100);
