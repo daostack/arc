@@ -1,4 +1,4 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.16;
 
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "@openzeppelin/upgrades/contracts/application/App.sol";
@@ -20,6 +20,7 @@ contract DAOFactory is Initializable {
         address indexed _reputation,
         address _daotoken
     );
+    
     event InitialSchemesSet (address indexed _avatar);
     event SchemeInstance(address indexed _scheme, string _name);
     /**
@@ -64,15 +65,7 @@ contract DAOFactory is Initializable {
         uint64[3] calldata _version)
         external
         returns(address) {
-            Package package;
-            uint64[3] memory latestVersion;
-            (package, latestVersion) = app.getPackage(PACKAGE_NAME);
-            if (package.getContract(_version) == address(0)) {
-                require(package.getContract(latestVersion) != address(0), "ImplementationProvider does not exist");
-                packageVersion = latestVersion;
-            } else {
-                packageVersion = _version;
-            }
+            packageVersion = getPackageVersion(_version);
             return _forgeOrg(_orgName, _tokenInitData, _founders, _foundersTokenAmount, _foundersReputationAmount);
         }
 
@@ -162,12 +155,12 @@ contract DAOFactory is Initializable {
     payable
     returns (AdminUpgradeabilityProxy) {
         Package package;
-
+        uint64[3] memory version = getPackageVersion(_packageVersion);
         (package, ) = app.getPackage(PACKAGE_NAME);
-        ImplementationProvider provider = ImplementationProvider(package.getContract(_packageVersion));
+        ImplementationProvider provider = ImplementationProvider(package.getContract(version));
         address implementation = provider.getImplementation(_contractName);
         AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy).value(msg.value)(implementation, _admin, _data);
-        emit ProxyCreated(address(proxy), implementation, _contractName, _packageVersion);
+        emit ProxyCreated(address(proxy), implementation, _contractName, version);
         return proxy;
     }
 
@@ -298,6 +291,18 @@ contract DAOFactory is Initializable {
 
         emit NewOrg (address(avatar), address(controller), address(nativeReputation), address(nativeToken));
         return (address(avatar));
+    }
+
+    function getPackageVersion(uint64[3] memory _version) private view returns(uint64[3] memory version) {
+        Package package;
+        uint64[3] memory latestVersion;
+        (package, latestVersion) = app.getPackage(PACKAGE_NAME);
+        if (package.getContract(_version) == address(0)) {
+            require(package.getContract(latestVersion) != address(0), "ImplementationProvider does not exist");
+            version = latestVersion;
+        } else {
+            version = _version;
+        }
     }
 
 }

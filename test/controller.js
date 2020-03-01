@@ -331,7 +331,9 @@ contract('Controller', accounts =>  {
         });
     it("sendEther", async () => {
       controller = await setup(accounts);
-      let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, avatar.address);
+      let otherAvatar = await Avatar.new();
+      await otherAvatar.initialize('otheravatar', helpers.NULL_ADDRESS, avatar.address,accounts[0]);
+
       await avatar.transferOwnership(controller.address);
       //send some ether to the avatar
       await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('1', "ether")});
@@ -345,9 +347,11 @@ contract('Controller', accounts =>  {
         .then(function(events){
             assert.equal(events[0].event,"SendEther");
         });
-      var avatarBalance = await web3.eth.getBalance(avatar.address)/web3.utils.toWei('1', "ether");
+      var vault = await avatar.vault();
+      var avatarBalance = await web3.eth.getBalance(vault)/web3.utils.toWei('1', "ether");
       assert.equal(avatarBalance, 0);
-      var otherAvatarBalance = await web3.eth.getBalance(otherAvatar.address)/web3.utils.toWei('1', "ether");
+      var otherVault = await otherAvatar.vault();
+      var otherAvatarBalance = await web3.eth.getBalance(otherVault)/web3.utils.toWei('1', "ether");
       assert.equal(otherAvatarBalance, 1);
     });
 
@@ -497,7 +501,8 @@ contract('Controller', accounts =>  {
     it("globalConstraints sendEther  add & remove", async () => {
      controller = await setup(accounts);
      var globalConstraints = await constraint("sendEther");
-     let otherAvatar = await Avatar.new('otheravatar', helpers.NULL_ADDRESS, avatar.address);
+     let otherAvatar = await Avatar.new();
+     await otherAvatar.initialize('otheravatar', helpers.NULL_ADDRESS, avatar.address,accounts[0]);
      await avatar.transferOwnership(controller.address);
      web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('1', "ether")});
 
@@ -520,9 +525,11 @@ contract('Controller', accounts =>  {
        .then(function(events){
            assert.equal(events[0].event,"SendEther");
        });
-     var avatarBalance = await web3.eth.getBalance(avatar.address)/web3.utils.toWei('1', "ether");
+     var vault = await avatar.vault();
+     var avatarBalance = await web3.eth.getBalance(vault)/web3.utils.toWei('1', "ether");
      assert.equal(avatarBalance, 0);
-     var otherAvatarBalance = await web3.eth.getBalance(otherAvatar.address)/web3.utils.toWei('1', "ether");
+     var otherVault = await otherAvatar.vault();
+     var otherAvatarBalance = await web3.eth.getBalance(otherVault)/web3.utils.toWei('1', "ether");
      assert.equal(otherAvatarBalance, 1);
      });
 
