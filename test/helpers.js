@@ -20,6 +20,7 @@ const Competition = artifacts.require("./Competition.sol");
 const ContributionRewardExt = artifacts.require("./ContributionRewardExt.sol");
 const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 const GenericScheme = artifacts.require("./GenericScheme.sol");
+const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -153,6 +154,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.contributionRewardExt = await ContributionRewardExt.new();
   registration.schemeRegistrar = await SchemeRegistrar.new();
   registration.genericScheme = await GenericScheme.new();
+  registration.upgradeScheme = await UpgradeScheme.new();
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
   await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
@@ -164,6 +166,8 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("ContributionRewardExt",registration.contributionRewardExt.address);
   await implementationDirectory.setImplementation("SchemeRegistrar",registration.schemeRegistrar.address);
   await implementationDirectory.setImplementation("GenericScheme",registration.genericScheme.address);
+  await implementationDirectory.setImplementation("UpgradeScheme",registration.upgradeScheme.address);
+
 
 
   return registration;

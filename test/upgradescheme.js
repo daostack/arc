@@ -4,31 +4,28 @@ const Controller = artifacts.require("./Controller.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
-const DaoCreator = artifacts.require("./DaoCreator.sol");
 const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-
-
-
 
 export class UpgradeSchemeParams {
   constructor() {
   }
 }
-
+var registration;
 const setupUpgradeSchemeParams = async function(
-                                            upgradeScheme,
                                             avatarAddress
                                             ) {
-  var upgradeSchemeParams = new UpgradeSchemeParams();
-  upgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,upgradeScheme.address);
-  await upgradeScheme.initialize(avatarAddress,
-                  upgradeSchemeParams.votingMachine.absoluteVote.address,
-                  upgradeSchemeParams.votingMachine.params);
-  upgradeSchemeParams.paramsHash = helpers.NULL_HASH;
-  return upgradeSchemeParams;
+    var upgradeSchemeParams = new UpgradeSchemeParams();
+
+    upgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+    upgradeSchemeParams.initdata = await new web3.eth.Contract(registration.upgradeScheme.abi)
+                          .methods
+                          .initialize(avatarAddress,
+                            upgradeSchemeParams.votingMachine.absoluteVote.address,
+                            upgradeSchemeParams.votingMachine.params)
+                          .encodeABI();
+    return upgradeSchemeParams;
 };
 
 
@@ -56,24 +53,32 @@ const setupNewController = async function (accounts,permission='0x00000000') {
 
 
 const setup = async function (accounts) {
-   var testSetup = new helpers.TestSetup();
-   testSetup.fee = 10;
-   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
-   testSetup.upgradeScheme = await UpgradeScheme.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.reputationArray = [20,40,70];
-   testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
-   testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(testSetup.upgradeScheme,testSetup.org.avatar.address);
-
-   var permissions = "0x0000000a";
-
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.upgradeScheme.address],[permissions],"metaData");
-
-   return testSetup;
+  var testSetup = new helpers.TestSetup();
+  testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
+  registration = await helpers.registerImplementation();
+  testSetup.reputationArray =  [20,40,70];
+  testSetup.proxyAdmin = accounts[5];
+  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                      accounts,
+                                                                      registration,
+                                                                      [accounts[0],
+                                                                      accounts[1],
+                                                                      accounts[2]],
+                                                                      [1000,0,0],
+                                                                      testSetup.reputationArray);
+  testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(
+                     testSetup.org.avatar.address);
+  var permissions = "0x0000000a";
+  var tx = await registration.daoFactory.setSchemes(
+                          testSetup.org.avatar.address,
+                          [web3.utils.fromAscii("UpgradeScheme")],
+                          testSetup.upgradeSchemeParams.initdata,
+                          [helpers.getBytesLength(testSetup.upgradeSchemeParams.initdata)],
+                          [permissions],
+                          "metaData",{from:testSetup.proxyAdmin});
+  testSetup.upgradeScheme = await UpgradeScheme.at(tx.logs[1].args._scheme);
+  return testSetup;
 };
-
 contract('UpgradeScheme', accounts => {
   before(function() {
     helpers.etherForEveryone(accounts);
