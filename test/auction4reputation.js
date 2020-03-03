@@ -50,13 +50,12 @@ const setup = async function (accounts,
     testSetup.org.avatar.address,
     testSetup.agreementHash)
    .encodeABI();
-
    var permissions = "0x00000000";
    tx = await registration.daoFactory.setSchemes(
     testSetup.org.avatar.address,
     [web3.utils.fromAscii("ContributionReward")],
-    testSetup.auction4Reputation.initdata,
-    [helpers.getBytesLength(testSetup.auction4Reputation.initdata)],
+    testSetup.auction4ReputationParams.initdata,
+    [helpers.getBytesLength(testSetup.auction4ReputationParams.initdata)],
     [permissions],
     "metaData",{from:testSetup.proxyAdmin});
    await testSetup.biddingToken.approve(testSetup.auction4Reputation.address,web3.utils.toWei('100', "ether"));
