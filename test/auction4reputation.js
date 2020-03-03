@@ -1,11 +1,13 @@
 const helpers = require('./helpers');
-const DaoCreator = artifacts.require("./DaoCreator.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
 const constants = require('./constants');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
 
+export class Auction4ReputationParams {
+  constructor() {
+  }
+}
 
 const setup = async function (accounts,
                              _auctionReputationReward = 100,
@@ -13,36 +15,50 @@ const setup = async function (accounts,
                              _auctionsEndTime = 3000,
                              _numberOfAuctions = 3,
                              _redeemEnableTime = 3000,
-                             _agreementHash = helpers.SOME_HASH,
-                             _initialize = true) {
+                             _agreementHash = helpers.SOME_HASH) {
    var testSetup = new helpers.TestSetup();
+   testSetup.proxyAdmin = accounts[5];
+   var registration = await helpers.registerImplementation();
    testSetup.biddingToken = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
+   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(
+     testSetup.proxyAdmin,
+     accounts,
+     registration,
+     [accounts[0]],
+     [1000],
+     [1000]
+  );
 
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
 
-   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.auctionsEndTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsEndTime;
    testSetup.auctionsStartTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsStartTime;
    testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
    testSetup.auction4Reputation = await Auction4Reputation.new();
    testSetup.auctionPeriod = (testSetup.auctionsEndTime - testSetup.auctionsStartTime)/3;
    testSetup.agreementHash = _agreementHash;
-   if (_initialize === true ) {
-     await testSetup.auction4Reputation.initialize(testSetup.org.avatar.address,
-                                                     _auctionReputationReward,
-                                                     testSetup.auctionsStartTime,
-                                                     testSetup.auctionPeriod,
-                                                     _numberOfAuctions,
-                                                     testSetup.redeemEnableTime,
-                                                     testSetup.biddingToken.address,
-                                                     testSetup.org.avatar.address,
-                                                     testSetup.agreementHash,
-                                                     {gas : constants.ARC_GAS_LIMIT});
-   }
+   testSetup.auction4ReputationParams = new Auction4ReputationParams();
+
+   testSetup.auction4ReputationParams.initdata = await new web3.eth.Contract(registration.auction4Reputation.abi)
+   .methods
+   .initialize(testSetup.org.avatar.address,
+    _auctionReputationReward,
+    testSetup.auctionsStartTime,
+    testSetup.auctionPeriod,
+    _numberOfAuctions,
+    testSetup.redeemEnableTime,
+    testSetup.biddingToken.address,
+    testSetup.org.avatar.address,
+    testSetup.agreementHash)
+   .encodeABI();
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.auction4Reputation.address],[permissions],"metaData");
+   tx = await registration.daoFactory.setSchemes(
+    testSetup.org.avatar.address,
+    [web3.utils.fromAscii("ContributionReward")],
+    testSetup.auction4Reputation.initdata,
+    [helpers.getBytesLength(testSetup.auction4Reputation.initdata)],
+    [permissions],
+    "metaData",{from:testSetup.proxyAdmin});
    await testSetup.biddingToken.approve(testSetup.auction4Reputation.address,web3.utils.toWei('100', "ether"));
    return testSetup;
 };

@@ -8,7 +8,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
- * @title A scheme for proposing a signal on behalkf of the daoCreator
+ * @title A scheme for proposing a signal on behalkf of the dao
  */
 
 contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
