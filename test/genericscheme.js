@@ -1,68 +1,85 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
 const GenericScheme = artifacts.require('./GenericScheme.sol');
-const DaoCreator = artifacts.require("./DaoCreator.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ActionMock = artifacts.require("./ActionMock.sol");
 const Wallet = artifacts.require("./Wallet.sol");
+
 
 export class GenericSchemeParams {
   constructor() {
   }
 }
 
+var registration;
 const setupGenericSchemeParams = async function(
-                                            genericScheme,
-                                            accounts,
-                                            contractToCall,
-                                            genesisProtocol = false,
-                                            tokenAddress = 0,
-                                            avatar
+                                              accounts,
+                                              genesisProtocol,
+                                              token,
+                                              avatarAddress,
+                                              contractToCall
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
-  if (genesisProtocol === true){
-      genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress,helpers.NULL_ADDRESS);
-      await genericScheme.initialize(
-            avatar.address,
-            genericSchemeParams.votingMachine.genesisProtocol.address,
-            genericSchemeParams.votingMachine.params,
-            contractToCall);
-    }
-  else {
-      genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,genericScheme.address);
-      await genericScheme.initialize(
-            avatar.address,
-            genericSchemeParams.votingMachine.absoluteVote.address,
-            genericSchemeParams.votingMachine.params,
-            contractToCall);
+
+  if (genesisProtocol === true) {
+    genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
+    genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericScheme.abi)
+                          .methods
+                          .initialize(avatarAddress,
+                            genericSchemeParams.votingMachine.genesisProtocol.address,
+                            genericSchemeParams.votingMachine.params,
+                            contractToCall)
+                          .encodeABI();
+    } else {
+  genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+  genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericScheme.abi)
+                        .methods
+                        .initialize(avatarAddress,
+                          genericSchemeParams.votingMachine.absoluteVote.address,
+                          genericSchemeParams.votingMachine.params,
+                          contractToCall)
+                        .encodeABI();
   }
   return genericSchemeParams;
 };
 
 const setup = async function (accounts,contractToCall = 0,reputationAccount=0,genesisProtocol = false,tokenAddress=0) {
-   var testSetup = new helpers.TestSetup();
-   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
-   testSetup.genericScheme = await GenericScheme.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.reputationArray = [20,10,70];
-   if (reputationAccount === 0) {
-     testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
-   } else {
-     testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
-   }
-   testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.genericScheme,accounts,contractToCall,genesisProtocol,tokenAddress,testSetup.org.avatar);
-   var permissions = "0x00000010";
+  var testSetup = new helpers.TestSetup();
+  testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
+  registration = await helpers.registerImplementation();
+  testSetup.reputationArray = [20,10,70];
+  var account2;
+  if (reputationAccount === 0) {
+     account2 = accounts[2];
+  } else {
+     account2 = reputationAccount;
+  }
+  testSetup.proxyAdmin = accounts[5];
+  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                      accounts,
+                                                                      registration,
+                                                                      [accounts[0],
+                                                                      accounts[1],
+                                                                      account2],
+                                                                      [1000,0,0],
+                                                                      testSetup.reputationArray);
+  testSetup.genericSchemeParams= await setupGenericSchemeParams(
+                     accounts,
+                     genesisProtocol,
+                     tokenAddress,
+                     testSetup.org.avatar.address,
+                     contractToCall
+                     );
 
-
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
-                                        [testSetup.genericScheme.address],
-                                        [permissions],"metaData");
-
-   return testSetup;
+  var permissions = "0x0000001f";
+  var tx = await registration.daoFactory.setSchemes(
+                          testSetup.org.avatar.address,
+                          [web3.utils.fromAscii("GenericScheme")],
+                          testSetup.genericSchemeParams.initdata,
+                          [helpers.getBytesLength(testSetup.genericSchemeParams.initdata)],
+                          [permissions],
+                          "metaData",{from:testSetup.proxyAdmin});
+  testSetup.genericScheme = await GenericScheme.at(tx.logs[1].args._scheme);
+  return testSetup;
 };
 
 const createCallToActionMock = async function(_avatar,_actionMock) {

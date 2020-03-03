@@ -1,51 +1,67 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
 const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
-const DaoCreator = artifacts.require("./DaoCreator.sol");
 const SchemeMock = artifacts.require('./SchemeMock.sol');
 const Controller = artifacts.require('./Controller.sol');
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-
-
 
 export class SchemeRegistrarParams {
   constructor() {
   }
 }
 
+var registration;
 const setupSchemeRegistrarParams = async function(
-                                            schemeRegistrar,
                                             avatarAddress
                                             ) {
   var schemeRegistrarParams = new SchemeRegistrarParams();
-  schemeRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,schemeRegistrar.address);
-  await schemeRegistrar.initialize(avatarAddress,schemeRegistrarParams.votingMachine.absoluteVote.address,schemeRegistrarParams.votingMachine.params,schemeRegistrarParams.votingMachine.params);
+
+  schemeRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+  schemeRegistrarParams.initdata = await new web3.eth.Contract(registration.schemeRegistrar.abi)
+                        .methods
+                        .initialize(avatarAddress,
+                          schemeRegistrarParams.votingMachine.absoluteVote.address,
+                          schemeRegistrarParams.votingMachine.params,
+                          schemeRegistrarParams.votingMachine.params)
+                        .encodeABI();
   return schemeRegistrarParams;
 };
 
 const setup = async function (accounts) {
-   var testSetup = new helpers.TestSetup();
-   testSetup.fee = 10;
-   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
-   testSetup.schemeRegistrar = await SchemeRegistrar.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.reputationArray = [20,40,70];
-   testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
-   testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(testSetup.schemeRegistrar,testSetup.org.avatar.address);
-   var permissions = "0x0000001F";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.schemeRegistrar.address],[permissions],"metaData");
+  var testSetup = new helpers.TestSetup();
+  testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
+  registration = await helpers.registerImplementation();
+  testSetup.reputationArray = [2000,4000,7000];
+  testSetup.proxyAdmin = accounts[5];
+  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                      accounts,
+                                                                      registration,
+                                                                      [accounts[0],
+                                                                      accounts[1],
+                                                                      accounts[2]],
+                                                                      [1000,0,0],
+                                                                      testSetup.reputationArray);
+  testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(
+                     testSetup.org.avatar.address);
 
-   return testSetup;
+  var permissions = "0x0000001f";
+  var tx = await registration.daoFactory.setSchemes(
+                          testSetup.org.avatar.address,
+                          [web3.utils.fromAscii("SchemeRegistrar")],
+                          testSetup.schemeRegistrarParams.initdata,
+                          [helpers.getBytesLength(testSetup.schemeRegistrarParams.initdata)],
+                          [permissions],
+                          "metaData",{from:testSetup.proxyAdmin});
+
+  testSetup.schemeRegistrar = await SchemeRegistrar.at(tx.logs[1].args._scheme);
+  return testSetup;
 };
 contract('SchemeRegistrar', accounts => {
 
    it("initialize", async() => {
-     var schemeRegistrar = await SchemeRegistrar.new();
-     var params = await setupSchemeRegistrarParams(schemeRegistrar,helpers.SOME_ADDRESS);
-     assert.equal(await schemeRegistrar.votingMachine(),params.votingMachine.absoluteVote.address);
+     var testSetup = await setup(accounts);
+     assert.equal(await testSetup.schemeRegistrar.votingMachine(),
+     testSetup.schemeRegistrarParams.votingMachine.absoluteVote.address);
+     assert.equal(await testSetup.schemeRegistrar.avatar(),testSetup.org.avatar.address);
      });
 
     it("proposeScheme log", async function() {
@@ -74,6 +90,7 @@ contract('SchemeRegistrar', accounts => {
       var testSetup = await setup(accounts);
       var universalScheme = await SchemeMock.new();
       var tx = await testSetup.schemeRegistrar.proposeScheme(universalScheme.address,"0x00000000",helpers.NULL_HASH);
+
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});

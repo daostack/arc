@@ -7,6 +7,27 @@ import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.so
 import "../libs/SafeERC20.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
+
+//Proxy contracts cannot recive eth via fallback function.
+//For now , we will use this vault to overcome that
+contract Vault is Ownable {
+    event ReceiveEther(address indexed _sender, uint256 _value);
+
+    /**
+    * @dev enables this contract to receive ethers
+    */
+    function() external payable {
+        emit ReceiveEther(msg.sender, msg.value);
+    }
+
+    function sendEther(uint256 _amountInWei, address payable _to) external onlyOwner returns(bool) {
+      // solhint-disable-next-line avoid-call-value
+        (bool success, ) = _to.call.value(_amountInWei)("");
+        require(success, "sendEther failed.");
+    }
+}
+
+
 /**
  * @title An Avatar holds tokens, reputation and ether for a controller
  */
@@ -16,20 +37,24 @@ contract Avatar is Initializable, Ownable {
     string public orgName;
     DAOToken public nativeToken;
     Reputation public nativeReputation;
+    Vault public vault;
 
     event GenericCall(address indexed _contract, bytes _data, uint _value, bool _success);
     event SendEther(uint256 _amountInWei, address indexed _to);
     event ExternalTokenTransfer(address indexed _externalToken, address indexed _to, uint256 _value);
     event ExternalTokenTransferFrom(address indexed _externalToken, address _from, address _to, uint256 _value);
     event ExternalTokenApproval(address indexed _externalToken, address _spender, uint256 _value);
-    event ReceiveEther(address indexed _sender, uint256 _value);
     event MetaData(string _metaData);
 
     /**
     * @dev enables an avatar to receive ethers
     */
     function() external payable {
-        emit ReceiveEther(msg.sender, msg.value);
+        if (msg.sender != address(vault)) {
+      // solhint-disable-next-line avoid-call-value
+            (bool success, ) = address(vault).call.value(msg.value)("");
+            require(success, "sendEther failed.");
+        }
     }
 
     /**
@@ -46,6 +71,8 @@ contract Avatar is Initializable, Ownable {
         nativeToken = _nativeToken;
         nativeReputation = _nativeReputation;
         Ownable.initialize(_owner);
+        vault = new Vault();
+        vault.initialize(address(this));
     }
 
     /**
@@ -60,7 +87,10 @@ contract Avatar is Initializable, Ownable {
     external
     onlyOwner
     returns(bool success, bytes memory returnValue) {
-      // solhint-disable-next-line avoid-call-value
+        if (_value > 0) {
+            vault.sendEther(_value, address(this));
+        }
+        // solhint-disable-next-line avoid-call-value
         (success, returnValue) = _contract.call.value(_value)(_data);
         emit GenericCall(_contract, _data, _value, success);
     }
@@ -72,7 +102,7 @@ contract Avatar is Initializable, Ownable {
     * @return bool which represents success
     */
     function sendEther(uint256 _amountInWei, address payable _to) external onlyOwner returns(bool) {
-        _to.transfer(_amountInWei);
+        vault.sendEther(_amountInWei, _to);
         emit SendEther(_amountInWei, _to);
         return true;
     }

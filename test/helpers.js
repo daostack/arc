@@ -16,6 +16,11 @@ const Package = artifacts.require("./Package.sol");
 var ImplementationDirectory = artifacts.require("./ImplementationDirectory.sol");
 var Controller = artifacts.require("./Controller.sol");
 const ContributionReward = artifacts.require("./ContributionReward.sol");
+const Competition = artifacts.require("./Competition.sol");
+const ContributionRewardExt = artifacts.require("./ContributionRewardExt.sol");
+const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
+const GenericScheme = artifacts.require("./GenericScheme.sol");
+const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -145,6 +150,11 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.schemeMock = await SchemeMock.new();
   registration.wallet = await Wallet.new();
   registration.contributionReward = await ContributionReward.new();
+  registration.competition = await Competition.new();
+  registration.contributionRewardExt = await ContributionRewardExt.new();
+  registration.schemeRegistrar = await SchemeRegistrar.new();
+  registration.genericScheme = await GenericScheme.new();
+  registration.upgradeScheme = await UpgradeScheme.new();
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
   await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
@@ -152,6 +162,14 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("SchemeMock",registration.schemeMock.address);
   await implementationDirectory.setImplementation("Wallet",registration.wallet.address);
   await implementationDirectory.setImplementation("ContributionReward",registration.contributionReward.address);
+  await implementationDirectory.setImplementation("Competition",registration.competition.address);
+  await implementationDirectory.setImplementation("ContributionRewardExt",registration.contributionRewardExt.address);
+  await implementationDirectory.setImplementation("SchemeRegistrar",registration.schemeRegistrar.address);
+  await implementationDirectory.setImplementation("GenericScheme",registration.genericScheme.address);
+  await implementationDirectory.setImplementation("UpgradeScheme",registration.upgradeScheme.address);
+
+
+
   return registration;
 };
 
@@ -161,7 +179,7 @@ export const registerImplementation = async function (version = [0,1,0]) {
   registration.app = await App.new();
   registration = await registrationAddVersionToPackege(registration,version);
   registration.daoFactory = await DAOFactory.new({gas:constants.ARC_GAS_LIMIT});
-  registration.daoFactory.initialize(registration.app.address);
+  await registration.daoFactory.initialize(registration.app.address);
   return registration;
 };
 
