@@ -169,6 +169,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("SchemeRegistrar",registration.schemeRegistrar.address);
   await implementationDirectory.setImplementation("GenericScheme",registration.genericScheme.address);
   await implementationDirectory.setImplementation("UpgradeScheme",registration.upgradeScheme.address);
+  await implementationDirectory.setImplementation("Auction4Reputation",registration.auction4Reputation.address);
 
 
 

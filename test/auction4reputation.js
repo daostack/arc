@@ -51,13 +51,15 @@ const setup = async function (accounts,
     testSetup.agreementHash)
    .encodeABI();
    var permissions = "0x00000000";
-   tx = await registration.daoFactory.setSchemes(
+
+   var tx = await registration.daoFactory.setSchemes(
     testSetup.org.avatar.address,
-    [web3.utils.fromAscii("ContributionReward")],
+    [web3.utils.fromAscii("Auction4Reputation")],
     testSetup.auction4ReputationParams.initdata,
     [helpers.getBytesLength(testSetup.auction4ReputationParams.initdata)],
     [permissions],
     "metaData",{from:testSetup.proxyAdmin});
+   testSetup.auction4Reputation = await Auction4Reputation.at(tx.logs[1].args._scheme);
    await testSetup.biddingToken.approve(testSetup.auction4Reputation.address,web3.utils.toWei('100', "ether"));
    return testSetup;
 };
@@ -198,16 +200,6 @@ contract('Auction4Reputation', accounts => {
       assert.equal(await testSetup.biddingToken.balanceOf(testSetup.auction4Reputation.address),web3.utils.toWei('0', "ether"));
       assert.equal(await testSetup.biddingToken.balanceOf(testSetup.org.avatar.address),web3.utils.toWei('1', "ether"));
 
-    });
-
-    it("bid without initialize should fail", async () => {
-      let testSetup = await setup(accounts,100,0,3000,3,3000,helpers.SOME_HASH,false);
-      try {
-        await testSetup.auction4Reputation.bid(web3.utils.toWei('1', "ether"),0, testSetup.agreementHash);
-        assert(false, "bid without initialize should fail");
-      } catch(error) {
-        helpers.assertVMException(error);
-      }
     });
 
     it("bid with wrong agreementHash should fail", async () => {
