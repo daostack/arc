@@ -1,7 +1,4 @@
 const helpers = require("./helpers");
-const DaoCreator = artifacts.require("./DaoCreator.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-const constants = require("./constants");
 var ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
 var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
 
