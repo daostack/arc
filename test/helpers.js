@@ -22,6 +22,8 @@ const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 const GenericScheme = artifacts.require("./GenericScheme.sol");
 const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
 const Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
+const ContinuousLocking4Reputation = artifacts.require("./ContinuousLocking4Reputation.sol");
+
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -157,6 +159,8 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.genericScheme = await GenericScheme.new();
   registration.upgradeScheme = await UpgradeScheme.new();
   registration.auction4Reputation = await Auction4Reputation.new();
+  registration.continuousLocking4Reputation = await ContinuousLocking4Reputation.new();
+
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
   await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
@@ -170,6 +174,8 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("GenericScheme",registration.genericScheme.address);
   await implementationDirectory.setImplementation("UpgradeScheme",registration.upgradeScheme.address);
   await implementationDirectory.setImplementation("Auction4Reputation",registration.auction4Reputation.address);
+  await implementationDirectory.setImplementation("ContinuousLocking4Reputation",registration.continuousLocking4Reputation.address);
+
 
 
 
