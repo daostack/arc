@@ -5,37 +5,70 @@ const constants = require("./constants");
 var ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
 var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
 
-const setup = async function (accounts,_repAllocation = 100,_claimingStartTime = 0,_claimingEndTime = 3000,_redeemEnableTime = 3000, _agreementHash = helpers.SOME_HASH, _initialize = true) {
+
+export class ExternalLocking4ReputationParams {
+  constructor() {
+  }
+}
+
+const setup = async function (accounts,
+                             _repAllocation = 100,
+                             _claimingStartTime = 0,
+                             _claimingEndTime = 3000,
+                             _redeemEnableTime = 3000,
+                             _agreementHash = helpers.SOME_HASH,
+                             _initialize = true) {
    var testSetup = new helpers.TestSetup();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
+   testSetup.proxyAdmin = accounts[5];
+   var registration = await helpers.registerImplementation();
+   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(
+     testSetup.proxyAdmin,
+     accounts,
+     registration,
+     [accounts[0]],
+     [1000],
+     [1000]
+  );
 
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   var block = await web3.eth.getBlock("latest");
-   testSetup.lockingEndTime = block.timestamp + _claimingEndTime;
-   testSetup.lockingStartTime = block.timestamp + _claimingStartTime;
-   testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
-   testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
-   await testSetup.extetnalTokenLockerMock.initialize(accounts[0]);
-   await testSetup.extetnalTokenLockerMock.lock(100,accounts[0]);
-   await testSetup.extetnalTokenLockerMock.lock(200,accounts[1]);
-   await testSetup.extetnalTokenLockerMock.lock(300,accounts[2]);
-   testSetup.agreementHash = _agreementHash;
 
-   testSetup.externalLocking4Reputation = await ExternalLocking4Reputation.new();
-   if (_initialize === true) {
-     await testSetup.externalLocking4Reputation.initialize(testSetup.org.avatar.address,
-                                                             _repAllocation,
-                                                             testSetup.lockingStartTime,
-                                                             testSetup.lockingEndTime,
-                                                             testSetup.redeemEnableTime,
-                                                             testSetup.extetnalTokenLockerMock.address,
-                                                             "lockedTokenBalances(address)",
-                                                             testSetup.agreementHash);
-   }
+  var block = await web3.eth.getBlock("latest");
+  testSetup.lockingEndTime = block.timestamp + _claimingEndTime;
+  testSetup.lockingStartTime = block.timestamp + _claimingStartTime;
+  testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
+  testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
+  await testSetup.extetnalTokenLockerMock.initialize(accounts[0]);
+  await testSetup.extetnalTokenLockerMock.lock(100,accounts[0]);
+  await testSetup.extetnalTokenLockerMock.lock(200,accounts[1]);
+  await testSetup.extetnalTokenLockerMock.lock(300,accounts[2]);
+  testSetup.agreementHash = _agreementHash;
+
+  testSetup.externalLocking4ReputationParams = new ExternalLocking4ReputationParams();
+  if (_initialize === true) {
+   testSetup.externalLocking4ReputationParams.initdata = await new web3.eth.Contract(registration.externalLocking4Reputation.abi)
+   .methods
+   .initialize(testSetup.org.avatar.address,
+                _repAllocation,
+                testSetup.lockingStartTime,
+                testSetup.lockingEndTime,
+                testSetup.redeemEnableTime,
+                testSetup.extetnalTokenLockerMock.address,
+                "lockedTokenBalances(address)",
+                testSetup.agreementHash)
+               .encodeABI();
+    } else {
+      testSetup.externalLocking4ReputationParams.initdata = Buffer.from('');
+    }
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.externalLocking4Reputation.address],[permissions],"metaData");
+
+   var tx = await registration.daoFactory.setSchemes(
+    testSetup.org.avatar.address,
+    [web3.utils.fromAscii("ExternalLocking4Reputation")],
+    testSetup.externalLocking4ReputationParams.initdata,
+    [helpers.getBytesLength(testSetup.externalLocking4ReputationParams.initdata)],
+    [permissions],
+    "metaData",{from:testSetup.proxyAdmin});
+   testSetup.externalLocking4Reputation = await ExternalLocking4Reputation.at(tx.logs[1].args._scheme);
    return testSetup;
 };
 

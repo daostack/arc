@@ -23,6 +23,8 @@ const GenericScheme = artifacts.require("./GenericScheme.sol");
 const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
 const Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
 const ContinuousLocking4Reputation = artifacts.require("./ContinuousLocking4Reputation.sol");
+const ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
+
 
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -160,6 +162,8 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.upgradeScheme = await UpgradeScheme.new();
   registration.auction4Reputation = await Auction4Reputation.new();
   registration.continuousLocking4Reputation = await ContinuousLocking4Reputation.new();
+  registration.externalLocking4Reputation = await ExternalLocking4Reputation.new();
+
 
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
@@ -175,9 +179,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("UpgradeScheme",registration.upgradeScheme.address);
   await implementationDirectory.setImplementation("Auction4Reputation",registration.auction4Reputation.address);
   await implementationDirectory.setImplementation("ContinuousLocking4Reputation",registration.continuousLocking4Reputation.address);
-
-
-
+  await implementationDirectory.setImplementation("ExternalLocking4Reputation",registration.externalLocking4Reputation.address);
 
   return registration;
 };
