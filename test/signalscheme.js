@@ -39,7 +39,6 @@ const setupSignalSchemeParam = async function(
 
 const setup = async function (accounts,genesisProtocol = false) {
    var testSetup = new helpers.TestSetup();
-   testSetup.signalScheme = await SignalScheme.new();
    registration = await helpers.registerImplementation();
 
    if (genesisProtocol) {

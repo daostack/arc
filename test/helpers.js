@@ -30,6 +30,7 @@ const FixedReputationAllocation = artifacts.require("./FixedReputationAllocation
 const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar.sol");
 const SignalScheme = artifacts.require("./SignalScheme.sol");
 const ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
+const VoteInOrganization = artifacts.require("./VoteInOrganizationScheme.sol");
 
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -174,6 +175,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
   registration.signalScheme = await SignalScheme.new();
   registration.reputationFromToken = await ReputationFromToken.new();
+  registration.voteInOrganization = await VoteInOrganization.new();
 
 
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
@@ -197,6 +199,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("GlobalConstraintRegistrar",registration.globalConstraintRegistrar.address);
   await implementationDirectory.setImplementation("SignalScheme",registration.signalScheme.address);
   await implementationDirectory.setImplementation("ReputationFromToken",registration.reputationFromToken.address);
+  await implementationDirectory.setImplementation("VoteInOrganization",registration.voteInOrganization.address);
 
   return registration;
 };
