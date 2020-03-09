@@ -1,8 +1,5 @@
 const helpers = require('./helpers');
-const DaoCreator = artifacts.require("./DaoCreator.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
-const constants = require('./constants');
 var ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
 var RepAllocation = artifacts.require("./RepAllocation.sol");
 var PolkaCurve = artifacts.require("./PolkaCurve.sol");
@@ -11,12 +8,23 @@ var NectarRepAllocation = artifacts.require("./NectarRepAllocation.sol");
 const NectarToken = artifacts.require('./Reputation.sol');
 var ethereumjs = require('ethereumjs-abi');
 
+export class ReputationFromTokenParams {
+  constructor() {
+  }
+}
+
+var registration;
+
 const setupNectar = async function (accounts)  {
   var testSetup = new helpers.TestSetup();
-  var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-  
-  testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-  testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
+  registration = await helpers.registerImplementation();
+  testSetup.proxyAdmin = accounts[5];
+  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                      accounts,
+                                                                      registration,
+                                                                      [accounts[0]],
+                                                                      [1000],
+                                                                      [1000]);
   testSetup.nectarToken = await NectarToken.new();
   await testSetup.nectarToken.initialize(accounts[0]);
   await testSetup.nectarToken.mint(accounts[0],100);
@@ -33,22 +41,40 @@ const setupNectar = async function (accounts)  {
 
   testSetup.reputationFromToken = await ReputationFromToken.new();
   testSetup.curve = helpers.NULL_ADDRESS;
-  await testSetup.reputationFromToken.initialize(testSetup.org.avatar.address,
-                                                   testSetup.nectarRepAllocation.address,
-                                                   helpers.NULL_ADDRESS);
+
+  testSetup.reputationFromTokenParams = new ReputationFromTokenParams();
+  testSetup.reputationFromTokenParams.initdata = await new web3.eth.Contract(registration.reputationFromToken.abi)
+  .methods
+  .initialize(testSetup.org.avatar.address,
+    testSetup.nectarRepAllocation.address,
+    helpers.NULL_ADDRESS)
+  .encodeABI();
 
 
   var permissions = "0x00000000";
-  await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[permissions],"metaData");
-  return testSetup;
+  var tx = await registration.daoFactory.setSchemes(
+    testSetup.org.avatar.address,
+    [web3.utils.fromAscii("ReputationFromToken")],
+    testSetup.reputationFromTokenParams.initdata,
+    [helpers.getBytesLength(testSetup.reputationFromTokenParams.initdata)],
+    [permissions],
+    "metaData",
+    {from:testSetup.proxyAdmin});
+
+   testSetup.reputationFromToken = await ReputationFromToken.at(tx.logs[1].args._scheme); 
+   return testSetup;
 };
 
-const setup = async function (accounts, _initialize = true) {
+const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
+   registration = await helpers.registerImplementation();
+   testSetup.proxyAdmin = accounts[5];
+   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                       accounts,
+                                                                       registration,
+                                                                       [accounts[0]],
+                                                                       [1000],
+                                                                       [1000]);
    testSetup.repAllocation = await RepAllocation.new();
    await testSetup.repAllocation.initialize(accounts[0]);
    await testSetup.repAllocation.addBeneficiary(accounts[0],100);
@@ -57,14 +83,27 @@ const setup = async function (accounts, _initialize = true) {
 
    testSetup.reputationFromToken = await ReputationFromToken.new();
    testSetup.curve = await PolkaCurve.new();
-   if (_initialize === true) {
-     await testSetup.reputationFromToken.initialize(testSetup.org.avatar.address,
-                                                    testSetup.repAllocation.address,
-                                                    testSetup.curve.address);
-   }
+   
+   testSetup.reputationFromTokenParams = new ReputationFromTokenParams();
+
+    testSetup.reputationFromTokenParams.initdata = await new web3.eth.Contract(registration.reputationFromToken.abi)
+    .methods
+    .initialize(testSetup.org.avatar.address,
+      testSetup.repAllocation.address,
+      testSetup.curve.address)
+    .encodeABI();
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.reputationFromToken.address],[permissions],"metaData");
+   var tx = await registration.daoFactory.setSchemes(
+    testSetup.org.avatar.address,
+    [web3.utils.fromAscii("ReputationFromToken")],
+    testSetup.reputationFromTokenParams.initdata,
+    [helpers.getBytesLength(testSetup.reputationFromTokenParams.initdata)],
+    [permissions],
+    "metaData",
+    {from:testSetup.proxyAdmin});
+
+   testSetup.reputationFromToken = await ReputationFromToken.at(tx.logs[1].args._scheme); 
    return testSetup;
 };
 const signatureType = 1;
