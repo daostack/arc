@@ -1,12 +1,11 @@
 const helpers = require('./helpers');
-const DaoCreator = artifacts.require("./DaoCreator.sol");
-
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const constants = require('./constants');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var ContinuousLocking4Reputation = artifacts.require("./ContinuousLocking4Reputation.sol");
-
-
+export class ContinuousLocking4ReputationParams {
+  constructor() {
+  }
+}
 const setup = async function (accounts,
                              _initialize = true,
                              _reputationReward = 850000,
@@ -18,45 +17,67 @@ const setup = async function (accounts,
                              _repRewardConstB = 900,
                              _periodsCap = 100,
                              _agreementHash = helpers.SOME_HASH
-                           ) {
+                           )
+  {
    var testSetup = new helpers.TestSetup();
+   testSetup.proxyAdmin = accounts[5];
+   var registration = await helpers.registerImplementation();
    testSetup.lockingToken = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(
+     testSetup.proxyAdmin,
+     accounts,
+     registration,
+     [accounts[0]],
+     [1000],
+     [1000]
+  );
 
-   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
-   testSetup.startTime = (await web3.eth.getBlock("latest")).timestamp + _startTime;
-   testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
-   testSetup.continuousLocking4Reputation = await ContinuousLocking4Reputation.new();
-   testSetup.periodsUnit = _periodsUnit;
-   testSetup.agreementHash = _agreementHash;
-   testSetup.maxLockingPeriod = _maxLockingPeriod;
 
-   testSetup.repRewardConstA = _repRewardConstA;
-   testSetup.repRewardConstB = _repRewardConstB;
-   testSetup.reputationReward = _reputationReward;
-   testSetup.periodsCap = _periodsCap;
-   if (_initialize === true ) {
-     await testSetup.continuousLocking4Reputation.initialize(testSetup.org.avatar.address,
-                                                     testSetup.reputationReward,
-                                                     testSetup.startTime,
-                                                     testSetup.periodsUnit,
-                                                     testSetup.redeemEnableTime,
-                                                     testSetup.maxLockingPeriod,
-                                                     testSetup.repRewardConstA,
-                                                     testSetup.repRewardConstB,
-                                                     testSetup.periodsCap,
-                                                     testSetup.lockingToken.address,
-                                                     testSetup.agreementHash,
-                                                     {gas : constants.ARC_GAS_LIMIT});
-   }
+  testSetup.startTime = (await web3.eth.getBlock("latest")).timestamp + _startTime;
+  testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
+  testSetup.continuousLocking4Reputation = await ContinuousLocking4Reputation.new();
+  testSetup.periodsUnit = _periodsUnit;
+  testSetup.agreementHash = _agreementHash;
+  testSetup.maxLockingPeriod = _maxLockingPeriod;
+  testSetup.repRewardConstA = _repRewardConstA;
+  testSetup.repRewardConstB = _repRewardConstB;
+  testSetup.reputationReward = _reputationReward;
+  testSetup.periodsCap = _periodsCap;
+
+  testSetup.continuousLocking4ReputationParams = new ContinuousLocking4ReputationParams();
+  if (_initialize === true) {
+   testSetup.continuousLocking4ReputationParams.initdata = await new web3.eth.Contract(registration.continuousLocking4Reputation.abi)
+   .methods
+   .initialize(testSetup.org.avatar.address,
+               testSetup.reputationReward,
+               testSetup.startTime,
+               testSetup.periodsUnit,
+               testSetup.redeemEnableTime,
+               testSetup.maxLockingPeriod,
+               testSetup.repRewardConstA,
+               testSetup.repRewardConstB,
+               testSetup.periodsCap,
+               testSetup.lockingToken.address,
+               testSetup.agreementHash)
+               .encodeABI();
+    } else {
+      testSetup.continuousLocking4ReputationParams.initdata = Buffer.from('');
+    }
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.continuousLocking4Reputation.address],[permissions],"metaData");
+
+   var tx = await registration.daoFactory.setSchemes(
+    testSetup.org.avatar.address,
+    [web3.utils.fromAscii("ContinuousLocking4Reputation")],
+    testSetup.continuousLocking4ReputationParams.initdata,
+    [helpers.getBytesLength(testSetup.continuousLocking4ReputationParams.initdata)],
+    [permissions],
+    "metaData",{from:testSetup.proxyAdmin});
+   testSetup.continuousLocking4Reputation = await ContinuousLocking4Reputation.at(tx.logs[1].args._scheme);
    await testSetup.lockingToken.approve(testSetup.continuousLocking4Reputation.address,web3.utils.toWei('100', "ether"));
    return testSetup;
 };
+
 
 contract('ContinuousLocking4Reputation', accounts => {
     it("initialize", async () => {

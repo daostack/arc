@@ -21,6 +21,18 @@ const ContributionRewardExt = artifacts.require("./ContributionRewardExt.sol");
 const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 const GenericScheme = artifacts.require("./GenericScheme.sol");
 const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
+const Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
+const LockingEth4Reputation = artifacts.require("./LockingEth4Reputation.sol");
+const LockingToken4Reputation = artifacts.require("./LockingToken4Reputation.sol");
+const ContinuousLocking4Reputation = artifacts.require("./ContinuousLocking4Reputation.sol");
+const ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
+const FixedReputationAllocation = artifacts.require("./FixedReputationAllocation.sol");
+const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar.sol");
+const SignalScheme = artifacts.require("./SignalScheme.sol");
+const ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
+const VoteInOrganization = artifacts.require("./VoteInOrganizationScheme.sol");
+const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallbacksMock.sol");
+
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -155,6 +167,19 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.schemeRegistrar = await SchemeRegistrar.new();
   registration.genericScheme = await GenericScheme.new();
   registration.upgradeScheme = await UpgradeScheme.new();
+  registration.auction4Reputation = await Auction4Reputation.new();
+  registration.lockingEth4Reputation = await LockingEth4Reputation.new();
+  registration.lockingToken4Reputation = await LockingToken4Reputation.new();
+  registration.continuousLocking4Reputation = await ContinuousLocking4Reputation.new();
+  registration.externalLocking4Reputation = await ExternalLocking4Reputation.new();
+  registration.fixedReputationAllocation = await FixedReputationAllocation.new();
+  registration.globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
+  registration.signalScheme = await SignalScheme.new();
+  registration.reputationFromToken = await ReputationFromToken.new();
+  registration.voteInOrganization = await VoteInOrganization.new();
+  registration.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
+
+
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
   await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
@@ -167,8 +192,17 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("SchemeRegistrar",registration.schemeRegistrar.address);
   await implementationDirectory.setImplementation("GenericScheme",registration.genericScheme.address);
   await implementationDirectory.setImplementation("UpgradeScheme",registration.upgradeScheme.address);
-
-
+  await implementationDirectory.setImplementation("Auction4Reputation",registration.auction4Reputation.address);
+  await implementationDirectory.setImplementation("LockingEth4Reputation",registration.lockingEth4Reputation.address);
+  await implementationDirectory.setImplementation("LockingToken4Reputation",registration.lockingToken4Reputation.address);
+  await implementationDirectory.setImplementation("ContinuousLocking4Reputation",registration.continuousLocking4Reputation.address);
+  await implementationDirectory.setImplementation("ExternalLocking4Reputation",registration.externalLocking4Reputation.address);
+  await implementationDirectory.setImplementation("FixedReputationAllocation",registration.fixedReputationAllocation.address);
+  await implementationDirectory.setImplementation("GlobalConstraintRegistrar",registration.globalConstraintRegistrar.address);
+  await implementationDirectory.setImplementation("SignalScheme",registration.signalScheme.address);
+  await implementationDirectory.setImplementation("ReputationFromToken",registration.reputationFromToken.address);
+  await implementationDirectory.setImplementation("VoteInOrganization",registration.voteInOrganization.address);
+  await implementationDirectory.setImplementation("ARCVotingMachineCallbacksMock",registration.arcVotingMachineCallbacksMock.address);
 
   return registration;
 };
@@ -241,24 +275,10 @@ export const setupGenesisProtocol = async function (
   return votingMachine;
 };
 
-export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
-  var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,cap,{gas: constants.ARC_GAS_LIMIT});
-  assert.equal(tx.logs.length, 1);
-  assert.equal(tx.logs[0].event, "NewOrg");
-  var avatarAddress = tx.logs[0].args._avatar;
-  org.avatar = await Avatar.at(avatarAddress);
-  var tokenAddress = await org.avatar.nativeToken();
-  org.token = await DAOToken.at(tokenAddress);
-  var reputationAddress = await org.avatar.nativeReputation();
-  org.reputation = await Reputation.at(reputationAddress);
-  return org;
-};
-
 export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
                                                                      accounts,
                                                                      registration,
-                                                                     daoCreatorOwner,
+                                                                     daoFactoryOwner,
                                                                      founderToken,
                                                                      founderReputation,
                                                                      cap=0) {
@@ -269,7 +289,7 @@ export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
                         .encodeABI();
   var tx = await registration.daoFactory.forgeOrg("testOrg",
                                                   nativeTokenData,
-                                                  daoCreatorOwner,
+                                                  daoFactoryOwner,
                                                   founderToken,
                                                   founderReputation,
                                                   [0,0,0],
@@ -284,21 +304,6 @@ export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
   org.reputation = await Reputation.at(reputationAddress);
   return org;
 };
-
-export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
-  var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],cap,{gas: constants.ARC_GAS_LIMIT});
-  assert.equal(tx.logs.length, 1);
-  assert.equal(tx.logs[0].event, "NewOrg");
-  var avatarAddress = tx.logs[0].args._avatar;
-  org.avatar = await Avatar.at(avatarAddress);
-  var tokenAddress = await org.avatar.nativeToken();
-  org.token = await DAOToken.at(tokenAddress);
-  var reputationAddress = await org.avatar.nativeReputation();
-  org.reputation = await Reputation.at(reputationAddress);
-  return org;
-};
-
 
 export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
   let voteInfo;

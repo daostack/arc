@@ -1,22 +1,15 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
 const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar.sol");
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
-const DaoCreator = artifacts.require("./DaoCreator.sol");
 const Controller = artifacts.require("./Controller.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-
-
-
 
 export class GlobalConstraintRegistrarParams {
   constructor() {
   }
 }
-
+var registration;
 const setupGlobalConstraintRegistrarParams = async function(
-
                                             globalConstraintRegistrar,
                                             accounts,
                                             genesisProtocol,
@@ -26,52 +19,62 @@ const setupGlobalConstraintRegistrarParams = async function(
   var globalConstraintRegistrarParams = new GlobalConstraintRegistrarParams();
   if (genesisProtocol === true) {
     globalConstraintRegistrarParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
-    await globalConstraintRegistrar.initialize(avatarAddress,
+    globalConstraintRegistrarParams.initdata = await new web3.eth.Contract(registration.globalConstraintRegistrar.abi)
+                                               .methods
+                                               .initialize(avatarAddress,
                                                globalConstraintRegistrarParams.votingMachine.genesisProtocol.address,
-                                                globalConstraintRegistrarParams.votingMachine.params
-                                               );
+                                               globalConstraintRegistrarParams.votingMachine.params)
+                                               .encodeABI();
     } else {
-  globalConstraintRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,globalConstraintRegistrar.address);
-  await globalConstraintRegistrar.initialize(   avatarAddress,
-                                                globalConstraintRegistrarParams.votingMachine.absoluteVote.address,
-                                                globalConstraintRegistrarParams.votingMachine.params,
-                                                );
+  globalConstraintRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+  globalConstraintRegistrarParams.initdata = await new web3.eth.Contract(registration.globalConstraintRegistrar.abi)
+                                             .methods
+                                             .initialize(avatarAddress,
+                                             globalConstraintRegistrarParams.votingMachine.absoluteVote.address,
+                                             globalConstraintRegistrarParams.votingMachine.params)
+                                             .encodeABI();
   }
   return globalConstraintRegistrarParams;
 };
 
 const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
-   var testSetup = new helpers.TestSetup();
-   testSetup.fee = 10;
-   testSetup.globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+  var testSetup = new helpers.TestSetup();
+  testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100000);
+  registration = await helpers.registerImplementation();
    testSetup.reputationArray = [20,10,70];
-   testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
+   testSetup.proxyAdmin = accounts[5];
+   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                       accounts,
+                                                                       registration,
+                                                                       [accounts[0],
+                                                                       accounts[1],
+                                                                       accounts[2]],
+                                                                       [1000,0,0],
+                                                                       testSetup.reputationArray);
+
    testSetup.globalConstraintRegistrarParams= await setupGlobalConstraintRegistrarParams(testSetup.globalConstraintRegistrar,
                                                                                          accounts,
                                                                                          genesisProtocol,
                                                                                          tokenAddress,
-                                                                                          testSetup.org.avatar.address);
+                                                                                         testSetup.org.avatar.address);
    var permissions = "0x00000004";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
-                                          [testSetup.globalConstraintRegistrar.address],
-                                          [permissions],"metaData");
+   var tx = await registration.daoFactory.setSchemes(
+                           testSetup.org.avatar.address,
+                           [web3.utils.fromAscii("GlobalConstraintRegistrar")],
+                           testSetup.globalConstraintRegistrarParams.initdata,
+                           [helpers.getBytesLength(testSetup.globalConstraintRegistrarParams.initdata)],
+                           [permissions],
+                           "metaData",{from:testSetup.proxyAdmin});
+
+   testSetup.globalConstraintRegistrar = await GlobalConstraintRegistrar.at(tx.logs[1].args._scheme);
 
    return testSetup;
 };
 contract('GlobalConstraintRegistrar', accounts => {
 
    it("initialize", async ()=> {
-     var globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
-     var params = await setupGlobalConstraintRegistrarParams(globalConstraintRegistrar,
-                                                             accounts,
-                                                             false,
-                                                             helpers.SOME_ADDRESS,
-                                                             helpers.SOME_ADDRESS);
-
-     assert.equal(await globalConstraintRegistrar.votingMachine(),params.votingMachine.absoluteVote.address);
+     var testSetup = await setup(accounts);
+     assert.equal(await testSetup.globalConstraintRegistrar.votingMachine(),testSetup.globalConstraintRegistrarParams.votingMachine.absoluteVote.address);
      });
 
     it("proposeGlobalConstraint voteToRemoveParams", async function() {
@@ -220,7 +223,7 @@ contract('GlobalConstraintRegistrar', accounts => {
                                                                       helpers.NULL_HASH);
       proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       var rep = await testSetup.org.reputation.balanceOf(accounts[2]);
-      await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{gas: constants.ARC_GAS_LIMIT, from:accounts[2]});
+      await testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       await helpers.checkVoteInfo(testSetup.globalConstraintRegistrarParams.votingMachine.genesisProtocol,proposalId,accounts[2],[1,rep.toNumber()]);
      });
 

@@ -1,23 +1,18 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
-const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
-const VoteInOrganizationScheme = artifacts.require('./VoteInOrganizationScheme.sol');
+const VoteInOrganization = artifacts.require('./VoteInOrganizationScheme.sol');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
-const DaoCreator = artifacts.require("./DaoCreator.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
 const AbsoluteVoteExecuteMock = artifacts.require("./AbsoluteVoteExecuteMock.sol");
 const GenesisProtocolCallbacksMock = artifacts.require("./GenesisProtocolCallbacksMock.sol");
 const Reputation = artifacts.require("./Reputation.sol");
-const Controller = artifacts.require("./Controller.sol");
 
 export class VoteInOrganizationParams {
   constructor() {
   }
 }
 
+var registration;
 const setupVoteInOrganizationParams = async function(
-                                            voteInOrganization,
                                             accounts,
                                             genesisProtocol = false,
                                             tokenAddress = 0,
@@ -27,18 +22,21 @@ const setupVoteInOrganizationParams = async function(
     voteInOrganizationParams.paramsHash = helpers.NULL_HASH;
   if (genesisProtocol === true){
     voteInOrganizationParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress,helpers.NULL_ADDRESS);
-    await voteInOrganization.initialize(   avatarAddress,
-                                           voteInOrganizationParams.votingMachine.genesisProtocol.address,
-                                           voteInOrganizationParams.votingMachine.params
-                                           );
-
+    voteInOrganizationParams.initdata = await new web3.eth.Contract(registration.voteInOrganization.abi)
+      .methods
+      .initialize(avatarAddress,
+        voteInOrganizationParams.votingMachine.genesisProtocol.address,
+        voteInOrganizationParams.votingMachine.params)
+      .encodeABI();
     }
   else {
       voteInOrganizationParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
-      await voteInOrganization.initialize(avatarAddress,
-                                 voteInOrganizationParams.votingMachine.absoluteVote.address,
-                                 voteInOrganizationParams.votingMachine.params
-                                             );
+      voteInOrganizationParams.initdata = await new web3.eth.Contract(registration.voteInOrganization.abi)
+      .methods
+      .initialize(avatarAddress,
+        voteInOrganizationParams.votingMachine.absoluteVote.address,
+        voteInOrganizationParams.votingMachine.params)
+      .encodeABI();
   }
 
   return voteInOrganizationParams;
@@ -48,27 +46,41 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
-   testSetup.voteInOrganization = await VoteInOrganizationScheme.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   registration = await helpers.registerImplementation();
    testSetup.reputationArray = [200,100,700];
+   testSetup.proxyAdmin = accounts[5];
    if (reputationAccount === 0) {
-     testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
+    testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+      accounts,
+      registration,
+      [accounts[0],accounts[1],accounts[2]],
+      [1000,1000,1000],
+      testSetup.reputationArray);
    } else {
-     testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
+    testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+      accounts,
+      registration,
+      [accounts[0],accounts[1],reputationAccount],
+      [1000,1000,1000],
+      testSetup.reputationArray);
    }
 
-   testSetup.voteInOrganizationParams= await setupVoteInOrganizationParams(testSetup.voteInOrganization,
+   testSetup.voteInOrganizationParams= await setupVoteInOrganizationParams(
                                                                            accounts,
                                                                            genesisProtocol,
                                                                            tokenAddress,
                                                                            testSetup.org.avatar.address);
    var permissions = "0x00000010";
 
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
-                                        [testSetup.voteInOrganization.address,accounts[3]],
-                                        [permissions,permissions],"metaData");
+   var tx = await registration.daoFactory.setSchemes(
+    testSetup.org.avatar.address,
+    [web3.utils.fromAscii("VoteInOrganization")],
+    testSetup.voteInOrganizationParams.initdata,
+    [helpers.getBytesLength(testSetup.voteInOrganizationParams.initdata)],
+    [permissions],
+    "metaData",{from:testSetup.proxyAdmin});
+
+    testSetup.voteInOrganization = await VoteInOrganization.at(tx.logs[1].args._scheme);
 
    return testSetup;
 };
@@ -77,20 +89,6 @@ contract('VoteInOrganizationScheme', accounts => {
   before(function() {
      helpers.etherForEveryone(accounts);
   });
-   it("initialize", async() => {
-     var voteInOrganization = await VoteInOrganizationScheme.new();
-     var absoluteVote = await AbsoluteVote.new();
-     await voteInOrganization.initialize(helpers.SOME_ADDRESS,absoluteVote.address,"0x1234");
-
-     assert.equal(await voteInOrganization.votingMachine(),absoluteVote.address);
-     try {
-          await voteInOrganization.initialize(helpers.SOME_ADDRESS,absoluteVote.address,"0x1234");
-          assert(false, "cannot initialize twice");
-        } catch(error) {
-          helpers.assertVMException(error);
-        }
-     });
-
 
      it("proposeVote log", async function() {
        var testSetup = await setup(accounts);
@@ -141,10 +139,8 @@ contract('VoteInOrganizationScheme', accounts => {
     it("execute proposeVote -positive decision - proposal data delete", async function() {
       var testSetup = await setup(accounts);
 
-      var anotherTestSetup =  await setup(accounts);
-      var anotherController = await Controller.at(await anotherTestSetup.org.reputation.owner());
+      var anotherTestSetup =  await setup(accounts,testSetup.org.avatar.address);
       //mint reputation to avatar in the other dao.
-      await anotherController.mintReputation(10000,testSetup.org.avatar.address,{from:accounts[3]});
       var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new();
       await absoluteVoteExecuteMock.initialize(anotherTestSetup.org.reputation.address,
                                                anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
