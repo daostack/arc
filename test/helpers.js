@@ -28,6 +28,7 @@ const ContinuousLocking4Reputation = artifacts.require("./ContinuousLocking4Repu
 const ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
 const FixedReputationAllocation = artifacts.require("./FixedReputationAllocation.sol");
 const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar.sol");
+const SignalScheme = artifacts.require("./SignalScheme.sol");
 
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -170,6 +171,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.externalLocking4Reputation = await ExternalLocking4Reputation.new();
   registration.fixedReputationAllocation = await FixedReputationAllocation.new();
   registration.globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
+  registration.signalScheme = await SignalScheme.new();
 
 
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
@@ -191,6 +193,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("ExternalLocking4Reputation",registration.externalLocking4Reputation.address);
   await implementationDirectory.setImplementation("FixedReputationAllocation",registration.fixedReputationAllocation.address);
   await implementationDirectory.setImplementation("GlobalConstraintRegistrar",registration.globalConstraintRegistrar.address);
+  await implementationDirectory.setImplementation("SignalScheme",registration.signalScheme.address);
 
 
   return registration;

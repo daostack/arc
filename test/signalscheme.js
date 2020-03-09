@@ -1,18 +1,15 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
 const SignalScheme = artifacts.require("./SignalScheme.sol");
-const DaoCreator = artifacts.require("./DaoCreator.sol");
 
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
 export class SignalSchemeParams {
   constructor() {
   }
 }
 
+var registration;
 
 const setupSignalSchemeParam = async function(
-                                            signalScheme,
                                             accounts,
                                             genesisProtocol,
                                             avatar
@@ -20,16 +17,22 @@ const setupSignalSchemeParam = async function(
   var signalSchemeParams = new SignalSchemeParams();
   if (genesisProtocol === true) {
     signalSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,avatar,helpers.NULL_ADDRESS);
-    await signalScheme.initialize(   avatar.address,
-                                           1234,
-                                           setupSignalSchemeParam.votingMachine.params,
-                                           setupSignalSchemeParam.votingMachine.genesisProtocol.address);
+    signalSchemeParams.initdata = await new web3.eth.Contract(registration.signalScheme.abi)
+    .methods
+    .initialize(   avatar.address,
+     1234,
+     setupSignalSchemeParam.votingMachine.params,
+     setupSignalSchemeParam.votingMachine.genesisProtocol.address)
+    .encodeABI();
     } else {
-    signalSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,signalScheme.address);
-    await signalScheme.initialize(   avatar.address,
-                                           1234,
-                                           signalSchemeParams.votingMachine.params,
-                                           signalSchemeParams.votingMachine.absoluteVote.address);
+      signalSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+      signalSchemeParams.initdata = await new web3.eth.Contract(registration.signalScheme.abi)
+                                                .methods
+                                                .initialize(   avatar.address,
+                                                  1234,
+                                                  signalSchemeParams.votingMachine.params,
+                                                  signalSchemeParams.votingMachine.absoluteVote.address)
+                                                .encodeABI();
   }
   return signalSchemeParams;
 };
@@ -37,24 +40,37 @@ const setupSignalSchemeParam = async function(
 const setup = async function (accounts,genesisProtocol = false) {
    var testSetup = new helpers.TestSetup();
    testSetup.signalScheme = await SignalScheme.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
+   registration = await helpers.registerImplementation();
+
    if (genesisProtocol) {
       testSetup.reputationArray = [1000,100,0];
    } else {
       testSetup.reputationArray = [2000,4000,7000];
    }
-   testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
-   testSetup.signalSchemeParams= await setupSignalSchemeParam(
-                      testSetup.signalScheme,
+   testSetup.proxyAdmin = accounts[5];
+   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                       accounts,
+                                                                       registration,
+                                                                       [accounts[0],
+                                                                       accounts[1],
+                                                                       accounts[2]],
+                                                                       [1000,0,0],
+                                                                       testSetup.reputationArray);
+
+  testSetup.signalSchemeParams= await setupSignalSchemeParam(
                       accounts,
                       genesisProtocol,
                       testSetup.org.avatar);
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
-                                        [testSetup.signalScheme.address],
-                                        [permissions],"metaData");
+   var tx = await registration.daoFactory.setSchemes(
+    testSetup.org.avatar.address,
+    [web3.utils.fromAscii("SignalScheme")],
+    testSetup.signalSchemeParams.initdata,
+    [helpers.getBytesLength(testSetup.signalSchemeParams.initdata)],
+    [permissions],
+    "metaData",{from:testSetup.proxyAdmin});
+
+    testSetup.signalScheme = await SignalScheme.at(tx.logs[1].args._scheme);
    return testSetup;
 };
 contract('SignalScheme', accounts => {
