@@ -31,6 +31,7 @@ const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar
 const SignalScheme = artifacts.require("./SignalScheme.sol");
 const ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
 const VoteInOrganization = artifacts.require("./VoteInOrganizationScheme.sol");
+const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallbacksMock.sol");
 
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -176,6 +177,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.signalScheme = await SignalScheme.new();
   registration.reputationFromToken = await ReputationFromToken.new();
   registration.voteInOrganization = await VoteInOrganization.new();
+  registration.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
 
 
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
@@ -200,6 +202,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("SignalScheme",registration.signalScheme.address);
   await implementationDirectory.setImplementation("ReputationFromToken",registration.reputationFromToken.address);
   await implementationDirectory.setImplementation("VoteInOrganization",registration.voteInOrganization.address);
+  await implementationDirectory.setImplementation("ARCVotingMachineCallbacksMock",registration.arcVotingMachineCallbacksMock.address);
 
   return registration;
 };
