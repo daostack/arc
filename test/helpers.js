@@ -23,6 +23,7 @@ const GenericScheme = artifacts.require("./GenericScheme.sol");
 const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
 const Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
 const LockingEth4Reputation = artifacts.require("./LockingEth4Reputation.sol");
+const LockingToken4Reputation = artifacts.require("./LockingToken4Reputation.sol");
 const ContinuousLocking4Reputation = artifacts.require("./ContinuousLocking4Reputation.sol");
 const ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation.sol");
 const FixedReputationAllocation = artifacts.require("./FixedReputationAllocation.sol");
@@ -164,6 +165,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.upgradeScheme = await UpgradeScheme.new();
   registration.auction4Reputation = await Auction4Reputation.new();
   registration.lockingEth4Reputation = await LockingEth4Reputation.new();
+  registration.lockingToken4Reputation = await LockingToken4Reputation.new();
   registration.continuousLocking4Reputation = await ContinuousLocking4Reputation.new();
   registration.externalLocking4Reputation = await ExternalLocking4Reputation.new();
   registration.fixedReputationAllocation = await FixedReputationAllocation.new();
@@ -184,6 +186,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("UpgradeScheme",registration.upgradeScheme.address);
   await implementationDirectory.setImplementation("Auction4Reputation",registration.auction4Reputation.address);
   await implementationDirectory.setImplementation("LockingEth4Reputation",registration.lockingEth4Reputation.address);
+  await implementationDirectory.setImplementation("LockingToken4Reputation",registration.lockingToken4Reputation.address);
   await implementationDirectory.setImplementation("ContinuousLocking4Reputation",registration.continuousLocking4Reputation.address);
   await implementationDirectory.setImplementation("ExternalLocking4Reputation",registration.externalLocking4Reputation.address);
   await implementationDirectory.setImplementation("FixedReputationAllocation",registration.fixedReputationAllocation.address);

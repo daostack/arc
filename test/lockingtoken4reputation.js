@@ -1,11 +1,15 @@
 const helpers = require('./helpers');
-const DaoCreator = artifacts.require("./DaoCreator.sol");
-const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
-const constants = require('./constants');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var LockingToken4Reputation = artifacts.require("./LockingToken4Reputation.sol");
 const PriceOracleMock = artifacts.require('./test/PriceOracleMock.sol');
+
+export class LockingToken4ReputationParams {
+  constructor() {
+  }
+}
+
+var registration;
 
 const setup = async function (accounts,
                              _repAllocation = 100,
@@ -13,15 +17,21 @@ const setup = async function (accounts,
                              _lockingEndTime = 3000,
                              _redeemEnableTime = 3000,
                              _maxLockingPeriod = 6000,
-                             _agreementHash = helpers.SOME_HASH,
-                             _initialize = true) {
+                             _agreementHash = helpers.SOME_HASH) {
    var testSetup = new helpers.TestSetup();
+   registration = await helpers.registerImplementation();
    testSetup.lockingToken = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
    testSetup.lockingToken2 = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
    
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,{gas:constants.ARC_GAS_LIMIT});
-   testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
+
+   testSetup.proxyAdmin = accounts[5];
+   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                       accounts,
+                                                                       registration,
+                                                                       [accounts[0]],
+                                                                       [1000],
+                                                                       [1000]);
+                                                                       
    testSetup.lockingEndTime = (await web3.eth.getBlock("latest")).timestamp + _lockingEndTime;
    testSetup.lockingStartTime = (await web3.eth.getBlock("latest")).timestamp + _lockingStartTime;
    testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
@@ -33,19 +43,34 @@ const setup = async function (accounts,
    await testSetup.priceOracleMock.setTokenPrice(testSetup.lockingToken.address,100,4);
    await testSetup.priceOracleMock.setTokenPrice(testSetup.lockingToken2.address,200,4);
 
-   if (_initialize === true) {
-      await testSetup.lockingToken4Reputation.initialize(testSetup.org.avatar.address,
-                                                           _repAllocation,
-                                                           testSetup.lockingStartTime,
-                                                           testSetup.lockingEndTime,
-                                                           testSetup.redeemEnableTime,
-                                                           _maxLockingPeriod,
-                                                           testSetup.priceOracleMock.address,
-                                                           testSetup.agreementHash);
-  }
+  testSetup.lockingToken4ReputationParams = new LockingToken4ReputationParams();
+
+   testSetup.lockingToken4ReputationParams.initdata = await new web3.eth.Contract(registration.lockingToken4Reputation.abi)
+   .methods
+   .initialize(testSetup.org.avatar.address,
+    _repAllocation,
+    testSetup.lockingStartTime,
+    testSetup.lockingEndTime,
+    testSetup.redeemEnableTime,
+    _maxLockingPeriod,
+    testSetup.priceOracleMock.address,
+    testSetup.agreementHash)
+   .encodeABI();
+
 
    var permissions = "0x00000000";
-   await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,[testSetup.lockingToken4Reputation.address],[permissions],"metaData");
+
+   var tx = await registration.daoFactory.setSchemes(
+    testSetup.org.avatar.address,
+    [web3.utils.fromAscii("LockingToken4Reputation")],
+    testSetup.lockingToken4ReputationParams.initdata,
+    [helpers.getBytesLength(testSetup.lockingToken4ReputationParams.initdata)],
+    [permissions],
+    "metaData",
+    {from:testSetup.proxyAdmin});
+
+   testSetup.lockingToken4Reputation = await LockingToken4Reputation.at(tx.logs[1].args._scheme);
+   
    await testSetup.lockingToken.approve(testSetup.lockingToken4Reputation.address,web3.utils.toWei('100', "ether"));
    return testSetup;
 };
@@ -101,16 +126,6 @@ contract('LockingToken4Reputation', accounts => {
       assert.equal(await testSetup.lockingToken4Reputation.totalScore(),100*web3.utils.toWei('1', "ether")*100/4);
       await testSetup.lockingToken4Reputation.lock(web3.utils.toWei('1', "ether"),100,testSetup.lockingToken.address,testSetup.agreementHash);
       assert.equal(await testSetup.lockingToken4Reputation.totalScore(),2*100*web3.utils.toWei('1', "ether")*100/4);
-    });
-
-    it("cannot lock without initialize", async () => {
-      let testSetup = await setup(accounts,100,0,3000,3000,6000,helpers.SOME_HASH,false);
-      try {
-        await testSetup.lockingToken4Reputation.lock(web3.utils.toWei('1', "ether"),100,testSetup.lockingToken.address,testSetup.agreementHash);
-        assert(false, "cannot lock without initialize");
-      } catch(error) {
-        helpers.assertVMException(error);
-      }
     });
 
     it("cannot lock with wrong agreementHash", async () => {
