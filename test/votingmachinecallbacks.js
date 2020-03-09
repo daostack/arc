@@ -1,5 +1,4 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 
 const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallbacksMock.sol");

@@ -1,12 +1,10 @@
 import * as helpers from './helpers';
-const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const VoteInOrganization = artifacts.require('./VoteInOrganizationScheme.sol');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 
 const AbsoluteVoteExecuteMock = artifacts.require("./AbsoluteVoteExecuteMock.sol");
 const GenesisProtocolCallbacksMock = artifacts.require("./GenesisProtocolCallbacksMock.sol");
 const Reputation = artifacts.require("./Reputation.sol");
-const Controller = artifacts.require("./Controller.sol");
 
 export class VoteInOrganizationParams {
   constructor() {

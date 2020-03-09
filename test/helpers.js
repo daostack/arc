@@ -275,24 +275,10 @@ export const setupGenesisProtocol = async function (
   return votingMachine;
 };
 
-export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
-  var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,cap,{gas: constants.ARC_GAS_LIMIT});
-  assert.equal(tx.logs.length, 1);
-  assert.equal(tx.logs[0].event, "NewOrg");
-  var avatarAddress = tx.logs[0].args._avatar;
-  org.avatar = await Avatar.at(avatarAddress);
-  var tokenAddress = await org.avatar.nativeToken();
-  org.token = await DAOToken.at(tokenAddress);
-  var reputationAddress = await org.avatar.nativeReputation();
-  org.reputation = await Reputation.at(reputationAddress);
-  return org;
-};
-
 export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
                                                                      accounts,
                                                                      registration,
-                                                                     daoCreatorOwner,
+                                                                     daoFactoryOwner,
                                                                      founderToken,
                                                                      founderReputation,
                                                                      cap=0) {
@@ -303,7 +289,7 @@ export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
                         .encodeABI();
   var tx = await registration.daoFactory.forgeOrg("testOrg",
                                                   nativeTokenData,
-                                                  daoCreatorOwner,
+                                                  daoFactoryOwner,
                                                   founderToken,
                                                   founderReputation,
                                                   [0,0,0],
@@ -318,21 +304,6 @@ export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
   org.reputation = await Reputation.at(reputationAddress);
   return org;
 };
-
-export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
-  var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],cap,{gas: constants.ARC_GAS_LIMIT});
-  assert.equal(tx.logs.length, 1);
-  assert.equal(tx.logs[0].event, "NewOrg");
-  var avatarAddress = tx.logs[0].args._avatar;
-  org.avatar = await Avatar.at(avatarAddress);
-  var tokenAddress = await org.avatar.nativeToken();
-  org.token = await DAOToken.at(tokenAddress);
-  var reputationAddress = await org.avatar.nativeReputation();
-  org.reputation = await Reputation.at(reputationAddress);
-  return org;
-};
-
 
 export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
   let voteInfo;
