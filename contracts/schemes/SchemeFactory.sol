@@ -9,9 +9,8 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title A factory and registrar for Schemes for organizations
- * @dev The SchemeFactory is used for deploying and registering schemes at organizations
+ * @dev The SchemeFactory is used for deploying and registering schemes to organisations
  */
-
 contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
     event NewSchemeProposal(
         address indexed _avatar,
@@ -28,8 +27,8 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
-    // a SchemeProposal is a  proposal to add or remove a scheme to/from the an organization
-    struct SchemeProposal {
+    // a proposal to add or remove a scheme to/from the an organization
+    struct Proposal {
         string schemeName;
         bytes schemeData;
         uint64[3] packageVersion;
@@ -37,7 +36,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
         bytes4 permissions;
     }
 
-    mapping(bytes32=>SchemeProposal) public organizationProposals;
+    mapping(bytes32=>Proposal) public proposals;
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
@@ -75,21 +74,21 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
     external
     onlyVotingMachine(_proposalId)
     returns(bool) {
-        SchemeProposal memory proposal = organizationProposals[_proposalId];
-        require(bytes(proposal.schemeName).length != 0);
-        delete organizationProposals[_proposalId];
+        Proposal memory proposal = proposals[_proposalId];
+        delete proposals[_proposalId];
         emit ProposalDeleted(address(avatar), _proposalId);
+        Controller controller = Controller(avatar.owner());
         if (_decision == 1) {
-            // Define controller and get the params:
-            Controller controller = Controller(avatar.owner());
+            if (bytes(proposal.schemeName).length > 0) {
+                address scheme = address(daoFactory.createInstance(
+                                        proposal.packageVersion,
+                                        proposal.schemeName,
+                                        address(avatar),
+                                        proposal.schemeData));
 
-            address scheme = address(daoFactory.createInstance(
-                                proposal.packageVersion,
-                                proposal.schemeName,
-                                address(avatar),
-                                proposal.schemeData));
+                require(controller.registerScheme(scheme, proposal.permissions), "faild to register new scheme");
+            }
 
-            require(controller.registerScheme(scheme, proposal.permissions), "faild to register new scheme");
 
             if (proposal.schemeToReplace != address(0) && controller.isSchemeRegistered(proposal.schemeToReplace)) {
                 require(controller.unregisterScheme(proposal.schemeToReplace), "faild to unregister old scheme");
@@ -108,7 +107,6 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
     * @param _schemeToReplace address of scheme to replace with the new scheme (zero for none)
     * @param _descriptionHash proposal's description hash
     * @return a proposal Id
-    * @dev NB: not only proposes the vote, but also votes for it
     */
     function proposeScheme(
         uint64[3] memory _packageVersion,
@@ -121,18 +119,20 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
     public
     returns(bytes32)
     {
-        // propose
-        require(
-            daoFactory.getImplementation(_packageVersion, _schemeName) != address(0),
-            "scheme name does not exist in Arc"
-        );
-
-        if (_schemeToReplace != address(0)) {
+        if (bytes(_schemeName).length > 0) {
+            // propose
+            require(
+                daoFactory.getImplementation(_packageVersion, _schemeName) != address(0),
+                "scheme name does not exist in Arc"
+            );
+        } else if (_schemeToReplace != address(0)) {
             Controller controller = Controller(avatar.owner());
             require(
                 controller.isSchemeRegistered(_schemeToReplace),
                 "scheme to replace is not registered in the organization"
             );
+        } else {
+            revert("proposal must have a scheme name to reister or address to unregister");
         }
 
         bytes32 proposalId = votingMachine.propose(
@@ -142,7 +142,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
             address(avatar)
         );
 
-        SchemeProposal memory proposal = SchemeProposal({
+        Proposal memory proposal = Proposal({
             schemeName: _schemeName,
             schemeData: _schemeData,
             packageVersion: _packageVersion,
@@ -162,7 +162,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
             _descriptionHash
         );
 
-        organizationProposals[proposalId] = proposal;
+        proposals[proposalId] = proposal;
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
             blockNumber:block.number,
             avatar:avatar

@@ -118,23 +118,43 @@ contract('SchemeFactory', accounts => {
       assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),false);
      });
 
-       it("execute proposeScheme - no decision (same for remove scheme) - proposal data delete", async function() {
-        var testSetup = await setup(accounts);
-        var tx = await testSetup.schemeFactory.proposeScheme(
-          [0,1,0],
-          'SchemeFactory',
-          testSetup.schemeFactoryParams.initdata,
-          "0x0000001f",
-          helpers.NULL_ADDRESS,
-          helpers.NULL_HASH);
-  
-        //Vote with reputation to trigger execution
-        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+     it("execute proposeScheme and execute -yes - unregister scheme", async function() {
+      var testSetup = await setup(accounts);
+      var tx = await testSetup.schemeFactory.proposeScheme(
+        [0,0,0],
+        '',
+        '0x',
+        "0x00000000",
+        testSetup.schemeFactory.address,
+        helpers.NULL_HASH);
 
-         //Vote with reputation to trigger execution
-         tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-         //should not register because the decision is "no"
-         let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
-         assert.equal(proxyEvents.length,0);//proposalType
-        });
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      var controller = await Controller.at(await testSetup.org.avatar.owner());
+      assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),true);
+      tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
+      assert.equal(proxyEvents.length,0);
+      assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),false);
+     });
+
+    it("execute proposeScheme - no decision - proposal data delete", async function() {
+    var testSetup = await setup(accounts);
+    var tx = await testSetup.schemeFactory.proposeScheme(
+      [0,1,0],
+      'SchemeFactory',
+      testSetup.schemeFactoryParams.initdata,
+      "0x0000001f",
+      helpers.NULL_ADDRESS,
+      helpers.NULL_HASH);
+
+    //Vote with reputation to trigger execution
+    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+
+      //Vote with reputation to trigger execution
+      tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      //should not register because the decision is "no"
+      let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
+      assert.equal(proxyEvents.length,0);
+    });
 });
