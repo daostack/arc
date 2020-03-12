@@ -177,6 +177,18 @@ contract DAOFactory is Initializable {
         return provider.getImplementation(_contractName);
     }
 
+    function getPackageVersion(uint64[3] memory _version) public view returns(uint64[3] memory version) {
+        Package package;
+        uint64[3] memory latestVersion;
+        (package, latestVersion) = app.getPackage(PACKAGE_NAME);
+        if (package.getContract(_version) == address(0)) {
+            require(package.getContract(latestVersion) != address(0), "ImplementationProvider does not exist");
+            version = latestVersion;
+        } else {
+            version = _version;
+        }
+    }
+
     /**
      * @dev Set initial schemes for the organization.
      * @param _avatar organization avatar (returns from forgeOrg)
@@ -304,18 +316,6 @@ contract DAOFactory is Initializable {
 
         emit NewOrg (address(avatar), address(controller), address(nativeReputation), address(nativeToken));
         return (address(avatar));
-    }
-
-    function getPackageVersion(uint64[3] memory _version) public view returns(uint64[3] memory version) {
-        Package package;
-        uint64[3] memory latestVersion;
-        (package, latestVersion) = app.getPackage(PACKAGE_NAME);
-        if (package.getContract(_version) == address(0)) {
-            require(package.getContract(latestVersion) != address(0), "ImplementationProvider does not exist");
-            version = latestVersion;
-        } else {
-            version = _version;
-        }
     }
 
 }

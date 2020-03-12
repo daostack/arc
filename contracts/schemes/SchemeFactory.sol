@@ -122,11 +122,17 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
     returns(bytes32)
     {
         // propose
-        require(daoFactory.getImplementation(_packageVersion, _schemeName) != address(0), "scheme name does not exist in Arc");
+        require(
+            daoFactory.getImplementation(_packageVersion, _schemeName) != address(0),
+            "scheme name does not exist in Arc"
+        );
 
         if (_schemeToReplace != address(0)) {
             Controller controller = Controller(avatar.owner());
-            require(controller.isSchemeRegistered(_schemeToReplace), "scheme to replace is not registered in the organization");
+            require(
+                controller.isSchemeRegistered(_schemeToReplace),
+                "scheme to replace is not registered in the organization"
+            );
         }
 
         bytes32 proposalId = votingMachine.propose(
