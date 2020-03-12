@@ -70,6 +70,7 @@ contract('SchemeFactory', accounts => {
                                                              'SchemeFactory',
                                                              testSetup.schemeFactoryParams.initdata,
                                                              "0x0000001f",
+                                                             helpers.NULL_ADDRESS,
                                                              helpers.NULL_HASH);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewSchemeProposal");
@@ -82,6 +83,7 @@ contract('SchemeFactory', accounts => {
         'SchemeFactory',
         testSetup.schemeFactoryParams.initdata,
         "0x0000001f",
+        helpers.NULL_ADDRESS,
         helpers.NULL_HASH);
 
       //Vote with reputation to trigger execution
@@ -94,6 +96,28 @@ contract('SchemeFactory', accounts => {
       assert.equal(await controller.schemesPermissions(schemeAddress),"0x0000001f");
      });
 
+     it("execute proposeScheme and execute -yes - replace scheme", async function() {
+      var testSetup = await setup(accounts);
+      var tx = await testSetup.schemeFactory.proposeScheme(
+        [0,1,0],
+        'SchemeFactory',
+        testSetup.schemeFactoryParams.initdata,
+        "0x0000001f",
+        testSetup.schemeFactory.address,
+        helpers.NULL_HASH);
+
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      var controller = await Controller.at(await testSetup.org.avatar.owner());
+      assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),true);
+      tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
+      var schemeAddress = proxyEvents[0].returnValues._proxy;
+      assert.equal(await controller.isSchemeRegistered(schemeAddress),true);
+      assert.equal(await controller.schemesPermissions(schemeAddress),"0x0000001f");
+      assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),false);
+     });
+
        it("execute proposeScheme - no decision (same for remove scheme) - proposal data delete", async function() {
         var testSetup = await setup(accounts);
         var tx = await testSetup.schemeFactory.proposeScheme(
@@ -101,6 +125,7 @@ contract('SchemeFactory', accounts => {
           'SchemeFactory',
           testSetup.schemeFactoryParams.initdata,
           "0x0000001f",
+          helpers.NULL_ADDRESS,
           helpers.NULL_HASH);
   
         //Vote with reputation to trigger execution

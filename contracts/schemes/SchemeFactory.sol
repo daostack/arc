@@ -21,6 +21,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
         bytes _schemeData,
         uint64[3] _packageVersion,
         bytes4 _permissions,
+        address _schemeToReplace,
         string _descriptionHash
     );
 
@@ -32,6 +33,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
         string schemeName;
         bytes schemeData;
         uint64[3] packageVersion;
+        address schemeToReplace;
         bytes4 permissions;
     }
 
@@ -87,10 +89,11 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
                                 address(avatar),
                                 proposal.schemeData));
 
-            require(controller.registerScheme(
-                    scheme,
-                    proposal.permissions)
-            );
+            require(controller.registerScheme(scheme, proposal.permissions), "faild to register new scheme");
+
+            if (proposal.schemeToReplace != address(0) && controller.isSchemeRegistered(proposal.schemeToReplace)) {
+                require(controller.unregisterScheme(proposal.schemeToReplace), "faild to unregister old scheme");
+            }
         }
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
@@ -102,6 +105,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
     * @param _schemeName the name of the scheme to be added
     * @param _schemeData initialize data for the scheme to be added
     * @param _permissions the permission of the scheme to be registered
+    * @param _schemeToReplace address of scheme to replace with the new scheme (zero for none)
     * @param _descriptionHash proposal's description hash
     * @return a proposal Id
     * @dev NB: not only proposes the vote, but also votes for it
@@ -111,6 +115,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
         string memory _schemeName,
         bytes memory _schemeData,
         bytes4 _permissions,
+        address _schemeToReplace,
         string memory _descriptionHash
     )
     public
@@ -118,6 +123,11 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
     {
         // propose
         require(daoFactory.getImplementation(_packageVersion, _schemeName) != address(0), "scheme name does not exist in Arc");
+
+        if (_schemeToReplace != address(0)) {
+            Controller controller = Controller(avatar.owner());
+            require(controller.isSchemeRegistered(_schemeToReplace), "scheme to replace is not registered in the organization");
+        }
 
         bytes32 proposalId = votingMachine.propose(
             2,
@@ -130,6 +140,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
             schemeName: _schemeName,
             schemeData: _schemeData,
             packageVersion: _packageVersion,
+            schemeToReplace: _schemeToReplace,
             permissions: _permissions
         });
 
@@ -141,6 +152,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
             _schemeData,
             _packageVersion,
             _permissions,
+            _schemeToReplace,
             _descriptionHash
         );
 

@@ -106,7 +106,6 @@ export function getValueFromLogs(tx, arg, eventName, index=0) {
   }
   let result = tx.logs[index].args[arg];
   if (!result) {
-    console.log(tx.logs);
     let msg = `getValueFromLogs: This log does not seem to have a field "${arg}": ${tx.logs[index].args}`;
     throw new Error(msg);
   }
