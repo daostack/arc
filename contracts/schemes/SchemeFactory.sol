@@ -123,7 +123,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
             // propose
             require(
                 daoFactory.getImplementation(_packageVersion, _schemeName) != address(0),
-                "scheme name does not exist in Arc"
+                "scheme name does not exist in ArcHive"
             );
         } else if (_schemeToReplace != address(0)) {
             Controller controller = Controller(avatar.owner());
