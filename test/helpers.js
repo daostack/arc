@@ -19,6 +19,7 @@ const ContributionReward = artifacts.require("./ContributionReward.sol");
 const Competition = artifacts.require("./Competition.sol");
 const ContributionRewardExt = artifacts.require("./ContributionRewardExt.sol");
 const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
+const SchemeFactory = artifacts.require("./SchemeFactory.sol");
 const GenericScheme = artifacts.require("./GenericScheme.sol");
 const UpgradeScheme = artifacts.require("./UpgradeScheme.sol");
 const Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
@@ -165,6 +166,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.competition = await Competition.new();
   registration.contributionRewardExt = await ContributionRewardExt.new();
   registration.schemeRegistrar = await SchemeRegistrar.new();
+  registration.schemeFactory = await SchemeFactory.new();
   registration.genericScheme = await GenericScheme.new();
   registration.upgradeScheme = await UpgradeScheme.new();
   registration.auction4Reputation = await Auction4Reputation.new();
@@ -190,6 +192,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("Competition",registration.competition.address);
   await implementationDirectory.setImplementation("ContributionRewardExt",registration.contributionRewardExt.address);
   await implementationDirectory.setImplementation("SchemeRegistrar",registration.schemeRegistrar.address);
+  await implementationDirectory.setImplementation("SchemeFactory",registration.schemeFactory.address);
   await implementationDirectory.setImplementation("GenericScheme",registration.genericScheme.address);
   await implementationDirectory.setImplementation("UpgradeScheme",registration.upgradeScheme.address);
   await implementationDirectory.setImplementation("Auction4Reputation",registration.auction4Reputation.address);
