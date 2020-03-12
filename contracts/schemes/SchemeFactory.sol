@@ -121,7 +121,6 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
     returns(bytes32)
     {
         if (bytes(_schemeName).length > 0) {
-            // propose
             require(
                 daoFactory.getImplementation(_packageVersion, _schemeName) != address(0),
                 "scheme name does not exist in ArcHive"
