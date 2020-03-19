@@ -193,55 +193,17 @@ contract('UpgradeScheme', function(accounts) {
     it("execute proposeVote -positive decision - too many contracts reverts", async function() {
       var testSetup = await setup(accounts);
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+      let contractsNames = [];
+      let contractsToUpgrade = [];
+      for (let i = 0; i < 21; i++) {
+        contractsNames += [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")];
+        contractsToUpgrade += [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address];
+      }
       try {
         await testSetup.upgradeScheme.proposeUpgrade(
           [0, 1, 1],
-          [
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")
-          ],
-          [
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address
-          ],
+          contractsNames,
+          contractsToUpgrade,
           helpers.NULL_HASH
         );
         assert(false, "can upgrade up to 60 contracts at a time");
@@ -351,52 +313,17 @@ contract('UpgradeScheme', function(accounts) {
         await oldImp.getImplementation("Reputation")
       );
 
+      let contractsNames = [];
+      let contractsToUpgrade = [];
+      for (let i = 0; i < 20; i++) {
+        contractsNames += [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")];
+        contractsToUpgrade += [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address];
+      }
+
       var tx = await testSetup.upgradeScheme.proposeUpgrade(
         [0, 1, 1],
-        [
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
-          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")
-        ],
-        [
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
-          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address
-        ],
+        contractsNames,
+        contractsToUpgrade,
         helpers.NULL_HASH
       );
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
