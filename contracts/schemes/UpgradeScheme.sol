@@ -91,8 +91,26 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
         require(proposal.passed == false, "cannot execute twice");
 
         if (_decision == 1) {
-            proposal.passed = true;
-            execute(_proposalId);
+            proposal.exist = false;
+            address[] memory contractsToUpgrade = proposal.contractsToUpgrade;
+            for (uint256 i = 0; i < contractsToUpgrade.length; i++) {
+                bytes32 contractNameBytes = proposal.contractsNames[i];
+                string memory contractName = contractNameBytes.toStr();
+                address updatedImp = ImplementationProvider(
+                    package.getContract(proposal.packageVersion)
+                ).getImplementation(contractName);
+
+                Controller controller = Controller(avatar.owner());
+                controller.genericCall(
+                    contractsToUpgrade[i],
+                    abi.encodeWithSignature("upgradeTo(address)", updatedImp),
+                    0
+                );
+            }
+
+            delete organizationProposals[_proposalId];
+            emit ProposalDeleted(address(avatar), _proposalId);
+            emit ProposalExecuted(address(avatar), _proposalId);
         } else {
             delete organizationProposals[_proposalId];
             emit ProposalDeleted(address(avatar), _proposalId);
@@ -100,36 +118,6 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
 
         emit ProposalExecutedByVotingMachine(address(avatar), _proposalId, _decision);
         return true;
-    }
-
-    /**
-    * @dev execution of proposals after it has been decided by the voting machine
-    * @param _proposalId the ID of the voting in the voting machine
-    */
-    function execute(bytes32 _proposalId) public {
-        Proposal storage proposal = organizationProposals[_proposalId];
-        require(proposal.exist, "must be a live proposal");
-        require(proposal.passed, "proposal must passed by voting machine");
-        proposal.exist = false;
-        address[] memory contractsToUpgrade = proposal.contractsToUpgrade;
-        for (uint256 i = 0; i < contractsToUpgrade.length; i++) {
-            bytes32 contractNameBytes = proposal.contractsNames[i];
-            string memory contractName = contractNameBytes.toStr();
-            address updatedImp = ImplementationProvider(
-                package.getContract(proposal.packageVersion)
-            ).getImplementation(contractName);
-
-            Controller controller = Controller(avatar.owner());
-            controller.genericCall(
-                contractsToUpgrade[i],
-                abi.encodeWithSignature("upgradeTo(address)", updatedImp),
-                0
-            );
-        }
-
-        delete organizationProposals[_proposalId];
-        emit ProposalDeleted(address(avatar), _proposalId);
-        emit ProposalExecuted(address(avatar), _proposalId);
     }
 
     /**
