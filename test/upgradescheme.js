@@ -196,8 +196,8 @@ contract('UpgradeScheme', function(accounts) {
       let contractsNames = [];
       let contractsToUpgrade = [];
       for (let i = 0; i < 21; i++) {
-        contractsNames += [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")];
-        contractsToUpgrade += [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address];
+        contractsNames.push(web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"));
+        contractsToUpgrade.push(testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address);
       }
       try {
         await testSetup.upgradeScheme.proposeUpgrade(
@@ -316,8 +316,8 @@ contract('UpgradeScheme', function(accounts) {
       let contractsNames = [];
       let contractsToUpgrade = [];
       for (let i = 0; i < 20; i++) {
-        contractsNames += [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")];
-        contractsToUpgrade += [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address];
+        contractsNames.push(web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"));
+        contractsToUpgrade.push(testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address);
       }
 
       var tx = await testSetup.upgradeScheme.proposeUpgrade(
