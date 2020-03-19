@@ -30,12 +30,6 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
         bytes32 indexed _proposalId
     );
 
-    event ProposalExecutedByVotingMachine(
-        address indexed _avatar,
-        bytes32 indexed _proposalId,
-        int256 _param
-    );
-
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // Details of a voting proposal:
@@ -44,7 +38,6 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
         bytes32[] contractsNames;
         address[] contractsToUpgrade;
         bool exist;
-        bool passed;
     }
 
     mapping(bytes32=>Proposal) public organizationProposals;
@@ -88,7 +81,6 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     returns(bool) {
         Proposal storage proposal = organizationProposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
-        require(proposal.passed == false, "cannot execute twice");
 
         if (_decision == 1) {
             proposal.exist = false;
@@ -107,16 +99,11 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
                     0
                 );
             }
-
-            delete organizationProposals[_proposalId];
-            emit ProposalDeleted(address(avatar), _proposalId);
-            emit ProposalExecuted(address(avatar), _proposalId);
-        } else {
-            delete organizationProposals[_proposalId];
-            emit ProposalDeleted(address(avatar), _proposalId);
         }
 
-        emit ProposalExecutedByVotingMachine(address(avatar), _proposalId, _decision);
+        delete organizationProposals[_proposalId];
+        emit ProposalDeleted(address(avatar), _proposalId);
+        emit ProposalExecuted(address(avatar), _proposalId);
         return true;
     }
 
@@ -158,8 +145,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
             packageVersion: _packageVersion,
             contractsNames: _contractsNames,
             contractsToUpgrade: _contractsToUpgrade,
-            exist: true,
-            passed: false
+            exist: true
         });
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
             blockNumber:block.number,

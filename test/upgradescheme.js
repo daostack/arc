@@ -115,7 +115,6 @@ contract('UpgradeScheme', function(accounts) {
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
        assert.equal(organizationProposal.exist,false);
-       assert.equal(organizationProposal.passed,false);
     });
 
     it("execute proposeVote -positive decision - proposal data delete", async function() {
@@ -133,13 +132,11 @@ contract('UpgradeScheme', function(accounts) {
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
         var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
         assert.equal(organizationProposal.exist,true);
-        assert.equal(organizationProposal.passed,false);
 
         await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
         //check organizationsProposals after execution
         organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
         assert.equal(organizationProposal.exist,false);
-        assert.equal(organizationProposal.passed,false);
      });
 
     it("execute proposeVote -positive decision - non existing package reverts", async function() {
@@ -226,7 +223,6 @@ contract('UpgradeScheme', function(accounts) {
        await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
        assert.equal(organizationProposal.exist,false);
-       assert.equal(organizationProposal.passed,false); 
        try {
          await testSetup.upgradeScheme.execute(proposalId);
          assert(false, "cannot call execute after it been executed");
@@ -270,7 +266,6 @@ contract('UpgradeScheme', function(accounts) {
       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
       assert.equal(organizationProposal.exist,false);
-      assert.equal(organizationProposal.passed,false); 
       
       let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
       let newImp = await ImplementationProvider.at(newImpAddress);
@@ -331,7 +326,6 @@ contract('UpgradeScheme', function(accounts) {
       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
       assert.equal(organizationProposal.exist,false);
-      assert.equal(organizationProposal.passed,false); 
       
       let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
       let newImp = await ImplementationProvider.at(newImpAddress);
