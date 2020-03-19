@@ -7,12 +7,14 @@ import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
 import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 import "../controller/Controller.sol";
+import "../libs/Bytes32ToStr.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 
 contract DAOFactory is Initializable {
     using BytesLib for bytes;
     using SafeMath for uint256;
+    using Bytes32ToStr for bytes32;
 
     event NewOrg (
         address indexed _avatar,
@@ -216,10 +218,10 @@ contract DAOFactory is Initializable {
         uint256 startIndex =  0;
         for (uint256 i = 0; i < _schemesNames.length; i++) {
             address scheme = address(createInstance(locks[_avatar].packageVersion,
-                                bytes32ToStr(_schemesNames[i]),
+                                _schemesNames[i].toStr(),
                                 _avatar,
                                 _schemesData.slice(startIndex, _schemesInitilizeDataLens[i])));
-            emit SchemeInstance(scheme, bytes32ToStr(_schemesNames[i]));
+            emit SchemeInstance(scheme, _schemesNames[i].toStr());
             controller.registerScheme(scheme, _permissions[i]);
             startIndex = startIndex.add(_schemesInitilizeDataLens[i]);
         }
@@ -229,24 +231,6 @@ contract DAOFactory is Initializable {
          // Remove lock:
         delete locks[_avatar];
         emit InitialSchemesSet(_avatar);
-    }
-
-    function bytes32ToStr(bytes32 x) private pure returns (string memory) {
-        bytes memory bytesString = new bytes(32);
-        uint charCount = 0;
-        uint j;
-        for (j = 0; j < 32; j++) {
-            byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
-            if (char != 0) {
-                bytesString[charCount] = char;
-                charCount++;
-            }
-        }
-        bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j < charCount; j++) {
-            bytesStringTrimmed[j] = bytesString[j];
-        }
-        return string(bytesStringTrimmed);
     }
 
     /**

@@ -158,7 +158,7 @@ contract('ArcUpgradeScheme', function(accounts) {
       }
     });
 
-    it("execute proposeVote -positive decision - non existing package reverts", async function() {
+    it("execute proposeVote -positive decision - non existing contract reverts", async function() {
       var testSetup = await setup(accounts);
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
       try {
@@ -169,6 +169,82 @@ contract('ArcUpgradeScheme', function(accounts) {
           helpers.NULL_HASH
         );
         assert(false, "cannot upgrade to non existing contract name");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("execute proposeVote -positive decision - unequal array lengths reverts", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+      try {
+        await testSetup.arcUpgradeScheme.proposeUpgrade(
+          [0, 1, 1],
+          [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken")],
+          [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+          helpers.NULL_HASH
+        );
+        assert(false, "contract arrays lengths must match");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("execute proposeVote -positive decision - too many contracts reverts", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+      try {
+        await testSetup.arcUpgradeScheme.proposeUpgrade(
+          [0, 1, 1],
+          [
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")
+          ],
+          [
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address
+          ],
+          helpers.NULL_HASH
+        );
+        assert(false, "can upgrade up to 60 contracts at a time");
       } catch(error) {
         helpers.assertVMException(error);
       }
@@ -250,6 +326,103 @@ contract('ArcUpgradeScheme', function(accounts) {
         await newImp.getImplementation("Reputation")
       );
     });
+
+    it("execute proposeVote -positive decision - verify version upgraded up to 60 contracts", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+
+      let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
+      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
+      let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
+
+      let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
+      let oldImp = await ImplementationProvider.at(oldImpAddress);
+
+      assert.equal(
+        await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("Avatar")
+      );
+      assert.equal(
+        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("DAOToken")
+      );
+      assert.equal(
+        await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("Reputation")
+      );
+
+      var tx = await testSetup.arcUpgradeScheme.proposeUpgrade(
+        [0, 1, 1],
+        [
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")
+        ],
+        [
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address
+        ],
+        helpers.NULL_HASH
+      );
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+      await testSetup.arcUpgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      var organizationProposal = await testSetup.arcUpgradeScheme.organizationProposals(proposalId);
+      assert.equal(organizationProposal.exist,false);
+      assert.equal(organizationProposal.passed,false); 
+      
+      let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
+      let newImp = await ImplementationProvider.at(newImpAddress);
+
+      assert.equal(
+        await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("Avatar")
+      );
+      assert.equal(
+        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("DAOToken")
+      );
+      assert.equal(
+        await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("Reputation")
+      );
+    });
+
 
     it("cannot init twice", async function() {
         var testSetup = await setup(accounts);

@@ -3,6 +3,7 @@ pragma solidity ^0.5.16;
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
+import "../libs/Bytes32ToStr.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "@openzeppelin/upgrades/contracts/application/Package.sol";
 import "@openzeppelin/upgrades/contracts/application/ImplementationProvider.sol";
@@ -10,9 +11,11 @@ import "@openzeppelin/upgrades/contracts/application/ImplementationProvider.sol"
 
 /**
  * @title ArcUpgradeScheme.
- * @dev  A scheme for proposing updating the versions DAOs contracts
+ * @dev  A scheme for proposing updates
  */
 contract ArcUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
+    using Bytes32ToStr for bytes32;
+
     event NewUpgradeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -36,7 +39,7 @@ contract ArcUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, I
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
     // Details of a voting proposal:
-    struct UpgradeProposal {
+    struct Proposal {
         uint64[3] packageVersion;
         bytes32[] contractsNames;
         address[] contractsToUpgrade;
@@ -44,7 +47,7 @@ contract ArcUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, I
         bool passed;
     }
 
-    mapping(bytes32=>UpgradeProposal) public organizationProposals;
+    mapping(bytes32=>Proposal) public organizationProposals;
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
@@ -83,7 +86,7 @@ contract ArcUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, I
     external
     onlyVotingMachine(_proposalId)
     returns(bool) {
-        UpgradeProposal storage proposal = organizationProposals[_proposalId];
+        Proposal storage proposal = organizationProposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed == false, "cannot execute twice");
 
@@ -104,14 +107,14 @@ contract ArcUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, I
     * @param _proposalId the ID of the voting in the voting machine
     */
     function execute(bytes32 _proposalId) public {
-        UpgradeProposal storage proposal = organizationProposals[_proposalId];
+        Proposal storage proposal = organizationProposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed, "proposal must passed by voting machine");
         proposal.exist = false;
         address[] memory contractsToUpgrade = proposal.contractsToUpgrade;
         for (uint256 i = 0; i < contractsToUpgrade.length; i++) {
             bytes32 contractNameBytes = proposal.contractsNames[i];
-            string memory contractName = bytes32ToStr(contractNameBytes);
+            string memory contractName = contractNameBytes.toStr();
             address updatedImp = ImplementationProvider(
                 package.getContract(proposal.packageVersion)
             ).getImplementation(contractName);
@@ -146,19 +149,21 @@ contract ArcUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, I
     public
     returns(bytes32)
     {
+        require(_contractsNames.length <= 60, "can upgrade up to 60 contracts at a time");
+        require(_contractsNames.length == _contractsToUpgrade.length, "upgrade name and address arrays must have equal lengths");
         require(package.hasVersion(_packageVersion), "Specified version doesn't exist in the Package");
         for (uint256 i = 0; i < _contractsToUpgrade.length; i++) {
             require(
                 ImplementationProvider(
                     package.getContract(_packageVersion)
-                ).getImplementation(bytes32ToStr(_contractsNames[i])) != address(0),
+                ).getImplementation(_contractsNames[i].toStr()) != address(0),
                 "Contract name does not exist in ArcHive package"
             );
         }
 
         bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
 
-        organizationProposals[proposalId] = UpgradeProposal({
+        organizationProposals[proposalId] = Proposal({
             packageVersion: _packageVersion,
             contractsNames: _contractsNames,
             contractsToUpgrade: _contractsToUpgrade,
@@ -178,23 +183,5 @@ contract ArcUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, I
             _descriptionHash
         );
         return proposalId;
-    }
-
-    function bytes32ToStr(bytes32 x) private pure returns (string memory) {
-        bytes memory bytesString = new bytes(32);
-        uint charCount = 0;
-        uint j;
-        for (j = 0; j < 32; j++) {
-            byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
-            if (char != 0) {
-                bytesString[charCount] = char;
-                charCount++;
-            }
-        }
-        bytes memory bytesStringTrimmed = new bytes(charCount);
-        for (j = 0; j < charCount; j++) {
-            bytesStringTrimmed[j] = bytesString[j];
-        }
-        return string(bytesStringTrimmed);
     }
 }
