@@ -1,74 +1,73 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
-const Controller = artifacts.require("./Controller.sol");
-const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
-const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
-const Avatar = artifacts.require("./Avatar.sol");
-const DAOToken = artifacts.require("./DAOToken.sol");
-const Reputation = artifacts.require("./Reputation.sol");
+const ERC20Mock = artifacts.require("./ERC20Mock.sol");
+const AdminUpgradeabilityProxy = artifacts.require("./AdminUpgradeabilityProxy.sol");
+const ImplementationProvider = artifacts.require("./ImplementationProvider.sol");
 
 export class UpgradeSchemeParams {
   constructor() {
   }
 }
+
 var registration;
 const setupUpgradeSchemeParams = async function(
-                                            avatarAddress
+                                              accounts,
+                                              genesisProtocol,
+                                              token,
+                                              avatarAddress,
                                             ) {
-    var upgradeSchemeParams = new UpgradeSchemeParams();
+  var upgradeSchemeParams = new UpgradeSchemeParams();
 
-    upgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+  if (genesisProtocol === true) {
+    upgradeSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     upgradeSchemeParams.initdata = await new web3.eth.Contract(registration.upgradeScheme.abi)
                           .methods
                           .initialize(avatarAddress,
-                            upgradeSchemeParams.votingMachine.absoluteVote.address,
-                            upgradeSchemeParams.votingMachine.params)
+                            upgradeSchemeParams.votingMachine.genesisProtocol.address,
+                            upgradeSchemeParams.votingMachine.params,
+                            registration.packageInstance.address)
                           .encodeABI();
-    return upgradeSchemeParams;
+    } else {
+      upgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+      upgradeSchemeParams.initdata = await new web3.eth.Contract(registration.upgradeScheme.abi)
+                        .methods
+                        .initialize(avatarAddress,
+                          upgradeSchemeParams.votingMachine.absoluteVote.address,
+                          upgradeSchemeParams.votingMachine.params,
+                          registration.packageInstance.address)
+                        .encodeABI();
+  }
+  return upgradeSchemeParams;
 };
 
-
-const setupNewController = async function (accounts,permission='0x00000000') {
-  var token  = await DAOToken.new();
-  await token.initialize("TEST","TST",0,accounts[0]);
-  // set up a reputation system
-  var reputation = await Reputation.new();
-  await reputation.initialize(accounts[0]);
-  var avatar = await Avatar.new('name', token.address, reputation.address);
-  await avatar.initialize('name', token.address, reputation.address,accounts[0]);
-  var _controller;
-  if (permission !== '0'){
-    _controller = await Controller.new({from:accounts[1],gas: constants.ARC_GAS_LIMIT});
-    await _controller.initialize(avatar.address,accounts[1],{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
-    await _controller.registerScheme(accounts[0],permission,{from:accounts[1]});
-    await _controller.unregisterSelf({from:accounts[1]});
-  }
-  else {
-    _controller = await Controller.new({gas: constants.ARC_GAS_LIMIT});
-    await _controller.initialize(avatar.address,accounts[0]);
-  }
-  return _controller;
-};
-
-
-const setup = async function (accounts) {
+const setup = async function (accounts,reputationAccount=0,genesisProtocol = false,tokenAddress=0) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
   registration = await helpers.registerImplementation();
-  testSetup.reputationArray =  [20,40,70];
+  testSetup.reputationArray = [20,10,70];
+  var account2;
+  if (reputationAccount === 0) {
+     account2 = accounts[2];
+  } else {
+     account2 = reputationAccount;
+  }
   testSetup.proxyAdmin = accounts[5];
   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
                                                                       registration,
                                                                       [accounts[0],
                                                                       accounts[1],
-                                                                      accounts[2]],
+                                                                      account2],
                                                                       [1000,0,0],
                                                                       testSetup.reputationArray);
   testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(
-                     testSetup.org.avatar.address);
-  var permissions = "0x0000000a";
+                     accounts,
+                     genesisProtocol,
+                     tokenAddress,
+                     testSetup.org.avatar.address,
+                     );
+
+  var permissions = "0x0000001f";
   var tx = await registration.daoFactory.setSchemes(
                           testSetup.org.avatar.address,
                           [web3.utils.fromAscii("UpgradeScheme")],
@@ -76,164 +75,370 @@ const setup = async function (accounts) {
                           [helpers.getBytesLength(testSetup.upgradeSchemeParams.initdata)],
                           [permissions],
                           "metaData",{from:testSetup.proxyAdmin});
+  testSetup.registration = registration;
   testSetup.upgradeScheme = await UpgradeScheme.at(tx.logs[1].args._scheme);
   return testSetup;
 };
-contract('UpgradeScheme', accounts => {
+
+contract('UpgradeScheme', function(accounts) {
   before(function() {
     helpers.etherForEveryone(accounts);
   });
 
-   it("initialize", async() => {
-     var upgradeScheme = await UpgradeScheme.new();
-     var absoluteVote = await AbsoluteVote.new();
-     await upgradeScheme.initialize(helpers.SOME_ADDRESS,absoluteVote.address,"0x1234");
-     assert.equal(await upgradeScheme.votingMachine(),absoluteVote.address);
-     });
-
-
-     it("proposeUpgrade log", async() => {
+    it("proposeUpgrade log", async function() {
        var testSetup = await setup(accounts);
 
-       var newController = await setupNewController(accounts);
-       var tx = await testSetup.upgradeScheme.proposeUpgrade(newController.address,helpers.NULL_HASH);
+       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+
+       var tx = await testSetup.upgradeScheme.proposeUpgrade(
+        [0, 1, 1],
+        [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
+        [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+        helpers.NULL_HASH);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "NewUpgradeProposal");
-       var votingMachine = await helpers.getValueFromLogs(tx, '_intVoteInterface',1);
-       assert.equal(votingMachine,testSetup.upgradeSchemeParams.votingMachine.absoluteVote.address);
-      });
-
-        it("proposeChangeUpgradingScheme log", async function() {
-          var testSetup = await setup(accounts);
-
-          var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(accounts[0],helpers.NULL_HASH);
-          assert.equal(tx.logs.length, 1);
-          assert.equal(tx.logs[0].event, "ChangeUpgradeSchemeProposal");
-          var votingMachine = await helpers.getValueFromLogs(tx, '_intVoteInterface',1);
-          assert.equal(votingMachine,testSetup.upgradeSchemeParams.votingMachine.absoluteVote.address);
-         });
-
- it("execute proposal upgrade controller -yes - proposal data delete", async function() {
-   var testSetup = await setup(accounts);
-
-   var newController = await setupNewController(accounts);
-   assert.notEqual(newController.address,await testSetup.org.avatar.owner());
-   var tx = await testSetup.upgradeScheme.proposeUpgrade(newController.address,helpers.NULL_HASH);
-   //Vote with reputation to trigger execution
-   var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-   //check organizationsProposals before execution
-   var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-   assert.equal(organizationProposal[0],newController.address);//new contract address
-   assert.equal(organizationProposal[1].toNumber(),1);//proposalType
-   await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-   assert.equal(newController.address,await testSetup.org.avatar.owner());
-   //check organizationsProposals after execution
-   organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-   assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
-   assert.equal(organizationProposal[1],0);//proposalType
-  });
-
-  it("execute proposal upgrade controller - no decision (same for update scheme) - proposal data delete", async function() {
-    var testSetup = await setup(accounts);
-
-    var newController = await setupNewController(accounts);
-    var tx = await testSetup.upgradeScheme.proposeUpgrade(newController.address,helpers.NULL_HASH);
-    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-    //check organizationsProposals before execution
-    var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-    assert.equal(organizationProposal[0],newController.address);//new contract address
-    assert.equal(organizationProposal[1].toNumber(),1);//proposalType
-
-    //Vote with reputation to trigger execution
-    await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    //should not upgrade because the decision is "no"
-    assert.notEqual(newController.address,await testSetup.org.avatar.owner());
-    //check organizationsProposals after execution
-    organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-    assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
-    assert.equal(organizationProposal[1],0);//proposalType
-   });
-
-   it("execute proposal ChangeUpgradingScheme - yes decision - proposal data delete", async function() {
-     var testSetup = await setup(accounts);
-
-
-     var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(accounts[0],helpers.NULL_HASH);
-     //Vote with reputation to trigger execution
-     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-
-     //check organizationsProposals before execution
-     var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-     assert.equal(organizationProposal[0],accounts[0]);//new contract address
-     assert.equal(organizationProposal[1].toNumber(),2);//proposalType
-
-     //check schemes registration before execution
-     var controller = await Controller.at(await testSetup.org.avatar.owner());
-     assert.equal(await controller.isSchemeRegistered(accounts[0]),false);
-     assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),true);
-
-     await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
-     //check organizationsProposals after execution
-     organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-     assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
-     assert.equal(organizationProposal[1],0);//proposalType
-
-     //check if scheme upgraded
-     assert.equal(await controller.isSchemeRegistered(accounts[0]),true);
-     assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),false);
     });
 
-    it("execute proposal ChangeUpgradingScheme - yes decision - check approve increase fee ", async function() {
+    it("execute proposeUpgrade -no decision - proposal data delete", async function() {
       var testSetup = await setup(accounts);
 
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
 
-      var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(accounts[0],helpers.NULL_HASH);
-      //Vote with reputation to trigger execution
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+       var tx = await testSetup.upgradeScheme.proposeUpgrade(
+        [0, 1, 1],
+        [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
+        [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+        helpers.NULL_HASH);
 
-      //check organizationsProposals before execution
-      var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-      assert.equal(organizationProposal[0],accounts[0]);//new contract address
-      assert.equal(organizationProposal[1].toNumber(),2);//proposalType
-
-      //check schemes registration before execution
-      var controller = await Controller.at(await testSetup.org.avatar.owner());
-      assert.equal(await controller.isSchemeRegistered(accounts[0]),false);
-      assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),true);
-
-      await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
-      //check organizationsProposals after execution
-      organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-      assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
-      assert.equal(organizationProposal[1],0);//proposalType
-
-      //check if scheme upgraded
-      assert.equal(await controller.isSchemeRegistered(accounts[0]),true);
-      assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),false);
-     });
-
-     it("execute proposal ChangeUpgradingScheme - yes decision - check upgrade it self. ", async function() {
-       var testSetup = await setup(accounts);
-
-
-       var tx = await testSetup.upgradeScheme.proposeChangeUpgradingScheme(testSetup.upgradeScheme.address,helpers.NULL_HASH);
-       //Vote with reputation to trigger execution
-       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-
-       //check schemes registration before execution
-       var controller = await Controller.at(await testSetup.org.avatar.owner());
-       assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),true);
-
-       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-       assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
-       assert.equal(organizationProposal[1],0);//proposalType
+       assert.equal(organizationProposal.exist,false);
+       assert.equal(organizationProposal.passed,false);
+    });
 
-       //schemes should still be registered
-       assert.equal(await controller.isSchemeRegistered(testSetup.upgradeScheme.address),true);
-      });
+    it("execute proposeVote -positive decision - proposal data delete", async function() {
+        var testSetup = await setup(accounts);
+
+        await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+
+        var tx = await testSetup.upgradeScheme.proposeUpgrade(
+          [0, 1, 1],
+          [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
+          [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+          helpers.NULL_HASH
+        );
+
+        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+        var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
+        assert.equal(organizationProposal.exist,true);
+        assert.equal(organizationProposal.passed,false);
+
+        await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+        //check organizationsProposals after execution
+        organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
+        assert.equal(organizationProposal.exist,false);
+        assert.equal(organizationProposal.passed,false);
+     });
+
+    it("execute proposeVote -positive decision - non existing package reverts", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+      try {
+        await testSetup.upgradeScheme.proposeUpgrade(
+          [0, 1, 2],
+          [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
+          [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+          helpers.NULL_HASH
+        );
+        assert(false, "cannot upgrade to non existing package version");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("execute proposeVote -positive decision - non existing contract reverts", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+      try {
+        await testSetup.upgradeScheme.proposeUpgrade(
+          [0, 1, 1],
+          [web3.utils.fromAscii("Avtar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
+          [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+          helpers.NULL_HASH
+        );
+        assert(false, "cannot upgrade to non existing contract name");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("execute proposeVote -positive decision - unequal array lengths reverts", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+      try {
+        await testSetup.upgradeScheme.proposeUpgrade(
+          [0, 1, 1],
+          [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken")],
+          [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+          helpers.NULL_HASH
+        );
+        assert(false, "contract arrays lengths must match");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("execute proposeVote -positive decision - too many contracts reverts", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+      try {
+        await testSetup.upgradeScheme.proposeUpgrade(
+          [0, 1, 1],
+          [
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+            web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")
+          ],
+          [
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+            testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address
+          ],
+          helpers.NULL_HASH
+        );
+        assert(false, "can upgrade up to 60 contracts at a time");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+    it("execute proposeVote -positive decision - cannot execute twice", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+      var tx = await testSetup.upgradeScheme.proposeUpgrade(
+        [0, 1, 1],
+        [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
+        [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+        helpers.NULL_HASH
+      );
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
+       assert.equal(organizationProposal.exist,false);
+       assert.equal(organizationProposal.passed,false); 
+       try {
+         await testSetup.upgradeScheme.execute(proposalId);
+         assert(false, "cannot call execute after it been executed");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
+    });
+
+    it("execute proposeVote -positive decision - verify version upgraded", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+
+      let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
+      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
+      let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
+
+      let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
+      let oldImp = await ImplementationProvider.at(oldImpAddress);
+
+      assert.equal(
+        await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("Avatar")
+      );
+      assert.equal(
+        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("DAOToken")
+      );
+      assert.equal(
+        await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("Reputation")
+      );
+
+      var tx = await testSetup.upgradeScheme.proposeUpgrade(
+        [0, 1, 1],
+        [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
+        [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+        helpers.NULL_HASH
+      );
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+      await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
+      assert.equal(organizationProposal.exist,false);
+      assert.equal(organizationProposal.passed,false); 
+      
+      let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
+      let newImp = await ImplementationProvider.at(newImpAddress);
+
+      assert.equal(
+        await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("Avatar")
+      );
+      assert.equal(
+        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("DAOToken")
+      );
+      assert.equal(
+        await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("Reputation")
+      );
+    });
+
+    it("execute proposeVote -positive decision - verify version upgraded up to 60 contracts", async function() {
+      var testSetup = await setup(accounts);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+
+      let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
+      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
+      let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
+
+      let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
+      let oldImp = await ImplementationProvider.at(oldImpAddress);
+
+      assert.equal(
+        await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("Avatar")
+      );
+      assert.equal(
+        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("DAOToken")
+      );
+      assert.equal(
+        await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("Reputation")
+      );
+
+      var tx = await testSetup.upgradeScheme.proposeUpgrade(
+        [0, 1, 1],
+        [
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"),
+          web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")
+        ],
+        [
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address,
+          testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address
+        ],
+        helpers.NULL_HASH
+      );
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+      await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
+      assert.equal(organizationProposal.exist,false);
+      assert.equal(organizationProposal.passed,false); 
+      
+      let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
+      let newImp = await ImplementationProvider.at(newImpAddress);
+
+      assert.equal(
+        await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("Avatar")
+      );
+      assert.equal(
+        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("DAOToken")
+      );
+      assert.equal(
+        await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("Reputation")
+      );
+    });
+
+
+    it("cannot init twice", async function() {
+        var testSetup = await setup(accounts);
+
+        try {
+          await testSetup.upgradeScheme.initialize(
+            testSetup.org.avatar.address,
+            testSetup.upgradeSchemeParams.votingMachine.absoluteVote.address,
+            testSetup.upgradeSchemeParams.votingMachine.params,
+            testSetup.registration.packageInstance.address
+          );
+          assert(false, "cannot init twice");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+
+    });
+
 });
