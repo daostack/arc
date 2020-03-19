@@ -150,7 +150,10 @@ contract ArcUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, I
     returns(bytes32)
     {
         require(_contractsNames.length <= 60, "can upgrade up to 60 contracts at a time");
-        require(_contractsNames.length == _contractsToUpgrade.length, "upgrade name and address arrays must have equal lengths");
+        require(
+            _contractsNames.length == _contractsToUpgrade.length,
+            "upgrade name and address arrays must have equal lengths"
+        );
         require(package.hasVersion(_packageVersion), "Specified version doesn't exist in the Package");
         for (uint256 i = 0; i < _contractsToUpgrade.length; i++) {
             require(
