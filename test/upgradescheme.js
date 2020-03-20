@@ -114,7 +114,7 @@ contract('UpgradeScheme', function(accounts) {
        await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-       assert.equal(organizationProposal.exist,false);
+       assert.equal(organizationProposal,false);
     });
 
     it("execute proposeVote -positive decision - proposal data delete", async function() {
@@ -131,12 +131,12 @@ contract('UpgradeScheme', function(accounts) {
 
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
         var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-        assert.equal(organizationProposal.exist,true);
+        assert.equal(organizationProposal,true);
 
         await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
         //check organizationsProposals after execution
         organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-        assert.equal(organizationProposal.exist,false);
+        assert.equal(organizationProposal,false);
      });
 
     it("execute proposeVote -positive decision - non existing package reverts", async function() {
@@ -209,28 +209,6 @@ contract('UpgradeScheme', function(accounts) {
       }
     });
 
-    it("execute proposeVote -positive decision - cannot execute twice", async function() {
-      var testSetup = await setup(accounts);
-      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
-      var tx = await testSetup.upgradeScheme.proposeUpgrade(
-        [0, 1, 1],
-        [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
-        [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
-        helpers.NULL_HASH
-      );
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-
-       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-       assert.equal(organizationProposal.exist,false);
-       try {
-         await testSetup.upgradeScheme.execute(proposalId);
-         assert(false, "cannot call execute after it been executed");
-       } catch(error) {
-         helpers.assertVMException(error);
-       }
-    });
-
     it("execute proposeVote -positive decision - verify version upgraded", async function() {
       var testSetup = await setup(accounts);
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
@@ -265,7 +243,7 @@ contract('UpgradeScheme', function(accounts) {
 
       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-      assert.equal(organizationProposal.exist,false);
+      assert.equal(organizationProposal,false);
       
       let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
       let newImp = await ImplementationProvider.at(newImpAddress);
@@ -325,7 +303,7 @@ contract('UpgradeScheme', function(accounts) {
 
       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
-      assert.equal(organizationProposal.exist,false);
+      assert.equal(organizationProposal,false);
       
       let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
       let newImp = await ImplementationProvider.at(newImpAddress);
