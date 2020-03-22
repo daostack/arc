@@ -1,58 +1,63 @@
 pragma solidity ^0.5.16;
 
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
-import "@daostack/infra-experimental/contracts/votingMachines/ProposalExecuteInterface.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
+import "../libs/Bytes32ToStr.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "@openzeppelin/upgrades/contracts/application/Package.sol";
+import "@openzeppelin/upgrades/contracts/application/ImplementationProvider.sol";
+
 
 /**
- * @title A scheme to manage the upgrade of an organization.
- * @dev The scheme is used to upgrade the controller of an organization to a new controller.
+ * @title UpgradeScheme.
+ * @dev  A scheme for proposing updates
  */
-
-contract UpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
+    using Bytes32ToStr for bytes32;
 
     event NewUpgradeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        address indexed _intVoteInterface,
-        address _newController,
-        string _descriptionHash
+        uint64[3] _packageVersion,
+        bytes32[] _contractsNames,
+        address[] _contractsToUpgrade,
+        string  _descriptionHash
     );
 
-    event ChangeUpgradeSchemeProposal(
+    event ProposalExecuted(
         address indexed _avatar,
-        bytes32 indexed _proposalId,
-        address indexed _intVoteInterface,
-        address _newUpgradeScheme,
-        string _descriptionHash
+        bytes32 indexed _proposalId
     );
 
-    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
-    // Details of an upgrade proposal:
-    struct UpgradeProposal {
-        address upgradeContract; // Either the new controller we upgrade to, or the new upgrading scheme.
-        uint256 proposalType; // 1: Upgrade controller, 2: change upgrade scheme.
+    // Details of a voting proposal:
+    struct Proposal {
+        uint64[3] packageVersion;
+        bytes32[] contractsNames;
+        address[] contractsToUpgrade;
+        bool exist;
     }
 
-    mapping(bytes32=>UpgradeProposal) public organizationProposals;
+    mapping(bytes32=>Proposal) public organizationProposals;
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
     Avatar public avatar;
+    Package public package;
 
     /**
      * @dev initialize
-     * @param _avatar the avatar this scheme referring to.
+     * @param _avatar the avatar to mint reputation from
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
      */
     function initialize(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
-        bytes32 _voteParams
+        bytes32 _voteParams,
+        Package _package
     )
     external
     initializer
@@ -61,106 +66,99 @@ contract UpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecute
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
+        package = _package;
     }
 
     /**
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
     * @param _proposalId the ID of the voting in the voting machine
-    * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    * @param _decision a parameter of the voting result, 1 yes and 2 is no.
+    * @return bool success
     */
-    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
-        UpgradeProposal memory proposal = organizationProposals[_proposalId];
-        require(proposal.proposalType != 0);
-        delete organizationProposals[_proposalId];
-        emit ProposalDeleted(address(avatar), _proposalId);
-        // Check if vote was successful:
-        if (_param == 1) {
+    function executeProposal(bytes32 _proposalId, int256 _decision)
+    external
+    onlyVotingMachine(_proposalId)
+    returns(bool) {
+        Proposal storage proposal = organizationProposals[_proposalId];
+        require(proposal.exist, "must be a live proposal");
 
-        // Define controller and get the params:
-            Controller controller = Controller(avatar.owner());
-        // Upgrading controller:
-            if (proposal.proposalType == 1) {
-                require(controller.upgradeController(proposal.upgradeContract));
-            }
+        if (_decision == 1) {
+            proposal.exist = false;
+            address[] memory contractsToUpgrade = proposal.contractsToUpgrade;
+            for (uint256 i = 0; i < contractsToUpgrade.length; i++) {
+                bytes32 contractNameBytes = proposal.contractsNames[i];
+                string memory contractName = contractNameBytes.toStr();
+                address updatedImp = ImplementationProvider(
+                    package.getContract(proposal.packageVersion)
+                ).getImplementation(contractName);
 
-        // Changing upgrade scheme:
-            if (proposal.proposalType == 2) {
-                bytes4 permissions = controller.schemesPermissions(address(this));
-                require(
-                controller.registerScheme(proposal.upgradeContract, permissions)
+                Controller controller = Controller(avatar.owner());
+                controller.genericCall(
+                    contractsToUpgrade[i],
+                    abi.encodeWithSignature("upgradeTo(address)", updatedImp),
+                    0
                 );
-                if (proposal.upgradeContract != address(this)) {
-                    require(controller.unregisterSelf());
-                }
             }
         }
-        emit ProposalExecuted(address(avatar), _proposalId, _param);
+
+        delete organizationProposals[_proposalId];
+        emit ProposalDeleted(address(avatar), _proposalId);
+        emit ProposalExecuted(address(avatar), _proposalId);
         return true;
     }
 
     /**
-    * @dev propose an upgrade of the organization's controller
-    * @param _newController address of the new controller that is being proposed
-    * @param _descriptionHash proposal description hash
+    * @dev propose upgrade contracts Arc version
+    *      The function trigger NewUpgradeProposal event
+    * @param _packageVersion - the new Arc version to use for the contracts
+    * @param _contractsNames - names of contracts which needs to be upgraded
+    * @param _contractsToUpgrade - addresses of contracts which needs to be upgraded
+    * @param _descriptionHash - proposal description hash
     * @return an id which represents the proposal
     */
-    function proposeUpgrade(address _newController, string memory _descriptionHash)
-        public
-        returns(bytes32)
+    function proposeUpgrade(
+        uint64[3] memory _packageVersion,
+        bytes32[] memory _contractsNames,
+        address[] memory _contractsToUpgrade,
+        string memory _descriptionHash)
+    public
+    returns(bytes32)
     {
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
-        UpgradeProposal memory proposal = UpgradeProposal({
-            proposalType: 1,
-            upgradeContract: _newController
-        });
-        organizationProposals[proposalId] = proposal;
-        emit NewUpgradeProposal(
-        address(avatar),
-        proposalId,
-        address(votingMachine),
-        _newController,
-        _descriptionHash
+        require(_contractsNames.length <= 60, "can upgrade up to 60 contracts at a time");
+        require(
+            _contractsNames.length == _contractsToUpgrade.length,
+            "upgrade name and address arrays must have equal lengths"
         );
+        require(package.hasVersion(_packageVersion), "Specified version doesn't exist in the Package");
+        for (uint256 i = 0; i < _contractsToUpgrade.length; i++) {
+            require(
+                ImplementationProvider(
+                    package.getContract(_packageVersion)
+                ).getImplementation(_contractsNames[i].toStr()) != address(0),
+                "Contract name does not exist in ArcHive package"
+            );
+        }
+
+        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
+
+        organizationProposals[proposalId] = Proposal({
+            packageVersion: _packageVersion,
+            contractsNames: _contractsNames,
+            contractsToUpgrade: _contractsToUpgrade,
+            exist: true
+        });
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
             blockNumber:block.number,
             avatar:avatar
         });
-        return proposalId;
-    }
-
-    /**
-    * @dev propose to replace this scheme by another upgrading scheme
-    * @param _scheme address of the new upgrading scheme
-    * @param _descriptionHash proposal description hash
-    * @return an id which represents the proposal
-    */
-    function proposeChangeUpgradingScheme(
-        address _scheme,
-        string memory _descriptionHash
-    )
-        public
-        returns(bytes32)
-    {
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
-        require(organizationProposals[proposalId].proposalType == 0);
-
-        UpgradeProposal memory proposal = UpgradeProposal({
-            proposalType: 2,
-            upgradeContract: _scheme
-        });
-        organizationProposals[proposalId] = proposal;
-
-        emit ChangeUpgradeSchemeProposal(
+        emit NewUpgradeProposal(
             address(avatar),
             proposalId,
-            address(votingMachine),
-            _scheme,
+            _packageVersion,
+            _contractsNames,
+            _contractsToUpgrade,
             _descriptionHash
         );
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
         return proposalId;
     }
 }

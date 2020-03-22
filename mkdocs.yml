@@ -66,7 +66,7 @@ pages:
     - SimpleICO: 'generated_docs/universalSchemes/SimpleICO.md'
     - UniversalScheme: 'generated_docs/universalSchemes/UniversalScheme.md'
     - UniversalSchemeInterface: 'generated_docs/universalSchemes/UniversalSchemeInterface.md'
-    - UpgradeScheme: 'generated_docs/universalSchemes/UpgradeScheme.md'
+    - ControllerUpgradeScheme: 'generated_docs/universalSchemes/ControllerUpgradeScheme.md'
     - VestingScheme: 'generated_docs/universalSchemes/VestingScheme.md'
     - VoteInOrganizationScheme: 'generated_docs/universalSchemes/VoteInOrganizationScheme.md'
   - 'Voting Machines':

@@ -1,5 +1,5 @@
-# UpgradeScheme
-[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/UpgradeScheme.sol)
+# ControllerUpgradeScheme
+[see the source](https://github.com/daostack/arc/tree/master/contracts/universalSchemes/ControllerUpgradeScheme.sol)
 > A scheme to manage the upgrade of an organization.
 
 
@@ -15,7 +15,7 @@
 
 
 ## Events
-### ChangeUpgradeSchemeProposal(address,bytes32,address,address,bytes32)
+### ChangeControllerUpgradeSchemeProposal(address,bytes32,address,address,bytes32)
 
 
 **Execution cost**: No bound available
@@ -26,11 +26,11 @@ Params:
 1. **_avatar** *of type `address`*
 2. **_proposalId** *of type `bytes32`*
 3. **_intVoteInterface** *of type `address`*
-4. **_newUpgradeScheme** *of type `address`*
+4. **_newControllerUpgradeScheme** *of type `address`*
 5. **_params** *of type `bytes32`*
 
 --- 
-### NewUpgradeProposal(address,bytes32,address,address)
+### NewControllerUpgradeProposal(address,bytes32,address,address)
 
 
 **Execution cost**: No bound available
@@ -202,7 +202,7 @@ Returns:
 2. **intVote** *of type `address`*
 
 --- 
-### proposeChangeUpgradingScheme(address,address,bytes32)
+### proposeChangeControllerUpgradingScheme(address,address,bytes32)
 >
 > propose to replace this scheme by another upgrading scheme
 
