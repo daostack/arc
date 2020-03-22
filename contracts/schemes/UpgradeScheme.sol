@@ -27,7 +27,8 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
 
     event ProposalExecuted(
         address indexed _avatar,
-        bytes32 indexed _proposalId
+        bytes32 indexed _proposalId,
+        int256 _param
     );
 
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
@@ -103,7 +104,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
 
         delete organizationProposals[_proposalId];
         emit ProposalDeleted(address(avatar), _proposalId);
-        emit ProposalExecuted(address(avatar), _proposalId);
+        emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
     }
 
