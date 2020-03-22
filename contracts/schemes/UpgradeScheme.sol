@@ -45,7 +45,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
     Avatar public avatar;
-    Package public package;
+    Package public arcPackage;
 
     /**
      * @dev initialize
@@ -66,7 +66,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
-        package = _package;
+        arcPackage = _package;
     }
 
     /**
@@ -89,7 +89,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
                 bytes32 contractNameBytes = proposal.contractsNames[i];
                 string memory contractName = contractNameBytes.toStr();
                 address updatedImp = ImplementationProvider(
-                    package.getContract(proposal.packageVersion)
+                    arcPackage.getContract(proposal.packageVersion)
                 ).getImplementation(contractName);
 
                 Controller controller = Controller(avatar.owner());
@@ -129,11 +129,11 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
             _contractsNames.length == _contractsToUpgrade.length,
             "upgrade name and address arrays must have equal lengths"
         );
-        require(package.hasVersion(_packageVersion), "Specified version doesn't exist in the Package");
+        require(arcPackage.hasVersion(_packageVersion), "Specified version doesn't exist in the Package");
         for (uint256 i = 0; i < _contractsToUpgrade.length; i++) {
             require(
                 ImplementationProvider(
-                    package.getContract(_packageVersion)
+                    arcPackage.getContract(_packageVersion)
                 ).getImplementation(_contractsNames[i].toStr()) != address(0),
                 "Contract name does not exist in ArcHive package"
             );
