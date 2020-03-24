@@ -208,7 +208,7 @@ contract JoinAndQuit is
     */
     function isFundedBeforeDeadLine() public returns(bool) {
         if ((fundedBeforeDeadLine == false) &&
-            (fundingToken.balanceOf(address(avatar)) > fundingGoal) &&
+            (fundingToken.balanceOf(address(avatar)) >= fundingGoal) &&
             // solhint-disable-next-line not-rely-on-time
             (now < fundingGoalDeadLine)) {
             fundedBeforeDeadLine = true;
