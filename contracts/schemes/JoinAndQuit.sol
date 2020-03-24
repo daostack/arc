@@ -230,7 +230,7 @@ contract JoinAndQuit is
             (now < fundingGoalDeadLine)) {
             require(
             Controller(
-            avatar.owner()).setDB("FUNDED_BEFORE_DEADLINE", "TRUE"));
+            avatar.owner()).setDBValue("FUNDED_BEFORE_DEADLINE", "TRUE"));
             emit FundedDeadLineReached(address(avatar));
         }
     }

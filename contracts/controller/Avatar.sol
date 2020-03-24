@@ -171,12 +171,12 @@ contract Avatar is Initializable, Ownable {
     }
 
     /**
-    * @dev setDB set a key value in the dao db
+    * @dev setDBValue set a key value in the dao db
     * @param _key a string
     * @param _value a string
-    * @return _value which represents a success
+    * @return true if successful
     */
-    function setDB(string calldata _key, string calldata _value) external onlyOwner returns(bool) {
+    function setDBValue(string calldata _key, string calldata _value) external onlyOwner returns(bool) {
         db[_key] = _value;
         return true;
     }

@@ -121,9 +121,9 @@ contract('Avatar',  accounts =>  {
         assert.equal(tx.logs[0].args["_metaData"], helpers.SOME_HASH);
     });
 
-    it("setDB", async () => {
+    it("setDBValue", async () => {
         avatar = await setup(accounts);
-        await avatar.setDB("KEY","VALUE");
+        await avatar.setDBValue("KEY","VALUE");
         assert.equal(await avatar.db("KEY"),"VALUE");
     });
 });

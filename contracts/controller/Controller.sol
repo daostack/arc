@@ -426,15 +426,15 @@ contract Controller is Initializable {
     }
 
     /**
-    * @dev setDB set a key value in the dao db
+    * @dev setDBValue set a key value in the dao db
     * @param _key a string
     * @param _value a string
     * @return bool success
     */
-    function setDB(string calldata _key, string calldata _value)
+    function setDBValue(string calldata _key, string calldata _value)
     external
     onlyRegisteredScheme returns(bool) {
-        return avatar.setDB(_key, _value);
+        return avatar.setDBValue(_key, _value);
     }
 
     /**
