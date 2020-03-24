@@ -68,6 +68,8 @@ contract JoinAndQuit is
     uint256 public fundingGoal;
     uint256 public fundingGoalDeadLine;
     uint256 public totalDonation;
+    string public constant FUNDED_BEFORE_DEADLINE_KEY = "FUNDED_BEFORE_DEADLINE";
+    string public constant FUNDED_BEFORE_DEADLINE_VALUE = "TRUE";
 
     /**
      * @dev initialize
@@ -120,7 +122,7 @@ contract JoinAndQuit is
         if (_decision == 1) {
             proposals[_proposalId].accepted = true;
             address(fundingToken).safeTransfer(address(avatar), proposals[_proposalId].funding);
-            fundings[proposal.funder] = proposal.funding;
+            fundings[proposal.funder] = fundings[proposal.funder].add(proposal.funding);
             totalDonation = totalDonation.add(proposal.funding);
             checkFundedBeforeDeadLine();
         } else {
@@ -199,7 +201,7 @@ contract JoinAndQuit is
     */
     function donate(uint256 _donation) public {
         address(fundingToken).safeTransferFrom(msg.sender, address(avatar), _donation);
-        fundings[msg.sender] = _donation;
+        fundings[msg.sender] = fundings[msg.sender].add(_donation);
         totalDonation = totalDonation.add(_donation);
         checkFundedBeforeDeadLine();
         emit Donation(address(avatar), _donation);
@@ -209,11 +211,14 @@ contract JoinAndQuit is
     * @dev rageQuit quit from the dao.
     * can be done on any time
     * REFUND = USER_DONATION * CURRENT_DAO_BALANCE / TOTAL_DONATIONS
+    * @return refund the refund amount
     */
-    function rageQuit() public returns(bool) {
+    function rageQuit() public returns(uint256 refund) {
+        require(fundings[msg.sender] > 0, "no fund to RageQuit");
         uint256 userDonation = fundings[msg.sender];
         fundings[msg.sender] = 0;
-        uint256 refund = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
+        refund = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
+        totalDonation = totalDonation.sub(userDonation);
         require(
         Controller(
         avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund));
@@ -224,7 +229,7 @@ contract JoinAndQuit is
     * @dev checkFundedBeforeDeadLine check if funding goal reached.
     */
     function checkFundedBeforeDeadLine() private {
-        if ((avatar.db("FUNDED_BEFORE_DEADLINE").hashCompareWithLengthCheck("TRUE") == false) &&
+        if ((avatar.db(FUNDED_BEFORE_DEADLINE_KEY).hashCompareWithLengthCheck(FUNDED_BEFORE_DEADLINE_VALUE) == false) &&
             (fundingToken.balanceOf(address(avatar)) >= fundingGoal) &&
             // solhint-disable-next-line not-rely-on-time
             (now < fundingGoalDeadLine)) {
