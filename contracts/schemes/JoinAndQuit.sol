@@ -29,6 +29,11 @@ contract JoinAndQuit is
         address indexed _avatar
     );
 
+    event Donation(
+        address indexed _avatar,
+        uint256 indexed _donation
+    );
+
     event RageQuit(
         address indexed _avatar,
         uint256 indexed _refund
@@ -190,11 +195,12 @@ contract JoinAndQuit is
     /**
     * @dev donate donate to the dao. no repution is minted
     */
-    function donate(uint256 _fundAmount) public {
-        address(fundingToken).safeTransferFrom(msg.sender, address(avatar), _fundAmount);
-        fundings[msg.sender] = _fundAmount;
-        totalDonation = totalDonation.add(_fundAmount);
+    function donate(uint256 _donation) public {
+        address(fundingToken).safeTransferFrom(msg.sender, address(avatar), _donation);
+        fundings[msg.sender] = _donation;
+        totalDonation = totalDonation.add(_donation);
         isFundedBeforeDeadLine();
+        emit Donation(address(avatar), _donation);
     }
 
     /**
