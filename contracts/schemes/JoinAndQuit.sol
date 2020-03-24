@@ -2,6 +2,7 @@ pragma solidity ^0.5.16;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "../libs/StringUtil.sol";
 
 
 /**
@@ -16,6 +17,7 @@ contract JoinAndQuit is
         Initializable {
     using SafeMath for uint;
     using SafeERC20 for address;
+    using StringUtil for string;
 
     event JoinInProposal(
         address indexed _avatar,
@@ -64,7 +66,6 @@ contract JoinAndQuit is
     uint256 public memberReputation;
     uint256 public fundingGoal;
     uint256 public fundingGoalDeadLine;
-    bool public fundedBeforeDeadLine;
     uint256 public totalDonation;
 
     /**
@@ -119,7 +120,7 @@ contract JoinAndQuit is
             proposals[_proposalId].executionTime = now;
             address(fundingToken).safeTransfer(address(avatar), proposals[_proposalId].funding);
             totalDonation = totalDonation.add(proposals[_proposalId].funding);
-            isFundedBeforeDeadLine();
+            checkFundedBeforeDeadLine();
         } else {
             address(fundingToken).safeTransfer(address(msg.sender), proposals[_proposalId].funding);
         }
@@ -199,22 +200,8 @@ contract JoinAndQuit is
         address(fundingToken).safeTransferFrom(msg.sender, address(avatar), _donation);
         fundings[msg.sender] = _donation;
         totalDonation = totalDonation.add(_donation);
-        isFundedBeforeDeadLine();
+        checkFundedBeforeDeadLine();
         emit Donation(address(avatar), _donation);
-    }
-
-    /**
-    * @dev isFundedBeforeDeadLine check if funding goal reached.
-    */
-    function isFundedBeforeDeadLine() public returns(bool) {
-        if ((fundedBeforeDeadLine == false) &&
-            (fundingToken.balanceOf(address(avatar)) >= fundingGoal) &&
-            // solhint-disable-next-line not-rely-on-time
-            (now < fundingGoalDeadLine)) {
-            fundedBeforeDeadLine = true;
-            emit FundedDeadLineReached(address(avatar));
-        }
-        return fundedBeforeDeadLine;
     }
 
     /**
@@ -230,6 +217,21 @@ contract JoinAndQuit is
         Controller(
         avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund));
         emit RageQuit(address(avatar), refund);
+    }
+
+    /**
+    * @dev checkFundedBeforeDeadLine check if funding goal reached.
+    */
+    function checkFundedBeforeDeadLine() private {
+        if ((avatar.db("FUNDED_BEFORE_DEADLINE").hashCompareWithLengthCheck("TRUE")) &&
+            (fundingToken.balanceOf(address(avatar)) >= fundingGoal) &&
+            // solhint-disable-next-line not-rely-on-time
+            (now < fundingGoalDeadLine)) {
+            require(
+            Controller(
+            avatar.owner()).setDB("FUNDED_BEFORE_DEADLINE", "TRUE"));
+            emit FundedDeadLineReached(address(avatar));
+        }
     }
 
 }

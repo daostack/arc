@@ -426,6 +426,18 @@ contract Controller is Initializable {
     }
 
     /**
+    * @dev setDB set a key value in the dao db
+    * @param _key a string
+    * @param _value a string
+    * @return bool success
+    */
+    function setDB(string calldata _key, string calldata _value)
+    external
+    onlyRegisteredScheme returns(bool) {
+        return avatar.setDB(_key, _value);
+    }
+
+    /**
     * @dev metaData emits an event with a string, should contain the hash of some meta data.
     * @param _metaData a string representing a hash of the meta data
     * @return bool which represents a success
