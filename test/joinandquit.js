@@ -1,8 +1,6 @@
 import * as helpers from './helpers';
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
-const Avatar = artifacts.require("./Avatar.sol");
-
 
 
 export class JoinAndQuitParams {
