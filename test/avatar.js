@@ -120,4 +120,10 @@ contract('Avatar',  accounts =>  {
         assert.equal(tx.logs[0].event, "MetaData");
         assert.equal(tx.logs[0].args["_metaData"], helpers.SOME_HASH);
     });
+
+    it("setDB", async () => {
+        avatar = await setup(accounts);
+        await avatar.setDB("KEY","VALUE");
+        assert.equal(await avatar.db("KEY"),"VALUE");
+    });
 });

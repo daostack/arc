@@ -50,8 +50,9 @@ contract JoinAndQuit is
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _decision);
 
     struct Proposal {
-        uint256 executionTime;
+        bool accepted;
         address proposedMember;
+        address funder;
         uint256 funding;
     }
 
@@ -112,17 +113,18 @@ contract JoinAndQuit is
     external
     onlyVotingMachine(_proposalId)
     returns(bool) {
-        require(proposals[_proposalId].executionTime == 0);
+        require(proposals[_proposalId].accepted == false);
         require(proposals[_proposalId].proposedMember != address(0));
+        Proposal memory proposal = proposals[_proposalId];
         // Check if vote was successful:
         if (_decision == 1) {
-          // solhint-disable-next-line not-rely-on-time
-            proposals[_proposalId].executionTime = now;
+            proposals[_proposalId].accepted = true;
             address(fundingToken).safeTransfer(address(avatar), proposals[_proposalId].funding);
-            totalDonation = totalDonation.add(proposals[_proposalId].funding);
+            fundings[proposal.funder] = proposal.funding;
+            totalDonation = totalDonation.add(proposal.funding);
             checkFundedBeforeDeadLine();
         } else {
-            address(fundingToken).safeTransfer(address(msg.sender), proposals[_proposalId].funding);
+            address(fundingToken).safeTransfer(proposal.funder, proposal.funding);
         }
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
@@ -144,8 +146,6 @@ contract JoinAndQuit is
     {
         require(_fundAmount >= minFeeToJoin, "_fundAmount should be >= then the minFeeToJoin");
         address(fundingToken).safeTransferFrom(msg.sender, address(this), _fundAmount);
-        fundings[msg.sender] = _fundAmount;
-
         bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
         address member = _member;
         if (member == address(0)) {
@@ -153,9 +153,10 @@ contract JoinAndQuit is
         }
 
         Proposal memory proposal = Proposal({
-            executionTime: 0,
+            accepted: false,
             proposedMember: member,
-            funding : _fundAmount
+            funding : _fundAmount,
+            funder : msg.sender
         });
         proposals[proposalId] = proposal;
 
@@ -185,7 +186,7 @@ contract JoinAndQuit is
         Proposal storage proposal = proposals[_proposalId];
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposal.proposedMember = address(0);
-        require(proposal.executionTime != 0, " no execution yet");
+        require(proposal.accepted == true, " proposal not accepted");
         require(
         Controller(
         avatar.owner()).mintReputation(memberReputation, _proposal.proposedMember));
