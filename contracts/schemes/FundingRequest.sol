@@ -151,9 +151,11 @@ contract FundingRequest is
         if (fundingToken == address(0)) {
             require(Controller(avatar.owner()).sendEther(_proposal.amount, _proposal.beneficiary));
         } else {
-            require(
-                Controller(avatar.owner()).externalTokenTransfer(IERC20(fundingToken), _proposal.beneficiary, _proposal.amount)
-            );
+            require(Controller(avatar.owner()).externalTokenTransfer(
+                    IERC20(fundingToken),
+                    _proposal.beneficiary,
+                    _proposal.amount
+                ));
         }
         emit Redeem(address(avatar), _proposalId, _proposal.beneficiary, _proposal.amount);
 
