@@ -47,7 +47,7 @@ contract FundingRequest is
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
     Avatar public avatar;
-    address public fundingToken;
+    IERC20 public fundingToken;
 
     /**
      * @dev initialize
@@ -60,7 +60,7 @@ contract FundingRequest is
         Avatar _avatar,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams,
-        address _fundingToken
+        IERC20 _fundingToken
     )
     external
     initializer
@@ -146,16 +146,22 @@ contract FundingRequest is
     function redeem(bytes32 _proposalId) public {
         Proposal memory _proposal = proposals[_proposalId];
         Proposal storage proposal = proposals[_proposalId];
-        require(proposal.executionTime != 0);
+        require(proposal.executionTime != 0, "proposal does not exist or not approved");
         proposal.executionTime = 0;
         if (fundingToken == address(0)) {
-            require(Controller(avatar.owner()).sendEther(_proposal.amount, _proposal.beneficiary));
+            require(
+                Controller(avatar.owner()).sendEther(_proposal.amount, _proposal.beneficiary),
+                "failed to transfer network token from DAO"
+            );
         } else {
-            require(Controller(avatar.owner()).externalTokenTransfer(
-                    IERC20(fundingToken),
+            require(
+                Controller(avatar.owner()).externalTokenTransfer(
+                    fundingToken,
                     _proposal.beneficiary,
                     _proposal.amount
-                ));
+                ),
+                "failed to transfer tokens from DAO"
+            );
         }
         emit Redeem(address(avatar), _proposalId, _proposal.beneficiary, _proposal.amount);
 
