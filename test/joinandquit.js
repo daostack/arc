@@ -474,8 +474,8 @@ contract('JoinAndQuit', accounts => {
     it("checkFundedBeforeDeadLine with eth", async function() {
       var testSetup = await setup(accounts,true);
       let avatar = await Avatar.at(testSetup.org.avatar.address);
-      let key = await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_KEY();
-      let value = await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_VALUE();
+      let key = "FUNDED_BEFORE_DEADLINE";
+      let value = "TRUE";
       assert.equal(await avatar.db(key),"");
 
       var tx = await testSetup.joinAndQuit.proposeToJoin(
@@ -501,7 +501,7 @@ contract('JoinAndQuit', accounts => {
       var testSetup = await setup(accounts);
       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal,{from:accounts[3]});
       let avatar = await Avatar.at(testSetup.org.avatar.address);
-      let key = await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_KEY();
+      let key = "FUNDED_BEFORE_DEADLINE";
       assert.equal(await avatar.db(key),"");
       await helpers.increaseTime(testSetup.fundingGoalDeadLine);
       await addMember(accounts,testSetup,accounts[4],testSetup.fundingGoal,accounts[3]);
@@ -511,7 +511,7 @@ contract('JoinAndQuit', accounts => {
     it("checkFundedBeforeDeadLine after deadline with eth", async function() {
       var testSetup = await setup(accounts,true);
       let avatar = await Avatar.at(testSetup.org.avatar.address);
-      let key = await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_KEY();
+      let key = "FUNDED_BEFORE_DEADLINE";
       assert.equal(await avatar.db(key),"");
       await helpers.increaseTime(testSetup.fundingGoalDeadLine);
       await addMember(accounts,testSetup,accounts[4],testSetup.fundingGoal,accounts[3]);

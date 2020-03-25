@@ -3,6 +3,7 @@ pragma solidity ^0.5.16;
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "../libs/StringUtil.sol";
+import "./CommonInterface.sol";
 
 
 /**
@@ -14,7 +15,8 @@ import "../libs/StringUtil.sol";
 contract JoinAndQuit is
         VotingMachineCallbacks,
         ProposalExecuteInterface,
-        Initializable {
+        Initializable,
+        CommonInterface {
     using SafeMath for uint;
     using SafeERC20 for address;
     using StringUtil for string;
@@ -68,8 +70,6 @@ contract JoinAndQuit is
     uint256 public fundingGoal;
     uint256 public fundingGoalDeadLine;
     uint256 public totalDonation;
-    string public constant FUNDED_BEFORE_DEADLINE_KEY = "FUNDED_BEFORE_DEADLINE";
-    string public constant FUNDED_BEFORE_DEADLINE_VALUE = "TRUE";
 
     /**
      * @dev initialize
@@ -261,13 +261,15 @@ contract JoinAndQuit is
         } else {
             avatarBalance = fundingToken.balanceOf(address(avatar));
         }
-        if ((avatar.db(FUNDED_BEFORE_DEADLINE_KEY).hashCompareWithLengthCheck(FUNDED_BEFORE_DEADLINE_VALUE) == false) &&
+        if ((avatar.db(CommonInterface.FUNDED_BEFORE_DEADLINE_KEY)
+            .hashCompareWithLengthCheck(CommonInterface.FUNDED_BEFORE_DEADLINE_VALUE) == false) &&
             (avatarBalance >= fundingGoal) &&
             // solhint-disable-next-line not-rely-on-time
             (now < fundingGoalDeadLine)) {
             require(
             Controller(
-            avatar.owner()).setDBValue(FUNDED_BEFORE_DEADLINE_KEY, FUNDED_BEFORE_DEADLINE_VALUE));
+            avatar.owner()).
+            setDBValue(CommonInterface.FUNDED_BEFORE_DEADLINE_KEY, CommonInterface.FUNDED_BEFORE_DEADLINE_VALUE));
             emit FundedBeforeDeadline(address(avatar));
         }
     }
