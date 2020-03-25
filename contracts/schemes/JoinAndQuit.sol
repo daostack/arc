@@ -76,9 +76,10 @@ contract JoinAndQuit is
      * @param _avatar the avatar this scheme referring to.
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
-     * @param _fundingToken the funding token
+     * @param _fundingToken the funding token - if this is zero the donation will be in native token ETH
      * @param _minFeeToJoin minimum fee required to join
      * @param _memberReputation the repution which will be allocated for members
+              if this param is zero so the repution will be allocated proportional to the fee paid
      * @param _fundingGoal the funding goal
      * @param _fundingGoalDeadLine the funding goal deadline
      */
@@ -118,15 +119,28 @@ contract JoinAndQuit is
         require(proposals[_proposalId].accepted == false);
         require(proposals[_proposalId].proposedMember != address(0));
         Proposal memory proposal = proposals[_proposalId];
+        bool success;
         // Check if vote was successful:
-        if (_decision == 1) {
+        if ((_decision == 1) && (avatar.nativeReputation().balanceOf(proposal.proposedMember) == 0)) {
             proposals[_proposalId].accepted = true;
-            address(fundingToken).safeTransfer(address(avatar), proposals[_proposalId].funding);
-            fundings[proposal.funder] = fundings[proposal.funder].add(proposal.funding);
+            if (fundingToken == IERC20(0)) {
+                // solhint-disable-next-line avoid-call-value
+                (success, ) = address(avatar).call.value(proposal.funding)("");
+                require(success, "sendEther to avatar failed");
+            } else {
+                address(fundingToken).safeTransfer(address(avatar), proposal.funding);
+            }
+            fundings[proposal.funder] = proposal.funding;
             totalDonation = totalDonation.add(proposal.funding);
-            checkFundedBeforeDeadLine();
+            setFundingGoalReachedFlag();
         } else {
-            address(fundingToken).safeTransfer(proposal.funder, proposal.funding);
+            if (fundingToken == IERC20(0)) {
+                // solhint-disable-next-line avoid-call-value
+                (success, ) = proposal.funder.call.value(proposal.funding)("");
+                require(success, "sendEther to avatar failed");
+            } else {
+                address(fundingToken).safeTransfer(proposal.funder, proposal.funding);
+            }
         }
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
@@ -136,7 +150,8 @@ contract JoinAndQuit is
     * @dev Submit a proposal for to join in a dao
     * @param _descriptionHash A hash of the proposal's description
     * @param _feeAmount - the amount to fund the dao with. should be >= the minimum fee to join
-    * @param _proposedMember the proposed member join in - if this address is zero the msg.sender will be set as the member
+    * @param _proposedMember the proposed member join in -
+    *         if this address is zero the msg.sender will be set as the member
     * @return proposalId the proposal id
     */
     function proposeToJoin(
@@ -145,16 +160,23 @@ contract JoinAndQuit is
         address _proposedMember
     )
     public
+    payable
     returns(bytes32)
     {
         require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
-        address(fundingToken).safeTransferFrom(msg.sender, address(this), _feeAmount);
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
-        address proposedMember = _proposedMember;
-        if (proposedMember == address(0)) {
-            proposedMember = msg.sender;
+        if (fundingToken == IERC20(0)) {
+            require(_feeAmount == msg.value, "ETH received shoul match the _feeAmount");
+        } else {
+            address(fundingToken).safeTransferFrom(msg.sender, address(this), _feeAmount);
         }
-
+        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
+        address proposedMember;
+        if (_proposedMember == address(0)) {
+            proposedMember = msg.sender;
+        } else {
+            proposedMember = _proposedMember;
+        }
+        require(avatar.nativeReputation().balanceOf(proposedMember) == 0, "already a member");
         Proposal memory proposal = Proposal({
             accepted: false,
             proposedMember: proposedMember,
@@ -167,7 +189,7 @@ contract JoinAndQuit is
             address(avatar),
             proposalId,
             _descriptionHash,
-            member,
+            proposedMember,
             _feeAmount
         );
 
@@ -190,22 +212,17 @@ contract JoinAndQuit is
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposal.proposedMember = address(0);
         require(proposal.accepted == true, " proposal not accepted");
+        uint256 reputationToMint;
+        if (memberReputation == 0) {
+            reputationToMint = _proposal.funding;
+        } else {
+            reputationToMint = memberReputation;
+        }
         require(
         Controller(
-        avatar.owner()).mintReputation(memberReputation, _proposal.proposedMember));
+        avatar.owner()).mintReputation(reputationToMint, _proposal.proposedMember));
         proposal.proposedMember = _proposal.proposedMember;
-        emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, memberReputation);
-    }
-
-    /**
-    * @dev donate donate to the dao. no repution is minted
-    */
-    function donate(uint256 _donation) public {
-        address(fundingToken).safeTransferFrom(msg.sender, address(avatar), _donation);
-        fundings[msg.sender] = fundings[msg.sender].add(_donation);
-        totalDonation = totalDonation.add(_donation);
-        checkFundedBeforeDeadLine();
-        emit Donation(address(avatar), _donation);
+        emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, reputationToMint);
     }
 
     /**
@@ -218,20 +235,33 @@ contract JoinAndQuit is
         require(fundings[msg.sender] > 0, "no fund to RageQuit");
         uint256 userDonation = fundings[msg.sender];
         fundings[msg.sender] = 0;
-        refund = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
+        if (fundingToken == IERC20(0)) {
+            refund = userDonation.mul((address(avatar)).balance).div(totalDonation);
+            require(
+            Controller(
+            avatar.owner()).sendEther(refund, msg.sender), "send ether failed");
+        } else {
+            refund = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
+            require(
+            Controller(
+            avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund), "send token failed");
+        }
         totalDonation = totalDonation.sub(userDonation);
-        require(
-        Controller(
-        avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund));
         emit RageQuit(address(avatar), refund);
     }
 
     /**
-    * @dev checkFundedBeforeDeadLine check if funding goal reached.
+    * @dev setFundingGoalReachedFlag check if funding goal reached.
     */
-    function checkFundedBeforeDeadLine() private {
+    function setFundingGoalReachedFlag() private {
+        uint256 avatarBalance;
+        if (fundingToken == IERC20(0)) {
+            avatarBalance = (address(avatar)).balance;
+        } else {
+            avatarBalance = fundingToken.balanceOf(address(avatar));
+        }
         if ((avatar.db(FUNDED_BEFORE_DEADLINE_KEY).hashCompareWithLengthCheck(FUNDED_BEFORE_DEADLINE_VALUE) == false) &&
-            (fundingToken.balanceOf(address(avatar)) >= fundingGoal) &&
+            (avatarBalance >= fundingGoal) &&
             // solhint-disable-next-line not-rely-on-time
             (now < fundingGoalDeadLine)) {
             require(
