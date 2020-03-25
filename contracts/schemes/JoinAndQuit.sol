@@ -27,7 +27,7 @@ contract JoinAndQuit is
         uint256 _feeAmount
     );
 
-    event FundedDeadLineReached(
+    event FundedBeforeDeadline(
         address indexed _avatar
     );
 
@@ -236,8 +236,8 @@ contract JoinAndQuit is
             (now < fundingGoalDeadLine)) {
             require(
             Controller(
-            avatar.owner()).setDBValue("FUNDED_BEFORE_DEADLINE", "TRUE"));
-            emit FundedDeadLineReached(address(avatar));
+            avatar.owner()).setDBValue(FUNDED_BEFORE_DEADLINE_KEY, FUNDED_BEFORE_DEADLINE_VALUE));
+            emit FundedBeforeDeadline(address(avatar));
         }
     }
 

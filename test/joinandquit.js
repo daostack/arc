@@ -297,7 +297,7 @@ contract('JoinAndQuit', accounts => {
       let value = await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_VALUE();
       assert.equal(await avatar.db(key),"");
       var tx = await testSetup.joinAndQuit.donate(testSetup.fundingGoal);
-      assert.equal(tx.logs[0].event, "FundedDeadLineReached");
+      assert.equal(tx.logs[0].event, "FundedBeforeDeadline");
       assert.equal(await avatar.db(key),value);
     });
 
