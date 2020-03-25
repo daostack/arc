@@ -236,7 +236,8 @@ contract JoinAndQuit is
         uint256 userDonation = fundings[msg.sender];
         fundings[msg.sender] = 0;
         if (fundingToken == IERC20(0)) {
-            refund = userDonation.mul((address(avatar)).balance).div(totalDonation);
+
+            refund = userDonation.mul(address(avatar.vault()).balance).div(totalDonation);
             require(
             Controller(
             avatar.owner()).sendEther(refund, msg.sender), "send ether failed");
@@ -256,7 +257,7 @@ contract JoinAndQuit is
     function setFundingGoalReachedFlag() private {
         uint256 avatarBalance;
         if (fundingToken == IERC20(0)) {
-            avatarBalance = (address(avatar)).balance;
+            avatarBalance = (address(avatar.vault())).balance;
         } else {
             avatarBalance = fundingToken.balanceOf(address(avatar));
         }
