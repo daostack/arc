@@ -137,6 +137,7 @@ contract JoinAndQuit is
     * @param _descriptionHash A hash of the proposal's description
     * @param _fundAmount - the amount to fund the dao with. should be >= the minimum fee to join
     * @param _member the member to join in - if this address is zero the msg.sender will be set as the member
+    * @return proposalId the proposal id
     */
     function proposeToJoinIn(
         string memory _descriptionHash,
