@@ -3,6 +3,7 @@ pragma solidity ^0.5.16;
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../libs/StringUtil.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./CommonInterface.sol";
 
 
 /**
@@ -12,14 +13,15 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 contract FundingRequest is
         VotingMachineCallbacks,
         ProposalExecuteInterface,
-        Initializable {
+        Initializable,
+        CommonInterface {
     using SafeMath for uint;
     using StringUtil for string;
 
     event NewFundingProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        address _beneficiary,
+        address payable _beneficiary,
         uint256 _amount,
         string _descriptionHash
     );
@@ -34,7 +36,7 @@ contract FundingRequest is
     );
 
     struct Proposal {
-        address beneficiary;
+        address payable beneficiary;
         uint256 amount;
         string descriptionHash;
         uint256 executionTime;
@@ -42,25 +44,23 @@ contract FundingRequest is
 
     mapping(bytes32=>Proposal) public proposals;
 
-    string public constant FUNDED_BEFORE_DEADLINE_KEY = "FUNDED_BEFORE_DEADLINE";
-    string public constant FUNDED_BEFORE_DEADLINE_VALUE = "TRUE";
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
     Avatar public avatar;
-    IERC20 public fundingToken;
+    address public fundingToken;
 
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
-     * @param _fundingToken token to transfer to funding requests.
+     * @param _fundingToken token to transfer to funding requests. 0x0 address for the native coin
      */
     function initialize(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams,
-        IERC20 _fundingToken
+        address _fundingToken
     )
     external
     initializer
@@ -81,7 +81,6 @@ contract FundingRequest is
     external
     onlyVotingMachine(_proposalId)
     returns(bool) {
-        ProposalInfo memory proposal = proposalsInfo[msg.sender][_proposalId];
         require(proposals[_proposalId].executionTime == 0);
         require(proposals[_proposalId].beneficiary != address(0));
         // Check if vote was successful:
@@ -100,7 +99,7 @@ contract FundingRequest is
     * @param _descriptionHash A hash of the proposal's description
     */
     function propose(
-        address _beneficiary,
+        address payable _beneficiary,
         uint256 _amount,
         string memory _descriptionHash
     )
@@ -109,10 +108,10 @@ contract FundingRequest is
     {
         require(
             avatar.db(FUNDED_BEFORE_DEADLINE_KEY).hashCompareWithLengthCheck(FUNDED_BEFORE_DEADLINE_VALUE),
-            "funding from this scheme was not yet approved"
+            "funding is not allowed yet"
         );
         bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
-        address beneficiary = _beneficiary;
+        address payable beneficiary = _beneficiary;
         if (beneficiary == address(0)) {
             beneficiary = msg.sender;
         }
@@ -149,8 +148,13 @@ contract FundingRequest is
         Proposal storage proposal = proposals[_proposalId];
         require(proposal.executionTime != 0);
         proposal.executionTime = 0;
-
-        require(Controller(avatar.owner()).externalTokenTransfer(fundingToken, _proposal.beneficiary, _proposal.amount));
+        if (fundingToken == address(0)) {
+            require(Controller(avatar.owner()).sendEther(_proposal.amount, _proposal.beneficiary));
+        } else {
+            require(
+                Controller(avatar.owner()).externalTokenTransfer(IERC20(fundingToken), _proposal.beneficiary, _proposal.amount)
+            );
+        }
         emit Redeem(address(avatar), _proposalId, _proposal.beneficiary, _proposal.amount);
 
         delete proposals[_proposalId];

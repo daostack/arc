@@ -92,6 +92,7 @@ const setupFundingRequest = async function(
 var registration;
 const setup = async function (accounts,
                               setupJAQProposal=true,
+                              ethFunding = false,
                               genesisProtocol = false,
                               tokenAddress=0,
                               minFeeToJoin = 100,
@@ -121,12 +122,17 @@ const setup = async function (accounts,
   testSetup.memberReputation = memberReputation;
   testSetup.fundingGoal = fundingGoal;
 
+  var fundPath = testSetup.standardTokenMock.address;
+  if (ethFunding === true) {
+     fundPath = helpers.NULL_ADDRESS;
+  }
+
   testSetup.joinAndQuitParams= await setupJoinAndQuit(
                      accounts,
                      genesisProtocol,
                      tokenAddress,
                      testSetup.org.avatar.address,
-                     testSetup.standardTokenMock.address,
+                     fundPath,
                      minFeeToJoin,
                      memberReputation,
                      fundingGoal,
@@ -137,7 +143,7 @@ const setup = async function (accounts,
                      genesisProtocol,
                      tokenAddress,
                      testSetup.org.avatar.address,
-                     testSetup.standardTokenMock.address);
+                     fundPath);
 
   var permissions = "0x00000000";
   var tx = await registration.daoFactory.setSchemes(
@@ -154,12 +160,15 @@ const setup = async function (accounts,
   if(setupJAQProposal) {
     await testSetup.standardTokenMock.transfer(accounts[3],10000);
     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal,{from:accounts[3]});
-
+    let value = 0;
+    if (ethFunding) {
+        value = testSetup.fundingGoal;
+    }
     tx = await testSetup.joinAndQuit.proposeToJoin(
                                                   "description-hash",
                                                   testSetup.fundingGoal,
                                                   helpers.NULL_ADDRESS,
-                                                  {from:accounts[3]});
+                                                  {value, from:accounts[3]});
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
   }
@@ -255,6 +264,34 @@ contract('FundingRequest', accounts => {
       assert.equal(proposal.amount, 0);
      });
 
+     it("redeem proposal eth", async function() {
+      var testSetup = await setup(accounts, true, true);
+      var balanceBefore = await web3.eth.getBalance(accounts[3]);
+
+      let tx = await testSetup.fundingRequest.propose(
+        accounts[3],
+        testSetup.minFeeToJoin - 1,
+        "description-hash");
+
+      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.fundingRequestParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      var proposal = await testSetup.fundingRequest.proposals(proposalId);
+      assert.equal(proposal.executionTime, (await web3.eth.getBlock("latest")).timestamp);
+      tx = await testSetup.fundingRequest.redeem(proposalId);
+      assert.equal(tx.logs[0].event, "Redeem");
+      assert.equal(tx.logs[0].args._avatar, testSetup.org.avatar.address);
+      assert.equal(tx.logs[0].args._proposalId, proposalId);
+      assert.equal(tx.logs[0].args._beneficiary, accounts[3]);
+      assert.equal(tx.logs[0].args._amount, testSetup.minFeeToJoin - 1);
+      var BN = web3.utils.BN;
+      var a = new BN(balanceBefore);
+      var b = new BN(testSetup.minFeeToJoin - 1);
+      var expectedBalance = await a.add(b).toString();
+      assert.equal((await web3.eth.getBalance(accounts[3])).toString(),expectedBalance.toString());
+      proposal = await testSetup.fundingRequest.proposals(proposalId);
+      assert.equal(proposal.executionTime, 0);
+      assert.equal(proposal.amount, 0);
+     });
 
      it("can't redeem before proposal passed", async function() {
       var testSetup = await setup(accounts);
