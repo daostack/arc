@@ -2,7 +2,6 @@ import * as helpers from './helpers';
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
-const Avatar = artifacts.require("./Avatar.sol");
 
 export class JoinAndQuitParams {
   constructor() {
@@ -92,6 +91,7 @@ const setupFundingRequest = async function(
 
 var registration;
 const setup = async function (accounts,
+                              setupJAQProposal=true,
                               genesisProtocol = false,
                               tokenAddress=0,
                               minFeeToJoin = 100,
@@ -151,18 +151,29 @@ const setup = async function (accounts,
   testSetup.joinAndQuit = await JoinAndQuit.at(tx.logs[1].args._scheme);
   testSetup.fundingRequest = await FundingRequest.at(tx.logs[3].args._scheme);
 
+  if(setupJAQProposal) {
+    await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
+
+      tx = await testSetup.joinAndQuit.proposeToJoin(
+                                                           "description-hash",
+                                                           testSetup.fundingGoal,
+                                                           helpers.NULL_ADDRESS);
+      
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+  }
   return testSetup;
 };
 contract('FundingRequest', accounts => {
 
     it("initialize", async function() {
-       var testSetup = await setup(accounts);
+       var testSetup = await setup(accounts, false);
        assert.equal(await testSetup.fundingRequest.votingMachine(),testSetup.fundingRequestParams.votingMachine.absoluteVote.address);
        assert.equal(await testSetup.fundingRequest.fundingToken(),testSetup.standardTokenMock.address);
     });
 
     it("can't propose before funded", async() => {
-      var testSetup = await setup(accounts);
+      var testSetup = await setup(accounts, false);
       try {
          await testSetup.fundingRequest.propose(
                                                     accounts[1],
@@ -177,22 +188,11 @@ contract('FundingRequest', accounts => {
     it("propose log", async function() {
       var testSetup = await setup(accounts);
 
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
-
-      var tx = await testSetup.joinAndQuit.proposeToJoin(
-                                                           "description-hash",
-                                                           testSetup.fundingGoal,
-                                                           helpers.NULL_ADDRESS);
-      
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
-      tx = await testSetup.fundingRequest.propose(
+      let tx = await testSetup.fundingRequest.propose(
         accounts[1],
         testSetup.minFeeToJoin - 1,
         "description-hash");
 
-      proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewFundingProposal");
       assert.equal(tx.logs[0].args._avatar, testSetup.org.avatar.address);
@@ -204,22 +204,12 @@ contract('FundingRequest', accounts => {
      it("execute proposal yes", async function() {
       var testSetup = await setup(accounts);
 
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
-
-      var tx = await testSetup.joinAndQuit.proposeToJoin(
-                                                           "description-hash",
-                                                           testSetup.fundingGoal,
-                                                           helpers.NULL_ADDRESS);
-      
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
-      tx = await testSetup.fundingRequest.propose(
+      let tx = await testSetup.fundingRequest.propose(
         accounts[1],
         testSetup.minFeeToJoin - 1,
         "description-hash");
 
-      proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.fundingRequestParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.fundingRequest.proposals(proposalId);
       assert.equal(proposal.executionTime, (await web3.eth.getBlock("latest")).timestamp);
@@ -229,22 +219,12 @@ contract('FundingRequest', accounts => {
      it("execute proposal no", async function() {
       var testSetup = await setup(accounts);
 
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
-
-      var tx = await testSetup.joinAndQuit.proposeToJoin(
-                                                           "description-hash",
-                                                           testSetup.fundingGoal,
-                                                           helpers.NULL_ADDRESS);
-      
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
-      tx = await testSetup.fundingRequest.propose(
+      let tx = await testSetup.fundingRequest.propose(
         accounts[1],
         testSetup.minFeeToJoin - 1,
         "description-hash");
 
-      proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.fundingRequestParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.fundingRequest.proposals(proposalId);
       assert.equal(proposal.executionTime, 0);
@@ -253,22 +233,12 @@ contract('FundingRequest', accounts => {
      it("redeem proposal", async function() {
       var testSetup = await setup(accounts);
 
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
-
-      var tx = await testSetup.joinAndQuit.proposeToJoin(
-                                                           "description-hash",
-                                                           testSetup.fundingGoal,
-                                                           helpers.NULL_ADDRESS);
-      
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
-      tx = await testSetup.fundingRequest.propose(
+      let tx = await testSetup.fundingRequest.propose(
         accounts[1],
         testSetup.minFeeToJoin - 1,
         "description-hash");
 
-      proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.fundingRequestParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.fundingRequest.proposals(proposalId);
       assert.equal(proposal.executionTime, (await web3.eth.getBlock("latest")).timestamp);
@@ -288,22 +258,12 @@ contract('FundingRequest', accounts => {
      it("can't redeem before proposal passed", async function() {
       var testSetup = await setup(accounts);
 
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
-
-      var tx = await testSetup.joinAndQuit.proposeToJoin(
-                                                           "description-hash",
-                                                           testSetup.fundingGoal,
-                                                           helpers.NULL_ADDRESS);
-      
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
-      tx = await testSetup.fundingRequest.propose(
+      let tx = await testSetup.fundingRequest.propose(
         accounts[1],
         testSetup.minFeeToJoin - 1,
         "description-hash");
 
-      proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       try {
         tx = await testSetup.fundingRequest.redeem(proposalId);
         assert(false, "can't redeem before passed");
@@ -316,22 +276,12 @@ contract('FundingRequest', accounts => {
      it("don't redeem failed proposal", async function() {
       var testSetup = await setup(accounts);
 
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
-
-      var tx = await testSetup.joinAndQuit.proposeToJoin(
-                                                           "description-hash",
-                                                           testSetup.fundingGoal,
-                                                           helpers.NULL_ADDRESS);
-      
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
-      tx = await testSetup.fundingRequest.propose(
+      let tx = await testSetup.fundingRequest.propose(
         accounts[1],
         testSetup.minFeeToJoin - 1,
         "description-hash");
 
-      proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.fundingRequestParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.fundingRequest.proposals(proposalId);
       assert.equal(proposal.executionTime, 0);
@@ -347,22 +297,12 @@ contract('FundingRequest', accounts => {
      it("can't redeem proposal twice", async function() {
       var testSetup = await setup(accounts);
 
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
-
-      var tx = await testSetup.joinAndQuit.proposeToJoin(
-                                                           "description-hash",
-                                                           testSetup.fundingGoal,
-                                                           helpers.NULL_ADDRESS);
-      
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
-      tx = await testSetup.fundingRequest.propose(
+      let tx = await testSetup.fundingRequest.propose(
         accounts[1],
         testSetup.minFeeToJoin - 1,
         "description-hash");
 
-      proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.fundingRequestParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.fundingRequest.proposals(proposalId);
       assert.equal(proposal.executionTime, (await web3.eth.getBlock("latest")).timestamp);
@@ -381,186 +321,4 @@ contract('FundingRequest', accounts => {
       }
       assert.equal((await testSetup.standardTokenMock.balanceOf(accounts[1])), testSetup.minFeeToJoin - 1);
      });
-
-  //   it("proposeJoinAndQuit check proposedMember", async() => {
-  //     var testSetup = await setup(accounts);
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-
-  //     var tx = await testSetup.joinAndQuit.proposeToJoin(
-  //                                                          "description-hash",
-  //                                                          testSetup.minFeeToJoin,
-  //                                                          accounts[1]);
-  //     assert.equal(tx.logs[0].args._proposedMember, accounts[1]);
-  //     assert.equal((await testSetup.joinAndQuit.proposals(tx.logs[0].args._proposalId)).proposedMember,accounts[1]);
-  //   });
-
-  //   it("proposeJoinAndQuit check minFeeToJoin", async() => {
-  //     var testSetup = await setup(accounts);
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-  //     try {
-  //        await testSetup.joinAndQuit.proposeToJoin(
-  //                                                   "description-hash",
-  //                                                   testSetup.minFeeToJoin-1,
-  //                                                   accounts[1]);
-  //        assert(false, 'minFeeToJoin');
-  //     } catch (ex) {
-  //        helpers.assertVMException(ex);
-  //     }
-  // });
-
-  //   it("execute proposeJoinAndQuit yes ", async function() {
-  //     var testSetup = await setup(accounts);
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-  //     var tx = await testSetup.joinAndQuit.proposeToJoin(
-  //                                                          "description-hash",
-  //                                                          testSetup.minFeeToJoin,
-  //                                                          helpers.NULL_ADDRESS);
-
-  //     //Vote with reputation to trigger execution
-  //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-  //     await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-  //     var proposal = await testSetup.joinAndQuit.proposals(proposalId);
-  //     assert.equal(proposal.accepted,true);
-  //     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
-  //     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
-  //     assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),testSetup.minFeeToJoin);
-  //    });
-
-  //    it("execute proposeJoinAndQuit no", async function() {
-  //      var testSetup = await setup(accounts);
-  //      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-  //      var tx = await testSetup.joinAndQuit.proposeToJoin(
-  //                                                           "description-hash",
-  //                                                           testSetup.minFeeToJoin,
-  //                                                           helpers.NULL_ADDRESS);
-
-  //      //Vote with reputation to trigger execution
-  //      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-  //      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-  //      var proposal = await testSetup.joinAndQuit.proposals(proposalId);
-  //      assert.equal(proposal.accepted,false);
-  //      assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),0);
-  //      assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
-  //      assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),0);
-  //      assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]),100000);
-  //     });
-
-  //   it("donation", async function() {
-  //     var testSetup = await setup(accounts);
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-  //     var tx = await testSetup.joinAndQuit.donate(10);
-  //     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
-  //     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),10);
-  //     assert.equal(tx.logs[0].event, "Donation");
-  //     assert.equal(tx.logs[0].args._donation, 10);
-  //     assert.equal(tx.logs[0].args._avatar, testSetup.org.avatar.address);
-  //    });
-
-  //   it("reputation redeem ", async function() {
-  //     var testSetup = await setup(accounts);
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-  //     var tx = await testSetup.joinAndQuit.proposeToJoin(
-  //                                                          "description-hash",
-  //                                                          testSetup.minFeeToJoin,
-  //                                                          helpers.NULL_ADDRESS);
-
-  //     //Vote with reputation to trigger execution
-  //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-  //     await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-  //     tx = await testSetup.joinAndQuit.redeemReputation(proposalId);
-  //     assert.equal(tx.logs[0].event, "RedeemReputation");
-  //     assert.equal(tx.logs[0].args._amount, testSetup.memberReputation);
-  //     assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),testSetup.reputationArray[0]+testSetup.memberReputation);
-  //   });
-
-  //   it("reputation cannot redeemed ", async function() {
-  //     var testSetup = await setup(accounts);
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-  //     var tx = await testSetup.joinAndQuit.proposeToJoin(
-  //                                                          "description-hash",
-  //                                                          testSetup.minFeeToJoin,
-  //                                                          helpers.NULL_ADDRESS);
-
-  //     //Vote with reputation to trigger execution
-  //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-  //     await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-  //     try {
-  //        await testSetup.joinAndQuit.redeemReputation(proposalId);
-  //        assert(false, 'reputation cannot redeemed');
-  //     } catch (ex) {
-  //        helpers.assertVMException(ex);
-  //     }
-  //   });
-
-  //   it("rageQuit", async function() {
-  //     var testSetup = await setup(accounts);
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-  //     var tx = await testSetup.joinAndQuit.proposeToJoin(
-  //                                                          "description-hash",
-  //                                                          testSetup.minFeeToJoin,
-  //                                                          helpers.NULL_ADDRESS);
-
-  //     //Vote with reputation to trigger execution
-  //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-  //     await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-  //     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
-  //     assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),testSetup.minFeeToJoin);
-  //     await testSetup.joinAndQuit.rageQuit();
-  //     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
-  //     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),0);
-  //     assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),0);
-  //     try {
-  //        await testSetup.joinAndQuit.rageQuit();
-  //        assert(false, 'cannot rage quite twice without refunding');
-  //     } catch (ex) {
-  //        helpers.assertVMException(ex);
-  //     }
-  //     await testSetup.standardTokenMock.transfer(accounts[1],100);
-  //     await testSetup.standardTokenMock.transfer(accounts[2],100);
-  //     await testSetup.standardTokenMock.transfer(accounts[3],100);
-
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,100,{from:accounts[1]});
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,100,{from:accounts[2]});
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,100,{from:accounts[3]});
-
-  //     await testSetup.joinAndQuit.donate(3,{from:accounts[1]});
-  //     await testSetup.joinAndQuit.donate(4,{from:accounts[1]});
-  //     await testSetup.joinAndQuit.donate(1,{from:accounts[2]});
-  //     await testSetup.joinAndQuit.donate(5,{from:accounts[3]});
-
-  //     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),3+4+1+5);
-  //     assert.equal(await testSetup.joinAndQuit.fundings(accounts[1]),7);
-  //     assert.equal(await testSetup.joinAndQuit.totalDonation(),13);
-  //     tx = await testSetup.joinAndQuit.rageQuit({from:accounts[1]});
-  //     assert.equal(tx.logs[0].event, "RageQuit");
-  //     assert.equal(tx.logs[0].args._refund, 3+4);
-  //     tx = await testSetup.joinAndQuit.rageQuit({from:accounts[2]});
-  //     assert.equal(tx.logs[0].args._refund, 1);
-  //     await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,100);
-  //     tx = await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
-  //     assert.equal(tx.logs[0].args._refund, 5+100);
-  //   });
-
-  //   it("checkFundedBeforeDeadLine ", async function() {
-  //     var testSetup = await setup(accounts);
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
-  //     let avatar = await Avatar.at(testSetup.org.avatar.address);
-  //     let key = await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_KEY();
-  //     let value = await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_VALUE();
-  //     assert.equal(await avatar.db(key),"");
-  //     var tx = await testSetup.joinAndQuit.donate(testSetup.fundingGoal);
-  //     assert.equal(tx.logs[0].event, "FundedBeforeDeadline");
-  //     assert.equal(await avatar.db(key),value);
-  //   });
-
-  //   it("checkFundedBeforeDeadLine after deadline", async function() {
-  //     var testSetup = await setup(accounts);
-  //     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal);
-  //     let avatar = await Avatar.at(testSetup.org.avatar.address);
-  //     let key = await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_KEY();
-  //     assert.equal(await avatar.db(key),"");
-  //     await helpers.increaseTime(testSetup.fundingGoalDeadLine);
-  //     await testSetup.joinAndQuit.donate(testSetup.fundingGoal);
-  //     assert.equal(await avatar.db(key),"");
-  //   });
 });
