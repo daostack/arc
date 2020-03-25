@@ -167,7 +167,7 @@ contract JoinAndQuit is
             address(avatar),
             proposalId,
             _descriptionHash,
-            member,
+            proposedMember,
             _feeAmount
         );
 
