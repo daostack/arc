@@ -127,7 +127,7 @@ contract('JoinAndQuit', accounts => {
       assert.equal(tx.logs[0].args._avatar, testSetup.org.avatar.address);
       assert.equal(tx.logs[0].args._descriptionHash, "description-hash");
       assert.equal(tx.logs[0].args._proposedMember, accounts[0]);
-      assert.equal(tx.logs[0].args._fundAmount, testSetup.minFeeToJoin);
+      assert.equal(tx.logs[0].args._feeAmount, testSetup.minFeeToJoin);
      });
 
     it("proposeJoinAndQuit check proposedMember", async() => {

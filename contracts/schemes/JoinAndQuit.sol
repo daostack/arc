@@ -24,7 +24,7 @@ contract JoinAndQuit is
         bytes32 indexed _proposalId,
         string _descriptionHash,
         address _proposedMember,
-        uint256 _fundAmount
+        uint256 _feeAmount
     );
 
     event FundedDeadLineReached(
@@ -135,20 +135,20 @@ contract JoinAndQuit is
     /**
     * @dev Submit a proposal for to join in a dao
     * @param _descriptionHash A hash of the proposal's description
-    * @param _fundAmount - the amount to fund the dao with. should be >= the minimum fee to join
+    * @param _feeAmount - the amount to fund the dao with. should be >= the minimum fee to join
     * @param _member the member to join in - if this address is zero the msg.sender will be set as the member
     * @return proposalId the proposal id
     */
     function proposeToJoinIn(
         string memory _descriptionHash,
-        uint256 _fundAmount,
+        uint256 _feeAmount,
         address _member
     )
     public
     returns(bytes32)
     {
-        require(_fundAmount >= minFeeToJoin, "_fundAmount should be >= then the minFeeToJoin");
-        address(fundingToken).safeTransferFrom(msg.sender, address(this), _fundAmount);
+        require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
+        address(fundingToken).safeTransferFrom(msg.sender, address(this), _feeAmount);
         bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
         address member = _member;
         if (member == address(0)) {
@@ -158,7 +158,7 @@ contract JoinAndQuit is
         Proposal memory proposal = Proposal({
             accepted: false,
             proposedMember: member,
-            funding : _fundAmount,
+            funding : _feeAmount,
             funder : msg.sender
         });
         proposals[proposalId] = proposal;
@@ -168,7 +168,7 @@ contract JoinAndQuit is
             proposalId,
             _descriptionHash,
             member,
-            _fundAmount
+            _feeAmount
         );
 
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
