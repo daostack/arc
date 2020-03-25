@@ -117,7 +117,7 @@ contract('JoinAndQuit', accounts => {
       var testSetup = await setup(accounts);
       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
 
-      var tx = await testSetup.joinAndQuit.proposeToJoinIn(
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
                                                            helpers.NULL_ADDRESS);
@@ -134,7 +134,7 @@ contract('JoinAndQuit', accounts => {
       var testSetup = await setup(accounts);
       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
 
-      var tx = await testSetup.joinAndQuit.proposeToJoinIn(
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
                                                            accounts[1]);
@@ -146,7 +146,7 @@ contract('JoinAndQuit', accounts => {
       var testSetup = await setup(accounts);
       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
       try {
-         await testSetup.joinAndQuit.proposeToJoinIn(
+         await testSetup.joinAndQuit.proposeToJoin(
                                                     "description-hash",
                                                     testSetup.minFeeToJoin-1,
                                                     accounts[1]);
@@ -159,7 +159,7 @@ contract('JoinAndQuit', accounts => {
     it("execute proposeJoinAndQuit yes ", async function() {
       var testSetup = await setup(accounts);
       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-      var tx = await testSetup.joinAndQuit.proposeToJoinIn(
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
                                                            helpers.NULL_ADDRESS);
@@ -177,7 +177,7 @@ contract('JoinAndQuit', accounts => {
      it("execute proposeJoinAndQuit no", async function() {
        var testSetup = await setup(accounts);
        await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-       var tx = await testSetup.joinAndQuit.proposeToJoinIn(
+       var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                             "description-hash",
                                                             testSetup.minFeeToJoin,
                                                             helpers.NULL_ADDRESS);
@@ -207,7 +207,7 @@ contract('JoinAndQuit', accounts => {
     it("reputation redeem ", async function() {
       var testSetup = await setup(accounts);
       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-      var tx = await testSetup.joinAndQuit.proposeToJoinIn(
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
                                                            helpers.NULL_ADDRESS);
@@ -224,7 +224,7 @@ contract('JoinAndQuit', accounts => {
     it("reputation cannot redeemed ", async function() {
       var testSetup = await setup(accounts);
       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-      var tx = await testSetup.joinAndQuit.proposeToJoinIn(
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
                                                            helpers.NULL_ADDRESS);
@@ -243,7 +243,7 @@ contract('JoinAndQuit', accounts => {
     it("rageQuit", async function() {
       var testSetup = await setup(accounts);
       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-      var tx = await testSetup.joinAndQuit.proposeToJoinIn(
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
                                                            helpers.NULL_ADDRESS);

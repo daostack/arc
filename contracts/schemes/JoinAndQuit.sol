@@ -139,7 +139,7 @@ contract JoinAndQuit is
     * @param _member the member to join in - if this address is zero the msg.sender will be set as the member
     * @return proposalId the proposal id
     */
-    function proposeToJoinIn(
+    function proposeToJoin(
         string memory _descriptionHash,
         uint256 _feeAmount,
         address _member
