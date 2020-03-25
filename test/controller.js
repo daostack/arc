@@ -616,5 +616,14 @@ contract('Controller', accounts =>  {
      assert.equal(globalConstraintsCount[0],0);
      });
 
+     it("setDBValue", async () => {
+
+     controller = await setup(accounts);
+     await avatar.transferOwnership(controller.address);
+     await controller.setDBValue("KEY","VALUE");
+     assert.equal(await avatar.db("KEY"),"VALUE");
+
+     });
+
 
 });

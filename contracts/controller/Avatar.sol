@@ -38,6 +38,7 @@ contract Avatar is Initializable, Ownable {
     DAOToken public nativeToken;
     Reputation public nativeReputation;
     Vault public vault;
+    mapping(string=>string) public db;
 
     event GenericCall(address indexed _contract, bytes _data, uint _value, bool _success);
     event SendEther(uint256 _amountInWei, address indexed _to);
@@ -166,6 +167,17 @@ contract Avatar is Initializable, Ownable {
     */
     function metaData(string calldata _metaData) external onlyOwner returns(bool) {
         emit MetaData(_metaData);
+        return true;
+    }
+
+    /**
+    * @dev setDBValue set a key value in the dao db
+    * @param _key a string
+    * @param _value a string
+    * @return true if successful
+    */
+    function setDBValue(string calldata _key, string calldata _value) external onlyOwner returns(bool) {
+        db[_key] = _value;
         return true;
     }
 

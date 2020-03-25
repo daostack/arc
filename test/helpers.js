@@ -34,6 +34,8 @@ const SignalScheme = artifacts.require("./SignalScheme.sol");
 const ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
 const VoteInOrganization = artifacts.require("./VoteInOrganizationScheme.sol");
 const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallbacksMock.sol");
+const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
+
 
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -182,6 +184,8 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.reputationFromToken = await ReputationFromToken.new();
   registration.voteInOrganization = await VoteInOrganization.new();
   registration.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
+  registration.joinAndQuit = await JoinAndQuit.new();
+
 
 
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
@@ -209,6 +213,8 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("ReputationFromToken",registration.reputationFromToken.address);
   await implementationDirectory.setImplementation("VoteInOrganization",registration.voteInOrganization.address);
   await implementationDirectory.setImplementation("ARCVotingMachineCallbacksMock",registration.arcVotingMachineCallbacksMock.address);
+  await implementationDirectory.setImplementation("JoinAndQuit",registration.joinAndQuit.address);
+
 
   return registration;
 };
