@@ -136,13 +136,13 @@ contract JoinAndQuit is
     * @dev Submit a proposal for to join in a dao
     * @param _descriptionHash A hash of the proposal's description
     * @param _feeAmount - the amount to fund the dao with. should be >= the minimum fee to join
-    * @param _member the member to join in - if this address is zero the msg.sender will be set as the member
+    * @param _proposedMember the proposed member join in - if this address is zero the msg.sender will be set as the member
     * @return proposalId the proposal id
     */
     function proposeToJoin(
         string memory _descriptionHash,
         uint256 _feeAmount,
-        address _member
+        address _proposedMember
     )
     public
     returns(bytes32)
@@ -150,14 +150,14 @@ contract JoinAndQuit is
         require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
         address(fundingToken).safeTransferFrom(msg.sender, address(this), _feeAmount);
         bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
-        address member = _member;
-        if (member == address(0)) {
-            member = msg.sender;
+        address proposedMember = _proposedMember;
+        if (proposedMember == address(0)) {
+            proposedMember = msg.sender;
         }
 
         Proposal memory proposal = Proposal({
             accepted: false,
-            proposedMember: member,
+            proposedMember: proposedMember,
             funding : _feeAmount,
             funder : msg.sender
         });
