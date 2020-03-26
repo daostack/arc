@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc-experimental",
-  "version": "0.1.1-rc.7",
+  "version": "0.1.1-rc.8",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -43,7 +43,7 @@
     "eslint-plugin-react": "^7.6.1",
     "eslint-plugin-standard": "^3.0.1",
     "ethereumjs-abi": "^0.6.5",
-    "pm2": "^2.9.3",
+    "pm2": "^4.2.3",
     "promisify": "^0.0.3",
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",

@@ -35,6 +35,7 @@ const ReputationFromToken = artifacts.require("./ReputationFromToken.sol");
 const VoteInOrganization = artifacts.require("./VoteInOrganizationScheme.sol");
 const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallbacksMock.sol");
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
+const FundingRequest = artifacts.require("./FundingRequest.sol");
 
 
 
@@ -185,6 +186,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   registration.voteInOrganization = await VoteInOrganization.new();
   registration.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
   registration.joinAndQuit = await JoinAndQuit.new();
+  registration.fundingRequest = await FundingRequest.new();
 
 
 
@@ -214,6 +216,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   await implementationDirectory.setImplementation("VoteInOrganization",registration.voteInOrganization.address);
   await implementationDirectory.setImplementation("ARCVotingMachineCallbacksMock",registration.arcVotingMachineCallbacksMock.address);
   await implementationDirectory.setImplementation("JoinAndQuit",registration.joinAndQuit.address);
+  await implementationDirectory.setImplementation("FundingRequest",registration.fundingRequest.address);
 
 
   return registration;
