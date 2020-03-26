@@ -33,11 +33,6 @@ contract JoinAndQuit is
         address indexed _avatar
     );
 
-    event Donation(
-        address indexed _avatar,
-        uint256 indexed _donation
-    );
-
     event RageQuit(
         address indexed _avatar,
         uint256 indexed _refund
