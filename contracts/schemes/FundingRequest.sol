@@ -148,7 +148,7 @@ contract FundingRequest is
         Proposal storage proposal = proposals[_proposalId];
         require(proposal.executionTime != 0, "proposal does not exist or not approved");
         proposal.executionTime = 0;
-        if (fundingToken == address(0)) {
+        if (address(fundingToken) == address(0)) {
             require(
                 Controller(avatar.owner()).sendEther(_proposal.amount, _proposal.beneficiary),
                 "failed to transfer network token from DAO"
