@@ -8,11 +8,11 @@ export class JoinAndQuitParams {
   }
 }
 
-const addMember = async function(accounts,_testSetup,_member,_fee,_from) {
+const addMember = async function(accounts,_testSetup,_fee,_from) {
   var tx = await _testSetup.joinAndQuit.proposeToJoin(
                                                        "description-hash",
                                                        _fee,
-                                                       _member,{value:_fee,from:_from});
+                                                       {value:_fee,from:_from});
 
   //Vote with reputation to trigger execution
   var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -84,16 +84,14 @@ const setup = async function (accounts,
   if (genesisProtocol) {
      testSetup.reputationArray = [1000,100,0];
   } else {
-     testSetup.reputationArray = [2000,4000,7000];
+     testSetup.reputationArray = [7000];
   }
   testSetup.proxyAdmin = accounts[5];
   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
                                                                       registration,
-                                                                      [accounts[0],
-                                                                      accounts[1],
-                                                                      accounts[2]],
-                                                                      [1000,0,0],
+                                                                      [accounts[2]],
+                                                                      [0],
                                                                       testSetup.reputationArray);
   testSetup.fundingGoalDeadLine = (await web3.eth.getBlock("latest")).timestamp + fundingGoalDeadLine;
   testSetup.minFeeToJoin = minFeeToJoin;
@@ -144,7 +142,6 @@ contract('JoinAndQuit', accounts => {
       var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
-                                                           helpers.NULL_ADDRESS,
                                                             {from:accounts[3]});
 
       assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),testSetup.minFeeToJoin);
@@ -162,7 +159,7 @@ contract('JoinAndQuit', accounts => {
        var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                             "description-hash",
                                                             testSetup.minFeeToJoin,
-                                                            helpers.NULL_ADDRESS,
+
                                                             {value:testSetup.minFeeToJoin,from:accounts[3]});
 
        assert.equal(await web3.eth.getBalance(testSetup.joinAndQuit.address),testSetup.minFeeToJoin);
@@ -181,7 +178,7 @@ contract('JoinAndQuit', accounts => {
            await testSetup.joinAndQuit.proposeToJoin(
                                                     "description-hash",
                                                     testSetup.minFeeToJoin,
-                                                    helpers.NULL_ADDRESS,
+
                                                     {value:testSetup.minFeeToJoin+1,from:accounts[3]});
               assert(false, 'should be equal to _feeAmount');
            } catch (ex) {
@@ -192,28 +189,19 @@ contract('JoinAndQuit', accounts => {
      it("propose cannot add a member twice", async function() {
        var testSetup = await setup(accounts);
        await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
+       await testSetup.joinAndQuit.proposeToJoin(
+                                                "description-hash",
+                                                 testSetup.minFeeToJoin);
        try {
          await testSetup.joinAndQuit.proposeToJoin(
                                                   "description-hash",
-                                                   testSetup.minFeeToJoin,
-                                                   accounts[1]);
+                                                   testSetup.minFeeToJoin);
             assert(false, 'cannot add a member twice');
          } catch (ex) {
             helpers.assertVMException(ex);
         }
       });
 
-    it("proposeJoinAndQuit check proposedMember", async() => {
-      var testSetup = await setup(accounts);
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-
-      var tx = await testSetup.joinAndQuit.proposeToJoin(
-                                                           "description-hash",
-                                                           testSetup.minFeeToJoin,
-                                                           accounts[3]);
-      assert.equal(tx.logs[0].args._proposedMember, accounts[3]);
-      assert.equal((await testSetup.joinAndQuit.proposals(tx.logs[0].args._proposalId)).proposedMember,accounts[3]);
-    });
 
     it("proposeJoinAndQuit check minFeeToJoin", async() => {
       var testSetup = await setup(accounts);
@@ -221,8 +209,7 @@ contract('JoinAndQuit', accounts => {
       try {
          await testSetup.joinAndQuit.proposeToJoin(
                                                     "description-hash",
-                                                    testSetup.minFeeToJoin-1,
-                                                    accounts[3]);
+                                                    testSetup.minFeeToJoin-1);
          assert(false, 'minFeeToJoin');
       } catch (ex) {
          helpers.assertVMException(ex);
@@ -235,7 +222,7 @@ contract('JoinAndQuit', accounts => {
          await testSetup.joinAndQuit.proposeToJoin(
                                                     "description-hash",
                                                     testSetup.minFeeToJoin-1,
-                                                    accounts[3],{value:testSetup.minFeeToJoin-1});
+                                                    {value:testSetup.minFeeToJoin-1});
          assert(false, 'minFeeToJoin');
       } catch (ex) {
          helpers.assertVMException(ex);
@@ -248,7 +235,7 @@ contract('JoinAndQuit', accounts => {
       var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
-                                                           helpers.NULL_ADDRESS,{from:accounts[3]});
+                                                           {from:accounts[3]});
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -265,7 +252,7 @@ contract('JoinAndQuit', accounts => {
       var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
-                                                           helpers.NULL_ADDRESS,{value:testSetup.minFeeToJoin,from:accounts[3]});
+                                                           {value:testSetup.minFeeToJoin,from:accounts[3]});
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -283,7 +270,7 @@ contract('JoinAndQuit', accounts => {
        var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                             "description-hash",
                                                             testSetup.minFeeToJoin,
-                                                            helpers.NULL_ADDRESS,{from:accounts[3]});
+                                                            {from:accounts[3]});
 
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -302,7 +289,6 @@ contract('JoinAndQuit', accounts => {
      var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                           "description-hash",
                                                           testSetup.minFeeToJoin,
-                                                          helpers.NULL_ADDRESS,
                                                           {value:testSetup.minFeeToJoin,from:accounts[3]});
 
      //Vote with reputation to trigger execution
@@ -323,11 +309,11 @@ contract('JoinAndQuit', accounts => {
 
     it("reputation redeem ", async function() {
       var testSetup = await setup(accounts);
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
+      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin,{from:accounts[3]});
       var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
-                                                           accounts[3]);
+                                                           {from:accounts[3]});
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -336,15 +322,21 @@ contract('JoinAndQuit', accounts => {
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, testSetup.memberReputation);
       assert.equal(await testSetup.org.reputation.balanceOf(accounts[3]),testSetup.memberReputation);
+      try {
+         await testSetup.joinAndQuit.redeemReputation(proposalId);
+         assert(false, 'cannot redeem twice');
+      } catch (ex) {
+         helpers.assertVMException(ex);
+      }
     });
 
     it("reputation cannot redeemed ", async function() {
       var testSetup = await setup(accounts);
-      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
+      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin,{from:accounts[3]});
       var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
-                                                           accounts[3]);
+                                                           {from:accounts[3]});
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -359,48 +351,48 @@ contract('JoinAndQuit', accounts => {
 
   it("rageQuit", async function() {
     var testSetup = await setup(accounts);
-    await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
+    await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin,{from:accounts[3]});
     var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                          "description-hash",
                                                          testSetup.minFeeToJoin,
-                                                         accounts[3]);
+                                                         {from:accounts[3]});
 
     //Vote with reputation to trigger execution
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
     await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
-    assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),testSetup.minFeeToJoin);
-    await testSetup.joinAndQuit.rageQuit();
+    assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),testSetup.minFeeToJoin);
+    await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),0);
-    assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),0);
+    assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),0);
     try {
-       await testSetup.joinAndQuit.rageQuit();
+       await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
        assert(false, 'cannot rage quite twice without refunding');
     } catch (ex) {
        helpers.assertVMException(ex);
     }
+    await testSetup.standardTokenMock.transfer(accounts[0],1000);
     await testSetup.standardTokenMock.transfer(accounts[1],1000);
-    await testSetup.standardTokenMock.transfer(accounts[2],1000);
-    await testSetup.standardTokenMock.transfer(accounts[3],1000);
+    await testSetup.standardTokenMock.transfer(accounts[4],1000);
 
+    await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,1000,{from:accounts[0]});
     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,1000,{from:accounts[1]});
-    await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,1000,{from:accounts[2]});
-    await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,1000,{from:accounts[3]});
-    await addMember(accounts,testSetup,accounts[4],300,accounts[1]);
-    await addMember(accounts,testSetup,accounts[5],100,accounts[2]);
-    await addMember(accounts,testSetup,testSetup.org.avatar.address,500,accounts[3]);
+    await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,1000,{from:accounts[4]});
+    await addMember(accounts,testSetup,300,accounts[0]);
+    await addMember(accounts,testSetup,100,accounts[1]);
+    await addMember(accounts,testSetup,500,accounts[4]);
 
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),900);
-    assert.equal(await testSetup.joinAndQuit.fundings(accounts[1]),300);
+    assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),300);
     assert.equal(await testSetup.joinAndQuit.totalDonation(),900);
-    tx = await testSetup.joinAndQuit.rageQuit({from:accounts[1]});
+    tx = await testSetup.joinAndQuit.rageQuit({from:accounts[0]});
     assert.equal(tx.logs[0].event, "RageQuit");
     assert.equal(tx.logs[0].args._refund, 300);
-    tx = await testSetup.joinAndQuit.rageQuit({from:accounts[2]});
+    tx = await testSetup.joinAndQuit.rageQuit({from:accounts[1]});
     assert.equal(tx.logs[0].args._refund, 100);
     await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,100);
-    tx = await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
+    tx = await testSetup.joinAndQuit.rageQuit({from:accounts[4]});
     assert.equal(tx.logs[0].args._refund, 500+100);
   });
     it("rageQuit with eth", async function() {
@@ -408,39 +400,39 @@ contract('JoinAndQuit', accounts => {
       var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.minFeeToJoin,
-                                                           accounts[3],{value:testSetup.minFeeToJoin});
+                                                           {from:accounts[3],value:testSetup.minFeeToJoin});
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       assert.equal(await avatarBalance(testSetup),testSetup.minFeeToJoin);
-      assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),testSetup.minFeeToJoin);
-      await testSetup.joinAndQuit.rageQuit();
+      assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),testSetup.minFeeToJoin);
+      await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
       assert.equal(await web3.eth.getBalance(testSetup.joinAndQuit.address),0);
       assert.equal(await avatarBalance(testSetup),0);
-      assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),0);
+      assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),0);
 
       try {
-         await testSetup.joinAndQuit.rageQuit();
+         await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
          assert(false, 'cannot rage quite twice without refunding');
       } catch (ex) {
          helpers.assertVMException(ex);
       }
 
-      await addMember(accounts,testSetup,accounts[4],300,accounts[1]);
-      await addMember(accounts,testSetup,accounts[5],100,accounts[2]);
-      await addMember(accounts,testSetup,testSetup.org.avatar.address,500,accounts[3]);
+      await addMember(accounts,testSetup,300,accounts[0]);
+      await addMember(accounts,testSetup,100,accounts[1]);
+      await addMember(accounts,testSetup,500,accounts[4]);
 
       assert.equal(await avatarBalance(testSetup),900);
-      assert.equal(await testSetup.joinAndQuit.fundings(accounts[1]),300);
+      assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),300);
       assert.equal(await testSetup.joinAndQuit.totalDonation(),900);
-      tx = await testSetup.joinAndQuit.rageQuit({from:accounts[1]});
+      tx = await testSetup.joinAndQuit.rageQuit({from:accounts[0]});
       assert.equal(tx.logs[0].event, "RageQuit");
       assert.equal(tx.logs[0].args._refund, 300);
-      tx = await testSetup.joinAndQuit.rageQuit({from:accounts[2]});
+      tx = await testSetup.joinAndQuit.rageQuit({from:accounts[1]});
       assert.equal(tx.logs[0].args._refund, 100);
       await web3.eth.sendTransaction({to:testSetup.org.avatar.address, from:accounts[0], value:100});
-      tx = await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
+      tx = await testSetup.joinAndQuit.rageQuit({from:accounts[4]});
       assert.equal(tx.logs[0].args._refund, 500+100);
     });
 
@@ -455,7 +447,7 @@ contract('JoinAndQuit', accounts => {
       var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.fundingGoal,
-                                                           accounts[4],{from:accounts[3]});
+                                                           {from:accounts[3]});
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
@@ -481,7 +473,6 @@ contract('JoinAndQuit', accounts => {
       var tx = await testSetup.joinAndQuit.proposeToJoin(
                                                            "description-hash",
                                                            testSetup.fundingGoal,
-                                                           accounts[4],
                                                            {value:testSetup.fundingGoal,from:accounts[3]});
 
       //Vote with reputation to trigger execution
@@ -504,7 +495,7 @@ contract('JoinAndQuit', accounts => {
       let key = "FUNDED_BEFORE_DEADLINE";
       assert.equal(await avatar.db(key),"");
       await helpers.increaseTime(testSetup.fundingGoalDeadLine);
-      await addMember(accounts,testSetup,accounts[4],testSetup.fundingGoal,accounts[3]);
+      await addMember(accounts,testSetup,testSetup.fundingGoal,accounts[3]);
       assert.equal(await avatar.db(key),"");
     });
 
@@ -514,7 +505,7 @@ contract('JoinAndQuit', accounts => {
       let key = "FUNDED_BEFORE_DEADLINE";
       assert.equal(await avatar.db(key),"");
       await helpers.increaseTime(testSetup.fundingGoalDeadLine);
-      await addMember(accounts,testSetup,accounts[4],testSetup.fundingGoal,accounts[3]);
+      await addMember(accounts,testSetup,testSetup.fundingGoal,accounts[3]);
       assert.equal(await avatar.db(key),"");
     });
 });
