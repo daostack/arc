@@ -167,7 +167,6 @@ const setup = async function (accounts,
     tx = await testSetup.joinAndQuit.proposeToJoin(
                                                   "description-hash",
                                                   testSetup.fundingGoal,
-                                                  helpers.NULL_ADDRESS,
                                                   {value, from:accounts[3]});
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
