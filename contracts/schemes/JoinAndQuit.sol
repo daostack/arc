@@ -53,8 +53,13 @@ contract JoinAndQuit is
         uint256 funding;
     }
 
+    struct MemberFund {
+        bool rageQuit;
+        uint256 funding;
+    }
+
     mapping(bytes32=>Proposal) public proposals;
-    mapping(address=>uint256) public fundings;
+    mapping(address=>MemberFund) public fundings;
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
@@ -125,7 +130,7 @@ contract JoinAndQuit is
             } else {
                 address(fundingToken).safeTransfer(address(avatar), proposal.funding);
             }
-            fundings[proposal.proposedMember] = proposal.funding;
+            fundings[proposal.proposedMember].funding = proposal.funding;
             totalDonation = totalDonation.add(proposal.funding);
             setFundingGoalReachedFlag();
         } else {
@@ -196,6 +201,7 @@ contract JoinAndQuit is
         Proposal memory _proposal = proposals[_proposalId];
         Proposal storage proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "no member to redeem");
+        require(!fundings[proposal.proposedMember].rageQuit, "member already rageQuit");
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposal.proposedMember = address(0);
         require(proposal.accepted == true, " proposal not accepted");
@@ -218,9 +224,10 @@ contract JoinAndQuit is
     * @return refund the refund amount
     */
     function rageQuit() public returns(uint256 refund) {
-        require(fundings[msg.sender] > 0, "no fund to RageQuit");
-        uint256 userDonation = fundings[msg.sender];
-        fundings[msg.sender] = 0;
+        require(fundings[msg.sender].funding > 0, "no fund to RageQuit");
+        uint256 userDonation = fundings[msg.sender].funding;
+        fundings[msg.sender].funding = 0;
+        fundings[msg.sender].rageQuit = true;
         if (fundingToken == IERC20(0)) {
             refund = userDonation.mul(address(avatar.vault()).balance).div(totalDonation);
             require(

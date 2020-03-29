@@ -244,7 +244,7 @@ contract('JoinAndQuit', accounts => {
       assert.equal(proposal.accepted,true);
       assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
       assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
-      assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),testSetup.minFeeToJoin);
+      assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
      });
 
     it("execute proposeJoinAndQuit yes with eth", async function() {
@@ -261,7 +261,7 @@ contract('JoinAndQuit', accounts => {
       assert.equal(proposal.accepted,true);
       assert.equal(await avatarBalance(testSetup),testSetup.minFeeToJoin);
       assert.equal(await web3.eth.getBalance(testSetup.joinAndQuit.address),0);
-      assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),testSetup.minFeeToJoin);
+      assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
      });
 
      it("execute proposeJoinAndQuit no", async function() {
@@ -279,7 +279,7 @@ contract('JoinAndQuit', accounts => {
        assert.equal(proposal.accepted,false);
        assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),0);
        assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
-       assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),0);
+       assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,0);
        assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[3]),10000);
       });
 
@@ -299,7 +299,7 @@ contract('JoinAndQuit', accounts => {
      assert.equal(proposal.accepted,false);
      assert.equal(await avatarBalance(testSetup),0);
      assert.equal(await web3.eth.getBalance(testSetup.joinAndQuit.address),0);
-     assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),0);
+     assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,0);
      var BN = web3.utils.BN;
      var a = new BN(balanceBefore);
      var b = new BN(testSetup.minFeeToJoin);
@@ -361,11 +361,11 @@ contract('JoinAndQuit', accounts => {
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
     await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
-    assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),testSetup.minFeeToJoin);
+    assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
     await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),0);
-    assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),0);
+    assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,0);
     try {
        await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
        assert(false, 'cannot rage quite twice without refunding');
@@ -384,7 +384,7 @@ contract('JoinAndQuit', accounts => {
     await addMember(accounts,testSetup,500,accounts[4]);
 
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),900);
-    assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),300);
+    assert.equal((await testSetup.joinAndQuit.fundings(accounts[0])).funding,300);
     assert.equal(await testSetup.joinAndQuit.totalDonation(),900);
     tx = await testSetup.joinAndQuit.rageQuit({from:accounts[0]});
     assert.equal(tx.logs[0].event, "RageQuit");
@@ -406,11 +406,11 @@ contract('JoinAndQuit', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       assert.equal(await avatarBalance(testSetup),testSetup.minFeeToJoin);
-      assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),testSetup.minFeeToJoin);
+      assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
       await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
       assert.equal(await web3.eth.getBalance(testSetup.joinAndQuit.address),0);
       assert.equal(await avatarBalance(testSetup),0);
-      assert.equal(await testSetup.joinAndQuit.fundings(accounts[3]),0);
+      assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,0);
 
       try {
          await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
@@ -424,7 +424,7 @@ contract('JoinAndQuit', accounts => {
       await addMember(accounts,testSetup,500,accounts[4]);
 
       assert.equal(await avatarBalance(testSetup),900);
-      assert.equal(await testSetup.joinAndQuit.fundings(accounts[0]),300);
+      assert.equal((await testSetup.joinAndQuit.fundings(accounts[0])).funding,300);
       assert.equal(await testSetup.joinAndQuit.totalDonation(),900);
       tx = await testSetup.joinAndQuit.rageQuit({from:accounts[0]});
       assert.equal(tx.logs[0].event, "RageQuit");
