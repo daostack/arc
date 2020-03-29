@@ -237,6 +237,8 @@ contract JoinAndQuit is
         Controller(
         avatar.owner()).burnReputation(memberReputation, msg.sender));
         totalDonation = totalDonation.sub(userDonation);
+        //cleard the proposedMember so he/she cannot redeemed his/her reputation.
+        proposal.proposedMember = address(0);
         emit RageQuit(address(avatar), msg.sender, refund);
     }
 
