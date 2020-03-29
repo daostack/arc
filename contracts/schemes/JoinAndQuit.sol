@@ -35,7 +35,7 @@ contract JoinAndQuit is
 
     event RageQuit(
         address indexed _avatar,
-        address indexed _rageQuiter,
+        address indexed _rageQuitter,
         uint256 indexed _refund
     );
 
