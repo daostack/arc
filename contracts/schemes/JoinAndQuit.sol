@@ -33,13 +33,9 @@ contract JoinAndQuit is
         address indexed _avatar
     );
 
-    event Donation(
-        address indexed _avatar,
-        uint256 indexed _donation
-    );
-
     event RageQuit(
         address indexed _avatar,
+        address indexed _rageQuitter,
         uint256 indexed _refund
     );
 
@@ -54,7 +50,6 @@ contract JoinAndQuit is
     struct Proposal {
         bool accepted;
         address proposedMember;
-        address funder;
         uint256 funding;
     }
 
@@ -130,16 +125,16 @@ contract JoinAndQuit is
             } else {
                 address(fundingToken).safeTransfer(address(avatar), proposal.funding);
             }
-            fundings[proposal.funder] = proposal.funding;
+            fundings[proposal.proposedMember] = proposal.funding;
             totalDonation = totalDonation.add(proposal.funding);
             setFundingGoalReachedFlag();
         } else {
             if (fundingToken == IERC20(0)) {
                 // solhint-disable-next-line avoid-call-value
-                (success, ) = proposal.funder.call.value(proposal.funding)("");
+                (success, ) = proposal.proposedMember.call.value(proposal.funding)("");
                 require(success, "sendEther to avatar failed");
             } else {
-                address(fundingToken).safeTransfer(proposal.funder, proposal.funding);
+                address(fundingToken).safeTransfer(proposal.proposedMember, proposal.funding);
             }
         }
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
@@ -150,38 +145,30 @@ contract JoinAndQuit is
     * @dev Submit a proposal for to join in a dao
     * @param _descriptionHash A hash of the proposal's description
     * @param _feeAmount - the amount to fund the dao with. should be >= the minimum fee to join
-    * @param _proposedMember the proposed member join in -
-    *         if this address is zero the msg.sender will be set as the member
     * @return proposalId the proposal id
     */
     function proposeToJoin(
         string memory _descriptionHash,
-        uint256 _feeAmount,
-        address _proposedMember
+        uint256 _feeAmount
     )
     public
     payable
     returns(bytes32)
     {
+        address proposer = msg.sender;
+        require(avatar.nativeReputation().balanceOf(proposer) == 0, "already a member");
         require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
         if (fundingToken == IERC20(0)) {
             require(_feeAmount == msg.value, "ETH received shoul match the _feeAmount");
         } else {
-            address(fundingToken).safeTransferFrom(msg.sender, address(this), _feeAmount);
+            address(fundingToken).safeTransferFrom(proposer, address(this), _feeAmount);
         }
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
-        address proposedMember;
-        if (_proposedMember == address(0)) {
-            proposedMember = msg.sender;
-        } else {
-            proposedMember = _proposedMember;
-        }
-        require(avatar.nativeReputation().balanceOf(proposedMember) == 0, "already a member");
+        bytes32 proposalId = votingMachine.propose(2, voteParams, proposer, address(avatar));
+
         Proposal memory proposal = Proposal({
             accepted: false,
-            proposedMember: proposedMember,
-            funding : _feeAmount,
-            funder : msg.sender
+            proposedMember: proposer,
+            funding : _feeAmount
         });
         proposals[proposalId] = proposal;
 
@@ -189,7 +176,7 @@ contract JoinAndQuit is
             address(avatar),
             proposalId,
             _descriptionHash,
-            proposedMember,
+            proposer,
             _feeAmount
         );
 
@@ -206,9 +193,9 @@ contract JoinAndQuit is
     * @return reputation the redeemed reputation.
     */
     function redeemReputation(bytes32 _proposalId) public returns(uint256 reputation) {
-
         Proposal memory _proposal = proposals[_proposalId];
         Proposal storage proposal = proposals[_proposalId];
+        require(proposal.proposedMember != address(0), "no member to redeem");
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposal.proposedMember = address(0);
         require(proposal.accepted == true, " proposal not accepted");
@@ -220,8 +207,7 @@ contract JoinAndQuit is
         }
         require(
         Controller(
-        avatar.owner()).mintReputation(reputationToMint, _proposal.proposedMember));
-        proposal.proposedMember = _proposal.proposedMember;
+        avatar.owner()).mintReputation(reputationToMint, _proposal.proposedMember), "failed to mint reputation");
         emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, reputationToMint);
     }
 
@@ -236,7 +222,6 @@ contract JoinAndQuit is
         uint256 userDonation = fundings[msg.sender];
         fundings[msg.sender] = 0;
         if (fundingToken == IERC20(0)) {
-
             refund = userDonation.mul(address(avatar.vault()).balance).div(totalDonation);
             require(
             Controller(
@@ -247,8 +232,12 @@ contract JoinAndQuit is
             Controller(
             avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund), "send token failed");
         }
+        uint256 memberReputation = avatar.nativeReputation().balanceOf(msg.sender);
+        require(
+        Controller(
+        avatar.owner()).burnReputation(memberReputation, msg.sender));
         totalDonation = totalDonation.sub(userDonation);
-        emit RageQuit(address(avatar), refund);
+        emit RageQuit(address(avatar), msg.sender, refund);
     }
 
     /**
