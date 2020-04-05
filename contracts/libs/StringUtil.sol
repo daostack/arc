@@ -3,7 +3,7 @@ pragma solidity ^0.5.16;
 
 library StringUtil {
 
-    function hashCompareWithLengthCheck(string memory _a, string memory _b) internal returns (bool) {
+    function hashCompareWithLengthCheck(string memory _a, string memory _b) internal pure returns (bool) {
 
         if (bytes(_a).length != bytes(_b).length) {
             return false;

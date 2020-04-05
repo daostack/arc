@@ -205,16 +205,15 @@ contract JoinAndQuit is
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposal.proposedMember = address(0);
         require(proposal.accepted == true, " proposal not accepted");
-        uint256 reputationToMint;
         if (memberReputation == 0) {
-            reputationToMint = _proposal.funding;
+            reputation = _proposal.funding;
         } else {
-            reputationToMint = memberReputation;
+            reputation = memberReputation;
         }
         require(
         Controller(
-        avatar.owner()).mintReputation(reputationToMint, _proposal.proposedMember), "failed to mint reputation");
-        emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, reputationToMint);
+        avatar.owner()).mintReputation(reputation, _proposal.proposedMember), "failed to mint reputation");
+        emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, reputation);
     }
 
     /**
@@ -239,10 +238,10 @@ contract JoinAndQuit is
             Controller(
             avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund), "send token failed");
         }
-        uint256 memberReputation = avatar.nativeReputation().balanceOf(msg.sender);
+        uint256 msgSenderReputation = avatar.nativeReputation().balanceOf(msg.sender);
         require(
         Controller(
-        avatar.owner()).burnReputation(memberReputation, msg.sender));
+        avatar.owner()).burnReputation(msgSenderReputation, msg.sender));
         totalDonation = totalDonation.sub(userDonation);
         emit RageQuit(address(avatar), msg.sender, refund);
     }
