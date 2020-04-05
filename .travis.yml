@@ -11,7 +11,7 @@ install:
   - npm ci
   - rm -rf build/ # remove any remaining artifacts from a previous build
   - npx buidler --version
-  - npm buidler clean
+  - npx buidler clean
 
 jobs:
   include:
