@@ -2,7 +2,6 @@ pragma solidity ^0.5.16;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "../controller/Controller.sol";
-import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
@@ -13,7 +12,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 contract Auction4Reputation is Agreement, Initializable {
     using SafeMath for uint256;
-    using SafeERC20 for address;
+    using SafeERC20 for IERC20;
 
     event Bid(address indexed _bidder, uint256 indexed _auctionId, uint256 _amount);
     event Redeem(uint256 indexed _auctionId, address indexed _beneficiary, uint256 _amount);
@@ -126,7 +125,7 @@ contract Auction4Reputation is Agreement, Initializable {
         require(now < auctionsEndTime, "bidding should be within the allowed bidding period");
         // solhint-disable-next-line not-rely-on-time
         require(now >= auctionsStartTime, "bidding is enable only after bidding auctionsStartTime");
-        address(token).safeTransferFrom(msg.sender, address(this), _amount);
+        token.safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
         auctionId = (now - auctionsStartTime) / auctionPeriod;
         require(auctionId == _auctionId, "auction is not active");
@@ -144,7 +143,7 @@ contract Auction4Reputation is Agreement, Initializable {
       // solhint-disable-next-line not-rely-on-time
         require(now > auctionsEndTime, "now > auctionsEndTime");
         uint256 tokenBalance = token.balanceOf(address(this));
-        address(token).safeTransfer(wallet, tokenBalance);
+        token.safeTransfer(wallet, tokenBalance);
     }
 
     /**

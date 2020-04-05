@@ -65,32 +65,38 @@ contract Controller is Initializable {
 
   // Modifiers:
     modifier onlyRegisteredScheme() {
-        require(schemesPermissions[msg.sender]&bytes4(0x00000001) == bytes4(0x00000001));
+        require(schemesPermissions[msg.sender]&bytes4(0x00000001) == bytes4(0x00000001),
+        "sender is not registered scheme");
         _;
     }
 
     modifier onlyRegisteringSchemes() {
-        require(schemesPermissions[msg.sender]&bytes4(0x00000002) == bytes4(0x00000002));
+        require(schemesPermissions[msg.sender]&bytes4(0x00000002) == bytes4(0x00000002),
+        "sender unautorized to register scheme");
         _;
     }
 
     modifier onlyGlobalConstraintsScheme() {
-        require(schemesPermissions[msg.sender]&bytes4(0x00000004) == bytes4(0x00000004));
+        require(schemesPermissions[msg.sender]&bytes4(0x00000004) == bytes4(0x00000004),
+        "sender is not globalConstraint scheme");
         _;
     }
 
     modifier onlyUpgradingScheme() {
-        require(schemesPermissions[msg.sender]&bytes4(0x00000008) == bytes4(0x00000008));
+        require(schemesPermissions[msg.sender]&bytes4(0x00000008) == bytes4(0x00000008),
+        "sender is not UpgradingScheme");
         _;
     }
 
     modifier onlyGenericCallScheme() {
-        require(schemesPermissions[msg.sender]&bytes4(0x00000010) == bytes4(0x00000010));
+        require(schemesPermissions[msg.sender]&bytes4(0x00000010) == bytes4(0x00000010),
+        "sender is not a Generic Scheme");
         _;
     }
 
     modifier onlyMetaDataScheme() {
-        require(schemesPermissions[msg.sender]&bytes4(0x00000010) == bytes4(0x00000010));
+        require(schemesPermissions[msg.sender]&bytes4(0x00000010) == bytes4(0x00000010),
+        "sender is not a MetaData Scheme");
         _;
     }
 
@@ -176,10 +182,12 @@ contract Controller is Initializable {
     // Implementation is a bit messy. One must recall logic-circuits ^^
 
     // produces non-zero if sender does not have all of the perms that are changing between old and new
-        require(bytes4(0x0000001f)&(_permissions^permissions)&(~schemesPermissions[msg.sender]) == bytes4(0));
+        require(bytes4(0x0000001f)&(_permissions^permissions)&(~schemesPermissions[msg.sender]) == bytes4(0),
+        "sender unautorize to register scheme");
 
     // produces non-zero if sender does not have all of the perms in the old scheme
-        require(bytes4(0x0000001f)&(permissions&(~schemesPermissions[msg.sender])) == bytes4(0));
+        require(bytes4(0x0000001f)&(permissions&(~schemesPermissions[msg.sender])) == bytes4(0),
+        "sender unautorize to register scheme");
 
     // Add or change the scheme:
         schemesPermissions[_scheme] = _permissions|bytes4(0x00000001);
@@ -203,7 +211,8 @@ contract Controller is Initializable {
             return false;
         }
     // Check the unregistering scheme has enough permissions:
-        require(bytes4(0x0000001f)&(schemesPermissions[_scheme]&(~schemesPermissions[msg.sender])) == bytes4(0));
+        require(bytes4(0x0000001f)&(schemesPermissions[_scheme]&(~schemesPermissions[msg.sender])) == bytes4(0),
+        "sender unautorized to unregister scheme");
 
     // Unregister:
         emit UnregisterScheme(msg.sender, _scheme);

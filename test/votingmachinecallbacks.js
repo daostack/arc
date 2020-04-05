@@ -1,17 +1,12 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 
 const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallbacksMock.sol");
 
 const proposalId = "0x1234000000000000000000000000000000000000000000000000000000000000";
 
-export class SchemeParams {
-   constructor() {
-   }
- }
- 
+
  var registration;
- 
 const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
@@ -34,7 +29,7 @@ const setup = async function (accounts) {
       [permissions],
       "metaData",
       {from:testSetup.proxyAdmin});
-  
+
    testSetup.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.at(tx.logs[1].args._scheme);
 
    await testSetup.arcVotingMachineCallbacksMock.propose(proposalId,

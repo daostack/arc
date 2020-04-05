@@ -5,8 +5,9 @@ rm -rf ./build
 git checkout origin/master
 echo "npm install ..."
 npm i
-echo "truffle compile ..."
-truffle compile
+echo "buidler compile ..."
+npm buidler clean
+npx buidler compile
 # publish npm
 echo "Publishing to npm..."
 npm publish

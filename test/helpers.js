@@ -38,42 +38,33 @@ const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
 
 
+const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
 
-export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
-export const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
-export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
-export const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
-
-export class TestSetup {
+ class TestSetup {
   constructor() {
   }
 }
 
-export class VotingMachine {
+ class VotingMachine {
   constructor() {
   }
 }
 
-export class Organization {
+ class Organization {
   constructor() {
   }
 }
 
-export class Registration {
+ class Registration {
   constructor() {
   }
 }
 
-export function getProposalAddress(tx) {
-    // helper function that returns a proposal object from the ProposalCreated event
-    // in the logs of tx
-    assert.equal(tx.logs[0].event, 'ProposalCreated');
-    const proposalAddress = tx.logs[0].args.proposaladdress;
-    return proposalAddress;
-}
-
-export function getValueFromLogs(tx, arg, eventName, index=0) {
+ function getValueFromLogs(tx, arg, eventName, index=0) {
   /**
    *
    * tx.logs look like this:
@@ -116,45 +107,21 @@ export function getValueFromLogs(tx, arg, eventName, index=0) {
   return result;
 }
 
-export async function getProposal(tx) {
-    return await Proposal.at(getProposalAddress(tx));
-}
-
-export async function etherForEveryone(accounts) {
+ async function etherForEveryone(accounts) {
     // give all web3.eth.accounts some ether
     for (let i=0; i < 10; i++) {
         await web3.eth.sendTransaction({to: accounts[i], from: accounts[0], value: web3.utils.toWei("0.1", "ether")});
     }
 }
 
-export const outOfGasMessage = 'VM Exception while processing transaction: out of gas';
-
-export function assertJumpOrOutOfGas(error) {
-    let condition = (
-        error.message === outOfGasMessage ||
-        error.message.search('invalid JUMP') > -1
-    );
-    assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error, got this instead: ' + error.message);
-}
-
-export function assertVMException(error) {
+ function assertVMException(error) {
     let condition = (
         error.message.search('VM Exception') > -1
     );
     assert.isTrue(condition, 'Expected a VM Exception, got this instead:' + error.message);
 }
 
-export function assertInternalFunctionException(error) {
-    let condition = (
-        error.message.search('is not a function') > -1
-    );
-    assert.isTrue(condition, 'Expected a function not found Exception, got this instead:' + error.message);
-}
-
-export function assertJump(error) {
-  assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned' + error.message);
-}
-export const registrationAddVersionToPackege = async function (registration,version = [0,1,0]) {
+ const registrationAddVersionToPackege = async function (registration,version = [0,1,0]) {
   var packageName = "DAOstack";
 
   var implementationDirectory = await ImplementationDirectory.new();
@@ -222,7 +189,7 @@ export const registrationAddVersionToPackege = async function (registration,vers
   return registration;
 };
 
-export const registerImplementation = async function (version = [0,1,0]) {
+ const registerImplementation = async function (version = [0,1,0]) {
   var registration = new Registration();
   registration.packageInstance = await Package.new();
   registration.app = await App.new();
@@ -232,7 +199,7 @@ export const registerImplementation = async function (version = [0,1,0]) {
   return registration;
 };
 
-export const setupAbsoluteVote = async function (voteOnBehalf=NULL_ADDRESS, precReq=50 ) {
+ const setupAbsoluteVote = async function (voteOnBehalf=NULL_ADDRESS, precReq=50 ) {
   var votingMachine = new VotingMachine();
   votingMachine.absoluteVote = await AbsoluteVote.new();
   // register some parameters
@@ -241,7 +208,7 @@ export const setupAbsoluteVote = async function (voteOnBehalf=NULL_ADDRESS, prec
   return votingMachine;
 };
 
-export const setupGenesisProtocol = async function (
+ const setupGenesisProtocol = async function (
    accounts,
    token,
    voteOnBehalf = NULL_ADDRESS,
@@ -290,7 +257,7 @@ export const setupGenesisProtocol = async function (
   return votingMachine;
 };
 
-export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
+ const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
                                                                      accounts,
                                                                      registration,
                                                                      daoFactoryOwner,
@@ -320,7 +287,7 @@ export const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
   return org;
 };
 
-export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
+ const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
   let voteInfo;
   voteInfo = await absoluteVote.voteInfo(proposalId, voterAddress);
   // voteInfo has the following structure
@@ -330,17 +297,7 @@ export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddres
   assert.equal(voteInfo[1].toNumber(), _voteInfo[1]);
 };
 
-
-export const checkVotesStatus = async function(proposalId, _votesStatus,votingMachine){
-
-  let voteStatus;
-  for (var i = 0; i < _votesStatus.length; i++) {
-      voteStatus = await votingMachine.voteStatus(proposalId,i);
-      assert.equal(voteStatus, _votesStatus[i]);
-  }
-};
-
-export async function getProposalId(tx,contract,eventName) {
+ async function getProposalId(tx,contract,eventName) {
   var proposalId;
   await contract.getPastEvents(eventName, {
             fromBlock: tx.blockNumber,
@@ -352,7 +309,7 @@ export async function getProposalId(tx,contract,eventName) {
   return proposalId;
 }
 
-// export const increaseTime  = async function (addSeconds) {
+//  const increaseTime  = async function (addSeconds) {
 //     web3.currentProvider.sendAsync({
 //       jsonrpc: '2.0',
 //       method: 'evm_increaseTime',
@@ -370,13 +327,13 @@ export async function getProposalId(tx,contract,eventName) {
 //     });
 //   }
 // Increases testrpc time by the passed duration in seconds
-export const increaseTime = async function(duration) {
+ const increaseTime = async function(duration) {
   const id = await Date.now();
 
    web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send;
 
   return new Promise((resolve, reject) => {
-    web3.currentProvider.sendAsync({
+    web3.currentProvider.send({
       jsonrpc: '2.0',
       method: 'evm_increaseTime',
       params: [duration],
@@ -384,7 +341,7 @@ export const increaseTime = async function(duration) {
     }, err1 => {
       if (err1) return reject(err1);
 
-      web3.currentProvider.sendAsync({
+      web3.currentProvider.send({
         jsonrpc: '2.0',
         method: 'evm_mine',
         id: id + 1,
@@ -395,10 +352,31 @@ export const increaseTime = async function(duration) {
   });
 };
 
-export const concatBytes = function (bytes1, bytes2) {
+ const concatBytes = function (bytes1, bytes2) {
   return bytes1 + (bytes2.slice(2));
 };
 
-export const getBytesLength = function (bytes) {
+ const getBytesLength = function (bytes) {
   return web3.utils.toBN(Number(bytes.slice(2).length) / 2);
 };
+
+
+module.exports = { MAX_UINT_256,
+                   NULL_HASH,
+                  SOME_HASH,
+                  NULL_ADDRESS,
+                  SOME_ADDRESS,
+                  TestSetup,
+                  assertVMException,
+                  registerImplementation,
+                  setupOrganizationWithArraysDAOFactory,
+                  getBytesLength,
+                  getValueFromLogs,
+                  increaseTime,
+                  setupAbsoluteVote,
+                  setupGenesisProtocol,
+                  etherForEveryone,
+                  checkVoteInfo,
+                  registrationAddVersionToPackege,
+                  concatBytes,
+                  getProposalId};

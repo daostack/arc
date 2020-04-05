@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const constants = require('./constants');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var ContinuousLocking4Reputation = artifacts.require("./ContinuousLocking4Reputation.sol");
-export class ContinuousLocking4ReputationParams {
+class ContinuousLocking4ReputationParams {
   constructor() {
   }
 }

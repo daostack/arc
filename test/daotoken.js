@@ -141,7 +141,6 @@ contract('DAOToken', accounts => {
         let totalSupply = await token.totalSupply();
 
         assert.equal(totalSupply.toNumber(), cap);
-
         try {
             await token.mint(accounts[1], 1);
             throw 'an error';

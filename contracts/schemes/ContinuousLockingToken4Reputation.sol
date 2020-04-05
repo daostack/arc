@@ -3,7 +3,6 @@ pragma solidity ^0.5.16;
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/Math.sol";
 import "../controller/Controller.sol";
-import "../libs/SafeERC20.sol";
 import "./Agreement.sol";
 import { RealMath } from "@daostack/infra-experimental/contracts/libs/RealMath.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
@@ -13,7 +12,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
  */
 contract ContinuousLocking4Reputation is Agreement, Initializable {
     using SafeMath for uint256;
-    using SafeERC20 for address;
+    using SafeERC20 for IERC20;
     using RealMath for uint216;
     using RealMath for uint256;
     using Math for uint256;
@@ -184,7 +183,7 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
         // solhint-disable-next-line not-rely-on-time
         locker.lockingTime = now;
 
-        address(token).safeTransferFrom(msg.sender, address(this), _amount);
+        token.safeTransferFrom(msg.sender, address(this), _amount);
         // solhint-disable-next-line not-rely-on-time
         uint256 batchIndexToLockIn = (now - startTime) / batchTime;
         require(batchIndexToLockIn == _batchIndexToLockIn,
@@ -254,7 +253,7 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
         require(block.timestamp > locker.lockingTime.add(locker.period*batchTime),
         "locking period is still active");
         totalLockedLeft = totalLockedLeft.sub(amount);
-        address(token).safeTransfer(_beneficiary, amount);
+        token.safeTransfer(_beneficiary, amount);
         emit Release(_lockingId, _beneficiary, amount);
     }
 

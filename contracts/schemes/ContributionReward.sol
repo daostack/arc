@@ -182,7 +182,7 @@ contract ContributionReward is
 
         ContributionProposal memory _proposal = organizationProposals[_proposalId];
         ContributionProposal storage proposal = organizationProposals[_proposalId];
-        require(proposal.executionTime != 0);
+        require(proposal.executionTime != 0, "proposal not executed yet");
         uint256 periodsToPay = getPeriodsToPay(_proposalId, 0);
 
         //set proposal reward to zero to prevent reentrancy attack.
@@ -214,7 +214,7 @@ contract ContributionReward is
 
         ContributionProposal memory _proposal = organizationProposals[_proposalId];
         ContributionProposal storage proposal = organizationProposals[_proposalId];
-        require(proposal.executionTime != 0);
+        require(proposal.executionTime != 0, "proposal not executed yet");
         uint256 periodsToPay = getPeriodsToPay(_proposalId, 1);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.nativeTokenReward = 0;
@@ -239,7 +239,7 @@ contract ContributionReward is
 
         ContributionProposal memory _proposal = organizationProposals[_proposalId];
         ContributionProposal storage proposal = organizationProposals[_proposalId];
-        require(proposal.executionTime != 0);
+        require(proposal.executionTime != 0, "proposal not executed yet");
         uint256 periodsToPay = getPeriodsToPay(_proposalId, 2);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.ethReward = 0;
@@ -264,7 +264,7 @@ contract ContributionReward is
 
         ContributionProposal memory _proposal = organizationProposals[_proposalId];
         ContributionProposal storage proposal = organizationProposals[_proposalId];
-        require(proposal.executionTime != 0);
+        require(proposal.executionTime != 0, "proposal not executed yet");
         uint256 periodsToPay = getPeriodsToPay(_proposalId, 3);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.externalTokenReward = 0;

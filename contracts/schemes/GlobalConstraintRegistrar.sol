@@ -68,7 +68,7 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
         votingMachine = _votingMachine;
         voteParams = _voteParams;
     }
-    
+
     /**
     * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
     * @param _proposalId the ID of the voting in the voting machine
@@ -153,7 +153,7 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
     */
     function proposeToRemoveGC(address _gc, string memory _descriptionHash) public returns(bytes32) {
         Controller controller = Controller(avatar.owner());
-        require(controller.isGlobalConstraintRegistered(_gc));
+        require(controller.isGlobalConstraintRegistered(_gc), "proposed gc is not register");
         bytes32 proposalId = votingMachine.propose(
         2,
         voteToRemoveParams[_gc],

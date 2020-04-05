@@ -39,8 +39,9 @@ contract DAOToken is Initializable, Ownable, ERC20, ERC20Burnable {
      * @param _amount The amount of tokens to mint.
      */
     function mint(address _to, uint256 _amount) public onlyOwner returns (bool) {
-        if (cap > 0)
-            require(totalSupply().add(_amount) <= cap);
+        if (cap > 0) {
+            require(totalSupply().add(_amount) <= cap, "override cap");
+        }
         _mint(_to, _amount);
         return true;
     }

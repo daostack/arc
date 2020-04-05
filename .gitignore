@@ -6,6 +6,9 @@ node_modules/
 .node-xmlhttprequest-sync*
 *.tgz
 .vscode/
+cache/
+artifacts/
 site/
 yarn*
 .DS_Store
+report*

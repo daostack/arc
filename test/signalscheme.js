@@ -1,8 +1,8 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const SignalScheme = artifacts.require("./SignalScheme.sol");
 
 
-export class SignalSchemeParams {
+class SignalSchemeParams {
   constructor() {
   }
 }

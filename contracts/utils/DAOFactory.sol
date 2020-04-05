@@ -91,10 +91,12 @@ contract DAOFactory is Initializable {
     external
     returns(bool)
     {
-        require(_founders.length == _foundersTokenAmount.length);
-        require(_founders.length == _foundersReputationAmount.length);
-        require(_founders.length > 0);
-        require(locks[address(_avatar)].sender == msg.sender);
+        require(_founders.length == _foundersTokenAmount.length,
+        "_founderlength != _foundersTokenAmount.length");
+        require(_founders.length == _foundersReputationAmount.length,
+        "_founderlength != _foundersReputationAmount.length");
+        require(_founders.length > 0, "no founders");
+        require(locks[address(_avatar)].sender == msg.sender, "sender is not holding the lock");
           // Mint token and reputation for founders:
         for (uint256 i = 0; i < _founders.length; i++) {
             require(_founders[i] != address(0));
@@ -212,7 +214,7 @@ contract DAOFactory is Initializable {
     {
        // this action can only be executed by the account that holds the lock
        // for this controller
-        require(locks[_avatar].sender == msg.sender);
+        require(locks[_avatar].sender == msg.sender, "sender is not holding the lock");
          // register initial schemes:
         Controller controller = Controller(Avatar(_avatar).owner());
         uint256 startIndex =  0;
@@ -254,9 +256,10 @@ contract DAOFactory is Initializable {
     private
     returns(address) {
          // Create Token, Reputation and Avatar:
-        require(_founders.length == _foundersTokenAmount.length);
-        require(_founders.length == _foundersReputationAmount.length);
-        require(_founders.length > 0);
+        require(_founders.length == _foundersTokenAmount.length,
+        "_founderlength != _foundersTokenAmount.length");
+        require(_founders.length == _foundersReputationAmount.length,
+        "_founderlength != _foundersReputationAmount.length");
         AdminUpgradeabilityProxy nativeToken =
         createInstance(packageVersion, "DAOToken", address(this), _tokenInitData);
         AdminUpgradeabilityProxy nativeReputation =
@@ -275,7 +278,7 @@ contract DAOFactory is Initializable {
         avatar.changeAdmin(address(avatar));
          // Mint token and reputation for founders:
         for (uint256 i = 0; i < _founders.length; i++) {
-            require(_founders[i] != address(0));
+            require(_founders[i] != address(0), "founder address cannot be zero");
             if (_foundersTokenAmount[i] > 0) {
                 DAOToken(address(nativeToken)).mint(_founders[i], _foundersTokenAmount[i]);
             }

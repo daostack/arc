@@ -1,7 +1,7 @@
 const helpers = require('./helpers');
 var FixedReputationAllocation = artifacts.require("./FixedReputationAllocation.sol");
 
-export class FixedReputationAllocationParams {
+class FixedReputationAllocationParams {
   constructor() {
   }
 }

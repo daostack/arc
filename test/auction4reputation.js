@@ -4,7 +4,7 @@ const constants = require('./constants');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
 
-export class Auction4ReputationParams {
+class Auction4ReputationParams {
   constructor() {
   }
 }

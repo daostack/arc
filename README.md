@@ -33,12 +33,7 @@ We take no responsibility for your implementation decisions and any security pro
 
 ## Getting Started
 
-1. Please install [Truffle](https://github.com/ConsenSys/truffle) and initialize your project with `truffle init`.
-    ```sh
-    npm install -g truffle
-    mkdir myproject && cd myproject
-    truffle init
-    ```
+1. Install [buidler](https://buidler.dev/getting-started/#quick-start) and initialize your project
 2. Install the `@daostack/arc` package:  `npm install @daostack/arc`.
     - `.sol` Source code is found under `node_modules/@daostack/arc/contracts`
     - `.json` Compiled contracts are found under `node_modules/@daostack/arc/build/contracts`

@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 
 var LockingEth4Reputation = artifacts.require("./LockingEth4Reputation.sol");
 
-export class LockingEth4ReputationParams {
+class LockingEth4ReputationParams {
   constructor() {
   }
 }

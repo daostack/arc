@@ -18,7 +18,7 @@ contract JoinAndQuit is
         Initializable,
         CommonInterface {
     using SafeMath for uint;
-    using SafeERC20 for address;
+    using SafeERC20 for IERC20;
     using StringUtil for string;
 
     event JoinInProposal(
@@ -128,7 +128,7 @@ contract JoinAndQuit is
                 (success, ) = address(avatar).call.value(proposal.funding)("");
                 require(success, "sendEther to avatar failed");
             } else {
-                address(fundingToken).safeTransfer(address(avatar), proposal.funding);
+                fundingToken.safeTransfer(address(avatar), proposal.funding);
             }
             fundings[proposal.proposedMember].funding = proposal.funding;
             totalDonation = totalDonation.add(proposal.funding);
@@ -139,7 +139,7 @@ contract JoinAndQuit is
                 (success, ) = proposal.proposedMember.call.value(proposal.funding)("");
                 require(success, "sendEther to avatar failed");
             } else {
-                address(fundingToken).safeTransfer(proposal.proposedMember, proposal.funding);
+                fundingToken.safeTransfer(proposal.proposedMember, proposal.funding);
             }
         }
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
@@ -166,7 +166,7 @@ contract JoinAndQuit is
         if (fundingToken == IERC20(0)) {
             require(_feeAmount == msg.value, "ETH received shoul match the _feeAmount");
         } else {
-            address(fundingToken).safeTransferFrom(proposer, address(this), _feeAmount);
+            fundingToken.safeTransferFrom(proposer, address(this), _feeAmount);
         }
         bytes32 proposalId = votingMachine.propose(2, voteParams, proposer, address(avatar));
 

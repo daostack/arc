@@ -8,7 +8,7 @@ var NectarRepAllocation = artifacts.require("./NectarRepAllocation.sol");
 const NectarToken = artifacts.require('./Reputation.sol');
 var ethereumjs = require('ethereumjs-abi');
 
-export class ReputationFromTokenParams {
+class ReputationFromTokenParams {
   constructor() {
   }
 }

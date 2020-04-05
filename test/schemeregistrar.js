@@ -1,10 +1,10 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const SchemeRegistrar = artifacts.require("./SchemeRegistrar.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const SchemeMock = artifacts.require('./SchemeMock.sol');
 const Controller = artifacts.require('./Controller.sol');
 
-export class SchemeRegistrarParams {
+class SchemeRegistrarParams {
   constructor() {
   }
 }
