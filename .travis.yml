@@ -29,5 +29,6 @@ jobs:
 
       - stage: coverage
         name: "Solidity Test Coverage"
-        script: npm run coveralls
         if: branch = arc-factory
+        script: npm run coveralls
+        
