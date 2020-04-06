@@ -29,5 +29,5 @@ jobs:
 
       - stage: tests
         name: "Solidity Test Coverage"
-        script: npx buidler coverage
-        script: cat coverage/lcov.info | coveralls
+        script: npx buidler coverage && cat coverage/lcov.info | coveralls
+
