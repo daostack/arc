@@ -21,14 +21,14 @@ const setup = async function (accounts,permission='0') {
   avatar = await Avatar.new();
   await avatar.initialize('name', token.address, reputation.address, accounts[0]);
   if (permission !== '0'){
-    _controller = await Controller.new({from:accounts[1],gas: constants.ARC_GAS_LIMIT});
-    await _controller.initialize(avatar.address,accounts[0],{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
+    _controller = await Controller.new({from:accounts[1]});
+    await _controller.initialize(avatar.address,accounts[0],{from:accounts[1]});
     await _controller.registerScheme(accounts[0],permission,{from:accounts[1]});
     await _controller.unregisterSelf({from:accounts[1]});
   }
   else {
-     _controller = await Controller.new({gas: constants.ARC_GAS_LIMIT});
-      await _controller.initialize(avatar.address,accounts[0],{gas: constants.ARC_GAS_LIMIT});
+     _controller = await Controller.new();
+      await _controller.initialize(avatar.address,accounts[0]);
   }
   controller = _controller;
   return _controller;

@@ -24,13 +24,13 @@ const setup = async function (accounts,permission='0',registerScheme = accounts[
   avatar = await Avatar.new();
   await avatar.initialize('name', token.address, reputation.address,accounts[0]);
   if (permission !== '0') {
-    _controller = await Controller.new({from:accounts[1],gas: constants.ARC_GAS_LIMIT});
+    _controller = await Controller.new({from:accounts[1]});
     await _controller.initialize(avatar.address, accounts[1]);
     await _controller.registerScheme(registerScheme,permission,{from:accounts[1]});
     await _controller.unregisterSelf({from:accounts[1]});
   }
   else {
-    _controller = await Controller.new({gas: constants.ARC_GAS_LIMIT});
+    _controller = await Controller.new();
     var tx = await _controller.initialize(avatar.address ,accounts[0]);
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "RegisterScheme");
