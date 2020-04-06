@@ -1,10 +1,10 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.16;
 
 import "@daostack/infra-experimental/contracts/Reputation.sol";
 import "./DAOToken.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import "../libs/SafeERC20.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
@@ -32,7 +32,7 @@ contract Vault is Ownable {
  * @title An Avatar holds tokens, reputation and ether for a controller
  */
 contract Avatar is Initializable, Ownable {
-    using SafeERC20 for address;
+    using SafeERC20 for IERC20;
 
     string public orgName;
     DAOToken public nativeToken;
@@ -118,7 +118,7 @@ contract Avatar is Initializable, Ownable {
     function externalTokenTransfer(IERC20 _externalToken, address _to, uint256 _value)
     external onlyOwner returns(bool)
     {
-        address(_externalToken).safeTransfer(_to, _value);
+        _externalToken.safeTransfer(_to, _value);
         emit ExternalTokenTransfer(address(_externalToken), _to, _value);
         return true;
     }
@@ -139,7 +139,7 @@ contract Avatar is Initializable, Ownable {
     )
     external onlyOwner returns(bool)
     {
-        address(_externalToken).safeTransferFrom(_from, _to, _value);
+        _externalToken.safeTransferFrom(_from, _to, _value);
         emit ExternalTokenTransferFrom(address(_externalToken), _from, _to, _value);
         return true;
     }
@@ -155,7 +155,7 @@ contract Avatar is Initializable, Ownable {
     function externalTokenApproval(IERC20 _externalToken, address _spender, uint256 _value)
     external onlyOwner returns(bool)
     {
-        address(_externalToken).safeApprove(_spender, _value);
+        _externalToken.safeApprove(_spender, _value);
         emit ExternalTokenApproval(address(_externalToken), _spender, _value);
         return true;
     }

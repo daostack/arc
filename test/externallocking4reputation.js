@@ -3,7 +3,7 @@ var ExternalLocking4Reputation = artifacts.require("./ExternalLocking4Reputation
 var ExternalTokenLockerMock = artifacts.require("./ExternalTokenLockerMock.sol");
 
 
-export class ExternalLocking4ReputationParams {
+class ExternalLocking4ReputationParams {
   constructor() {
   }
 }

@@ -6,7 +6,8 @@ git checkout origin/arc-factory
 echo "npm install ..."
 npm i
 echo "truffle compile ..."
-truffle compile
+npm buidler clean
+npx buidler compile
 # publish npm
 echo "Publishing to npm..."
 npm publish

@@ -1,14 +1,14 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 
-export class JoinAndQuitParams {
+class JoinAndQuitParams {
   constructor() {
   }
 }
 
-export class FundingRequestParams {
+class FundingRequestParams {
   constructor() {
   }
 }

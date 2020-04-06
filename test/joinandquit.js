@@ -1,9 +1,9 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Avatar = artifacts.require("./Avatar.sol");
 
-export class JoinAndQuitParams {
+class JoinAndQuitParams {
   constructor() {
   }
 }
@@ -192,6 +192,7 @@ contract('JoinAndQuit', accounts => {
        await testSetup.joinAndQuit.proposeToJoin(
                                                 "description-hash",
                                                  testSetup.minFeeToJoin);
+
        try {
          await testSetup.joinAndQuit.proposeToJoin(
                                                   "description-hash",

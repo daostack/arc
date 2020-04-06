@@ -1,11 +1,11 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const GenericScheme = artifacts.require('./GenericScheme.sol');
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ActionMock = artifacts.require("./ActionMock.sol");
 const Wallet = artifacts.require("./Wallet.sol");
 
 
-export class GenericSchemeParams {
+class GenericSchemeParams {
   constructor() {
   }
 }

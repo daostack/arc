@@ -4,7 +4,7 @@ const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var LockingToken4Reputation = artifacts.require("./LockingToken4Reputation.sol");
 const PriceOracleMock = artifacts.require('./test/PriceOracleMock.sol');
 
-export class LockingToken4ReputationParams {
+class LockingToken4ReputationParams {
   constructor() {
   }
 }

@@ -2,7 +2,6 @@ pragma solidity ^0.5.16;
 
 import "./Locking4Reputation.sol";
 import "./PriceOracleInterface.sol";
-import "../libs/SafeERC20.sol";
 
 
 /**
@@ -10,7 +9,7 @@ import "../libs/SafeERC20.sol";
  */
 
 contract LockingToken4Reputation is Locking4Reputation {
-    using SafeERC20 for address;
+    using SafeERC20 for IERC20;
 
     PriceOracleInterface public priceOracleContract;
     //      lockingId => token
@@ -62,7 +61,7 @@ contract LockingToken4Reputation is Locking4Reputation {
      */
     function release(address _beneficiary, bytes32 _lockingId) public returns(bool) {
         uint256 amount = super._release(_beneficiary, _lockingId);
-        lockedTokens[_lockingId].safeTransfer(_beneficiary, amount);
+        IERC20(lockedTokens[_lockingId]).safeTransfer(_beneficiary, amount);
 
         return true;
     }
@@ -88,7 +87,7 @@ contract LockingToken4Reputation is Locking4Reputation {
         require(numerator > 0, "numerator should be > 0");
         require(denominator > 0, "denominator should be > 0");
 
-        _token.safeTransferFrom(msg.sender, address(this), _amount);
+        IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
 
         lockingId = super._lock(_amount, _period, msg.sender, numerator, denominator, _agreementHash);
 

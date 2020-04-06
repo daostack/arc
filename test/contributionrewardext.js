@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const ContributionRewardExt = artifacts.require("./ContributionRewardExt.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Avatar = artifacts.require("./Avatar.sol");
@@ -6,7 +6,7 @@ const Redeemer = artifacts.require("./Redeemer.sol");
 
 
 
-export class ContributionRewardParams {
+class ContributionRewardParams {
   constructor() {
   }
 }

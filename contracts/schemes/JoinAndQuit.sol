@@ -18,7 +18,7 @@ contract JoinAndQuit is
         Initializable,
         CommonInterface {
     using SafeMath for uint;
-    using SafeERC20 for address;
+    using SafeERC20 for IERC20;
     using StringUtil for string;
 
     event JoinInProposal(
@@ -128,7 +128,7 @@ contract JoinAndQuit is
                 (success, ) = address(avatar).call.value(proposal.funding)("");
                 require(success, "sendEther to avatar failed");
             } else {
-                address(fundingToken).safeTransfer(address(avatar), proposal.funding);
+                fundingToken.safeTransfer(address(avatar), proposal.funding);
             }
             fundings[proposal.proposedMember].funding = proposal.funding;
             totalDonation = totalDonation.add(proposal.funding);
@@ -139,7 +139,7 @@ contract JoinAndQuit is
                 (success, ) = proposal.proposedMember.call.value(proposal.funding)("");
                 require(success, "sendEther to avatar failed");
             } else {
-                address(fundingToken).safeTransfer(proposal.proposedMember, proposal.funding);
+                fundingToken.safeTransfer(proposal.proposedMember, proposal.funding);
             }
         }
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
@@ -166,7 +166,7 @@ contract JoinAndQuit is
         if (fundingToken == IERC20(0)) {
             require(_feeAmount == msg.value, "ETH received shoul match the _feeAmount");
         } else {
-            address(fundingToken).safeTransferFrom(proposer, address(this), _feeAmount);
+            fundingToken.safeTransferFrom(proposer, address(this), _feeAmount);
         }
         bytes32 proposalId = votingMachine.propose(2, voteParams, proposer, address(avatar));
 
@@ -205,16 +205,15 @@ contract JoinAndQuit is
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposal.proposedMember = address(0);
         require(proposal.accepted == true, " proposal not accepted");
-        uint256 reputationToMint;
         if (memberReputation == 0) {
-            reputationToMint = _proposal.funding;
+            reputation = _proposal.funding;
         } else {
-            reputationToMint = memberReputation;
+            reputation = memberReputation;
         }
         require(
         Controller(
-        avatar.owner()).mintReputation(reputationToMint, _proposal.proposedMember), "failed to mint reputation");
-        emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, reputationToMint);
+        avatar.owner()).mintReputation(reputation, _proposal.proposedMember), "failed to mint reputation");
+        emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, reputation);
     }
 
     /**
@@ -239,10 +238,10 @@ contract JoinAndQuit is
             Controller(
             avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund), "send token failed");
         }
-        uint256 memberReputation = avatar.nativeReputation().balanceOf(msg.sender);
+        uint256 msgSenderReputation = avatar.nativeReputation().balanceOf(msg.sender);
         require(
         Controller(
-        avatar.owner()).burnReputation(memberReputation, msg.sender));
+        avatar.owner()).burnReputation(msgSenderReputation, msg.sender));
         totalDonation = totalDonation.sub(userDonation);
         emit RageQuit(address(avatar), msg.sender, refund);
     }

@@ -1,8 +1,8 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const SchemeFactory = artifacts.require("./SchemeFactory.sol");
 const Controller = artifacts.require('./Controller.sol');
 
-export class SchemeFactoryParams {
+class SchemeFactoryParams {
   constructor() {
   }
 }

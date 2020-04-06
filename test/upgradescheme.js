@@ -1,10 +1,10 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const AdminUpgradeabilityProxy = artifacts.require("./AdminUpgradeabilityProxy.sol");
 const ImplementationProvider = artifacts.require("./ImplementationProvider.sol");
 
-export class UpgradeSchemeParams {
+class UpgradeSchemeParams {
   constructor() {
   }
 }

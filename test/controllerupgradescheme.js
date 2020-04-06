@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require("./helpers");
 const constants = require('./constants');
 const Controller = artifacts.require("./Controller.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
@@ -8,7 +8,7 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 
-export class ControllerUpgradeSchemeParams {
+class ControllerUpgradeSchemeParams {
   constructor() {
   }
 }

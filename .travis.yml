@@ -3,25 +3,26 @@ dist: trusty
 language: node_js
 
 node_js:
-  - "10.16.3"
+  - "12.16.1"
 
 before_install:
 
 install:
   - npm ci
   - rm -rf build/ # remove any remaining artifacts from a previous build
-  - truffle version
+  - npx buidler --version
+  - npx buidler clean
 
 jobs:
   include:
       - stage: tests
         name: "Unit tests"
-        script: npm run test
+        script: npx buidler test
 
       - stage: tests
         name: "Solidity Lint"
-        script: npm run solhint
+        script: npx buidler check
 
       - stage: tests
         name: "JS Lint"
-        script: npm run lint
+        script: npx eslint .

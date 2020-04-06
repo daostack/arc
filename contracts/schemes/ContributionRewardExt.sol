@@ -1,7 +1,6 @@
 pragma solidity 0.5.16;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "../libs/SafeERC20.sol";
 
 /**
  * @title A scheme for proposing and rewarding contributions to an organization
@@ -13,7 +12,7 @@ import "../libs/SafeERC20.sol";
  */
 contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
     using SafeMath for uint;
-    using SafeERC20 for address;
+    using SafeERC20 for IERC20;
 
     event NewContributionProposal(
         address indexed _avatar,
@@ -352,7 +351,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         "cannot redeem more tokens than allocated for this proposal or no redeemNativeToken was called");
 
         if (_amount > 0) {
-            address(avatar.nativeToken()).safeTransfer(_beneficiary, _amount);
+            IERC20(avatar.nativeToken()).safeTransfer(_beneficiary, _amount);
             emit RedeemNativeToken(address(avatar), _proposalId, _beneficiary, _amount);
         }
     }
@@ -399,7 +398,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
 
         if (proposal.externalToken != IERC20(0)) {
             if (_amount > 0) {
-                address(proposal.externalToken).safeTransfer(_beneficiary, _amount);
+                proposal.externalToken.safeTransfer(_beneficiary, _amount);
                 emit RedeemExternalToken(address(avatar), _proposalId, _beneficiary, _amount);
             }
         }
