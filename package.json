@@ -34,6 +34,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "ethereumjs-abi": "^0.6.5",
+    "mocha": "^7.1.1",
     "pm2": "^4.2.3",
     "promisify": "^0.0.3",
     "pug": "^2.0.0-rc.4",
