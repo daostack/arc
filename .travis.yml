@@ -29,5 +29,4 @@ jobs:
 
       - stage: tests
         name: "Solidity Test Coverage"
-        script: npx buidler coverage && cat coverage/lcov.info | coveralls
-
+        script: npm run coveralls
