@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/daostack/arc.svg?branch=master)](https://travis-ci.org/daostack/arc)
 [![NPM Package](https://img.shields.io/npm/v/@daostack/arc.svg?style=flat-square)](https://www.npmjs.org/package/@daostack/arc)
 [![Join the chat at https://gitter.im/daostack/Lobby](https://badges.gitter.im/daostack/Lobby.svg)](https://gitter.im/daostack/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Coverage Status](https://coveralls.io/repos/github/daostack/arc/badge.svg?branch=solccover)](https://coveralls.io/github/daostack/arc?branch=solccover)
+[![Coverage Status](https://coveralls.io/repos/github/daostack/arc/badge.svg)](https://coveralls.io/github/daostack/arc)
 # Arc
 
 Arc is the base layer of the DAO stack. It consists of a set of smart contracts deployed on the Ethereum blockchain that define the basic building blocks and standard components that can be used to implement any DAO.
