@@ -1,5 +1,4 @@
 const helpers = require("./helpers");
-const constants = require('./constants');
 const Controller = artifacts.require("./Controller.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const ControllerUpgradeScheme = artifacts.require('./ControllerUpgradeScheme.sol');

@@ -27,7 +27,7 @@ jobs:
         name: "JS Lint"
         script: npx eslint .
 
-      - stage: coverage
+      - stage: tests
         name: "Solidity Test Coverage"
         script: npx buidler coverage
         script: cat coverage/lcov.info | coveralls

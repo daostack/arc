@@ -4,8 +4,6 @@ const TokenCapGC = artifacts.require('./globalConstraints/TokenCapGC.sol');
 const Controller = artifacts.require("./Controller.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
-var constants = require('../test/constants');
-
 
 let reputation, avatar,token,controller,tokenCapGC;
 

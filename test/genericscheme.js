@@ -91,163 +91,163 @@ contract('GenericScheme', function(accounts) {
     helpers.etherForEveryone(accounts);
   });
 
-    // it("proposeCall log", async function() {
-    //    var actionMock =await ActionMock.new();
-    //
-    //    var testSetup = await setup(accounts,actionMock.address);
-    //
-    //    var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-    //
-    //    var tx = await testSetup.genericScheme.proposeCall(
-    //                                                        callData,0,helpers.NULL_HASH);
-    //    assert.equal(tx.logs.length, 1);
-    //    assert.equal(tx.logs[0].event, "NewCallProposal");
-    // });
-    //
-    // it("execute proposeCall -no decision - proposal data delete", async function() {
-    //    var actionMock =await ActionMock.new();
-    //    var testSetup = await setup(accounts,actionMock.address);
-    //    var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-    //    var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
-    //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-    //    await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    //    //check organizationsProposals after execution
-    //    var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
-    //    assert.equal(organizationProposal.passed,false);
-    //    assert.equal(organizationProposal.callData,null);
-    // });
-    //
-    // it("execute proposeVote -positive decision - proposal data delete", async function() {
-    //     var actionMock =await ActionMock.new();
-    //     var testSetup = await setup(accounts,actionMock.address);
-    //     var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-    //     var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
-    //     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-    //     var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
-    //     assert.equal(organizationProposal[0],callData,helpers.NULL_HASH);
-    //     await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    //     //check organizationsProposals after execution
-    //     organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
-    //     assert.equal(organizationProposal.callData,null);//new contract address
-    //  });
-    //
-    // it("execute proposeVote -positive decision - destination reverts", async function() {
-    //    var actionMock =await ActionMock.new();
-    //    var testSetup = await setup(accounts,actionMock.address);
-    //    var callData = await createCallToActionMock(helpers.NULL_ADDRESS,actionMock);
-    //    var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
-    //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-    //
-    //    await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    //    //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
-    //    var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
-    //    assert.equal(organizationProposal.exist,true);//new contract address
-    //    assert.equal(organizationProposal.passed,true);//new contract address
-    //    //can call execute
-    //    await testSetup.genericScheme.execute( proposalId);
-    // });
-    //
-    //
-    // it("execute proposeVote -positive decision - destination reverts and then active", async function() {
-    //    var actionMock =await ActionMock.new();
-    //    var testSetup = await setup(accounts,actionMock.address);
-    //    var activationTime = (await web3.eth.getBlock("latest")).timestamp + 1000;
-    //    await actionMock.setActivationTime(activationTime);
-    //    var callData = await new web3.eth.Contract(actionMock.abi).methods.test3().encodeABI();
-    //    var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
-    //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-    //
-    //    await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    //    //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
-    //    var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
-    //    assert.equal(organizationProposal.exist,true);//new contract address
-    //    assert.equal(organizationProposal.passed,true);//new contract address
-    //    //can call execute
-    //    await testSetup.genericScheme.execute( proposalId);
-    //    await helpers.increaseTime(1001);
-    //    await testSetup.genericScheme.execute( proposalId);
-    //
-    //    organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
-    //    assert.equal(organizationProposal.exist,false);//new contract address
-    //    assert.equal(organizationProposal.passed,false);//new contract address
-    //    try {
-    //      await testSetup.genericScheme.execute( proposalId);
-    //      assert(false, "cannot call execute after it been executed");
-    //    } catch(error) {
-    //      helpers.assertVMException(error);
-    //    }
-    // });
-    //
-    //
-    //
-    // it("execute proposeVote without return value-positive decision - check action", async function() {
-    //    var actionMock =await ActionMock.new();
-    //    var testSetup = await setup(accounts,actionMock.address);
-    //    const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
-    //    var tx = await testSetup.genericScheme.proposeCall(encodeABI,0,helpers.NULL_HASH);
-    //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-    //
-    //    await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    //
-    // });
-    //
-    // it("execute should fail if not executed from votingMachine", async function() {
-    //    var actionMock =await ActionMock.new();
-    //    var testSetup = await setup(accounts,actionMock.address);
-    //    const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
-    //    var tx = await testSetup.genericScheme.proposeCall(encodeABI,0,helpers.NULL_HASH);
-    //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-    //
-    //    try {
-    //      await testSetup.genericScheme.execute( proposalId);
-    //      assert(false, "execute should fail if not executed from votingMachine");
-    //    } catch(error) {
-    //      helpers.assertVMException(error);
-    //    }
-    //
-    // });
-    //
-    // it("execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
-    //    var actionMock =await ActionMock.new();
-    //    var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-    //    var testSetup = await setup(accounts,actionMock.address,0,true,standardTokenMock.address);
-    //    var value = 123;
-    //    var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-    //    var tx = await testSetup.genericScheme.proposeCall(callData,value,helpers.NULL_HASH);
-    //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-    //    //transfer some eth to avatar
-    //    await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
-    //    assert.equal(await web3.eth.getBalance(actionMock.address),0);
-    //    tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    //    await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {
-    //          fromBlock: tx.blockNumber,
-    //          toBlock: 'latest'
-    //      })
-    //      .then(function(events){
-    //          assert.equal(events[0].event,"ProposalExecutedByVotingMachine");
-    //          assert.equal(events[0].args._param,1);
-    //     });
-    //     assert.equal(await web3.eth.getBalance(actionMock.address),value);
-    // });
-    //
-    // it("execute proposeVote -negative decision - check action - with GenesisProtocol", async function() {
-    //    var actionMock =await ActionMock.new();
-    //    var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-    //    var testSetup = await setup(accounts,actionMock.address,0,true,standardTokenMock.address);
-    //
-    //    var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-    //    var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
-    //    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-    //    tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    //    await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {
-    //          fromBlock: tx.blockNumber,
-    //          toBlock: 'latest'
-    //      })
-    //      .then(function(events){
-    //          assert.equal(events[0].event,"ProposalExecutedByVotingMachine");
-    //          assert.equal(events[0].args._param,2);
-    //     });
-    //   });
+    it("proposeCall log", async function() {
+       var actionMock =await ActionMock.new();
+
+       var testSetup = await setup(accounts,actionMock.address);
+
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+
+       var tx = await testSetup.genericScheme.proposeCall(
+                                                           callData,0,helpers.NULL_HASH);
+       assert.equal(tx.logs.length, 1);
+       assert.equal(tx.logs[0].event, "NewCallProposal");
+    });
+
+    it("execute proposeCall -no decision - proposal data delete", async function() {
+       var actionMock =await ActionMock.new();
+       var testSetup = await setup(accounts,actionMock.address);
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+       var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       //check organizationsProposals after execution
+       var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
+       assert.equal(organizationProposal.passed,false);
+       assert.equal(organizationProposal.callData,null);
+    });
+
+    it("execute proposeVote -positive decision - proposal data delete", async function() {
+        var actionMock =await ActionMock.new();
+        var testSetup = await setup(accounts,actionMock.address);
+        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+        var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
+        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+        var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
+        assert.equal(organizationProposal[0],callData,helpers.NULL_HASH);
+        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+        //check organizationsProposals after execution
+        organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
+        assert.equal(organizationProposal.callData,null);//new contract address
+     });
+
+    it("execute proposeVote -positive decision - destination reverts", async function() {
+       var actionMock =await ActionMock.new();
+       var testSetup = await setup(accounts,actionMock.address);
+       var callData = await createCallToActionMock(helpers.NULL_ADDRESS,actionMock);
+       var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
+       var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
+       assert.equal(organizationProposal.exist,true);//new contract address
+       assert.equal(organizationProposal.passed,true);//new contract address
+       //can call execute
+       await testSetup.genericScheme.execute( proposalId);
+    });
+
+
+    it("execute proposeVote -positive decision - destination reverts and then active", async function() {
+       var actionMock =await ActionMock.new();
+       var testSetup = await setup(accounts,actionMock.address);
+       var activationTime = (await web3.eth.getBlock("latest")).timestamp + 1000;
+       await actionMock.setActivationTime(activationTime);
+       var callData = await new web3.eth.Contract(actionMock.abi).methods.test3().encodeABI();
+       var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
+       var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
+       assert.equal(organizationProposal.exist,true);//new contract address
+       assert.equal(organizationProposal.passed,true);//new contract address
+       //can call execute
+       await testSetup.genericScheme.execute( proposalId);
+       await helpers.increaseTime(1001);
+       await testSetup.genericScheme.execute( proposalId);
+
+       organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
+       assert.equal(organizationProposal.exist,false);//new contract address
+       assert.equal(organizationProposal.passed,false);//new contract address
+       try {
+         await testSetup.genericScheme.execute( proposalId);
+         assert(false, "cannot call execute after it been executed");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
+    });
+
+
+
+    it("execute proposeVote without return value-positive decision - check action", async function() {
+       var actionMock =await ActionMock.new();
+       var testSetup = await setup(accounts,actionMock.address);
+       const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
+       var tx = await testSetup.genericScheme.proposeCall(encodeABI,0,helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+
+    });
+
+    it("execute should fail if not executed from votingMachine", async function() {
+       var actionMock =await ActionMock.new();
+       var testSetup = await setup(accounts,actionMock.address);
+       const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
+       var tx = await testSetup.genericScheme.proposeCall(encodeABI,0,helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+       try {
+         await testSetup.genericScheme.execute( proposalId);
+         assert(false, "execute should fail if not executed from votingMachine");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
+
+    });
+
+    it("execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
+       var actionMock =await ActionMock.new();
+       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,actionMock.address,0,true,standardTokenMock.address);
+       var value = 123;
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+       var tx = await testSetup.genericScheme.proposeCall(callData,value,helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       //transfer some eth to avatar
+       await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
+       assert.equal(await web3.eth.getBalance(actionMock.address),0);
+       tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"ProposalExecutedByVotingMachine");
+             assert.equal(events[0].args._param,1);
+        });
+        assert.equal(await web3.eth.getBalance(actionMock.address),value);
+    });
+
+    it("execute proposeVote -negative decision - check action - with GenesisProtocol", async function() {
+       var actionMock =await ActionMock.new();
+       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,actionMock.address,0,true,standardTokenMock.address);
+
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+       var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"ProposalExecutedByVotingMachine");
+             assert.equal(events[0].args._param,2);
+        });
+      });
 
       it("Wallet - execute proposeVote -positive decision - check action - with GenesisProtocol [ @skip-on-coverage ]", async function() {
          var wallet =await Wallet.new();
@@ -266,22 +266,22 @@ contract('GenericScheme', function(accounts) {
          assert.equal(await web3.eth.getBalance(wallet.address),0);
       });
 
-      // it("cannot init twice", async function() {
-      //    var actionMock =await ActionMock.new();
-      //    var testSetup = await setup(accounts,actionMock.address);
-      //
-      //    try {
-      //      await testSetup.genericScheme.initialize(
-      //        testSetup.org.avatar.address,
-      //        accounts[0],
-      //        helpers.SOME_HASH,
-      //        accounts[0]
-      //      );
-      //      assert(false, "cannot init twice");
-      //    } catch(error) {
-      //      helpers.assertVMException(error);
-      //    }
+      it("cannot init twice", async function() {
+         var actionMock =await ActionMock.new();
+         var testSetup = await setup(accounts,actionMock.address);
 
-      //});
+         try {
+           await testSetup.genericScheme.initialize(
+             testSetup.org.avatar.address,
+             accounts[0],
+             helpers.SOME_HASH,
+             accounts[0]
+           );
+           assert(false, "cannot init twice");
+         } catch(error) {
+           helpers.assertVMException(error);
+         }
+
+      });
 
 });
