@@ -26,3 +26,9 @@ jobs:
       - stage: tests
         name: "JS Lint"
         script: npx eslint .
+
+      - stage: coverage
+        name: "Solidity Test Coverage"
+        if: branch = arc-factory
+        script: npm run coveralls
+        

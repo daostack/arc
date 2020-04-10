@@ -1,5 +1,4 @@
 const helpers = require("./helpers");
-const constants = require('./constants');
 const Controller = artifacts.require("./Controller.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const ControllerUpgradeScheme = artifacts.require('./ControllerUpgradeScheme.sol');
@@ -39,13 +38,13 @@ const setupNewController = async function (accounts,permission='0x00000000') {
   await avatar.initialize('name', token.address, reputation.address,accounts[0]);
   var _controller;
   if (permission !== '0'){
-    _controller = await Controller.new({from:accounts[1],gas: constants.ARC_GAS_LIMIT});
-    await _controller.initialize(avatar.address,accounts[1],{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
+    _controller = await Controller.new({from:accounts[1]});
+    await _controller.initialize(avatar.address,accounts[1],{from:accounts[1]});
     await _controller.registerScheme(accounts[0],permission,{from:accounts[1]});
     await _controller.unregisterSelf({from:accounts[1]});
   }
   else {
-    _controller = await Controller.new({gas: constants.ARC_GAS_LIMIT});
+    _controller = await Controller.new();
     await _controller.initialize(avatar.address,accounts[0]);
   }
   return _controller;

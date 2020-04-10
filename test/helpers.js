@@ -194,7 +194,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.packageInstance = await Package.new();
   registration.app = await App.new();
   registration = await registrationAddVersionToPackege(registration,version);
-  registration.daoFactory = await DAOFactory.new({gas:constants.ARC_GAS_LIMIT});
+  registration.daoFactory = await DAOFactory.new();
   await registration.daoFactory.initialize(registration.app.address);
   return registration;
 };

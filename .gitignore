@@ -12,3 +12,6 @@ site/
 yarn*
 .DS_Store
 report*
+coverage/
+coverage.json
+.covera*
