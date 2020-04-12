@@ -11,26 +11,43 @@ class SchemeRegistrarParams {
 
 var registration;
 const setupSchemeRegistrarParams = async function(
-                                            avatarAddress
+                                            accounts,
+                                            genesisProtocol,
+                                            token,
+                                            avatarAddress,
                                             ) {
   var schemeRegistrarParams = new SchemeRegistrarParams();
-
-  schemeRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
-  schemeRegistrarParams.initdata = await new web3.eth.Contract(registration.schemeRegistrar.abi)
-                        .methods
-                        .initialize(avatarAddress,
-                          schemeRegistrarParams.votingMachine.absoluteVote.address,
-                          [0,0,0,0,0,0,0,0,0,0,0],
-                          helpers.NULL_ADDRESS,
-                          schemeRegistrarParams.votingMachine.params,
-                          [0,0,0,0,0,0,0,0,0,0,0],
-                          helpers.NULL_ADDRESS,
-                          schemeRegistrarParams.votingMachine.params)
-                        .encodeABI();
+  if (genesisProtocol === true) {
+    schemeRegistrarParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
+    schemeRegistrarParams.initdata = await new web3.eth.Contract(registration.schemeRegistrar.abi)
+                          .methods
+                          .initialize(avatarAddress,
+                            schemeRegistrarParams.votingMachine.genesisProtocol.address,
+                            schemeRegistrarParams.votingMachine.uintArray,
+                            schemeRegistrarParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_HASH,
+                            schemeRegistrarParams.votingMachine.uintArray,
+                            schemeRegistrarParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_HASH)
+                          .encodeABI();
+    } else {
+      schemeRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+      schemeRegistrarParams.initdata = await new web3.eth.Contract(registration.schemeRegistrar.abi)
+                            .methods
+                            .initialize(avatarAddress,
+                              schemeRegistrarParams.votingMachine.absoluteVote.address,
+                              [0,0,0,0,0,0,0,0,0,0,0],
+                              helpers.NULL_ADDRESS,
+                              schemeRegistrarParams.votingMachine.params,
+                              [0,0,0,0,0,0,0,0,0,0,0],
+                              helpers.NULL_ADDRESS,
+                              schemeRegistrarParams.votingMachine.params)
+                            .encodeABI();
+  }
   return schemeRegistrarParams;
 };
 
-const setup = async function (accounts) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
   registration = await helpers.registerImplementation();
@@ -45,7 +62,10 @@ const setup = async function (accounts) {
                                                                       [1000,0,0],
                                                                       testSetup.reputationArray);
   testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(
-                     testSetup.org.avatar.address);
+                                          accounts,
+                                          genesisProtocol,
+                                          tokenAddress,
+                                          testSetup.org.avatar.address);
 
   var permissions = "0x0000001f";
   var tx = await registration.daoFactory.setSchemes(
@@ -101,6 +121,18 @@ contract('SchemeRegistrar', accounts => {
       var controller = await Controller.at(await testSetup.org.avatar.owner());
       assert.equal(await controller.isSchemeRegistered(universalScheme.address),true);
      });
+
+     it("execute proposeScheme  and execute -yes - fee > 0  + genesisProtocol", async function() {
+       var testSetup = await setup(accounts,true,helpers.NULL_ADDRESS);
+       var universalScheme = await SchemeMock.new();
+       var tx = await testSetup.schemeRegistrar.proposeScheme(universalScheme.address,"0x00000000",helpers.NULL_HASH);
+
+       //Vote with reputation to trigger execution
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+       await testSetup.schemeRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       var controller = await Controller.at(await testSetup.org.avatar.owner());
+       assert.equal(await controller.isSchemeRegistered(universalScheme.address),true);
+      });
 
      it("execute proposeScheme  and execute -yes - permissions== 0x00000001", async function() {
        var testSetup = await setup(accounts);
@@ -214,6 +246,21 @@ contract('SchemeRegistrar', accounts => {
           var organizationProposal = await testSetup.schemeRegistrar.organizationProposals(proposalId);
           assert.equal(organizationProposal[2],0);//proposalType
          });
+
+         it("execute proposeToRemoveScheme + genesisProtocol ", async function() {
+           var testSetup = await setup(accounts,true,helpers.NULL_ADDRESS);
+
+           var tx = await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.schemeRegistrar.address,helpers.NULL_HASH);
+           var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+           var controller = await Controller.at(await testSetup.org.avatar.owner());
+           assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address),true);
+           //Vote with reputation to trigger execution
+           await testSetup.schemeRegistrarParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+           assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address),false);
+           //check organizationsProposals after execution
+           var organizationProposal = await testSetup.schemeRegistrar.organizationProposals(proposalId);
+           assert.equal(organizationProposal[2],0);//proposalType
+          });
    it("execute proposeScheme  and execute -yes - autoRegisterOrganization==TRUE arc scheme", async function() {
      var testSetup = await setup(accounts);
 

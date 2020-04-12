@@ -71,7 +71,7 @@ const setupContributionReward = async function(
   return contributionRewardParams;
 };
 
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,setParameters = false) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
@@ -95,6 +95,15 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
                       tokenAddress,
                       testSetup.org.avatar.address);
    var permissions = "0x00000000";
+
+   if ((genesisProtocol === true) && (setParameters === true)) {
+      await testSetup.
+            contributionRewardParams.
+            votingMachine.
+            genesisProtocol.
+            setParameters(testSetup.contributionRewardParams.votingMachine.uintArray,
+                          testSetup.contributionRewardParams.votingMachine.voteOnBehalf);
+   }
 
    var tx = await registration.daoFactory.setSchemes(
                            testSetup.org.avatar.address,
@@ -560,6 +569,62 @@ contract('ContributionReward', accounts => {
      var reputationGainAsProposer = proposingRepRewardConstA;
      assert.equal(reputation, 1000+reputationGainAsVoter + reputationGainAsProposer);
     });
+
+    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer + setParameters", async function() {
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,true,standardTokenMock.address,true);
+      var reputationReward = 12;
+      var nativeTokenReward = 12;
+      var ethReward = 12;
+      var periodLength = 50;
+      var numberOfPeriods = 1;
+      //send some ether to the org avatar
+      var otherAvatar = await Avatar.new();
+      await otherAvatar.initialize('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS,accounts[0]);
+      await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+      var tx = await testSetup.contributionReward.proposeContributionReward(
+                                                                     web3.utils.asciiToHex("description"),
+                                                                     reputationReward,
+                                                                     [nativeTokenReward,ethReward,0,periodLength,numberOfPeriods],
+                                                                     testSetup.standardTokenMock.address,
+                                                                     otherAvatar.address
+                                                                   );
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+      await helpers.increaseTime(periodLength+1);
+      var arcUtils = await Redeemer.new();
+      var redeemRewards = await arcUtils.redeem.call(testSetup.contributionReward.address,
+                                                     testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
+                                                     proposalId,
+                                                     accounts[0]);
+      assert.equal(redeemRewards[0][1],100); //redeemRewards[0] gpRewards
+      assert.equal(redeemRewards[0][2],60);
+      assert.equal(redeemRewards[1][0],0); //daoBountyRewards
+      assert.equal(redeemRewards[1][1],0); //daoBountyRewards
+      assert.equal(redeemRewards[2],false); //isExecuted
+      assert.equal(redeemRewards[3],1); //winningVote
+      assert.equal(redeemRewards[4],reputationReward); //crReputationReward
+      assert.equal(redeemRewards[5],nativeTokenReward); //crNativeTokenReward
+      assert.equal(redeemRewards[6],ethReward); //crEthReward
+      assert.equal(redeemRewards[7],0); //crExternalTokenReward
+
+      await arcUtils.redeem(testSetup.contributionReward.address,
+                            testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
+                            proposalId,
+                            accounts[0]);
+      var vault = await otherAvatar.vault();
+      var eth = await web3.eth.getBalance(vault);
+      assert.equal(eth,ethReward);
+      assert.equal(await testSetup.org.reputation.balanceOf(otherAvatar.address),reputationReward);
+      assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
+      var reputation = await testSetup.org.reputation.balanceOf(accounts[0]);
+      var reputationGainAsVoter =  0;
+      var proposingRepRewardConstA=60;
+      var reputationGainAsProposer = proposingRepRewardConstA;
+      assert.equal(reputation, 1000+reputationGainAsVoter + reputationGainAsProposer);
+     });
+
 
     it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer for un excuted boosted proposal", async function() {
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);

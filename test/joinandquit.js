@@ -45,8 +45,8 @@ const setupJoinAndQuit = async function(
                           .methods
                           .initialize(avatarAddress,
                             joinAndQuitParams.votingMachine.genesisProtocol.address,
-                            joinAndQuitParams.votingMachine.genesisProtocol.address,
                             joinAndQuitParams.votingMachine.uintArray,
+                            joinAndQuitParams.votingMachine.voteOnBehalf,
                             helpers.NULL_HASH,
                             _fundingToken,
                             _minFeeToJoin,
@@ -76,7 +76,7 @@ var registration;
 const setup = async function (accounts,
                               ethFunding = false,
                               genesisProtocol = false,
-                              tokenAddress=0,
+                              tokenAddress=helpers.NULL_ADDRESS,
                               minFeeToJoin = 100,
                               memberReputation = 100,
                               fundingGoal = 1000,
@@ -84,12 +84,7 @@ const setup = async function (accounts,
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[0],100000);
   registration = await helpers.registerImplementation();
-
-  if (genesisProtocol) {
-     testSetup.reputationArray = [1000,100,0];
-  } else {
-     testSetup.reputationArray = [7000];
-  }
+  testSetup.reputationArray = [7000];
   testSetup.proxyAdmin = accounts[5];
   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
@@ -323,6 +318,29 @@ contract('JoinAndQuit', accounts => {
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.joinAndQuit.redeemReputation(proposalId);
+      assert.equal(tx.logs[0].event, "RedeemReputation");
+      assert.equal(tx.logs[0].args._amount, testSetup.memberReputation);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[3]),testSetup.memberReputation);
+      try {
+         await testSetup.joinAndQuit.redeemReputation(proposalId);
+         assert(false, 'cannot redeem twice');
+      } catch (ex) {
+         helpers.assertVMException(ex);
+      }
+    });
+
+    it("reputation redeem + genesisProtocol", async function() {
+      var testSetup = await setup(accounts,false,true);
+      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin,{from:accounts[3]});
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
+                                                           "description-hash",
+                                                           testSetup.minFeeToJoin,
+                                                           {from:accounts[3]});
+
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.joinAndQuitParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       tx = await testSetup.joinAndQuit.redeemReputation(proposalId);
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, testSetup.memberReputation);
