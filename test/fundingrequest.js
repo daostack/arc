@@ -178,7 +178,6 @@ const setup = async function (accounts,
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     } else {
       await testSetup.joinAndQuitParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
     }
   }
   return testSetup;
