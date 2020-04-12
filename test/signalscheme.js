@@ -138,7 +138,9 @@ contract('SignalScheme', accounts => {
               await testSetup.signalScheme.initialize(testSetup.org.avatar.address,
                                                      1234,
                                                      testSetup.signalSchemeParams.votingMachine.params,
-                                                     testSetup.signalSchemeParams.votingMachine.absoluteVote.address);
+                                                     testSetup.signalSchemeParams.votingMachine.absoluteVote.address,
+                                                     [0,0,0,0,0,0,0,0,0,0,0],
+                                                     helpers.NULL_ADDRESS);
               assert(false, "cannot initialize twice");
             } catch(error) {
               helpers.assertVMException(error);

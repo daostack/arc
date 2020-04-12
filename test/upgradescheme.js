@@ -334,6 +334,8 @@ contract('UpgradeScheme', function(accounts) {
           await testSetup.upgradeScheme.initialize(
             testSetup.org.avatar.address,
             testSetup.upgradeSchemeParams.votingMachine.absoluteVote.address,
+            [0,0,0,0,0,0,0,0,0,0,0],
+            helpers.NULL_ADDRESS,
             testSetup.upgradeSchemeParams.votingMachine.params,
             testSetup.registration.packageInstance.address
           );
