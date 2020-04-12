@@ -1,6 +1,7 @@
 usePlugin("@nomiclabs/buidler-truffle5");
 usePlugin("@nomiclabs/buidler-solhint");
 usePlugin("solidity-coverage");
+usePlugin("@nomiclabs/buidler-web3");
 
 // This is a sample Buidler task. To learn how to create your own go to
 // https://buidler.dev/guides/create-task.html
@@ -123,7 +124,7 @@ module.exports = {
   }
 },
   solc: {
-    version: "0.5.16",    // Fetch exact version from solc-bin (default: truffle's version)
+    version: "0.5.17",    // Fetch exact version from solc-bin (default: truffle's version)
     optimizer: {
       enabled: true,
       runs: 200

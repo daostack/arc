@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.5.17;
 
 library Bytes32ToStr {
     function toStr(bytes32 x) internal pure returns (string memory) {
