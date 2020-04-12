@@ -32,7 +32,9 @@ const setupJoinAndQuit = async function(
                           .methods
                           .initialize(avatarAddress,
                             joinAndQuitParams.votingMachine.genesisProtocol.address,
-                            joinAndQuitParams.votingMachine.params,
+                            joinAndQuitParams.votingMachine.uintArray,
+                            joinAndQuitParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_HASH,
                             _fundingToken,
                             _minFeeToJoin,
                             _memberReputation,
@@ -45,6 +47,8 @@ const setupJoinAndQuit = async function(
                         .methods
                         .initialize(avatarAddress,
                           joinAndQuitParams.votingMachine.absoluteVote.address,
+                          [1,1,1,1,1,1,1,1,1,1,1],
+                          helpers.NULL_ADDRESS,
                           joinAndQuitParams.votingMachine.params,
                           _fundingToken,
                           _minFeeToJoin,
@@ -71,6 +75,8 @@ const setupFundingRequest = async function(
                           .methods
                           .initialize(avatarAddress,
                             fundingRequestParams.votingMachine.genesisProtocol.address,
+                            fundingRequestParams.votingMachine.uintArray,
+                            fundingRequestParams.votingMachine.voteOnBehalf,
                             fundingRequestParams.votingMachine.params,
                             externalToken
                           )
@@ -81,6 +87,8 @@ const setupFundingRequest = async function(
                         .methods
                         .initialize(avatarAddress,
                           fundingRequestParams.votingMachine.absoluteVote.address,
+                          [1,1,1,1,1,1,1,1,1,1,1],
+                          helpers.NULL_ADDRESS,
                           fundingRequestParams.votingMachine.params,
                           externalToken
                         )
