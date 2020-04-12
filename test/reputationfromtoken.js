@@ -61,7 +61,7 @@ const setupNectar = async function (accounts)  {
     "metaData",
     {from:testSetup.proxyAdmin});
 
-   testSetup.reputationFromToken = await ReputationFromToken.at(tx.logs[1].args._scheme); 
+   testSetup.reputationFromToken = await ReputationFromToken.at(tx.logs[1].args._scheme);
    return testSetup;
 };
 
@@ -83,7 +83,7 @@ const setup = async function (accounts) {
 
    testSetup.reputationFromToken = await ReputationFromToken.new();
    testSetup.curve = await PolkaCurve.new();
-   
+
    testSetup.reputationFromTokenParams = new ReputationFromTokenParams();
 
     testSetup.reputationFromTokenParams.initdata = await new web3.eth.Contract(registration.reputationFromToken.abi)
@@ -103,25 +103,35 @@ const setup = async function (accounts) {
     "metaData",
     {from:testSetup.proxyAdmin});
 
-   testSetup.reputationFromToken = await ReputationFromToken.at(tx.logs[1].args._scheme); 
+   testSetup.reputationFromToken = await ReputationFromToken.at(tx.logs[1].args._scheme);
    return testSetup;
 };
 const signatureType = 1;
+
+function fixSignature (signature) {
+  // in geth its always 27/28, in ganache its 0/1. Change to 27/28 to prevent
+  // signature malleability if version is 0/1
+  // see https://github.com/ethereum/go-ethereum/blob/v1.8.23/internal/ethapi/api.go#L465
+  let v = parseInt(signature.slice(130, 132), 16);
+  if (v < 27) {
+    v += 27;
+  }
+  const vHex = v.toString(16);
+  return signature.slice(0, 130) + vHex;
+}
+
+// signs message in node (ganache auto-applies "Ethereum Signed Message" prefix)
+async function signMessage (signer, messageHex = '0x') {
+  return fixSignature(await web3.eth.sign(messageHex, signer));
+}
+
 const redeem = async function(_testSetup,_beneficiary,_redeemer,_fromAccount) {
   var textMsg = "0x"+ethereumjs.soliditySHA3(
     ["address","address"],
     [_testSetup.reputationFromToken.address, _beneficiary]
   ).toString("hex");
   //https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
-  let signature = await web3.eth.sign(textMsg , _redeemer);
-  const signature1 =  signature.substring(0, signature.length-2);
-  var v = signature.substring(signature.length-2, signature.length);
-
-  if (v === '00') {
-   signature = signature1+'1b';
- } else {
-   signature = signature1+'1c';
- }
+  let signature = await signMessage(_redeemer,textMsg);
   return (await _testSetup.reputationFromToken.redeemWithSignature(_beneficiary,signatureType,signature
     ,{from:_fromAccount}));
 };
@@ -141,22 +151,18 @@ contract('ReputationFromToken and RepAllocation', accounts => {
       } catch(error) {
         helpers.assertVMException(error);
       }
-
     });
 
     it("repAllocation cannot allocate after freeze", async () => {
       let testSetup = await setup(accounts);
       await testSetup.repAllocation.addBeneficiary(accounts[3],1030);
       await testSetup.repAllocation.freeze();
-
-
       try {
-          await testSetup.repAllocation.addBeneficiary(accounts[4],1030);
+        await testSetup.repAllocation.addBeneficiary(accounts[4],1030);
         assert(false, "cannot allocate after freeze");
       } catch(error) {
         helpers.assertVMException(error);
       }
-
     });
 
     it("repAllocation cannot allocate twice", async () => {
@@ -171,8 +177,6 @@ contract('ReputationFromToken and RepAllocation', accounts => {
       let tx = await testSetup.repAllocation.addBeneficiaries([accounts[3],accounts[4]],[300,400]);
       assert.equal(tx.logs.length,2);
     });
-
-
 
     it("redeem", async () => {
       let testSetup = await setup(accounts);
@@ -196,7 +200,6 @@ contract('ReputationFromToken and RepAllocation', accounts => {
       var total_reputation = await testSetup.curve.TOTAL_REPUTATION();
       var sum_of_sqrt = await testSetup.curve.SUM_OF_SQRTS();
       var expected = Math.floor(((10*total_reputation)/sum_of_sqrt) * 1000000000) * 1000000000;
-
       assert.equal(tx.logs.length,1);
       assert.equal(tx.logs[0].event,"Redeem");
       assert.equal(tx.logs[0].args._beneficiary,accounts[1]);
