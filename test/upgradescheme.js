@@ -24,6 +24,8 @@ const setupUpgradeSchemeParams = async function(
                           .methods
                           .initialize(avatarAddress,
                             upgradeSchemeParams.votingMachine.genesisProtocol.address,
+                            upgradeSchemeParams.votingMachine.uintArray,
+                            upgradeSchemeParams.votingMachine.voteOnBehalf,
                             upgradeSchemeParams.votingMachine.params,
                             registration.packageInstance.address)
                           .encodeABI();
@@ -33,6 +35,8 @@ const setupUpgradeSchemeParams = async function(
                         .methods
                         .initialize(avatarAddress,
                           upgradeSchemeParams.votingMachine.absoluteVote.address,
+                          [0,0,0,0,0,0,0,0,0,0,0],
+                          helpers.NULL_ADDRESS,
                           upgradeSchemeParams.votingMachine.params,
                           registration.packageInstance.address)
                         .encodeABI();
@@ -244,7 +248,7 @@ contract('UpgradeScheme', function(accounts) {
       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
       assert.equal(organizationProposal,false);
-      
+
       let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
       let newImp = await ImplementationProvider.at(newImpAddress);
 
@@ -304,7 +308,7 @@ contract('UpgradeScheme', function(accounts) {
       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
       assert.equal(organizationProposal,false);
-      
+
       let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
       let newImp = await ImplementationProvider.at(newImpAddress);
 

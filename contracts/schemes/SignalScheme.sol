@@ -10,7 +10,6 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 /**
  * @title A scheme for proposing a signal on behalkf of the dao
  */
-
 contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
 
     event NewSignalProposal(
@@ -48,19 +47,38 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
      * @param  _avatar the scheme avatar
      * @param _signalType - signal types
      * @param _voteApproveParams voting machine params
-     * @param _intVote  voting machine address
+     * @param _votingMachine  voting machine address
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
      */
     function initialize(Avatar _avatar,
                         uint256 _signalType,
                         bytes32 _voteApproveParams,
-                        IntVoteInterface _intVote)
+                        IntVoteInterface _votingMachine,
+                        uint256[11] calldata _votingParams,
+                        address _voteOnBehalf)
     external
     initializer {
         require(_avatar != Avatar(0), "avatar cannot be zero");
+        bytes32 voteParamsHash;
+        if (_voteApproveParams == bytes32(0)) {
+            //genesisProtocol
+            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
+            voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
+            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
+            genesisProtocol.parameters(voteParamsHash);
+            if (queuedVoteRequiredPercentage == 0) {
+               //params not set already
+                genesisProtocol.setParameters(_votingParams, _voteOnBehalf);
+            }
+        } else {
+            //for other voting machines
+            voteParamsHash = _voteApproveParams;
+        }
         params = Parameters({
-            voteApproveParams: _voteApproveParams,
+            voteApproveParams: voteParamsHash,
             signalType: _signalType,
-            intVote: _intVote,
+            intVote: _votingMachine,
             avatar: _avatar
         });
     }

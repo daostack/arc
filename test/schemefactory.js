@@ -17,6 +17,8 @@ const setupSchemeFactoryParams = async function(
                         .methods
                         .initialize(avatarAddress,
                           schemeFactoryParams.votingMachine.absoluteVote.address,
+                          [0,0,0,0,0,0,0,0,0,0,0],
+                          helpers.NULL_ADDRESS,
                           schemeFactoryParams.votingMachine.params,
                           registration.daoFactory.address)
                         .encodeABI();
@@ -40,7 +42,7 @@ const setup = async function (accounts) {
                      testSetup.org.avatar.address);
 
   var permissions = "0x0000001f";
-  
+
   var tx = await registration.daoFactory.setSchemes(
                           testSetup.org.avatar.address,
                           [web3.utils.fromAscii("SchemeFactory")],

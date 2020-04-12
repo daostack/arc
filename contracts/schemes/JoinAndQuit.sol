@@ -62,7 +62,7 @@ contract JoinAndQuit is
     mapping(address=>MemberFund) public fundings;
 
     IntVoteInterface public votingMachine;
-    bytes32 public voteParams;
+    bytes32 public voteParamsHash;
     Avatar public avatar;
     IERC20 public fundingToken;
     uint256 public minFeeToJoin;
@@ -75,7 +75,9 @@ contract JoinAndQuit is
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
      * @param _votingMachine the voting machines address to
-     * @param _voteParams voting machine parameters.
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
+     * @param _voteParamsHash voting machine parameters.
      * @param _fundingToken the funding token - if this is zero the donation will be in native token ETH
      * @param _minFeeToJoin minimum fee required to join
      * @param _memberReputation the repution which will be allocated for members
@@ -86,7 +88,9 @@ contract JoinAndQuit is
     function initialize(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
-        bytes32 _voteParams,
+        uint256[11] calldata _votingParams,
+        address _voteOnBehalf,
+        bytes32 _voteParamsHash,
         IERC20 _fundingToken,
         uint256 _minFeeToJoin,
         uint256 _memberReputation,
@@ -99,7 +103,20 @@ contract JoinAndQuit is
         require(_avatar != Avatar(0), "avatar cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
-        voteParams = _voteParams;
+        if (_voteParamsHash == bytes32(0)) {
+            //genesisProtocol
+            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
+            voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
+            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
+            genesisProtocol.parameters(voteParamsHash);
+            if (queuedVoteRequiredPercentage == 0) {
+               //params not set already
+                genesisProtocol.setParameters(_votingParams, _voteOnBehalf);
+            }
+        } else {
+            //for other voting machines
+            voteParamsHash = _voteParamsHash;
+        }
         fundingToken = _fundingToken;
         minFeeToJoin = _minFeeToJoin;
         memberReputation = _memberReputation;
@@ -168,7 +185,7 @@ contract JoinAndQuit is
         } else {
             fundingToken.safeTransferFrom(proposer, address(this), _feeAmount);
         }
-        bytes32 proposalId = votingMachine.propose(2, voteParams, proposer, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, proposer, address(avatar));
 
         Proposal memory proposal = Proposal({
             accepted: false,

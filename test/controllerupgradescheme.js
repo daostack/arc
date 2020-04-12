@@ -22,6 +22,8 @@ const setupControllerUpgradeSchemeParams = async function(
                           .methods
                           .initialize(avatarAddress,
                             controllerUpgradeSchemeParams.votingMachine.absoluteVote.address,
+                            [0,0,0,0,0,0,0,0,0,0,0],
+                            helpers.NULL_ADDRESS,
                             controllerUpgradeSchemeParams.votingMachine.params)
                           .encodeABI();
     return controllerUpgradeSchemeParams;
@@ -86,7 +88,11 @@ contract('ControllerUpgradeScheme', accounts => {
    it("initialize", async() => {
      var controllerUpgradeScheme = await ControllerUpgradeScheme.new();
      var absoluteVote = await AbsoluteVote.new();
-     await controllerUpgradeScheme.initialize(helpers.SOME_ADDRESS,absoluteVote.address,"0x1234");
+     await controllerUpgradeScheme.initialize(helpers.SOME_ADDRESS,
+                                              absoluteVote.address,
+                                              [0,0,0,0,0,0,0,0,0,0,0],
+                                              helpers.NULL_ADDRESS,
+                                              "0x1234");
      assert.equal(await controllerUpgradeScheme.votingMachine(),absoluteVote.address);
      });
 

@@ -26,7 +26,9 @@ const setupGenericSchemeParams = async function(
                           .methods
                           .initialize(avatarAddress,
                             genericSchemeParams.votingMachine.genesisProtocol.address,
-                            genericSchemeParams.votingMachine.params,
+                            genericSchemeParams.votingMachine.uintArray,
+                            genericSchemeParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_HASH,
                             contractToCall)
                           .encodeABI();
     } else {
@@ -35,6 +37,8 @@ const setupGenericSchemeParams = async function(
                         .methods
                         .initialize(avatarAddress,
                           genericSchemeParams.votingMachine.absoluteVote.address,
+                          [0,0,0,0,0,0,0,0,0,0,0],
+                          helpers.NULL_ADDRESS,
                           genericSchemeParams.votingMachine.params,
                           contractToCall)
                         .encodeABI();
@@ -274,6 +278,8 @@ contract('GenericScheme', function(accounts) {
            await testSetup.genericScheme.initialize(
              testSetup.org.avatar.address,
              accounts[0],
+             [0,0,0,0,0,0,0,0,0,0,0],
+             helpers.NULL_ADDRESS,
              helpers.SOME_HASH,
              accounts[0]
            );

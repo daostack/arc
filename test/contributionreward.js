@@ -53,7 +53,9 @@ const setupContributionReward = async function(
                           .methods
                           .initialize(avatarAddress,
                             contributionRewardParams.votingMachine.genesisProtocol.address,
-                            contributionRewardParams.votingMachine.params)
+                            contributionRewardParams.votingMachine.uintArray,
+                            contributionRewardParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_HASH)
                           .encodeABI();
     } else {
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
@@ -61,6 +63,8 @@ const setupContributionReward = async function(
                         .methods
                         .initialize(avatarAddress,
                           contributionRewardParams.votingMachine.absoluteVote.address,
+                          [1,1,1,1,1,1,1,1,1,1,1],
+                          helpers.NULL_ADDRESS,
                           contributionRewardParams.votingMachine.params)
                         .encodeABI();
   }
@@ -118,6 +122,8 @@ contract('ContributionReward', accounts => {
        try {
          await testSetup.contributionReward.initialize(testSetup.org.avatar.address,
                                                        testSetup.contributionRewardParams.votingMachine.absoluteVote.address,
+                                                       [0,0,0,0,0,0,0,0,0,0,0],
+                                                       helper.NULL_ADDRESS,
                                                        testSetup.contributionRewardParams.votingMachine.params);
          assert(false, 'cannot initialize twice');
        } catch (ex) {

@@ -19,14 +19,15 @@ const setupContributionRewardExt = async function(
                                             rewarderAddress = helpers.NULL_ADDRESS
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
-
   if (genesisProtocol === true) {
     contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
                           .methods
                           .initialize(avatarAddress,
                             contributionRewardParams.votingMachine.genesisProtocol.address,
-                            contributionRewardParams.votingMachine.params,
+                            contributionRewardParams.votingMachine.uintArray,
+                            contributionRewardParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_HASH,
                             rewarderAddress)
                           .encodeABI();
     } else {
@@ -35,6 +36,8 @@ const setupContributionRewardExt = async function(
                         .methods
                         .initialize(avatarAddress,
                           contributionRewardParams.votingMachine.absoluteVote.address,
+                          [1,1,1,1,1,1,1,1,1,1,1],
+                          helpers.NULL_ADDRESS,
                           contributionRewardParams.votingMachine.params,
                           rewarderAddress)
                         .encodeABI();
@@ -546,6 +549,8 @@ contract('ContributionRewardExt', accounts => {
         await testSetup.contributionRewardExt.initialize(
                                                testSetup.org.avatar.address,
                                                testSetup.contributionRewardExtParams.votingMachine.absoluteVote.address,
+                                               [0,0,0,0,0,0,0,0,0,0,0],
+                                               helpers.NULL_ADDRESS,
                                                testSetup.contributionRewardExtParams.votingMachine.absoluteVote.address,
                                                helpers.NULL_ADDRESS
                                                );

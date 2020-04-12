@@ -20,7 +20,11 @@ const setupSchemeRegistrarParams = async function(
                         .methods
                         .initialize(avatarAddress,
                           schemeRegistrarParams.votingMachine.absoluteVote.address,
+                          [0,0,0,0,0,0,0,0,0,0,0],
+                          helpers.NULL_ADDRESS,
                           schemeRegistrarParams.votingMachine.params,
+                          [0,0,0,0,0,0,0,0,0,0,0],
+                          helpers.NULL_ADDRESS,
                           schemeRegistrarParams.votingMachine.params)
                         .encodeABI();
   return schemeRegistrarParams;

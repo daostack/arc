@@ -22,16 +22,20 @@ const setupGlobalConstraintRegistrarParams = async function(
     globalConstraintRegistrarParams.initdata = await new web3.eth.Contract(registration.globalConstraintRegistrar.abi)
                                                .methods
                                                .initialize(avatarAddress,
-                                               globalConstraintRegistrarParams.votingMachine.genesisProtocol.address,
-                                               globalConstraintRegistrarParams.votingMachine.params)
-                                               .encodeABI();
+                                                 globalConstraintRegistrarParams.votingMachine.genesisProtocol.address,
+                                                 globalConstraintRegistrarParams.votingMachine.uintArray,
+                                                 globalConstraintRegistrarParams.votingMachine.voteOnBehalf,
+                                                 helpers.NULL_HASH)
+                                                 .encodeABI();
     } else {
   globalConstraintRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   globalConstraintRegistrarParams.initdata = await new web3.eth.Contract(registration.globalConstraintRegistrar.abi)
                                              .methods
                                              .initialize(avatarAddress,
-                                             globalConstraintRegistrarParams.votingMachine.absoluteVote.address,
-                                             globalConstraintRegistrarParams.votingMachine.params)
+                                               globalConstraintRegistrarParams.votingMachine.absoluteVote.address,
+                                               [1,1,1,1,1,1,1,1,1,1,1],
+                                               helpers.NULL_ADDRESS,
+                                               globalConstraintRegistrarParams.votingMachine.params)
                                              .encodeABI();
   }
   return globalConstraintRegistrarParams;

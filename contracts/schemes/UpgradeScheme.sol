@@ -44,20 +44,23 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     mapping(bytes32=>Proposal) public organizationProposals;
 
     IntVoteInterface public votingMachine;
-    bytes32 public voteParams;
+    bytes32 public voteParamsHash;
     Avatar public avatar;
     Package public arcPackage;
 
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
-     * @param _votingMachine the voting machines address to
-     * @param _voteParams voting machine parameters.
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
+     * @param _voteParamsHash voting machine parameters.
      */
     function initialize(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
-        bytes32 _voteParams,
+        uint256[11] calldata _votingParams,
+        address _voteOnBehalf,
+        bytes32 _voteParamsHash,
         Package _package
     )
     external
@@ -66,7 +69,20 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
         require(_avatar != Avatar(0), "avatar cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
-        voteParams = _voteParams;
+        if (_voteParamsHash == bytes32(0)) {
+            //genesisProtocol
+            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
+            voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
+            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
+            genesisProtocol.parameters(voteParamsHash);
+            if (queuedVoteRequiredPercentage == 0) {
+               //params not set already
+                genesisProtocol.setParameters(_votingParams, _voteOnBehalf);
+            }
+        } else {
+            //for other voting machines
+            voteParamsHash = _voteParamsHash;
+        }
         arcPackage = _package;
     }
 
@@ -140,7 +156,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
             );
         }
 
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
 
         organizationProposals[proposalId] = Proposal({
             packageVersion: _packageVersion,

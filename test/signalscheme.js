@@ -21,8 +21,10 @@ const setupSignalSchemeParam = async function(
     .methods
     .initialize(   avatar.address,
      1234,
-     setupSignalSchemeParam.votingMachine.params,
-     setupSignalSchemeParam.votingMachine.genesisProtocol.address)
+     helpers.NULL_ADDRESS,
+     setupSignalSchemeParam.votingMachine.genesisProtocol.address,
+     contributionRewardParams.votingMachine.uintArray,
+     contributionRewardParams.votingMachine.voteOnBehalf)
     .encodeABI();
     } else {
       signalSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
@@ -31,7 +33,9 @@ const setupSignalSchemeParam = async function(
                                                 .initialize(   avatar.address,
                                                   1234,
                                                   signalSchemeParams.votingMachine.params,
-                                                  signalSchemeParams.votingMachine.absoluteVote.address)
+                                                  signalSchemeParams.votingMachine.absoluteVote.address,
+                                                  [0,0,0,0,0,0,0,0,0,0,0],
+                                                  helpers.NULL_ADDRESS)
                                                 .encodeABI();
   }
   return signalSchemeParams;

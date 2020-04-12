@@ -26,7 +26,9 @@ const setupVoteInOrganizationParams = async function(
       .methods
       .initialize(avatarAddress,
         voteInOrganizationParams.votingMachine.genesisProtocol.address,
-        voteInOrganizationParams.votingMachine.params)
+        voteInOrganizationParams.votingMachine.uintArray,
+        voteInOrganizationParams.votingMachine.voteOnBehalf,
+        helpers.NULL_HASH)
       .encodeABI();
     }
   else {
@@ -35,6 +37,8 @@ const setupVoteInOrganizationParams = async function(
       .methods
       .initialize(avatarAddress,
         voteInOrganizationParams.votingMachine.absoluteVote.address,
+        [0,0,0,0,0,0,0,0,0,0,0],
+        helpers.NULL_ADDRESS,
         voteInOrganizationParams.votingMachine.params)
       .encodeABI();
   }

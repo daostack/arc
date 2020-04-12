@@ -45,7 +45,9 @@ const setupJoinAndQuit = async function(
                           .methods
                           .initialize(avatarAddress,
                             joinAndQuitParams.votingMachine.genesisProtocol.address,
-                            joinAndQuitParams.votingMachine.params,
+                            joinAndQuitParams.votingMachine.genesisProtocol.address,
+                            joinAndQuitParams.votingMachine.uintArray,
+                            helpers.NULL_HASH,
                             _fundingToken,
                             _minFeeToJoin,
                             _memberReputation,
@@ -58,6 +60,8 @@ const setupJoinAndQuit = async function(
                         .methods
                         .initialize(avatarAddress,
                           joinAndQuitParams.votingMachine.absoluteVote.address,
+                          [0,0,0,0,0,0,0,0,0,0,0],
+                          helpers.NULL_ADDRESS,
                           joinAndQuitParams.votingMachine.params,
                           _fundingToken,
                           _minFeeToJoin,
