@@ -123,7 +123,7 @@ contract('ContributionReward', accounts => {
          await testSetup.contributionReward.initialize(testSetup.org.avatar.address,
                                                        testSetup.contributionRewardParams.votingMachine.absoluteVote.address,
                                                        [0,0,0,0,0,0,0,0,0,0,0],
-                                                       helper.NULL_ADDRESS,
+                                                       helpers.NULL_ADDRESS,
                                                        testSetup.contributionRewardParams.votingMachine.params);
          assert(false, 'cannot initialize twice');
        } catch (ex) {

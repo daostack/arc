@@ -24,7 +24,9 @@ const setupContributionRewardExt = async function(
                           .methods
                           .initialize(avatarAddress,
                             contributionRewardParams.votingMachine.genesisProtocol.address,
-                            contributionRewardParams.votingMachine.params,
+                            contributionRewardParams.votingMachine.uintArray,
+                            contributionRewardParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_ADDRESS,
                             rewarderAddress)
                           .encodeABI();
     } else {
@@ -33,6 +35,8 @@ const setupContributionRewardExt = async function(
                         .methods
                         .initialize(avatarAddress,
                           contributionRewardParams.votingMachine.absoluteVote.address,
+                          [1,1,1,1,1,1,1,1,1,1,1],
+                          helpers.NULL_ADDRESS,
                           contributionRewardParams.votingMachine.params,
                           rewarderAddress)
                         .encodeABI();
