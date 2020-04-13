@@ -137,7 +137,10 @@ const redeem = async function(_testSetup,_beneficiary,_redeemer,_fromAccount) {
 };
 contract('ReputationFromToken and RepAllocation', accounts => {
     it("initialize", async () => {
-      console.log(ethereumjs.utils.toUtf8Bytes("ore"));
+      let testSetup = await setup(accounts);
+      assert.equal(await testSetup.reputationFromToken.tokenContract(),testSetup.repAllocation.address);
+      assert.equal(await testSetup.reputationFromToken.avatar(),testSetup.org.avatar.address);
+      assert.equal(await testSetup.reputationFromToken.curve(),testSetup.curve.address);
     });
 
     it("repAllocation is onlyOwner", async () => {
