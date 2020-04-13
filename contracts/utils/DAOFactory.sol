@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.5.17;
 
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "@openzeppelin/upgrades/contracts/application/App.sol";
@@ -175,16 +175,13 @@ contract DAOFactory is Initializable {
     public
     view
     returns (address) {
-        Package package;
-        (package, ) = app.getPackage(PACKAGE_NAME);
+        (Package package, ) = app.getPackage(PACKAGE_NAME);
         ImplementationProvider provider = ImplementationProvider(package.getContract(_version));
         return provider.getImplementation(_contractName);
     }
 
     function getPackageVersion(uint64[3] memory _version) public view returns(uint64[3] memory version) {
-        Package package;
-        uint64[3] memory latestVersion;
-        (package, latestVersion) = app.getPackage(PACKAGE_NAME);
+        (Package package, uint64[3] memory latestVersion) = app.getPackage(PACKAGE_NAME);
         if (package.getContract(_version) == address(0)) {
             require(package.getContract(latestVersion) != address(0), "ImplementationProvider does not exist");
             version = latestVersion;

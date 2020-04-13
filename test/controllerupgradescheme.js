@@ -13,17 +13,33 @@ class ControllerUpgradeSchemeParams {
 }
 var registration;
 const setupControllerUpgradeSchemeParams = async function(
-                                            avatarAddress
+                                              accounts,
+                                              genesisProtocol,
+                                              token,
+                                              avatarAddress
                                             ) {
     var controllerUpgradeSchemeParams = new ControllerUpgradeSchemeParams();
-
+    if (genesisProtocol === true) {
+      controllerUpgradeSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,avatarAddress,helpers.NULL_ADDRESS);
+      controllerUpgradeSchemeParams.initdata = await new web3.eth.Contract(registration.controllerUpgradeScheme.abi)
+                            .methods
+                            .initialize(avatarAddress,
+                              controllerUpgradeSchemeParams.votingMachine.genesisProtocol.address,
+                              controllerUpgradeSchemeParams.votingMachine.uintArray,
+                              controllerUpgradeSchemeParams.votingMachine.voteOnBehalf,
+                              helpers.NULL_HASH)
+                            .encodeABI();
+      } else {
     controllerUpgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
     controllerUpgradeSchemeParams.initdata = await new web3.eth.Contract(registration.controllerUpgradeScheme.abi)
                           .methods
                           .initialize(avatarAddress,
                             controllerUpgradeSchemeParams.votingMachine.absoluteVote.address,
+                            [0,0,0,0,0,0,0,0,0,0,0],
+                            helpers.NULL_ADDRESS,
                             controllerUpgradeSchemeParams.votingMachine.params)
                           .encodeABI();
+    }
     return controllerUpgradeSchemeParams;
 };
 
@@ -51,7 +67,7 @@ const setupNewController = async function (accounts,permission='0x00000000') {
 };
 
 
-const setup = async function (accounts) {
+const setup = async function (accounts,genesisProtocol=false,tokenAddress= helpers.NULL_HASH) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
   registration = await helpers.registerImplementation();
@@ -66,7 +82,10 @@ const setup = async function (accounts) {
                                                                       [1000,0,0],
                                                                       testSetup.reputationArray);
   testSetup.controllerUpgradeSchemeParams= await setupControllerUpgradeSchemeParams(
-                     testSetup.org.avatar.address);
+    accounts,
+    genesisProtocol,
+    tokenAddress,
+    testSetup.org.avatar.address);
   var permissions = "0x0000000a";
   var tx = await registration.daoFactory.setSchemes(
                           testSetup.org.avatar.address,
@@ -86,7 +105,11 @@ contract('ControllerUpgradeScheme', accounts => {
    it("initialize", async() => {
      var controllerUpgradeScheme = await ControllerUpgradeScheme.new();
      var absoluteVote = await AbsoluteVote.new();
-     await controllerUpgradeScheme.initialize(helpers.SOME_ADDRESS,absoluteVote.address,"0x1234");
+     await controllerUpgradeScheme.initialize(helpers.SOME_ADDRESS,
+                                              absoluteVote.address,
+                                              [0,0,0,0,0,0,0,0,0,0,0],
+                                              helpers.NULL_ADDRESS,
+                                              "0x1234");
      assert.equal(await controllerUpgradeScheme.votingMachine(),absoluteVote.address);
      });
 
@@ -131,6 +154,26 @@ contract('ControllerUpgradeScheme', accounts => {
    assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
    assert.equal(organizationProposal[1],0);//proposalType
   });
+
+  it("execute proposal upgrade controller -yes - proposal data delete + genesisProtocol", async function() {
+    var testSetup = await setup(accounts,true);
+
+    var newController = await setupNewController(accounts);
+    assert.notEqual(newController.address,await testSetup.org.avatar.owner());
+    var tx = await testSetup.controllerUpgradeScheme.proposeUpgrade(newController.address,helpers.NULL_HASH);
+    //Vote with reputation to trigger execution
+    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+    //check organizationsProposals before execution
+    var organizationProposal = await testSetup.controllerUpgradeScheme.organizationProposals(proposalId);
+    assert.equal(organizationProposal[0],newController.address);//new contract address
+    assert.equal(organizationProposal[1].toNumber(),1);//proposalType
+    await testSetup.controllerUpgradeSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    assert.equal(newController.address,await testSetup.org.avatar.owner());
+    //check organizationsProposals after execution
+    organizationProposal = await testSetup.controllerUpgradeScheme.organizationProposals(proposalId);
+    assert.equal(organizationProposal[0],0x0000000000000000000000000000000000000000);//new contract address
+    assert.equal(organizationProposal[1],0);//proposalType
+   });
 
   it("execute proposal upgrade controller - no decision (same for update scheme) - proposal data delete", async function() {
     var testSetup = await setup(accounts);

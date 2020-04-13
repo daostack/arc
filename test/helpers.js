@@ -231,7 +231,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   // set up a reputation system
   votingMachine.reputationArray = [20, 10 ,70];
   // register some parameters
-  await votingMachine.genesisProtocol.setParameters([_queuedVoteRequiredPercentage,
+  votingMachine.uintArray = [_queuedVoteRequiredPercentage,
                                                      _queuedVotePeriodLimit,
                                                      _boostedVotePeriodLimit,
                                                      _preBoostedVotePeriodLimit,
@@ -241,7 +241,8 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
                                                      _votersReputationLossRatio,
                                                      _minimumDaoBounty,
                                                      _daoBountyConst,
-                                                     _activationTime],voteOnBehalf);
+                                                     _activationTime];
+  votingMachine.voteOnBehalf = voteOnBehalf;
   votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_queuedVoteRequiredPercentage,
                                                      _queuedVotePeriodLimit,
                                                      _boostedVotePeriodLimit,

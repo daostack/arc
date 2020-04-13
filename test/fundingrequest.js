@@ -32,7 +32,9 @@ const setupJoinAndQuit = async function(
                           .methods
                           .initialize(avatarAddress,
                             joinAndQuitParams.votingMachine.genesisProtocol.address,
-                            joinAndQuitParams.votingMachine.params,
+                            joinAndQuitParams.votingMachine.uintArray,
+                            joinAndQuitParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_HASH,
                             _fundingToken,
                             _minFeeToJoin,
                             _memberReputation,
@@ -45,6 +47,8 @@ const setupJoinAndQuit = async function(
                         .methods
                         .initialize(avatarAddress,
                           joinAndQuitParams.votingMachine.absoluteVote.address,
+                          [1,1,1,1,1,1,1,1,1,1,1],
+                          helpers.NULL_ADDRESS,
                           joinAndQuitParams.votingMachine.params,
                           _fundingToken,
                           _minFeeToJoin,
@@ -71,7 +75,9 @@ const setupFundingRequest = async function(
                           .methods
                           .initialize(avatarAddress,
                             fundingRequestParams.votingMachine.genesisProtocol.address,
-                            fundingRequestParams.votingMachine.params,
+                            fundingRequestParams.votingMachine.uintArray,
+                            fundingRequestParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_HASH,
                             externalToken
                           )
                           .encodeABI();
@@ -81,6 +87,8 @@ const setupFundingRequest = async function(
                         .methods
                         .initialize(avatarAddress,
                           fundingRequestParams.votingMachine.absoluteVote.address,
+                          [1,1,1,1,1,1,1,1,1,1,1],
+                          helpers.NULL_ADDRESS,
                           fundingRequestParams.votingMachine.params,
                           externalToken
                         )
@@ -94,7 +102,7 @@ const setup = async function (accounts,
                               setupJAQProposal=true,
                               ethFunding = false,
                               genesisProtocol = false,
-                              tokenAddress=0,
+                              tokenAddress=helpers.NULL_ADDRESS,
                               minFeeToJoin = 100,
                               memberReputation = 100,
                               fundingGoal = 1000,
@@ -103,11 +111,8 @@ const setup = async function (accounts,
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[0],100000);
   registration = await helpers.registerImplementation();
 
-  if (genesisProtocol) {
-     testSetup.reputationArray = [1000,100,0];
-  } else {
-     testSetup.reputationArray = [2000,4000,7000];
-  }
+
+  testSetup.reputationArray = [2000,4000,7000];
   testSetup.proxyAdmin = accounts[5];
   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
@@ -169,7 +174,11 @@ const setup = async function (accounts,
                                                   testSetup.fundingGoal,
                                                   {value, from:accounts[3]});
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+    if (genesisProtocol === false) {
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    } else {
+      await testSetup.joinAndQuitParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    }
   }
   return testSetup;
 };
@@ -249,6 +258,30 @@ contract('FundingRequest', accounts => {
 
       let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.fundingRequestParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      var proposal = await testSetup.fundingRequest.proposals(proposalId);
+      assert.equal(proposal.executionTime, (await web3.eth.getBlock("latest")).timestamp);
+      tx = await testSetup.fundingRequest.redeem(proposalId);
+      assert.equal(tx.logs[0].event, "Redeem");
+      assert.equal(tx.logs[0].args._avatar, testSetup.org.avatar.address);
+      assert.equal(tx.logs[0].args._proposalId, proposalId);
+      assert.equal(tx.logs[0].args._beneficiary, accounts[1]);
+      assert.equal(tx.logs[0].args._amount, testSetup.minFeeToJoin - 1);
+      assert.equal((await testSetup.standardTokenMock.balanceOf(accounts[1])), testSetup.minFeeToJoin - 1);
+      proposal = await testSetup.fundingRequest.proposals(proposalId);
+      assert.equal(proposal.executionTime, 0);
+      assert.equal(proposal.amount, 0);
+     });
+
+     it("redeem proposal + genesisProtocol", async function() {
+      var testSetup = await setup(accounts,true,false,true);
+
+      let tx = await testSetup.fundingRequest.propose(
+        accounts[1],
+        testSetup.minFeeToJoin - 1,
+        "description-hash");
+
+      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.fundingRequestParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.fundingRequest.proposals(proposalId);
       assert.equal(proposal.executionTime, (await web3.eth.getBlock("latest")).timestamp);
       tx = await testSetup.fundingRequest.redeem(proposalId);

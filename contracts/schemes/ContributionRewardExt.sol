@@ -1,4 +1,4 @@
-pragma solidity 0.5.16;
+pragma solidity 0.5.17;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
 
@@ -72,7 +72,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     mapping(bytes32=>ContributionProposal) public organizationProposals;
 
     IntVoteInterface public votingMachine;
-    bytes32 public voteParams;
+    bytes32 public voteParamsHash;
     Avatar public avatar;
     address public rewarder;
     Vault public vault;
@@ -81,14 +81,18 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _votingMachine the voting machines address
-     * @param _voteParams voting machine parameters
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
+     * @param _voteParamsHash voting machine parameters
      * @param _rewarder an address which allowed to redeem the contribution.
        if _rewarder is 0 this param is agnored.
      */
     function initialize(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
-        bytes32 _voteParams,
+        uint[11] calldata _votingParams,
+        address _voteOnBehalf,
+        bytes32 _voteParamsHash,
         address _rewarder
     )
     external
@@ -98,7 +102,20 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         require(_votingMachine != IntVoteInterface(0), "votingMachine cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
-        voteParams = _voteParams;
+        if (_voteParamsHash == bytes32(0)) {
+            //genesisProtocol
+            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
+            voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
+            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
+            genesisProtocol.parameters(voteParamsHash);
+            if (queuedVoteRequiredPercentage == 0) {
+               //params not set already
+                genesisProtocol.setParameters(_votingParams, _voteOnBehalf);
+            }
+        } else {
+            //for other voting machines
+            voteParamsHash = _voteParamsHash;
+        }
         rewarder = _rewarder;
         vault = new Vault();
         vault.initialize(address(this));
@@ -149,7 +166,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         if (proposer == address(0)) {
             proposer = msg.sender;
         }
-        proposalId = votingMachine.propose(2, voteParams, proposer, address(avatar));
+        proposalId = votingMachine.propose(2, voteParamsHash, proposer, address(avatar));
         address payable beneficiary = _beneficiary;
         if (beneficiary == address(0)) {
             beneficiary = msg.sender;

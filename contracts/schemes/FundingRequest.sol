@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.5.17;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../libs/StringUtil.sol";
@@ -44,7 +44,7 @@ contract FundingRequest is
     mapping(bytes32=>Proposal) public proposals;
 
     IntVoteInterface public votingMachine;
-    bytes32 public voteParams;
+    bytes32 public voteParamsHash;
     Avatar public avatar;
     IERC20 public fundingToken;
 
@@ -52,13 +52,17 @@ contract FundingRequest is
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
      * @param _votingMachine the voting machines address to
-     * @param _voteParams voting machine parameters.
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
+     * @param _voteParamsHash voting machine parameters.
      * @param _fundingToken token to transfer to funding requests. 0x0 address for the native coin
      */
     function initialize(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
-        bytes32 _voteParams,
+        uint256[11] calldata _votingParams,
+        address _voteOnBehalf,
+        bytes32 _voteParamsHash,
         IERC20 _fundingToken
     )
     external
@@ -67,7 +71,20 @@ contract FundingRequest is
         require(_avatar != Avatar(0), "avatar cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
-        voteParams = _voteParams;
+        if (_voteParamsHash == bytes32(0)) {
+            //genesisProtocol
+            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
+            voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
+            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
+            genesisProtocol.parameters(voteParamsHash);
+            if (queuedVoteRequiredPercentage == 0) {
+               //params not set already
+                genesisProtocol.setParameters(_votingParams, _voteOnBehalf);
+            }
+        } else {
+            //for other voting machines
+            voteParamsHash = _voteParamsHash;
+        }
         fundingToken = _fundingToken;
     }
 
@@ -109,7 +126,7 @@ contract FundingRequest is
             avatar.db(FUNDED_BEFORE_DEADLINE_KEY).hashCompareWithLengthCheck(FUNDED_BEFORE_DEADLINE_VALUE),
             "funding is not allowed yet"
         );
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
         address payable beneficiary = _beneficiary;
         if (beneficiary == address(0)) {
             beneficiary = msg.sender;

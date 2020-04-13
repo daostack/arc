@@ -10,39 +10,44 @@ class SignalSchemeParams {
 var registration;
 
 const setupSignalSchemeParam = async function(
-                                            accounts,
-                                            genesisProtocol,
-                                            avatar
+                                              accounts,
+                                              genesisProtocol,
+                                              token,
+                                              avatarAddress
                                             ) {
   var signalSchemeParams = new SignalSchemeParams();
   if (genesisProtocol === true) {
-    signalSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,avatar,helpers.NULL_ADDRESS);
+    signalSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     signalSchemeParams.initdata = await new web3.eth.Contract(registration.signalScheme.abi)
     .methods
-    .initialize(   avatar.address,
+    .initialize(   avatarAddress,
      1234,
-     setupSignalSchemeParam.votingMachine.params,
-     setupSignalSchemeParam.votingMachine.genesisProtocol.address)
+     helpers.NULL_HASH,
+     signalSchemeParams.votingMachine.genesisProtocol.address,
+     signalSchemeParams.votingMachine.uintArray,
+     signalSchemeParams.votingMachine.voteOnBehalf)
     .encodeABI();
     } else {
       signalSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
       signalSchemeParams.initdata = await new web3.eth.Contract(registration.signalScheme.abi)
                                                 .methods
-                                                .initialize(   avatar.address,
+                                                .initialize(avatarAddress,
                                                   1234,
                                                   signalSchemeParams.votingMachine.params,
-                                                  signalSchemeParams.votingMachine.absoluteVote.address)
+                                                  signalSchemeParams.votingMachine.absoluteVote.address,
+                                                  [0,0,0,0,0,0,0,0,0,0,0],
+                                                  helpers.NULL_ADDRESS)
                                                 .encodeABI();
   }
   return signalSchemeParams;
 };
 
-const setup = async function (accounts,genesisProtocol = false) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress = helpers.NULL_ADDRESS) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
 
    if (genesisProtocol) {
-      testSetup.reputationArray = [1000,100,0];
+      testSetup.reputationArray = [1000,100,5000];
    } else {
       testSetup.reputationArray = [2000,4000,7000];
    }
@@ -57,9 +62,10 @@ const setup = async function (accounts,genesisProtocol = false) {
                                                                        testSetup.reputationArray);
 
   testSetup.signalSchemeParams= await setupSignalSchemeParam(
-                      accounts,
-                      genesisProtocol,
-                      testSetup.org.avatar);
+                                      accounts,
+                                      genesisProtocol,
+                                      tokenAddress,
+                                      testSetup.org.avatar.address);
    var permissions = "0x00000000";
    var tx = await registration.daoFactory.setSchemes(
     testSetup.org.avatar.address,
@@ -111,6 +117,27 @@ contract('SignalScheme', accounts => {
       assert.equal(proposal.executed,true);
      });
 
+     it("execute signalScheme  yes + genesisProtocol", async function() {
+       var testSetup = await setup(accounts,true);
+       var tx = await testSetup.signalScheme.proposeSignal(web3.utils.asciiToHex("description"));
+       //Vote with reputation to trigger execution
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+       tx = await testSetup.signalSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.signalScheme.getPastEvents('Signal', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"Signal");
+             assert.equal(events[0].args._avatar, testSetup.org.avatar.address);
+             assert.equal(events[0].args._proposalId, proposalId);
+             assert.equal(events[0].args._signalType, 1234);
+             assert.equal(events[0].args._descriptionHash, web3.utils.asciiToHex("description"));
+        });
+       var proposal = await testSetup.signalScheme.proposals(proposalId);
+       assert.equal(proposal.executed,true);
+      });
+
      it("execute signalScheme no ", async function() {
        var testSetup = await setup(accounts);
        var tx = await testSetup.signalScheme.proposeSignal(web3.utils.asciiToHex("description"));
@@ -134,7 +161,9 @@ contract('SignalScheme', accounts => {
               await testSetup.signalScheme.initialize(testSetup.org.avatar.address,
                                                      1234,
                                                      testSetup.signalSchemeParams.votingMachine.params,
-                                                     testSetup.signalSchemeParams.votingMachine.absoluteVote.address);
+                                                     testSetup.signalSchemeParams.votingMachine.absoluteVote.address,
+                                                     [0,0,0,0,0,0,0,0,0,0,0],
+                                                     helpers.NULL_ADDRESS);
               assert(false, "cannot initialize twice");
             } catch(error) {
               helpers.assertVMException(error);

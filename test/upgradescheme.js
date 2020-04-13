@@ -24,7 +24,9 @@ const setupUpgradeSchemeParams = async function(
                           .methods
                           .initialize(avatarAddress,
                             upgradeSchemeParams.votingMachine.genesisProtocol.address,
-                            upgradeSchemeParams.votingMachine.params,
+                            upgradeSchemeParams.votingMachine.uintArray,
+                            upgradeSchemeParams.votingMachine.voteOnBehalf,
+                            helpers.NULL_ADDRESS,
                             registration.packageInstance.address)
                           .encodeABI();
     } else {
@@ -33,6 +35,8 @@ const setupUpgradeSchemeParams = async function(
                         .methods
                         .initialize(avatarAddress,
                           upgradeSchemeParams.votingMachine.absoluteVote.address,
+                          [0,0,0,0,0,0,0,0,0,0,0],
+                          helpers.NULL_ADDRESS,
                           upgradeSchemeParams.votingMachine.params,
                           registration.packageInstance.address)
                         .encodeABI();
@@ -244,7 +248,7 @@ contract('UpgradeScheme', function(accounts) {
       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
       assert.equal(organizationProposal,false);
-      
+
       let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
       let newImp = await ImplementationProvider.at(newImpAddress);
 
@@ -304,7 +308,67 @@ contract('UpgradeScheme', function(accounts) {
       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
       assert.equal(organizationProposal,false);
-      
+
+      let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
+      let newImp = await ImplementationProvider.at(newImpAddress);
+
+      assert.equal(
+        await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("Avatar")
+      );
+      assert.equal(
+        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("DAOToken")
+      );
+      assert.equal(
+        await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await newImp.getImplementation("Reputation")
+      );
+    });
+
+    it("execute proposeVote -positive decision - verify version upgraded up to 60 contracts + genesisProtocol", async function() {
+      var testSetup = await setup(accounts,0,true,helpers.NULL_ADDRESS);
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+
+      let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
+      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
+      let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
+
+      let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
+      let oldImp = await ImplementationProvider.at(oldImpAddress);
+
+      assert.equal(
+        await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("Avatar")
+      );
+      assert.equal(
+        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("DAOToken")
+      );
+      assert.equal(
+        await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
+        await oldImp.getImplementation("Reputation")
+      );
+
+      let contractsNames = [];
+      let contractsToUpgrade = [];
+      for (let i = 0; i < 20; i++) {
+        contractsNames.push(web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"));
+        contractsToUpgrade.push(testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address);
+      }
+
+      var tx = await testSetup.upgradeScheme.proposeUpgrade(
+        [0, 1, 1],
+        contractsNames,
+        contractsToUpgrade,
+        helpers.NULL_HASH
+      );
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+      await testSetup.upgradeSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
+      assert.equal(organizationProposal,false);
+
       let newImpAddress = await testSetup.registration.packageInstance.getContract([0,1,1]);
       let newImp = await ImplementationProvider.at(newImpAddress);
 
@@ -330,6 +394,8 @@ contract('UpgradeScheme', function(accounts) {
           await testSetup.upgradeScheme.initialize(
             testSetup.org.avatar.address,
             testSetup.upgradeSchemeParams.votingMachine.absoluteVote.address,
+            [0,0,0,0,0,0,0,0,0,0,0],
+            helpers.NULL_ADDRESS,
             testSetup.upgradeSchemeParams.votingMachine.params,
             testSetup.registration.packageInstance.address
           );

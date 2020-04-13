@@ -1,4 +1,4 @@
-pragma solidity ^0.5.16;
+pragma solidity ^0.5.17;
 
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
@@ -10,7 +10,6 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
  * @title A registrar for Schemes for organizations
  * @dev The SchemeRegistrar is used for registering and unregistering schemes at organizations
  */
-
 contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
     event NewSchemeProposal(
         address indexed _avatar,
@@ -41,22 +40,30 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     mapping(bytes32=>SchemeProposal) public organizationProposals;
 
     IntVoteInterface public votingMachine;
-    bytes32 public voteRegisterParams;
-    bytes32 public voteRemoveParams;
+    bytes32 public voteRegisterParamsHash;
+    bytes32 public voteRemoveParamsHash;
     Avatar public avatar;
 
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
      * @param _votingMachine the voting machines address to
-     * @param _voteRegisterParams voting machine parameters to register scheme.
-     * @param _voteRemoveParams voting machine parameters to remove scheme.
+     * @param _votingParamsRegister genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalfRegister genesisProtocol parameter - valid only if _voteParamsHash is zero
+     * @param _voteRegisterParamsHash voting machine parameters to register scheme.
+     * @param _votingParamsRemove genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalfRemove genesisProtocol parameter - valid only if _voteParamsHash is zero
+     * @param _voteRemoveParamsHash voting machine parameters to remove scheme.
      */
     function initialize(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
-        bytes32 _voteRegisterParams,
-        bytes32 _voteRemoveParams
+        uint[11] calldata _votingParamsRegister,
+        address _voteOnBehalfRegister,
+        bytes32 _voteRegisterParamsHash,
+        uint[11] calldata _votingParamsRemove,
+        address _voteOnBehalfRemove,
+        bytes32 _voteRemoveParamsHash
     )
     external
     initializer
@@ -64,8 +71,35 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
         require(_avatar != Avatar(0), "avatar cannot be zero");
         avatar = _avatar;
         votingMachine = _votingMachine;
-        voteRegisterParams = _voteRegisterParams;
-        voteRemoveParams = _voteRemoveParams;
+        if (_voteRegisterParamsHash == bytes32(0)) {
+            //genesisProtocol
+            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
+            voteRegisterParamsHash = genesisProtocol.getParametersHash(_votingParamsRegister, _voteOnBehalfRegister);
+            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
+            genesisProtocol.parameters(voteRegisterParamsHash);
+            if (queuedVoteRequiredPercentage == 0) {
+               //params not set already
+                genesisProtocol.setParameters(_votingParamsRegister, _voteOnBehalfRegister);
+            }
+        } else {
+            //for other voting machines
+            voteRegisterParamsHash = _voteRegisterParamsHash;
+        }
+
+        if (_voteRemoveParamsHash == bytes32(0)) {
+            //genesisProtocol
+            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
+            voteRemoveParamsHash = genesisProtocol.getParametersHash(_votingParamsRemove, _voteOnBehalfRemove);
+            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
+            genesisProtocol.parameters(voteRemoveParamsHash);
+            if (queuedVoteRequiredPercentage == 0) {
+               //params not set already
+                genesisProtocol.setParameters(_votingParamsRemove, _voteOnBehalfRemove);
+            }
+        } else {
+            //for other voting machines
+            voteRemoveParamsHash = _voteRemoveParamsHash;
+        }
     }
 
     /**
@@ -123,7 +157,7 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
 
         bytes32 proposalId = votingMachine.propose(
             2,
-            voteRegisterParams,
+            voteRegisterParamsHash,
             msg.sender,
             address(avatar)
         );
@@ -161,7 +195,7 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     {
         require(_scheme != address(0), "scheme cannot be zero");
 
-        bytes32 proposalId = votingMachine.propose(2, voteRemoveParams, msg.sender, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, voteRemoveParamsHash, msg.sender, address(avatar));
         organizationProposals[proposalId].scheme = _scheme;
         emit RemoveSchemeProposal(address(avatar), proposalId, address(votingMachine), _scheme, _descriptionHash);
         proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({

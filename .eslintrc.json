@@ -14,5 +14,5 @@
         "eol-last": 2,
         "eqeqeq": "error"
     },
-    "ignorePatterns": ["cache/", "node_modules/"]
+    "ignorePatterns": ["cache/", "node_modules/","coverage/"]
 }
