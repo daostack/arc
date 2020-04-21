@@ -5,8 +5,8 @@ import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallb
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../libs/Bytes32ToStr.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
-import "@openzeppelin/upgrades/contracts/application/Package.sol";
-import "@openzeppelin/upgrades/contracts/application/ImplementationProvider.sol";
+import "../registry/Package.sol";
+import "../registry/ImplementationProvider.sol";
 
 
 /**
