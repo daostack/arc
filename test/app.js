@@ -87,4 +87,11 @@ contract('App', accounts => {
        var provider = await registration.app.getProvider(registration.packageName);
        assert.equal(registration.implementationDirectory.address, provider);
     });
+
+    it("addVersion", async function() {
+       await setup();
+       var tx = await registration.packageInstance.addVersion([1,0,0],registration.implementationDirectory.address,helpers.NULL_HASH);
+       assert.equal(tx.logs[0].event, "VersionAdded");
+       assert.equal(tx.logs[0].args.semanticVersion[0], 1);
+    });
 });
