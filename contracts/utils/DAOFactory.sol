@@ -1,8 +1,8 @@
 pragma solidity ^0.5.17;
 
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
-import "@openzeppelin/upgrades/contracts/application/App.sol";
-import "@openzeppelin/upgrades/contracts/application/ImplementationDirectory.sol";
+import "../registry/App.sol";
+import "../registry/ImplementationDirectory.sol";
 import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
 import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
