@@ -16,7 +16,7 @@ contract('App', accounts => {
          await registration.
                implementationDirectory.
                setImplementation("Test",registration.fundingRequest.address);
-         assert(false, 'cannot setImplementation because it is freeze');
+         assert(false, 'cannot setImplementation because it is freezed');
        } catch (ex) {
          helpers.assertVMException(ex);
        }

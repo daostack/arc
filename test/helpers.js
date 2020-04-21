@@ -1,7 +1,6 @@
 /**
     helpers for tests
 */
-
 const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
