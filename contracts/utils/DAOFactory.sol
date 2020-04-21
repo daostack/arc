@@ -4,7 +4,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "@openzeppelin/upgrades/contracts/application/App.sol";
 import "@openzeppelin/upgrades/contracts/application/ImplementationDirectory.sol";
 import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
-import "@openzeppelin/upgrades/contracts/upgradeability/InitializableAdminUpgradeabilityProxy.sol";
+import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
 import "solidity-bytes-utils/contracts/BytesLib.sol";
 import "../controller/Controller.sol";
 import "../libs/Bytes32ToStr.sol";
@@ -157,11 +157,10 @@ contract DAOFactory is Initializable {
                             bytes memory _data)
     public
     payable
-    returns (InitializableAdminUpgradeabilityProxy) {
+    returns (AdminUpgradeabilityProxy) {
         uint64[3] memory version = getPackageVersion(_packageVersion);
         address implementation = getImplementation(version, _contractName);
-        InitializableAdminUpgradeabilityProxy proxy = new InitializableAdminUpgradeabilityProxy();
-        proxy.initialize(implementation, _admin, _data);
+        AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy).value(msg.value)(implementation, _admin, _data);
         emit ProxyCreated(address(proxy), implementation, _contractName, version);
         return proxy;
     }
@@ -258,13 +257,13 @@ contract DAOFactory is Initializable {
         "_founderlength != _foundersTokenAmount.length");
         require(_founders.length == _foundersReputationAmount.length,
         "_founderlength != _foundersReputationAmount.length");
-        InitializableAdminUpgradeabilityProxy nativeToken =
+        AdminUpgradeabilityProxy nativeToken =
         createInstance(packageVersion, "DAOToken", address(this), _tokenInitData);
-        InitializableAdminUpgradeabilityProxy nativeReputation =
+        AdminUpgradeabilityProxy nativeReputation =
         createInstance(packageVersion, "Reputation", address(this),
         abi.encodeWithSignature("initialize(address)", address(this)));
 
-        InitializableAdminUpgradeabilityProxy avatar = createInstance(packageVersion, "Avatar", address(this),
+        AdminUpgradeabilityProxy avatar = createInstance(packageVersion, "Avatar", address(this),
         abi.encodeWithSignature(
             "initialize(string,address,address,address)",
             _orgName,
