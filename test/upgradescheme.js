@@ -1,7 +1,7 @@
 const helpers = require("./helpers");
 const UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
-const AdminUpgradeabilityProxy = artifacts.require("./AdminUpgradeabilityProxy.sol");
+const InitializableAdminUpgradeabilityProxy = artifacts.require("./InitializableAdminUpgradeabilityProxy.sol");
 const ImplementationProvider = artifacts.require("./ImplementationProvider.sol");
 
 class UpgradeSchemeParams {
@@ -217,9 +217,9 @@ contract('UpgradeScheme', function(accounts) {
       var testSetup = await setup(accounts);
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
 
-      let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
-      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
-      let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
+      let avatarProxy = await InitializableAdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
+      let tokenProxy = await InitializableAdminUpgradeabilityProxy.at(testSetup.org.token.address);
+      let reputationProxy = await InitializableAdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
 
       let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
       let oldImp = await ImplementationProvider.at(oldImpAddress);
@@ -270,9 +270,9 @@ contract('UpgradeScheme', function(accounts) {
       var testSetup = await setup(accounts);
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
 
-      let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
-      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
-      let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
+      let avatarProxy = await InitializableAdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
+      let tokenProxy = await InitializableAdminUpgradeabilityProxy.at(testSetup.org.token.address);
+      let reputationProxy = await InitializableAdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
 
       let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
       let oldImp = await ImplementationProvider.at(oldImpAddress);
@@ -330,9 +330,9 @@ contract('UpgradeScheme', function(accounts) {
       var testSetup = await setup(accounts,0,true,helpers.NULL_ADDRESS);
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
 
-      let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
-      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
-      let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
+      let avatarProxy = await InitializableAdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
+      let tokenProxy = await InitializableAdminUpgradeabilityProxy.at(testSetup.org.token.address);
+      let reputationProxy = await InitializableAdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
 
       let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
       let oldImp = await ImplementationProvider.at(oldImpAddress);
