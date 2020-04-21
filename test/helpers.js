@@ -123,7 +123,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
 
  const registrationAddVersionToPackege = async function (registration,version = [0,1,0]) {
   var packageName = "DAOstack";
-
+  registration.packageName = packageName;
   var implementationDirectory = await ImplementationDirectory.new();
   await registration.packageInstance.addVersion(version,implementationDirectory.address,NULL_HASH);
   await registration.app.setPackage(packageName,registration.packageInstance.address,version);
@@ -185,6 +185,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   await implementationDirectory.setImplementation("JoinAndQuit",registration.joinAndQuit.address);
   await implementationDirectory.setImplementation("FundingRequest",registration.fundingRequest.address);
 
+  registration.implementationDirectory = implementationDirectory;
 
   return registration;
 };
