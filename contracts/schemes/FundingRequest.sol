@@ -2,7 +2,6 @@ pragma solidity ^0.5.17;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../libs/StringUtil.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "./CommonInterface.sol";
 
 
@@ -12,7 +11,6 @@ import "./CommonInterface.sol";
 contract FundingRequest is
         VotingMachineCallbacks,
         ProposalExecuteInterface,
-        Initializable,
         CommonInterface {
     using SafeMath for uint;
     using StringUtil for string;
@@ -45,7 +43,6 @@ contract FundingRequest is
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParamsHash;
-    Avatar public avatar;
     IERC20 public fundingToken;
 
     /**
@@ -66,10 +63,8 @@ contract FundingRequest is
         IERC20 _fundingToken
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
+        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -148,10 +143,8 @@ contract FundingRequest is
             _descriptionHash
         );
 
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+
         return proposalId;
     }
 

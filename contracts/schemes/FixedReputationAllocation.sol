@@ -2,14 +2,14 @@ pragma solidity ^0.5.17;
 
 import "../controller/Controller.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./ArcScheme.sol";
 
 /**
  * @title A fixed reputation allocation contract
  * This scheme can be used to allocate a pre define amount of reputation to whitelisted
  * beneficiaries.
  */
-contract FixedReputationAllocation is Initializable, Ownable {
+contract FixedReputationAllocation is Ownable, ArcScheme {
     using SafeMath for uint256;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
@@ -18,7 +18,6 @@ contract FixedReputationAllocation is Initializable, Ownable {
     // beneficiary -> exist
     mapping(address => bool) public beneficiaries;
 
-    Avatar public avatar;
     uint256 public reputationReward;
     bool public isEnable;
     uint256 public numberOfBeneficiaries;
@@ -32,12 +31,11 @@ contract FixedReputationAllocation is Initializable, Ownable {
      * @param _redeemEnableTime time to enable redeem
      */
     function initialize(Avatar _avatar, uint256 _reputationReward, uint256 _redeemEnableTime, address _owner)
-    external initializer
+    external
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        super._initialize(_avatar);
         reputationReward = _reputationReward;
         redeemEnableTime = _redeemEnableTime;
-        avatar = _avatar;
         Ownable.initialize(_owner);
     }
 

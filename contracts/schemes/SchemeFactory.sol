@@ -4,14 +4,13 @@ import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.s
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../utils/DAOFactory.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
  * @title A factory and registrar for Schemes for organizations
  * @dev The SchemeFactory is used for deploying and registering schemes to organisations
  */
-contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+contract SchemeFactory is VotingMachineCallbacks, ProposalExecuteInterface {
     event NewSchemeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -40,7 +39,6 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParamsHash;
-    Avatar public avatar;
     DAOFactory public daoFactory;
 
     /**
@@ -61,10 +59,8 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
         DAOFactory _daoFactory
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
+        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -181,10 +177,7 @@ contract SchemeFactory is Initializable, VotingMachineCallbacks, ProposalExecute
         );
 
         proposals[proposalId] = proposal;
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
         return proposalId;
     }
 }

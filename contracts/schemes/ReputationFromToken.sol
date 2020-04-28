@@ -5,14 +5,14 @@ import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.so
 import "./CurveInterface.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./ArcScheme.sol";
 
 /**
  * @title A scheme for reputation allocation according to token balances
  *        This contract is assuming that the token contract is paused, and one cannot transfer its tokens.
  */
 
-contract ReputationFromToken is Initializable {
+contract ReputationFromToken is ArcScheme {
     using ECDSA for bytes32;
     using SafeMath for uint256;
 
@@ -20,7 +20,6 @@ contract ReputationFromToken is Initializable {
     CurveInterface public curve;
     //      beneficiary -> bool
     mapping(address     => bool) public redeems;
-    Avatar public avatar;
 
     // Digest describing the data the user signs according EIP 712.
     // Needs to match what is passed to Metamask.
@@ -37,11 +36,10 @@ contract ReputationFromToken is Initializable {
      * @param _avatar the avatar to mint reputation from
      * @param _tokenContract the token contract
      */
-    function initialize(Avatar _avatar, IERC20 _tokenContract, CurveInterface _curve) external initializer
+    function initialize(Avatar _avatar, IERC20 _tokenContract, CurveInterface _curve) external
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        super._initialize(_avatar);
         tokenContract = _tokenContract;
-        avatar = _avatar;
         curve = _curve;
     }
 

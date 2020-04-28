@@ -229,7 +229,7 @@ contract Competition is Initializable {
         bytes32 proposalId = suggestions[_suggestionId].proposalId;
         require(proposalId != bytes32(0), "suggestion does not exist");
         setSnapshotBlock(proposalId);
-        Avatar avatar = ContributionRewardExt(contributionRewardExt).avatar();
+        Avatar avatar = ArcScheme(contributionRewardExt).avatar();
         uint256 reputation = avatar.nativeReputation().balanceOfAt(msg.sender, proposals[proposalId].snapshotBlock);
         require(reputation > 0, "voter had no reputation when snapshot was taken");
         Proposal storage proposal = proposals[proposalId];

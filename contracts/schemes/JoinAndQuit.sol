@@ -1,7 +1,6 @@
 pragma solidity ^0.5.17;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "../libs/StringUtil.sol";
 import "./CommonInterface.sol";
 
@@ -15,7 +14,6 @@ import "./CommonInterface.sol";
 contract JoinAndQuit is
         VotingMachineCallbacks,
         ProposalExecuteInterface,
-        Initializable,
         CommonInterface {
     using SafeMath for uint;
     using SafeERC20 for IERC20;
@@ -63,7 +61,6 @@ contract JoinAndQuit is
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParamsHash;
-    Avatar public avatar;
     IERC20 public fundingToken;
     uint256 public minFeeToJoin;
     uint256 public memberReputation;
@@ -98,9 +95,8 @@ contract JoinAndQuit is
         uint256 _fundingGoalDeadLine
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        super._initialize(_avatar);
         avatar = _avatar;
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
@@ -202,10 +198,7 @@ contract JoinAndQuit is
             _feeAmount
         );
 
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
         return proposalId;
     }
 

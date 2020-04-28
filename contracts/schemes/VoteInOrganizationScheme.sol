@@ -1,14 +1,13 @@
 pragma solidity ^0.5.17;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
  * @title VoteInOrganizationScheme.
  * @dev A scheme to allow an organization to vote in a proposal.
  */
-contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     event NewVoteProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -34,7 +33,6 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParamsHash;
-    Avatar public avatar;
 
     /**
      * @dev initialize
@@ -52,10 +50,8 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
         bytes32 _voteParamsHash
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
+        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -148,10 +144,7 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
             _vote,
             _descriptionHash
         );
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
         return proposalId;
     }
 }

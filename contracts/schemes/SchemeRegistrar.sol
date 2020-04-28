@@ -3,14 +3,13 @@ pragma solidity ^0.5.17;
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
  * @title A registrar for Schemes for organizations
  * @dev The SchemeRegistrar is used for registering and unregistering schemes at organizations
  */
-contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     event NewSchemeProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -42,7 +41,6 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
     IntVoteInterface public votingMachine;
     bytes32 public voteRegisterParamsHash;
     bytes32 public voteRemoveParamsHash;
-    Avatar public avatar;
 
     /**
      * @dev initialize
@@ -66,10 +64,8 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
         bytes32 _voteRemoveParamsHash
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
+        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteRegisterParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -176,10 +172,7 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
             _descriptionHash
         );
         organizationProposals[proposalId] = proposal;
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
         return proposalId;
     }
 
@@ -198,10 +191,7 @@ contract SchemeRegistrar is Initializable, VotingMachineCallbacks, ProposalExecu
         bytes32 proposalId = votingMachine.propose(2, voteRemoveParamsHash, msg.sender, address(avatar));
         organizationProposals[proposalId].scheme = _scheme;
         emit RemoveSchemeProposal(address(avatar), proposalId, address(votingMachine), _scheme, _descriptionHash);
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
         return proposalId;
     }
 }

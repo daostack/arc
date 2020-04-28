@@ -5,12 +5,12 @@ import "@openzeppelin/contracts-ethereum-package/contracts/math/Math.sol";
 import "../controller/Controller.sol";
 import "./Agreement.sol";
 import { RealMath } from "@daostack/infra-experimental/contracts/libs/RealMath.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./ArcScheme.sol";
 
 /**
  * @title A scheme for continuous locking ERC20 Token for reputation
  */
-contract ContinuousLocking4Reputation is Agreement, Initializable {
+contract ContinuousLocking4Reputation is Agreement, ArcScheme {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
     using RealMath for uint216;
@@ -39,7 +39,6 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
     // A mapping from batch index to batch
     mapping(uint256 => Batch) public batches;
 
-    Avatar public avatar;
     uint256 public reputationRewardLeft; // the amount of reputation that is still left to distribute
     uint256 public startTime; // the time (in secs since epoch) that locking can start (is enable)
     uint256 public redeemEnableTime;
@@ -93,9 +92,8 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
         IERC20 _token,
         bytes32 _agreementHash )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        super._initialize(_avatar);
         // _batchTime should be greater than block interval
         require(_batchTime > 15, "batchTime should be > 15");
         require(_maxLockingBatches <= MAX_LOCKING_BATCHES_HARDCAP,
@@ -104,7 +102,6 @@ contract ContinuousLocking4Reputation is Agreement, Initializable {
         "_redeemEnableTime >= _startTime+_batchTime");
         require(_batchesIndexCap <= BATCHES_INDEX_HARDCAP, "_batchesIndexCap > BATCHES_INDEX_HARDCAP");
         token = _token;
-        avatar = _avatar;
         startTime = _startTime;
         reputationRewardLeft = _reputationReward;
         redeemEnableTime = _redeemEnableTime;

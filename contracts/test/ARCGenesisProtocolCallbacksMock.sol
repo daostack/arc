@@ -4,11 +4,12 @@ import "../votingMachines/VotingMachineCallbacks.sol";
 
 
 contract ARCVotingMachineCallbacksMock is VotingMachineCallbacks {
+    function initialize(Avatar _avatar)
+    external {
+        super._initialize(_avatar);
+    }
 
-    function propose(bytes32 _proposalId, Avatar _avatar, address _votingMachine) public {
-        proposalsInfo[_votingMachine][_proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:_avatar
-        });
+    function propose(bytes32 _proposalId, address _votingMachine) public {
+        proposalsBlockNumber[_votingMachine][_proposalId] = block.number;
     }
 }

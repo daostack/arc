@@ -3,14 +3,13 @@ pragma solidity ^0.5.17;
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
  * @title A scheme to manage global constraint for organizations
  * @dev The scheme is used to register or remove new global constraints
  */
-contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     event NewGlobalConstraintsProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -47,7 +46,6 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParamsHash;
-    Avatar public avatar;
 
     /**
      * @dev initialize
@@ -65,10 +63,8 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
         bytes32 _voteParamsHash
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
+        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -155,10 +151,7 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
             _voteToRemoveParams,
             _descriptionHash
         );
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
         return proposalId;
     }
 
@@ -192,10 +185,7 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
         _gc,
         _descriptionHash);
 
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber: block.number,
-            avatar: avatar
-        });
+        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
         return proposalId;
     }
 }

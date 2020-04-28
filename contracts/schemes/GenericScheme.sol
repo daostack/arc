@@ -3,7 +3,6 @@ pragma solidity ^0.5.17;
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
@@ -11,7 +10,7 @@ import "@openzeppelin/upgrades/contracts/Initializable.sol";
  * @dev  A scheme for proposing and executing calls to an arbitrary function
  * on a specific contract on behalf of the organization avatar.
  */
-contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
+contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     event NewCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -47,7 +46,6 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
     IntVoteInterface public votingMachine;
     bytes32 public voteParamsHash;
     address public contractToCall;
-    Avatar public avatar;
 
     /**
      * @dev initialize
@@ -67,10 +65,8 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
         address _contractToCall
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
+        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -158,10 +154,9 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
             exist: true,
             passed: false
         });
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+
+        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+
         emit NewCallProposal(address(avatar), proposalId, _callData, _value, _descriptionHash);
         return proposalId;
     }
