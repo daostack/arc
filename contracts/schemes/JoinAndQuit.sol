@@ -54,13 +54,13 @@ contract JoinAndQuit is
     }
 
     struct MemberFund {
+        bool candidate;
         bool rageQuit;
         uint256 funding;
     }
 
     mapping(bytes32=>Proposal) public proposals;
     mapping(address=>MemberFund) public fundings;
-    mapping(address=>bool) public candidates;
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParamsHash;
@@ -160,7 +160,7 @@ contract JoinAndQuit is
                 fundingToken.safeTransfer(proposal.proposedMember, proposal.funding);
             }
         }
-        candidates[proposal.proposedMember] = false;
+        fundings[proposal.proposedMember].candidate = false;
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
     }
@@ -180,10 +180,10 @@ contract JoinAndQuit is
     returns(bytes32)
     {
         address proposer = msg.sender;
-        require(!candidates[proposer], "already a candidate");
+        require(!fundings[proposer].candidate, "already a candidate");
         require(avatar.nativeReputation().balanceOf(proposer) == 0, "already a member");
         require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
-        candidates[proposer] = true;
+        fundings[proposer].candidate = true;
         if (fundingToken == IERC20(0)) {
             require(_feeAmount == msg.value, "ETH received shoul match the _feeAmount");
         } else {
