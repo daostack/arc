@@ -22,7 +22,7 @@ const setupJoinAndQuit = async function(
                                             _minFeeToJoin,
                                             _memberReputation,
                                             _fundingGoal,
-                                            _fundingGoalDeadLine
+                                            _fundingGoalDeadline
                                             ) {
   var joinAndQuitParams = new JoinAndQuitParams();
 
@@ -39,7 +39,7 @@ const setupJoinAndQuit = async function(
                             _minFeeToJoin,
                             _memberReputation,
                             _fundingGoal,
-                           _fundingGoalDeadLine)
+                           _fundingGoalDeadline)
                           .encodeABI();
     } else {
   joinAndQuitParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
@@ -54,7 +54,7 @@ const setupJoinAndQuit = async function(
                           _minFeeToJoin,
                           _memberReputation,
                           _fundingGoal,
-                         _fundingGoalDeadLine)
+                         _fundingGoalDeadline)
                         .encodeABI();
   }
   return joinAndQuitParams;
@@ -106,7 +106,7 @@ const setup = async function (accounts,
                               minFeeToJoin = 100,
                               memberReputation = 100,
                               fundingGoal = 1000,
-                              fundingGoalDeadLine = 3000) {
+                              fundingGoalDeadline = 3000) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[0],100000);
   registration = await helpers.registerImplementation();
@@ -122,7 +122,7 @@ const setup = async function (accounts,
                                                                       accounts[2]],
                                                                       [1000,0,0],
                                                                       testSetup.reputationArray);
-  testSetup.fundingGoalDeadLine = (await web3.eth.getBlock("latest")).timestamp + fundingGoalDeadLine;
+  testSetup.fundingGoalDeadline = (await web3.eth.getBlock("latest")).timestamp + fundingGoalDeadline;
   testSetup.minFeeToJoin = minFeeToJoin;
   testSetup.memberReputation = memberReputation;
   testSetup.fundingGoal = fundingGoal;
@@ -141,7 +141,7 @@ const setup = async function (accounts,
                      minFeeToJoin,
                      memberReputation,
                      fundingGoal,
-                     testSetup.fundingGoalDeadLine);
+                     testSetup.fundingGoalDeadline);
 
   testSetup.fundingRequestParams = await setupFundingRequest(
                      accounts,

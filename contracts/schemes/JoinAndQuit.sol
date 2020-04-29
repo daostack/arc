@@ -69,7 +69,7 @@ contract JoinAndQuit is
     uint256 public minFeeToJoin;
     uint256 public memberReputation;
     uint256 public fundingGoal;
-    uint256 public fundingGoalDeadLine;
+    uint256 public fundingGoalDeadline;
     uint256 public totalDonation;
 
     /**
@@ -84,7 +84,7 @@ contract JoinAndQuit is
      * @param _memberReputation the repution which will be allocated for members
               if this param is zero so the repution will be allocated proportional to the fee paid
      * @param _fundingGoal the funding goal
-     * @param _fundingGoalDeadLine the funding goal deadline
+     * @param _fundingGoalDeadline the funding goal deadline
      */
     function initialize(
         Avatar _avatar,
@@ -96,7 +96,7 @@ contract JoinAndQuit is
         uint256 _minFeeToJoin,
         uint256 _memberReputation,
         uint256 _fundingGoal,
-        uint256 _fundingGoalDeadLine
+        uint256 _fundingGoalDeadline
     )
     external
     initializer
@@ -122,7 +122,7 @@ contract JoinAndQuit is
         minFeeToJoin = _minFeeToJoin;
         memberReputation = _memberReputation;
         fundingGoal = _fundingGoal;
-        fundingGoalDeadLine = _fundingGoalDeadLine;
+        fundingGoalDeadline = _fundingGoalDeadline;
     }
 
     /**
@@ -281,7 +281,7 @@ contract JoinAndQuit is
             .hashCompareWithLengthCheck(CommonInterface.FUNDED_BEFORE_DEADLINE_VALUE) == false) &&
             (avatarBalance >= fundingGoal) &&
             // solhint-disable-next-line not-rely-on-time
-            (now < fundingGoalDeadLine)) {
+            (now < fundingGoalDeadline)) {
             require(
             Controller(
             avatar.owner()).
