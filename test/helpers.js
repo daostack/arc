@@ -35,6 +35,8 @@ const VoteInOrganization = artifacts.require("./VoteInOrganizationScheme.sol");
 const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallbacksMock.sol");
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
+const RageQuitWithToken = artifacts.require("./RageQuitWithToken.sol");
+
 
 
 const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -153,6 +155,8 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
   registration.joinAndQuit = await JoinAndQuit.new();
   registration.fundingRequest = await FundingRequest.new();
+  registration.rageQuitWithToken = await RageQuitWithToken.new();
+
 
 
 
@@ -183,6 +187,8 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   await implementationDirectory.setImplementation("ARCVotingMachineCallbacksMock",registration.arcVotingMachineCallbacksMock.address);
   await implementationDirectory.setImplementation("JoinAndQuit",registration.joinAndQuit.address);
   await implementationDirectory.setImplementation("FundingRequest",registration.fundingRequest.address);
+  await implementationDirectory.setImplementation("RageQuitWithToken",registration.rageQuitWithToken.address);
+
 
   registration.implementationDirectory = implementationDirectory;
 
@@ -261,9 +267,9 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
  const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
                                                                      accounts,
                                                                      registration,
-                                                                     daoFactoryOwner,
-                                                                     founderToken,
-                                                                     founderReputation,
+                                                                     founders,
+                                                                     foundersToken,
+                                                                     foundersReputation,
                                                                      cap=0) {
   var org = new Organization();
   var nativeTokenData = await new web3.eth.Contract(registration.daoToken.abi)
@@ -272,9 +278,9 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
                         .encodeABI();
   var tx = await registration.daoFactory.forgeOrg("testOrg",
                                                   nativeTokenData,
-                                                  daoFactoryOwner,
-                                                  founderToken,
-                                                  founderReputation,
+                                                  founders,
+                                                  foundersToken,
+                                                  foundersReputation,
                                                   [0,0,0],
                                                   {from:proxyAdmin,gas:constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 5);
