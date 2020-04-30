@@ -9,7 +9,8 @@
     "migrations/",
     "test/",
     "tsconfig.json",
-    "buidler.config.js"
+    "buidler.config.js",
+    "truffle.js"
   ],
   "config": {
     "gasLimit": "7200000"
