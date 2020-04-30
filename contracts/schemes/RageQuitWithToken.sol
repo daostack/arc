@@ -43,8 +43,7 @@ contract RageQuitWithToken {
     * @param _amountToRageQuitWith amount of native token to rageQuit with.
     * @return refund the refund amount
     */
-    function rageQuit(uint256 _amountToRageQuitWith) public returns(uint256 refund) {
-
+    function rageQuit(uint256 _amountToRageQuitWith) external returns(uint256 refund) {
         uint256 totalTokenSupply = avatar.nativeToken().totalSupply();
         uint256 rageQuitTokenTotalSupply = rageQuitToken.balanceOf(address(avatar));
         refund = _amountToRageQuitWith.mul(rageQuitTokenTotalSupply).div(totalTokenSupply);
