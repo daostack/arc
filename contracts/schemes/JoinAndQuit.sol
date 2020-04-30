@@ -54,6 +54,7 @@ contract JoinAndQuit is
     }
 
     struct MemberFund {
+        bool candidate;
         bool rageQuit;
         uint256 funding;
     }
@@ -68,7 +69,7 @@ contract JoinAndQuit is
     uint256 public minFeeToJoin;
     uint256 public memberReputation;
     uint256 public fundingGoal;
-    uint256 public fundingGoalDeadLine;
+    uint256 public fundingGoalDeadline;
     uint256 public totalDonation;
 
     /**
@@ -83,7 +84,7 @@ contract JoinAndQuit is
      * @param _memberReputation the repution which will be allocated for members
               if this param is zero so the repution will be allocated proportional to the fee paid
      * @param _fundingGoal the funding goal
-     * @param _fundingGoalDeadLine the funding goal deadline
+     * @param _fundingGoalDeadline the funding goal deadline
      */
     function initialize(
         Avatar _avatar,
@@ -95,7 +96,7 @@ contract JoinAndQuit is
         uint256 _minFeeToJoin,
         uint256 _memberReputation,
         uint256 _fundingGoal,
-        uint256 _fundingGoalDeadLine
+        uint256 _fundingGoalDeadline
     )
     external
     initializer
@@ -121,7 +122,7 @@ contract JoinAndQuit is
         minFeeToJoin = _minFeeToJoin;
         memberReputation = _memberReputation;
         fundingGoal = _fundingGoal;
-        fundingGoalDeadLine = _fundingGoalDeadLine;
+        fundingGoalDeadline = _fundingGoalDeadline;
     }
 
     /**
@@ -159,6 +160,7 @@ contract JoinAndQuit is
                 fundingToken.safeTransfer(proposal.proposedMember, proposal.funding);
             }
         }
+        fundings[proposal.proposedMember].candidate = false;
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
     }
@@ -178,8 +180,10 @@ contract JoinAndQuit is
     returns(bytes32)
     {
         address proposer = msg.sender;
+        require(!fundings[proposer].candidate, "already a candidate");
         require(avatar.nativeReputation().balanceOf(proposer) == 0, "already a member");
         require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
+        fundings[proposer].candidate = true;
         if (fundingToken == IERC20(0)) {
             require(_feeAmount == msg.value, "ETH received shoul match the _feeAmount");
         } else {
@@ -266,7 +270,7 @@ contract JoinAndQuit is
     /**
     * @dev setFundingGoalReachedFlag check if funding goal reached.
     */
-    function setFundingGoalReachedFlag() private {
+    function setFundingGoalReachedFlag() public {
         uint256 avatarBalance;
         if (fundingToken == IERC20(0)) {
             avatarBalance = (address(avatar.vault())).balance;
@@ -277,7 +281,7 @@ contract JoinAndQuit is
             .hashCompareWithLengthCheck(CommonInterface.FUNDED_BEFORE_DEADLINE_VALUE) == false) &&
             (avatarBalance >= fundingGoal) &&
             // solhint-disable-next-line not-rely-on-time
-            (now < fundingGoalDeadLine)) {
+            (now < fundingGoalDeadline)) {
             require(
             Controller(
             avatar.owner()).

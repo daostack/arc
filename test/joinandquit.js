@@ -35,7 +35,7 @@ const setupJoinAndQuit = async function(
                                             _minFeeToJoin,
                                             _memberReputation,
                                             _fundingGoal,
-                                            _fundingGoalDeadLine
+                                            _fundingGoalDeadline
                                             ) {
   var joinAndQuitParams = new JoinAndQuitParams();
 
@@ -52,7 +52,7 @@ const setupJoinAndQuit = async function(
                             _minFeeToJoin,
                             _memberReputation,
                             _fundingGoal,
-                           _fundingGoalDeadLine)
+                           _fundingGoalDeadline)
                           .encodeABI();
     } else {
   joinAndQuitParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
@@ -67,7 +67,7 @@ const setupJoinAndQuit = async function(
                           _minFeeToJoin,
                           _memberReputation,
                           _fundingGoal,
-                         _fundingGoalDeadLine)
+                         _fundingGoalDeadline)
                         .encodeABI();
   }
   return joinAndQuitParams;
@@ -80,7 +80,7 @@ const setup = async function (accounts,
                               minFeeToJoin = 100,
                               memberReputation = 100,
                               fundingGoal = 1000,
-                              fundingGoalDeadLine = 3000) {
+                              fundingGoalDeadline = 3000) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[0],100000);
   registration = await helpers.registerImplementation();
@@ -92,7 +92,7 @@ const setup = async function (accounts,
                                                                       [accounts[2]],
                                                                       [0],
                                                                       testSetup.reputationArray);
-  testSetup.fundingGoalDeadLine = (await web3.eth.getBlock("latest")).timestamp + fundingGoalDeadLine;
+  testSetup.fundingGoalDeadline = (await web3.eth.getBlock("latest")).timestamp + fundingGoalDeadline;
   testSetup.minFeeToJoin = minFeeToJoin;
   testSetup.memberReputation = memberReputation;
   testSetup.fundingGoal = fundingGoal;
@@ -111,7 +111,7 @@ const setup = async function (accounts,
                      minFeeToJoin,
                      memberReputation,
                      fundingGoal,
-                     testSetup.fundingGoalDeadLine);
+                     testSetup.fundingGoalDeadline);
 
   var permissions = "0x00000000";
   var tx = await registration.daoFactory.setSchemes(
@@ -131,7 +131,7 @@ contract('JoinAndQuit', accounts => {
     it("initialize", async function() {
        var testSetup = await setup(accounts);
        assert.equal(await testSetup.joinAndQuit.votingMachine(),testSetup.joinAndQuitParams.votingMachine.absoluteVote.address);
-       assert.equal(await testSetup.joinAndQuit.fundingGoalDeadLine(),testSetup.fundingGoalDeadLine);
+       assert.equal(await testSetup.joinAndQuit.fundingGoalDeadline(),testSetup.fundingGoalDeadline);
     });
 
     it("propose log", async function() {
@@ -185,18 +185,47 @@ contract('JoinAndQuit', accounts => {
           }
        });
 
-     it("propose cannot add a member twice", async function() {
+
+    it("propose cannot add a member if already is a candidate", async function() {
+      var testSetup = await setup(accounts);
+
+      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin*2);
+      await testSetup.joinAndQuit.proposeToJoin(
+                                               "description-hash",
+                                                testSetup.minFeeToJoin);
+
+      try {
+        await testSetup.joinAndQuit.proposeToJoin(
+                                                 "description-hash",
+                                                  testSetup.minFeeToJoin);
+           assert(false, 'proposer already is a candidate');
+        } catch (ex) {
+           helpers.assertVMException(ex);
+       }
+     });
+
+     it("propose cannot add a member if member allready has reputation", async function() {
        var testSetup = await setup(accounts);
-       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin);
-       await testSetup.joinAndQuit.proposeToJoin(
-                                                "description-hash",
-                                                 testSetup.minFeeToJoin);
+       var candidate = accounts[3];
+       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,
+                                                 testSetup.minFeeToJoin*2,
+                                                 {from:candidate});
+       var tx = await testSetup.joinAndQuit.proposeToJoin(
+                                                          "description-hash",
+                                                           testSetup.minFeeToJoin,
+                                                           {from:candidate});
+       //Vote with reputation to trigger execution
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.joinAndQuit.redeemReputation(proposalId);
+
 
        try {
-         await testSetup.joinAndQuit.proposeToJoin(
-                                                  "description-hash",
-                                                   testSetup.minFeeToJoin);
-            assert(false, 'cannot add a member twice');
+       await testSetup.joinAndQuit.proposeToJoin(
+                                                "description-hash",
+                                                 testSetup.minFeeToJoin,
+                                                 {from:candidate});
+            assert(false, 'proposer already have reputation');
          } catch (ex) {
             helpers.assertVMException(ex);
         }
@@ -517,7 +546,7 @@ contract('JoinAndQuit', accounts => {
       let avatar = await Avatar.at(testSetup.org.avatar.address);
       let key = "FUNDED_BEFORE_DEADLINE";
       assert.equal(await avatar.db(key),"");
-      await helpers.increaseTime(testSetup.fundingGoalDeadLine);
+      await helpers.increaseTime(testSetup.fundingGoalDeadline);
       await addMember(accounts,testSetup,testSetup.fundingGoal,accounts[3]);
       assert.equal(await avatar.db(key),"");
     });
@@ -527,8 +556,38 @@ contract('JoinAndQuit', accounts => {
       let avatar = await Avatar.at(testSetup.org.avatar.address);
       let key = "FUNDED_BEFORE_DEADLINE";
       assert.equal(await avatar.db(key),"");
-      await helpers.increaseTime(testSetup.fundingGoalDeadLine);
+      await helpers.increaseTime(testSetup.fundingGoalDeadline);
       await addMember(accounts,testSetup,testSetup.fundingGoal,accounts[3]);
       assert.equal(await avatar.db(key),"");
     });
+
+
+    it("can fund the dao directly and set the goal", async function() {
+      var testSetup = await setup(accounts);
+      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal,{from:accounts[3]});
+      let avatar = await Avatar.at(testSetup.org.avatar.address);
+      let key = await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_KEY();
+      await testSetup.joinAndQuit.FUNDED_BEFORE_DEADLINE_VALUE();
+      assert.equal(await avatar.db(key),"");
+      await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,testSetup.fundingGoal-1);
+      var tx = await testSetup.joinAndQuit.setFundingGoalReachedFlag();
+      await testSetup.joinAndQuit.getPastEvents('FundedBeforeDeadline', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events.length,0);
+        });
+        //now fill up the funding goal..
+        await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,1);
+        tx = await testSetup.joinAndQuit.setFundingGoalReachedFlag();
+        await testSetup.joinAndQuit.getPastEvents('FundedBeforeDeadline', {
+              fromBlock: tx.blockNumber,
+              toBlock: 'latest'
+          })
+          .then(function(events){
+              assert.equal(events[0].event,"FundedBeforeDeadline");
+          });
+    });
+
 });
