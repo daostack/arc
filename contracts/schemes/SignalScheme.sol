@@ -73,7 +73,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             //for other voting machines
             voteParamsHash = _voteApproveParams;
         }
-        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
         params = Parameters({
             voteApproveParams: voteParamsHash,
             signalType: _signalType,

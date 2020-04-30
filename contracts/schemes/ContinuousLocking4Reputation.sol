@@ -93,7 +93,7 @@ contract ContinuousLocking4Reputation is Agreement, ArcScheme {
         bytes32 _agreementHash )
     external
     {
-        super._initialize(_avatar, address(0), 0);
+        super._initialize(_avatar, IntVoteInterface(0), 0);
         // _batchTime should be greater than block interval
         require(_batchTime > 15, "batchTime should be > 15");
         require(_maxLockingBatches <= MAX_LOCKING_BATCHES_HARDCAP,

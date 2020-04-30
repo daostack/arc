@@ -43,8 +43,6 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
 
     mapping(bytes32=>CallProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
     address public contractToCall;
 
     /**
@@ -66,7 +64,6 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     )
     external
     {
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -81,7 +78,7 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
-        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
         contractToCall = _contractToCall;
     }
 

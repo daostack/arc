@@ -64,9 +64,6 @@ contract ContributionReward is
 
     mapping(bytes32=>ContributionProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
@@ -86,7 +83,6 @@ contract ContributionReward is
     initializer
     {
         avatar = _avatar;
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -101,7 +97,7 @@ contract ContributionReward is
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
-        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
     }
 
     /**

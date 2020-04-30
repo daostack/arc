@@ -44,9 +44,6 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
     // voteToRemoveParams hash by avatar and proposal.gc
     mapping(address=>bytes32) public voteToRemoveParams;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
@@ -64,7 +61,6 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
     )
     external
     {
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -79,7 +75,7 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
-        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
     }
     
     /**

@@ -71,8 +71,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
 
     mapping(bytes32=>ContributionProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
     address public rewarder;
     Vault public vault;
 
@@ -97,7 +95,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     external
     {
         require(_votingMachine != IntVoteInterface(0), "votingMachine cannot be zero");
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -112,7 +109,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
-        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
         rewarder = _rewarder;
         vault = new Vault();
         vault.initialize(address(this));

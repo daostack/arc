@@ -37,8 +37,6 @@ contract SchemeFactory is VotingMachineCallbacks, ProposalExecuteInterface {
 
     mapping(bytes32=>Proposal) public proposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
     DAOFactory public daoFactory;
 
     /**
@@ -60,7 +58,6 @@ contract SchemeFactory is VotingMachineCallbacks, ProposalExecuteInterface {
     )
     external
     {
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -75,7 +72,7 @@ contract SchemeFactory is VotingMachineCallbacks, ProposalExecuteInterface {
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
-        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
         daoFactory = _daoFactory;
     }
 

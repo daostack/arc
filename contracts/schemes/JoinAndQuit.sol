@@ -59,8 +59,6 @@ contract JoinAndQuit is
     mapping(bytes32=>Proposal) public proposals;
     mapping(address=>MemberFund) public fundings;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
     IERC20 public fundingToken;
     uint256 public minFeeToJoin;
     uint256 public memberReputation;
@@ -97,7 +95,6 @@ contract JoinAndQuit is
     external
     {
         avatar = _avatar;
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -112,7 +109,7 @@ contract JoinAndQuit is
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
-        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
         fundingToken = _fundingToken;
         minFeeToJoin = _minFeeToJoin;
         memberReputation = _memberReputation;

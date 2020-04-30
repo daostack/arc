@@ -10,7 +10,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
 
     modifier onlyVotingMachine(bytes32 _proposalId) {
 
-        require(votingMachine == msg.sender, "only VotingMachine");
+        require(address(votingMachine) == msg.sender, "only VotingMachine");
         _;
     }
 

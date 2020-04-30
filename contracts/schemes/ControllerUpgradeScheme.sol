@@ -38,9 +38,6 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
 
     mapping(bytes32=>UpgradeProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
@@ -58,7 +55,6 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
     )
     external
     {
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -73,7 +69,7 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
-        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
     }
 
     /**

@@ -1,6 +1,5 @@
 pragma solidity ^0.5.17;
 
-import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 
@@ -38,7 +37,6 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
 
     mapping(bytes32=>SchemeProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
     bytes32 public voteRegisterParamsHash;
     bytes32 public voteRemoveParamsHash;
 
@@ -65,8 +63,7 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     )
     external
     {
-        super._initialize(_avatar, address(_votingMachine), 0);
-        votingMachine = _votingMachine;
+        super._initialize(_avatar, _votingMachine, 0);
         if (_voteRegisterParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));

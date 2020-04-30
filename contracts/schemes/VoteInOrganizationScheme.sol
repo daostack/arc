@@ -31,9 +31,6 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
 
     mapping(bytes32=>VoteProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
@@ -51,7 +48,6 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
     )
     external
     {
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -66,7 +62,7 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
-        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
     }
 
     /**

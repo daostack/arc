@@ -10,7 +10,7 @@ contract SchemeMock is ArcScheme {
 
     function initialize(Avatar _avatar, uint256 _testData)
     external {
-        super._initialize(_avatar, address(0), 0);
+        super._initialize(_avatar, IntVoteInterface(0), 0);
         testData = _testData;
     }
 
