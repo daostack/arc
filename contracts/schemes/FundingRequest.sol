@@ -64,7 +64,6 @@ contract FundingRequest is
     )
     external
     {
-        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -80,6 +79,7 @@ contract FundingRequest is
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
         fundingToken = _fundingToken;
     }
 
@@ -143,7 +143,7 @@ contract FundingRequest is
             _descriptionHash
         );
 
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
 
         return proposalId;
     }

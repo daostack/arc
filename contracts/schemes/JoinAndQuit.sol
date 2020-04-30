@@ -96,7 +96,6 @@ contract JoinAndQuit is
     )
     external
     {
-        super._initialize(_avatar);
         avatar = _avatar;
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
@@ -113,6 +112,7 @@ contract JoinAndQuit is
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
         fundingToken = _fundingToken;
         minFeeToJoin = _minFeeToJoin;
         memberReputation = _memberReputation;
@@ -198,7 +198,7 @@ contract JoinAndQuit is
             _feeAmount
         );
 
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 

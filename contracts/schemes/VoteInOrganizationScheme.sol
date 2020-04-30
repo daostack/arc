@@ -51,7 +51,6 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
     )
     external
     {
-        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -67,6 +66,7 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
     }
 
     /**
@@ -144,7 +144,7 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
             _vote,
             _descriptionHash
         );
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 }

@@ -64,7 +64,6 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
     )
     external
     {
-        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -80,6 +79,7 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
     }
     
     /**
@@ -151,7 +151,7 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
             _voteToRemoveParams,
             _descriptionHash
         );
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 
@@ -185,7 +185,7 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
         _gc,
         _descriptionHash);
 
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 }

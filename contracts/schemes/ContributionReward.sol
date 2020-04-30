@@ -85,7 +85,6 @@ contract ContributionReward is
     external
     initializer
     {
-        super._initialize(_avatar);
         avatar = _avatar;
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
@@ -102,6 +101,7 @@ contract ContributionReward is
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
     }
 
     /**
@@ -179,7 +179,7 @@ contract ContributionReward is
             beneficiary
         );
 
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 

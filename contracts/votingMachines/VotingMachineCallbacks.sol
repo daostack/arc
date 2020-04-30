@@ -9,12 +9,13 @@ import "../schemes/ArcScheme.sol";
 contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
 
     modifier onlyVotingMachine(bytes32 _proposalId) {
-        require(proposalsBlockNumber[msg.sender][_proposalId] != 0, "only VotingMachine");
+
+        require(votingMachine == msg.sender, "only VotingMachine");
         _;
     }
 
-    // VotingMaching  ->  proposalId  ->  blockNumber
-    mapping(address => mapping(bytes32 => uint256)) public proposalsBlockNumber;
+    // proposalId  ->  blockNumber
+    mapping(bytes32 => uint256) public proposalsBlockNumber;
 
     function mintReputation(uint256 _amount, address _beneficiary, bytes32 _proposalId)
     external
@@ -53,12 +54,12 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
     function getTotalReputationSupply(bytes32 _proposalId)
     external view onlyVotingMachine(_proposalId) returns(uint256)
     {
-        return avatar.nativeReputation().totalSupplyAt(proposalsBlockNumber[msg.sender][_proposalId]);
+        return avatar.nativeReputation().totalSupplyAt(proposalsBlockNumber[_proposalId]);
     }
 
     function reputationOf(address _owner, bytes32 _proposalId)
     external view onlyVotingMachine(_proposalId) returns(uint256)
     {
-        return avatar.nativeReputation().balanceOfAt(_owner, proposalsBlockNumber[msg.sender][_proposalId]);
+        return avatar.nativeReputation().balanceOfAt(_owner, proposalsBlockNumber[_proposalId]);
     }
 }

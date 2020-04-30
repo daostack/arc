@@ -60,7 +60,6 @@ contract SchemeFactory is VotingMachineCallbacks, ProposalExecuteInterface {
     )
     external
     {
-        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -76,6 +75,7 @@ contract SchemeFactory is VotingMachineCallbacks, ProposalExecuteInterface {
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
         daoFactory = _daoFactory;
     }
 
@@ -177,7 +177,7 @@ contract SchemeFactory is VotingMachineCallbacks, ProposalExecuteInterface {
         );
 
         proposals[proposalId] = proposal;
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 }

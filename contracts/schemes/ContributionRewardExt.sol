@@ -96,7 +96,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     )
     external
     {
-        super._initialize(_avatar);
         require(_votingMachine != IntVoteInterface(0), "votingMachine cannot be zero");
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
@@ -113,6 +112,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
         rewarder = _rewarder;
         vault = new Vault();
         vault.initialize(address(this));
@@ -199,7 +199,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
             proposer
         );
 
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
     }
 
     /**

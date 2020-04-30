@@ -58,7 +58,6 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
     )
     external
     {
-        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -74,6 +73,7 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
     }
 
     /**
@@ -135,7 +135,7 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
         _descriptionHash
         );
 
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
 
         return proposalId;
     }
@@ -170,7 +170,7 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
             _descriptionHash
         );
 
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
 
         return proposalId;
     }

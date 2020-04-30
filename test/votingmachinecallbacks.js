@@ -21,7 +21,7 @@ const setup = async function (accounts) {
 
    var schemeMockData = await new web3.eth.Contract(registration.arcVotingMachineCallbacksMock.abi)
    .methods
-   .initialize(testSetup.org.avatar.address)
+   .initialize(testSetup.org.avatar.address, accounts[0])
    .encodeABI();
 
    var permissions = "0x00000000";
@@ -36,7 +36,7 @@ const setup = async function (accounts) {
 
    testSetup.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.at(tx.logs[1].args._scheme);
 
-   await testSetup.arcVotingMachineCallbacksMock.propose(proposalId, accounts[0]);
+   await testSetup.arcVotingMachineCallbacksMock.propose(proposalId);
 
 
    return testSetup;

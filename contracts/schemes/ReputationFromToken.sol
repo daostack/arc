@@ -38,7 +38,7 @@ contract ReputationFromToken is ArcScheme {
      */
     function initialize(Avatar _avatar, IERC20 _tokenContract, CurveInterface _curve) external
     {
-        super._initialize(_avatar);
+        super._initialize(_avatar, address(0), 0);
         tokenContract = _tokenContract;
         curve = _curve;
     }

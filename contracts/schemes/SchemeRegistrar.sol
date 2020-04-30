@@ -65,7 +65,7 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     )
     external
     {
-        super._initialize(_avatar);
+        super._initialize(_avatar, address(_votingMachine), 0);
         votingMachine = _votingMachine;
         if (_voteRegisterParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -172,7 +172,7 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
             _descriptionHash
         );
         organizationProposals[proposalId] = proposal;
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 
@@ -191,7 +191,7 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
         bytes32 proposalId = votingMachine.propose(2, voteRemoveParamsHash, msg.sender, address(avatar));
         organizationProposals[proposalId].scheme = _scheme;
         emit RemoveSchemeProposal(address(avatar), proposalId, address(votingMachine), _scheme, _descriptionHash);
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 }

@@ -63,7 +63,6 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     )
     external
     {
-        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
@@ -79,6 +78,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
         arcPackage = _package;
     }
 
@@ -160,7 +160,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             contractsToUpgrade: _contractsToUpgrade,
             exist: true
         });
-        proposalsBlockNumber[address(votingMachine)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         emit NewUpgradeProposal(
             address(avatar),
             proposalId,

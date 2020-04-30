@@ -58,7 +58,6 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
                         address _voteOnBehalf)
     external
     initializer {
-        super._initialize(_avatar);
         bytes32 voteParamsHash;
         if (_voteApproveParams == bytes32(0)) {
             //genesisProtocol
@@ -74,6 +73,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             //for other voting machines
             voteParamsHash = _voteApproveParams;
         }
+        super._initialize(_avatar, address(_votingMachine), voteParamsHash);
         params = Parameters({
             voteApproveParams: voteParamsHash,
             signalType: _signalType,
@@ -111,7 +111,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             _descriptionHash
         );
 
-        proposalsBlockNumber[address(params.intVote)][proposalId] = block.number;
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 
