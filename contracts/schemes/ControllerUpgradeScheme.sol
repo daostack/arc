@@ -3,14 +3,13 @@ pragma solidity ^0.5.17;
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 /**
  * @title A scheme to manage the upgrade of an organization.
  * @dev The scheme is used to upgrade the controller of an organization to a new controller.
  */
 
-contract ControllerUpgradeScheme is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
 
     event NewControllerUpgradeProposal(
         address indexed _avatar,
@@ -39,10 +38,6 @@ contract ControllerUpgradeScheme is Initializable, VotingMachineCallbacks, Propo
 
     mapping(bytes32=>UpgradeProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-    Avatar public avatar;
-
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
@@ -59,11 +54,7 @@ contract ControllerUpgradeScheme is Initializable, VotingMachineCallbacks, Propo
         bytes32 _voteParamsHash
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -78,6 +69,7 @@ contract ControllerUpgradeScheme is Initializable, VotingMachineCallbacks, Propo
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
     }
 
     /**
@@ -138,10 +130,9 @@ contract ControllerUpgradeScheme is Initializable, VotingMachineCallbacks, Propo
         _newController,
         _descriptionHash
         );
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+
+        proposalsBlockNumber[proposalId] = block.number;
+
         return proposalId;
     }
 
@@ -174,10 +165,9 @@ contract ControllerUpgradeScheme is Initializable, VotingMachineCallbacks, Propo
             _scheme,
             _descriptionHash
         );
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+
+        proposalsBlockNumber[proposalId] = block.number;
+
         return proposalId;
     }
 }

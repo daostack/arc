@@ -3,14 +3,13 @@ pragma solidity ^0.5.17;
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
  * @title A scheme to manage global constraint for organizations
  * @dev The scheme is used to register or remove new global constraints
  */
-contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     event NewGlobalConstraintsProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -45,10 +44,6 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
     // voteToRemoveParams hash by avatar and proposal.gc
     mapping(address=>bytes32) public voteToRemoveParams;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-    Avatar public avatar;
-
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
@@ -65,11 +60,7 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
         bytes32 _voteParamsHash
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -84,6 +75,7 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
     }
     
     /**
@@ -155,10 +147,7 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
             _voteToRemoveParams,
             _descriptionHash
         );
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 
@@ -192,10 +181,7 @@ contract GlobalConstraintRegistrar is Initializable, VotingMachineCallbacks, Pro
         _gc,
         _descriptionHash);
 
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber: block.number,
-            avatar: avatar
-        });
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 }

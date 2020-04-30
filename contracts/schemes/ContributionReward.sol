@@ -1,7 +1,6 @@
 pragma solidity ^0.5.17;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.sol";
 
 
@@ -12,8 +11,7 @@ import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.so
  */
 contract ContributionReward is
         VotingMachineCallbacks,
-        ProposalExecuteInterface,
-        Initializable {
+        ProposalExecuteInterface {
     using SafeMath for uint;
 
     event NewContributionProposal(
@@ -66,10 +64,6 @@ contract ContributionReward is
 
     mapping(bytes32=>ContributionProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-    Avatar public avatar;
-
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
@@ -88,9 +82,7 @@ contract ContributionReward is
     external
     initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
         avatar = _avatar;
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -105,6 +97,7 @@ contract ContributionReward is
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
     }
 
     /**
@@ -116,7 +109,6 @@ contract ContributionReward is
     external
     onlyVotingMachine(_proposalId)
     returns(bool) {
-        ProposalInfo memory proposal = proposalsInfo[msg.sender][_proposalId];
         require(organizationProposals[_proposalId].executionTime == 0);
         require(organizationProposals[_proposalId].beneficiary != address(0));
         // Check if vote was successful:
@@ -124,7 +116,7 @@ contract ContributionReward is
           // solhint-disable-next-line not-rely-on-time
             organizationProposals[_proposalId].executionTime = now;
         }
-        emit ProposalExecuted(address(proposal.avatar), _proposalId, _decision);
+        emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
     }
 
@@ -183,10 +175,7 @@ contract ContributionReward is
             beneficiary
         );
 
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 

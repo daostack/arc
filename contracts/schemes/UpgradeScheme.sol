@@ -4,7 +4,6 @@ import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.s
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../libs/Bytes32ToStr.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "../registry/Package.sol";
 import "../registry/ImplementationProvider.sol";
 
@@ -13,7 +12,7 @@ import "../registry/ImplementationProvider.sol";
  * @title UpgradeScheme.
  * @dev  A scheme for proposing updates
  */
-contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
+contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     using Bytes32ToStr for bytes32;
 
     event NewUpgradeProposal(
@@ -43,9 +42,6 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
 
     mapping(bytes32=>Proposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-    Avatar public avatar;
     Package public arcPackage;
 
     /**
@@ -64,11 +60,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
         Package _package
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -83,6 +75,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
         arcPackage = _package;
     }
 
@@ -164,10 +157,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface, Init
             contractsToUpgrade: _contractsToUpgrade,
             exist: true
         });
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[proposalId] = block.number;
         emit NewUpgradeProposal(
             address(avatar),
             proposalId,

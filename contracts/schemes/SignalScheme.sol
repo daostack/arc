@@ -4,13 +4,12 @@ import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.s
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../controller/Avatar.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
  * @title A scheme for proposing a signal on behalkf of the dao
  */
-contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
+contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
 
     event NewSignalProposal(
         address indexed _avatar,
@@ -59,7 +58,6 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
                         address _voteOnBehalf)
     external
     initializer {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
         bytes32 voteParamsHash;
         if (_voteApproveParams == bytes32(0)) {
             //genesisProtocol
@@ -75,6 +73,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
             //for other voting machines
             voteParamsHash = _voteApproveParams;
         }
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
         params = Parameters({
             voteApproveParams: voteParamsHash,
             signalType: _signalType,
@@ -112,10 +111,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface, Initi
             _descriptionHash
         );
 
-        proposalsInfo[address(params.intVote)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:params.avatar
-        });
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 

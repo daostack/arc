@@ -3,14 +3,14 @@ pragma solidity ^0.5.17;
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "../controller/Controller.sol";
 import "./Agreement.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./ArcScheme.sol";
 
 /**
  * @title A scheme for conduct ERC20 Tokens auction for reputation
  */
 
 
-contract Auction4Reputation is Agreement, Initializable {
+contract Auction4Reputation is Agreement, ArcScheme {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -26,7 +26,6 @@ contract Auction4Reputation is Agreement, Initializable {
     // A mapping from auction index to auction.
     mapping(uint=>Auction) public auctions;
 
-    Avatar public avatar;
     uint256 public reputationRewardLeft;
     uint256 public auctionsEndTime;
     uint256 public auctionsStartTime;
@@ -66,9 +65,8 @@ contract Auction4Reputation is Agreement, Initializable {
         address _wallet,
         bytes32 _agreementHash )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        super._initialize(_avatar, IntVoteInterface(0), 0);
         require(_numberOfAuctions > 0, "number of auctions cannot be zero");
         //_auctionPeriod should be greater than block interval
         require(_auctionPeriod > 15, "auctionPeriod should be > 15");
@@ -76,7 +74,6 @@ contract Auction4Reputation is Agreement, Initializable {
         auctionsEndTime = _auctionsStartTime + _auctionPeriod.mul(_numberOfAuctions);
         require(_redeemEnableTime >= auctionsEndTime, "_redeemEnableTime >= auctionsEndTime");
         token = _token;
-        avatar = _avatar;
         auctionsStartTime = _auctionsStartTime;
         numberOfAuctions = _numberOfAuctions;
         wallet = _wallet;

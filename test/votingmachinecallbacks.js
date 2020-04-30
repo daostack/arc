@@ -19,22 +19,24 @@ const setup = async function (accounts) {
                                                                        [1000]);
    testSetup.standardTokenMock = await ERC20Mock.new(testSetup.org.avatar.address,100);
 
+   var schemeMockData = await new web3.eth.Contract(registration.arcVotingMachineCallbacksMock.abi)
+   .methods
+   .initialize(testSetup.org.avatar.address, accounts[0])
+   .encodeABI();
 
    var permissions = "0x00000000";
    var tx = await registration.daoFactory.setSchemes(
       testSetup.org.avatar.address,
       [web3.utils.fromAscii("ARCVotingMachineCallbacksMock")],
-      '0x',
-      [0],
+      schemeMockData,
+      [helpers.getBytesLength(schemeMockData)],
       [permissions],
       "metaData",
       {from:testSetup.proxyAdmin});
 
    testSetup.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.at(tx.logs[1].args._scheme);
 
-   await testSetup.arcVotingMachineCallbacksMock.propose(proposalId,
-                                                           testSetup.org.avatar.address,
-                                                           accounts[0]);
+   await testSetup.arcVotingMachineCallbacksMock.propose(proposalId);
 
 
    return testSetup;

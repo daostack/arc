@@ -2,13 +2,13 @@ pragma solidity ^0.5.17;
 
 import "../controller/Controller.sol";
 import "./Agreement.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "./ArcScheme.sol";
 
 /**
  * @title A locker contract
  */
 
-contract Locking4Reputation is Agreement, Initializable {
+contract Locking4Reputation is Agreement, ArcScheme {
     using SafeMath for uint256;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
@@ -19,8 +19,6 @@ contract Locking4Reputation is Agreement, Initializable {
         uint256 amount;
         uint256 releaseTime;
     }
-
-    Avatar public avatar;
 
     // A mapping from lockers addresses their lock balances.
     mapping(address => mapping(bytes32=>Locker)) public lockers;
@@ -149,9 +147,8 @@ contract Locking4Reputation is Agreement, Initializable {
         uint256 _maxLockingPeriod,
         bytes32 _agreementHash )
     internal
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
+        super._initialize(_avatar, IntVoteInterface(0), 0);
         require(_lockingEndTime > _lockingStartTime, "locking end time should be greater than locking start time");
         require(_redeemEnableTime >= _lockingEndTime, "redeemEnableTime >= lockingEndTime");
 
@@ -159,7 +156,6 @@ contract Locking4Reputation is Agreement, Initializable {
         reputationRewardLeft = _reputationReward;
         lockingEndTime = _lockingEndTime;
         maxLockingPeriod = _maxLockingPeriod;
-        avatar = _avatar;
         lockingStartTime = _lockingStartTime;
         redeemEnableTime = _redeemEnableTime;
         super.setAgreementHash(_agreementHash);

@@ -10,7 +10,7 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  * It enable to assign a rewarder, which, after the contributionreward has been accepted,
  * can then later distribute the assets as it would like.
  */
-contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterface, Initializable {
+contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterface {
     using SafeMath for uint;
     using SafeERC20 for IERC20;
 
@@ -71,9 +71,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
 
     mapping(bytes32=>ContributionProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-    Avatar public avatar;
     address public rewarder;
     Vault public vault;
 
@@ -96,12 +93,8 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         address _rewarder
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
         require(_votingMachine != IntVoteInterface(0), "votingMachine cannot be zero");
-        avatar = _avatar;
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -116,6 +109,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
         rewarder = _rewarder;
         vault = new Vault();
         vault.initialize(address(this));
@@ -202,10 +196,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
             proposer
         );
 
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[proposalId] = block.number;
     }
 
     /**

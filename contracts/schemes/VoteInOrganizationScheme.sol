@@ -1,14 +1,13 @@
 pragma solidity ^0.5.17;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
  * @title VoteInOrganizationScheme.
  * @dev A scheme to allow an organization to vote in a proposal.
  */
-contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, ProposalExecuteInterface {
+contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     event NewVoteProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -32,10 +31,6 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
 
     mapping(bytes32=>VoteProposal) public organizationProposals;
 
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParamsHash;
-    Avatar public avatar;
-
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
@@ -52,11 +47,7 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
         bytes32 _voteParamsHash
     )
     external
-    initializer
     {
-        require(_avatar != Avatar(0), "avatar cannot be zero");
-        avatar = _avatar;
-        votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
@@ -71,6 +62,7 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
             //for other voting machines
             voteParamsHash = _voteParamsHash;
         }
+        super._initialize(_avatar, _votingMachine, voteParamsHash);
     }
 
     /**
@@ -148,10 +140,7 @@ contract VoteInOrganizationScheme is Initializable, VotingMachineCallbacks, Prop
             _vote,
             _descriptionHash
         );
-        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
-            blockNumber:block.number,
-            avatar:avatar
-        });
+        proposalsBlockNumber[proposalId] = block.number;
         return proposalId;
     }
 }

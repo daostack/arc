@@ -1,21 +1,19 @@
 pragma solidity ^0.5.17;
 
 import "../controller/Controller.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "../schemes/ArcScheme.sol";
 
 
-contract SchemeMock is Initializable {
+contract SchemeMock is ArcScheme {
 
-    Avatar public avatar;
     uint256 public testData;
 
     function initialize(Avatar _avatar, uint256 _testData)
-    external
-    initializer {
-        avatar = _avatar;
+    external {
+        super._initialize(_avatar, IntVoteInterface(0), 0);
         testData = _testData;
     }
-    
+
     function genericCall(Avatar _avatar, address _contract, uint256 _a, address _b, bytes32 _c, uint256 _value)
     public returns(bool, bytes memory)
     {
