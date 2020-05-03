@@ -359,6 +359,23 @@ contract('JoinAndQuit', accounts => {
       }
     });
 
+    it("reputation redeem memberReputation 0", async function() {
+      var testSetup = await setup(accounts, false, false, helpers.NULL_ADDRESS, 100, 0);
+      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin,{from:accounts[3]});
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
+                                                           "description-hash",
+                                                           testSetup.minFeeToJoin,
+                                                           {from:accounts[3]});
+
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.joinAndQuit.redeemReputation(proposalId);
+      assert.equal(tx.logs[0].event, "RedeemReputation");
+      assert.equal(tx.logs[0].args._amount, testSetup.minFeeToJoin);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[3]),testSetup.minFeeToJoin);
+    });
+
     it("reputation redeem + genesisProtocol", async function() {
       var testSetup = await setup(accounts,false,true);
       await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin,{from:accounts[3]});
@@ -401,7 +418,7 @@ contract('JoinAndQuit', accounts => {
       }
     });
 
-  it("rageQuit", async function() {
+  it("rageQuit and redeem", async function() {
     var testSetup = await setup(accounts);
     await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin,{from:accounts[3]});
     var tx = await testSetup.joinAndQuit.proposeToJoin(
@@ -446,7 +463,15 @@ contract('JoinAndQuit', accounts => {
     await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,100);
     tx = await testSetup.joinAndQuit.rageQuit({from:accounts[4]});
     assert.equal(tx.logs[0].args._refund, 500+100);
+
+    try {
+      await testSetup.joinAndQuit.redeemReputation(proposalId);
+      assert(false, 'reputation cannot redeemed after rageQuit');
+   } catch (ex) {
+      helpers.assertVMException(ex);
+   }
   });
+
     it("rageQuit with eth", async function() {
       var testSetup = await setup(accounts,true);
       var tx = await testSetup.joinAndQuit.proposeToJoin(

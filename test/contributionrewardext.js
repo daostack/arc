@@ -369,9 +369,11 @@ contract('ContributionRewardExt', accounts => {
    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer", async function() {
      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
      var testSetup = await setup(accounts,true,standardTokenMock.address);
+     await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
      var reputationReward = 12;
      var nativeTokenReward = 12;
      var ethReward = 12;
+     var externalTokenReward = 12;
 
 
      //send some ether to the org avatar
@@ -381,7 +383,7 @@ contract('ContributionRewardExt', accounts => {
      var tx = await testSetup.contributionRewardExt.proposeContributionReward(
                                                                     web3.utils.asciiToHex("description"),
                                                                     reputationReward,
-                                                                    [nativeTokenReward,ethReward,0],
+                                                                    [nativeTokenReward,ethReward,externalTokenReward],
                                                                     testSetup.standardTokenMock.address,
                                                                     otherAvatar.address,
                                                                     helpers.NULL_ADDRESS
@@ -404,7 +406,7 @@ contract('ContributionRewardExt', accounts => {
      assert.equal(redeemRewards[4],reputationReward); //crReputationReward
      assert.equal(redeemRewards[5],nativeTokenReward); //crNativeTokenReward
      assert.equal(redeemRewards[6],ethReward); //crEthReward
-     assert.equal(redeemRewards[7],0); //crExternalTokenReward
+     assert.equal(redeemRewards[7],externalTokenReward); //crExternalTokenReward
 
      await arcUtils.redeemFromCRExt(testSetup.contributionRewardExt.address,
                            testSetup.contributionRewardExtParams.votingMachine.genesisProtocol.address,
@@ -415,6 +417,7 @@ contract('ContributionRewardExt', accounts => {
      assert.equal(eth,ethReward);
      assert.equal(await testSetup.org.reputation.balanceOf(otherAvatar.address),reputationReward);
      assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
+     assert.equal(await testSetup.standardTokenMock.balanceOf(otherAvatar.address),externalTokenReward);
      var reputation = await testSetup.org.reputation.balanceOf(accounts[0]);
      var reputationGainAsVoter =  0;
      var proposingRepRewardConstA=60;
@@ -518,7 +521,7 @@ contract('ContributionRewardExt', accounts => {
       assert.equal(reputation, 1000+reputationGainAsVoter + reputationGainAsProposer);
      });
 
-    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer for un excuted boosted proposal", async function() {
+    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer for un executed boosted proposal", async function() {
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
       var testSetup = await setup(accounts,true,standardTokenMock.address);
       var reputationReward = 12;
