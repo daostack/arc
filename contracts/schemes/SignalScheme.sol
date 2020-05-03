@@ -58,22 +58,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
                         address _voteOnBehalf)
     external
     initializer {
-        bytes32 voteParamsHash;
-        if (_voteApproveParams == bytes32(0)) {
-            //genesisProtocol
-            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
-            voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
-            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
-            genesisProtocol.parameters(voteParamsHash);
-            if (queuedVoteRequiredPercentage == 0) {
-               //params not set already
-                genesisProtocol.setParameters(_votingParams, _voteOnBehalf);
-            }
-        } else {
-            //for other voting machines
-            voteParamsHash = _voteApproveParams;
-        }
-        super._initialize(_avatar, _votingMachine, voteParamsHash);
+        super._initialize(_avatar, _votingMachine, _voteApproveParams, _votingParams, _voteOnBehalf);
         params = Parameters({
             voteApproveParams: voteParamsHash,
             signalType: _signalType,

@@ -48,21 +48,7 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
     )
     external
     {
-        if (_voteParamsHash == bytes32(0)) {
-            //genesisProtocol
-            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
-            voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
-            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
-            genesisProtocol.parameters(voteParamsHash);
-            if (queuedVoteRequiredPercentage == 0) {
-               //params not set already
-                genesisProtocol.setParameters(_votingParams, _voteOnBehalf);
-            }
-        } else {
-            //for other voting machines
-            voteParamsHash = _voteParamsHash;
-        }
-        super._initialize(_avatar, _votingMachine, voteParamsHash);
+        super._initialize(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
     }
 
     /**
