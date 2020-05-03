@@ -113,7 +113,7 @@ const proposeCompetition = async function(
                                           ) {
 
     var block = await web3.eth.getBlock("latest");
-    _testSetup.startTime = block.timestamp + _startTime;
+    _testSetup.startTime = _startTime > 0 ? block.timestamp + _startTime : 0;
     _testSetup.votingStartTime = block.timestamp + _votingStartTime;
     _testSetup.endTime = block.timestamp + _endTime;
     _testSetup.suggestionsEndTime = block.timestamp + _suggestionsEndTime;
@@ -145,7 +145,8 @@ const proposeCompetition = async function(
     assert.equal(tx.logs[0].args._rewardSplit[1],_rewardSplit[1]);
     assert.equal(tx.logs[0].args._rewardSplit[2],_rewardSplit[2]);
     assert.equal(tx.logs[0].args._rewardSplit[3],_rewardSplit[3]);
-    assert.equal(tx.logs[0].args._startTime,_testSetup.startTime);
+    block = await web3.eth.getBlock("latest");
+    assert.equal(tx.logs[0].args._startTime,_testSetup.startTime == 0 ? block.timestamp : _testSetup.startTime);
     assert.equal(tx.logs[0].args._votingStartTime,_testSetup.votingStartTime);
     assert.equal(tx.logs[0].args._endTime,_testSetup.endTime);
     assert.equal(tx.logs[0].args._maxNumberOfVotesPerVoter,_maxNumberOfVotesPerVoter);
@@ -243,6 +244,11 @@ contract('Competition', accounts => {
             } catch (ex) {
                  helpers.assertVMException(ex);
            }
+     });
+
+     it("proposeCompetition no start time", async function() {
+      var testSetup = await setup(accounts);
+      await proposeCompetition(testSetup,"description-hash",10,[1,2,3],[50,25,15,10],0);
      });
 
      it("suggest", async function() {
