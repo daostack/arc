@@ -146,7 +146,7 @@ const proposeCompetition = async function(
     assert.equal(tx.logs[0].args._rewardSplit[2],_rewardSplit[2]);
     assert.equal(tx.logs[0].args._rewardSplit[3],_rewardSplit[3]);
     block = await web3.eth.getBlock("latest");
-    assert.equal(tx.logs[0].args._startTime,_testSetup.startTime == 0 ? block.timestamp : _testSetup.startTime);
+    assert.equal(tx.logs[0].args._startTime,_testSetup.startTime === 0 ? block.timestamp : _testSetup.startTime);
     assert.equal(tx.logs[0].args._votingStartTime,_testSetup.votingStartTime);
     assert.equal(tx.logs[0].args._endTime,_testSetup.endTime);
     assert.equal(tx.logs[0].args._maxNumberOfVotesPerVoter,_maxNumberOfVotesPerVoter);
