@@ -1,4 +1,4 @@
-pragma solidity 0.5.13;
+pragma solidity 0.5.17;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
