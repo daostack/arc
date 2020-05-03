@@ -14,19 +14,30 @@ contract ArcScheme is Initializable {
     /**
      * @dev _initialize
      * @param _avatar the scheme avatar
+     */
+    function _initialize(Avatar _avatar) internal initializer
+    {
+        require(address(_avatar) != address(0), "Scheme must have avatar");
+        avatar = _avatar;
+    }
+
+    /**
+     * @dev _initialize
+     * @param _avatar the scheme avatar
      * @param _votingMachine the scheme voting machine
      * @param _voteParamsHash the scheme vote params
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
      */
-    function _initialize(
+    function _initializeGovernance(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
         bytes32 _voteParamsHash,
         uint256[11] memory _votingParams,
         address _voteOnBehalf
-    ) internal initializer
+    ) internal
     {
-        require(address(_avatar) != address(0), "Scheme must have avatar");
-        avatar = _avatar;
+        _initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0) && votingMachine != IntVoteInterface(0)) {
             //genesisProtocol

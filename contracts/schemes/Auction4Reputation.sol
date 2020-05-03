@@ -66,7 +66,7 @@ contract Auction4Reputation is Agreement, ArcScheme {
         bytes32 _agreementHash )
     external
     {
-        super._initialize(_avatar, IntVoteInterface(0), 0, [uint256(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], address(0));
+        super._initialize(_avatar);
         require(_numberOfAuctions > 0, "number of auctions cannot be zero");
         //_auctionPeriod should be greater than block interval
         require(_auctionPeriod > 15, "auctionPeriod should be > 15");

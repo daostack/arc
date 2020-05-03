@@ -62,7 +62,7 @@ contract FundingRequest is
     )
     external
     {
-        super._initialize(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
+        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
         fundingToken = _fundingToken;
     }
 

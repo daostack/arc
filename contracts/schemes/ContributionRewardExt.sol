@@ -95,7 +95,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     external
     {
         require(_votingMachine != IntVoteInterface(0), "votingMachine cannot be zero");
-        super._initialize(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
+        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
         rewarder = _rewarder;
         vault = new Vault();
         vault.initialize(address(this));

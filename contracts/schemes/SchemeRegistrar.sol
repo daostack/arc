@@ -63,7 +63,7 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     )
     external
     {
-        super._initialize(_avatar, IntVoteInterface(0), 0, [uint256(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], address(0));
+        super._initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteRegisterParamsHash == bytes32(0)) {
             //genesisProtocol
