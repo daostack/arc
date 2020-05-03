@@ -16,7 +16,8 @@ const setupContributionRewardExt = async function(
                                             genesisProtocol,
                                             token,
                                             avatarAddress,
-                                            rewarderAddress = helpers.NULL_ADDRESS
+                                            rewarderAddress = helpers.NULL_ADDRESS,
+                                            vmZero=false
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
   if (genesisProtocol === true) {
@@ -35,7 +36,7 @@ const setupContributionRewardExt = async function(
   contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
                         .methods
                         .initialize(avatarAddress,
-                          contributionRewardParams.votingMachine.absoluteVote.address,
+                          vmZero ? helpers.NULL_ADDRESS : contributionRewardParams.votingMachine.absoluteVote.address,
                           [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
                           contributionRewardParams.votingMachine.params,
@@ -45,7 +46,7 @@ const setupContributionRewardExt = async function(
   return contributionRewardParams;
 };
 var registration;
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,service=helpers.NULL_ADDRESS) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,service=helpers.NULL_ADDRESS,vmZero=false) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100000);
   registration = await helpers.registerImplementation();
@@ -69,7 +70,8 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,se
                      genesisProtocol,
                      tokenAddress,
                      testSetup.org.avatar.address,
-                     service);
+                     service,
+                     vmZero);
 
   var permissions = "0x00000000";
   var tx = await registration.daoFactory.setSchemes(
@@ -92,6 +94,15 @@ contract('ContributionRewardExt', accounts => {
        var testSetup = await setup(accounts);
        assert.equal(await testSetup.contributionRewardExt.votingMachine(),testSetup.contributionRewardExtParams.votingMachine.absoluteVote.address);
     });
+
+    it("initialize vm 0", async function() {
+      try {
+        await setup(accounts,false,0,helpers.NULL_ADDRESS,true);
+        assert(false, 'votingMachine cannot be zero');
+      } catch (ex) { 
+        // revert
+      }
+   });
 
     it("proposeContributionReward log", async function() {
       var testSetup = await setup(accounts);
@@ -129,6 +140,36 @@ contract('ContributionRewardExt', accounts => {
                                                                     );
        assert.equal(await helpers.getValueFromLogs(tx, '_beneficiary'),accounts[0]);
     });
+
+    it("execute proposeContributionReward getProposalReputationReward ", async function() {
+      var testSetup = await setup(accounts);
+      var tx = await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                     web3.utils.asciiToHex("description"),
+                                                                     10,
+                                                                    [0,0,0],
+                                                                     testSetup.standardTokenMock.address,
+                                                                     accounts[0],
+                                                                     helpers.NULL_ADDRESS
+                                                                   );
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      assert.equal((await testSetup.contributionRewardExt.getProposalReputationReward(proposalId)).toNumber(),10);//acceptedByVotingMachine
+     });
+
+     it("execute proposeContributionReward getProposalNativeTokenReward ", async function() {
+      var testSetup = await setup(accounts);
+      var tx = await testSetup.contributionRewardExt.proposeContributionReward(
+                                                                     web3.utils.asciiToHex("description"),
+                                                                     0,
+                                                                    [10,0,0],
+                                                                     testSetup.standardTokenMock.address,
+                                                                     accounts[0],
+                                                                     helpers.NULL_ADDRESS
+                                                                   );
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      assert.equal((await testSetup.contributionRewardExt.getProposalNativeTokenReward(proposalId)).toNumber(),10);//acceptedByVotingMachine
+     });
 
     it("execute proposeContributionReward  yes ", async function() {
       var testSetup = await setup(accounts);

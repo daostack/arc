@@ -50,6 +50,7 @@ contract('VotingMachineCallbacks', function(accounts) {
          await setup(accounts, true);
          assert(false, "avatar 0 address should revert");
        } catch(error) {
+          // revert
        }
    });
 
