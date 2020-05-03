@@ -7,7 +7,7 @@ const proposalId = "0x1234000000000000000000000000000000000000000000000000000000
 
 
  var registration;
-const setup = async function (accounts) {
+const setup = async function (accounts, avatarZero=false) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
    testSetup.proxyAdmin = accounts[5];
@@ -21,7 +21,7 @@ const setup = async function (accounts) {
 
    var schemeMockData = await new web3.eth.Contract(registration.arcVotingMachineCallbacksMock.abi)
    .methods
-   .initialize(testSetup.org.avatar.address, accounts[0])
+   .initialize((avatarZero ? helpers.NULL_ADDRESS : testSetup.org.avatar.address), accounts[0])
    .encodeABI();
 
    var permissions = "0x00000000";
@@ -34,14 +34,24 @@ const setup = async function (accounts) {
       "metaData",
       {from:testSetup.proxyAdmin});
 
-   testSetup.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.at(tx.logs[1].args._scheme);
+   if (!avatarZero) {
+      testSetup.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.at(tx.logs[1].args._scheme);
 
-   await testSetup.arcVotingMachineCallbacksMock.propose(proposalId);
-
-
-   return testSetup;
+      await testSetup.arcVotingMachineCallbacksMock.propose(proposalId);
+   
+   
+      return testSetup;
+   }
 };
 contract('VotingMachineCallbacks', function(accounts) {
+
+   it("avatar address cannot be 0 ", async function() {
+      try {
+         await setup(accounts, true);
+         assert(false, "avatar 0 address should revert");
+       } catch(error) {
+       }
+   });
 
     it("getTotalReputationSupply & reputationOf  ", async function() {
        var testSetup = await setup(accounts);
