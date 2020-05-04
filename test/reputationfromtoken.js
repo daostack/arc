@@ -192,6 +192,13 @@ contract('ReputationFromToken and RepAllocation', accounts => {
       assert.equal(tx.logs[0].args._sender,accounts[0]);
       assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
       assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),expected);
+
+      try {
+        await testSetup.reputationFromToken.redeem(accounts[1]);
+        assert(false, "cannot redeem twice");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
     });
 
     it("redeemWithSignature", async () => {
@@ -223,6 +230,16 @@ contract('ReputationFromToken and RepAllocation', accounts => {
       assert.equal((await testSetup.org.reputation.balanceOf(accounts[0])).toString(),
                   (expected + 1000).toString());
       assert.equal(await testSetup.org.reputation.balanceOf(accounts[1]),0);
+    });
+
+    it("cannot redeem before initialize", async () => {
+      try {
+        let reputationFromToken = await ReputationFromToken.new();
+        await reputationFromToken.redeem(accounts[1]);
+        assert(false, "cannot redeem before initialize");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }      
     });
 
     it("cannot initialize twice", async () => {
