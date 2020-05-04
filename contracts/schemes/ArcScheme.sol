@@ -22,7 +22,7 @@ contract ArcScheme is Initializable {
     }
 
     /**
-     * @dev _initialize
+     * @dev _initializeGovernance
      * @param _avatar the scheme avatar
      * @param _votingMachine the scheme voting machine
      * @param _voteParamsHash the scheme vote params
