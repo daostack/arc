@@ -1,4 +1,4 @@
-pragma solidity 0.5.13;
+pragma solidity 0.5.17;
 
 //this is a mock to simulate bad ERC20 token implementation as describe at
 //https://github.com/ethereum/solidity/issues/4116
