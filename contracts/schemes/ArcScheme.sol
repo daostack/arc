@@ -37,7 +37,7 @@ contract ArcScheme is Initializable {
         address _voteOnBehalf
     ) internal
     {
-        require(votingMachine != IntVoteInterface(0), "votingMachine cannot be zero");
+        require(_votingMachine != IntVoteInterface(0), "votingMachine cannot be zero");
         _initialize(_avatar);
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
