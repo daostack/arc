@@ -148,7 +148,7 @@ contract Locking4Reputation is Agreement, ArcScheme {
         bytes32 _agreementHash )
     internal
     {
-        super._initialize(_avatar, IntVoteInterface(0), 0);
+        super._initialize(_avatar);
         require(_lockingEndTime > _lockingStartTime, "locking end time should be greater than locking start time");
         require(_redeemEnableTime >= _lockingEndTime, "redeemEnableTime >= lockingEndTime");
 

@@ -1,6 +1,5 @@
 pragma solidity ^0.5.17;
 
-import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.sol";
 import "../controller/Avatar.sol";
 import "../controller/Controller.sol";
 import "../schemes/ArcScheme.sol";

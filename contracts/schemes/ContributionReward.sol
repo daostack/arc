@@ -1,8 +1,6 @@
 pragma solidity ^0.5.17;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.sol";
-
 
 /**
  * @title A scheme for proposing and rewarding contributions to an organization
@@ -82,22 +80,7 @@ contract ContributionReward is
     external
     initializer
     {
-        avatar = _avatar;
-        if (_voteParamsHash == bytes32(0)) {
-            //genesisProtocol
-            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
-            voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
-            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
-            genesisProtocol.parameters(voteParamsHash);
-            if (queuedVoteRequiredPercentage == 0) {
-               //params not set already
-                genesisProtocol.setParameters(_votingParams, _voteOnBehalf);
-            }
-        } else {
-            //for other voting machines
-            voteParamsHash = _voteParamsHash;
-        }
-        super._initialize(_avatar, _votingMachine, voteParamsHash);
+        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
     }
 
     /**

@@ -98,6 +98,22 @@ contract('SchemeFactory', accounts => {
       assert.equal(tx.logs[0].event, "NewSchemeProposal");
      });
 
+     it("proposeScheme no scheme to un/register", async function() {
+      var testSetup = await setup(accounts);
+
+      try {
+        await testSetup.schemeFactory.proposeScheme(
+          [0,1,0],
+          '',
+          testSetup.schemeFactoryParams.initdata,
+          "0x0000001f",
+          helpers.NULL_ADDRESS,
+          helpers.NULL_HASH);
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+     });
+
     it("execute proposeScheme and execute -yes - permissions== 0x0000001f", async function() {
       var testSetup = await setup(accounts);
       var tx = await testSetup.schemeFactory.proposeScheme(

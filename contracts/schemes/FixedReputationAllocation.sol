@@ -33,7 +33,7 @@ contract FixedReputationAllocation is Ownable, ArcScheme {
     function initialize(Avatar _avatar, uint256 _reputationReward, uint256 _redeemEnableTime, address _owner)
     external
     {
-        super._initialize(_avatar, IntVoteInterface(0), 0);
+        super._initialize(_avatar);
         reputationReward = _reputationReward;
         redeemEnableTime = _redeemEnableTime;
         Ownable.initialize(_owner);

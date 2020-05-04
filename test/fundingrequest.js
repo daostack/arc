@@ -219,6 +219,22 @@ contract('FundingRequest', accounts => {
       assert.equal(tx.logs[0].args._descriptionHash, "description-hash");
      });
 
+     it("propose log null beneficiary", async function() {
+      var testSetup = await setup(accounts);
+
+      let tx = await testSetup.fundingRequest.propose(
+        helpers.NULL_ADDRESS,
+        testSetup.minFeeToJoin - 1,
+        "description-hash");
+
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "NewFundingProposal");
+      assert.equal(tx.logs[0].args._avatar, testSetup.org.avatar.address);
+      assert.equal(tx.logs[0].args._beneficiary, accounts[0]);
+      assert.equal(tx.logs[0].args._amount, testSetup.minFeeToJoin-1);
+      assert.equal(tx.logs[0].args._descriptionHash, "description-hash");
+     });
+
      it("execute proposal yes", async function() {
       var testSetup = await setup(accounts);
 
