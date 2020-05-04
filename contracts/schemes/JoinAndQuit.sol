@@ -66,6 +66,7 @@ contract JoinAndQuit is
     uint256 public fundingGoal;
     uint256 public fundingGoalDeadline;
     uint256 public totalDonation;
+    bool public rageQuitEnable;
 
     /**
      * @dev initialize
@@ -80,6 +81,7 @@ contract JoinAndQuit is
               if this param is zero so the repution will be allocated proportional to the fee paid
      * @param _fundingGoal the funding goal
      * @param _fundingGoalDeadline the funding goal deadline
+     * @param _rageQuitEnable rageQuit enabling flag
      */
     function initialize(
         Avatar _avatar,
@@ -91,7 +93,8 @@ contract JoinAndQuit is
         uint256 _minFeeToJoin,
         uint256 _memberReputation,
         uint256 _fundingGoal,
-        uint256 _fundingGoalDeadline
+        uint256 _fundingGoalDeadline,
+        bool    _rageQuitEnable
     )
     external
     {
@@ -101,6 +104,7 @@ contract JoinAndQuit is
         memberReputation = _memberReputation;
         fundingGoal = _fundingGoal;
         fundingGoalDeadline = _fundingGoalDeadline;
+        rageQuitEnable = _rageQuitEnable;
     }
 
     /**
@@ -219,6 +223,7 @@ contract JoinAndQuit is
     * @return refund the refund amount
     */
     function rageQuit() public returns(uint256 refund) {
+        require(rageQuitEnable, "RageQuit disabled");
         require(fundings[msg.sender].funding > 0, "no fund to RageQuit");
         uint256 userDonation = fundings[msg.sender].funding;
         fundings[msg.sender].funding = 0;
