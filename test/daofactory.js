@@ -326,7 +326,7 @@ contract('DaoFactory', function(accounts) {
       } catch(ex) {
         helpers.assertVMException(ex);
       }
-      founderToken.pop()
+      founderToken.pop();
       founderReputation[i] = 1;
       try {
         await registration.daoFactory.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
@@ -334,7 +334,7 @@ contract('DaoFactory', function(accounts) {
       } catch(ex) {
         helpers.assertVMException(ex);
       }
-      founderReputation.pop()
+      founderReputation.pop();
       foundersArray[i-1] = helpers.NULL_ADDRESS;
       try {
         await registration.daoFactory.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
