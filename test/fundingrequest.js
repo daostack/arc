@@ -39,7 +39,8 @@ const setupJoinAndQuit = async function(
                             _minFeeToJoin,
                             _memberReputation,
                             _fundingGoal,
-                           _fundingGoalDeadline)
+                           _fundingGoalDeadline,
+                           false)
                           .encodeABI();
     } else {
   joinAndQuitParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
@@ -54,7 +55,8 @@ const setupJoinAndQuit = async function(
                           _minFeeToJoin,
                           _memberReputation,
                           _fundingGoal,
-                         _fundingGoalDeadline)
+                         _fundingGoalDeadline,
+                         false)
                         .encodeABI();
   }
   return joinAndQuitParams;

@@ -35,7 +35,8 @@ const setupJoinAndQuit = async function(
                                             _minFeeToJoin,
                                             _memberReputation,
                                             _fundingGoal,
-                                            _fundingGoalDeadline
+                                            _fundingGoalDeadline,
+                                            _rageQuitEnable = true,
                                             ) {
   var joinAndQuitParams = new JoinAndQuitParams();
 
@@ -52,7 +53,8 @@ const setupJoinAndQuit = async function(
                             _minFeeToJoin,
                             _memberReputation,
                             _fundingGoal,
-                           _fundingGoalDeadline)
+                           _fundingGoalDeadline,
+                           _rageQuitEnable)
                           .encodeABI();
     } else {
   joinAndQuitParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
@@ -67,7 +69,8 @@ const setupJoinAndQuit = async function(
                           _minFeeToJoin,
                           _memberReputation,
                           _fundingGoal,
-                         _fundingGoalDeadline)
+                         _fundingGoalDeadline,
+                         _rageQuitEnable)
                         .encodeABI();
   }
   return joinAndQuitParams;
@@ -80,7 +83,8 @@ const setup = async function (accounts,
                               minFeeToJoin = 100,
                               memberReputation = 100,
                               fundingGoal = 1000,
-                              fundingGoalDeadline = 3000) {
+                              fundingGoalDeadline = 3000,
+                              rageQuitEnable = true) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[0],100000);
   registration = await helpers.registerImplementation();
@@ -111,7 +115,8 @@ const setup = async function (accounts,
                      minFeeToJoin,
                      memberReputation,
                      fundingGoal,
-                     testSetup.fundingGoalDeadline);
+                     testSetup.fundingGoalDeadline,
+                     rageQuitEnable);
 
   var permissions = "0x00000000";
   var tx = await registration.daoFactory.setSchemes(
@@ -613,6 +618,28 @@ contract('JoinAndQuit', accounts => {
           .then(function(events){
               assert.equal(events[0].event,"FundedBeforeDeadline");
           });
+    });
+
+
+    it("rageQuit not enable", async function() {
+      var testSetup = await setup(accounts, false, false, helpers.NULL_ADDRESS, 100, 0,1000,3000,false);
+      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin,{from:accounts[3]});
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
+                                                           "description-hash",
+                                                           testSetup.minFeeToJoin,
+                                                           {from:accounts[3]});
+
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
+      assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
+      try {
+         await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
+         assert(false, 'rageQuitEnable is false');
+      } catch (ex) {
+         helpers.assertVMException(ex);
+      }
     });
 
 });
