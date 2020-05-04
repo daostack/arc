@@ -109,6 +109,26 @@ contract('SchemeRegistrar', accounts => {
          assert.equal(tx.logs[0].event, "RemoveSchemeProposal");
         });
 
+    it("proposeScheme cannot be 0", async function() {
+      var testSetup = await setup(accounts);
+      try {
+        await testSetup.schemeRegistrar.proposeScheme(
+          helpers.NULL_ADDRESS,
+          "0x00000000",
+          helpers.NULL_HASH);
+      } catch(ex) {
+        helpers.assertVMException(ex);
+      }
+    });
+
+    it("proposeToRemoveScheme cannot be 0", async function() {
+      var testSetup = await setup(accounts);
+      try {
+        await testSetup.schemeRegistrar.proposeToRemoveScheme(helpers.NULL_ADDRESS, helpers.NULL_HASH);
+      } catch(ex) {
+        helpers.assertVMException(ex);
+      }
+    });
 
     it("execute proposeScheme  and execute -yes - fee > 0 ", async function() {
       var testSetup = await setup(accounts);

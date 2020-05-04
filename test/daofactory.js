@@ -229,6 +229,14 @@ contract('DaoFactory', function(accounts) {
        }
 
        try {
+        await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[],[11],[0,0,0],{gas:constants.ARC_GAS_LIMIT});
+        assert(false,"should revert  because token array size is 0");
+       }
+       catch(ex){
+         helpers.assertVMException(ex);
+       }
+
+       try {
         await registration.daoFactory.forgeOrg("testOrg",
                        nativeTokenData,[accounts[0],
                        helpers.NULL_ADDRESS],
@@ -236,7 +244,7 @@ contract('DaoFactory', function(accounts) {
                        [amountToMint,amountToMint],
                        [0,0,0],
                        {gas:constants.ARC_GAS_LIMIT});
-        assert(false,"should revert  because account is 0");
+        assert(false,"should revert because account is 0");
        }
        catch(ex){
          helpers.assertVMException(ex);
@@ -286,6 +294,63 @@ contract('DaoFactory', function(accounts) {
         assert.equal(tx.logs[2].event, "InitialSchemesSet");
         assert.equal(tx.logs[2].args._avatar, avatar.address);
       });
+
+
+    it("setSchemes to SchemeMock and addFounders wrong lengths", async function() {
+      var amountToMint = 10;
+      await setup(accounts,amountToMint,amountToMint);
+      var foundersArray = [];
+      var founderReputation = [];
+      var founderToken = [];
+
+      try {
+        await registration.daoFactory.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
+        assert(false, "should revert because founders list is empty");
+      }
+      catch(ex){
+        helpers.assertVMException(ex);
+      }
+
+      var i;
+      var numberOfFounders = 60;
+      for (i=0;i<numberOfFounders;i++) {
+        foundersArray[i] = accounts[1];
+        founderReputation[i] = 1;
+        founderToken[i] = 1;
+
+      }
+      founderToken[i] = 1;
+      try {
+        await registration.daoFactory.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
+        assert(false, "should revert because founders list is shorter than tokens");
+      } catch(ex) {
+        helpers.assertVMException(ex);
+      }
+      founderToken.pop()
+      founderReputation[i] = 1;
+      try {
+        await registration.daoFactory.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
+        assert(false, "should revert because founders list is shorter than reputations");
+      } catch(ex) {
+        helpers.assertVMException(ex);
+      }
+      founderReputation.pop()
+      foundersArray[i-1] = helpers.NULL_ADDRESS;
+      try {
+        await registration.daoFactory.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
+        assert(false, "should revert because founder address cannot be 0");
+      } catch(ex) {
+        helpers.assertVMException(ex);
+      }
+      foundersArray[i-1] = accounts[1];
+      founderReputation[i-1] = 0;
+      founderToken[i-1] = 0;
+      await registration.daoFactory.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
+      var rep = await reputation.balanceOf(accounts[1],{from:accounts[1]});
+      assert.equal(rep.toNumber(),numberOfFounders - 1);
+      var founderBalance = await daoToken.balanceOf(accounts[1],{from:accounts[1]});
+      assert.equal(founderBalance.toNumber(),numberOfFounders - 1);
+    });
 
       it("forgeOrg different version", async function() {
           var amountToMint = 10;
