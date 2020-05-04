@@ -37,9 +37,10 @@ contract ArcScheme is Initializable {
         address _voteOnBehalf
     ) internal
     {
+        require(votingMachine != IntVoteInterface(0), "votingMachine cannot be zero");
         _initialize(_avatar);
         votingMachine = _votingMachine;
-        if (_voteParamsHash == bytes32(0) && votingMachine != IntVoteInterface(0)) {
+        if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
             GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
             voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
