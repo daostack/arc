@@ -329,18 +329,18 @@ contract Controller is Initializable {
     onlyUpgradingScheme
     returns(bool)
     {
-        require(newController == address(0));   // so the upgrade could be done once for a contract.
-        require(_newController != address(0));
+        require(newController == address(0), "this controller was already upgraded");   // so the upgrade could be done once for a contract.
+        require(_newController != address(0), "new controller cannot be 0");
         newController = _newController;
         avatar.transferOwnership(_newController);
-        require(avatar.owner() == _newController);
+        require(avatar.owner() == _newController, "failed to transfer avatar ownership to the new controller");
         if (nativeToken.owner() == address(this)) {
             nativeToken.transferOwnership(_newController);
-            require(nativeToken.owner() == _newController);
+            require(nativeToken.owner() == _newController, "failed to transfer token ownership to the new controller");
         }
         if (nativeReputation.owner() == address(this)) {
             nativeReputation.transferOwnership(_newController);
-            require(nativeReputation.owner() == _newController);
+            require(nativeReputation.owner() == _newController, "failed to transfer reputation ownership to the new controller");
         }
         emit UpgradeController(address(this), newController);
         return true;

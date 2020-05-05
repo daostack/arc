@@ -62,6 +62,17 @@ contract('Controller', accounts =>  {
           assert.equal(rep,amountToMint);
       });
 
+    it("mint reputation - only registered scheme", async () => {
+      controller = await setup(accounts);
+      await reputation.transferOwnership(controller.address);
+      try {
+        await controller.mintReputation(amountToMint,accounts[0],{from:accounts[1]});
+        assert(false, 'only registered scheme can mint reputation');
+      } catch (ex) {
+        helpers.assertVMException(ex);
+      }
+    });
+
     it("burn reputation via controller", async () => {
         controller = await setup(accounts);
         await reputation.transferOwnership(controller.address);
@@ -214,6 +225,17 @@ contract('Controller', accounts =>  {
         assert.equal(count[0], 1); //pre
         assert.equal(count[1], 1); //post
        });
+
+       it("globalConstraint - cannot register without sufficient permissions", async () => {
+        controller = await setup(accounts, "0x00000001");
+        try {
+          await controller.addGlobalConstraint(helpers.NULL_ADDRESS);
+          assert(false, 'only scheme with sufficient permission can add global constraint');
+        } catch (ex) {
+          helpers.assertVMException(ex);
+        }
+       });
+
        it("removeGlobalConstraint ", async () => {
          const zeroBytes32 = "0x0000000000000000000000000000000000000000";
          controller = await setup(accounts);
@@ -255,11 +277,43 @@ contract('Controller', accounts =>  {
          assert.equal(gcCount[1],3);
         });
 
-        it("upgrade controller ", async () => {
+        it("upgrade controller", async () => {
           controller = await setup(accounts);
           await reputation.transferOwnership(controller.address);
           await token.transferOwnership(controller.address);
+
+          try {
+            await controller.upgradeController(accounts[1]);
+            assert(false, 'cannot upgrade controller if it does not ow the avatar');
+          } catch (ex) {
+            helpers.assertVMException(ex);
+          }
+
           await avatar.transferOwnership(controller.address);
+
+          try {
+            await controller.upgradeController(helpers.NULL_ADDRESS);
+            assert(false, 'new controller cannot be 0');
+          } catch (ex) {
+            helpers.assertVMException(ex);
+          }
+
+          var tx = await controller.upgradeController(accounts[1]);
+          assert.equal(tx.logs.length, 1);
+          assert.equal(tx.logs[0].event, "UpgradeController");
+
+          try {
+            await controller.upgradeController(accounts[2]);
+            assert(false, 'cannot upgrade twice the same controller contract');
+          } catch (ex) {
+            helpers.assertVMException(ex);
+          }
+        });
+
+        it("upgrade controller - no native token and reputation", async () => {
+          controller = await setup(accounts);
+          await avatar.transferOwnership(controller.address);
+
           var tx = await controller.upgradeController(accounts[1]);
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "UpgradeController");
@@ -308,6 +362,22 @@ contract('Controller', accounts =>  {
           const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.test(a,b,c).encodeABI();
           var result = await controller.genericCall.call(actionMock.address,encodeABI,0);
           assert.equal(result[1], 14);
+        });
+
+        it("generic call - only generic call scheme", async () => {
+          controller = await setup(accounts,'0x00000001');
+          await avatar.transferOwnership(controller.address);
+          let actionMock =  await ActionMock.new();
+          let a = 7;
+          let b = actionMock.address;
+          let c = "0x1234";
+          const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.test(a,b,c).encodeABI();
+          try {
+            await controller.genericCall.call(actionMock.address,encodeABI,0);
+            assert(false, 'only registered scheme can mint reputation');
+          } catch (ex) {
+            helpers.assertVMException(ex);
+          }
         });
 
         it("generic call withoutReturnValue", async () => {
@@ -623,5 +693,14 @@ contract('Controller', accounts =>  {
 
      });
 
-
+     it("metaData - cannot set metaData without sufficient permissions", async () => {
+      controller = await setup(accounts, "0x00000001");
+      await avatar.transferOwnership(controller.address);
+      try {
+        await controller.metaData('newMetadata');
+        assert(false, 'only scheme with sufficient permission can set metadata');
+      } catch (ex) {
+        helpers.assertVMException(ex);
+      }
+     });
 });
