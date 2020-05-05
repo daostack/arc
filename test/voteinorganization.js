@@ -139,8 +139,9 @@ contract('VoteInOrganizationScheme', accounts => {
     try {
       await testSetup.voteInOrganization.proposeVote(
         anotherTestSetup.voteInOrganizationParams.votingMachine.genesisProtocol.address,
-        originalProposalId,3,helpers.NULL_HASH);
-        assert(false, "vote out of range (too high)");
+        originalProposalId,3,helpers.NULL_HASH
+      );
+      assert(false, "vote out of range (too high)");
     }  catch(error) {
       helpers.assertVMException(error);
     }
@@ -148,8 +149,9 @@ contract('VoteInOrganizationScheme', accounts => {
     try {
       await testSetup.voteInOrganization.proposeVote(
         anotherTestSetup.voteInOrganizationParams.votingMachine.genesisProtocol.address,
-        originalProposalId,0,helpers.NULL_HASH);
-        assert(false, "vote out of range (too low)");
+        originalProposalId,0,helpers.NULL_HASH
+      );
+      assert(false, "vote out of range (too low)");
     }  catch(error) {
       helpers.assertVMException(error);
     }

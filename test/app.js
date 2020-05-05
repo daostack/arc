@@ -90,8 +90,37 @@ contract('App', accounts => {
 
     it("addVersion", async function() {
        await setup();
-       var tx = await registration.packageInstance.addVersion([1,0,0],registration.implementationDirectory.address,helpers.NULL_HASH);
+       var tx = await registration.packageInstance.addVersion([1,1,0],registration.implementationDirectory.address,helpers.NULL_HASH);
        assert.equal(tx.logs[0].event, "VersionAdded");
        assert.equal(tx.logs[0].args.semanticVersion[0], 1);
+
+       try {
+         await registration.packageInstance.addVersion([1,2,0],helpers.NULL_ADDRESS,helpers.NULL_HASH);
+         assert(false, "contract address cannot be 0");
+       }  catch(error) {
+         helpers.assertVMException(error);
+       }
+       try {
+         await registration.packageInstance.addVersion([1,1,0],registration.implementationDirectory.address,helpers.NULL_HASH);
+         assert(false, "cannot register same version twice");
+       }  catch(error) {
+         helpers.assertVMException(error);
+       }
+       try {
+         await registration.packageInstance.addVersion([0,0,0],registration.implementationDirectory.address,helpers.NULL_HASH);
+         assert(false, "version cannot be 0");
+       }  catch(error) {
+         helpers.assertVMException(error);
+       }
+
+       tx = await registration.packageInstance.addVersion([1,0,0],registration.implementationDirectory.address,helpers.NULL_HASH);
+       assert.equal(tx.logs[0].event, "VersionAdded");
+       assert.equal(tx.logs[0].args.semanticVersion[0], 1);
+       assert.equal(tx.logs[0].args.semanticVersion[1], 0);
+
+       let latest = await registration.packageInstance.getLatest();
+       assert.equal(latest.semanticVersion[0], 1);
+       assert.equal(latest.semanticVersion[1], 1);
+       assert.equal(latest.semanticVersion[2], 0);
     });
 });
