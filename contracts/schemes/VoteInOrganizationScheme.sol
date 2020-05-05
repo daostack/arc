@@ -106,6 +106,8 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
     {
         (uint256 minVote, uint256 maxVote) = _originalIntVote.getAllowedRangeOfChoices();
         require(_vote <= maxVote && _vote >= minVote, "vote should be in the allowed range");
+        require(_vote <= _originalIntVote.getNumberOfChoices(_originalProposalId),
+        "vote should be <= original proposal number of choices");
 
         bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
 

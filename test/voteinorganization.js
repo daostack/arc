@@ -116,6 +116,31 @@ contract('VoteInOrganizationScheme', accounts => {
     assert.equal(tx.logs[0].args._vote, 1);
   });
 
+  it("proposeVote vote not an option", async function() {
+    var testSetup = await setup(accounts);
+
+    var anotherTestSetup =  await setup(accounts);
+    var absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new();
+    await absoluteVoteExecuteMock.initialize(testSetup.org.reputation.address,
+                                            anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address);
+
+    var tx = await absoluteVoteExecuteMock.propose(2,
+                                                  anotherTestSetup.voteInOrganizationParams.votingMachine.params,
+                                                  anotherTestSetup.org.avatar.address,
+                                                  accounts[0],helpers.NULL_ADDRESS);
+
+    const proposalId = await helpers.getProposalId(tx,anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote, 'NewProposal');
+    try {
+      await testSetup.voteInOrganization.proposeVote(
+        anotherTestSetup.voteInOrganizationParams.votingMachine.absoluteVote.address,
+        proposalId,3,helpers.NULL_HASH
+      );
+      assert(false, "vote not an option");
+    }  catch(error) {
+      helpers.assertVMException(error);
+    }
+  });
+
   it("proposeVote vote not in range", async function() {
     var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
     var testSetup = await setup(accounts,0,true,standardTokenMock.address);
