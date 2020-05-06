@@ -99,7 +99,7 @@ contract DAOFactory is Initializable {
         require(locks[address(_avatar)].sender == msg.sender, "sender is not holding the lock");
           // Mint token and reputation for founders:
         for (uint256 i = 0; i < _founders.length; i++) {
-            require(_founders[i] != address(0));
+            require(_founders[i] != address(0), "founder address cannot be 0");
             if (_foundersTokenAmount[i] > 0) {
                 Controller(
                 _avatar.owner()).mintTokens(_foundersTokenAmount[i], _founders[i]);
