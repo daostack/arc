@@ -1,6 +1,13 @@
 pragma solidity 0.5.17;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
+import "../utils/DAOFactory.sol";
+
+
+interface Rewarder {
+    function initialize(address payable) external;
+}
+
 
 /**
  * @title A scheme for proposing and rewarding contributions to an organization
@@ -81,8 +88,11 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
      * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
      * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
      * @param _voteParamsHash voting machine parameters
-     * @param _rewarder an address which allowed to redeem the contribution.
-       if _rewarder is 0 this param is agnored.
+     * @param _daoFactory DAOFactory instance to instance a rewarder.
+     * if _daoFactory is zero so no rewarder will be set.
+     * @param _packageVersion packageVersion to instance the rewarder from.
+     * @param _rewarderName the rewarder contract name.
+
      */
     function initialize(
         Avatar _avatar,
@@ -90,14 +100,22 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         uint[11] calldata _votingParams,
         address _voteOnBehalf,
         bytes32 _voteParamsHash,
-        address _rewarder
+        DAOFactory _daoFactory,
+        uint64[3] calldata _packageVersion,
+        string calldata _rewarderName
     )
     external
     {
         super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
-        rewarder = _rewarder;
         vault = new Vault();
         vault.initialize(address(this));
+        if (_daoFactory != DAOFactory(0)) {
+            rewarder = address(_daoFactory.createInstance(
+                                _packageVersion,
+                                _rewarderName,
+                                address(avatar),
+                                abi.encodeWithSignature("initialize(address)", address(this))));
+        }
     }
 
     /**
