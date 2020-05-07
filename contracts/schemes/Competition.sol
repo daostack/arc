@@ -3,7 +3,7 @@ pragma solidity 0.5.17;
 import "./ContributionRewardExt.sol";
 
 
-contract Competition is Initializable {
+contract Competition is Initializable, Rewarder {
     using SafeMath for uint256;
 
     uint256 constant public MAX_NUMBER_OF_WINNERS = 100;

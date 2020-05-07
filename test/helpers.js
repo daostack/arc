@@ -9,6 +9,7 @@ const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
+const RewarderMock = artifacts.require('./test/RewarderMock.sol');
 const Wallet = artifacts.require('./test/Wallet.sol');
 const App = artifacts.require("./App.sol");
 const Package = artifacts.require("./Package.sol");
@@ -153,14 +154,14 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
   registration.joinAndQuit = await JoinAndQuit.new();
   registration.fundingRequest = await FundingRequest.new();
-
-
+  registration.rewarderMock = await RewarderMock.new();
 
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
   await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
   await implementationDirectory.setImplementation("Controller",registration.controller.address);
   await implementationDirectory.setImplementation("SchemeMock",registration.schemeMock.address);
+  await implementationDirectory.setImplementation("RewarderMock",registration.rewarderMock.address);
   await implementationDirectory.setImplementation("Wallet",registration.wallet.address);
   await implementationDirectory.setImplementation("ContributionReward",registration.contributionReward.address);
   await implementationDirectory.setImplementation("Competition",registration.competition.address);

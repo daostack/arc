@@ -3,7 +3,7 @@ const ContributionRewardExt = artifacts.require("./ContributionRewardExt.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Avatar = artifacts.require("./Avatar.sol");
 const Redeemer = artifacts.require("./Redeemer.sol");
-
+const RewarderMock = artifacts.require("./RewarderMock.sol");
 
 
 class ContributionRewardParams {
@@ -16,7 +16,8 @@ const setupContributionRewardExt = async function(
                                             genesisProtocol,
                                             token,
                                             avatarAddress,
-                                            rewarderAddress = helpers.NULL_ADDRESS,
+                                            daoFactoryAddress = helpers.NULL_ADDRESS,
+                                            service = "",
                                             vmZero=false
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
@@ -29,7 +30,9 @@ const setupContributionRewardExt = async function(
                             contributionRewardParams.votingMachine.uintArray,
                             contributionRewardParams.votingMachine.voteOnBehalf,
                             helpers.NULL_HASH,
-                            rewarderAddress)
+                            daoFactoryAddress,
+                            [0,1,0],
+                            service)
                           .encodeABI();
     } else {
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
@@ -40,13 +43,15 @@ const setupContributionRewardExt = async function(
                           [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
                           contributionRewardParams.votingMachine.params,
-                          rewarderAddress)
+                          daoFactoryAddress,
+                          [0,1,0],
+                          service)
                         .encodeABI();
   }
   return contributionRewardParams;
 };
 var registration;
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,service=helpers.NULL_ADDRESS,vmZero=false) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,service="",vmZero=false) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100000);
   registration = await helpers.registerImplementation();
@@ -65,11 +70,16 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,se
                                                                       accounts[2]],
                                                                       [1000,0,0],
                                                                       testSetup.reputationArray);
+  var daoFactoryAddress = helpers.NULL_ADDRESS;
+  if (service !== "") {
+     daoFactoryAddress = registration.daoFactory.address;
+  }
   testSetup.contributionRewardExtParams= await setupContributionRewardExt(
                      accounts,
                      genesisProtocol,
                      tokenAddress,
                      testSetup.org.avatar.address,
+                     daoFactoryAddress,
                      service,
                      vmZero);
 
@@ -82,7 +92,11 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,se
                           [permissions],
                           "metaData",{from:testSetup.proxyAdmin});
 
-  testSetup.contributionRewardExt = await ContributionRewardExt.at(tx.logs[1].args._scheme);
+  if (service !== "") {
+    testSetup.contributionRewardExt = await ContributionRewardExt.at(tx.logs[2].args._scheme);
+  } else {
+    testSetup.contributionRewardExt = await ContributionRewardExt.at(tx.logs[1].args._scheme);
+  }
 
   testSetup.admin = accounts[0];
 
@@ -97,9 +111,9 @@ contract('ContributionRewardExt', accounts => {
 
     it("initialize vm 0", async function() {
       try {
-        await setup(accounts,false,0,helpers.NULL_ADDRESS,true);
+        await setup(accounts,false,0,true);
         assert(false, 'votingMachine cannot be zero');
-      } catch (ex) { 
+      } catch (ex) {
         // revert
       }
    });
@@ -431,8 +445,8 @@ contract('ContributionRewardExt', accounts => {
       var reputationReward = 12;
       var nativeTokenReward = 12;
       var ethReward = 12;
- 
- 
+
+
       //send some ether to the org avatar
       var otherAvatar = await Avatar.new();
       await otherAvatar.initialize('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS,accounts[0]);
@@ -447,7 +461,7 @@ contract('ContributionRewardExt', accounts => {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
- 
+
       var arcUtils = await Redeemer.new();
       var redeemRewards = await arcUtils.redeemFromCRExt.call(testSetup.contributionRewardExt.address,
                                                      testSetup.contributionRewardExtParams.votingMachine.genesisProtocol.address,
@@ -471,8 +485,8 @@ contract('ContributionRewardExt', accounts => {
       var reputationReward = 12;
       var nativeTokenReward = 0;
       var ethReward = 0;
- 
- 
+
+
       //send some ether to the org avatar
       var otherAvatar = await Avatar.new();
       await otherAvatar.initialize('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS,accounts[0]);
@@ -488,7 +502,7 @@ contract('ContributionRewardExt', accounts => {
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.contributionRewardExtParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
- 
+
       var arcUtils = await Redeemer.new();
       var redeemRewards = await arcUtils.redeemFromCRExt.call(testSetup.contributionRewardExt.address,
                                                      testSetup.contributionRewardExtParams.votingMachine.genesisProtocol.address,
@@ -504,7 +518,7 @@ contract('ContributionRewardExt', accounts => {
       assert.equal(redeemRewards[5],nativeTokenReward); //crNativeTokenReward
       assert.equal(redeemRewards[6],ethReward); //crEthReward
       assert.equal(redeemRewards[7],0); //crExternalTokenReward
- 
+
       await arcUtils.redeemFromCRExt(testSetup.contributionRewardExt.address,
                             testSetup.contributionRewardExtParams.votingMachine.genesisProtocol.address,
                             proposalId,
@@ -691,8 +705,10 @@ contract('ContributionRewardExt', accounts => {
                                                testSetup.contributionRewardExtParams.votingMachine.absoluteVote.address,
                                                [0,0,0,0,0,0,0,0,0,0,0],
                                                helpers.NULL_ADDRESS,
-                                               testSetup.contributionRewardExtParams.votingMachine.absoluteVote.address,
-                                               helpers.NULL_ADDRESS
+                                               helpers.NULL_HASH,
+                                               helpers.NULL_ADDRESS,
+                                               [0,1,0],
+                                               ""
                                                );
         assert(false, 'cannot initialize twice');
       } catch (ex) {
@@ -700,7 +716,7 @@ contract('ContributionRewardExt', accounts => {
       }
      });
      it("execute proposeContributionReward to self and redeem from external contract ", async function() {
-       var testSetup = await setup(accounts,false,0,accounts[0]);
+       var testSetup = await setup(accounts,false,0,"RewarderMock");
        var reputationReward = 12;
        var nativeTokenReward = 12;
        var ethReward = 12;
@@ -733,22 +749,31 @@ contract('ContributionRewardExt', accounts => {
          } catch (ex) {
            helpers.assertVMException(ex);
          }
-       tx = await testSetup.contributionRewardExt.redeemEtherByRewarder(proposalId,otherAvatar.address,1);
-       assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "RedeemEther");
-       assert.equal(tx.logs[0].args._amount, 1);
+       var rewarderMock = await RewarderMock.at(await testSetup.contributionRewardExt.rewarder());
+       tx = await rewarderMock.redeemEtherByRewarder(proposalId,otherAvatar.address,1);
+
+       await testSetup.contributionRewardExt.getPastEvents('RedeemEther', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"RedeemEther");
+             assert.equal(events[0].args._beneficiary,otherAvatar.address);
+             assert.equal(events[0].args._amount,1);
+         });
+
        var vault = await otherAvatar.vault();
        assert.equal(await web3.eth.getBalance(vault),1);
        //cannot redeem more than the proposal reward
        var proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.ethRewardLeft, ethReward - 1);
        try {
-           await testSetup.contributionRewardExt.redeemEtherByRewarder(proposalId,otherAvatar.address,proposal.ethRewardLeft+1);
+           await rewarderMock.redeemEtherByRewarder(proposalId,otherAvatar.address,proposal.ethRewardLeft+1);
            assert(false, 'cannot redeem more than the proposal reward');
         } catch (ex) {
            helpers.assertVMException(ex);
        }
-       await testSetup.contributionRewardExt.redeemEtherByRewarder(proposalId,otherAvatar.address,proposal.ethRewardLeft);
+       await rewarderMock.redeemEtherByRewarder(proposalId,otherAvatar.address,proposal.ethRewardLeft);
        assert.equal(await web3.eth.getBalance(vault),ethReward);
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.ethRewardLeft, 0);
@@ -760,22 +785,28 @@ contract('ContributionRewardExt', accounts => {
          } catch (ex) {
            helpers.assertVMException(ex);
          }
-       tx = await testSetup.contributionRewardExt.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,1);
-       assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "RedeemNativeToken");
-       assert.equal(tx.logs[0].args._amount, 1);
+       tx = await rewarderMock.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,1);
+       await testSetup.contributionRewardExt.getPastEvents('RedeemNativeToken', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"RedeemNativeToken");
+             assert.equal(events[0].args._beneficiary,otherAvatar.address);
+             assert.equal(events[0].args._amount,1);
+         });
 
        assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),1);
        //cannot redeem more than the proposal reward
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.nativeTokenRewardLeft, nativeTokenReward - 1);
        try {
-           await testSetup.contributionRewardExt.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,proposal.nativeTokenRewardLeft+1);
+           await rewarderMock.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,proposal.nativeTokenRewardLeft+1);
            assert(false, 'cannot redeem more than the proposal reward');
         } catch (ex) {
            helpers.assertVMException(ex);
        }
-       await testSetup.contributionRewardExt.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,proposal.nativeTokenRewardLeft);
+       await rewarderMock.redeemNativeTokenByRewarder(proposalId,otherAvatar.address,proposal.nativeTokenRewardLeft);
        assert.equal(await testSetup.org.token.balanceOf(otherAvatar.address),nativeTokenReward);
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.nativeTokenRewardLeft, 0);
@@ -788,27 +819,31 @@ contract('ContributionRewardExt', accounts => {
          } catch (ex) {
            helpers.assertVMException(ex);
          }
-       tx = await testSetup.contributionRewardExt.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,1);
-       assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "RedeemExternalToken");
-       assert.equal(tx.logs[0].args._amount, 1);
+       tx = await rewarderMock.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,1);
+       await testSetup.contributionRewardExt.getPastEvents('RedeemExternalToken', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"RedeemExternalToken");
+             assert.equal(events[0].args._beneficiary,otherAvatar.address);
+             assert.equal(events[0].args._amount,1);
+         });
 
        assert.equal(await testSetup.standardTokenMock.balanceOf(otherAvatar.address),1);
        //cannot redeem more than the proposal reward
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.externalTokenRewardLeft, externalTokenReward - 1);
        try {
-           await testSetup.contributionRewardExt.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,proposal.externalTokenRewardLeft+1);
+           await rewarderMock.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,proposal.externalTokenRewardLeft+1);
            assert(false, 'cannot redeem more than the proposal reward');
         } catch (ex) {
            helpers.assertVMException(ex);
        }
-       await testSetup.contributionRewardExt.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,proposal.externalTokenRewardLeft);
+       await rewarderMock.redeemExternalTokenByRewarder(proposalId,otherAvatar.address,proposal.externalTokenRewardLeft);
        assert.equal(await testSetup.standardTokenMock.balanceOf(otherAvatar.address),externalTokenReward);
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.externalTokenRewardLeft, 0);
-
-
        //redeem reputation
        try {
            await testSetup.contributionRewardExt.redeemReputationByRewarder(proposalId,otherAvatar.address,1,{from:accounts[1]});
@@ -816,22 +851,28 @@ contract('ContributionRewardExt', accounts => {
          } catch (ex) {
            helpers.assertVMException(ex);
          }
-       tx = await testSetup.contributionRewardExt.redeemReputationByRewarder(proposalId,otherAvatar.address,1);
-       assert.equal(tx.logs.length, 1);
-       assert.equal(tx.logs[0].event, "RedeemReputation");
-       assert.equal(tx.logs[0].args._amount, 1);
+       tx = await rewarderMock.redeemReputationByRewarder(proposalId,otherAvatar.address,1);
+       await testSetup.contributionRewardExt.getPastEvents('RedeemReputation', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"RedeemReputation");
+             assert.equal(events[0].args._beneficiary,otherAvatar.address);
+             assert.equal(events[0].args._amount,1);
+         });
 
        assert.equal(await testSetup.org.reputation.balanceOf(otherAvatar.address),1);
        //cannot redeem more than the proposal reward
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.reputationChangeLeft, reputationReward - 1);
        try {
-           await testSetup.contributionRewardExt.redeemReputationByRewarder(proposalId,otherAvatar.address,proposal.reputationChangeLeft+1);
+           await rewarderMock.redeemReputationByRewarder(proposalId,otherAvatar.address,proposal.reputationChangeLeft+1);
            assert(false, 'cannot redeem more than the proposal reward');
         } catch (ex) {
            helpers.assertVMException(ex);
        }
-       await testSetup.contributionRewardExt.redeemReputationByRewarder(proposalId,otherAvatar.address,proposal.reputationChangeLeft);
+       await rewarderMock.redeemReputationByRewarder(proposalId,otherAvatar.address,proposal.reputationChangeLeft);
        assert.equal(await testSetup.org.reputation.balanceOf(otherAvatar.address),reputationReward);
        proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
        assert.equal(proposal.reputationChangeLeft, 0);
@@ -839,7 +880,7 @@ contract('ContributionRewardExt', accounts => {
       });
 
       it("negativ rep change is not allowed for rewarder to set ", async function() {
-        var testSetup = await setup(accounts,false,0,accounts[0]);
+        var testSetup = await setup(accounts,false,0,"RewarderMock");
         var reputationReward = -12;
         var nativeTokenReward = 12;
         var ethReward = 12;

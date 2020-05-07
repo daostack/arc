@@ -14,7 +14,9 @@ const setupContributionRewardExt = async function(
                                             genesisProtocol,
                                             token,
                                             avatarAddress,
-                                            rewarderAddress
+                                            _daoFactoryAddress,
+                                            _packageVersion = [0,1,0],
+                                            _rewarderName = 'Competition'
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
 
@@ -27,7 +29,10 @@ const setupContributionRewardExt = async function(
                             contributionRewardParams.votingMachine.uintArray,
                             contributionRewardParams.votingMachine.voteOnBehalf,
                             helpers.NULL_ADDRESS,
-                            rewarderAddress)
+                            _daoFactoryAddress,
+                            _packageVersion,
+                            _rewarderName
+                            )
                           .encodeABI();
     } else {
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
@@ -38,7 +43,9 @@ const setupContributionRewardExt = async function(
                           [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
                           contributionRewardParams.votingMachine.params,
-                          rewarderAddress)
+                          _daoFactoryAddress,
+                          _packageVersion,
+                          _rewarderName)
                         .encodeABI();
   }
   return contributionRewardParams;
@@ -65,21 +72,13 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
                                                                        [1000,0,0],
                                                                        testSetup.reputationArray);
 
-   var tx = await registration.daoFactory.createInstance(
-                           [0,0,0],
-                           "Competition",
-                           testSetup.proxyAdmin,
-                           Buffer.from(''),
-                           {from:testSetup.proxyAdmin});
-   assert.equal(tx.logs.length, 1);
-   assert.equal(tx.logs[0].event, "ProxyCreated");
-   testSetup.competition = await Competition.at(tx.logs[0].args._proxy);
+
    testSetup.contributionRewardExtParams= await setupContributionRewardExt(
                       accounts,
                       genesisProtocol,
                       tokenAddress,
                       testSetup.org.avatar.address,
-                      testSetup.competition.address);
+                      registration.daoFactory.address);
 
    var permissions = "0x00000000";
    tx = await registration.daoFactory.setSchemes(
@@ -89,10 +88,9 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
                            [helpers.getBytesLength(testSetup.contributionRewardExtParams.initdata)],
                            [permissions],
                            "metaData",{from:testSetup.proxyAdmin});
-
-   testSetup.contributionRewardExt = await ContributionRewardExt.at(tx.logs[1].args._scheme);
-
-   await testSetup.competition.initialize(testSetup.contributionRewardExt.address);
+   testSetup.contributionRewardExt = await ContributionRewardExt.at(tx.logs[2].args._scheme);
+   var competitionAddress = await testSetup.contributionRewardExt.rewarder();
+   testSetup.competition = await Competition.at(competitionAddress);
    testSetup.admin = accounts[0];
 
    return testSetup;
