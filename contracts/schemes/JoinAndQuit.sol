@@ -37,6 +37,12 @@ contract JoinAndQuit is
         uint256 indexed _refund
     );
 
+    event Refund(
+        address indexed _avatar,
+        address indexed _beneficiary,
+        uint256 indexed _refund
+    );
+
     event RedeemReputation(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -214,6 +220,31 @@ contract JoinAndQuit is
         Controller(
         avatar.owner()).mintReputation(reputation, _proposal.proposedMember), "failed to mint reputation");
         emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, reputation);
+    }
+
+    /**
+    * @dev refund refund donator if the the funding goal did not reached till the funding goal deadline.
+    * @return refund the refund amount
+    */
+    function refund() public returns(uint256 refund) {
+       // solhint-disable-next-line not-rely-on-time
+        require(now > fundingGoalDeadline, "can refund only after fundingGoalDeadline");
+        require(
+        (avatar.db(FUNDED_BEFORE_DEADLINE_KEY).hashCompareWithLengthCheck(FUNDED_BEFORE_DEADLINE_VALUE) == false),
+        "can refund only if funding goal not reached");
+        require(fundings[msg.sender].funding > 0, "no funds to refund");
+        refund = fundings[msg.sender].funding;
+        fundings[msg.sender].funding = 0;
+        if (fundingToken == IERC20(0)) {
+            require(
+            Controller(
+            avatar.owner()).sendEther(refund, msg.sender), "send ether failed");
+        } else {
+            require(
+            Controller(
+            avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund), "send token failed");
+        }
+        emit Refund(address(avatar), msg.sender, refund);
     }
 
     /**
