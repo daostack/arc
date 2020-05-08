@@ -224,58 +224,45 @@ contract JoinAndQuit is
 
     /**
     * @dev refund refund donator if the the funding goal did not reached till the funding goal deadline.
-    * @return refund the refund amount
+    * @return refundAmount the refund amount
     */
-    function refund() public returns(uint256 refund) {
+    function refund() public returns(uint256 refundAmount) {
        // solhint-disable-next-line not-rely-on-time
         require(now > fundingGoalDeadline, "can refund only after fundingGoalDeadline");
         require(
         (avatar.db(FUNDED_BEFORE_DEADLINE_KEY).hashCompareWithLengthCheck(FUNDED_BEFORE_DEADLINE_VALUE) == false),
         "can refund only if funding goal not reached");
         require(fundings[msg.sender].funding > 0, "no funds to refund");
-        refund = fundings[msg.sender].funding;
+        refundAmount = fundings[msg.sender].funding;
         fundings[msg.sender].funding = 0;
-        if (fundingToken == IERC20(0)) {
-            require(
-            Controller(
-            avatar.owner()).sendEther(refund, msg.sender), "send ether failed");
-        } else {
-            require(
-            Controller(
-            avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund), "send token failed");
-        }
-        emit Refund(address(avatar), msg.sender, refund);
+        sendToBeneficiary(refundAmount, msg.sender);
+        emit Refund(address(avatar), msg.sender, refundAmount);
     }
 
     /**
     * @dev rageQuit quit from the dao.
     * can be done on any time
     * REFUND = USER_DONATION * CURRENT_DAO_BALANCE / TOTAL_DONATIONS
-    * @return refund the refund amount
+    * @return refundAmount the refund amount
     */
-    function rageQuit() public returns(uint256 refund) {
+    function rageQuit() public returns(uint256 refundAmount) {
         require(rageQuitEnable, "RageQuit disabled");
         require(fundings[msg.sender].funding > 0, "no fund to RageQuit");
         uint256 userDonation = fundings[msg.sender].funding;
         fundings[msg.sender].funding = 0;
         fundings[msg.sender].rageQuit = true;
         if (fundingToken == IERC20(0)) {
-            refund = userDonation.mul(address(avatar.vault()).balance).div(totalDonation);
-            require(
-            Controller(
-            avatar.owner()).sendEther(refund, msg.sender), "send ether failed");
+            refundAmount = userDonation.mul(address(avatar.vault()).balance).div(totalDonation);
         } else {
-            refund = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
-            require(
-            Controller(
-            avatar.owner()).externalTokenTransfer(fundingToken, msg.sender, refund), "send token failed");
+            refundAmount = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
         }
+        sendToBeneficiary(refundAmount, msg.sender);
         uint256 msgSenderReputation = avatar.nativeReputation().balanceOf(msg.sender);
         require(
         Controller(
         avatar.owner()).burnReputation(msgSenderReputation, msg.sender));
         totalDonation = totalDonation.sub(userDonation);
-        emit RageQuit(address(avatar), msg.sender, refund);
+        emit RageQuit(address(avatar), msg.sender, refundAmount);
     }
 
     /**
@@ -298,6 +285,23 @@ contract JoinAndQuit is
             avatar.owner()).
             setDBValue(CommonInterface.FUNDED_BEFORE_DEADLINE_KEY, CommonInterface.FUNDED_BEFORE_DEADLINE_VALUE));
             emit FundedBeforeDeadline(address(avatar));
+        }
+    }
+
+    /**
+    * @dev sendToBeneficiary send amount of eth or token to beneficiary
+    * @param _amount the amount to send
+    * @param _beneficiary the beneficiary
+    */
+    function sendToBeneficiary(uint256 _amount, address payable _beneficiary) private {
+        if (fundingToken == IERC20(0)) {
+            require(
+            Controller(
+            avatar.owner()).sendEther(_amount, _beneficiary), "send ether failed");
+        } else {
+            require(
+            Controller(
+            avatar.owner()).externalTokenTransfer(fundingToken, _beneficiary, _amount), "send token failed");
         }
     }
 
