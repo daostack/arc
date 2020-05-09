@@ -642,4 +642,90 @@ contract('JoinAndQuit', accounts => {
       }
     });
 
+    it("refund", async function() {
+      var testSetup = await setup(accounts);
+      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.minFeeToJoin,{from:accounts[3]});
+      var donatorBalance = await testSetup.standardTokenMock.balanceOf(accounts[3]);
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
+                                                           "description-hash",
+                                                           testSetup.minFeeToJoin,
+                                                           {from:accounts[3]});
+
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
+      assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
+      try {
+         await testSetup.joinAndQuit.refund({from:accounts[3]});
+         assert(false, 'cannot refund before deadline');
+      } catch (ex) {
+         helpers.assertVMException(ex);
+      }
+      await helpers.increaseTime(testSetup.fundingGoalDeadline);
+      tx = await testSetup.joinAndQuit.refund({from:accounts[3]});
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "Refund");
+      assert.equal(tx.logs[0].args._avatar, testSetup.org.avatar.address);
+      assert.equal(tx.logs[0].args._beneficiary, accounts[3]);
+      assert.equal(tx.logs[0].args._refund, testSetup.minFeeToJoin);
+      assert.equal((await testSetup.standardTokenMock.balanceOf(accounts[3])).toString(),donatorBalance.toString());
+    });
+
+    it("refund - cannot if funding goal reached.", async function() {
+      var testSetup = await setup(accounts);
+      await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal+1,{from:accounts[3]});
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
+                                                           "description-hash",
+                                                           testSetup.fundingGoal+1,
+                                                           {from:accounts[3]});
+
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+
+      await helpers.increaseTime(testSetup.fundingGoalDeadline);
+      try {
+         await testSetup.joinAndQuit.refund({from:accounts[3]});
+         assert(false, 'cannot if funding goal reached');
+      } catch (ex) {
+         helpers.assertVMException(ex);
+      }
+    });
+
+    it("refund with eth", async function() {
+      var testSetup = await setup(accounts,true);
+      var tx = await testSetup.joinAndQuit.proposeToJoin(
+                                                           "description-hash",
+                                                           testSetup.minFeeToJoin,
+                                                           {from:accounts[3],value:testSetup.minFeeToJoin});
+
+      //Vote with reputation to trigger execution
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
+      try {
+         await testSetup.joinAndQuit.refund({from:accounts[3]});
+         assert(false, 'cannot refund before deadline');
+      } catch (ex) {
+         helpers.assertVMException(ex);
+      }
+      await helpers.increaseTime(testSetup.fundingGoalDeadline);
+      var balanceBefore = await avatarBalance(testSetup);
+      tx = await testSetup.joinAndQuit.refund({from:accounts[3]});
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "Refund");
+      assert.equal(tx.logs[0].args._avatar, testSetup.org.avatar.address);
+      assert.equal(tx.logs[0].args._beneficiary, accounts[3]);
+      assert.equal(tx.logs[0].args._refund, testSetup.minFeeToJoin);
+      assert.equal(await avatarBalance(testSetup),balanceBefore - testSetup.minFeeToJoin);
+      try {
+         await testSetup.joinAndQuit.refund({from:accounts[3]});
+         assert(false, 'cannot refund twice');
+      } catch (ex) {
+         helpers.assertVMException(ex);
+      }
+    });
+
+
 });
