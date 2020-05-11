@@ -2,6 +2,7 @@ const helpers = require('./helpers');
 const Controller = artifacts.require("./Controller.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
+const Vault = artifacts.require("./Vault.sol");
 const DAOToken   = artifacts.require("./DAOToken.sol");
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
 const ActionMock = artifacts.require('./test/ActionMock.sol');
@@ -407,7 +408,8 @@ contract('Controller', accounts =>  {
       await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('1', "ether")});
       //send some ether from an organization's avatar to the otherAvatar
       var tx = await controller.sendEther(web3.utils.toWei('1', "ether"),otherAvatar.address);
-      await avatar.getPastEvents('SendEther', {
+      var vault = await Vault.at(await avatar.vault());
+      await vault.getPastEvents('SendEther', {
             filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
@@ -415,8 +417,7 @@ contract('Controller', accounts =>  {
         .then(function(events){
             assert.equal(events[0].event,"SendEther");
         });
-      var vault = await avatar.vault();
-      var avatarBalance = await web3.eth.getBalance(vault)/web3.utils.toWei('1', "ether");
+      var avatarBalance = await web3.eth.getBalance(vault.address)/web3.utils.toWei('1', "ether");
       assert.equal(avatarBalance, 0);
       var otherVault = await otherAvatar.vault();
       var otherAvatarBalance = await web3.eth.getBalance(otherVault)/web3.utils.toWei('1', "ether");
@@ -585,16 +586,16 @@ contract('Controller', accounts =>  {
      var globalConstraintsCount =await controller.globalConstraintsCount();
      assert.equal(globalConstraintsCount[0],0);
      var tx = await controller.sendEther(web3.utils.toWei('1', "ether"),otherAvatar.address);
-     await avatar.getPastEvents('SendEther', {
-           filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
-           fromBlock: tx.blockNumber,
-           toBlock: 'latest'
-       })
-       .then(function(events){
-           assert.equal(events[0].event,"SendEther");
-       });
-     var vault = await avatar.vault();
-     var avatarBalance = await web3.eth.getBalance(vault)/web3.utils.toWei('1', "ether");
+     var vault = await Vault.at(await avatar.vault());
+      await vault.getPastEvents('SendEther', {
+            filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"SendEther");
+        });
+     var avatarBalance = await web3.eth.getBalance(vault.address)/web3.utils.toWei('1', "ether");
      assert.equal(avatarBalance, 0);
      var otherVault = await otherAvatar.vault();
      var otherAvatarBalance = await web3.eth.getBalance(otherVault)/web3.utils.toWei('1', "ether");

@@ -2,30 +2,10 @@ pragma solidity ^0.5.17;
 
 import "@daostack/infra-experimental/contracts/Reputation.sol";
 import "./DAOToken.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "./Vault.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
-
-
-//Proxy contracts cannot recive eth via fallback function.
-//For now , we will use this vault to overcome that
-contract Vault is Ownable {
-    event ReceiveEther(address indexed _sender, uint256 _value);
-
-    /**
-    * @dev enables this contract to receive ethers
-    */
-    function() external payable {
-        emit ReceiveEther(msg.sender, msg.value);
-    }
-
-    function sendEther(uint256 _amountInWei, address payable _to) external onlyOwner returns(bool) {
-      // solhint-disable-next-line avoid-call-value
-        (bool success, ) = _to.call.value(_amountInWei)("");
-        require(success, "sendEther failed.");
-    }
-}
 
 
 /**
@@ -41,7 +21,6 @@ contract Avatar is Initializable, Ownable {
     mapping(string=>string) public db;
 
     event GenericCall(address indexed _contract, bytes _data, uint _value, bool _success);
-    event SendEther(uint256 _amountInWei, address indexed _to);
     event ExternalTokenTransfer(address indexed _externalToken, address indexed _to, uint256 _value);
     event ExternalTokenTransferFrom(address indexed _externalToken, address _from, address _to, uint256 _value);
     event ExternalTokenApproval(address indexed _externalToken, address _spender, uint256 _value);
@@ -90,7 +69,6 @@ contract Avatar is Initializable, Ownable {
     returns(bool success, bytes memory returnValue) {
         if (_value > 0) {
             vault.sendEther(_value, address(this));
-            emit SendEther(_value, _contract);
         }
         // solhint-disable-next-line avoid-call-value
         (success, returnValue) = _contract.call.value(_value)(_data);
@@ -105,7 +83,6 @@ contract Avatar is Initializable, Ownable {
     */
     function sendEther(uint256 _amountInWei, address payable _to) external onlyOwner returns(bool) {
         vault.sendEther(_amountInWei, _to);
-        emit SendEther(_amountInWei, _to);
         return true;
     }
 
