@@ -90,6 +90,7 @@ contract Avatar is Initializable, Ownable {
     returns(bool success, bytes memory returnValue) {
         if (_value > 0) {
             vault.sendEther(_value, address(this));
+            emit SendEther(_value, _contract);
         }
         // solhint-disable-next-line avoid-call-value
         (success, returnValue) = _contract.call.value(_value)(_data);
