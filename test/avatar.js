@@ -1,5 +1,6 @@
 const helpers = require('./helpers');
 const Avatar = artifacts.require("./Avatar.sol");
+const Vault = artifacts.require("./Vault.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const ActionMock = artifacts.require('./test/ActionMock.sol');
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
@@ -73,8 +74,15 @@ contract('Avatar',  accounts =>  {
         var avatarBalance =  await web3.eth.getBalance(vault)/web3.utils.toWei('1', "ether");
         assert.equal(avatarBalance,1);
         var tx = await avatar.sendEther(web3.utils.toWei('1', "ether"),otherAvatar.address);
-        assert.equal(tx.logs.length, 1);
-        assert.equal(tx.logs[0].event, "SendEther");
+        var vaultContract = await Vault.at(vault);
+        await vaultContract.getPastEvents('SendEther', {
+              filter: {_addr: avatar.address}, // Using an array means OR: e.g. 20 or 23
+              fromBlock: tx.blockNumber,
+              toBlock: 'latest'
+          })
+          .then(function(events){
+              assert.equal(events[0].event,"SendEther");
+          });
         avatarBalance =await web3.eth.getBalance(vault)/web3.utils.toWei('1', "ether");
         assert.equal(avatarBalance,0);
         var otherVault = await otherAvatar.vault();
