@@ -41,21 +41,27 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
-     * @param _votingMachine the voting machines address to
-     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
-     * @param _voteParamsHash voting machine parameters.
+     * @param _votingParams genesisProtocol parameters
+     * @param _addresses array of addresses
+     *       addresses[0] - _daoFactory DAOFactory instance to instance a votingMachine.
+     *       addresses[1] - _voteOnBehalf  parameter
+     *       addresses[2] - _organization organization
+     *       addresses[3] - _callbacks should fulfill voting callbacks interface
+     *       addresses[4] - _authorizedToPropose only this address allow to propose (unless it is zero)
+     *       addresses[5] - _stakingToken (for GenesisProtocol)
+     * @param _packageVersion packageVersion to instance the votingMachine from.
+     * @param _votingMachineName the votingMachine contract name.
      */
     function initialize(
         Avatar _avatar,
-        IntVoteInterface _votingMachine,
         uint256[11] calldata _votingParams,
-        address _voteOnBehalf,
-        bytes32 _voteParamsHash
+        address[6] calldata _addresses,
+        uint64[3] calldata _packageVersion,
+        string calldata _votingMachineName
     )
     external
     {
-        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
+        super._initializeGovernance(_avatar, _votingParams, _addresses, _packageVersion, _votingMachineName);
     }
 
     /**
@@ -103,7 +109,7 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
         public
         returns(bytes32)
     {
-        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, msg.sender);
         UpgradeProposal memory proposal = UpgradeProposal({
             proposalType: 1,
             upgradeContract: _newController
@@ -135,7 +141,7 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
         public
         returns(bytes32)
     {
-        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, msg.sender);
         require(organizationProposals[proposalId].proposalType == 0);
 
         UpgradeProposal memory proposal = UpgradeProposal({

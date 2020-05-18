@@ -43,57 +43,27 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
-     * @param _votingMachine the voting machines address to
-     * @param _votingParamsRegister genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalfRegister genesisProtocol parameter - valid only if _voteParamsHash is zero
-     * @param _voteRegisterParamsHash voting machine parameters to register scheme.
-     * @param _votingParamsRemove genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalfRemove genesisProtocol parameter - valid only if _voteParamsHash is zero
-     * @param _voteRemoveParamsHash voting machine parameters to remove scheme.
+     * @param _votingParams genesisProtocol parameters
+     * @param _addresses array of addresses
+     *       addresses[0] - _daoFactory DAOFactory instance to instance a votingMachine.
+     *       addresses[1] - _voteOnBehalf  parameter
+     *       addresses[2] - _organization organization
+     *       addresses[3] - _callbacks should fulfill voting callbacks interface
+     *       addresses[4] - _authorizedToPropose only this address allow to propose (unless it is zero)
+     *       addresses[5] - _stakingToken (for GenesisProtocol)
+     * @param _packageVersion packageVersion to instance the votingMachine from.
+     * @param _votingMachineName the votingMachine contract name.
      */
     function initialize(
         Avatar _avatar,
-        IntVoteInterface _votingMachine,
-        uint[11] calldata _votingParamsRegister,
-        address _voteOnBehalfRegister,
-        bytes32 _voteRegisterParamsHash,
-        uint[11] calldata _votingParamsRemove,
-        address _voteOnBehalfRemove,
-        bytes32 _voteRemoveParamsHash
+        uint256[11] calldata _votingParams,
+        address[6] calldata _addresses,
+        uint64[3] calldata _packageVersion,
+        string calldata _votingMachineName
     )
     external
     {
-        super._initialize(_avatar);
-        votingMachine = _votingMachine;
-        if (_voteRegisterParamsHash == bytes32(0)) {
-            //genesisProtocol
-            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
-            voteRegisterParamsHash = genesisProtocol.getParametersHash(_votingParamsRegister, _voteOnBehalfRegister);
-            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
-            genesisProtocol.parameters(voteRegisterParamsHash);
-            if (queuedVoteRequiredPercentage == 0) {
-               //params not set already
-                genesisProtocol.setParameters(_votingParamsRegister, _voteOnBehalfRegister);
-            }
-        } else {
-            //for other voting machines
-            voteRegisterParamsHash = _voteRegisterParamsHash;
-        }
-
-        if (_voteRemoveParamsHash == bytes32(0)) {
-            //genesisProtocol
-            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
-            voteRemoveParamsHash = genesisProtocol.getParametersHash(_votingParamsRemove, _voteOnBehalfRemove);
-            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
-            genesisProtocol.parameters(voteRemoveParamsHash);
-            if (queuedVoteRequiredPercentage == 0) {
-               //params not set already
-                genesisProtocol.setParameters(_votingParamsRemove, _voteOnBehalfRemove);
-            }
-        } else {
-            //for other voting machines
-            voteRemoveParamsHash = _voteRemoveParamsHash;
-        }
+        super._initializeGovernance(_avatar, _votingParams, _addresses, _packageVersion, _votingMachineName);
     }
 
     /**

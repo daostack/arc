@@ -77,10 +77,16 @@ contract JoinAndQuit is
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
-     * @param _votingMachine the voting machines address to
-     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
-     * @param _voteParamsHash voting machine parameters.
+     * @param _votingParams genesisProtocol parameters
+     * @param _addresses array of addresses
+     *       addresses[0] - _daoFactory DAOFactory instance to instance a votingMachine.
+     *       addresses[1] - _voteOnBehalf  parameter
+     *       addresses[2] - _organization organization
+     *       addresses[3] - _callbacks should fulfill voting callbacks interface
+     *       addresses[4] - _authorizedToPropose only this address allow to propose (unless it is zero)
+     *       addresses[5] - _stakingToken (for GenesisProtocol)
+     * @param _packageVersion packageVersion to instance the votingMachine from.
+     * @param _votingMachineName the votingMachine contract name.
      * @param _fundingToken the funding token - if this is zero the donation will be in native token ETH
      * @param _minFeeToJoin minimum fee required to join
      * @param _memberReputation the repution which will be allocated for members
@@ -91,10 +97,10 @@ contract JoinAndQuit is
      */
     function initialize(
         Avatar _avatar,
-        IntVoteInterface _votingMachine,
         uint256[11] calldata _votingParams,
-        address _voteOnBehalf,
-        bytes32 _voteParamsHash,
+        address[6] calldata _addresses,
+        uint64[3] calldata _packageVersion,
+        string calldata _votingMachineName,
         IERC20 _fundingToken,
         uint256 _minFeeToJoin,
         uint256 _memberReputation,
@@ -104,7 +110,7 @@ contract JoinAndQuit is
     )
     external
     {
-        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
+        super._initializeGovernance(_avatar, _votingParams, _addresses, _packageVersion, _votingMachineName);
         fundingToken = _fundingToken;
         minFeeToJoin = _minFeeToJoin;
         memberReputation = _memberReputation;
@@ -177,7 +183,7 @@ contract JoinAndQuit is
         } else {
             fundingToken.safeTransferFrom(proposer, address(this), _feeAmount);
         }
-        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, proposer, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, proposer);
 
         Proposal memory proposal = Proposal({
             accepted: false,
