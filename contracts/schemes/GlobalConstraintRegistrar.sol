@@ -10,12 +10,12 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  * @dev The scheme is used to register or remove new global constraints
  */
 contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
+
     event NewGlobalConstraintsProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address indexed _intVoteInterface,
         address _gc,
-        bytes32 _voteToRemoveParams,
         string _descriptionHash
     );
 
@@ -29,23 +29,20 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
 
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param);
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
-    event D(bool x);
 
     // The struct that holds the information of a global constraint proposed to be added or removed.
     struct GCProposal {
         address gc; // The address of the global constraint contract.
         bool addGC; // true: add a GC, false: remove a GC.
-        bytes32 voteToRemoveParams; // Voting parameters for removing this GC.
+        IntVoteInterface votingMachineToRemove; // voting machine to remove the GC.
     }
 
     // GCProposal by avatar and proposalId
     mapping(bytes32=>GCProposal) public organizationProposals;
 
-    // voteToRemoveParams hash by avatar and proposal.gc
-    mapping(address=>bytes32) public voteToRemoveParams;
+    // votingMachineToRemove  by avatar and proposal.gc
+    mapping(address=>IntVoteInterface) public votingMachineToRemove;
 
-    DAOFactory public daoFactory;
-    address[6] public addresses;
     uint64[3] public packageVersion;
     string public votingMachineName;
 
@@ -104,7 +101,7 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
         // Adding a GC
             if (proposal.addGC) {
                 retVal = controller.addGlobalConstraint(proposal.gc);
-                voteToRemoveParams[proposal.gc] = proposal.voteToRemoveParams;
+                votingMachineToRemove[proposal.gc] = proposal.votingMachineToRemove;
             }
         // Removing a GC
             if (!proposal.addGC) {
@@ -118,30 +115,58 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
     /**
     * @dev propose to add a new global constraint:
     * @param _gc the address of the global constraint that is being proposed
-    * @param _voteToRemoveParams the conditions (on the voting machine) for removing this global constraint
     * @param _descriptionHash proposal's description hash
+    * @param _votingParams genesisProtocol parameters -
+    *        the conditions (on the voting machine) for removing this global constraint
+    * @param _addresses array of addresses - the conditions (on the voting machine) for removing this global constraint
+    *       addresses[0] - _daoFactory DAOFactory instance to instance a votingMachine.
+    *       addresses[1] - _voteOnBehalf  parameter
+    *       addresses[2] - _organization organization
+    *       addresses[3] - _callbacks should fulfill voting callbacks interface
+    *       addresses[4] - _authorizedToPropose only this address allow to propose (unless it is zero)
+    *       addresses[5] - _stakingToken (for GenesisProtocol)
     * @return bytes32 -the proposal id
     */
     function proposeGlobalConstraint(
     address _gc,
-    string memory _descriptionHash,
+    string calldata _descriptionHash,
     uint256[11] calldata _votingParams,
-    address[6] calldata _addresses,
-    uint64[3] calldata _packageVersion,
-    string calldata _votingMachineName)
-    public
+    address[6] calldata _addresses)
+    external
     returns(bytes32)
     {
         bytes32 proposalId = votingMachine.propose(2, msg.sender);
+        //instance voting machine to remove this GC.
+        require(_addresses[0] != address(0), "daoFactory cannot be zero");
+        bytes memory initData;
+        if (votingMachineName.hashCompareWithLengthCheck("GenesisProtocol")) {
+            initData = abi.encodeWithSignature(
+                GENESIS_PROTOCOL_INIT_FUNC_SIGNATURE,
+                _addresses[5],
+                _votingParams,
+                _addresses[1],
+                _addresses[2],
+                _addresses[3],
+                _addresses[4]);
+        } else {
+            initData = abi.encodeWithSignature(
+                    ABSOLUTE_VOTE_INIT_FUNC_SIGNATURE,
+                    _votingParams[0],
+                    _addresses[1],
+                    _addresses[2],
+                    _addresses[3],
+                    _addresses[4]);
+        }
+        votingMachineToRemove[_gc] = IntVoteInterface(address(DAOFactory(_addresses[0]).createInstance(
+                            packageVersion,
+                            votingMachineName,
+                            address(avatar),
+                            initData)));
 
         GCProposal memory proposal = GCProposal({
             gc: _gc,
             addGC: true,
-            voteToRemoveParams: _voteToRemoveParams,
-            votingParams: _votingParams,
-            addresses: _addresses,
-            packageVersion: _packageVersion,
-            _votingMachineName:
+            votingMachineToRemove: votingMachineToRemove[_gc]
         });
 
         organizationProposals[proposalId] = proposal;
@@ -150,7 +175,6 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
             proposalId,
             address(votingMachine),
             _gc,
-            _voteToRemoveParams,
             _descriptionHash
         );
         proposalsBlockNumber[proposalId] = block.number;
@@ -166,24 +190,19 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
     function proposeToRemoveGC(address _gc, string memory _descriptionHash) public returns(bytes32) {
         Controller controller = Controller(avatar.owner());
         require(controller.isGlobalConstraintRegistered(_gc), "proposed gc is not register");
-        bytes32 proposalId = votingMachine.propose(
-        2,
-        voteToRemoveParams[_gc],
-        msg.sender,
-        address(avatar)
-        );
+        bytes32 proposalId = votingMachineToRemove[_gc].propose(2, msg.sender);
 
         GCProposal memory proposal = GCProposal({
             gc: _gc,
             addGC: false,
-            voteToRemoveParams: 0
+            votingMachineToRemove:IntVoteInterface(0)
         });
 
         organizationProposals[proposalId] = proposal;
         emit RemoveGlobalConstraintsProposal(
         address(avatar),
         proposalId,
-        address(votingMachine),
+        address(votingMachineToRemove[_gc]),
         _gc,
         _descriptionHash);
 
