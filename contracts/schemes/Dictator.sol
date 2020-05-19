@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol
  * @title A scheme for register other scheme with full permission.
  */
 
-contract BackDoor is Initializable, Ownable {
+contract Dictator is Initializable, Ownable {
 
     Avatar public avatar;
 

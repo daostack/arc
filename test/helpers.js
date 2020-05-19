@@ -36,7 +36,7 @@ const VoteInOrganization = artifacts.require("./VoteInOrganizationScheme.sol");
 const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallbacksMock.sol");
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
-const BackDoor = artifacts.require("./BackDoor.sol");
+const Dictator = artifacts.require("./Dictator.sol");
 
 
 const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -156,7 +156,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.joinAndQuit = await JoinAndQuit.new();
   registration.fundingRequest = await FundingRequest.new();
   registration.rewarderMock = await RewarderMock.new();
-  registration.backDoor = await BackDoor.new();
+  registration.dictator = await Dictator.new();
 
 
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
@@ -187,7 +187,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   await implementationDirectory.setImplementation("ARCVotingMachineCallbacksMock",registration.arcVotingMachineCallbacksMock.address);
   await implementationDirectory.setImplementation("JoinAndQuit",registration.joinAndQuit.address);
   await implementationDirectory.setImplementation("FundingRequest",registration.fundingRequest.address);
-  await implementationDirectory.setImplementation("BackDoor",registration.backDoor.address);
+  await implementationDirectory.setImplementation("Dictator",registration.dictator.address);
 
 
   registration.implementationDirectory = implementationDirectory;
