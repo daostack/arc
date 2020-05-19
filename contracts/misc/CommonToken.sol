@@ -15,7 +15,7 @@ contract CommonToken is StandaloneERC20 {
      *
      * See {ERC20-_burn}.
      */
-    function burn(uint256 amount) public onlyMinter {
-        _burn(_msgSender(), amount);
+    function burn(address _account, uint256 _amount) public onlyMinter {
+        _burn(_account, _amount);
     }
 }
