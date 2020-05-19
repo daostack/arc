@@ -44,6 +44,11 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
     // voteToRemoveParams hash by avatar and proposal.gc
     mapping(address=>bytes32) public voteToRemoveParams;
 
+    DAOFactory public daoFactory;
+    address[6] public addresses;
+    uint64[3] public packageVersion;
+    string public votingMachineName;
+
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
@@ -68,6 +73,8 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
     external
     {
         super._initializeGovernance(_avatar, _votingParams, _addresses, _packageVersion, _votingMachineName);
+        packageVersion = _packageVersion;
+        votingMachineName = _votingMachineName;
     }
 
     /**
@@ -117,8 +124,11 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
     */
     function proposeGlobalConstraint(
     address _gc,
-    bytes32 _voteToRemoveParams,
-    string memory _descriptionHash)
+    string memory _descriptionHash,
+    uint256[11] calldata _votingParams,
+    address[6] calldata _addresses,
+    uint64[3] calldata _packageVersion,
+    string calldata _votingMachineName)
     public
     returns(bytes32)
     {
@@ -127,7 +137,11 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
         GCProposal memory proposal = GCProposal({
             gc: _gc,
             addGC: true,
-            voteToRemoveParams: _voteToRemoveParams
+            voteToRemoveParams: _voteToRemoveParams,
+            votingParams: _votingParams,
+            addresses: _addresses,
+            packageVersion: _packageVersion,
+            _votingMachineName:
         });
 
         organizationProposals[proposalId] = proposal;
