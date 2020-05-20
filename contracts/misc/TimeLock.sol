@@ -1,7 +1,7 @@
 pragma solidity ^0.5.17;
 
 
-contract DxDAOTimeLock {
+contract TimeLock {
 
     address public owner;
     uint256 public releaseTime;
