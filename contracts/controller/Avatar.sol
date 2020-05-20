@@ -66,7 +66,9 @@ contract Avatar is Ownable {
     * @return bool which represents success
     */
     function sendEther(uint256 _amountInWei, address payable _to) public onlyOwner returns(bool) {
-        _to.transfer(_amountInWei);
+       // solhint-disable-next-line avoid-call-value
+        (bool success, ) = _to.call.value(_amountInWei)("");
+        require(success, "sendEther failed.");
         emit SendEther(_amountInWei, _to);
         return true;
     }
