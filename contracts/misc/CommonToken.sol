@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.so
 
 /**
  * @title CommonToken, base on zeppelin contract.
- * @dev ERC20 compatible token. It is a mintable, burnable token(onlyOwner)
+ * @dev ERC20 compatible token. It is a mintable, burnable token(onlyMinter)
  */
 contract CommonToken is StandaloneERC20 {
 
