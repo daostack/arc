@@ -9,7 +9,6 @@ var constants = require('../test/constants');
 
 let reputation, avatar,token,controller,etherGC;
 const setup = async function () {
-  var _controller;
   token  = await DAOToken.new("TEST","TST",0);
   // set up a reputation system
   reputation = await Reputation.new();
@@ -52,8 +51,8 @@ contract('EtherGC', accounts =>  {
     catch(ex){
       helpers.assertVMException(ex);
     }
-
-    for (var i = 0 ;i< 10;i++) {
+    var i;
+    for (i = 0 ;i< 10;i++) {
       //increment 10 blocks in ganache
       //use mint rep to increment blocks number in ganache.
       tx = await reputation.mint(accounts[0],1);
@@ -64,11 +63,11 @@ contract('EtherGC', accounts =>  {
     var periodIndex = Math.floor((tx.receipt.blockNumber - startBlock.toNumber())/10);
     await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('10', "ether")});
 
-    for (var i = 0 ;i< 10;i++) {
+    for (i = 0 ;i< 10;i++) {
       //increment 10 blocks or till the period index is changed (in ganache)
       //use mint rep to increment blocks number in ganache.
       tx = await reputation.mint(accounts[0],1);
-      if (Math.floor((tx.receipt.blockNumber - startBlock.toNumber())/10) != periodIndex) {
+      if (Math.floor((tx.receipt.blockNumber - startBlock.toNumber())/10) !== periodIndex) {
         break;
       }
     }
