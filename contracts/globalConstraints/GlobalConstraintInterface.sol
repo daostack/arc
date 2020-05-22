@@ -11,5 +11,5 @@ contract GlobalConstraintInterface {
      * @dev when return if this globalConstraints is pre, post or both.
      * @return CallPhase enum indication  Pre, Post or PreAndPost.
      */
-    function when() public returns(CallPhase);
+    function when() public pure returns(CallPhase);
 }
