@@ -4,6 +4,7 @@ const EtherGC = artifacts.require('./globalConstraints/EtherGC.sol');
 const Controller = artifacts.require("./Controller.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const Avatar = artifacts.require("./Avatar.sol");
+const ActionMock = artifacts.require("./ActionMock.sol");
 var constants = require('../test/constants');
 
 
@@ -73,4 +74,64 @@ contract('EtherGC', accounts =>  {
     }
      await controller.sendEther(web3.utils.toWei('4', "ether"), accounts[2],avatar.address);
     });
+
+    it("genericCall check", async () => {
+
+      await setup();
+      try {
+       await etherGC.initialize(avatar.address,10,web3.utils.toWei('5', "ether")); //10 blocks ,5 eth
+       assert(false,"cannpt init twice ");
+     }   catch(ex){
+       helpers.assertVMException(ex);
+      }
+      var startBlock = await etherGC.startBlock();
+
+      await controller.addGlobalConstraint(etherGC.address,helpers.NULL_HASH,avatar.address);
+      //move 10 ether to avatar
+      await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('10', "ether")});
+
+      let actionMock =  await ActionMock.new();
+      let a = 7;
+      let b = actionMock.address;
+      let c = "0x1234";
+      const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.test(a,b,c).encodeABI();
+      await controller.genericCall(actionMock.address,encodeABI,avatar.address,web3.utils.toWei('1', "ether"));
+      await controller.genericCall(actionMock.address,encodeABI,avatar.address,web3.utils.toWei('4', "ether"));
+
+      try {
+        await controller.sendEther(web3.utils.toWei('1', "ether"), accounts[2],avatar.address);
+        assert(false,"sendEther should fail due to the etherGC global constraint ");
+      }
+      catch(ex){
+        helpers.assertVMException(ex);
+      }
+
+      try {
+        await controller.genericCall(actionMock.address,encodeABI,avatar.address,web3.utils.toWei('1', "ether"));
+        assert(false,"sendEther should fail due to the etherGC global constraint ");
+      }
+      catch(ex){
+        helpers.assertVMException(ex);
+      }
+      var i;
+      for (i = 0 ;i< 10;i++) {
+        //increment 10 blocks in ganache
+        //use mint rep to increment blocks number in ganache.
+        tx = await reputation.mint(accounts[0],1);
+      }
+      await controller.genericCall(actionMock.address,encodeABI,avatar.address,web3.utils.toWei('1', "ether"));
+      var tx = await controller.genericCall(actionMock.address,encodeABI,avatar.address,web3.utils.toWei('1', "ether"));
+      var periodIndex = Math.floor((tx.receipt.blockNumber - startBlock.toNumber())/10);
+      await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('10', "ether")});
+
+      for (i = 0 ;i< 10;i++) {
+        //increment 10 blocks or till the period index is changed (in ganache)
+        //use mint rep to increment blocks number in ganache.
+        tx = await reputation.mint(accounts[0],1);
+        if (Math.floor((tx.receipt.blockNumber - startBlock.toNumber())/10) !== periodIndex) {
+          break;
+        }
+      }
+       await controller.genericCall(actionMock.address,encodeABI,avatar.address,web3.utils.toWei('1', "ether"));
+      });
 });
