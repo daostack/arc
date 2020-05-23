@@ -58,12 +58,10 @@ contract EtherGC is GlobalConstraintInterface {
      */
     function post(address, bytes32, bytes32) public returns(bool) {
         require(msg.sender == avatar.owner(), "only avatar owner is authorize to call");
-        uint256 currentPeriodIndex = (block.number - startBlock)/periodLength;
-
         if (avatarBalanceBefore > address(avatar).balance) {
-            uint256 ethSentAmount = avatarBalanceBefore.sub(address(avatar).balance);
+            uint256 currentPeriodIndex = (block.number - startBlock)/periodLength;
             totalAmountSentPerPeriod[currentPeriodIndex] =
-            totalAmountSentPerPeriod[currentPeriodIndex].add(ethSentAmount);
+            totalAmountSentPerPeriod[currentPeriodIndex].add(avatarBalanceBefore.sub(address(avatar).balance));
             require(totalAmountSentPerPeriod[currentPeriodIndex] <= amountAllowedPerPeriod,
             "Violation of Global constraint EtherGC:amount sent exceed in current period");
         }
