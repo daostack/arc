@@ -8,6 +8,7 @@ var constants = require('../test/constants');
 
 
 let reputation, avatar,token,controller,reputationGC;
+var periodLengthConst = 1000;
 const setup = async function (accounts) {
   token  = await DAOToken.new("TEST","TST",0);
   // set up a reputation system
@@ -19,7 +20,7 @@ const setup = async function (accounts) {
   reputationGC = await ReputationGC.new();
   //mint 1000 reputation before the global constraint registration
   await controller.mintReputation(1000, accounts[2],avatar.address);
-  await reputationGC.initialize(avatar.address,10,5); //10 blocks ,5%
+  await reputationGC.initialize(avatar.address,periodLengthConst,5); //1000 seconds ,5%
 };
 
 contract('ReputationGC', accounts =>  {
@@ -27,22 +28,21 @@ contract('ReputationGC', accounts =>  {
       await setup(accounts);
       assert.equal(await reputationGC.avatar(),avatar.address);
       assert.equal(await reputationGC.percentageAllowedPerPeriod(),5);
-      assert.equal(await reputationGC.periodLength(),10);
+      assert.equal(await reputationGC.periodLength(),periodLengthConst);
     });
 
   it("mint/burn reputation check", async () => {
 
     await setup(accounts);
     try {
-     await reputationGC.initialize(avatar.address,10,5); //10 blocks ,5%
+     await reputationGC.initialize(avatar.address,periodLengthConst,5); //1000 seconds ,5%
      assert(false,"cannpt init twice ");
    }   catch(ex){
      helpers.assertVMException(ex);
     }
-    var startBlock = await reputationGC.startBlock();
-
-
+    var startTime = await reputationGC.startTime();
     await controller.addGlobalConstraint(reputationGC.address,helpers.NULL_HASH,avatar.address);
+
 
     try {
       //try to mint more than 5 percentage
@@ -64,7 +64,7 @@ contract('ReputationGC', accounts =>  {
       helpers.assertVMException(ex);
     }
 
-    var tx = await controller.burnReputation(50, accounts[2],avatar.address);
+    await controller.burnReputation(50, accounts[2],avatar.address);
     assert.equal(await reputation.totalSupply(),1000);
 
     try {
@@ -74,21 +74,14 @@ contract('ReputationGC', accounts =>  {
     catch(ex){
       helpers.assertVMException(ex);
     }
+    var diff = ((await web3.eth.getBlock("latest")).timestamp - startTime.toNumber())% periodLengthConst;
+    //increment time for next period
+    helpers.increaseTime(periodLengthConst-diff);
 
-    var periodIndex = Math.floor((tx.receipt.blockNumber - startBlock.toNumber())/10);
-    var i;
-    for (i = 0 ;i< 10;i++) {
-      //increment 10 blocks or till the period index is changed (in ganache)
-      //use token mint to increment blocks number in ganache.
-      tx = await token.mint(accounts[0],1);
-      if (Math.floor((tx.receipt.blockNumber - startBlock.toNumber())/10) !== periodIndex) {
-        break;
-      }
-    }
     await controller.mintReputation(10, accounts[2],avatar.address);
     assert.equal(await reputation.totalSupply(),1010);
 
-    tx = await controller.burnReputation(50, accounts[2],avatar.address);
+    await controller.burnReputation(50, accounts[2],avatar.address);
     assert.equal(await reputation.totalSupply(),960);
 
     try {
@@ -99,15 +92,9 @@ contract('ReputationGC', accounts =>  {
       helpers.assertVMException(ex);
     }
 
-    periodIndex = Math.floor((tx.receipt.blockNumber - startBlock.toNumber())/10);
-    for (i = 0 ;i< 10;i++) {
-      //increment 10 blocks or till the period index is changed (in ganache)
-      //use token mint to increment blocks number in ganache.
-      tx = await token.mint(accounts[0],1);
-      if (Math.floor((tx.receipt.blockNumber - startBlock.toNumber())/10) !== periodIndex) {
-        break;
-      }
-    }
+    diff = ((await web3.eth.getBlock("latest")).timestamp - startTime.toNumber())% periodLengthConst;
+    //increment time for next period
+    helpers.increaseTime(periodLengthConst-diff);
     await controller.burnReputation(10, accounts[2],avatar.address);
     assert.equal(await reputation.totalSupply(),950);
 

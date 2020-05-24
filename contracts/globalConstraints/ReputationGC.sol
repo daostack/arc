@@ -12,19 +12,22 @@ import "../controller/Avatar.sol";
 contract ReputationGC is GlobalConstraintInterface {
     using SafeMath for uint256;
 
-    uint256 public periodLength; //the period length in blocks units
+    uint256 public periodLength; //the period length in seconds
     uint256 public percentageAllowedPerPeriod;
     Avatar public avatar;
-    uint256 public startBlock;
+    uint256 public startTime;
     uint256 public totalRepSupplyBefore;
+
     // a mapping from period indexes to amounts
     mapping(uint256=>uint256) public totalRepMintedPerPeriod;
     mapping(uint256=>uint256) public totalRepBurnedPerPeriod;
+    // a mapping from period to totalSupply
+    mapping(uint256=>uint256) public totalRepSupplyPerPeriod;
 
   /**
    * @dev initialize
    * @param _avatar the avatar to enforce the constraint on
-   * @param _periodLength the periodLength in blocks units
+   * @param _periodLength the periodLength in seconds
    * @param _percentageAllowedPerPeriod the amount of reputation to constraint for each period (brun and mint)
    */
     function initialize(
@@ -40,7 +43,8 @@ contract ReputationGC is GlobalConstraintInterface {
         avatar = _avatar;
         periodLength = _periodLength;
         percentageAllowedPerPeriod = _percentageAllowedPerPeriod;
-        startBlock = block.number;
+        // solhint-disable-next-line not-rely-on-time
+        startTime = now;
     }
 
     /**
@@ -50,6 +54,12 @@ contract ReputationGC is GlobalConstraintInterface {
     function pre(address, bytes32, bytes32) public returns(bool) {
         require(msg.sender == avatar.owner(), "only avatar owner is authorize to call");
         totalRepSupplyBefore = (avatar.nativeReputation()).totalSupply();
+        // solhint-disable-next-line not-rely-on-time
+        uint256 currentPeriodIndex = (now - startTime)/periodLength;
+        if (totalRepSupplyPerPeriod[currentPeriodIndex] == 0) {
+            totalRepSupplyPerPeriod[currentPeriodIndex] = totalRepSupplyBefore;
+        }
+
         return true;
     }
 
@@ -62,10 +72,12 @@ contract ReputationGC is GlobalConstraintInterface {
         require(msg.sender == avatar.owner(), "only avatar owner is authorize to call");
         uint256 currentRepTotalSupply = (avatar.nativeReputation()).totalSupply();
         if (totalRepSupplyBefore != currentRepTotalSupply) {
-            uint256 currentPeriodIndex = (block.number - startBlock)/periodLength;
-            uint256 periodBlockReference = startBlock + (currentPeriodIndex * periodLength);
-            uint256 repAllowedForCurrentPeriod =
-            ((avatar.nativeReputation()).totalSupplyAt(periodBlockReference)).mul(percentageAllowedPerPeriod).div(100);
+          // solhint-disable-next-line not-rely-on-time
+            uint256 currentPeriodIndex = (now - startTime)/periodLength;
+            uint256 repAllowedForCurrentPeriod = totalRepSupplyPerPeriod[currentPeriodIndex]
+            .mul(percentageAllowedPerPeriod)
+            .div(100);
+
             if (totalRepSupplyBefore > currentRepTotalSupply) {
                 //reputation was burned
                 uint256 burnedReputation = totalRepSupplyBefore.sub(currentRepTotalSupply);
@@ -74,7 +86,7 @@ contract ReputationGC is GlobalConstraintInterface {
 
                 require(totalRepBurnedPerPeriod[currentPeriodIndex] <= repAllowedForCurrentPeriod,
                 "Violation of Global constraint ReputationGC:amount of reputation burned exceed in current period");
-            } else if (totalRepSupplyBefore < currentRepTotalSupply) {
+            } else {
                 // reputation was minted
                 uint256 mintedReputation = currentRepTotalSupply.sub(totalRepSupplyBefore);
                 totalRepMintedPerPeriod[currentPeriodIndex] =
@@ -83,6 +95,7 @@ contract ReputationGC is GlobalConstraintInterface {
                 "Violation of Global constraint ReputationGC:amount of reputation minted exceed in current period");
             }
         }
+        totalRepSupplyBefore = 0; //save gas
         return true;
     }
 

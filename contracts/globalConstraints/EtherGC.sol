@@ -12,10 +12,10 @@ import "../controller/Avatar.sol";
 contract EtherGC is GlobalConstraintInterface {
     using SafeMath for uint256;
 
-    uint256 public periodLength; //the period length in blocks units
+    uint256 public periodLength; //the period length in seconds
     uint256 public amountAllowedPerPeriod;
     Avatar public avatar;
-    uint256 public startBlock;
+    uint256 public startTime;
     uint256 public avatarBalanceBefore;
     // a mapping from period indexes to amounts
     mapping(uint256=>uint256) public totalAmountSentPerPeriod;
@@ -23,7 +23,7 @@ contract EtherGC is GlobalConstraintInterface {
   /**
    * @dev initialize
    * @param _avatar the avatar to enforce the constraint on
-   * @param _periodLength the periodLength in blocks units
+   * @param _periodLength the periodLength in seconds
    * @param _amountAllowedPerPeriod the amount of eth to constraint for each period
    */
     function initialize(
@@ -38,7 +38,8 @@ contract EtherGC is GlobalConstraintInterface {
         avatar = _avatar;
         periodLength = _periodLength;
         amountAllowedPerPeriod = _amountAllowedPerPeriod;
-        startBlock = block.number;
+        // solhint-disable-next-line not-rely-on-time
+        startTime = now;
     }
 
     /**
@@ -59,12 +60,14 @@ contract EtherGC is GlobalConstraintInterface {
     function post(address, bytes32, bytes32) public returns(bool) {
         require(msg.sender == avatar.owner(), "only avatar owner is authorize to call");
         if (avatarBalanceBefore > address(avatar).balance) {
-            uint256 currentPeriodIndex = (block.number - startBlock)/periodLength;
+          // solhint-disable-next-line not-rely-on-time
+            uint256 currentPeriodIndex = (now - startTime)/periodLength;
             totalAmountSentPerPeriod[currentPeriodIndex] =
             totalAmountSentPerPeriod[currentPeriodIndex].add(avatarBalanceBefore.sub(address(avatar).balance));
             require(totalAmountSentPerPeriod[currentPeriodIndex] <= amountAllowedPerPeriod,
             "Violation of Global constraint EtherGC:amount sent exceed in current period");
         }
+        avatarBalanceBefore = 0; //save gas
         return true;
     }
 
