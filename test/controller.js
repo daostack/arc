@@ -105,11 +105,37 @@ contract('Controller', accounts =>  {
         assert.equal(tx.logs[0].event, "RegisterScheme");
     });
 
-    it("register schemes - check permissions for register new scheme", async () => {
+    it("register schemes - check permissions for register new scheme 0-7", async () => {
       // Check scheme has at least the permissions it is changing, and at least the current permissions.
       var i,j;
     //  controller;
-      for(j = 0; j <= 15; j++ ){
+      for(j = 0; j <= 7; j++ ){
+        //registered scheme has already permission to register(2)
+        controller = await setup(accounts,'0x'+uint32.toHex(j|2));
+        var  register;
+        for(i = 0; i <= 15; i++ ){
+          register = true;
+          try {
+                await controller.registerScheme(accounts[1],'0x'+uint32.toHex(i));
+              } catch (ex) {
+                //registered scheme has already permission to register(2) and is register(1).
+                assert.notEqual(i&(~(j|3),0));
+                register = false;
+              }
+              if (register){
+                await controller.unregisterScheme(accounts[1]);
+                register= false;
+              }
+            }
+        }
+    });
+
+
+    it("register schemes - check permissions for register new scheme 7-15", async () => {
+      // Check scheme has at least the permissions it is changing, and at least the current permissions.
+      var i,j;
+    //  controller;
+      for(j = 7; j <= 15; j++ ){
         //registered scheme has already permission to register(2)
         controller = await setup(accounts,'0x'+uint32.toHex(j|2));
         var  register;
@@ -158,7 +184,7 @@ contract('Controller', accounts =>  {
         assert.equal(tx.logs.length, 0);
     });
 
-    it("unregister schemes - check permissions unregister scheme", async () => {
+    it("unregister schemes - check permissions unregister scheme 0-7", async () => {
       // Check scheme has at least the permissions it is changing, and at least the current permissions.
       //1. setup
       controller = await setup(accounts);
@@ -167,7 +193,7 @@ contract('Controller', accounts =>  {
       var tx;
       var registeredScheme = accounts[1];
       var unregisteredScheme = accounts[2];
-      for(i = 0; i <= 15; i++ ){
+      for(i = 0; i <= 7; i++ ){
         //registered scheme has already permission to register(2)
         tx = await controller.registerScheme(registeredScheme,'0x'+uint32.toHex(i|3));
         assert.equal(tx.logs.length, 1);
@@ -194,6 +220,43 @@ contract('Controller', accounts =>  {
          }
        }
      });
+
+     it("unregister schemes - check permissions unregister scheme 7-15", async () => {
+       // Check scheme has at least the permissions it is changing, and at least the current permissions.
+       //1. setup
+       controller = await setup(accounts);
+       //2. account[0] register schemes ,on account[1] with variables permissions which could unregister other schemes.
+       var i,j;
+       var tx;
+       var registeredScheme = accounts[1];
+       var unregisteredScheme = accounts[2];
+       for(i = 7; i <= 15; i++ ){
+         //registered scheme has already permission to register(2)
+         tx = await controller.registerScheme(registeredScheme,'0x'+uint32.toHex(i|3));
+         assert.equal(tx.logs.length, 1);
+         assert.equal(tx.logs[0].event, "RegisterScheme");
+         for(j = 0; j <= 15; j++ ){
+           tx = await controller.registerScheme(unregisteredScheme,'0x'+uint32.toHex(j));
+           assert.equal(tx.logs.length, 1);
+           assert.equal(tx.logs[0].event, "RegisterScheme");
+           //try to unregisterScheme
+           if (j&(~(i|3))) {
+             //unregister should fail
+             try {
+              await controller.unregisterScheme(unregisteredScheme,{ from: registeredScheme });
+              assert(false, "scheme with permission " +uint32.toHex(i|3)+ " should not be able to unregister scheme with permission"+uint32.toHex(j));
+               } catch (ex) {
+                   helpers.assertVMException(ex);
+               }
+            }else{
+              //unregister should succeed
+             tx = await controller.unregisterScheme(unregisteredScheme,{ from: registeredScheme });
+             assert.equal(tx.logs.length, 1);
+             assert.equal(tx.logs[0].event, "UnregisterScheme");
+            }
+          }
+        }
+      });
 
      it("unregister self", async () => {
        var tx;
