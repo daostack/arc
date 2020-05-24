@@ -114,17 +114,12 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
         string memory _descriptionHash
     )
     public
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
         // propose
         require(_scheme != address(0), "scheme cannot be zero");
 
-        bytes32 proposalId = votingMachine.propose(
-            2,
-            voteRegisterParamsHash,
-            msg.sender,
-            address(avatar)
-        );
+        proposalId = votingMachine.propose(2, msg.sender);
 
         SchemeProposal memory proposal = SchemeProposal({
             scheme: _scheme,
@@ -141,7 +136,6 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
         );
         organizationProposals[proposalId] = proposal;
         proposalsBlockNumber[proposalId] = block.number;
-        return proposalId;
     }
 
     /**
@@ -152,14 +146,13 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     */
     function proposeToRemoveScheme(address _scheme, string memory _descriptionHash)
     public
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
         require(_scheme != address(0), "scheme cannot be zero");
 
-        bytes32 proposalId = votingMachine.propose(2, voteRemoveParamsHash, msg.sender, address(avatar));
+        proposalId = votingMachine.propose(2, msg.sender);
         organizationProposals[proposalId].scheme = _scheme;
         emit RemoveSchemeProposal(address(avatar), proposalId, address(votingMachine), _scheme, _descriptionHash);
         proposalsBlockNumber[proposalId] = block.number;
-        return proposalId;
     }
 }

@@ -109,14 +109,14 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
     uint256 _vote,
     string memory _descriptionHash)
     public
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
         (uint256 minVote, uint256 maxVote) = _originalIntVote.getAllowedRangeOfChoices();
         require(_vote <= maxVote && _vote >= minVote, "vote should be in the allowed range");
         require(_vote <= _originalIntVote.getNumberOfChoices(_originalProposalId),
         "vote should be <= original proposal number of choices");
 
-        bytes32 proposalId = votingMachine.propose(2, msg.sender);
+        proposalId = votingMachine.propose(2, msg.sender);
 
         organizationProposals[proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
@@ -134,6 +134,5 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
             _descriptionHash
         );
         proposalsBlockNumber[proposalId] = block.number;
-        return proposalId;
     }
 }

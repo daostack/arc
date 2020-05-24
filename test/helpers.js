@@ -39,6 +39,7 @@ const FundingRequest = artifacts.require("./FundingRequest.sol");
 const Dictator = artifacts.require("./Dictator.sol");
 
 
+
 const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
@@ -232,7 +233,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   ) {
   var votingMachine = new VotingMachine();
 
-  votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
+  //votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
 
   // set up a reputation system
   votingMachine.reputationArray = [20, 10 ,70];
@@ -249,17 +250,17 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
                                                      _daoBountyConst,
                                                      _activationTime];
   votingMachine.voteOnBehalf = voteOnBehalf;
-  votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_queuedVoteRequiredPercentage,
-                                                     _queuedVotePeriodLimit,
-                                                     _boostedVotePeriodLimit,
-                                                     _preBoostedVotePeriodLimit,
-                                                     _thresholdConst,
-                                                     _quietEndingPeriod,
-                                                     _proposingRepReward,
-                                                     _votersReputationLossRatio,
-                                                     _minimumDaoBounty,
-                                                     _daoBountyConst,
-                                                     _activationTime],voteOnBehalf);
+  // votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_queuedVoteRequiredPercentage,
+  //                                                    _queuedVotePeriodLimit,
+  //                                                    _boostedVotePeriodLimit,
+  //                                                    _preBoostedVotePeriodLimit,
+  //                                                    _thresholdConst,
+  //                                                    _quietEndingPeriod,
+  //                                                    _proposingRepReward,
+  //                                                    _votersReputationLossRatio,
+  //                                                    _minimumDaoBounty,
+  //                                                    _daoBountyConst,
+  //                                                    _activationTime],voteOnBehalf);
 
   return votingMachine;
 };

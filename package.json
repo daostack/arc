@@ -44,7 +44,8 @@
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
     "solidity-coverage": "^0.7.0-beta.3",
-    "uint32": "^0.2.1"
+    "uint32": "^0.2.1",
+    "web3-utils": "^1.2.8"
   },
   "repository": {
     "type": "git",

@@ -125,7 +125,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         address[] memory _contractsToUpgrade,
         string memory _descriptionHash)
     public
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
         require(_contractsNames.length <= 60, "can upgrade up to 60 contracts at a time");
         require(
@@ -142,7 +142,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             );
         }
 
-        bytes32 proposalId = votingMachine.propose(2, msg.sender);
+        proposalId = votingMachine.propose(2, msg.sender);
 
         organizationProposals[proposalId] = Proposal({
             packageVersion: _packageVersion,
@@ -159,6 +159,5 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             _contractsToUpgrade,
             _descriptionHash
         );
-        return proposalId;
     }
 }

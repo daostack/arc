@@ -4,7 +4,7 @@ const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
 
 
- var registration;
+var registration;
 const setup = async function (accounts, initGov=true, avatarZero=false, vmZero=false, gpParamsHash=true) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
@@ -27,23 +27,36 @@ const setup = async function (accounts, initGov=true, avatarZero=false, vmZero=f
       )
       .encodeABI();
    } else {
+       console.log(1)
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
       testSetup.votingMachine = await helpers.setupGenesisProtocol(accounts,standardTokenMock.address,helpers.NULL_ADDRESS);
+      console.log(2)
+
+
+      var addresses = [registration.daoFactory,
+                       helpers.NULL_ADDRESS,
+                       testSetup.org.avatar.address,
+                       helpers.NULL_ADDRESS,
+                       helpers.NULL_ADDRESS,
+                       helpers.NULL_ADDRESS
+                       ];
+      console.log(3,avatarZero,testSetup.votingMachine.uintArray)
       schemeMockData = await new web3.eth.Contract(registration.schemeMock.abi)
       .methods
       .initializeGovernance(
          avatarZero ? helpers.NULL_ADDRESS : testSetup.org.avatar.address,
-         vmZero ? helpers.NULL_ADDRESS : testSetup.votingMachine.genesisProtocol.address,
          testSetup.votingMachine.uintArray,
-         testSetup.votingMachine.voteOnBehalf,
-         gpParamsHash ? testSetup.votingMachine.params : helpers.NULL_HASH,
+         addresses,
+         [0,1,0],
+         "GenesisProtocol",
          1
       )
       .encodeABI();
    }
-    
+
 
    var permissions = "0x00000000";
+   console.log(3)
    var tx = await registration.daoFactory.setSchemes(
       testSetup.org.avatar.address,
       [web3.utils.fromAscii("SchemeMock")],
@@ -52,6 +65,7 @@ const setup = async function (accounts, initGov=true, avatarZero=false, vmZero=f
       [permissions],
       "metaData",
       {from:testSetup.proxyAdmin});
+      console.log(4)
 
    if (!avatarZero && !vmZero) {
       testSetup.schemeMock = await SchemeMock.at(tx.logs[1].args._scheme);
@@ -59,7 +73,7 @@ const setup = async function (accounts, initGov=true, avatarZero=false, vmZero=f
       return testSetup;
    }
 };
-contract('VotingMachineCallbacks', function(accounts) {
+contract('ArcScheme', function(accounts) {
 
    it("avatar address cannot be 0 ", async function() {
       try {

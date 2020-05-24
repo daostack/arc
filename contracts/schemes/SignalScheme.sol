@@ -30,16 +30,10 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         bool executed;
     }
 
-    struct Parameters {
-        bytes32 voteApproveParams;
-        IntVoteInterface intVote;
-        uint256 signalType;
-        Avatar avatar;
-    }
+    uint256 public signalType;
 
     mapping(bytes32  =>  Proposal) public proposals;
 
-    Parameters public params;
 
     /**
      * @dev initialize
@@ -65,10 +59,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     external
     initializer {
         super._initializeGovernance(_avatar, _votingParams, _addresses, _packageVersion, _votingMachineName);
-        params = Parameters({
-            signalType: _signalType,
-            avatar: _avatar
-        });
+        signalType = _signalType;
     }
 
     /**
@@ -79,29 +70,23 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         string calldata _descriptionHash
     )
     external
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
-        require(Controller(params.avatar.owner()).isSchemeRegistered(address(this)),
+        require(Controller(avatar.owner()).isSchemeRegistered(address(this)),
         "scheme is not registered");
 
-        bytes32 proposalId = params.intVote.propose(
-        2,
-        params.voteApproveParams,
-        msg.sender,
-        address(params.avatar)
-        );
+        proposalId = votingMachine.propose(2, msg.sender);
 
         proposals[proposalId].descriptionHash = _descriptionHash;
 
         emit NewSignalProposal(
-            address(params.avatar),
+            address(avatar),
             proposalId,
-            params.signalType,
+            signalType,
             _descriptionHash
         );
 
         proposalsBlockNumber[proposalId] = block.number;
-        return proposalId;
     }
 
     /**
@@ -114,9 +99,9 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         proposals[_proposalId].executed = true;
         // Check if vote was successful:
         if (_param == 1) {
-            emit Signal(address(params.avatar),
+            emit Signal(address(avatar),
                         _proposalId,
-                        params.signalType,
+                        signalType,
                         proposals[_proposalId].descriptionHash);
         }
         return true;
