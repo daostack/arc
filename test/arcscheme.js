@@ -26,11 +26,19 @@ const setup = async function (accounts, initGov=true, avatarZero=false, vmZero=f
          1
       )
       .encodeABI();
+      console.log("testSetup.org.avatar.address",testSetup.org.avatar.address,schemeMockData,web3.eth.abi.encodeParameters(['address'],
+                                     [testSetup.org.avatar.address]));
+// 0xcd6dc687000000000000000000000000ec741c277992defb75f6f64f981e93d14b49ca760000000000000000000000000000000000000000000000000000000000000001
+// 0x        000000000000000000000000ec741c277992defb75f6f64f981e93d14b49ca76
+
    } else {
        console.log(1)
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
       testSetup.votingMachine = await helpers.setupGenesisProtocol(accounts,standardTokenMock.address,helpers.NULL_ADDRESS);
       console.log(2)
+
+// 000000000000000000000000ec741c277992defb75f6f64f981e93d14b49ca76
+// 0000000000000000000000000000000000000000000000000000000000000001
 
 
       var addresses = [registration.daoFactory,

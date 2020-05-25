@@ -277,6 +277,8 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
                         .methods
                         .initialize("TEST","TST",cap,registration.daoFactory.address)
                         .encodeABI();
+  var encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+                                                            ["testOrg",nativeTokenData,daoFactoryOwner,founderToken,founderReputation,[0,0,0]]);
   var tx = await registration.daoFactory.forgeOrg("testOrg",
                                                   nativeTokenData,
                                                   daoFactoryOwner,
