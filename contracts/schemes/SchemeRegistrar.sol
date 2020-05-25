@@ -44,26 +44,34 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
      * @param _votingParams genesisProtocol parameters
-     * @param _addresses array of addresses
-     *       addresses[0] - _daoFactory DAOFactory instance to instance a votingMachine.
-     *       addresses[1] - _voteOnBehalf  parameter
-     *       addresses[2] - _organization organization
-     *       addresses[3] - _callbacks should fulfill voting callbacks interface
-     *       addresses[4] - _authorizedToPropose only this address allow to propose (unless it is zero)
-     *       addresses[5] - _stakingToken (for GenesisProtocol)
+     * @param _voteOnBehalf  parameter
+     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
+     * @param _stakingToken (for GenesisProtocol)
      * @param _packageVersion packageVersion to instance the votingMachine from.
      * @param _votingMachineName the votingMachine contract name.
      */
     function initialize(
         Avatar _avatar,
         uint256[11] calldata _votingParams,
-        address[6] calldata _addresses,
+        address _voteOnBehalf,
+        DAOFactory _daoFactory,
+        address _stakingToken,
         uint64[3] calldata _packageVersion,
         string calldata _votingMachineName
     )
     external
     {
-        super._initializeGovernance(_avatar, _votingParams, _addresses, _packageVersion, _votingMachineName);
+        super._initializeGovernance(
+            _avatar,
+            _votingParams,
+            _voteOnBehalf,
+            _daoFactory,
+            _stakingToken,
+            address(this),
+            address(this),
+            address(this),
+            _packageVersion,
+            _votingMachineName);
     }
 
     /**
