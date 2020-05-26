@@ -307,7 +307,8 @@ contract JoinAndQuit is
         } else {
             require(
             Controller(
-            avatar.owner()).externalTokenTransfer(joinAndQuitParams.fundingToken, _beneficiary, _amount), "send token failed");
+            avatar.owner()).externalTokenTransfer(joinAndQuitParams.fundingToken, _beneficiary, _amount),
+            "send token failed");
         }
     }
 

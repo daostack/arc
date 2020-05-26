@@ -1,4 +1,5 @@
 pragma solidity ^0.5.17;
+pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/upgrades/contracts/Initializable.sol";
 import "../registry/App.sol";
@@ -40,35 +41,97 @@ contract DAOFactory is Initializable {
     mapping(address=>Locks) public locks;
     App public app;
     string public constant PACKAGE_NAME = "DAOstack";
-    //this is here due to "stack too deep issue"
-    uint64[3] private packageVersion;
 
+    // orgName - The name of the new organization
+    // tokenInitData - the DAOToken init data (tokenName,tokenSymbol,cap)
+    // founders - An array with the addresses of the founders of the organization
+    // foundersTokenAmount -  An array of amount of tokens that the founders
+    // receive in the new organization
+    // foundersReputationAmount - An array of amount of reputation that the
+    //                          founders receive in the new organization
+    //
+    // version - the arc version to forgeOrg from.
+    // struct ForgeOrgParams {
+    //     string orgName;
+    //     bytes  tokenInitData;
+    //     address[] founders;
+    //     uint256[] foundersTokenAmount;
+    //     uint256[] foundersReputationAmount;
+    //     uint64[3] version;
+    // }
+    // struct SetSchemesParams {
+    //     bytes32[] schemesNames;
+    //     bytes  schemesData;
+    //     uint256[] schemesInitilizeDataLens;
+    //     bytes4[] permissions;
+    //     string  metaData;
+    // }
     function initialize(address _appContractAddress) external initializer {
         app = App(_appContractAddress);
     }
 
     /**
      * @dev Create a new organization
-     * @param _orgName The name of the new organization
-     * @param _tokenInitData the DAOToken init data (tokenName,tokenSymbol,cap)
-     * @param _founders An array with the addresses of the founders of the organization
-     * @param _foundersTokenAmount An array of amount of tokens that the founders
-     *  receive in the new organization
-     * @param _foundersReputationAmount An array of amount of reputation that the
-     *   founders receive in the new organization
+     * @param _encodedForgeOrgParams encoded ForgeOrgParams
+     * @param _encodedSetSchemesParams encoded SetSchemesParams -
+     *        if there is a need to add more than 100 founders:
+     *          encodedSetSchemesParams should be zero and then do :
+     *         forgeOrg,addFounders,setSchemes. this will result in 3 transactions.
      * @return The address of the avatar of the controller
      */
     function forgeOrg (
-        string calldata _orgName,
-        bytes calldata _tokenInitData,
-        address[] calldata _founders,
-        uint[] calldata _foundersTokenAmount,
-        uint[] calldata _foundersReputationAmount,
-        uint64[3] calldata _version)
+        bytes calldata _encodedForgeOrgParams,
+        bytes calldata _encodedSetSchemesParams)
         external
         returns(address) {
-            packageVersion = getPackageVersion(_version);
-            return _forgeOrg(_orgName, _tokenInitData, _founders, _foundersTokenAmount, _foundersReputationAmount);
+            (
+            string memory orgName,
+            bytes memory tokenInitData,
+            address[] memory founders,
+            uint256[] memory foundersTokenAmount,
+            uint256[] memory foundersReputationAmount,
+            uint64[3] memory version) =
+            /* solhint-disable */
+            abi.decode(
+              _encodedForgeOrgParams,
+              (string, bytes, address[], uint256[], uint256[], uint64[3])
+            );
+            uint64[3] memory packageVersion = getPackageVersion(version);
+            Avatar avatar =_forgeOrg(
+                            orgName,
+                            tokenInitData,
+                            founders,
+                            foundersTokenAmount,
+                            foundersReputationAmount,
+                            packageVersion);
+
+            if (_encodedSetSchemesParams.length > 0) {
+                (
+                bytes32[] memory schemesNames,
+                bytes memory schemesData,
+                uint256[] memory schemesInitilizeDataLens,
+                bytes4[] memory permissions,
+                string memory metaData
+                ) =
+                abi.decode(
+                  _encodedSetSchemesParams,
+                  (bytes32[], bytes, uint256[], bytes4[], string)
+                );
+                /* solhint-enable */
+
+                _setSchemes(
+                    address(avatar),
+                    schemesNames,
+                    schemesData,
+                    schemesInitilizeDataLens,
+                    permissions,
+                    metaData,
+                    packageVersion);
+            } else {
+                locks[address(avatar)].sender = msg.sender;
+                locks[address(avatar)].packageVersion = packageVersion;
+            }
+            return address(avatar);
         }
 
   /**
@@ -115,28 +178,27 @@ contract DAOFactory is Initializable {
     /**
      * @dev Set initial schemes for the organization.
      * @param _avatar organization avatar (returns from forgeOrg)
-     * @param _schemesNames the schemes name to register for the organization
-     * @param _schemesData the schemes initilization data
-     * @param _schemesInitilizeDataLens the schemes initilization data lens (at _schemesData)
-     * @param _permissions the schemes permissions.
-     * @param _metaData dao meta data hash
+     * @param _encodedSetSchemesParams encoded SetSchemesParams -
      */
     function setSchemes (
         Avatar _avatar,
-        bytes32[] calldata _schemesNames,
-        bytes calldata _schemesData,
-        uint256[] calldata _schemesInitilizeDataLens,
-        bytes4[] calldata _permissions,
-        string calldata _metaData
+        bytes calldata _encodedSetSchemesParams
         )
         external {
+            // this action can only be executed by the account that holds the lock
+            // for this controller
+            require(locks[address(_avatar)].sender == msg.sender, "sender is not holding the lock");
+            SetSchemesParams memory setSchemesParams = abi.decode(_encodedSetSchemesParams, (SetSchemesParams));
             _setSchemes(
                 address(_avatar),
-                _schemesNames,
-                _schemesData,
-                _schemesInitilizeDataLens,
-                _permissions,
-                _metaData);
+                setSchemesParams.schemesNames,
+                setSchemesParams.schemesData,
+                setSchemesParams.schemesInitilizeDataLens,
+                setSchemesParams.permissions,
+                setSchemesParams.metaData,
+                locks[address(_avatar)].packageVersion);
+            // Remove lock:
+            delete locks[address(_avatar)];
         }
 
     /**
@@ -205,21 +267,25 @@ contract DAOFactory is Initializable {
         bytes memory _schemesData,
         uint256[] memory _schemesInitilizeDataLens,
         bytes4[] memory _permissions,
-        string memory _metaData
+        string memory _metaData,
+        uint64[3] memory _packageVersion
     )
         private
     {
-       // this action can only be executed by the account that holds the lock
-       // for this controller
-        require(locks[_avatar].sender == msg.sender, "sender is not holding the lock");
          // register initial schemes:
         Controller controller = Controller(Avatar(_avatar).owner());
         uint256 startIndex =  0;
         for (uint256 i = 0; i < _schemesNames.length; i++) {
-            address scheme = address(createInstance(locks[_avatar].packageVersion,
+          //add avatar to encoded data and encode the call to initilize
+            bytes memory schemeEncodedData1 = _schemesData.slice(startIndex, _schemesInitilizeDataLens[i]);
+            // functionSignature + encodedAvatar+ encodedRestOfData
+            bytes memory schemeEncodedData = schemeEncodedData1.slice(0, 4);
+            schemeEncodedData = schemeEncodedData.concat(abi.encode(_avatar));
+            schemeEncodedData = schemeEncodedData.concat(schemeEncodedData1.slice(36, _schemesInitilizeDataLens[i]-36));
+            address scheme = address(createInstance(_packageVersion,
                                 _schemesNames[i].toStr(),
                                 _avatar,
-                                _schemesData.slice(startIndex, _schemesInitilizeDataLens[i])));
+                                schemeEncodedData));
             emit SchemeInstance(scheme, _schemesNames[i].toStr());
             controller.registerScheme(scheme, _permissions[i]);
             startIndex = startIndex.add(_schemesInitilizeDataLens[i]);
@@ -227,8 +293,6 @@ contract DAOFactory is Initializable {
         controller.metaData(_metaData);
          // Unregister self:
         controller.unregisterSelf();
-         // Remove lock:
-        delete locks[_avatar];
         emit InitialSchemesSet(_avatar);
     }
 
@@ -248,22 +312,23 @@ contract DAOFactory is Initializable {
         bytes  memory _tokenInitData,
         address[] memory _founders,
         uint256[] memory _foundersTokenAmount,
-        uint256[] memory _foundersReputationAmount
+        uint256[] memory _foundersReputationAmount,
+        uint64[3] memory _packageVersion
     )
     private
-    returns(address) {
+    returns(Avatar) {
          // Create Token, Reputation and Avatar:
         require(_founders.length == _foundersTokenAmount.length,
         "_founderlength != _foundersTokenAmount.length");
         require(_founders.length == _foundersReputationAmount.length,
         "_founderlength != _foundersReputationAmount.length");
         AdminUpgradeabilityProxy nativeToken =
-        createInstance(packageVersion, "DAOToken", address(this), _tokenInitData);
+        createInstance(_packageVersion, "DAOToken", address(this), _tokenInitData);
         AdminUpgradeabilityProxy nativeReputation =
-        createInstance(packageVersion, "Reputation", address(this),
+        createInstance(_packageVersion, "Reputation", address(this),
         abi.encodeWithSignature("initialize(address)", address(this)));
 
-        AdminUpgradeabilityProxy avatar = createInstance(packageVersion, "Avatar", address(this),
+        AdminUpgradeabilityProxy avatar = createInstance(_packageVersion, "Avatar", address(this),
         abi.encodeWithSignature(
             "initialize(string,address,address,address)",
             _orgName,
@@ -286,7 +351,7 @@ contract DAOFactory is Initializable {
          // Create Controller:
         Controller controller =
         Controller(address(createInstance(
-        packageVersion,
+        _packageVersion,
         "Controller",
         address(avatar),
         abi.encodeWithSignature("initialize(address,address)", address(avatar), address(this)))));
@@ -295,11 +360,8 @@ contract DAOFactory is Initializable {
         DAOToken(address(nativeToken)).transferOwnership(address(controller));
         Reputation(address(nativeReputation)).transferOwnership(address(controller));
 
-        locks[address(avatar)].sender = msg.sender;
-        locks[address(avatar)].packageVersion = packageVersion;
-
         emit NewOrg (address(avatar), address(controller), address(nativeReputation), address(nativeToken));
-        return (address(avatar));
+        return (Avatar(address(avatar)));
     }
 
 }

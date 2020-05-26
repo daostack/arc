@@ -38,8 +38,6 @@ const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
 const Dictator = artifacts.require("./Dictator.sol");
 
-
-
 const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
@@ -156,6 +154,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
   registration.joinAndQuit = await JoinAndQuit.new();
   registration.fundingRequest = await FundingRequest.new();
+  registration.genesisProtocol = await GenesisProtocol.new();
   registration.rewarderMock = await RewarderMock.new();
   registration.dictator = await Dictator.new();
 
@@ -188,8 +187,8 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   await implementationDirectory.setImplementation("ARCVotingMachineCallbacksMock",registration.arcVotingMachineCallbacksMock.address);
   await implementationDirectory.setImplementation("JoinAndQuit",registration.joinAndQuit.address);
   await implementationDirectory.setImplementation("FundingRequest",registration.fundingRequest.address);
+  await implementationDirectory.setImplementation("GenesisProtocol",registration.genesisProtocol.address);
   await implementationDirectory.setImplementation("Dictator",registration.dictator.address);
-
 
   registration.implementationDirectory = implementationDirectory;
 
@@ -271,22 +270,29 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
                                                                      daoFactoryOwner,
                                                                      founderToken,
                                                                      founderReputation,
-                                                                     cap=0) {
+                                                                     cap=0,
+                                                                     schemesNames,
+                                                                     schemesData,
+                                                                     schemesInitilizeDataLens,
+                                                                     permissions,
+                                                                     metaData) {
+
   var org = new Organization();
   var nativeTokenData = await new web3.eth.Contract(registration.daoToken.abi)
                         .methods
                         .initialize("TEST","TST",cap,registration.daoFactory.address)
                         .encodeABI();
-  var encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+   encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
                                                             ["testOrg",nativeTokenData,daoFactoryOwner,founderToken,founderReputation,[0,0,0]]);
-  var tx = await registration.daoFactory.forgeOrg("testOrg",
-                                                  nativeTokenData,
-                                                  daoFactoryOwner,
-                                                  founderToken,
-                                                  founderReputation,
-                                                  [0,0,0],
+
+  var encodedSetSchemesParams = web3.eth.abi.encodeParameters(['bytes32[]','bytes','uint256[]','bytes4[]','string'],
+                                                              [schemesNames,schemesData,schemesInitilizeDataLens,permissions,metaData]);
+
+  var tx = await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
+                                                  encodedSetSchemesParams,
                                                   {from:proxyAdmin,gas:constants.ARC_GAS_LIMIT});
-  assert.equal(tx.logs.length, 5);
+
+
   assert.equal(tx.logs[4].event, "NewOrg");
   var avatarAddress = tx.logs[4].args._avatar;
   org.avatar = await Avatar.at(avatarAddress);
@@ -294,7 +300,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   org.token = await DAOToken.at(tokenAddress);
   var reputationAddress = await org.avatar.nativeReputation();
   org.reputation = await Reputation.at(reputationAddress);
-  return org;
+  return [org,tx];
 };
 
  const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {

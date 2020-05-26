@@ -77,6 +77,7 @@ contract ArcScheme is Initializable {
                     _callbacks,
                     _authorizedToPropose);
         }
+        
         votingMachine = IntVoteInterface(address(_daoFactory.createInstance(
                             _packageVersion,
                             _votingMachineName,
