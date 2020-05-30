@@ -96,6 +96,7 @@ contract DAOFactory is Initializable {
               _encodedForgeOrgParams,
               (string, bytes, address[], uint256[], uint256[], uint64[3])
             );
+            /* solhint-enable */
             uint64[3] memory packageVersion = getPackageVersion(version);
             Avatar avatar =_forgeOrg(
                             orgName,
@@ -104,28 +105,11 @@ contract DAOFactory is Initializable {
                             foundersTokenAmount,
                             foundersReputationAmount,
                             packageVersion);
-
             if (_encodedSetSchemesParams.length > 0) {
-                (
-                bytes32[] memory schemesNames,
-                bytes memory schemesData,
-                uint256[] memory schemesInitilizeDataLens,
-                bytes4[] memory permissions,
-                string memory metaData
-                ) =
-                abi.decode(
-                  _encodedSetSchemesParams,
-                  (bytes32[], bytes, uint256[], bytes4[], string)
-                );
-                /* solhint-enable */
 
                 _setSchemes(
                     address(avatar),
-                    schemesNames,
-                    schemesData,
-                    schemesInitilizeDataLens,
-                    permissions,
-                    metaData,
+                    _encodedSetSchemesParams,
                     packageVersion);
             } else {
                 locks[address(avatar)].sender = msg.sender;
@@ -188,14 +172,9 @@ contract DAOFactory is Initializable {
             // this action can only be executed by the account that holds the lock
             // for this controller
             require(locks[address(_avatar)].sender == msg.sender, "sender is not holding the lock");
-            SetSchemesParams memory setSchemesParams = abi.decode(_encodedSetSchemesParams, (SetSchemesParams));
             _setSchemes(
                 address(_avatar),
-                setSchemesParams.schemesNames,
-                setSchemesParams.schemesData,
-                setSchemesParams.schemesInitilizeDataLens,
-                setSchemesParams.permissions,
-                setSchemesParams.metaData,
+                _encodedSetSchemesParams,
                 locks[address(_avatar)].packageVersion);
             // Remove lock:
             delete locks[address(_avatar)];
@@ -255,42 +234,50 @@ contract DAOFactory is Initializable {
     /**
      * @dev Set initial schemes for the organization.
      * @param _avatar organization avatar (returns from forgeOrg)
-     * @param _schemesNames the schemes name to register for the organization
-     * @param _schemesData the schemes initilization data
-     * @param _schemesInitilizeDataLens the schemes initilization data lens (at _schemesData)
-     * @param _permissions the schemes permissions.
-     * @param _metaData dao meta data hash
+     * @param _encodedSetSchemesParams _setSchemes parameters
+     * @param _packageVersion package version
      */
     function _setSchemes (
         address payable _avatar,
-        bytes32[] memory _schemesNames,
-        bytes memory _schemesData,
-        uint256[] memory _schemesInitilizeDataLens,
-        bytes4[] memory _permissions,
-        string memory _metaData,
+        bytes memory _encodedSetSchemesParams,
         uint64[3] memory _packageVersion
     )
         private
     {
+        (
+        bytes32[] memory schemesNames,
+        bytes memory schemesData,
+        uint256[] memory schemesInitilizeDataLens,
+        bytes4[] memory permissions,
+        string memory metaData
+        ) =
+        /* solhint-disable */
+        abi.decode(
+          _encodedSetSchemesParams,
+          (bytes32[], bytes, uint256[], bytes4[], string)
+        );
+        /* solhint-enable */
          // register initial schemes:
         Controller controller = Controller(Avatar(_avatar).owner());
         uint256 startIndex =  0;
-        for (uint256 i = 0; i < _schemesNames.length; i++) {
+        for (uint256 i = 0; i < schemesNames.length; i++) {
           //add avatar to encoded data and encode the call to initilize
-            bytes memory schemeEncodedData1 = _schemesData.slice(startIndex, _schemesInitilizeDataLens[i]);
             // functionSignature + encodedAvatar+ encodedRestOfData
-            bytes memory schemeEncodedData = schemeEncodedData1.slice(0, 4);
+            bytes memory schemeEncodedData = (schemesData.slice(startIndex, schemesInitilizeDataLens[i])).slice(0, 4);
             schemeEncodedData = schemeEncodedData.concat(abi.encode(_avatar));
-            schemeEncodedData = schemeEncodedData.concat(schemeEncodedData1.slice(36, _schemesInitilizeDataLens[i]-36));
+            schemeEncodedData =
+            schemeEncodedData
+            .concat((schemesData.slice(startIndex, schemesInitilizeDataLens[i]))
+            .slice(36, schemesInitilizeDataLens[i]-36));
             address scheme = address(createInstance(_packageVersion,
-                                _schemesNames[i].toStr(),
+                                schemesNames[i].toStr(),
                                 _avatar,
                                 schemeEncodedData));
-            emit SchemeInstance(scheme, _schemesNames[i].toStr());
-            controller.registerScheme(scheme, _permissions[i]);
-            startIndex = startIndex.add(_schemesInitilizeDataLens[i]);
+            emit SchemeInstance(scheme, schemesNames[i].toStr());
+            controller.registerScheme(scheme, permissions[i]);
+            startIndex = startIndex.add(schemesInitilizeDataLens[i]);
         }
-        controller.metaData(_metaData);
+        controller.metaData(metaData);
          // Unregister self:
         controller.unregisterSelf();
         emit InitialSchemesSet(_avatar);

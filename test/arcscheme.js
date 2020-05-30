@@ -47,7 +47,7 @@ const setup = async function (accounts, initGov=true) {
                                                                        0,
                                                                        [web3.utils.fromAscii("SchemeMock")],
                                                                        schemeMockData,
-                                                                       [Number(helpers.getBytesLength(schemeMockData))],
+                                                                       [helpers.getBytesLength(schemeMockData)],
                                                                        [permissions],
                                                                        "metaData");
    testSetup.standardTokenMock = await ERC20Mock.new(testSetup.org.avatar.address,100);
