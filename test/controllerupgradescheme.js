@@ -1,6 +1,5 @@
 const helpers = require("./helpers");
 const Controller = artifacts.require("./Controller.sol");
-const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const ControllerUpgradeScheme = artifacts.require('./ControllerUpgradeScheme.sol');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Avatar = artifacts.require("./Avatar.sol");

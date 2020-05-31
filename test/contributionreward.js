@@ -77,7 +77,7 @@ const setupContributionReward = async function(
   return contributionRewardParams;
 };
 
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,setParameters = false) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
@@ -671,9 +671,9 @@ contract('ContributionReward', accounts => {
     assert.equal(redeemRewards[7],0); //crExternalTokenReward
    });
 
-    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer + setParameters", async function() {
+    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer", async function() {
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-      var testSetup = await setup(accounts,true,standardTokenMock.address,true);
+      var testSetup = await setup(accounts,true,standardTokenMock.address);
       var reputationReward = 12;
       var nativeTokenReward = 12;
       var ethReward = 12;

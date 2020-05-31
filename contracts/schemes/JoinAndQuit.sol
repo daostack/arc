@@ -115,7 +115,25 @@ contract JoinAndQuit is
             address(this),
             _packageVersion,
             _votingMachineName);
-        joinAndQuitParams = abi.decode(_encodedJoinAndQuitParams, (JoinAndQuitParams));
+
+        (
+            address  fundingToken,
+            uint256  minFeeToJoin,
+            uint256  memberReputation,
+            uint256  fundingGoal,
+            uint256  fundingGoalDeadline,
+            bool  rageQuitEnable
+        )  =
+        abi.decode(_encodedJoinAndQuitParams, (address, uint256, uint256, uint256, uint256, bool));
+
+        joinAndQuitParams = JoinAndQuitParams({
+            fundingToken: IERC20(fundingToken),
+            minFeeToJoin: minFeeToJoin,
+            memberReputation: memberReputation,
+            fundingGoal: fundingGoal,
+            fundingGoalDeadline: fundingGoalDeadline,
+            rageQuitEnable: rageQuitEnable
+        });
     }
 
     /**

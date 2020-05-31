@@ -18,54 +18,50 @@ const setup = async function (accounts,
    var testSetup = new helpers.TestSetup();
    testSetup.proxyAdmin = accounts[5];
    var registration = await helpers.registerImplementation();
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(
+   var block = await web3.eth.getBlock("latest");
+   testSetup.lockingEndTime = block.timestamp + _claimingEndTime;
+   testSetup.lockingStartTime = block.timestamp + _claimingStartTime;
+   testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
+   testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
+   await testSetup.extetnalTokenLockerMock.initialize(accounts[0]);
+   await testSetup.extetnalTokenLockerMock.lock(100,accounts[0]);
+   await testSetup.extetnalTokenLockerMock.lock(200,accounts[1]);
+   await testSetup.extetnalTokenLockerMock.lock(300,accounts[2]);
+   testSetup.agreementHash = _agreementHash;
+
+   testSetup.externalLocking4ReputationParams = new ExternalLocking4ReputationParams();
+   if (_initialize === true) {
+    testSetup.externalLocking4ReputationParams.initdata = await new web3.eth.Contract(registration.externalLocking4Reputation.abi)
+    .methods
+    .initialize(helpers.NULL_ADDRESS,
+                 _repAllocation,
+                 testSetup.lockingStartTime,
+                 testSetup.lockingEndTime,
+                 testSetup.redeemEnableTime,
+                 testSetup.extetnalTokenLockerMock.address,
+                 "lockedTokenBalances(address)",
+                 testSetup.agreementHash)
+                .encodeABI();
+     } else {
+       testSetup.externalLocking4ReputationParams.initdata = Buffer.from('');
+     }
+
+   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(
      testSetup.proxyAdmin,
      accounts,
      registration,
      [accounts[0]],
      [1000],
-     [1000]
+     [1000],
+     0,
+     [web3.utils.fromAscii("ExternalLocking4Reputation")],
+     testSetup.externalLocking4ReputationParams.initdata,
+     [helpers.getBytesLength(testSetup.externalLocking4ReputationParams.initdata)],
+     ["0x0000000"],
+     "metaData"
   );
 
-
-  var block = await web3.eth.getBlock("latest");
-  testSetup.lockingEndTime = block.timestamp + _claimingEndTime;
-  testSetup.lockingStartTime = block.timestamp + _claimingStartTime;
-  testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
-  testSetup.extetnalTokenLockerMock = await ExternalTokenLockerMock.new();
-  await testSetup.extetnalTokenLockerMock.initialize(accounts[0]);
-  await testSetup.extetnalTokenLockerMock.lock(100,accounts[0]);
-  await testSetup.extetnalTokenLockerMock.lock(200,accounts[1]);
-  await testSetup.extetnalTokenLockerMock.lock(300,accounts[2]);
-  testSetup.agreementHash = _agreementHash;
-
-  testSetup.externalLocking4ReputationParams = new ExternalLocking4ReputationParams();
-  if (_initialize === true) {
-   testSetup.externalLocking4ReputationParams.initdata = await new web3.eth.Contract(registration.externalLocking4Reputation.abi)
-   .methods
-   .initialize(testSetup.org.avatar.address,
-                _repAllocation,
-                testSetup.lockingStartTime,
-                testSetup.lockingEndTime,
-                testSetup.redeemEnableTime,
-                testSetup.extetnalTokenLockerMock.address,
-                "lockedTokenBalances(address)",
-                testSetup.agreementHash)
-               .encodeABI();
-    } else {
-      testSetup.externalLocking4ReputationParams.initdata = Buffer.from('');
-    }
-
-   var permissions = "0x00000000";
-
-   var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
-    [web3.utils.fromAscii("ExternalLocking4Reputation")],
-    testSetup.externalLocking4ReputationParams.initdata,
-    [helpers.getBytesLength(testSetup.externalLocking4ReputationParams.initdata)],
-    [permissions],
-    "metaData",{from:testSetup.proxyAdmin});
-   testSetup.externalLocking4Reputation = await ExternalLocking4Reputation.at(tx.logs[1].args._scheme);
+   testSetup.externalLocking4Reputation = await ExternalLocking4Reputation.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
    return testSetup;
 };
 

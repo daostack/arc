@@ -228,6 +228,7 @@ const getVotingMachine = async function (votingMachine, genesisProtocol) {
 const getSchemeAddress = async function (daoFactoryAddress,daoFactoryTx) {
 var daoFactory = await DAOFactory.at(daoFactoryAddress);
 var address;
+
 await daoFactory.getPastEvents('SchemeInstance', {
       fromBlock: daoFactoryTx.blockNumber,
       toBlock: 'latest'
@@ -296,7 +297,6 @@ await daoFactory.getPastEvents('SchemeInstance', {
                         .encodeABI();
   var encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
                                                             ["testOrg",nativeTokenData,daoFactoryOwner,founderToken,founderReputation,[0,0,0]]);
-
   var encodedSetSchemesParams = web3.eth.abi.encodeParameters(['bytes32[]','bytes','uint256[]','bytes4[]','string'],
                                                               [schemesNames,schemesData,schemesInitilizeDataLens,permissions,metaData]);
 

@@ -17,7 +17,6 @@ const setupContributionRewardExt = async function(
                                             token,
                                             _daoFactoryAddress = helpers.NULL_ADDRESS,
                                             service = "",
-                                            vmZero=false,
                                             _packageVersion = [0,1,0]
                                             ) {
   var contributionRewardExtParams = new ContributionRewardExtParams();
@@ -52,7 +51,7 @@ const setupContributionRewardExt = async function(
   return contributionRewardExtParams;
 };
 var registration;
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,service="",vmZero=false) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS,service="") {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100000);
   registration = await helpers.registerImplementation();
@@ -68,8 +67,7 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,se
                      genesisProtocol,
                      tokenAddress,
                      registration.daoFactory.address,
-                     service,
-                     vmZero);
+                     service);
 
   var permissions = "0x00000000";
   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
@@ -103,7 +101,7 @@ contract('ContributionRewardExt', accounts => {
 
     it("initialize vm 0", async function() {
       try {
-        await setup(accounts,false,0,true);
+        await setup(accounts,false,helpers.NULL_ADDRESS,true);
         assert(false, 'votingMachine cannot be zero');
       } catch (ex) {
         // revert
@@ -872,7 +870,7 @@ contract('ContributionRewardExt', accounts => {
       });
 
       it("negativ rep change is not allowed for rewarder to set ", async function() {
-        var testSetup = await setup(accounts,false,0,"RewarderMock");
+        var testSetup = await setup(accounts,false,helpers.NULL_ADDRESS,"RewarderMock");
         var reputationReward = -12;
         var nativeTokenReward = 12;
         var ethReward = 12;

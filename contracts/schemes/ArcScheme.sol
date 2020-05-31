@@ -57,7 +57,12 @@ contract ArcScheme is Initializable {
     {
 
         require(_daoFactory != DAOFactory(0), "daoFactory cannot be zero");
+        require(
+            _daoFactory.getImplementation(_packageVersion, _votingMachineName) != address(0),
+            "votingMachine name does not exist in ArcHive"
+        );
         _initialize(_avatar);
+
         bytes memory initData;
         if (_votingMachineName.hashCompareWithLengthCheck("GenesisProtocol")) {
             initData = abi.encodeWithSignature(
@@ -77,7 +82,7 @@ contract ArcScheme is Initializable {
                     _callbacks,
                     _authorizedToPropose);
         }
-        
+
         votingMachine = IntVoteInterface(address(_daoFactory.createInstance(
                             _packageVersion,
                             _votingMachineName,
