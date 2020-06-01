@@ -5,7 +5,6 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
-const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
@@ -302,7 +301,7 @@ await daoFactory.getPastEvents('SchemeInstance', {
 
   var tx = await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
                                                   encodedSetSchemesParams,
-                                                  {from:proxyAdmin,gas:constants.ARC_GAS_LIMIT});
+                                                  {from:proxyAdmin});
 
 
   assert.equal(tx.logs[4].event, "NewOrg");
