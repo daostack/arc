@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for universalSchemes/DaoCreator.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">universalSchemes/</a> DaoCreator.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>47/47</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">68.75% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>22/32</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>6/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>48/48</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">296×</span>
+<span class="cline-any cline-yes">296×</span>
+<span class="cline-any cline-yes">296×</span>
+<span class="cline-any cline-yes">296×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">60×</span>
+<span class="cline-any cline-yes">60×</span>
+<span class="cline-any cline-yes">60×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">60×</span>
+<span class="cline-any cline-yes">60×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">298×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">290×</span>
+<span class="cline-any cline-yes">290×</span>
+<span class="cline-any cline-yes">313×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">290×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">290×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">290×</span>
+<span class="cline-any cline-yes">290×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">298×</span>
+<span class="cline-any cline-yes">298×</span>
+<span class="cline-any cline-yes">296×</span>
+<span class="cline-any cline-yes">296×</span>
+<span class="cline-any cline-yes">296×</span>
+<span class="cline-any cline-yes">296×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">296×</span>
+<span class="cline-any cline-yes">536×</span>
+<span class="cline-any cline-yes">534×</span>
+<span class="cline-any cline-yes">370×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">534×</span>
+<span class="cline-any cline-yes">508×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-yes">294×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity 0.5.17;
+&nbsp;
+import "./UniversalScheme.sol";
+import "../controller/Controller.sol";
+import "../utils/DAOTracker.sol";
+&nbsp;
+&nbsp;
+/**
+ * @title ControllerCreator for creating a single controller.
+ */
+contract ControllerCreator {
+&nbsp;
+    function create(Avatar _avatar) public returns(address) {
+        Controller controller = new Controller(_avatar);
+        controller.registerScheme(msg.sender, bytes32(0), bytes4(0x0000001f), address(_avatar));
+        controller.unregisterScheme(address(this), address(_avatar));
+        return address(controller);
+    }
+}
+&nbsp;
+/**
+ * @title Genesis Scheme that creates organizations
+ */
+contract DaoCreator {
+&nbsp;
+    mapping(address=&gt;address) public locks;
+&nbsp;
+    event NewOrg (address _avatar);
+    event InitialSchemesSet (address _avatar);
+&nbsp;
+    ControllerCreator private controllerCreator;
+    DAOTracker private daoTracker;
+&nbsp;
+    constructor(ControllerCreator _controllerCreator, DAOTracker _daoTracker) public {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_controllerCreator != ControllerCreator(0));
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_daoTracker != DAOTracker(0));
+        controllerCreator = _controllerCreator;
+        daoTracker = _daoTracker;
+    }
+&nbsp;
+    /**
+      * @dev addFounders add founders to the organization.
+      *      this function can be called only after forgeOrg and before setSchemes
+      * @param _avatar the organization avatar
+      * @param _founders An array with the addresses of the founders of the organization
+      * @param _foundersTokenAmount An array of amount of tokens that the founders
+      *  receive in the new organization
+      * @param _foundersReputationAmount An array of amount of reputation that the
+      *   founders receive in the new organization
+      * @return bool true or false
+      */
+    function addFounders (
+        Avatar _avatar,
+        address[] calldata _founders,
+        uint[] calldata _foundersTokenAmount,
+        uint[] calldata _foundersReputationAmount
+    )
+    external
+    returns(bool)
+    {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_founders.length == _foundersTokenAmount.length);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_founders.length == _foundersReputationAmount.length);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_founders.length &gt; 0);
+        require(locks[address(_avatar)] == msg.sender);
+        // Mint token and reputation for founders:
+        for (uint256 i = 0; i &lt; _founders.length; i++) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(_founders[i] != address(0));
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (_foundersTokenAmount[i] &gt; 0) {
+                Controller(
+                _avatar.owner()).mintTokens(_foundersTokenAmount[i], _founders[i], address(_avatar));
+            }
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (_foundersReputationAmount[i] &gt; 0) {
+                Controller(
+                _avatar.owner()).mintReputation(_foundersReputationAmount[i], _founders[i], address(_avatar));
+            }
+        }
+        return true;
+    }
+&nbsp;
+  /**
+    * @dev Create a new organization
+    * @param _orgName The name of the new organization
+    * @param _tokenName The name of the token associated with the organization
+    * @param _tokenSymbol The symbol of the token
+    * @param _founders An array with the addresses of the founders of the organization
+    * @param _foundersTokenAmount An array of amount of tokens that the founders
+    *  receive in the new organization
+    * @param _foundersReputationAmount An array of amount of reputation that the
+    *   founders receive in the new organization
+    * @param  _cap token cap - 0 for no cap.
+    * @return The address of the avatar of the controller
+    */
+    function forgeOrg (
+        string calldata _orgName,
+        string calldata _tokenName,
+        string calldata _tokenSymbol,
+        address[] calldata _founders,
+        uint[] calldata _foundersTokenAmount,
+        uint[] calldata _foundersReputationAmount,
+        uint256 _cap
+    )
+    external
+    returns(address)
+    {
+        //The call for the private function is needed to bypass a deep stack issues
+        return _forgeOrg(
+            _orgName,
+            _tokenName,
+            _tokenSymbol,
+            _founders,
+            _foundersTokenAmount,
+            _foundersReputationAmount,
+            _cap);
+    }
+&nbsp;
+     /**
+      * @dev Set initial schemes for the organization.
+      * @param _avatar organization avatar (returns from forgeOrg)
+      * @param _schemes the schemes to register for the organization
+      * @param _params the schemes's params
+      * @param _permissions the schemes permissions.
+      * @param _metaData dao meta data hash
+      */
+    function setSchemes (
+        Avatar _avatar,
+        address[] calldata _schemes,
+        bytes32[] calldata _params,
+        bytes4[] calldata _permissions,
+        string calldata _metaData
+    )
+        external
+    {
+        // this action can only be executed by the account that holds the lock
+        // for this controller
+        require(locks[address(_avatar)] == msg.sender);
+        // register initial schemes:
+        Controller controller = Controller(_avatar.owner());
+        for (uint256 i = 0; i &lt; _schemes.length; i++) {
+            controller.registerScheme(_schemes[i], _params[i], _permissions[i], address(_avatar));
+        }
+        controller.metaData(_metaData, _avatar);
+        // Unregister self:
+        controller.unregisterScheme(address(this), address(_avatar));
+        // Remove lock:
+        delete locks[address(_avatar)];
+        emit InitialSchemesSet(address(_avatar));
+    }
+&nbsp;
+    /**
+     * @dev Create a new organization
+     * @param _orgName The name of the new organization
+     * @param _tokenName The name of the token associated with the organization
+     * @param _tokenSymbol The symbol of the token
+     * @param _founders An array with the addresses of the founders of the organization
+     * @param _foundersTokenAmount An array of amount of tokens that the founders
+     *  receive in the new organization
+     * @param _foundersReputationAmount An array of amount of reputation that the
+     *   founders receive in the new organization
+     * @param  _cap token cap - 0 for no cap.
+     * @return The address of the avatar of the controller
+     */
+    function _forgeOrg (
+        string memory _orgName,
+        string memory _tokenName,
+        string memory _tokenSymbol,
+        address[] memory _founders,
+        uint[] memory _foundersTokenAmount,
+        uint[] memory _foundersReputationAmount,
+        uint256 _cap
+    ) private returns(address)
+    {
+        // Create Token, Reputation and Avatar:
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_founders.length == _foundersTokenAmount.length);
+        require(_founders.length == _foundersReputationAmount.length);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_founders.length &gt; 0);
+        DAOToken nativeToken = new DAOToken(_tokenName, _tokenSymbol, _cap);
+        Reputation nativeReputation = new Reputation();
+        Avatar avatar = new Avatar(_orgName, nativeToken, nativeReputation);
+&nbsp;
+&nbsp;
+        // Mint token and reputation for founders:
+        for (uint256 i = 0; i &lt; _founders.length; i++) {
+            require(_founders[i] != address(0));
+            if (_foundersTokenAmount[i] &gt; 0) {
+                nativeToken.mint(_founders[i], _foundersTokenAmount[i]);
+            }
+            if (_foundersReputationAmount[i] &gt; 0) {
+                nativeReputation.mint(_founders[i], _foundersReputationAmount[i]);
+            }
+        }
+&nbsp;
+        Controller controller = Controller(controllerCreator.create(avatar));
+&nbsp;
+        // Add the DAO to the tracking registry
+        daoTracker.track(avatar, controller, "");
+&nbsp;
+        // Transfer ownership:
+        avatar.transferOwnership(address(controller));
+        nativeToken.transferOwnership(address(controller));
+        nativeReputation.transferOwnership(address(controller));
+&nbsp;
+        locks[address(avatar)] = msg.sender;
+&nbsp;
+        emit NewOrg (address(avatar));
+        return (address(avatar));
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat May 30 2020 12:44:17 GMT-0300 (Argentina Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

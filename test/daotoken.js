@@ -18,8 +18,6 @@ contract('DAOToken', accounts => {
     });
 
     it("should mint tokens to owner account", async () => {
-        await helpers.etherForEveryone(accounts);
-
         let owner, totalSupply, userSupply;
         const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
         totalSupply = await token.totalSupply();
@@ -43,7 +41,6 @@ contract('DAOToken', accounts => {
     });
 
     it("should allow minting tokens only by owner", async () => {
-        await helpers.etherForEveryone(accounts);
         const token = await DAOToken.new(testTokenName,testTokenSymbol,0);
         let owner = await token.owner();
         let totalSupply = await token.totalSupply();

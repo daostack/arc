@@ -76,9 +76,7 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
 };
 
 contract('VoteInOrganizationScheme', accounts => {
-  before(function() {
-     helpers.etherForEveryone(accounts);
-  });
+  
    it("setParameters", async() => {
      var voteInOrganization = await VoteInOrganizationScheme.new();
      var absoluteVote = await AbsoluteVote.new();

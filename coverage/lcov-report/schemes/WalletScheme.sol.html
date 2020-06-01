@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for schemes/WalletScheme.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">schemes/</a> WalletScheme.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>40/40</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">70.83% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>17/24</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>6/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>42/42</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity 0.5.17;
+pragma experimental ABIEncoderV2;
+&nbsp;
+import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
+import "../votingMachines/VotingMachineCallbacks.sol";
+&nbsp;
+&nbsp;
+/**
+ * @title WalletScheme.
+ * @dev  A scheme for proposing and executing calls to any contract except itself and controller
+ */
+contract WalletScheme is VotingMachineCallbacks, ProposalExecuteInterface {
+    event NewCallProposal(
+        address[] _to,
+        bytes32 indexed _proposalId,
+        bytes[]   _callData,
+        uint256[] _value,
+        string  _descriptionHash
+    );
+&nbsp;
+    event ProposalExecuted(
+        bytes32 indexed _proposalId,
+        bytes[] _genericCallReturnValue
+    );
+&nbsp;
+    event ProposalExecutedByVotingMachine(
+        bytes32 indexed _proposalId,
+        int256 _param
+    );
+&nbsp;
+    event ProposalDeleted(bytes32 indexed _proposalId);
+&nbsp;
+    // Details of a voting proposal:
+    struct CallProposal {
+        address[] to;
+        bytes[] callData;
+        uint256[] value;
+        bool exist;
+        bool passed;
+    }
+&nbsp;
+    mapping(bytes32=&gt;CallProposal) public organizationProposals;
+&nbsp;
+    IntVoteInterface public votingMachine;
+    bytes32 public voteParams;
+    Avatar public avatar;
+    address public controller;
+&nbsp;
+    /**
+     * @dev initialize
+     * @param _avatar the avatar address
+     * @param _controller the controller address
+     * @param _votingMachine the voting machines address to
+     * @param _voteParams voting machine parameters.
+     */
+    function initialize(
+        Avatar _avatar,
+        address _controller,
+        IntVoteInterface _votingMachine,
+        bytes32 _voteParams
+    )
+    external
+    {
+        require(avatar == Avatar(0), "can be called only one time");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_avatar != Avatar(0), "avatar cannot be zero");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_controller != address(0), "controller cannot be zero");
+        avatar = _avatar;
+        controller = _controller;
+        votingMachine = _votingMachine;
+        voteParams = _voteParams;
+    }
+    
+    /**
+    * @dev Fallback function that allows the wallet to receive ETH
+    */
+    function() external payable {}
+&nbsp;
+    /**
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _decision a parameter of the voting result, 1 yes and 2 is no.
+    * @return bool success
+    */
+    function executeProposal(bytes32 _proposalId, int256 _decision)
+    external
+    onlyVotingMachine(_proposalId)
+    returns(bool) {
+        CallProposal storage proposal = organizationProposals[_proposalId];
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(proposal.exist, "must be a live proposal");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(proposal.passed == false, "cannot execute twice");
+&nbsp;
+        if (_decision == 1) {
+            proposal.passed = true;
+            execute(_proposalId);
+        } else {
+            delete organizationProposals[_proposalId];
+            emit ProposalDeleted(_proposalId);
+        }
+&nbsp;
+        emit ProposalExecutedByVotingMachine(_proposalId, _decision);
+        return true;
+    }
+&nbsp;
+    /**
+    * @dev execution of proposals after it has been decided by the voting machine
+    * @param _proposalId the ID of the voting in the voting machine
+    */
+    function execute(bytes32 _proposalId) public {
+        CallProposal storage proposal = organizationProposals[_proposalId];
+        require(proposal.exist, "must be a live proposal");
+        require(proposal.passed, "proposal must passed by voting machine");
+        proposal.exist = false;
+        bytes[] memory genericCallReturnValues = new bytes[](proposal.to.length);
+        bytes memory genericCallReturnValue;
+        bool success;
+        for(uint i = 0; i &lt; proposal.to.length; i ++) {
+          (success, genericCallReturnValue) =
+          address(proposal.to[i]).call.value(proposal.value[i])(proposal.callData[i]);
+          genericCallReturnValues[i] = genericCallReturnValue;
+        }
+        if (success) {
+            delete organizationProposals[_proposalId];
+            emit ProposalDeleted(_proposalId);
+            emit ProposalExecuted(_proposalId, genericCallReturnValues);
+        } else {
+            proposal.exist = true;
+        }
+    }
+&nbsp;
+    /**
+    * @dev propose to call an address
+    *      The function trigger NewCallProposal event
+    * @param _to - The addresses to call
+    * @param _callData - The abi encode data for the calls
+    * @param _value value(ETH) to transfer with the calls
+    * @param _descriptionHash proposal description hash
+    * @return an id which represents the proposal
+    */
+    function proposeCalls(address[] memory _to, bytes[] memory _callData, uint256[] memory _value, string memory _descriptionHash)
+    public
+    returns(bytes32)
+    {
+        for(uint i = 0; i &lt; _to.length; i ++) {
+          <span class="missing-if-branch" title="else path not taken" >E</span>require(_to[i] != controller &amp;&amp; _to[i] != address(this), 'invalid proposal caller');
+        }
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_to.length == _callData.length, 'invalid callData length');
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_to.length == _value.length, 'invalid _value length');
+        
+        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, _to[0]);
+&nbsp;
+        organizationProposals[proposalId] = CallProposal({
+            to: _to,
+            callData: _callData,
+            value: _value,
+            exist: true,
+            passed: false
+        });
+        proposalsInfo[address(votingMachine)][proposalId] = ProposalInfo({
+            blockNumber: block.number,
+            avatar: avatar
+        });
+        emit NewCallProposal(_to, proposalId, _callData, _value, _descriptionHash);
+        return proposalId;
+    }
+    
+    function getOrganizationProposal(bytes32 proposalId) public view 
+      returns (address[] memory to, bytes[] memory callData, uint256[] memory value, bool exist, bool passed)
+    {
+      return (
+        organizationProposals[proposalId].to,
+        organizationProposals[proposalId].callData,
+        organizationProposals[proposalId].value,
+        organizationProposals[proposalId].exist,
+        organizationProposals[proposalId].passed
+      );
+    }
+&nbsp;
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat May 30 2020 12:44:17 GMT-0300 (Argentina Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

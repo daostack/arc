@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for schemes/Auction4Reputation.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">schemes/</a> Auction4Reputation.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>40/40</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">88.46% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>23/26</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>5/5</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>40/40</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">24×</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity 0.5.17;
+&nbsp;
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../controller/Controller.sol";
+import "../libs/SafeERC20.sol";
+import "./Agreement.sol";
+&nbsp;
+/**
+ * @title A scheme for conduct ERC20 Tokens auction for reputation
+ */
+&nbsp;
+&nbsp;
+contract Auction4Reputation is Agreement {
+    using SafeMath for uint256;
+    using SafeERC20 for address;
+&nbsp;
+    event Bid(address indexed _bidder, uint256 indexed _auctionId, uint256 _amount);
+    event Redeem(uint256 indexed _auctionId, address indexed _beneficiary, uint256 _amount);
+&nbsp;
+    struct Auction {
+        uint256 totalBid;
+        // A mapping from bidder addresses to their bids.
+        mapping(address=&gt;uint) bids;
+    }
+&nbsp;
+    // A mapping from auction index to auction.
+    mapping(uint=&gt;Auction) public auctions;
+&nbsp;
+    Avatar public avatar;
+    uint256 public reputationRewardLeft;
+    uint256 public auctionsEndTime;
+    uint256 public auctionsStartTime;
+    uint256 public numberOfAuctions;
+    uint256 public auctionReputationReward;
+    uint256 public auctionPeriod;
+    uint256 public redeemEnableTime;
+    IERC20 public token;
+    address public wallet;
+&nbsp;
+    /**
+     * @dev initialize
+     * @param _avatar the avatar to mint reputation from
+     * @param _auctionReputationReward the reputation reward per auction this contract will reward
+     *        for the token locking
+     * @param _auctionsStartTime auctions period start time
+     * @param _auctionPeriod auctions period time.
+     *        auctionsEndTime is set to _auctionsStartTime + _auctionPeriod*_numberOfAuctions
+     *        bidding is disable after auctionsEndTime.
+     * @param _numberOfAuctions number of auctions.
+     * @param _redeemEnableTime redeem enable time .
+     *        redeem reputation can be done after this time.
+     * @param _token the bidding token
+     * @param  _wallet the address of the wallet the token will be transfer to.
+     *         Please note that _wallet address should be a trusted account.
+     *         Normally this address should be set as the DAO's avatar address.
+     * @param _agreementHash is a hash of agreement required to be added to the TX by participants
+     */
+    function initialize(
+        Avatar _avatar,
+        uint256 _auctionReputationReward,
+        uint256 _auctionsStartTime,
+        uint256 _auctionPeriod,
+        uint256 _numberOfAuctions,
+        uint256 _redeemEnableTime,
+        IERC20 _token,
+        address _wallet,
+        bytes32 _agreementHash )
+    external
+    {
+        require(avatar == Avatar(0), "can be called only one time");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_avatar != Avatar(0), "avatar cannot be zero");
+        require(_numberOfAuctions &gt; 0, "number of auctions cannot be zero");
+        //_auctionPeriod should be greater than block interval
+        require(_auctionPeriod &gt; 15, "auctionPeriod should be &gt; 15");
+        auctionPeriod = _auctionPeriod;
+        auctionsEndTime = _auctionsStartTime + _auctionPeriod.mul(_numberOfAuctions);
+        require(_redeemEnableTime &gt;= auctionsEndTime, "_redeemEnableTime &gt;= auctionsEndTime");
+        token = _token;
+        avatar = _avatar;
+        auctionsStartTime = _auctionsStartTime;
+        numberOfAuctions = _numberOfAuctions;
+        wallet = _wallet;
+        auctionReputationReward = _auctionReputationReward;
+        reputationRewardLeft = _auctionReputationReward.mul(_numberOfAuctions);
+        redeemEnableTime = _redeemEnableTime;
+        super.setAgreementHash(_agreementHash);
+    }
+&nbsp;
+    /**
+     * @dev redeem reputation function
+     * @param _beneficiary the beneficiary to redeem.
+     * @param _auctionId the auction id to redeem from.
+     * @return uint256 reputation rewarded
+     */
+    function redeem(address _beneficiary, uint256 _auctionId) public returns(uint256 reputation) {
+        // solhint-disable-next-line not-rely-on-time
+        require(now &gt; redeemEnableTime, "now &gt; redeemEnableTime");
+        Auction storage auction = auctions[_auctionId];
+        uint256 bid = auction.bids[_beneficiary];
+        require(bid &gt; 0, "bidding amount should be &gt; 0");
+        auction.bids[_beneficiary] = 0;
+        uint256 repRelation = bid.mul(auctionReputationReward);
+        reputation = repRelation.div(auction.totalBid);
+        // check that the reputation is sum zero
+        reputationRewardLeft = reputationRewardLeft.sub(reputation);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(
+        Controller(avatar.owner())
+        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
+        emit Redeem(_auctionId, _beneficiary, reputation);
+    }
+&nbsp;
+    /**
+     * @dev bid function
+     * @param _amount the amount to bid with
+     * @param _auctionId the auction id to bid at .
+     * @return auctionId
+     */
+    function bid(uint256 _amount, uint256 _auctionId, bytes32 _agreementHash)
+    public
+    onlyAgree(_agreementHash)
+    returns(uint256 auctionId)
+    {
+        require(_amount &gt; 0, "bidding amount should be &gt; 0");
+        // solhint-disable-next-line not-rely-on-time
+        require(now &lt; auctionsEndTime, "bidding should be within the allowed bidding period");
+        // solhint-disable-next-line not-rely-on-time
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(now &gt;= auctionsStartTime, "bidding is enable only after bidding auctionsStartTime");
+        address(token).safeTransferFrom(msg.sender, address(this), _amount);
+        // solhint-disable-next-line not-rely-on-time
+        auctionId = (now - auctionsStartTime) / auctionPeriod;
+        require(auctionId == _auctionId, "auction is not active");
+        Auction storage auction = auctions[auctionId];
+        auction.totalBid = auction.totalBid.add(_amount);
+        auction.bids[msg.sender] = auction.bids[msg.sender].add(_amount);
+        emit Bid(msg.sender, auctionId, _amount);
+    }
+&nbsp;
+    /**
+     * @dev transferToWallet transfer the tokens to the wallet.
+     *      can be called only after auctionsEndTime
+     */
+    function transferToWallet() public {
+      // solhint-disable-next-line not-rely-on-time
+        require(now &gt; auctionsEndTime, "now &gt; auctionsEndTime");
+        uint256 tokenBalance = token.balanceOf(address(this));
+        address(token).safeTransfer(wallet, tokenBalance);
+    }
+&nbsp;
+    /**
+     * @dev getBid get bid for specific bidder and _auctionId
+     * @param _bidder the bidder
+     * @param _auctionId auction id
+     * @return uint
+     */
+    function getBid(address _bidder, uint256 _auctionId) public view returns(uint256) {
+        return auctions[_auctionId].bids[_bidder];
+    }
+&nbsp;
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat May 30 2020 12:44:17 GMT-0300 (Argentina Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

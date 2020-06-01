@@ -67,9 +67,6 @@ const setup = async function (accounts) {
 };
 
 contract('UpgradeScheme', accounts => {
-  before(function() {
-    helpers.etherForEveryone(accounts);
-  });
 
    it("setParameters", async() => {
      var upgradeScheme = await UpgradeScheme.new();

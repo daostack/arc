@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for schemes/Locking4Reputation.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">schemes/</a> Locking4Reputation.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>46/46</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">87.5% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>28/32</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>4/4</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>46/46</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">64×</span>
+<span class="cline-any cline-yes">58×</span>
+<span class="cline-any cline-yes">54×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">48×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">75×</span>
+<span class="cline-any cline-yes">69×</span>
+<span class="cline-any cline-yes">69×</span>
+<span class="cline-any cline-yes">69×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-yes">63×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity 0.5.17;
+&nbsp;
+import "../controller/Controller.sol";
+import "./Agreement.sol";
+&nbsp;
+/**
+ * @title A locker contract
+ */
+&nbsp;
+contract Locking4Reputation is Agreement {
+    using SafeMath for uint256;
+&nbsp;
+    event Redeem(address indexed _beneficiary, uint256 _amount);
+    event Release(bytes32 indexed _lockingId, address indexed _beneficiary, uint256 _amount);
+    event Lock(address indexed _locker, bytes32 indexed _lockingId, uint256 _amount, uint256 _period);
+&nbsp;
+    struct Locker {
+        uint256 amount;
+        uint256 releaseTime;
+    }
+&nbsp;
+    Avatar public avatar;
+&nbsp;
+    // A mapping from lockers addresses their lock balances.
+    mapping(address =&gt; mapping(bytes32=&gt;Locker)) public lockers;
+    // A mapping from lockers addresses to their scores.
+    mapping(address =&gt; uint) public scores;
+&nbsp;
+    uint256 public totalLocked;
+    uint256 public totalLockedLeft;
+    uint256 public totalScore;
+    uint256 public lockingsCounter; // Total number of lockings
+    uint256 public reputationReward;
+    uint256 public reputationRewardLeft;
+    uint256 public lockingEndTime;
+    uint256 public maxLockingPeriod;
+    uint256 public lockingStartTime;
+    uint256 public redeemEnableTime;
+&nbsp;
+    /**
+     * @dev redeem reputation function
+     * @param _beneficiary the beneficiary for the release
+     * @return uint256 reputation rewarded
+     */
+    function redeem(address _beneficiary) public returns(uint256 reputation) {
+        // solhint-disable-next-line not-rely-on-time
+        require(block.timestamp &gt; redeemEnableTime, "now &gt; redeemEnableTime");
+        require(scores[_beneficiary] &gt; 0, "score should be &gt; 0");
+        uint256 score = scores[_beneficiary];
+        scores[_beneficiary] = 0;
+        uint256 repRelation = score.mul(reputationReward);
+        reputation = repRelation.div(totalScore);
+&nbsp;
+        //check that the reputation is sum zero
+        reputationRewardLeft = reputationRewardLeft.sub(reputation);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(
+        Controller(
+        avatar.owner())
+        .mintReputation(reputation, _beneficiary, address(avatar)), "mint reputation should succeed");
+&nbsp;
+        emit Redeem(_beneficiary, reputation);
+    }
+&nbsp;
+    /**
+     * @dev release function
+     * @param _beneficiary the beneficiary for the release
+     * @param _lockingId the locking id to release
+     * @return bool
+     */
+    function _release(address _beneficiary, bytes32 _lockingId) internal returns(uint256 amount) {
+        Locker storage locker = lockers[_beneficiary][_lockingId];
+        require(locker.amount &gt; 0, "amount should be &gt; 0");
+        amount = locker.amount;
+        locker.amount = 0;
+        // solhint-disable-next-line not-rely-on-time
+        require(block.timestamp &gt; locker.releaseTime, "check the lock period pass");
+        totalLockedLeft = totalLockedLeft.sub(amount);
+&nbsp;
+        emit Release(_lockingId, _beneficiary, amount);
+    }
+&nbsp;
+    /**
+     * @dev lock function
+     * @param _amount the amount to lock
+     * @param _period the locking period
+     * @param _locker the locker
+     * @param _numerator price numerator
+     * @param _denominator price denominator
+     * @return lockingId
+     */
+    function _lock(
+        uint256 _amount,
+        uint256 _period,
+        address _locker,
+        uint256 _numerator,
+        uint256 _denominator,
+        bytes32 _agreementHash)
+        internal
+        onlyAgree(_agreementHash)
+        returns(bytes32 lockingId)
+        {
+        require(_amount &gt; 0, "locking amount should be &gt; 0");
+        require(_period &lt;= maxLockingPeriod, "locking period should be &lt;= maxLockingPeriod");
+        require(_period &gt; 0, "locking period should be &gt; 0");
+        // solhint-disable-next-line not-rely-on-time
+        require(now &lt;= lockingEndTime, "lock should be within the allowed locking period");
+        // solhint-disable-next-line not-rely-on-time
+        require(now &gt;= lockingStartTime, "lock should start after lockingStartTime");
+&nbsp;
+        lockingId = keccak256(abi.encodePacked(address(this), lockingsCounter));
+        lockingsCounter = lockingsCounter.add(1);
+&nbsp;
+        Locker storage locker = lockers[_locker][lockingId];
+        locker.amount = _amount;
+        // solhint-disable-next-line not-rely-on-time
+        locker.releaseTime = now + _period;
+        totalLocked = totalLocked.add(_amount);
+        totalLockedLeft = totalLockedLeft.add(_amount);
+        uint256 score = _period.mul(_amount).mul(_numerator).div(_denominator);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(score &gt; 0, "score must me &gt; 0");
+        scores[_locker] = scores[_locker].add(score);
+        //verify that redeem will not overflow for this locker
+        require((scores[_locker] * reputationReward)/scores[_locker] == reputationReward,
+        "score is too high");
+        totalScore = totalScore.add(score);
+&nbsp;
+        emit Lock(_locker, lockingId, _amount, _period);
+    }
+&nbsp;
+    /**
+     * @dev _initialize
+     * @param _avatar the avatar to mint reputation from
+     * @param _reputationReward the total reputation this contract will reward
+     *        for eth/token locking
+     * @param _lockingStartTime the locking start time.
+     * @param _lockingEndTime the locking end time.
+     *        locking is disable after this time.
+     * @param _redeemEnableTime redeem enable time .
+     *        redeem reputation can be done after this time.
+     * @param _maxLockingPeriod maximum locking period allowed.
+     */
+    function _initialize(
+        Avatar _avatar,
+        uint256 _reputationReward,
+        uint256 _lockingStartTime,
+        uint256 _lockingEndTime,
+        uint256 _redeemEnableTime,
+        uint256 _maxLockingPeriod,
+        bytes32 _agreementHash )
+    internal
+    {
+        require(avatar == Avatar(0), "can be called only one time");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_avatar != Avatar(0), "avatar cannot be zero");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_lockingEndTime &gt; _lockingStartTime, "locking end time should be greater than locking start time");
+        require(_redeemEnableTime &gt;= _lockingEndTime, "redeemEnableTime &gt;= lockingEndTime");
+&nbsp;
+        reputationReward = _reputationReward;
+        reputationRewardLeft = _reputationReward;
+        lockingEndTime = _lockingEndTime;
+        maxLockingPeriod = _maxLockingPeriod;
+        avatar = _avatar;
+        lockingStartTime = _lockingStartTime;
+        redeemEnableTime = _redeemEnableTime;
+        super.setAgreementHash(_agreementHash);
+    }
+&nbsp;
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat May 30 2020 12:44:17 GMT-0300 (Argentina Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

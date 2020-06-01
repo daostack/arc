@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for universalSchemes/VoteInOrganizationScheme.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">universalSchemes/</a> VoteInOrganizationScheme.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>27/27</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">60% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>6/10</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>4/4</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>28/28</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity 0.5.17;
+&nbsp;
+import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
+import "@daostack/infra/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
+import "./UniversalScheme.sol";
+import "../votingMachines/VotingMachineCallbacks.sol";
+&nbsp;
+&nbsp;
+/**
+ * @title VoteInOrganizationScheme.
+ * @dev A scheme to allow an organization to vote in a proposal.
+ */
+contract VoteInOrganizationScheme is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
+    event NewVoteProposal(
+        address indexed _avatar,
+        bytes32 indexed _proposalId,
+        address indexed _intVoteInterface,
+        IntVoteInterface _originalIntVote,
+        bytes32 _originalProposalId,
+        uint256 _vote,
+        string _descriptionHash
+    );
+&nbsp;
+    event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _param, bytes _callReturnValue);
+    event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
+&nbsp;
+    // Details of a voting proposal:
+    struct VoteProposal {
+        IntVoteInterface originalIntVote;
+        bytes32 originalProposalId;
+        uint256 vote;
+        bool exist;
+    }
+&nbsp;
+    // A mapping from the organization (Avatar) address to the saved data of the organization:
+    mapping(address=&gt;mapping(bytes32=&gt;VoteProposal)) public organizationsProposals;
+&nbsp;
+    struct Parameters {
+        IntVoteInterface intVote;
+        bytes32 voteParams;
+    }
+&nbsp;
+    // A mapping from hashes to parameters (use to store a particular configuration on the controller)
+    mapping(bytes32=&gt;Parameters) public parameters;
+&nbsp;
+    /**
+    * @dev execution of proposals, can only be called by the voting machine in which the vote is held.
+    * @param _proposalId the ID of the voting in the voting machine
+    * @param _param a parameter of the voting result, 1 yes and 2 is no.
+    * @return bool which represents a successful of the function
+    */
+    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
+        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
+        // Save proposal to memory and delete from storage:
+        VoteProposal memory proposal = organizationsProposals[address(avatar)][_proposalId];
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(proposal.exist);
+        delete organizationsProposals[address(avatar)][_proposalId];
+        emit ProposalDeleted(address(avatar), _proposalId);
+        bytes memory callReturnValue;
+        bool success;
+        // If no decision do nothing:
+        if (_param == 1) {
+&nbsp;
+            Controller controller = Controller(avatar.owner());
+            (success, callReturnValue) = controller.genericCall(
+            address(proposal.originalIntVote),
+            abi.encodeWithSignature("vote(bytes32,uint256,uint256,address)",
+            proposal.originalProposalId,
+            proposal.vote,
+            0,
+            address(this)),
+            avatar,
+            0
+            );
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(success);
+        }
+        emit ProposalExecuted(address(avatar), _proposalId, _param, callReturnValue);
+        return true;
+    }
+&nbsp;
+    /**
+    * @dev Hash the parameters, save them if necessary, and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
+    */
+    function setParameters(
+        bytes32 _voteParams,
+        IntVoteInterface _intVote
+    ) public returns(bytes32)
+    {
+        bytes32 paramsHash = getParametersHash(_voteParams, _intVote);
+        parameters[paramsHash].voteParams = _voteParams;
+        parameters[paramsHash].intVote = _intVote;
+        return paramsHash;
+    }
+&nbsp;
+    /**
+    * @dev propose to vote in other organization
+    *      The function trigger NewVoteProposal event
+    * @param _avatar avatar of the organization
+    * @param _originalIntVote the other organization voting machine
+    * @param _originalProposalId the other organization proposal id
+    * @param _vote - which value to vote in the destination organization
+    * @param _descriptionHash proposal description hash
+    * @return an id which represents the proposal
+    */
+    function proposeVote(
+    Avatar _avatar,
+    IntVoteInterface _originalIntVote,
+    bytes32 _originalProposalId,
+    uint256 _vote,
+    string memory _descriptionHash)
+    public
+    returns(bytes32)
+    {
+        Parameters memory params = parameters[getParametersFromController(_avatar)];
+        IntVoteInterface intVote = params.intVote;
+        (uint256 minVote, uint256 maxVote) = _originalIntVote.getAllowedRangeOfChoices();
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_vote &lt;= maxVote &amp;&amp; _vote &gt;= minVote, "vote should be in the allowed range");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_vote &lt;= _originalIntVote.getNumberOfChoices(_originalProposalId),
+        "vote should be &lt;= original proposal number of choices");
+&nbsp;
+        bytes32 proposalId = intVote.propose(2, params.voteParams, msg.sender, address(_avatar));
+&nbsp;
+        organizationsProposals[address(_avatar)][proposalId] = VoteProposal({
+            originalIntVote: _originalIntVote,
+            originalProposalId: _originalProposalId,
+            vote:_vote,
+            exist: true
+        });
+        emit NewVoteProposal(
+            address(_avatar),
+            proposalId,
+            address(params.intVote),
+            _originalIntVote,
+            _originalProposalId,
+            _vote,
+            _descriptionHash
+        );
+        proposalsInfo[address(intVote)][proposalId] = ProposalInfo({
+            blockNumber:block.number,
+            avatar:_avatar
+        });
+        return proposalId;
+    }
+&nbsp;
+    /**
+    * @dev Hash the parameters, and return the hash value
+    * @param _voteParams -  voting parameters
+    * @param _intVote  - voting machine contract.
+    * @return bytes32 -the parameters hash
+    */
+    function getParametersHash(
+        bytes32 _voteParams,
+        IntVoteInterface _intVote
+    ) public pure returns(bytes32)
+    {
+        return keccak256(abi.encodePacked(_voteParams, _intVote));
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat May 30 2020 12:44:17 GMT-0300 (Argentina Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

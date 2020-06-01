@@ -36,7 +36,7 @@ module.exports = {
       port: 8545,
       gas: 4543760
     },
-    coverage: {
+    soliditycoverage: {
       host: 'localhost',
       network_id: '*', // eslint-disable-line camelcase
       port: 8555,
@@ -61,6 +61,7 @@ module.exports = {
         enabled: true,
         runs: 200
       }
-      }
-  }
+    }
+  },
+  plugins: ["solidity-coverage"]
 };
