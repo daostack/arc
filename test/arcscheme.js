@@ -65,17 +65,46 @@ const setup = async function (accounts, initGov=true) {
 contract('ArcScheme', function(accounts) {
 
    it("avatar address cannot be 0 ", async function() {
+      var schemeMock = await SchemeMock.new();
+
       try {
-         await setup(accounts, false, true);
+         await schemeMock.initialize(helpers.NULL_ADDRESS,1);
          assert(false, "avatar 0 address should revert");
        } catch(error) {
           // revert
       }
+      await schemeMock.initialize(accounts[0],1);
+
+      var params = await helpers.setupGenesisProtocol(accounts,helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
+
+      schemeMock = await SchemeMock.new();
+      try {
+         await schemeMock.initializeGovernance(accounts[0],
+                                               params.uintArray,
+                                               params.voteOnBehalf,
+                                               helpers.NULL_ADDRESS,
+                                               helpers.NULL_ADDRESS,
+                                               [0,1,0],
+                                               "GenesisProtocol",
+                                               1);
+         assert(false, "daoFactory cannot be zero");
+       } catch(error) {
+          // revert
+      }
+      var registration = await helpers.registerImplementation();
+      await schemeMock.initializeGovernance(accounts[0],
+                                            params.uintArray,
+                                            params.voteOnBehalf,
+                                            registration.daoFactory.address,
+                                            helpers.NULL_ADDRESS,
+                                            [0,1,0],
+                                            "GenesisProtocol",
+                                            1);
    });
 
    it("vm address cannot be 0 ", async function() {
       try {
-         await setup(accounts, true, false, true);
+         await setup(accounts, true);
          assert(false, "vm 0 address should revert");
        } catch(error) {
           // revert
