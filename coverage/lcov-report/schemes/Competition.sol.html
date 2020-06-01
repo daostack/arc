@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for schemes/Competition.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">schemes/</a> Competition.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">97.84% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>136/139</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">77.66% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>73/94</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>9/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">97.84% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>136/139</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">73×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">71×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">69×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">64×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-yes">65×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-yes">31×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">27×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">31×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">29×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">17×</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15×</span>
+<span class="cline-any cline-yes">45×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity 0.5.17;
+&nbsp;
+import "./ContributionRewardExt.sol";
+&nbsp;
+&nbsp;
+contract Competition {
+    using SafeMath for uint256;
+&nbsp;
+    uint256 constant public MAX_NUMBER_OF_WINNERS = 100;
+&nbsp;
+    event NewCompetitionProposal(
+        bytes32 indexed _proposalId,
+        uint256 _numberOfWinners,
+        uint256[] _rewardSplit,
+        uint256 _startTime,
+        uint256 _votingStartTime,
+        uint256 _suggestionsEndTime,
+        uint256 _endTime,
+        uint256 _maxNumberOfVotesPerVoter,
+        address payable _contributionRewardExt, //address of the contract to redeem from.
+        address _admin
+    );
+&nbsp;
+    event Redeem(
+        bytes32 indexed _proposalId,
+        uint256 indexed _suggestionId,
+        uint256 _rewardPercentage
+    );
+&nbsp;
+    event NewSuggestion(
+        bytes32 indexed _proposalId,
+        uint256 indexed _suggestionId,
+        string _descriptionHash,
+        address payable indexed _beneficiary
+    );
+&nbsp;
+    event NewVote(
+        bytes32 indexed _proposalId,
+        uint256 indexed _suggestionId,
+        address indexed _voter,
+        uint256 _reputation
+    );
+&nbsp;
+    event SnapshotBlock(
+        bytes32 indexed _proposalId,
+        uint256 _snapshotBlock
+    );
+&nbsp;
+    // A struct holding the data for a competition proposal
+    struct Proposal {
+        uint256 numberOfWinners;
+        uint256[] rewardSplit;
+        uint256 startTime;
+        uint256 votingStartTime;
+        uint256 suggestionsEndTime;
+        uint256 endTime;
+        uint256 maxNumberOfVotesPerVoter;
+        address payable contributionRewardExt;
+        uint256 snapshotBlock;
+        uint256 reputationReward;
+        uint256 ethReward;
+        uint256 nativeTokenReward;
+        uint256 externalTokenReward;
+        uint256[] topSuggestions;
+        address admin;
+        //mapping from suggestions totalVotes to the number of suggestions with the same totalVotes.
+        mapping(uint256=&gt;uint256) suggestionsPerVote;
+        mapping(address=&gt;uint256) votesPerVoter;
+    }
+&nbsp;
+    struct Suggestion {
+        uint256 totalVotes;
+        bytes32 proposalId;
+        address payable beneficiary;
+        mapping(address=&gt;uint256) votes;
+    }
+&nbsp;
+    //mapping from proposalID to Proposal
+    mapping(bytes32=&gt;Proposal) public proposals;
+    //mapping from suggestionId to Suggestion
+    mapping(uint256=&gt;Suggestion) public suggestions;
+    uint256 public suggestionsCounter;
+    address payable public contributionRewardExt; //address of the contract to redeem from.
+&nbsp;
+    /**
+     * @dev initialize
+     * @param _contributionRewardExt the contributionRewardExt scheme which
+     *        manage and allocate the rewards for the competition.
+     */
+    function initialize(address payable _contributionRewardExt) external {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(contributionRewardExt == address(0), "can be called only one time");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_contributionRewardExt != address(0), "contributionRewardExt cannot be zero");
+        contributionRewardExt = _contributionRewardExt;
+    }
+&nbsp;
+    /**
+    * @dev Submit a competion proposal
+    * @param _descriptionHash A hash of the proposal's description
+    * @param _reputationChange - Amount of reputation change requested.
+    * @param _rewards rewards array:
+    *         rewards[0] - Amount of tokens requested per period
+    *         rewards[1] - Amount of ETH requested per period
+    *         rewards[2] - Amount of external tokens requested per period
+    * @param _externalToken Address of external token, if reward is requested there
+    * @param _rewardSplit an array of precentages which specify how to split the rewards
+    *         between the winning suggestions
+    * @param _competitionParams competition parameters :
+    *         _competitionParams[0] - competition startTime
+    *         _competitionParams[1] - _votingStartTime competition voting start time
+    *         _competitionParams[2] - _endTime competition end time
+    *         _competitionParams[3] - _maxNumberOfVotesPerVoter on how many suggestions a voter can vote
+    *         _competitionParams[4] - _suggestionsEndTime suggestion submission end time
+    *        _proposerIsAdmin -
+    *          true -  proposer is an admin.
+    *          false no admin.
+    *          if admin is set, so only admin can suggest on this proposal.
+    * @return proposalId the proposal id.
+    */
+    function proposeCompetition(
+            string calldata _descriptionHash,
+            int256 _reputationChange,
+            uint[3] calldata _rewards,
+            IERC20 _externalToken,
+            uint256[] calldata _rewardSplit,
+            uint256[5] calldata _competitionParams,
+            bool _proposerIsAdmin
+    )
+    external
+    // solhint-disable-next-line function-max-lines
+    returns(bytes32 proposalId) {
+        uint256 numberOfWinners = _rewardSplit.length;
+        uint256 startTime = _competitionParams[0];
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (startTime == 0) {
+          // solhint-disable-next-line not-rely-on-time
+<span class="cstat-no" title="statement not covered" >            startTime = now</span>;
+        }
+        // solhint-disable-next-line not-rely-on-time
+        require(startTime &gt;= now, "startTime should be greater than proposing time");
+        require(numberOfWinners &lt;= MAX_NUMBER_OF_WINNERS, "number of winners greater than max allowed");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_competitionParams[1] &lt; _competitionParams[2], "voting start time greater than end time");
+        require(_competitionParams[1] &gt;= startTime, "voting start time smaller than start time");
+        require(_competitionParams[3] &gt; 0, "maxNumberOfVotesPerVoter should be greater than 0");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_competitionParams[4] &lt;= _competitionParams[2],
+        "suggestionsEndTime should be earlier than proposal end time");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_competitionParams[4] &gt; startTime, "suggestionsEndTime should be later than proposal start time");
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (_rewards[2] &gt; 0) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(_externalToken != ERC20(0), "extenal token cannot be zero");
+        }
+        require(_reputationChange &gt;= 0, "negative reputation change is not allowed for a competition");
+        uint256 totalRewardSplit;
+        for (uint256 i = 0; i &lt; numberOfWinners; i++) {
+            totalRewardSplit = totalRewardSplit.add(_rewardSplit[i]);
+        }
+        require(totalRewardSplit == 100, "total rewards split is not 100%");
+        proposalId = ContributionRewardExt(contributionRewardExt).proposeContributionReward(
+                _descriptionHash, _reputationChange, _rewards, _externalToken, contributionRewardExt, msg.sender);
+        proposals[proposalId].numberOfWinners = numberOfWinners;
+        proposals[proposalId].rewardSplit = _rewardSplit;
+        proposals[proposalId].startTime = startTime;
+        proposals[proposalId].votingStartTime = _competitionParams[1];
+        proposals[proposalId].endTime = _competitionParams[2];
+        proposals[proposalId].maxNumberOfVotesPerVoter = _competitionParams[3];
+        proposals[proposalId].suggestionsEndTime = _competitionParams[4];
+        proposals[proposalId].reputationReward = uint256(_reputationChange);
+        proposals[proposalId].nativeTokenReward = _rewards[0];
+        proposals[proposalId].ethReward = _rewards[1];
+        proposals[proposalId].externalTokenReward = _rewards[2];
+        proposals[proposalId].snapshotBlock = 0;
+        if (_proposerIsAdmin) {
+            proposals[proposalId].admin = msg.sender;
+        }
+        emit NewCompetitionProposal(
+            proposalId,
+            numberOfWinners,
+            proposals[proposalId].rewardSplit,
+            startTime,
+            proposals[proposalId].votingStartTime,
+            proposals[proposalId].suggestionsEndTime,
+            proposals[proposalId].endTime,
+            proposals[proposalId].maxNumberOfVotesPerVoter,
+            contributionRewardExt,
+            proposals[proposalId].admin
+        );
+    }
+&nbsp;
+    /**
+    * @dev submit a competion suggestion
+    * @param _proposalId the proposal id this suggestion is referring to.
+    * @param _descriptionHash a descriptionHash of the suggestion.
+    * @param _beneficiary the beneficiary of this suggestion.
+    * @return suggestionId the suggestionId.
+    */
+    function suggest(
+            bytes32 _proposalId,
+            string calldata _descriptionHash,
+            address payable _beneficiary
+    )
+    external
+    returns(uint256)
+    {
+        if (proposals[_proposalId].admin != address(0)) {
+            require(proposals[_proposalId].admin == msg.sender, "only admin can suggest");
+        }
+        // solhint-disable-next-line not-rely-on-time
+        require(proposals[_proposalId].startTime &lt;= now, "competition not started yet");
+        // solhint-disable-next-line not-rely-on-time
+        require(proposals[_proposalId].suggestionsEndTime &gt; now, "suggestions submission time is over");
+        suggestionsCounter = suggestionsCounter.add(1);
+        suggestions[suggestionsCounter].proposalId = _proposalId;
+        address payable beneficiary;
+        if (_beneficiary == address(0)) {
+            beneficiary = msg.sender;
+        } else {
+            beneficiary = _beneficiary;
+        }
+        suggestions[suggestionsCounter].beneficiary = beneficiary;
+        emit NewSuggestion(_proposalId, suggestionsCounter, _descriptionHash, beneficiary);
+        return suggestionsCounter;
+    }
+&nbsp;
+    /**
+    * @dev vote on a suggestion
+    * @param _suggestionId suggestionId
+    * @return bool
+    */
+    function vote(uint256 _suggestionId)
+    external
+    returns(bool)
+    {
+        bytes32 proposalId = suggestions[_suggestionId].proposalId;
+        require(proposalId != bytes32(0), "suggestion does not exist");
+        setSnapshotBlock(proposalId);
+        Avatar avatar = ContributionRewardExt(contributionRewardExt).avatar();
+        uint256 reputation = avatar.nativeReputation().balanceOfAt(msg.sender, proposals[proposalId].snapshotBlock);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(reputation &gt; 0, "voter had no reputation when snapshot was taken");
+        Proposal storage proposal = proposals[proposalId];
+        // solhint-disable-next-line not-rely-on-time
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(proposal.endTime &gt; now, "competition ended");
+        Suggestion storage suggestion = suggestions[_suggestionId];
+        require(suggestion.votes[msg.sender] == 0, "already voted on this suggestion");
+        require(proposal.votesPerVoter[msg.sender] &lt; proposal.maxNumberOfVotesPerVoter,
+        "exceed number of votes allowed");
+        proposal.votesPerVoter[msg.sender] = proposal.votesPerVoter[msg.sender].add(1);
+        if (suggestion.totalVotes &gt; 0) {
+            proposal.suggestionsPerVote[suggestion.totalVotes] =
+            proposal.suggestionsPerVote[suggestion.totalVotes].sub(1);
+        }
+        suggestion.totalVotes = suggestion.totalVotes.add(reputation);
+        proposal.suggestionsPerVote[suggestion.totalVotes] = proposal.suggestionsPerVote[suggestion.totalVotes].add(1);
+        suggestion.votes[msg.sender] = reputation;
+        refreshTopSuggestions(proposalId, _suggestionId);
+        emit NewVote(proposalId, _suggestionId, msg.sender, reputation);
+        return true;
+    }
+&nbsp;
+    /**
+    * @dev setSnapshotBlock set the block for the reputaion snapshot
+    * this function is public in order to externaly set snapshot block regardless of the first voting event.
+    * @param _proposalId the proposal id
+    */
+    function setSnapshotBlock(bytes32 _proposalId) public {
+        // solhint-disable-next-line not-rely-on-time
+        require(proposals[_proposalId].votingStartTime &lt; now, "voting period not started yet");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(proposals[_proposalId].maxNumberOfVotesPerVoter &gt; 0, "proposal does not exist");
+        if (proposals[_proposalId].snapshotBlock == 0) {
+            proposals[_proposalId].snapshotBlock = block.number;
+            emit SnapshotBlock(_proposalId, block.number);
+        }
+    }
+&nbsp;
+    /**
+    * @dev sendLeftOverFund send leftover funds back to the dao.
+    * @param _proposalId the proposal id
+    */
+    function sendLeftOverFunds(bytes32 _proposalId) public {
+        // solhint-disable-next-line not-rely-on-time
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(proposals[_proposalId].endTime &lt; now, "competition is still on");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(proposals[_proposalId].maxNumberOfVotesPerVoter &gt; 0, "proposal does not exist");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_proposalId != bytes32(0), "proposalId is zero");
+        uint256[] memory topSuggestions = proposals[_proposalId].topSuggestions;
+        for (uint256 i = 0; i &lt; topSuggestions.length; i++) {
+            require(suggestions[topSuggestions[i]].beneficiary == address(0), "not all winning suggestions redeemed");
+        }
+&nbsp;
+        (, , , , , ,
+        uint256 nativeTokenRewardLeft, ,
+        uint256 ethRewardLeft,
+        uint256 externalTokenRewardLeft,)
+        = ContributionRewardExt(contributionRewardExt).organizationProposals(_proposalId);
+&nbsp;
+        Avatar avatar = ContributionRewardExt(contributionRewardExt).avatar();
+&nbsp;
+        ContributionRewardExt(contributionRewardExt).redeemExternalTokenByRewarder(
+        _proposalId, address(avatar), externalTokenRewardLeft);
+&nbsp;
+        ContributionRewardExt(contributionRewardExt).redeemEtherByRewarder(
+        _proposalId, address(avatar), ethRewardLeft);
+&nbsp;
+        ContributionRewardExt(contributionRewardExt).redeemNativeTokenByRewarder(
+        _proposalId, address(avatar), nativeTokenRewardLeft);
+    }
+&nbsp;
+    /**
+    * @dev redeem a winning suggestion reward
+    * @param _suggestionId suggestionId
+    */
+    function redeem(uint256 _suggestionId) public {
+        bytes32 proposalId = suggestions[_suggestionId].proposalId;
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(proposalId != bytes32(0), "proposalId is zero");
+        Proposal storage proposal = proposals[proposalId];
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_suggestionId &gt; 0, "suggestionId is zero");
+        // solhint-disable-next-line not-rely-on-time
+        require(proposal.endTime &lt; now, "competition is still on");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(proposal.maxNumberOfVotesPerVoter &gt; 0, "proposal does not exist");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(suggestions[_suggestionId].beneficiary != address(0),
+        "suggestion was already redeemed");
+        address payable beneficiary = suggestions[_suggestionId].beneficiary;
+        uint256 orderIndex = getOrderedIndexOfSuggestion(_suggestionId);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(orderIndex &lt; proposal.topSuggestions.length, "suggestion is not in winners list");
+        suggestions[_suggestionId].beneficiary = address(0);
+        uint256 rewardPercentage = 0;
+        uint256 numberOfTieSuggestions = proposal.suggestionsPerVote[suggestions[_suggestionId].totalVotes];
+        uint256 j;
+        //calc the reward percentage for this suggestion
+        for (j = orderIndex; j &lt; (orderIndex+numberOfTieSuggestions) &amp;&amp; j &lt; proposal.numberOfWinners; j++) {
+            rewardPercentage = rewardPercentage.add(proposal.rewardSplit[j]);
+        }
+        rewardPercentage = rewardPercentage.div(numberOfTieSuggestions);
+        uint256 rewardPercentageLeft = 0;
+        if (proposal.topSuggestions.length &lt; proposal.numberOfWinners) {
+          //if there are less winners than the proposal number of winners so divide the pre allocated
+          //left reward equally between the winners
+            for (j = proposal.topSuggestions.length; j &lt; proposal.numberOfWinners; j++) {
+                rewardPercentageLeft = rewardPercentageLeft.add(proposal.rewardSplit[j]);
+            }
+            rewardPercentage =
+            rewardPercentage.add(rewardPercentageLeft.div(proposal.topSuggestions.length));
+        }
+        uint256 amount;
+        amount = proposal.externalTokenReward.mul(rewardPercentage).div(100);
+        ContributionRewardExt(contributionRewardExt).redeemExternalTokenByRewarder(
+        proposalId, beneficiary, amount);
+&nbsp;
+        amount = proposal.reputationReward.mul(rewardPercentage).div(100);
+        ContributionRewardExt(contributionRewardExt).redeemReputationByRewarder(
+        proposalId, beneficiary, amount);
+&nbsp;
+        amount = proposal.ethReward.mul(rewardPercentage).div(100);
+        ContributionRewardExt(contributionRewardExt).redeemEtherByRewarder(
+        proposalId, beneficiary, amount);
+&nbsp;
+        amount = proposal.nativeTokenReward.mul(rewardPercentage).div(100);
+        ContributionRewardExt(contributionRewardExt).redeemNativeTokenByRewarder(
+        proposalId, beneficiary, amount);
+        emit Redeem(proposalId, _suggestionId, rewardPercentage);
+    }
+&nbsp;
+    /**
+    * @dev getOrderedIndexOfSuggestion return the index of specific suggestion in the winners list.
+    * for the case when the suggestion is NOT in the winners list,
+    * this method will return topSuggestions.length
+    * @param _suggestionId suggestion id
+    */
+    function getOrderedIndexOfSuggestion(uint256 _suggestionId)
+    public
+    view
+    returns(uint256 index) {
+        bytes32 proposalId = suggestions[_suggestionId].proposalId;
+        require(proposalId != bytes32(0), "suggestion does not exist");
+        uint256[] memory topSuggestions = proposals[proposalId].topSuggestions;
+        /** get how many elements are greater than a given element*/
+        for (uint256 i = 0; i &lt; topSuggestions.length; i++) {
+            if (suggestions[topSuggestions[i]].totalVotes &gt; suggestions[_suggestionId].totalVotes) {
+                index++;
+            }
+        }
+    }
+&nbsp;
+    /**
+    * @dev refreshTopSuggestions this function maintain a winners list array.
+    * it will check if the given suggestion is among the top suggestions, and if so,
+    * update the list of top suggestions
+    * @param _proposalId proposal id
+    * @param _suggestionId suggestion id
+    */
+    // solhint-disable-next-line code-complexity
+    function refreshTopSuggestions(bytes32 _proposalId, uint256 _suggestionId) private {
+        uint256[] storage topSuggestions = proposals[_proposalId].topSuggestions;
+        uint256 topSuggestionsLength = topSuggestions.length;
+        uint256 i;
+        if (topSuggestionsLength &lt; proposals[_proposalId].numberOfWinners) {
+            for (i = 0; i &lt; topSuggestionsLength; i++) {
+                if (topSuggestions[i] == _suggestionId) {
+                    return;
+                }
+            }
+            topSuggestions.push(_suggestionId);
+        } else {
+         /** get the index of the smallest element **/
+            uint256 smallest = 0;
+            for (i = 0; i &lt; proposals[_proposalId].numberOfWinners; i++) {
+                if (suggestions[topSuggestions[i]].totalVotes &lt;
+                    suggestions[topSuggestions[smallest]].totalVotes) {
+                    smallest = i;
+                } else <span class="missing-if-branch" title="if path not taken" >I</span>if (topSuggestions[i] == _suggestionId) {
+                  //the suggestion is already in the topSuggestions list
+<span class="cstat-no" title="statement not covered" >                    return;</span>
+                }
+            }
+&nbsp;
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (suggestions[topSuggestions[smallest]].totalVotes &lt; suggestions[_suggestionId].totalVotes) {
+<span class="cstat-no" title="statement not covered" >                topSuggestions[smallest] = _suggestionId</span>;
+            }
+        }
+    }
+&nbsp;
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat May 30 2020 12:44:17 GMT-0300 (Argentina Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

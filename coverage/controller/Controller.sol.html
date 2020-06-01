@@ -1,0 +1,1739 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for controller/Controller.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">controller/</a> Controller.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">99.07% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>107/108</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">73.53% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>50/68</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">96.97% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>32/33</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">99.18% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>121/122</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">354×</span>
+<span class="cline-any cline-yes">354×</span>
+<span class="cline-any cline-yes">354×</span>
+<span class="cline-any cline-yes">354×</span>
+<span class="cline-any cline-yes">354×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">316×</span>
+<span class="cline-any cline-yes">316×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1887×</span>
+<span class="cline-any cline-yes">1885×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">290×</span>
+<span class="cline-any cline-yes">290×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2222×</span>
+<span class="cline-any cline-yes">2222×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2207×</span>
+<span class="cline-any cline-yes">1979×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2778×</span>
+<span class="cline-any cline-yes">2776×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">79×</span>
+<span class="cline-any cline-yes">79×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">956×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">955×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">731×</span>
+<span class="cline-any cline-yes">731×</span>
+<span class="cline-any cline-yes">731×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">33×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">32×</span>
+<span class="cline-any cline-yes">32×</span>
+<span class="cline-any cline-yes">32×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-yes">19×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-yes">25×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">290×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">90×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">57×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1079×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">pragma solidity 0.5.17;
+&nbsp;
+import "./Avatar.sol";
+import "../globalConstraints/GlobalConstraintInterface.sol";
+&nbsp;
+/**
+ * @title Controller contract
+ * @dev A controller controls the organizations tokens, reputation and avatar.
+ * It is subject to a set of schemes and constraints that determine its behavior.
+ * Each scheme has it own parameters and operation permissions.
+ */
+contract Controller {
+&nbsp;
+    struct Scheme {
+        bytes32 paramsHash;  // a hash "configuration" of the scheme
+        bytes4  permissions; // A bitwise flags of permissions,
+                             // All 0: Not registered,
+                             // 1st bit: Flag if the scheme is registered,
+                             // 2nd bit: Scheme can register other schemes
+                             // 3rd bit: Scheme can add/remove global constraints
+                             // 4th bit: Scheme can upgrade the controller
+                             // 5th bit: Scheme can call genericCall on behalf of
+                             //          the organization avatar
+    }
+&nbsp;
+    struct GlobalConstraint {
+        address gcAddress;
+        bytes32 params;
+    }
+&nbsp;
+    struct GlobalConstraintRegister {
+        bool isRegistered; //is registered
+        uint256 index;    //index at globalConstraints
+    }
+&nbsp;
+    mapping(address=&gt;Scheme) public schemes;
+&nbsp;
+    Avatar public avatar;
+    DAOToken public nativeToken;
+    Reputation public nativeReputation;
+  // newController will point to the new controller after the present controller is upgraded
+    address public newController;
+  // globalConstraintsPre that determine pre conditions for all actions on the controller
+&nbsp;
+    GlobalConstraint[] public globalConstraintsPre;
+  // globalConstraintsPost that determine post conditions for all actions on the controller
+    GlobalConstraint[] public globalConstraintsPost;
+  // globalConstraintsRegisterPre indicate if a globalConstraints is registered as a pre global constraint
+    mapping(address=&gt;GlobalConstraintRegister) public globalConstraintsRegisterPre;
+  // globalConstraintsRegisterPost indicate if a globalConstraints is registered as a post global constraint
+    mapping(address=&gt;GlobalConstraintRegister) public globalConstraintsRegisterPost;
+&nbsp;
+    event MintReputation (address indexed _sender, address indexed _to, uint256 _amount);
+    event BurnReputation (address indexed _sender, address indexed _from, uint256 _amount);
+    event MintTokens (address indexed _sender, address indexed _beneficiary, uint256 _amount);
+    event RegisterScheme (address indexed _sender, address indexed _scheme);
+    event UnregisterScheme (address indexed _sender, address indexed _scheme);
+    event UpgradeController(address indexed _oldController, address _newController);
+&nbsp;
+    event AddGlobalConstraint(
+        address indexed _globalConstraint,
+        bytes32 _params,
+        GlobalConstraintInterface.CallPhase _when);
+&nbsp;
+    event RemoveGlobalConstraint(address indexed _globalConstraint, uint256 _index, bool _isPre);
+&nbsp;
+    constructor( Avatar _avatar) public {
+        avatar = _avatar;
+        nativeToken = avatar.nativeToken();
+        nativeReputation = avatar.nativeReputation();
+        schemes[msg.sender] = Scheme({paramsHash: bytes32(0), permissions: bytes4(0x0000001F)});
+        emit RegisterScheme (msg.sender, msg.sender);
+    }
+&nbsp;
+  // Do not allow mistaken calls:
+   // solhint-disable-next-line payable-fallback
+<span class="fstat-no" title="function not covered" >    function() externa</span>l {
+<span class="cstat-no" title="statement not covered" >        revert()</span>;
+    }
+&nbsp;
+  // Modifiers:
+    modifier onlyRegisteredScheme() {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(schemes[msg.sender].permissions&amp;bytes4(0x00000001) == bytes4(0x00000001));
+        _;
+    }
+&nbsp;
+    modifier onlyRegisteringSchemes() {
+        require(schemes[msg.sender].permissions&amp;bytes4(0x00000002) == bytes4(0x00000002));
+        _;
+    }
+&nbsp;
+    modifier onlyGlobalConstraintsScheme() {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(schemes[msg.sender].permissions&amp;bytes4(0x00000004) == bytes4(0x00000004));
+        _;
+    }
+&nbsp;
+    modifier onlyUpgradingScheme() {
+        require(schemes[msg.sender].permissions&amp;bytes4(0x00000008) == bytes4(0x00000008));
+        _;
+    }
+&nbsp;
+    modifier onlyGenericCallScheme() {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(schemes[msg.sender].permissions&amp;bytes4(0x00000010) == bytes4(0x00000010));
+        _;
+    }
+&nbsp;
+    modifier onlyMetaDataScheme() {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(schemes[msg.sender].permissions&amp;bytes4(0x00000010) == bytes4(0x00000010));
+        _;
+    }
+&nbsp;
+    modifier onlySubjectToConstraint(bytes32 func) {
+        uint256 idx;
+        for (idx = 0; idx &lt; globalConstraintsPre.length; idx++) {
+            require(
+            (GlobalConstraintInterface(globalConstraintsPre[idx].gcAddress))
+            .pre(msg.sender, globalConstraintsPre[idx].params, func));
+        }
+        _;
+        for (idx = 0; idx &lt; globalConstraintsPost.length; idx++) {
+            require(
+            (GlobalConstraintInterface(globalConstraintsPost[idx].gcAddress))
+            .post(msg.sender, globalConstraintsPost[idx].params, func));
+        }
+    }
+&nbsp;
+    modifier isAvatarValid(address _avatar) {
+        require(_avatar == address(avatar));
+        _;
+    }
+&nbsp;
+    /**
+     * @dev Mint `_amount` of reputation that are assigned to `_to` .
+     * @param  _amount amount of reputation to mint
+     * @param _to beneficiary address
+     * @return bool which represents a success
+     */
+    function mintReputation(uint256 _amount, address _to, address _avatar)
+    external
+    onlyRegisteredScheme
+    onlySubjectToConstraint("mintReputation")
+    isAvatarValid(_avatar)
+    returns(bool)
+    {
+        emit MintReputation(msg.sender, _to, _amount);
+        return nativeReputation.mint(_to, _amount);
+    }
+&nbsp;
+    /**
+     * @dev Burns `_amount` of reputation from `_from`
+     * @param _amount amount of reputation to burn
+     * @param _from The address that will lose the reputation
+     * @return bool which represents a success
+     */
+    function burnReputation(uint256 _amount, address _from, address _avatar)
+    external
+    onlyRegisteredScheme
+    onlySubjectToConstraint("burnReputation")
+    isAvatarValid(_avatar)
+    returns(bool)
+    {
+        emit BurnReputation(msg.sender, _from, _amount);
+        return nativeReputation.burn(_from, _amount);
+    }
+&nbsp;
+    /**
+     * @dev mint tokens .
+     * @param  _amount amount of token to mint
+     * @param _beneficiary beneficiary address
+     * @return bool which represents a success
+     */
+    function mintTokens(uint256 _amount, address _beneficiary, address _avatar)
+    external
+    onlyRegisteredScheme
+    onlySubjectToConstraint("mintTokens")
+    isAvatarValid(_avatar)
+    returns(bool)
+    {
+        emit MintTokens(msg.sender, _beneficiary, _amount);
+        return nativeToken.mint(_beneficiary, _amount);
+    }
+&nbsp;
+  /**
+   * @dev register a scheme
+   * @param _scheme the address of the scheme
+   * @param _paramsHash a hashed configuration of the usage of the scheme
+   * @param _permissions the permissions the new scheme will have
+   * @return bool which represents a success
+   */
+    function registerScheme(address _scheme, bytes32 _paramsHash, bytes4 _permissions, address _avatar)
+    external
+    onlyRegisteringSchemes
+    onlySubjectToConstraint("registerScheme")
+    isAvatarValid(_avatar)
+    returns(bool)
+    {
+&nbsp;
+        Scheme memory scheme = schemes[_scheme];
+&nbsp;
+    // Check scheme has at least the permissions it is changing, and at least the current permissions:
+    // Implementation is a bit messy. One must recall logic-circuits ^^
+&nbsp;
+    // produces non-zero if sender does not have all of the perms that are changing between old and new
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(bytes4(0x0000001f)&amp;(_permissions^scheme.permissions)&amp;(~schemes[msg.sender].permissions) == bytes4(0));
+&nbsp;
+    // produces non-zero if sender does not have all of the perms in the old scheme
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(bytes4(0x0000001f)&amp;(scheme.permissions&amp;(~schemes[msg.sender].permissions)) == bytes4(0));
+&nbsp;
+    // Add or change the scheme:
+        schemes[_scheme].paramsHash = _paramsHash;
+        schemes[_scheme].permissions = _permissions|bytes4(0x00000001);
+        emit RegisterScheme(msg.sender, _scheme);
+        return true;
+    }
+&nbsp;
+    /**
+     * @dev unregister a scheme
+     * @param _scheme the address of the scheme
+     * @return bool which represents a success
+     */
+    function unregisterScheme( address _scheme, address _avatar)
+    external
+    onlyRegisteringSchemes
+    onlySubjectToConstraint("unregisterScheme")
+    isAvatarValid(_avatar)
+    returns(bool)
+    {
+    //check if the scheme is registered
+        if (_isSchemeRegistered(_scheme) == false) {
+            return false;
+        }
+    // Check the unregistering scheme has enough permissions:
+        require(bytes4(0x0000001f)&amp;(schemes[_scheme].permissions&amp;(~schemes[msg.sender].permissions)) == bytes4(0));
+&nbsp;
+    // Unregister:
+        emit UnregisterScheme(msg.sender, _scheme);
+        delete schemes[_scheme];
+        return true;
+    }
+&nbsp;
+    /**
+     * @dev unregister the caller's scheme
+     * @return bool which represents a success
+     */
+    function unregisterSelf(address _avatar) external isAvatarValid(_avatar) returns(bool) {
+        if (_isSchemeRegistered(msg.sender) == false) {
+            return false;
+        }
+        delete schemes[msg.sender];
+        emit UnregisterScheme(msg.sender, msg.sender);
+        return true;
+    }
+&nbsp;
+    /**
+     * @dev add or update Global Constraint
+     * @param _globalConstraint the address of the global constraint to be added.
+     * @param _params the constraint parameters hash.
+     * @return bool which represents a success
+     */
+    function addGlobalConstraint(address _globalConstraint, bytes32 _params, address _avatar)
+    external
+    onlyGlobalConstraintsScheme
+    isAvatarValid(_avatar)
+    returns(bool)
+    {
+        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
+        if ((when == GlobalConstraintInterface.CallPhase.Pre)||
+            (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            if (!globalConstraintsRegisterPre[_globalConstraint].isRegistered) {
+                globalConstraintsPre.push(GlobalConstraint(_globalConstraint, _params));
+                globalConstraintsRegisterPre[_globalConstraint] =
+                GlobalConstraintRegister(true, globalConstraintsPre.length-1);
+            }else {
+                globalConstraintsPre[globalConstraintsRegisterPre[_globalConstraint].index].params = _params;
+            }
+        }
+        if ((when == GlobalConstraintInterface.CallPhase.Post)||
+            (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            if (!globalConstraintsRegisterPost[_globalConstraint].isRegistered) {
+                globalConstraintsPost.push(GlobalConstraint(_globalConstraint, _params));
+                globalConstraintsRegisterPost[_globalConstraint] =
+                GlobalConstraintRegister(true, globalConstraintsPost.length-1);
+            }else {
+                globalConstraintsPost[globalConstraintsRegisterPost[_globalConstraint].index].params = _params;
+            }
+        }
+        emit AddGlobalConstraint(_globalConstraint, _params, when);
+        return true;
+    }
+&nbsp;
+    /**
+     * @dev remove Global Constraint
+     * @param _globalConstraint the address of the global constraint to be remove.
+     * @return bool which represents a success
+     */
+     // solhint-disable-next-line code-complexity
+    function removeGlobalConstraint (address _globalConstraint, address _avatar)
+    external
+    onlyGlobalConstraintsScheme
+    isAvatarValid(_avatar)
+    returns(bool)
+    {
+        GlobalConstraintRegister memory globalConstraintRegister;
+        GlobalConstraint memory globalConstraint;
+        GlobalConstraintInterface.CallPhase when = GlobalConstraintInterface(_globalConstraint).when();
+        bool retVal = false;
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if ((when == GlobalConstraintInterface.CallPhase.Pre)||
+            (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            globalConstraintRegister = globalConstraintsRegisterPre[_globalConstraint];
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (globalConstraintRegister.isRegistered) {
+                if (globalConstraintRegister.index &lt; globalConstraintsPre.length-1) {
+                    globalConstraint = globalConstraintsPre[globalConstraintsPre.length-1];
+                    globalConstraintsPre[globalConstraintRegister.index] = globalConstraint;
+                    globalConstraintsRegisterPre[globalConstraint.gcAddress].index = globalConstraintRegister.index;
+                }
+                globalConstraintsPre.length--;
+                delete globalConstraintsRegisterPre[_globalConstraint];
+                retVal = true;
+            }
+        }
+        if ((when == GlobalConstraintInterface.CallPhase.Post)||
+            (when == GlobalConstraintInterface.CallPhase.PreAndPost)) {
+            globalConstraintRegister = globalConstraintsRegisterPost[_globalConstraint];
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (globalConstraintRegister.isRegistered) {
+                if (globalConstraintRegister.index &lt; globalConstraintsPost.length-1) {
+                    globalConstraint = globalConstraintsPost[globalConstraintsPost.length-1];
+                    globalConstraintsPost[globalConstraintRegister.index] = globalConstraint;
+                    globalConstraintsRegisterPost[globalConstraint.gcAddress].index = globalConstraintRegister.index;
+                }
+                globalConstraintsPost.length--;
+                delete globalConstraintsRegisterPost[_globalConstraint];
+                retVal = true;
+            }
+        }
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (retVal) {
+            emit RemoveGlobalConstraint(
+            _globalConstraint,
+            globalConstraintRegister.index,
+            when == GlobalConstraintInterface.CallPhase.Pre
+            );
+        }
+        return retVal;
+    }
+&nbsp;
+  /**
+    * @dev upgrade the Controller
+    *      The function will trigger an event 'UpgradeController'.
+    * @param  _newController the address of the new controller.
+    * @return bool which represents a success
+    */
+    function upgradeController(address _newController, Avatar _avatar)
+    external
+    onlyUpgradingScheme
+    isAvatarValid(address(_avatar))
+    returns(bool)
+    {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(newController == address(0));   // so the upgrade could be done once for a contract.
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_newController != address(0));
+        newController = _newController;
+        avatar.transferOwnership(_newController);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(avatar.owner() == _newController);
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (nativeToken.owner() == address(this)) {
+            nativeToken.transferOwnership(_newController);
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(nativeToken.owner() == _newController);
+        }
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (nativeReputation.owner() == address(this)) {
+            nativeReputation.transferOwnership(_newController);
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(nativeReputation.owner() == _newController);
+        }
+        emit UpgradeController(address(this), newController);
+        return true;
+    }
+&nbsp;
+    /**
+    * @dev perform a generic call to an arbitrary contract
+    * @param _contract  the contract's address to call
+    * @param _data ABI-encoded contract call to call `_contract` address.
+    * @param _avatar the controller's avatar address
+    * @param _value value (ETH) to transfer with the transaction
+    * @return bool -success
+    *         bytes  - the return value of the called _contract's function.
+    */
+    function genericCall(address _contract, bytes calldata _data, Avatar _avatar, uint256 _value)
+    external
+    onlyGenericCallScheme
+    onlySubjectToConstraint("genericCall")
+    isAvatarValid(address(_avatar))
+    returns (bool, bytes memory)
+    {
+        return avatar.genericCall(_contract, _data, _value);
+    }
+&nbsp;
+  /**
+   * @dev send some ether
+   * @param _amountInWei the amount of ether (in Wei) to send
+   * @param _to address of the beneficiary
+   * @return bool which represents a success
+   */
+    function sendEther(uint256 _amountInWei, address payable _to, Avatar _avatar)
+    external
+    onlyRegisteredScheme
+    onlySubjectToConstraint("sendEther")
+    isAvatarValid(address(_avatar))
+    returns(bool)
+    {
+        return avatar.sendEther(_amountInWei, _to);
+    }
+&nbsp;
+    /**
+    * @dev send some amount of arbitrary ERC20 Tokens
+    * @param _externalToken the address of the Token Contract
+    * @param _to address of the beneficiary
+    * @param _value the amount of ether (in Wei) to send
+    * @return bool which represents a success
+    */
+    function externalTokenTransfer(IERC20 _externalToken, address _to, uint256 _value, Avatar _avatar)
+    external
+    onlyRegisteredScheme
+    onlySubjectToConstraint("externalTokenTransfer")
+    isAvatarValid(address(_avatar))
+    returns(bool)
+    {
+        return avatar.externalTokenTransfer(_externalToken, _to, _value);
+    }
+&nbsp;
+    /**
+    * @dev transfer token "from" address "to" address
+    *      One must to approve the amount of tokens which can be spend from the
+    *      "from" account.This can be done using externalTokenApprove.
+    * @param _externalToken the address of the Token Contract
+    * @param _from address of the account to send from
+    * @param _to address of the beneficiary
+    * @param _value the amount of ether (in Wei) to send
+    * @return bool which represents a success
+    */
+    function externalTokenTransferFrom(
+    IERC20 _externalToken,
+    address _from,
+    address _to,
+    uint256 _value,
+    Avatar _avatar)
+    external
+    onlyRegisteredScheme
+    onlySubjectToConstraint("externalTokenTransferFrom")
+    isAvatarValid(address(_avatar))
+    returns(bool)
+    {
+        return avatar.externalTokenTransferFrom(_externalToken, _from, _to, _value);
+    }
+&nbsp;
+    /**
+    * @dev externalTokenApproval approve the spender address to spend a specified amount of tokens
+    *      on behalf of msg.sender.
+    * @param _externalToken the address of the Token Contract
+    * @param _spender address
+    * @param _value the amount of ether (in Wei) which the approval is referring to.
+    * @return bool which represents a success
+    */
+    function externalTokenApproval(IERC20 _externalToken, address _spender, uint256 _value, Avatar _avatar)
+    external
+    onlyRegisteredScheme
+    onlySubjectToConstraint("externalTokenIncreaseApproval")
+    isAvatarValid(address(_avatar))
+    returns(bool)
+    {
+        return avatar.externalTokenApproval(_externalToken, _spender, _value);
+    }
+&nbsp;
+    /**
+    * @dev metaData emits an event with a string, should contain the hash of some meta data.
+    * @param _metaData a string representing a hash of the meta data
+    * @param _avatar Avatar
+    * @return bool which represents a success
+    */
+    function metaData(string calldata _metaData, Avatar _avatar)
+        external
+        onlyMetaDataScheme
+        isAvatarValid(address(_avatar))
+        returns(bool)
+        {
+        return avatar.metaData(_metaData);
+    }
+&nbsp;
+    /**
+     * @dev getNativeReputation
+     * @param _avatar the organization avatar.
+     * @return organization native reputation
+     */
+    function getNativeReputation(address _avatar) external isAvatarValid(_avatar) view returns(address) {
+        return address(nativeReputation);
+    }
+&nbsp;
+    function isSchemeRegistered(address _scheme, address _avatar) external isAvatarValid(_avatar) view returns(bool) {
+        return _isSchemeRegistered(_scheme);
+    }
+&nbsp;
+    function getSchemeParameters(address _scheme, address _avatar)
+    external
+    isAvatarValid(_avatar)
+    view
+    returns(bytes32)
+    {
+        return schemes[_scheme].paramsHash;
+    }
+&nbsp;
+    function getSchemePermissions(address _scheme, address _avatar)
+    external
+    isAvatarValid(_avatar)
+    view
+    returns(bytes4)
+    {
+        return schemes[_scheme].permissions;
+    }
+&nbsp;
+    function getGlobalConstraintParameters(address _globalConstraint, address) external view returns(bytes32) {
+&nbsp;
+        GlobalConstraintRegister memory register = globalConstraintsRegisterPre[_globalConstraint];
+&nbsp;
+        if (register.isRegistered) {
+            return globalConstraintsPre[register.index].params;
+        }
+&nbsp;
+        register = globalConstraintsRegisterPost[_globalConstraint];
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (register.isRegistered) {
+            return globalConstraintsPost[register.index].params;
+        }
+    }
+&nbsp;
+   /**
+    * @dev globalConstraintsCount return the global constraint pre and post count
+    * @return uint256 globalConstraintsPre count.
+    * @return uint256 globalConstraintsPost count.
+    */
+    function globalConstraintsCount(address _avatar)
+        external
+        isAvatarValid(_avatar)
+        view
+        returns(uint, uint)
+        {
+        return (globalConstraintsPre.length, globalConstraintsPost.length);
+    }
+&nbsp;
+    function isGlobalConstraintRegistered(address _globalConstraint, address _avatar)
+        external
+        isAvatarValid(_avatar)
+        view
+        returns(bool)
+        {
+        return (globalConstraintsRegisterPre[_globalConstraint].isRegistered ||
+                globalConstraintsRegisterPost[_globalConstraint].isRegistered);
+    }
+&nbsp;
+    function _isSchemeRegistered(address _scheme) private view returns(bool) {
+        return (schemes[_scheme].permissions&amp;bytes4(0x00000001) != bytes4(0));
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat May 30 2020 12:44:17 GMT-0300 (Argentina Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

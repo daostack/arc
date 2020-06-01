@@ -71,9 +71,6 @@ const createCallToActionMock = async function(_avatar,_actionMock) {
 };
 
 contract('GenericScheme', function(accounts) {
-  before(function() {
-    helpers.etherForEveryone(accounts);
-  });
 
     it("proposeCall log", async function() {
 

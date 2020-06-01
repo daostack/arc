@@ -41,9 +41,6 @@ const setup = async function (accounts) {
 };
 
 contract('OrganizationRegister',accounts => {
-  before(function() {
-     helpers.etherForEveryone(accounts);
-  });
 
    it("setParameters", async() => {
      var organizationRegister = await OrganizationRegister.new();
