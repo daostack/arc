@@ -33,7 +33,6 @@ contract SchemeMock is ArcScheme {
             _stakingToken,
             address(this),
             address(this),
-            address(this),
             _packageVersion,
             _votingMachineName);
         testData = _testData;

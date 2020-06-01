@@ -68,7 +68,6 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
             _stakingToken,
             address(this),
             address(this),
-            address(this),
             _packageVersion,
             _votingMachineName);
     }

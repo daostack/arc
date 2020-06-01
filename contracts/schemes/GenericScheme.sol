@@ -76,7 +76,6 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             _stakingToken,
             address(this),
             address(this),
-            address(this),
             _packageVersion,
             _votingMachineName);
         contractToCall = _contractToCall;

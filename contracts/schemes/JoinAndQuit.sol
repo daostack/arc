@@ -112,7 +112,6 @@ contract JoinAndQuit is
             _stakingToken,
             address(this),
             address(this),
-            address(this),
             _packageVersion,
             _votingMachineName);
 

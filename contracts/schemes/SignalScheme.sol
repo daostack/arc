@@ -64,7 +64,6 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             _stakingToken,
             address(this),
             address(this),
-            address(this),
             _packageVersion,
             _votingMachineName);
         signalType = _signalType;

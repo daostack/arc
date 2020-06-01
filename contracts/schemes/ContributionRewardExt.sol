@@ -112,7 +112,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
             _stakingToken,
             address(this),
             address(this),
-            address(this),
             _packageVersion,
             _votingMachineName);
         vault = new Vault();

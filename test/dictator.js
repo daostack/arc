@@ -24,30 +24,29 @@ const setup = async function (accounts) {
    registration = await helpers.registerImplementation();
    testSetup.reputationArray = [2000,4000,7000];
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+
+   testSetup.owner = accounts[4];
+   testSetup.dictatorParams= await setupDictator(
+                      helpers.NULL_ADDRESS,
+                      testSetup.owner
+                      );
+   var permissions = "0x0000001f";
+
+   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                        accounts,
                                                                        registration,
                                                                        [accounts[0],
                                                                        accounts[1],
                                                                        accounts[2]],
                                                                        [1000,0,0],
-                                                                       testSetup.reputationArray);
-   testSetup.owner = accounts[4];
-   testSetup.dictatorParams= await setupDictator(
-                      testSetup.org.avatar.address,
-                      testSetup.owner
-                      );
-   var permissions = "0x0000001f";
+                                                                       testSetup.reputationArray,0,
+                                                                       [web3.utils.fromAscii("Dictator")],
+                                                                       testSetup.dictatorParams.initdata,
+                                                                       [helpers.getBytesLength(testSetup.dictatorParams.initdata)],
+                                                                       [permissions],
+                                                                       "metaData");
 
-   var tx = await registration.daoFactory.setSchemes(
-                           testSetup.org.avatar.address,
-                           [web3.utils.fromAscii("Dictator")],
-                           testSetup.dictatorParams.initdata,
-                           [helpers.getBytesLength(testSetup.dictatorParams.initdata)],
-                           [permissions],
-                           "metaData",{from:testSetup.proxyAdmin});
-
-   testSetup.dictator = await Dictator.at(tx.logs[1].args._scheme);
+   testSetup.dictator = await Dictator.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
 
    return testSetup;
 };

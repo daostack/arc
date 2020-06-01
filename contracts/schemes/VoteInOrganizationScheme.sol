@@ -60,7 +60,6 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
             _stakingToken,
             address(this),
             address(this),
-            address(this),
             _packageVersion,
             _votingMachineName);
     }

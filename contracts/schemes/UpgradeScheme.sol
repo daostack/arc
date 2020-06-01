@@ -75,7 +75,6 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             _stakingToken,
             address(this),
             address(this),
-            address(this),
             _packageVersion,
             _votingMachineName);
         arcPackage = _arcPackage;

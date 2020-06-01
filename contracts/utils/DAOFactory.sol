@@ -42,30 +42,6 @@ contract DAOFactory is Initializable {
     App public app;
     string public constant PACKAGE_NAME = "DAOstack";
 
-    // orgName - The name of the new organization
-    // tokenInitData - the DAOToken init data (tokenName,tokenSymbol,cap)
-    // founders - An array with the addresses of the founders of the organization
-    // foundersTokenAmount -  An array of amount of tokens that the founders
-    // receive in the new organization
-    // foundersReputationAmount - An array of amount of reputation that the
-    //                          founders receive in the new organization
-    //
-    // version - the arc version to forgeOrg from.
-    // struct ForgeOrgParams {
-    //     string orgName;
-    //     bytes  tokenInitData;
-    //     address[] founders;
-    //     uint256[] foundersTokenAmount;
-    //     uint256[] foundersReputationAmount;
-    //     uint64[3] version;
-    // }
-    // struct SetSchemesParams {
-    //     bytes32[] schemesNames;
-    //     bytes  schemesData;
-    //     uint256[] schemesInitilizeDataLens;
-    //     bytes4[] permissions;
-    //     string  metaData;
-    // }
     function initialize(address _appContractAddress) external initializer {
         app = App(_appContractAddress);
     }
@@ -73,6 +49,14 @@ contract DAOFactory is Initializable {
     /**
      * @dev Create a new organization
      * @param _encodedForgeOrgParams encoded ForgeOrgParams
+     *     orgName - The name of the new organization
+     *     tokenInitData - the DAOToken init data (tokenName,tokenSymbol,cap)
+     *     founders - An array with the addresses of the founders of the organization
+     *     foundersTokenAmount -  An array of amount of tokens that the founders
+     *                            receive in the new organization
+     *     foundersReputationAmount - An array of amount of reputation that the
+     *                        founders receive in the new organization
+     *     version - the arc version to forgeOrg from.
      * @param _encodedSetSchemesParams encoded SetSchemesParams -
      *        if there is a need to add more than 100 founders:
      *          encodedSetSchemesParams should be zero and then do :

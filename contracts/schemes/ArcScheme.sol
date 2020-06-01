@@ -36,7 +36,6 @@ contract ArcScheme is Initializable {
      * @param _voteOnBehalf  parameter
      * @param _daoFactory  DAOFactory instance to instance a votingMachine.
      * @param _stakingToken (for GenesisProtocol)
-     * @param _organization organization
      * @param _callbacks should fulfill voting callbacks interface
      * @param _authorizedToPropose only this address allow to propose (unless it is zero)
      * @param _packageVersion packageVersion to instance the votingMachine from.
@@ -48,7 +47,6 @@ contract ArcScheme is Initializable {
         address _voteOnBehalf,
         DAOFactory _daoFactory,
         address _stakingToken,
-        address _organization,
         address _callbacks,
         address _authorizedToPropose,
         uint64[3] memory _packageVersion,
@@ -70,7 +68,7 @@ contract ArcScheme is Initializable {
                 _stakingToken,
                 _votingParams,
                 _voteOnBehalf,
-                _organization,
+                avatar,
                 _callbacks,
                 _authorizedToPropose);
         } else {
@@ -78,7 +76,7 @@ contract ArcScheme is Initializable {
                     ABSOLUTE_VOTE_INIT_FUNC_SIGNATURE,
                     _votingParams[0],
                     _voteOnBehalf,
-                    _organization,
+                    avatar,
                     _callbacks,
                     _authorizedToPropose);
         }
