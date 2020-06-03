@@ -47,24 +47,37 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
 
     /**
      * @dev initialize
-     * @param _avatar the avatar to mint reputation from
-     * @param _votingMachine the voting machines address to
-     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
-     * @param _voteParamsHash voting machine parameters.
+     * @param _avatar the avatar this scheme referring to.
+     * @param _votingParams genesisProtocol parameters
+     * @param _voteOnBehalf  parameter
+     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
+     * @param _stakingToken (for GenesisProtocol)
+     * @param _packageVersion packageVersion to instance the votingMachine from.
+     * @param _votingMachineName the votingMachine contract name.
      * @param _contractToCall the target contract this scheme will call to
      */
     function initialize(
         Avatar _avatar,
-        IntVoteInterface _votingMachine,
         uint256[11] calldata _votingParams,
         address _voteOnBehalf,
-        bytes32 _voteParamsHash,
+        DAOFactory _daoFactory,
+        address _stakingToken,
+        uint64[3] calldata _packageVersion,
+        string calldata _votingMachineName,
         address _contractToCall
     )
     external
     {
-        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
+        super._initializeGovernance(
+            _avatar,
+            _votingParams,
+            _voteOnBehalf,
+            _daoFactory,
+            _stakingToken,
+            address(this),
+            address(this),
+            _packageVersion,
+            _votingMachineName);
         contractToCall = _contractToCall;
     }
 
@@ -129,7 +142,7 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     public
     returns(bytes32)
     {
-        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
+        bytes32 proposalId = votingMachine.propose(2, msg.sender);
 
         organizationProposals[proposalId] = CallProposal({
             callData: _callData,

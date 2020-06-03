@@ -34,7 +34,6 @@ contract Auction4Reputation is Agreement, ArcScheme {
     uint256 public auctionPeriod;
     uint256 public redeemEnableTime;
     IERC20 public token;
-    address public wallet;
 
     /**
      * @dev initialize
@@ -49,9 +48,6 @@ contract Auction4Reputation is Agreement, ArcScheme {
      * @param _redeemEnableTime redeem enable time .
      *        redeem reputation can be done after this time.
      * @param _token the bidding token
-     * @param  _wallet the address of the wallet the token will be transfer to.
-     *         Please note that _wallet address should be a trusted account.
-     *         Normally this address should be set as the DAO's avatar address.
      * @param _agreementHash is a hash of agreement required to be added to the TX by participants
      */
     function initialize(
@@ -62,7 +58,6 @@ contract Auction4Reputation is Agreement, ArcScheme {
         uint256 _numberOfAuctions,
         uint256 _redeemEnableTime,
         IERC20 _token,
-        address _wallet,
         bytes32 _agreementHash )
     external
     {
@@ -76,7 +71,6 @@ contract Auction4Reputation is Agreement, ArcScheme {
         token = _token;
         auctionsStartTime = _auctionsStartTime;
         numberOfAuctions = _numberOfAuctions;
-        wallet = _wallet;
         auctionReputationReward = _auctionReputationReward;
         reputationRewardLeft = _auctionReputationReward.mul(_numberOfAuctions);
         redeemEnableTime = _redeemEnableTime;
@@ -133,14 +127,14 @@ contract Auction4Reputation is Agreement, ArcScheme {
     }
 
     /**
-     * @dev transferToWallet transfer the tokens to the wallet.
+     * @dev transferToWallet transfer the tokens to the avatar.
      *      can be called only after auctionsEndTime
      */
     function transferToWallet() public {
       // solhint-disable-next-line not-rely-on-time
         require(now > auctionsEndTime, "now > auctionsEndTime");
         uint256 tokenBalance = token.balanceOf(address(this));
-        token.safeTransfer(wallet, tokenBalance);
+        token.safeTransfer(address(avatar), tokenBalance);
     }
 
     /**

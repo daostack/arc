@@ -16,7 +16,7 @@ const addMember = async function(accounts,_testSetup,_fee,_from) {
 
   //Vote with reputation to trigger execution
   var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-  await _testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+  await _testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
   return tx;
 };
 
@@ -30,47 +30,42 @@ const setupJoinAndQuit = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
-                                            avatarAddress,
                                             _fundingToken,
                                             _minFeeToJoin,
                                             _memberReputation,
                                             _fundingGoal,
                                             _fundingGoalDeadline,
                                             _rageQuitEnable = true,
+                                            _packageVersion= [0,1,0]
                                             ) {
   var joinAndQuitParams = new JoinAndQuitParams();
-
+  var encodedJoinAndQuitParams = web3.eth.abi.encodeParameters(['address','uint256','uint256','uint256','uint256','bool'],
+                                                               [_fundingToken,_minFeeToJoin,_memberReputation,_fundingGoal,_fundingGoalDeadline,_rageQuitEnable]);
   if (genesisProtocol === true) {
     joinAndQuitParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     joinAndQuitParams.initdata = await new web3.eth.Contract(registration.joinAndQuit.abi)
                           .methods
-                          .initialize(avatarAddress,
-                            joinAndQuitParams.votingMachine.genesisProtocol.address,
+                          .initialize(helpers.NULL_ADDRESS,
                             joinAndQuitParams.votingMachine.uintArray,
                             joinAndQuitParams.votingMachine.voteOnBehalf,
-                            helpers.NULL_HASH,
-                            _fundingToken,
-                            _minFeeToJoin,
-                            _memberReputation,
-                            _fundingGoal,
-                           _fundingGoalDeadline,
-                           _rageQuitEnable)
+                            registration.daoFactory.address,
+                            token,
+                            _packageVersion,
+                            "GenesisProtocol",
+                            encodedJoinAndQuitParams)
                           .encodeABI();
     } else {
   joinAndQuitParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   joinAndQuitParams.initdata = await new web3.eth.Contract(registration.joinAndQuit.abi)
                         .methods
-                        .initialize(avatarAddress,
-                          joinAndQuitParams.votingMachine.absoluteVote.address,
-                          [0,0,0,0,0,0,0,0,0,0,0],
-                          helpers.NULL_ADDRESS,
-                          joinAndQuitParams.votingMachine.params,
-                          _fundingToken,
-                          _minFeeToJoin,
-                          _memberReputation,
-                          _fundingGoal,
-                         _fundingGoalDeadline,
-                         _rageQuitEnable)
+                        .initialize(helpers.NULL_ADDRESS,
+                          joinAndQuitParams.votingMachine.uintArray,
+                          joinAndQuitParams.votingMachine.voteOnBehalf,
+                          registration.daoFactory.address,
+                          token,
+                          _packageVersion,
+                          "AbsoluteVote",
+                          encodedJoinAndQuitParams)
                         .encodeABI();
   }
   return joinAndQuitParams;
@@ -90,12 +85,6 @@ const setup = async function (accounts,
   registration = await helpers.registerImplementation();
   testSetup.reputationArray = [7000];
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                      accounts,
-                                                                      registration,
-                                                                      [accounts[2]],
-                                                                      [0],
-                                                                      testSetup.reputationArray);
   testSetup.fundingGoalDeadline = (await web3.eth.getBlock("latest")).timestamp + fundingGoalDeadline;
   testSetup.minFeeToJoin = minFeeToJoin;
   testSetup.memberReputation = memberReputation;
@@ -110,7 +99,6 @@ const setup = async function (accounts,
                      accounts,
                      genesisProtocol,
                      tokenAddress,
-                     testSetup.org.avatar.address,
                      fundPath,
                      minFeeToJoin,
                      memberReputation,
@@ -119,15 +107,24 @@ const setup = async function (accounts,
                      rageQuitEnable);
 
   var permissions = "0x00000000";
-  var tx = await registration.daoFactory.setSchemes(
-                          testSetup.org.avatar.address,
-                          [web3.utils.fromAscii("JoinAndQuit")],
-                          testSetup.joinAndQuitParams.initdata,
-                          [helpers.getBytesLength(testSetup.joinAndQuitParams.initdata)],
-                          [permissions],
-                          "metaData",{from:testSetup.proxyAdmin});
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                      accounts,
+                                                                      registration,
+                                                                      [accounts[2]],
+                                                                      [0],
+                                                                      testSetup.reputationArray,
+                                                                      0,
+                                                                      [web3.utils.fromAscii("JoinAndQuit")],
+                                                                      testSetup.joinAndQuitParams.initdata,
+                                                                      [helpers.getBytesLength(testSetup.joinAndQuitParams.initdata)],
+                                                                      [permissions],
+                                                                      "metaData");
+
+  testSetup.joinAndQuit = await JoinAndQuit.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
+
   await testSetup.standardTokenMock.transfer(accounts[3],10000);
-  testSetup.joinAndQuit = await JoinAndQuit.at(tx.logs[1].args._scheme);
+  testSetup.joinAndQuitParams.votingMachineInstance =
+  await helpers.getVotingMachine(await testSetup.joinAndQuit.votingMachine(),genesisProtocol);
 
   return testSetup;
 };
@@ -135,8 +132,8 @@ contract('JoinAndQuit', accounts => {
 
     it("initialize", async function() {
        var testSetup = await setup(accounts);
-       assert.equal(await testSetup.joinAndQuit.votingMachine(),testSetup.joinAndQuitParams.votingMachine.absoluteVote.address);
-       assert.equal(await testSetup.joinAndQuit.fundingGoalDeadline(),testSetup.fundingGoalDeadline);
+       assert.equal(await testSetup.joinAndQuit.votingMachine(),testSetup.joinAndQuitParams.votingMachineInstance.address);
+       assert.equal((await testSetup.joinAndQuit.joinAndQuitParams()).fundingGoalDeadline,testSetup.fundingGoalDeadline);
     });
 
     it("propose log", async function() {
@@ -221,7 +218,7 @@ contract('JoinAndQuit', accounts => {
                                                            {from:candidate});
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        await testSetup.joinAndQuit.redeemReputation(proposalId);
 
 
@@ -273,7 +270,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.joinAndQuit.proposals(proposalId);
       assert.equal(proposal.accepted,true);
       assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
@@ -290,7 +287,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.joinAndQuit.proposals(proposalId);
       assert.equal(proposal.accepted,true);
       assert.equal(await avatarBalance(testSetup),testSetup.minFeeToJoin);
@@ -308,7 +305,7 @@ contract('JoinAndQuit', accounts => {
 
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        var proposal = await testSetup.joinAndQuit.proposals(proposalId);
        assert.equal(proposal.accepted,false);
        assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),0);
@@ -328,7 +325,7 @@ contract('JoinAndQuit', accounts => {
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
      var balanceBefore = await web3.eth.getBalance(accounts[3]);
-     await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+     await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
      var proposal = await testSetup.joinAndQuit.proposals(proposalId);
      assert.equal(proposal.accepted,false);
      assert.equal(await avatarBalance(testSetup),0);
@@ -351,7 +348,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       tx = await testSetup.joinAndQuit.redeemReputation(proposalId);
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, testSetup.memberReputation);
@@ -374,7 +371,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       tx = await testSetup.joinAndQuit.redeemReputation(proposalId);
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, testSetup.minFeeToJoin);
@@ -391,7 +388,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       tx = await testSetup.joinAndQuit.redeemReputation(proposalId);
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, testSetup.memberReputation);
@@ -414,7 +411,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       try {
          await testSetup.joinAndQuit.redeemReputation(proposalId);
          assert(false, 'reputation cannot redeemed');
@@ -433,7 +430,7 @@ contract('JoinAndQuit', accounts => {
 
     //Vote with reputation to trigger execution
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-    await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
     assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
     await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
@@ -486,7 +483,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       assert.equal(await avatarBalance(testSetup),testSetup.minFeeToJoin);
       assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
       await testSetup.joinAndQuit.rageQuit({from:accounts[3]});
@@ -533,7 +530,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      tx = await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       await testSetup.joinAndQuit.getPastEvents('FundedBeforeDeadline', {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
@@ -559,7 +556,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      tx = await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       await testSetup.joinAndQuit.getPastEvents('FundedBeforeDeadline', {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
@@ -631,7 +628,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
       assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
       try {
@@ -653,7 +650,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
       assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
       try {
@@ -682,7 +679,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
 
       await helpers.increaseTime(testSetup.fundingGoalDeadline);
       try {
@@ -702,7 +699,7 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinAndQuitParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
       try {
          await testSetup.joinAndQuit.refund({from:accounts[3]});

@@ -19,12 +19,7 @@ const setupNectar = async function (accounts)  {
   var testSetup = new helpers.TestSetup();
   registration = await helpers.registerImplementation();
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                      accounts,
-                                                                      registration,
-                                                                      [accounts[0]],
-                                                                      [1000],
-                                                                      [1000]);
+
   testSetup.nectarToken = await NectarToken.new();
   await testSetup.nectarToken.initialize(accounts[0]);
   await testSetup.nectarToken.mint(accounts[0],100);
@@ -45,23 +40,28 @@ const setupNectar = async function (accounts)  {
   testSetup.reputationFromTokenParams = new ReputationFromTokenParams();
   testSetup.reputationFromTokenParams.initdata = await new web3.eth.Contract(registration.reputationFromToken.abi)
   .methods
-  .initialize(testSetup.org.avatar.address,
+  .initialize(helpers.NULL_ADDRESS,
     testSetup.nectarRepAllocation.address,
     helpers.NULL_ADDRESS)
   .encodeABI();
 
 
   var permissions = "0x00000000";
-  var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
-    [web3.utils.fromAscii("ReputationFromToken")],
-    testSetup.reputationFromTokenParams.initdata,
-    [helpers.getBytesLength(testSetup.reputationFromTokenParams.initdata)],
-    [permissions],
-    "metaData",
-    {from:testSetup.proxyAdmin});
 
-   testSetup.reputationFromToken = await ReputationFromToken.at(tx.logs[1].args._scheme);
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                        accounts,
+                                                                        registration,
+                                                                        [accounts[0]],
+                                                                        [1000],
+                                                                        [1000],0,
+                                                                        [web3.utils.fromAscii("ReputationFromToken")],
+                                                                        testSetup.reputationFromTokenParams.initdata,
+                                                                        [helpers.getBytesLength(testSetup.reputationFromTokenParams.initdata)],
+                                                                        [permissions],
+                                                                        "metaData");
+
+   testSetup.reputationFromToken = await ReputationFromToken.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
+
    return testSetup;
 };
 
@@ -69,12 +69,7 @@ const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                       accounts,
-                                                                       registration,
-                                                                       [accounts[0]],
-                                                                       [1000],
-                                                                       [1000]);
+
    testSetup.repAllocation = await RepAllocation.new();
    await testSetup.repAllocation.initialize(accounts[0]);
    await testSetup.repAllocation.addBeneficiary(accounts[0],100);
@@ -88,22 +83,27 @@ const setup = async function (accounts) {
 
     testSetup.reputationFromTokenParams.initdata = await new web3.eth.Contract(registration.reputationFromToken.abi)
     .methods
-    .initialize(testSetup.org.avatar.address,
+    .initialize(helpers.NULL_ADDRESS,
       testSetup.repAllocation.address,
       testSetup.curve.address)
     .encodeABI();
 
    var permissions = "0x00000000";
-   var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
-    [web3.utils.fromAscii("ReputationFromToken")],
-    testSetup.reputationFromTokenParams.initdata,
-    [helpers.getBytesLength(testSetup.reputationFromTokenParams.initdata)],
-    [permissions],
-    "metaData",
-    {from:testSetup.proxyAdmin});
 
-   testSetup.reputationFromToken = await ReputationFromToken.at(tx.logs[1].args._scheme);
+    [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(
+                                                                        testSetup.proxyAdmin,
+                                                                        accounts,
+                                                                        registration,
+                                                                        [accounts[0]],
+                                                                        [1000],
+                                                                        [1000],
+                                                                        0,
+                                                                        [web3.utils.fromAscii("ReputationFromToken")],
+                                                                        testSetup.reputationFromTokenParams.initdata,
+                                                                        [helpers.getBytesLength(testSetup.reputationFromTokenParams.initdata)],
+                                                                        [permissions],
+                                                                        "metaData");
+   testSetup.reputationFromToken = await ReputationFromToken.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
    return testSetup;
 };
 const signatureType = 1;
@@ -239,7 +239,7 @@ contract('ReputationFromToken and RepAllocation', accounts => {
         assert(false, "cannot redeem before initialize");
       } catch(error) {
         helpers.assertVMException(error);
-      }      
+      }
     });
 
     it("cannot initialize twice", async () => {

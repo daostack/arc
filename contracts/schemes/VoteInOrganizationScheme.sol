@@ -34,21 +34,34 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
-     * @param _votingMachine the voting machines address to
-     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
-     * @param _voteParamsHash voting machine parameters.
+     * @param _votingParams genesisProtocol parameters
+     * @param _voteOnBehalf  parameter
+     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
+     * @param _stakingToken (for GenesisProtocol)
+     * @param _packageVersion packageVersion to instance the votingMachine from.
+     * @param _votingMachineName the votingMachine contract name.
      */
     function initialize(
         Avatar _avatar,
-        IntVoteInterface _votingMachine,
         uint256[11] calldata _votingParams,
         address _voteOnBehalf,
-        bytes32 _voteParamsHash
+        DAOFactory _daoFactory,
+        address _stakingToken,
+        uint64[3] calldata _packageVersion,
+        string calldata _votingMachineName
     )
     external
     {
-        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
+        super._initializeGovernance(
+            _avatar,
+            _votingParams,
+            _voteOnBehalf,
+            _daoFactory,
+            _stakingToken,
+            address(this),
+            address(this),
+            _packageVersion,
+            _votingMachineName);
     }
 
     /**
@@ -102,14 +115,14 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
     uint256 _vote,
     string memory _descriptionHash)
     public
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
         (uint256 minVote, uint256 maxVote) = _originalIntVote.getAllowedRangeOfChoices();
         require(_vote <= maxVote && _vote >= minVote, "vote should be in the allowed range");
         require(_vote <= _originalIntVote.getNumberOfChoices(_originalProposalId),
         "vote should be <= original proposal number of choices");
 
-        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
+        proposalId = votingMachine.propose(2, msg.sender);
 
         organizationProposals[proposalId] = VoteProposal({
             originalIntVote: _originalIntVote,
@@ -127,6 +140,5 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
             _descriptionHash
         );
         proposalsBlockNumber[proposalId] = block.number;
-        return proposalId;
     }
 }

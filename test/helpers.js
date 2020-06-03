@@ -5,7 +5,6 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
-const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
@@ -37,7 +36,6 @@ const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallb
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
 const Dictator = artifacts.require("./Dictator.sol");
-
 
 const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -155,6 +153,8 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
   registration.joinAndQuit = await JoinAndQuit.new();
   registration.fundingRequest = await FundingRequest.new();
+  registration.genesisProtocol = await GenesisProtocol.new();
+  registration.absoluteVote = await AbsoluteVote.new();
   registration.rewarderMock = await RewarderMock.new();
   registration.dictator = await Dictator.new();
 
@@ -187,8 +187,9 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   await implementationDirectory.setImplementation("ARCVotingMachineCallbacksMock",registration.arcVotingMachineCallbacksMock.address);
   await implementationDirectory.setImplementation("JoinAndQuit",registration.joinAndQuit.address);
   await implementationDirectory.setImplementation("FundingRequest",registration.fundingRequest.address);
+  await implementationDirectory.setImplementation("GenesisProtocol",registration.genesisProtocol.address);
+  await implementationDirectory.setImplementation("AbsoluteVote",registration.absoluteVote.address);
   await implementationDirectory.setImplementation("Dictator",registration.dictator.address);
-
 
   registration.implementationDirectory = implementationDirectory;
 
@@ -205,13 +206,36 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   return registration;
 };
 
+const getVotingMachine = async function (votingMachine, genesisProtocol) {
+ if (genesisProtocol === true) {
+   return await GenesisProtocol.at(votingMachine);
+ }
+ return await AbsoluteVote.at(votingMachine);
+};
+
  const setupAbsoluteVote = async function (voteOnBehalf=NULL_ADDRESS, precReq=50 ) {
   var votingMachine = new VotingMachine();
-  votingMachine.absoluteVote = await AbsoluteVote.new();
   // register some parameters
-  await votingMachine.absoluteVote.setParameters( precReq, voteOnBehalf);
-  votingMachine.params = await votingMachine.absoluteVote.getParametersHash( precReq, voteOnBehalf);
+  votingMachine.uintArray = [precReq,
+                             0,0,0,0,0,0,0,0,0,0];
+  votingMachine.voteOnBehalf = voteOnBehalf;
+
+  // register some parameters
   return votingMachine;
+};
+
+const getSchemeAddress = async function (daoFactoryAddress,daoFactoryTx) {
+var daoFactory = await DAOFactory.at(daoFactoryAddress);
+var address;
+
+await daoFactory.getPastEvents('SchemeInstance', {
+      fromBlock: daoFactoryTx.blockNumber,
+      toBlock: 'latest'
+  })
+  .then(function(events){
+    address = events[0].args._scheme;
+  });
+  return address;
 };
 
  const setupGenesisProtocol = async function (
@@ -232,7 +256,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   ) {
   var votingMachine = new VotingMachine();
 
-  votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
+  //votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
 
   // set up a reputation system
   votingMachine.reputationArray = [20, 10 ,70];
@@ -249,18 +273,6 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
                                                      _daoBountyConst,
                                                      _activationTime];
   votingMachine.voteOnBehalf = voteOnBehalf;
-  votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_queuedVoteRequiredPercentage,
-                                                     _queuedVotePeriodLimit,
-                                                     _boostedVotePeriodLimit,
-                                                     _preBoostedVotePeriodLimit,
-                                                     _thresholdConst,
-                                                     _quietEndingPeriod,
-                                                     _proposingRepReward,
-                                                     _votersReputationLossRatio,
-                                                     _minimumDaoBounty,
-                                                     _daoBountyConst,
-                                                     _activationTime],voteOnBehalf);
-
   return votingMachine;
 };
 
@@ -270,20 +282,28 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
                                                                      daoFactoryOwner,
                                                                      founderToken,
                                                                      founderReputation,
-                                                                     cap=0) {
+                                                                     cap=0,
+                                                                     schemesNames,
+                                                                     schemesData,
+                                                                     schemesInitilizeDataLens,
+                                                                     permissions,
+                                                                     metaData) {
+
   var org = new Organization();
   var nativeTokenData = await new web3.eth.Contract(registration.daoToken.abi)
                         .methods
                         .initialize("TEST","TST",cap,registration.daoFactory.address)
                         .encodeABI();
-  var tx = await registration.daoFactory.forgeOrg("testOrg",
-                                                  nativeTokenData,
-                                                  daoFactoryOwner,
-                                                  founderToken,
-                                                  founderReputation,
-                                                  [0,0,0],
-                                                  {from:proxyAdmin,gas:constants.ARC_GAS_LIMIT});
-  assert.equal(tx.logs.length, 5);
+  var encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+                                                            ["testOrg",nativeTokenData,daoFactoryOwner,founderToken,founderReputation,[0,0,0]]);
+  var encodedSetSchemesParams = web3.eth.abi.encodeParameters(['bytes32[]','bytes','uint256[]','bytes4[]','string'],
+                                                              [schemesNames,schemesData,schemesInitilizeDataLens,permissions,metaData]);
+
+  var tx = await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
+                                                  encodedSetSchemesParams,
+                                                  {from:proxyAdmin});
+
+
   assert.equal(tx.logs[4].event, "NewOrg");
   var avatarAddress = tx.logs[4].args._avatar;
   org.avatar = await Avatar.at(avatarAddress);
@@ -291,7 +311,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   org.token = await DAOToken.at(tokenAddress);
   var reputationAddress = await org.avatar.nativeReputation();
   org.reputation = await Reputation.at(reputationAddress);
-  return org;
+  return [org,tx];
 };
 
  const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
@@ -364,7 +384,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
 };
 
  const getBytesLength = function (bytes) {
-  return web3.utils.toBN(Number(bytes.slice(2).length) / 2);
+  return Number(web3.utils.toBN(Number(bytes.slice(2).length) / 2));
 };
 
 
@@ -386,4 +406,6 @@ module.exports = { MAX_UINT_256,
                   checkVoteInfo,
                   registrationAddVersionToPackege,
                   concatBytes,
-                  getProposalId};
+                  getProposalId,
+                  getVotingMachine,
+                  getSchemeAddress};

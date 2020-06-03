@@ -43,57 +43,34 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
-     * @param _votingMachine the voting machines address to
-     * @param _votingParamsRegister genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalfRegister genesisProtocol parameter - valid only if _voteParamsHash is zero
-     * @param _voteRegisterParamsHash voting machine parameters to register scheme.
-     * @param _votingParamsRemove genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalfRemove genesisProtocol parameter - valid only if _voteParamsHash is zero
-     * @param _voteRemoveParamsHash voting machine parameters to remove scheme.
+     * @param _votingParams genesisProtocol parameters
+     * @param _voteOnBehalf  parameter
+     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
+     * @param _stakingToken (for GenesisProtocol)
+     * @param _packageVersion packageVersion to instance the votingMachine from.
+     * @param _votingMachineName the votingMachine contract name.
      */
     function initialize(
         Avatar _avatar,
-        IntVoteInterface _votingMachine,
-        uint[11] calldata _votingParamsRegister,
-        address _voteOnBehalfRegister,
-        bytes32 _voteRegisterParamsHash,
-        uint[11] calldata _votingParamsRemove,
-        address _voteOnBehalfRemove,
-        bytes32 _voteRemoveParamsHash
+        uint256[11] calldata _votingParams,
+        address _voteOnBehalf,
+        DAOFactory _daoFactory,
+        address _stakingToken,
+        uint64[3] calldata _packageVersion,
+        string calldata _votingMachineName
     )
     external
     {
-        super._initialize(_avatar);
-        votingMachine = _votingMachine;
-        if (_voteRegisterParamsHash == bytes32(0)) {
-            //genesisProtocol
-            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
-            voteRegisterParamsHash = genesisProtocol.getParametersHash(_votingParamsRegister, _voteOnBehalfRegister);
-            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
-            genesisProtocol.parameters(voteRegisterParamsHash);
-            if (queuedVoteRequiredPercentage == 0) {
-               //params not set already
-                genesisProtocol.setParameters(_votingParamsRegister, _voteOnBehalfRegister);
-            }
-        } else {
-            //for other voting machines
-            voteRegisterParamsHash = _voteRegisterParamsHash;
-        }
-
-        if (_voteRemoveParamsHash == bytes32(0)) {
-            //genesisProtocol
-            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
-            voteRemoveParamsHash = genesisProtocol.getParametersHash(_votingParamsRemove, _voteOnBehalfRemove);
-            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
-            genesisProtocol.parameters(voteRemoveParamsHash);
-            if (queuedVoteRequiredPercentage == 0) {
-               //params not set already
-                genesisProtocol.setParameters(_votingParamsRemove, _voteOnBehalfRemove);
-            }
-        } else {
-            //for other voting machines
-            voteRemoveParamsHash = _voteRemoveParamsHash;
-        }
+        super._initializeGovernance(
+            _avatar,
+            _votingParams,
+            _voteOnBehalf,
+            _daoFactory,
+            _stakingToken,
+            address(this),
+            address(this),
+            _packageVersion,
+            _votingMachineName);
     }
 
     /**
@@ -144,17 +121,12 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
         string memory _descriptionHash
     )
     public
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
         // propose
         require(_scheme != address(0), "scheme cannot be zero");
 
-        bytes32 proposalId = votingMachine.propose(
-            2,
-            voteRegisterParamsHash,
-            msg.sender,
-            address(avatar)
-        );
+        proposalId = votingMachine.propose(2, msg.sender);
 
         SchemeProposal memory proposal = SchemeProposal({
             scheme: _scheme,
@@ -171,7 +143,6 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
         );
         organizationProposals[proposalId] = proposal;
         proposalsBlockNumber[proposalId] = block.number;
-        return proposalId;
     }
 
     /**
@@ -182,14 +153,13 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     */
     function proposeToRemoveScheme(address _scheme, string memory _descriptionHash)
     public
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
         require(_scheme != address(0), "scheme cannot be zero");
 
-        bytes32 proposalId = votingMachine.propose(2, voteRemoveParamsHash, msg.sender, address(avatar));
+        proposalId = votingMachine.propose(2, msg.sender);
         organizationProposals[proposalId].scheme = _scheme;
         emit RemoveSchemeProposal(address(avatar), proposalId, address(votingMachine), _scheme, _descriptionHash);
         proposalsBlockNumber[proposalId] = block.number;
-        return proposalId;
     }
 }

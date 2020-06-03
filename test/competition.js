@@ -3,6 +3,7 @@ const helpers = require("./helpers");
 const ContributionRewardExt = artifacts.require("./ContributionRewardExt.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Competition = artifacts.require("./Competition.sol");
+const DAOFactory = artifacts.require("./DAOFactory.sol");
 
 class ContributionRewardParams {
   constructor() {
@@ -13,24 +14,22 @@ const setupContributionRewardExt = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
-                                            avatarAddress,
                                             _daoFactoryAddress,
                                             _packageVersion = [0,1,0],
                                             _rewarderName = 'Competition'
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
-
   if (genesisProtocol === true) {
     contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
                           .methods
-                          .initialize(avatarAddress,
-                            contributionRewardParams.votingMachine.genesisProtocol.address,
+                          .initialize(helpers.NULL_ADDRESS,
                             contributionRewardParams.votingMachine.uintArray,
                             contributionRewardParams.votingMachine.voteOnBehalf,
-                            helpers.NULL_ADDRESS,
                             _daoFactoryAddress,
+                            helpers.NULL_ADDRESS,
                             _packageVersion,
+                            "GenesisProtocol",
                             _rewarderName
                             )
                           .encodeABI();
@@ -38,13 +37,13 @@ const setupContributionRewardExt = async function(
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
                         .methods
-                        .initialize(avatarAddress,
-                          contributionRewardParams.votingMachine.absoluteVote.address,
-                          [1,1,1,1,1,1,1,1,1,1,1],
-                          helpers.NULL_ADDRESS,
-                          contributionRewardParams.votingMachine.params,
+                        .initialize(helpers.NULL_ADDRESS,
+                          contributionRewardParams.votingMachine.uintArray,
+                          contributionRewardParams.votingMachine.voteOnBehalf,
                           _daoFactoryAddress,
+                          helpers.NULL_ADDRESS,
                           _packageVersion,
+                          "AbsoluteVote",
                           _rewarderName)
                         .encodeABI();
   }
@@ -63,35 +62,43 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
       testSetup.reputationArray = [2000,5000,7000];
    }
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+   var permissions = "0x00000000";
+   testSetup.contributionRewardExtParams= await setupContributionRewardExt(
+                      accounts,
+                      genesisProtocol,
+                      tokenAddress,
+                      registration.daoFactory.address);
+   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                        accounts,
                                                                        registration,
                                                                        [accounts[0],
                                                                        accounts[1],
                                                                        accounts[2]],
                                                                        [1000,0,0],
-                                                                       testSetup.reputationArray);
+                                                                       testSetup.reputationArray,
+                                                                       0,
+                                                                       [web3.utils.fromAscii("ContributionRewardExt")],
+                                                                       testSetup.contributionRewardExtParams.initdata,
+                                                                       [helpers.getBytesLength(testSetup.contributionRewardExtParams.initdata)],
+                                                                       [permissions],
+                                                                       "metaData");
 
+   var daoFactory = await DAOFactory.at(registration.daoFactory.address);
+   var contributionRewardExtAddress;
+   await daoFactory.getPastEvents('SchemeInstance', {
+         fromBlock: tx.blockNumber,
+         toBlock: 'latest'
+     })
+     .then(function(events){
+         contributionRewardExtAddress = events[0].args._scheme;
+     });
+   testSetup.contributionRewardExt = await ContributionRewardExt.at(contributionRewardExtAddress);
 
-   testSetup.contributionRewardExtParams= await setupContributionRewardExt(
-                      accounts,
-                      genesisProtocol,
-                      tokenAddress,
-                      testSetup.org.avatar.address,
-                      registration.daoFactory.address);
-
-   var permissions = "0x00000000";
-   tx = await registration.daoFactory.setSchemes(
-                           testSetup.org.avatar.address,
-                           [web3.utils.fromAscii("ContributionRewardExt")],
-                           testSetup.contributionRewardExtParams.initdata,
-                           [helpers.getBytesLength(testSetup.contributionRewardExtParams.initdata)],
-                           [permissions],
-                           "metaData",{from:testSetup.proxyAdmin});
-   testSetup.contributionRewardExt = await ContributionRewardExt.at(tx.logs[2].args._scheme);
    var competitionAddress = await testSetup.contributionRewardExt.rewarder();
    testSetup.competition = await Competition.at(competitionAddress);
    testSetup.admin = accounts[0];
+   testSetup.contributionRewardExtParams.votingMachine =
+   await helpers.getVotingMachine(await testSetup.contributionRewardExt.votingMachine(),genesisProtocol);
 
    return testSetup;
 };
@@ -491,8 +498,8 @@ contract('Competition', accounts => {
        } catch (ex) {
             helpers.assertVMException(ex);
       }
-    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+    await testSetup.contributionRewardExtParams.votingMachine.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.contributionRewardExtParams.votingMachine.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
     await testSetup.contributionRewardExt.redeem(proposalId,[true,true,true,true]);
     await helpers.increaseTime(650);
     await testSetup.competition.vote(1,{from:accounts[1]});
@@ -575,8 +582,8 @@ contract('Competition', accounts => {
     await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
     await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
     await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
-    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+    await testSetup.contributionRewardExtParams.votingMachine.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.contributionRewardExtParams.votingMachine.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
     await testSetup.contributionRewardExt.redeem(proposalId,[true,true,true,true]);
     await helpers.increaseTime(650);
     await testSetup.competition.vote(1,{from:accounts[0]});
@@ -676,8 +683,8 @@ contract('Competition', accounts => {
     await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
     await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
 
-    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+    await testSetup.contributionRewardExtParams.votingMachine.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.contributionRewardExtParams.votingMachine.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
     await testSetup.contributionRewardExt.redeem(proposalId,[true,true,true,true]);
     await helpers.increaseTime(650);
     await testSetup.competition.vote(1,{from:accounts[2]});
@@ -716,8 +723,8 @@ contract('Competition', accounts => {
     await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
     await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
 
-    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+    await testSetup.contributionRewardExtParams.votingMachine.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.contributionRewardExtParams.votingMachine.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
     await testSetup.contributionRewardExt.redeem(proposalId,[true,true,true,true]);
     await helpers.increaseTime(650);
     await testSetup.competition.vote(1,{from:accounts[1]});

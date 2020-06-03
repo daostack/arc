@@ -14,42 +14,39 @@ const setup = async function (accounts,
    var testSetup = new helpers.TestSetup();
    testSetup.proxyAdmin = accounts[5];
    var registration = await helpers.registerImplementation();
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(
+   testSetup.fixedReputationAllocationParams = new FixedReputationAllocationParams();
+   var block = await web3.eth.getBlock("latest");
+   testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
+
+   if (_initialize === true) {
+    testSetup.fixedReputationAllocationParams.initdata = await new web3.eth.Contract(registration.fixedReputationAllocation.abi)
+    .methods
+    .initialize(helpers.NULL_ADDRESS,
+               _repAllocation,
+               testSetup.redeemEnableTime,
+               accounts[0])
+                .encodeABI();
+     } else {
+       testSetup.fixedReputationAllocationParams.initdata = Buffer.from('');
+     }
+
+  var permissions = "0x00000000";
+   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(
      testSetup.proxyAdmin,
      accounts,
      registration,
      [accounts[0]],
      [0],
-     [0]
+     [0],
+     0,
+     [web3.utils.fromAscii("FixedReputationAllocation")],
+     testSetup.fixedReputationAllocationParams.initdata,
+     [helpers.getBytesLength(testSetup.fixedReputationAllocationParams.initdata)],
+     [permissions],
+     "metaData"
   );
-
-  testSetup.fixedReputationAllocationParams = new FixedReputationAllocationParams();
-  var block = await web3.eth.getBlock("latest");
-  testSetup.redeemEnableTime = block.timestamp + _redeemEnableTime;
-
-  if (_initialize === true) {
-   testSetup.fixedReputationAllocationParams.initdata = await new web3.eth.Contract(registration.fixedReputationAllocation.abi)
-   .methods
-   .initialize(testSetup.org.avatar.address,
-              _repAllocation,
-              testSetup.redeemEnableTime,
-              accounts[0])
-               .encodeABI();
-    } else {
-      testSetup.fixedReputationAllocationParams.initdata = Buffer.from('');
-    }
-
-   var permissions = "0x00000000";
-
-   var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
-    [web3.utils.fromAscii("FixedReputationAllocation")],
-    testSetup.fixedReputationAllocationParams.initdata,
-    [helpers.getBytesLength(testSetup.fixedReputationAllocationParams.initdata)],
-    [permissions],
-    "metaData",{from:testSetup.proxyAdmin});
-   testSetup.fixedReputationAllocation = await FixedReputationAllocation.at(tx.logs[1].args._scheme);
-   return testSetup;
+  testSetup.fixedReputationAllocation = await FixedReputationAllocation.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
+  return testSetup;
 };
 
 contract('FixedReputationAllocation', accounts => {

@@ -30,41 +30,43 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         bool executed;
     }
 
-    struct Parameters {
-        bytes32 voteApproveParams;
-        IntVoteInterface intVote;
-        uint256 signalType;
-        Avatar avatar;
-    }
+    uint256 public signalType;
 
     mapping(bytes32  =>  Proposal) public proposals;
 
-    Parameters public params;
-
     /**
      * @dev initialize
-     * @param  _avatar the scheme avatar
+     * @param _avatar the avatar this scheme referring to.
+     * @param _votingParams genesisProtocol parameters
+     * @param _voteOnBehalf  parameter
+     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
+     * @param _stakingToken (for GenesisProtocol)
+     * @param _packageVersion packageVersion to instance the votingMachine from.
+     * @param _votingMachineName the votingMachine contract name.
      * @param _signalType - signal types
-     * @param _voteApproveParams voting machine params
-     * @param _votingMachine  voting machine address
-     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
      */
-    function initialize(Avatar _avatar,
-                        uint256 _signalType,
-                        bytes32 _voteApproveParams,
-                        IntVoteInterface _votingMachine,
-                        uint256[11] calldata _votingParams,
-                        address _voteOnBehalf)
+    function initialize(
+        Avatar _avatar,
+        uint256[11] calldata _votingParams,
+        address _voteOnBehalf,
+        DAOFactory _daoFactory,
+        address _stakingToken,
+        uint64[3] calldata _packageVersion,
+        string calldata _votingMachineName,
+        uint256 _signalType)
     external
     initializer {
-        super._initializeGovernance(_avatar, _votingMachine, _voteApproveParams, _votingParams, _voteOnBehalf);
-        params = Parameters({
-            voteApproveParams: voteParamsHash,
-            signalType: _signalType,
-            intVote: _votingMachine,
-            avatar: _avatar
-        });
+        super._initializeGovernance(
+            _avatar,
+            _votingParams,
+            _voteOnBehalf,
+            _daoFactory,
+            _stakingToken,
+            address(this),
+            address(this),
+            _packageVersion,
+            _votingMachineName);
+        signalType = _signalType;
     }
 
     /**
@@ -75,29 +77,23 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         string calldata _descriptionHash
     )
     external
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
-        require(Controller(params.avatar.owner()).isSchemeRegistered(address(this)),
+        require(Controller(avatar.owner()).isSchemeRegistered(address(this)),
         "scheme is not registered");
 
-        bytes32 proposalId = params.intVote.propose(
-        2,
-        params.voteApproveParams,
-        msg.sender,
-        address(params.avatar)
-        );
+        proposalId = votingMachine.propose(2, msg.sender);
 
         proposals[proposalId].descriptionHash = _descriptionHash;
 
         emit NewSignalProposal(
-            address(params.avatar),
+            address(avatar),
             proposalId,
-            params.signalType,
+            signalType,
             _descriptionHash
         );
 
         proposalsBlockNumber[proposalId] = block.number;
-        return proposalId;
     }
 
     /**
@@ -110,9 +106,9 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         proposals[_proposalId].executed = true;
         // Check if vote was successful:
         if (_param == 1) {
-            emit Signal(address(params.avatar),
+            emit Signal(address(avatar),
                         _proposalId,
-                        params.signalType,
+                        signalType,
                         proposals[_proposalId].descriptionHash);
         }
         return true;
