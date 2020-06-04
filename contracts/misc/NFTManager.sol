@@ -9,7 +9,10 @@ contract NFTManager is Initializable, Ownable {
         Ownable.initialize(msg.sender);
     }
 
-    // @notice Transfer specified NFT to 
+    /// @notice Transfer specified NFT to a given recipient
+    /// @param recipient Address to transfer NFT to
+    /// @param nftContract NFT token contract to transfer from (e.g. Cryptokitties contract)
+    /// @param tokenId ID of specific NFT to transfer
     function sendNFT(address recipient, IERC721 nftContract, uint tokenId) external onlyOwner {
         nftContract.transferFrom(address(this), recipient, tokenId);
     }
