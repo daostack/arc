@@ -2,6 +2,8 @@ const helpers = require("./helpers");
 const GenericScheme = artifacts.require("./GenericScheme.sol");
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ERC721Mock = artifacts.require("./ERC721Mock.sol");
+const IERC721ReceiverMock = artifacts.require("./IERC721ReceiverMock.sol");
+const IERC721NonReceiverMock = artifacts.require("./IERC721NonReceiverMock");
 const NFTManager = artifacts.require("./NFTManager.sol");
 
 class GenericSchemeParams {
@@ -112,7 +114,7 @@ const encodeSendNFTCall = async function(
   _actionMock
 ) {
   return await new web3.eth.Contract(_actionMock.abi).methods
-    .sendNFT(_recipient, _nftContract, _tokenId)
+    .sendNFTNoSafeguards(_recipient, _nftContract, _tokenId)
     .encodeABI();
   // Change tottran
 };
@@ -127,11 +129,16 @@ const setupNFT = async (owner, nftMinter, nftSender) => {
   await nftMock.mint(nftManager.address, 0, { from: nftMinter });
   await nftMock.mint(nftSender, 1, { from: nftMinter });
 
+  const nftReceiverMock = await IERC721ReceiverMock.new({ from: nftMinter });
+
   return {
     nftManager,
     nftMock,
+    nftReceiverMock
   };
 };
+
+const sendNFTData = '0x12345';
 
 contract("NFTManager", function(accounts) {
   before(function() {
@@ -173,7 +180,7 @@ contract("NFTManager", function(accounts) {
     const { nftManager, nftMock } = await setupNFT(owner, nftMinter, nftSender);
     const tokenId = 0;
 
-    await nftManager.sendNFT(nftRecipient, nftMock.address, tokenId, {
+    await nftManager.sendNFTNoSafeguards(nftRecipient, nftMock.address, tokenId, {
       from: owner,
     });
 
@@ -188,6 +195,36 @@ contract("NFTManager", function(accounts) {
     const tokenId = 0;
 
     try {
+      await nftManager.sendNFTNoSafeguards(nftRecipient, nftMock.address, tokenId, {
+        from: nftRecipient,
+      });
+    } catch (error) {
+      expect(!!error.message, true, "Error message not received");
+      return;
+    }
+    expect.fail("Transaction should fail when sent by non owner");
+  });
+
+  it("Valid NFT safeTransfer w/o data succeeds when sent by owner", async function() {
+    const [owner, nftMinter, nftSender, nftRecipient] = accounts;
+    const { nftManager, nftMock } = await setupNFT(owner, nftMinter, nftSender);
+    const tokenId = 0;
+
+    await nftManager.sendNFT(nftRecipient, nftMock.address, tokenId, {
+      from: owner,
+    });
+
+    // Verify it's success (the NFT is owned by nftRecipient)
+    const actualOwner = await nftMock.ownerOf(tokenId);
+    expect(actualOwner).to.be.eq(nftRecipient);
+  });
+
+  it("Valid NFT safeTransfer w/o data fails when sent by non-owner", async function() {
+    const [owner, nftMinter, nftSender, nftRecipient] = accounts;
+    const { nftManager, nftMock } = await setupNFT(owner, nftMinter, nftSender);
+    const tokenId = 0;
+
+    try {
       await nftManager.sendNFT(nftRecipient, nftMock.address, tokenId, {
         from: nftRecipient,
       });
@@ -196,6 +233,120 @@ contract("NFTManager", function(accounts) {
       return;
     }
     expect.fail("Transaction should fail when sent by non owner");
+  });
+
+  xit("Valid NFT safeTransfer w/o data to smart contract succeeds when the recipient implements IERC721Reciever", async function() {
+    const [owner, nftMinter, nftSender] = accounts;
+    const { nftManager, nftMock, nftReceiverMock } = await setupNFT(owner, nftMinter, nftSender);
+    const tokenId = 0;
+
+    await nftManager.sendNFT(nftReceiverMock, nftMock.address, tokenId, {
+      from: owner,
+    });
+
+    // Verify it's success (the NFT is owned by nftRecipient)
+    const actualOwner = await nftMock.ownerOf(tokenId);
+    expect(actualOwner).to.be.eq(nftReceiverMock);
+  });
+
+  xit("Valid NFT safeTransfer w/o data to smart contract fails when the recipient does not implement IERC721Reciever", async function() {
+    const [owner, nftMinter, nftSender, nftRecipient] = accounts;
+    const { nftManager, nftMock } = await setupNFT(owner, nftMinter, nftSender);
+    const nftNonReceiverMock = await IERC721NonReceiverMock.new({ from: nftMinter });
+    const tokenId = 0;
+
+    try {
+      await nftManager.sendNFT(nftNonReceiverMock, nftMock.address, tokenId, {
+        from: nftRecipient,
+      });
+    } catch (error) {
+      expect(!!error.message, true, "Error message not received");
+      return;
+    }
+    expect.fail("Transaction should fail when recipient contract does not implement IERC721Reciever");
+  });
+
+  it("Valid NFT safeTransfer with data succeeds when sent by owner", async function() {
+    const [owner, nftMinter, nftSender, nftRecipient] = accounts;
+    const { nftManager, nftMock } = await setupNFT(owner, nftMinter, nftSender);
+    const tokenId = 0;
+
+    await nftManager.sendNFTWithData(nftRecipient, nftMock.address, tokenId, sendNFTData, {
+      from: owner,
+    });
+
+    // Expect data in event
+
+    // Verify it's success (the NFT is owned by nftRecipient)
+    const actualOwner = await nftMock.ownerOf(tokenId);
+    expect(actualOwner).to.be.eq(nftRecipient);
+  });
+
+  it("Valid NFT safeTransfer with data fails when sent by non-owner", async function() {
+    const [owner, nftMinter, nftSender, nftRecipient] = accounts;
+    const { nftManager, nftMock } = await setupNFT(owner, nftMinter, nftSender);
+    const tokenId = 0;
+
+    try {
+      await nftManager.sendNFTWithData(nftRecipient, nftMock.address, tokenId, sendNFTData, {
+        from: nftRecipient,
+      });
+    } catch (error) {
+      expect(!!error.message, true, "Error message not received");
+      return;
+    }
+    expect.fail("Transaction should fail when sent by non owner");
+  });
+
+  xit("Valid NFT safeTransfer with data to smart contract succeeds when the recipient implements IERC721Reciever", async function() {
+    const [owner, nftMinter, nftSender] = accounts;
+    const { nftManager, nftMock, nftReceiverMock } = await setupNFT(owner, nftMinter, nftSender);
+    const tokenId = 0;
+
+    const tx = await nftManager.sendNFTWithData(nftReceiverMock, nftMock.address, tokenId, sendNFTData, {
+      from: owner,
+    });
+
+    // Expect data in event
+    console.log(tx);
+
+    // Verify it's success (the NFT is owned by nftRecipient)
+    const actualOwner = await nftMock.ownerOf(tokenId);
+    expect(actualOwner).to.be.eq(nftReceiverMock);
+  });
+
+  xit("Valid NFT safeTransfer with data to smart contract fails when the recipient does not implement IERC721Reciever", async function() {
+    const [owner, nftMinter, nftSender, nftRecipient] = accounts;
+    const { nftManager, nftMock, nftNonReceiverMock } = await setupNFT(owner, nftMinter, nftSender);
+    const tokenId = 0;
+
+    try {
+      await nftManager.sendNFTWithData(nftNonReceiverMock, nftMock.address, tokenId, sendNFTData, {
+        from: nftRecipient,
+      });
+    } catch (error) {
+      expect(!!error.message, true, "Error message not received");
+      return;
+    }
+    expect.fail("Transaction should fail when recipient contract does not implement IERC721Reciever");
+  });
+
+  it("NFTManager gracefully accepts NFTs sent using safeTransfer()", async function() {
+    const [owner, nftMinter, nftSender] = accounts;
+    const { nftManager, nftMock } = await setupNFT(owner, nftMinter, nftSender);
+    const tokenId = 1;
+
+    //Safe Transfer NFT to NFTManager
+    const tx = await nftMock.safeTransferFrom(nftSender, nftManager.address, tokenId, {from: nftSender});
+
+    //Ensure transfer completes as expected
+    const transferLog = tx.logs.find(log => log.event === "Transfer");
+    expect(transferLog.args.from).to.be.equal(nftSender);
+    expect(transferLog.args.to).to.be.equal(nftManager.address);
+    expect(transferLog.args.tokenId.toString()).to.be.equal(tokenId.toString());
+
+    const actualOwner = await nftMock.ownerOf(tokenId);
+    expect(actualOwner).to.be.eq(nftManager.address);
   });
 
   it("proposeCall log", async function() {
