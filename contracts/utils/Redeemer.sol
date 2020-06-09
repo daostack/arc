@@ -17,7 +17,6 @@ contract Redeemer {
     * A client should listen to GenesisProtocol and ContributionReward redemption events
     * to monitor redemption operations.
     * @param _contributionReward contributionReward
-    * @param _genesisProtocol genesisProtocol
     * @param _proposalId the ID of the voting in the voting machine
     * @param _beneficiary beneficiary
     * @return gpRewards array
@@ -38,7 +37,6 @@ contract Redeemer {
     * @return int256 crExternalTokenReward ExternalToken - from ContributionReward
     */
     function redeem(ContributionReward _contributionReward,
-                    GenesisProtocol _genesisProtocol,
                     bytes32 _proposalId,
                     address _beneficiary)
     external
@@ -53,7 +51,7 @@ contract Redeemer {
     {
         bool callContributionReward;
         (gpRewards, gpDaoBountyReward, executed, winningVote, callContributionReward) =
-        genesisProtocolRedeem(_genesisProtocol, _proposalId, _beneficiary);
+        genesisProtocolRedeem(_contributionReward, _proposalId, _beneficiary);
         if (callContributionReward) {
             //redeem from contributionReward only if it executed
             if (_contributionReward.getProposalExecutionTime(_proposalId) > 0) {
@@ -72,7 +70,6 @@ contract Redeemer {
      * A client should listen to GenesisProtocol and ContributionReward redemption events
      * to monitor redemption operations.
      * @param _contributionRewardExt contributionRewardExt
-     * @param _genesisProtocol genesisProtocol
      * @param _proposalId the ID of the voting in the voting machine
      * @param _beneficiary beneficiary
      * @return gpRewards array
@@ -93,7 +90,6 @@ contract Redeemer {
      * @return int256 crExternalTokenReward ExternalToken - from ContributionReward
      */
     function redeemFromCRExt(ContributionRewardExt _contributionRewardExt,
-                            GenesisProtocol _genesisProtocol,
                             bytes32 _proposalId,
                             address _beneficiary)
         external
@@ -108,7 +104,7 @@ contract Redeemer {
     {
         bool callContributionReward;
         (gpRewards, gpDaoBountyReward, executed, winningVote, callContributionReward) =
-        genesisProtocolRedeem(_genesisProtocol, _proposalId, _beneficiary);
+        genesisProtocolRedeem(_contributionRewardExt, _proposalId, _beneficiary);
         if (callContributionReward) {
                //redeem from contributionReward only if it executed
             if (_contributionRewardExt.getProposalAcceptedByVotingMachine(_proposalId)) {
@@ -175,7 +171,7 @@ contract Redeemer {
         } else {
             whatToRedeem[3] = true;
         }
-        (reputation, nativeToken, eth, externalToken) = _contributionReward.redeem(_proposalId, whatToRedeem);
+        (reputation, nativeToken, eth, externalToken) = _contributionReward.redeemContributionReward(_proposalId, whatToRedeem);
     }
 
     function contributionRewardExtRedeem(ContributionRewardExt _contributionRewardExt, bytes32 _proposalId)
@@ -199,6 +195,6 @@ contract Redeemer {
         } else {
             whatToRedeem[3] = true;
         }
-        (reputation, nativeToken, eth, externalToken) = _contributionRewardExt.redeem(_proposalId, whatToRedeem);
+        (reputation, nativeToken, eth, externalToken) = _contributionRewardExt.redeemContributionRewardExt(_proposalId, whatToRedeem);
     }
 }
