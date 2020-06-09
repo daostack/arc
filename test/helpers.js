@@ -8,6 +8,7 @@ const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
+const ArcVotableSchemeMock = artifacts.require('./test/ArcVotableSchemeMock.sol');
 const RewarderMock = artifacts.require('./test/RewarderMock.sol');
 const Wallet = artifacts.require('./test/Wallet.sol');
 const App = artifacts.require("./App.sol");
@@ -131,6 +132,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.avatar = await Avatar.new();
   registration.controller = await Controller.new();
   registration.schemeMock = await SchemeMock.new();
+  registration.arcVotableSchemeMock = await ArcVotableSchemeMock.new();
   registration.wallet = await Wallet.new();
   registration.contributionReward = await ContributionReward.new();
   registration.competition = await Competition.new();
@@ -164,6 +166,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   await implementationDirectory.setImplementation("Avatar",registration.avatar.address);
   await implementationDirectory.setImplementation("Controller",registration.controller.address);
   await implementationDirectory.setImplementation("SchemeMock",registration.schemeMock.address);
+  await implementationDirectory.setImplementation("ArcVotableSchemeMock",registration.arcVotableSchemeMock.address);
   await implementationDirectory.setImplementation("RewarderMock",registration.rewarderMock.address);
   await implementationDirectory.setImplementation("Wallet",registration.wallet.address);
   await implementationDirectory.setImplementation("ContributionReward",registration.contributionReward.address);
@@ -274,6 +277,40 @@ await daoFactory.getPastEvents('SchemeInstance', {
                                                      _activationTime];
   votingMachine.voteOnBehalf = voteOnBehalf;
   return votingMachine;
+};
+
+const setupGenesisProtocolParams = async function (
+  voteOnBehalf = NULL_ADDRESS,
+  _queuedVoteRequiredPercentage=50,
+  _queuedVotePeriodLimit=60,
+  _boostedVotePeriodLimit=60,
+  _preBoostedVotePeriodLimit =0,
+  _thresholdConst=2000,
+  _quietEndingPeriod=0,
+  _proposingRepReward=60,
+  _votersReputationLossRatio=10,
+  _minimumDaoBounty=15,
+  _daoBountyConst=10,
+  _activationTime=0
+ ) {
+ var votingMachine = new VotingMachine();
+
+ // set up a reputation system
+ votingMachine.reputationArray = [20, 10 ,70];
+ // register some parameters
+ votingMachine.uintArray = [_queuedVoteRequiredPercentage,
+                                                    _queuedVotePeriodLimit,
+                                                    _boostedVotePeriodLimit,
+                                                    _preBoostedVotePeriodLimit,
+                                                    _thresholdConst,
+                                                    _quietEndingPeriod,
+                                                    _proposingRepReward,
+                                                    _votersReputationLossRatio,
+                                                    _minimumDaoBounty,
+                                                    _daoBountyConst,
+                                                    _activationTime];
+ votingMachine.voteOnBehalf = voteOnBehalf;
+ return votingMachine;
 };
 
  const setupOrganizationWithArraysDAOFactory = async function (proxyAdmin,
@@ -402,6 +439,7 @@ module.exports = { MAX_UINT_256,
                   increaseTime,
                   setupAbsoluteVote,
                   setupGenesisProtocol,
+                  setupGenesisProtocolParams,
                   etherForEveryone,
                   checkVoteInfo,
                   registrationAddVersionToPackege,

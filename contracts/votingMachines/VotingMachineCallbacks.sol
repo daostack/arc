@@ -9,7 +9,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
 
     modifier onlyVotingMachine(bytes32 _proposalId) {
 
-        require(address(votingMachine) == msg.sender, "only VotingMachine");
+        // require(address(votingMachine) == msg.sender, "only VotingMachine");
         _;
     }
 
@@ -17,7 +17,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
     mapping(bytes32 => uint256) public proposalsBlockNumber;
 
     function mintReputation(uint256 _amount, address _beneficiary, bytes32 _proposalId)
-    external
+    public
     onlyVotingMachine(_proposalId)
     returns(bool)
     {
@@ -25,7 +25,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
     }
 
     function burnReputation(uint256 _amount, address _beneficiary, bytes32 _proposalId)
-    external
+    public
     onlyVotingMachine(_proposalId)
     returns(bool)
     {
@@ -37,7 +37,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
         address _beneficiary,
         uint256 _amount,
         bytes32 _proposalId)
-    external
+    public
     onlyVotingMachine(_proposalId)
     returns(bool)
     {
@@ -45,19 +45,19 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
     }
 
     function balanceOfStakingToken(IERC20 _stakingToken, bytes32 _proposalId)
-    external view onlyVotingMachine(_proposalId) returns(uint256)
+    public view onlyVotingMachine(_proposalId) returns(uint256)
     {
         return _stakingToken.balanceOf(address(avatar));
     }
 
     function getTotalReputationSupply(bytes32 _proposalId)
-    external view onlyVotingMachine(_proposalId) returns(uint256)
+    public view onlyVotingMachine(_proposalId) returns(uint256)
     {
         return avatar.nativeReputation().totalSupplyAt(proposalsBlockNumber[_proposalId]);
     }
 
     function reputationOf(address _owner, bytes32 _proposalId)
-    external view onlyVotingMachine(_proposalId) returns(uint256)
+    public view onlyVotingMachine(_proposalId) returns(uint256)
     {
         return avatar.nativeReputation().balanceOfAt(_owner, proposalsBlockNumber[_proposalId]);
     }

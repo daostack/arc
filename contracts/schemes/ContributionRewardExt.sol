@@ -1,7 +1,8 @@
 pragma solidity 0.5.17;
 
-import "../votingMachines/VotingMachineCallbacks.sol";
+import "./VotableScheme.sol";
 import "../utils/DAOFactory.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 
 interface Rewarder {
@@ -17,14 +18,13 @@ interface Rewarder {
  * It enable to assign a rewarder, which, after the contributionreward has been accepted,
  * can then later distribute the assets as it would like.
  */
-contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterface {
+contract ContributionRewardExt is VotableScheme, ProposalExecuteInterface {
     using SafeMath for uint;
     using SafeERC20 for IERC20;
 
     event NewContributionProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        address indexed _intVoteInterface,
         string _descriptionHash,
         int256 _reputationChange,
         uint[3]  _rewards,
@@ -81,46 +81,41 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     address public rewarder;
     Vault public vault;
 
-    /**
-     * @dev initialize
-     * @param _avatar the avatar this scheme referring to.
-     * @param _votingParams genesisProtocol parameters
-     * @param _voteOnBehalf  parameter
-     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
-     * @param _stakingToken (for GenesisProtocol)
-     * @param _packageVersion packageVersion to instance the votingMachine from.
-     * @param _votingMachineName the votingMachine contract name.
-     * @param _rewarderName the rewarder contract name.
-     */
+      /**
+    * @dev initialize
+    * @param _avatar the scheme avatar
+    * @param _stakingToken (for GenesisProtocol)
+    * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+    * @param _voteOnBehalf  parameter
+    * @param _authorizedToPropose only this address allow to propose (unless it is zero)
+    * @param _daoFactory  DAOFactory instance to instance a votingMachine.
+    * @param _packageVersion packageVersion to instance the votingMachine from.
+    * @param _rewarderName the rewarder contract name.
+    */
     function initialize(
         Avatar _avatar,
-        uint256[11] calldata _votingParams,
+        IERC20 _stakingToken,
+        uint[11] calldata _votingParams,
         address _voteOnBehalf,
+        address _authorizedToPropose,
         DAOFactory _daoFactory,
-        address _stakingToken,
         uint64[3] calldata _packageVersion,
-        string calldata _votingMachineName,
         string calldata _rewarderName
-    )
-    external
-    {
-        super._initializeGovernance(
+    ) external {
+        VotableScheme._initializeVoting(
             _avatar,
+            _stakingToken,
             _votingParams,
             _voteOnBehalf,
-            _daoFactory,
-            _stakingToken,
-            address(this),
-            address(this),
-            _packageVersion,
-            _votingMachineName);
+            _authorizedToPropose
+        );
         vault = new Vault();
         vault.initialize(address(this));
         if (bytes(_rewarderName).length != 0) {
             rewarder = address(_daoFactory.createInstance(
                                 _packageVersion,
                                 _rewarderName,
-                                address(avatar),
+                                address(_avatar),
                                 abi.encodeWithSignature("initialize(address)", address(this))));
         }
     }
@@ -132,7 +127,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     */
     function executeProposal(bytes32 _proposalId, int256 _decision)
     external
-    onlyVotingMachine(_proposalId)
+    onlySelf
     returns(bool) {
         require(organizationProposals[_proposalId].acceptedByVotingMachine == false);
         require(organizationProposals[_proposalId].beneficiary != address(0));
@@ -170,7 +165,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         if (proposer == address(0)) {
             proposer = msg.sender;
         }
-        proposalId = votingMachine.propose(2, proposer);
+        proposalId = GenesisProtocolLogic.propose(2, proposer);
         address payable beneficiary = _beneficiary;
         if (beneficiary == address(0)) {
             beneficiary = msg.sender;
@@ -197,7 +192,6 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         emit NewContributionProposal(
             address(avatar),
             proposalId,
-            address(votingMachine),
             _descriptionHash,
             _reputationChange,
             _rewards,
@@ -432,7 +426,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
     *         whatToRedeem[3] - ExternalToken
     * @return  result boolean array for each redeem type.
     */
-    function redeem(bytes32 _proposalId, bool[4] memory _whatToRedeem)
+    function redeemContributionRewardExt(bytes32 _proposalId, bool[4] memory _whatToRedeem)
     public
     returns(int256 reputationReward, uint256 nativeTokenReward, uint256 etherReward, uint256 externalTokenReward)
     {

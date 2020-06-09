@@ -2,19 +2,20 @@ pragma solidity ^0.5.17;
 
 import "../controller/Controller.sol";
 import "../schemes/ArcScheme.sol";
+import "../utils/DAOFactory.sol";
 
 
 contract SchemeMock is ArcScheme {
 
     uint256 public testData;
 
-    function initialize(Avatar _avatar, uint256 _testData)
-    external {
-        super._initialize(_avatar);
-        testData = _testData;
-    }
+    // function initialize(Avatar _avatar, uint256 _testData)
+    // external {
+    //     super._initialize(_avatar);
+    //     testData = _testData;
+    // }
 
-    function initializeGovernance(
+    function initialize(
         Avatar _avatar,
         uint256[11] calldata _votingParams,
         address _voteOnBehalf,

@@ -12,59 +12,39 @@ class ContributionRewardExtParams {
 }
 
 const setupContributionRewardExt = async function(
-                                            accounts,
-                                            genesisProtocol,
                                             token,
                                             _daoFactoryAddress = helpers.NULL_ADDRESS,
                                             service = "",
                                             _packageVersion = [0,1,0]
                                             ) {
   var contributionRewardExtParams = new ContributionRewardExtParams();
-  if (genesisProtocol === true) {
-    contributionRewardExtParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
-    contributionRewardExtParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
-                          .methods
-                          .initialize(helpers.NULL_ADDRESS,
-                            contributionRewardExtParams.votingMachine.uintArray,
-                            contributionRewardExtParams.votingMachine.voteOnBehalf,
-                            _daoFactoryAddress,
-                            token,
-                            _packageVersion,
-                            "GenesisProtocol",
-                            service
-                            )
-                          .encodeABI();
-    } else {
-  contributionRewardExtParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+  contributionRewardExtParams.votingMachine = await helpers.setupGenesisProtocolParams();
   contributionRewardExtParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
                         .methods
-                        .initialize(helpers.NULL_ADDRESS,
+                        .initialize(
+                          helpers.NULL_ADDRESS,
+                          token,
                           contributionRewardExtParams.votingMachine.uintArray,
                           contributionRewardExtParams.votingMachine.voteOnBehalf,
-                          _daoFactoryAddress,
                           helpers.NULL_ADDRESS,
+                          _daoFactoryAddress,
                           _packageVersion,
-                          "AbsoluteVote",
-                          service)
+                          service
+                          )
                         .encodeABI();
-  }
+
   return contributionRewardExtParams;
 };
 var registration;
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS,service="") {
+const setup = async function (accounts,tokenAddress=helpers.NULL_ADDRESS,service="") {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100000);
   registration = await helpers.registerImplementation();
 
-  if (genesisProtocol) {
-     testSetup.reputationArray = [1000,100,0];
-  } else {
-     testSetup.reputationArray = [2000,4000,7000];
-  }
+  testSetup.reputationArray = [1000,100,0];
+
   testSetup.proxyAdmin = accounts[5];
   testSetup.contributionRewardExtParams= await setupContributionRewardExt(
-                     accounts,
-                     genesisProtocol,
                      tokenAddress,
                      registration.daoFactory.address,
                      service);
@@ -85,8 +65,6 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=help
                                                                       [permissions],
                                                                       "metaData");
   testSetup.contributionRewardExt = await ContributionRewardExt.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
-  testSetup.contributionRewardExtParams.votingMachineInstance =
-  await helpers.getVotingMachine(await testSetup.contributionRewardExt.votingMachine(),genesisProtocol);
 
   testSetup.admin = accounts[0];
 
@@ -96,7 +74,7 @@ contract('ContributionRewardExt', accounts => {
 
     it("initialize", async function() {
        var testSetup = await setup(accounts);
-       assert.equal(await testSetup.contributionRewardExt.votingMachine(),testSetup.contributionRewardExtParams.votingMachineInstance.address);
+       assert.equal(await testSetup.contributionRewardExt.avatar(), testSetup.org.avatar.address);
     });
 
     it("initialize vm 0", async function() {

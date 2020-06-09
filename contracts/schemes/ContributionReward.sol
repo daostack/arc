@@ -1,21 +1,19 @@
 pragma solidity ^0.5.17;
 
-import "../votingMachines/VotingMachineCallbacks.sol";
+import "./VotableScheme.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
 /**
  * @title A scheme for proposing and rewarding contributions to an organization
  * @dev An agent can ask an organization to recognize a contribution and reward
  * him with token, reputation, ether or any combination.
  */
-contract ContributionReward is
-        VotingMachineCallbacks,
-        ProposalExecuteInterface {
+contract ContributionReward is VotableScheme, ProposalExecuteInterface {
     using SafeMath for uint;
 
     event NewContributionProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        address indexed _intVoteInterface,
         string _descriptionHash,
         int256 _reputationChange,
         uint[5]  _rewards,
@@ -63,37 +61,27 @@ contract ContributionReward is
     mapping(bytes32=>ContributionProposal) public organizationProposals;
 
     /**
-     * @dev initialize
-     * @param _avatar the avatar this scheme referring to.
-     * @param _votingParams genesisProtocol parameters
-     * @param _voteOnBehalf  parameter
-     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
-     * @param _stakingToken (for GenesisProtocol)
-     * @param _packageVersion packageVersion to instance the votingMachine from.
-     * @param _votingMachineName the votingMachine contract name.
-     */
+    * @dev initialize
+    * @param _avatar the scheme avatar
+    * @param _stakingToken (for GenesisProtocol)
+    * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+    * @param _voteOnBehalf  parameter
+    * @param _authorizedToPropose only this address allow to propose (unless it is zero)
+    */
     function initialize(
         Avatar _avatar,
-        uint256[11] calldata _votingParams,
+        IERC20 _stakingToken,
+        uint[11] calldata _votingParams,
         address _voteOnBehalf,
-        DAOFactory _daoFactory,
-        address _stakingToken,
-        uint64[3] calldata _packageVersion,
-        string calldata _votingMachineName
-    )
-    external
-    initializer
-    {
-        super._initializeGovernance(
+        address _authorizedToPropose
+    ) external {
+        VotableScheme._initializeVoting(
             _avatar,
+            _stakingToken,
             _votingParams,
             _voteOnBehalf,
-            _daoFactory,
-            _stakingToken,
-            address(this),
-            address(this),
-            _packageVersion,
-            _votingMachineName);
+            _authorizedToPropose
+        );
     }
 
     /**
@@ -101,10 +89,8 @@ contract ContributionReward is
     * @param _proposalId the ID of the voting in the voting machine
     * @param _decision a parameter of the voting result, 1 yes and 2 is no.
     */
-    function executeProposal(bytes32 _proposalId, int256 _decision)
-    external
-    onlyVotingMachine(_proposalId)
-    returns(bool) {
+    // TODO: Maybe should be internal or public?
+    function executeProposal(bytes32 _proposalId, int256 _decision) external onlySelf returns(bool) {
         require(organizationProposals[_proposalId].executionTime == 0);
         require(organizationProposals[_proposalId].beneficiary != address(0));
         // Check if vote was successful:
@@ -140,7 +126,7 @@ contract ContributionReward is
     returns(bytes32)
     {
         validateProposalParams(_reputationChange, _rewards);
-        bytes32 proposalId = votingMachine.propose(2, msg.sender);
+        bytes32 proposalId = GenesisProtocolLogic.propose(2, msg.sender);
         address payable beneficiary = _beneficiary;
         if (beneficiary == address(0)) {
             beneficiary = msg.sender;
@@ -163,7 +149,6 @@ contract ContributionReward is
         emit NewContributionProposal(
             address(avatar),
             proposalId,
-            address(votingMachine),
             _descriptionHash,
             _reputationChange,
             _rewards,
@@ -296,7 +281,7 @@ contract ContributionReward is
     *         whatToRedeem[3] - ExternalToken
     * @return  result boolean array for each redeem type.
     */
-    function redeem(bytes32 _proposalId, bool[4] memory _whatToRedeem)
+    function redeemContributionReward(bytes32 _proposalId, bool[4] memory _whatToRedeem)
     public
     returns(int256 reputationReward, uint256 nativeTokenReward, uint256 etherReward, uint256 externalTokenReward)
     {
