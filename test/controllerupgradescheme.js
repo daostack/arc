@@ -1,5 +1,6 @@
 const helpers = require("./helpers");
 const Controller = artifacts.require("./Controller.sol");
+const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const ControllerUpgradeScheme = artifacts.require('./ControllerUpgradeScheme.sol');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Avatar = artifacts.require("./Avatar.sol");
@@ -13,10 +14,7 @@ class ControllerUpgradeSchemeParams {
 var registration;
 const setupControllerUpgradeSchemeParams = async function(
                                               accounts,
-                                              genesisProtocol,
-                                              token,
-                                              _daoFactoryAddress,
-                                              _packageVersion = [0,1,0]
+                                              genesisProtocol
                                             ) {
     var controllerUpgradeSchemeParams = new ControllerUpgradeSchemeParams();
     if (genesisProtocol === true) {
@@ -24,24 +22,20 @@ const setupControllerUpgradeSchemeParams = async function(
       controllerUpgradeSchemeParams.initdata = await new web3.eth.Contract(registration.controllerUpgradeScheme.abi)
                             .methods
                             .initialize(helpers.NULL_ADDRESS,
+                              controllerUpgradeSchemeParams.votingMachine.genesisProtocol.address,
                               controllerUpgradeSchemeParams.votingMachine.uintArray,
                               controllerUpgradeSchemeParams.votingMachine.voteOnBehalf,
-                              _daoFactoryAddress,
-                              token,
-                              _packageVersion,
-                              "GenesisProtocol")
+                              helpers.NULL_HASH)
                             .encodeABI();
       } else {
     controllerUpgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
     controllerUpgradeSchemeParams.initdata = await new web3.eth.Contract(registration.controllerUpgradeScheme.abi)
                           .methods
                           .initialize(helpers.NULL_ADDRESS,
-                            controllerUpgradeSchemeParams.votingMachine.uintArray,
-                            controllerUpgradeSchemeParams.votingMachine.voteOnBehalf,
-                            _daoFactoryAddress,
+                            controllerUpgradeSchemeParams.votingMachine.absoluteVote.address,
+                            [0,0,0,0,0,0,0,0,0,0,0],
                             helpers.NULL_ADDRESS,
-                            _packageVersion,
-                            "AbsoluteVote")
+                            controllerUpgradeSchemeParams.votingMachine.params)
                           .encodeABI();
     }
     return controllerUpgradeSchemeParams;
@@ -79,9 +73,7 @@ const setup = async function (accounts,genesisProtocol=false,tokenAddress= helpe
   testSetup.proxyAdmin = accounts[5];
   testSetup.controllerUpgradeSchemeParams= await setupControllerUpgradeSchemeParams(
     accounts,
-    genesisProtocol,
-    tokenAddress,
-    registration.daoFactory.address);
+    genesisProtocol);
   var permissions = "0x0000000a";
   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
@@ -98,14 +90,24 @@ const setup = async function (accounts,genesisProtocol=false,tokenAddress= helpe
                                                                       [permissions],
                                                                       "metaData");
 
-testSetup.controllerUpgradeScheme = await ControllerUpgradeScheme.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
-testSetup.controllerUpgradeSchemeParams.votingMachineInstance =
-await helpers.getVotingMachine(await testSetup.controllerUpgradeScheme.votingMachine(),genesisProtocol);  return testSetup;
+  testSetup.controllerUpgradeScheme = await ControllerUpgradeScheme.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
+  return testSetup;
 };
 contract('ControllerUpgradeScheme', accounts => {
   before(function() {
     helpers.etherForEveryone(accounts);
   });
+
+   it("initialize", async() => {
+     var controllerUpgradeScheme = await ControllerUpgradeScheme.new();
+     var absoluteVote = await AbsoluteVote.new();
+     await controllerUpgradeScheme.initialize(helpers.SOME_ADDRESS,
+                                              absoluteVote.address,
+                                              [0,0,0,0,0,0,0,0,0,0,0],
+                                              helpers.NULL_ADDRESS,
+                                              "0x1234");
+     assert.equal(await controllerUpgradeScheme.votingMachine(),absoluteVote.address);
+     });
 
 
      it("proposeUpgrade log", async() => {
@@ -116,7 +118,7 @@ contract('ControllerUpgradeScheme', accounts => {
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "NewControllerUpgradeProposal");
        var votingMachine = await helpers.getValueFromLogs(tx, '_intVoteInterface',1);
-       assert.equal(votingMachine,testSetup.controllerUpgradeSchemeParams.votingMachineInstance.address);
+       assert.equal(votingMachine,testSetup.controllerUpgradeSchemeParams.votingMachine.absoluteVote.address);
       });
 
         it("proposeChangeControllerUpgradingScheme log", async function() {
@@ -126,7 +128,7 @@ contract('ControllerUpgradeScheme', accounts => {
           assert.equal(tx.logs.length, 1);
           assert.equal(tx.logs[0].event, "ChangeControllerUpgradeSchemeProposal");
           var votingMachine = await helpers.getValueFromLogs(tx, '_intVoteInterface',1);
-          assert.equal(votingMachine,testSetup.controllerUpgradeSchemeParams.votingMachineInstance.address);
+          assert.equal(votingMachine,testSetup.controllerUpgradeSchemeParams.votingMachine.absoluteVote.address);
          });
 
  it("execute proposal upgrade controller -yes - proposal data delete", async function() {
@@ -141,7 +143,7 @@ contract('ControllerUpgradeScheme', accounts => {
    var organizationProposal = await testSetup.controllerUpgradeScheme.organizationProposals(proposalId);
    assert.equal(organizationProposal[0],newController.address);//new contract address
    assert.equal(organizationProposal[1].toNumber(),1);//proposalType
-   await testSetup.controllerUpgradeSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+   await testSetup.controllerUpgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
    assert.equal(newController.address,await testSetup.org.avatar.owner());
    //check organizationsProposals after execution
    organizationProposal = await testSetup.controllerUpgradeScheme.organizationProposals(proposalId);
@@ -161,7 +163,7 @@ contract('ControllerUpgradeScheme', accounts => {
     var organizationProposal = await testSetup.controllerUpgradeScheme.organizationProposals(proposalId);
     assert.equal(organizationProposal[0],newController.address);//new contract address
     assert.equal(organizationProposal[1].toNumber(),1);//proposalType
-    await testSetup.controllerUpgradeSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.controllerUpgradeSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     assert.equal(newController.address,await testSetup.org.avatar.owner());
     //check organizationsProposals after execution
     organizationProposal = await testSetup.controllerUpgradeScheme.organizationProposals(proposalId);
@@ -181,7 +183,7 @@ contract('ControllerUpgradeScheme', accounts => {
     assert.equal(organizationProposal[1].toNumber(),1);//proposalType
 
     //Vote with reputation to trigger execution
-    await testSetup.controllerUpgradeSchemeParams.votingMachineInstance.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.controllerUpgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     //should not upgrade because the decision is "no"
     assert.notEqual(newController.address,await testSetup.org.avatar.owner());
     //check organizationsProposals after execution
@@ -208,7 +210,7 @@ contract('ControllerUpgradeScheme', accounts => {
      assert.equal(await controller.isSchemeRegistered(accounts[0]),false);
      assert.equal(await controller.isSchemeRegistered(testSetup.controllerUpgradeScheme.address),true);
 
-     await testSetup.controllerUpgradeSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+     await testSetup.controllerUpgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
 
      //check organizationsProposals after execution
      organizationProposal = await testSetup.controllerUpgradeScheme.organizationProposals(proposalId);
@@ -238,7 +240,7 @@ contract('ControllerUpgradeScheme', accounts => {
       assert.equal(await controller.isSchemeRegistered(accounts[0]),false);
       assert.equal(await controller.isSchemeRegistered(testSetup.controllerUpgradeScheme.address),true);
 
-      await testSetup.controllerUpgradeSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.controllerUpgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
 
       //check organizationsProposals after execution
       organizationProposal = await testSetup.controllerUpgradeScheme.organizationProposals(proposalId);
@@ -262,7 +264,7 @@ contract('ControllerUpgradeScheme', accounts => {
        var controller = await Controller.at(await testSetup.org.avatar.owner());
        assert.equal(await controller.isSchemeRegistered(testSetup.controllerUpgradeScheme.address),true);
 
-       await testSetup.controllerUpgradeSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.controllerUpgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
 
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.controllerUpgradeScheme.organizationProposals(proposalId);

@@ -10,9 +10,7 @@ class SchemeFactoryParams {
 var registration;
 const setupSchemeFactoryParams = async function(
                                             accounts,
-                                            genesisProtocol,
-                                            token,
-                                            _packageVersion=[0,1,0]
+                                            genesisProtocol
                                             ) {
   var schemeFactoryParams = new SchemeFactoryParams();
   if (genesisProtocol === true) {
@@ -20,31 +18,29 @@ const setupSchemeFactoryParams = async function(
     schemeFactoryParams.initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
                           .methods
                           .initialize(helpers.NULL_ADDRESS,
+                            schemeFactoryParams.votingMachine.genesisProtocol.address,
                             schemeFactoryParams.votingMachine.uintArray,
                             schemeFactoryParams.votingMachine.voteOnBehalf,
-                            registration.daoFactory.address,
-                            token,
-                            _packageVersion,
-                            "GenesisProtocol")
+                            helpers.NULL_HASH,
+                            registration.daoFactory.address)
                           .encodeABI();
     } else {
       schemeFactoryParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
       schemeFactoryParams.initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
                             .methods
                             .initialize(helpers.NULL_ADDRESS,
-                              schemeFactoryParams.votingMachine.uintArray,
-                              schemeFactoryParams.votingMachine.voteOnBehalf,
-                              registration.daoFactory.address,
-                              token,
-                              _packageVersion,
-                              "AbsoluteVote")
+                              schemeFactoryParams.votingMachine.absoluteVote.address,
+                              [0,0,0,0,0,0,0,0,0,0,0],
+                              helpers.NULL_ADDRESS,
+                              schemeFactoryParams.votingMachine.params,
+                              registration.daoFactory.address)
                             .encodeABI();
   }
 
   return schemeFactoryParams;
 };
 
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
+const setup = async function (accounts,genesisProtocol = false) {
   var testSetup = new helpers.TestSetup();
   registration = await helpers.registerImplementation();
   testSetup.reputationArray = [2000,4000,7000];
@@ -52,8 +48,7 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=help
 
   testSetup.schemeFactoryParams= await setupSchemeFactoryParams(
                                         accounts,
-                                        genesisProtocol,
-                                        tokenAddress);
+                                        genesisProtocol);
 
   var permissions = "0x0000001f";
 
@@ -75,8 +70,6 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=help
                                                                      );
 
    testSetup.schemeFactory = await SchemeFactory.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
-   testSetup.schemeFactoryParams.votingMachineInstance =
-   await helpers.getVotingMachine(await testSetup.schemeFactory.votingMachine(),genesisProtocol);
   return testSetup;
 };
 contract('SchemeFactory', accounts => {
@@ -84,7 +77,7 @@ contract('SchemeFactory', accounts => {
    it("initialize", async() => {
      var testSetup = await setup(accounts);
      assert.equal(await testSetup.schemeFactory.votingMachine(),
-     testSetup.schemeFactoryParams.votingMachineInstance.address);
+     testSetup.schemeFactoryParams.votingMachine.absoluteVote.address);
      assert.equal(await testSetup.schemeFactory.avatar(),testSetup.org.avatar.address);
      assert.equal(await testSetup.schemeFactory.daoFactory(),registration.daoFactory.address);
      });
@@ -124,12 +117,11 @@ contract('SchemeFactory', accounts => {
       var initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
                             .methods
                             .initialize(testSetup.org.avatar.address,
-                              testSetup.schemeFactoryParams.votingMachine.uintArray,
-                              testSetup.schemeFactoryParams.votingMachine.voteOnBehalf,
-                              registration.daoFactory.address,
+                              testSetup.schemeFactoryParams.votingMachine.absoluteVote.address,
+                              [0,0,0,0,0,0,0,0,0,0,0],
                               helpers.NULL_ADDRESS,
-                              [0,1,0],
-                              "AbsoluteVote")
+                              testSetup.schemeFactoryParams.votingMachine.params,
+                              registration.daoFactory.address)
                             .encodeABI();
       var tx = await testSetup.schemeFactory.proposeScheme(
         [0,1,0],
@@ -141,9 +133,9 @@ contract('SchemeFactory', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      tx = await testSetup.schemeFactoryParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
-      var schemeAddress = proxyEvents[1].returnValues._proxy;
+      var schemeAddress = proxyEvents[0].returnValues._proxy;
       var controller = await Controller.at(await testSetup.org.avatar.owner());
       assert.equal(await controller.isSchemeRegistered(schemeAddress),true);
       assert.equal(await controller.schemesPermissions(schemeAddress),"0x0000001f");
@@ -154,12 +146,11 @@ contract('SchemeFactory', accounts => {
       var initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
                             .methods
                             .initialize(testSetup.org.avatar.address,
-                              testSetup.schemeFactoryParams.votingMachine.uintArray,
-                              testSetup.schemeFactoryParams.votingMachine.voteOnBehalf,
-                              registration.daoFactory.address,
+                              testSetup.schemeFactoryParams.votingMachine.absoluteVote.address,
+                              [0,0,0,0,0,0,0,0,0,0,0],
                               helpers.NULL_ADDRESS,
-                              [0,1,0],
-                              "AbsoluteVote")
+                              testSetup.schemeFactoryParams.votingMachine.params,
+                              registration.daoFactory.address)
                             .encodeABI();
       var tx = await testSetup.schemeFactory.proposeScheme(
         [0,1,0],
@@ -173,9 +164,9 @@ contract('SchemeFactory', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       var controller = await Controller.at(await testSetup.org.avatar.owner());
       assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),true);
-      tx = await testSetup.schemeFactoryParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
-      var schemeAddress = proxyEvents[1].returnValues._proxy;
+      var schemeAddress = proxyEvents[0].returnValues._proxy;
       assert.equal(await controller.isSchemeRegistered(schemeAddress),true);
       assert.equal(await controller.schemesPermissions(schemeAddress),"0x0000001f");
       assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),false);
@@ -186,12 +177,11 @@ contract('SchemeFactory', accounts => {
       var initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
                             .methods
                             .initialize(testSetup.org.avatar.address,
-                              testSetup.schemeFactoryParams.votingMachine.uintArray,
-                              testSetup.schemeFactoryParams.votingMachine.voteOnBehalf,
-                              registration.daoFactory.address,
+                              testSetup.schemeFactoryParams.votingMachine.genesisProtocol.address,
+                              [0,0,0,0,0,0,0,0,0,0,0],
                               helpers.NULL_ADDRESS,
-                              [0,1,0],
-                              "GenesisProtocol")
+                              testSetup.schemeFactoryParams.votingMachine.params,
+                              registration.daoFactory.address)
                             .encodeABI();
       var tx = await testSetup.schemeFactory.proposeScheme(
         [0,1,0],
@@ -205,9 +195,9 @@ contract('SchemeFactory', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       var controller = await Controller.at(await testSetup.org.avatar.owner());
       assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),true);
-      tx = await testSetup.schemeFactoryParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.schemeFactoryParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
-      var schemeAddress = proxyEvents[1].returnValues._proxy;
+      var schemeAddress = proxyEvents[0].returnValues._proxy;
       assert.equal(await controller.isSchemeRegistered(schemeAddress),true);
       assert.equal(await controller.schemesPermissions(schemeAddress),"0x0000001f");
       assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),false);
@@ -227,7 +217,7 @@ contract('SchemeFactory', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       var controller = await Controller.at(await testSetup.org.avatar.owner());
       assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),true);
-      tx = await testSetup.schemeFactoryParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
       assert.equal(proxyEvents.length,0);
       assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),false);
@@ -247,7 +237,7 @@ contract('SchemeFactory', accounts => {
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
       //Vote with reputation to trigger execution
-      tx = await testSetup.schemeFactoryParams.votingMachineInstance.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       //should not register because the decision is "no"
       let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
       assert.equal(proxyEvents.length,0);

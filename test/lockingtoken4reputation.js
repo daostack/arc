@@ -356,13 +356,4 @@ contract('LockingToken4Reputation', accounts => {
                                                 accounts[1],
                                                 helpers.SOME_HASH);
     });
-
-    it("get earned reputation", async () => {
-        let testSetup = await setup(accounts);
-        await testSetup.lockingToken4Reputation.lock(web3.utils.toWei('1', "ether"),100,testSetup.lockingToken.address,testSetup.agreementHash);
-        await helpers.increaseTime(3001);
-        const reputation = await testSetup.lockingToken4Reputation.redeem.call(accounts[0]);
-        assert.equal(reputation,100);
-        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
-    });
 });

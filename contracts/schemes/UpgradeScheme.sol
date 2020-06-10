@@ -46,38 +46,23 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
 
     /**
      * @dev initialize
-     * @param _avatar the avatar this scheme referring to.
-     * @param _votingParams genesisProtocol parameters
-     * @param _voteOnBehalf  parameter
-     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
-     * @param _stakingToken (for GenesisProtocol)
-     * @param _packageVersion packageVersion to instance the votingMachine from.
-     * @param _votingMachineName the votingMachine contract name.
-     * @param _arcPackage the arc package to upgrade from
+     * @param _avatar the avatar to mint reputation from
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
+     * @param _voteParamsHash voting machine parameters.
      */
     function initialize(
         Avatar _avatar,
+        IntVoteInterface _votingMachine,
         uint256[11] calldata _votingParams,
         address _voteOnBehalf,
-        DAOFactory _daoFactory,
-        address _stakingToken,
-        uint64[3] calldata _packageVersion,
-        string calldata _votingMachineName,
-        Package _arcPackage
+        bytes32 _voteParamsHash,
+        Package _package
     )
     external
     {
-        super._initializeGovernance(
-            _avatar,
-            _votingParams,
-            _voteOnBehalf,
-            _daoFactory,
-            _stakingToken,
-            address(this),
-            address(this),
-            _packageVersion,
-            _votingMachineName);
-        arcPackage = _arcPackage;
+        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
+        arcPackage = _package;
     }
 
     /**
@@ -133,7 +118,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         address[] memory _contractsToUpgrade,
         string memory _descriptionHash)
     public
-    returns(bytes32 proposalId)
+    returns(bytes32)
     {
         require(_contractsNames.length <= 60, "can upgrade up to 60 contracts at a time");
         require(
@@ -150,7 +135,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             );
         }
 
-        proposalId = votingMachine.propose(2, msg.sender);
+        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
 
         organizationProposals[proposalId] = Proposal({
             packageVersion: _packageVersion,
@@ -167,5 +152,6 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
             _contractsToUpgrade,
             _descriptionHash
         );
+        return proposalId;
     }
 }

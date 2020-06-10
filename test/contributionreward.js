@@ -43,9 +43,6 @@ const setupContributionReward = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
-                                            avatarAddress,
-                                            _daoFactoryAddress,
-                                            _packageVersion = [0,1,0]
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
 
@@ -54,24 +51,20 @@ const setupContributionReward = async function(
     contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionReward.abi)
                           .methods
                           .initialize(helpers.NULL_ADDRESS,
+                            contributionRewardParams.votingMachine.genesisProtocol.address,
                             contributionRewardParams.votingMachine.uintArray,
                             contributionRewardParams.votingMachine.voteOnBehalf,
-                            _daoFactoryAddress,
-                            token,
-                            _packageVersion,
-                            "GenesisProtocol")
+                            helpers.NULL_HASH)
                           .encodeABI();
     } else {
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionReward.abi)
                         .methods
                         .initialize(helpers.NULL_ADDRESS,
-                          contributionRewardParams.votingMachine.uintArray,
-                          contributionRewardParams.votingMachine.voteOnBehalf,
-                          _daoFactoryAddress,
+                          contributionRewardParams.votingMachine.absoluteVote.address,
+                          [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
-                          _packageVersion,
-                          "AbsoluteVote")
+                          contributionRewardParams.votingMachine.params)
                         .encodeABI();
   }
   return contributionRewardParams;
@@ -91,9 +84,7 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    testSetup.contributionRewardParams= await setupContributionReward(
                       accounts,
                       genesisProtocol,
-                      tokenAddress,
-                      helpers.NULL_ADDRESS,
-                      registration.daoFactory.address);
+                      tokenAddress);
    var permissions = "0x00000000";
    [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                        accounts,
@@ -113,9 +104,6 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
 
 
    testSetup.contributionReward = await ContributionReward.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
-   testSetup.contributionRewardParams.votingMachineInstance =
-   await helpers.getVotingMachine(await testSetup.contributionReward.votingMachine(),genesisProtocol);
-
    return testSetup;
 };
 contract('ContributionReward', accounts => {
@@ -123,7 +111,7 @@ contract('ContributionReward', accounts => {
     it("initialize", async function() {
        var testSetup = await setup(accounts);
        assert.equal(await testSetup.contributionReward.votingMachine(),
-       testSetup.contributionRewardParams.votingMachineInstance.address);
+       testSetup.contributionRewardParams.votingMachine.absoluteVote.address);
        assert.equal(await testSetup.contributionReward.avatar(),testSetup.org.avatar.address);
     });
 
@@ -132,12 +120,10 @@ contract('ContributionReward', accounts => {
 
        try {
          await testSetup.contributionReward.initialize(testSetup.org.avatar.address,
-           testSetup.contributionRewardParams.votingMachine.uintArray,
-           testSetup.contributionRewardParams.votingMachine.voteOnBehalf,
-           registration.daoFactory.address,
-           helpers.NULL_ADDRESS,
-           [0,1,0],
-           "AbsoluteVote");
+                                                       testSetup.contributionRewardParams.votingMachine.absoluteVote.address,
+                                                       [0,0,0,0,0,0,0,0,0,0,0],
+                                                       helpers.NULL_ADDRESS,
+                                                       testSetup.contributionRewardParams.votingMachine.params);
          assert(false, 'cannot initialize twice');
        } catch (ex) {
          helpers.assertVMException(ex);
@@ -157,7 +143,7 @@ contract('ContributionReward', accounts => {
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewContributionProposal");
       assert.equal(await helpers.getValueFromLogs(tx, '_avatar',0), testSetup.org.avatar.address, "Wrong log: _avatar");
-      assert.equal(await helpers.getValueFromLogs(tx, '_intVoteInterface',0), testSetup.contributionRewardParams.votingMachineInstance.address, "Wrong log: _intVoteInterface");
+      assert.equal(await helpers.getValueFromLogs(tx, '_intVoteInterface',0), testSetup.contributionRewardParams.votingMachine.absoluteVote.address, "Wrong log: _intVoteInterface");
       assert.equal(await helpers.getValueFromLogs(tx, '_descriptionHash',15), "description-hash", "Wrong log: _contributionDescription");
       assert.equal(await helpers.getValueFromLogs(tx, '_reputationChange',0), 10, "Wrong log: _reputationChange");
       var arr = await helpers.getValueFromLogs(tx, '_rewards',0);
@@ -196,7 +182,7 @@ contract('ContributionReward', accounts => {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.contributionReward.organizationProposals(proposalId);
       assert.notEqual(organizationProposal[8],0);//executionTime
      });
@@ -215,7 +201,7 @@ contract('ContributionReward', accounts => {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       await helpers.increaseTime(periodLength+1);
       tx = await testSetup.contributionReward.redeem(proposalId,[true,false,false,false]);
       assert.equal(tx.logs.length, 1);
@@ -240,7 +226,7 @@ contract('ContributionReward', accounts => {
                                                                     );
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-       await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        await helpers.increaseTime(periodLength+1);
        tx = await testSetup.contributionReward.redeem(proposalId,[false,true,false,false]);
        var tokens = await testSetup.org.token.balanceOf(accounts[1]);
@@ -268,7 +254,7 @@ contract('ContributionReward', accounts => {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       await helpers.increaseTime(periodLength+1);
       await testSetup.contributionReward.redeem(proposalId,[false,false,true,false]);
       var vault = await otherAvatar.vault();
@@ -300,7 +286,7 @@ contract('ContributionReward', accounts => {
                                                                     );
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-       await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        await helpers.increaseTime(periodLength+1);
        await testSetup.contributionReward.redeem(proposalId,[false,false,false,true]);
        var tokens = await testSetup.standardTokenMock.balanceOf(otherAvatar.address);
@@ -330,7 +316,7 @@ contract('ContributionReward', accounts => {
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
         var organizationProposal = await testSetup.contributionReward.organizationProposals(proposalId);
         assert.equal(organizationProposal[5],otherAvatar.address);//beneficiary
-        await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+        await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
         await helpers.increaseTime(periodLength+1);
         try {
           await testSetup.contributionReward.redeem(proposalId,[true,true,true,true]);
@@ -361,7 +347,7 @@ contract('ContributionReward', accounts => {
                                                                   );
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-     await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+     await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
      await helpers.increaseTime(periodLength+1);
 
      await checkRedeemedPeriods(testSetup,proposalId,0,0,0,0);
@@ -460,7 +446,7 @@ contract('ContributionReward', accounts => {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       await helpers.increaseTime(periodLength+1);
       tx = await testSetup.contributionReward.redeem(proposalId,[true,false,false,false]);
       assert.equal(tx.logs.length, 1);
@@ -542,11 +528,11 @@ contract('ContributionReward', accounts => {
                                                                   );
      //Vote with reputation to trigger execution
      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-     await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+     await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
      await helpers.increaseTime(periodLength+1);
      var arcUtils = await Redeemer.new();
      var redeemRewards = await arcUtils.redeem.call(testSetup.contributionReward.address,
-                                                    testSetup.contributionRewardParams.votingMachineInstance.address,
+                                                    testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                                                     proposalId,
                                                     accounts[0]);
      assert.equal(redeemRewards[0][1],100); //redeemRewards[0] gpRewards
@@ -561,7 +547,7 @@ contract('ContributionReward', accounts => {
      assert.equal(redeemRewards[7],externalTokenReward); //crExternalTokenReward
 
      await arcUtils.redeem(testSetup.contributionReward.address,
-                           testSetup.contributionRewardParams.votingMachineInstance.address,
+                           testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                            proposalId,
                            accounts[0]);
      var vault = await otherAvatar.vault();
@@ -599,11 +585,11 @@ contract('ContributionReward', accounts => {
                                                                  );
     //Vote with reputation to trigger execution
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-    await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+    await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
     await helpers.increaseTime(periodLength+1);
     var arcUtils = await Redeemer.new();
     var redeemRewards = await arcUtils.redeem.call(testSetup.contributionReward.address,
-                                                   testSetup.contributionRewardParams.votingMachineInstance.address,
+                                                   testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                                                    proposalId,
                                                    accounts[0]);
     assert.equal(redeemRewards[0][1],100); //redeemRewards[0] gpRewards
@@ -618,7 +604,7 @@ contract('ContributionReward', accounts => {
     assert.equal(redeemRewards[7],0); //crExternalTokenReward
 
     await arcUtils.redeem(testSetup.contributionReward.address,
-                          testSetup.contributionRewardParams.votingMachineInstance.address,
+                          testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                           proposalId,
                           accounts[0]);
     var vault = await otherAvatar.vault();
@@ -656,7 +642,7 @@ contract('ContributionReward', accounts => {
     var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
     var arcUtils = await Redeemer.new();
     var redeemRewards = await arcUtils.redeem.call(testSetup.contributionReward.address,
-                                                   testSetup.contributionRewardParams.votingMachineInstance.address,
+                                                   testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                                                    proposalId,
                                                    accounts[0]);
     assert.equal(redeemRewards[0][1],0); //redeemRewards[0] gpRewards
@@ -671,9 +657,9 @@ contract('ContributionReward', accounts => {
     assert.equal(redeemRewards[7],0); //crExternalTokenReward
    });
 
-    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer", async function() {
+    it("execute proposeContributionReward via genesisProtocol and redeem using Redeemer + setParameters", async function() {
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-      var testSetup = await setup(accounts,true,standardTokenMock.address);
+      var testSetup = await setup(accounts,true,standardTokenMock.address,true);
       var reputationReward = 12;
       var nativeTokenReward = 12;
       var ethReward = 12;
@@ -692,11 +678,11 @@ contract('ContributionReward', accounts => {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
       await helpers.increaseTime(periodLength+1);
       var arcUtils = await Redeemer.new();
       var redeemRewards = await arcUtils.redeem.call(testSetup.contributionReward.address,
-                                                     testSetup.contributionRewardParams.votingMachineInstance.address,
+                                                     testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                                                      proposalId,
                                                      accounts[0]);
       assert.equal(redeemRewards[0][1],100); //redeemRewards[0] gpRewards
@@ -711,7 +697,7 @@ contract('ContributionReward', accounts => {
       assert.equal(redeemRewards[7],0); //crExternalTokenReward
 
       await arcUtils.redeem(testSetup.contributionReward.address,
-                            testSetup.contributionRewardParams.votingMachineInstance.address,
+                            testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                             proposalId,
                             accounts[0]);
       var vault = await otherAvatar.vault();
@@ -749,13 +735,13 @@ contract('ContributionReward', accounts => {
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
-      await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[1]});
-      await standardTokenMock.approve(testSetup.contributionRewardParams.votingMachineInstance.address,1000);
-      await testSetup.contributionRewardParams.votingMachineInstance.stake(proposalId,1,1000);
+      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[1]});
+      await standardTokenMock.approve(testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,1000);
+      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.stake(proposalId,1,1000);
       await helpers.increaseTime(60+1);
       var arcUtils = await Redeemer.new();
       var redeemRewards = await arcUtils.redeem.call(testSetup.contributionReward.address,
-                                                     testSetup.contributionRewardParams.votingMachineInstance.address,
+                                                     testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                                                      proposalId,
                                                      accounts[0]);
       assert.equal(redeemRewards[0][1],0); //redeemRewards[0] gpRewards
@@ -770,7 +756,7 @@ contract('ContributionReward', accounts => {
       assert.equal(redeemRewards[7],0); //crExternalTokenReward
 
       await arcUtils.redeem(testSetup.contributionReward.address,
-                            testSetup.contributionRewardParams.votingMachineInstance.address,
+                            testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                             proposalId,
                             accounts[0]);
       var vault = await otherAvatar.vault();
@@ -806,11 +792,11 @@ contract('ContributionReward', accounts => {
                                                                    );
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+      await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[0]});
       await helpers.increaseTime(periodLength+1);
       var arcUtils = await Redeemer.new();
       await arcUtils.redeem(testSetup.contributionReward.address,
-                            testSetup.contributionRewardParams.votingMachineInstance.address,
+                            testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                             proposalId,
                             accounts[0]);
       var eth = await web3.eth.getBalance(otherAvatar.address);
@@ -843,14 +829,14 @@ contract('ContributionReward', accounts => {
                                                                     );
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
 
-       await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[1]});
+       await testSetup.contributionRewardParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[1]});
        await helpers.increaseTime(60+1);
        var arcUtils = await Redeemer.new();
        await arcUtils.redeem(testSetup.contributionReward.address,
-                             testSetup.contributionRewardParams.votingMachineInstance.address,
+                             testSetup.contributionRewardParams.votingMachine.genesisProtocol.address,
                              proposalId,
                              accounts[1]);
-       var proposal = await testSetup.contributionRewardParams.votingMachineInstance.proposals(proposalId);
+       var proposal = await testSetup.contributionRewardParams.votingMachine.genesisProtocol.proposals(proposalId);
        assert.equal(proposal.state,1); //ExpiredInQueue
        var reputation = await testSetup.org.reputation.balanceOf(accounts[1]);
        //accounts[1] redeems its deposit rep.
@@ -886,7 +872,7 @@ contract('ContributionReward', accounts => {
 
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-       await testSetup.contributionRewardParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        tx = await testSetup.contributionReward.redeem(proposalId,[true,false,false,false]);
        assert.equal(tx.logs.length, 1);
        assert.equal(tx.logs[0].event, "RedeemReputation");
