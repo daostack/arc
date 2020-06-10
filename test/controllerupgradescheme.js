@@ -65,7 +65,7 @@ const setupNewController = async function (accounts,permission='0x00000000') {
 };
 
 
-const setup = async function (accounts,genesisProtocol=false,tokenAddress= helpers.NULL_ADDRESS) {
+const setup = async function (accounts,genesisProtocol=false) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
   registration = await helpers.registerImplementation();
