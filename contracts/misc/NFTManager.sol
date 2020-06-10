@@ -6,6 +6,8 @@ import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC721/IERC721R
 import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
 
 contract NFTManager is Initializable, Ownable, IERC721Receiver {
+    event SendNFT(address indexed recipient, IERC721 indexed nftContract, uint256 tokenId);
+
     function initialize() public initializer {
         Ownable.initialize(msg.sender);
     }
@@ -25,6 +27,7 @@ contract NFTManager is Initializable, Ownable, IERC721Receiver {
     /// @param data Arbitrary data to transfer
     function sendNFTWithData(address recipient, IERC721 nftContract, uint tokenId, bytes memory data) public onlyOwner {
         nftContract.safeTransferFrom(address(this), recipient, tokenId, data);
+        emit SendNFT(recipient, nftContract, tokenId);
     }
 
     /// @notice Transfer specified NFT to a given recipient, without extra safeTransferFrom() safeguards
@@ -33,6 +36,7 @@ contract NFTManager is Initializable, Ownable, IERC721Receiver {
     /// @param tokenId ID of specific NFT to transfer
     function sendNFTNoSafeguards(address recipient, IERC721 nftContract, uint tokenId) public onlyOwner {
         nftContract.transferFrom(address(this), recipient, tokenId);
+        emit SendNFT(recipient, nftContract, tokenId);
     }
 
     /**
