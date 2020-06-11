@@ -80,7 +80,8 @@ contract('SignalScheme', accounts => {
     it("proposeSignal log", async function() {
       var testSetup = await setup(accounts);
       var parameters = await testSetup.signalScheme.params();
-      assert.equal(parameters.avatar,testSetup.org.avatar.address);
+      var avatar = await testSetup.signalScheme.avatar();
+      assert.equal(avatar,testSetup.org.avatar.address);
       assert.equal(parameters.signalType,1234);
       assert.equal(parameters.voteApproveParams,testSetup.signalSchemeParams.votingMachine.params);
       assert.equal(parameters.intVote,testSetup.signalSchemeParams.votingMachine.absoluteVote.address);

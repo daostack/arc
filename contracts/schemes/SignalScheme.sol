@@ -34,7 +34,6 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         bytes32 voteApproveParams;
         IntVoteInterface intVote;
         uint256 signalType;
-        Avatar avatar;
     }
 
     mapping(bytes32  =>  Proposal) public proposals;
@@ -62,8 +61,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         params = Parameters({
             voteApproveParams: voteParamsHash,
             signalType: _signalType,
-            intVote: _votingMachine,
-            avatar: _avatar
+            intVote: _votingMachine
         });
     }
 
@@ -77,20 +75,20 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     external
     returns(bytes32)
     {
-        require(Controller(params.avatar.owner()).isSchemeRegistered(address(this)),
+        require(Controller(avatar.owner()).isSchemeRegistered(address(this)),
         "scheme is not registered");
 
         bytes32 proposalId = params.intVote.propose(
         2,
         params.voteApproveParams,
         msg.sender,
-        address(params.avatar)
+        address(avatar)
         );
 
         proposals[proposalId].descriptionHash = _descriptionHash;
 
         emit NewSignalProposal(
-            address(params.avatar),
+            address(avatar),
             proposalId,
             params.signalType,
             _descriptionHash
@@ -110,7 +108,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         proposals[_proposalId].executed = true;
         // Check if vote was successful:
         if (_param == 1) {
-            emit Signal(address(params.avatar),
+            emit Signal(address(avatar),
                         _proposalId,
                         params.signalType,
                         proposals[_proposalId].descriptionHash);
