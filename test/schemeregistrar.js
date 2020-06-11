@@ -18,6 +18,8 @@ const setupSchemeRegistrarParams = async function(
   var schemeRegistrarParams = new SchemeRegistrarParams();
   if (genesisProtocol === true) {
     schemeRegistrarParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
+    let removalSchemeParams = schemeRegistrarParams.votingMachine.uintArray;
+    removalSchemeParams[10] = 1;
     schemeRegistrarParams.initdata = await new web3.eth.Contract(registration.schemeRegistrar.abi)
                           .methods
                           .initialize(helpers.NULL_ADDRESS,
@@ -25,7 +27,7 @@ const setupSchemeRegistrarParams = async function(
                             schemeRegistrarParams.votingMachine.uintArray,
                             schemeRegistrarParams.votingMachine.voteOnBehalf,
                             helpers.NULL_HASH,
-                            schemeRegistrarParams.votingMachine.uintArray,
+                            removalSchemeParams,
                             schemeRegistrarParams.votingMachine.voteOnBehalf,
                             helpers.NULL_HASH)
                           .encodeABI();
