@@ -117,7 +117,12 @@ const proposeCompetition = async function(
                                           ) {
 
     var block = await web3.eth.getBlock("latest");
-    _testSetup.startTime = _startTime > 0 ? block.timestamp + _startTime : 0;
+    if (_startTime === "invalid") {
+      _testSetup.startTime = 1;
+    } else {
+      _testSetup.startTime = _startTime > 0 ? block.timestamp + _startTime : 0;
+
+    }
     _testSetup.votingStartTime = block.timestamp + _votingStartTime;
     _testSetup.endTime = block.timestamp + _endTime;
     _testSetup.suggestionsEndTime = block.timestamp + _suggestionsEndTime;
@@ -204,6 +209,17 @@ contract('Competition', accounts => {
               helpers.assertVMException(ex);
         }
         rewardSplit = [50,25,15,10];
+        try {
+          await proposeCompetition(testSetup,
+                                  descriptionHash,
+                                  reputationChange,
+                                  rewards,
+                                  rewardSplit,
+                                  "invalid");
+          assert(false, 'start time cannot be in the past');
+        } catch (ex) {
+          helpers.assertVMException(ex);
+        }
 
         try {
 
