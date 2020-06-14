@@ -82,11 +82,20 @@ const setup = async function(
     account2 = reputationAccount;
   }
   testSetup.proxyAdmin = accounts[5];
+  console.log(
+    'helpers.setupOrganizationWithArraysDAOFactory',
+    testSetup.proxyAdmin,
+    accounts,
+    registration,
+    [accounts[0], accounts[1], accounts[2]],
+    [1000, 0, 0],
+    testSetup.reputationArray
+  );
   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(
     testSetup.proxyAdmin,
     accounts,
     registration,
-    [accounts[0], accounts[1], account2],
+    [accounts[0], accounts[1], accounts[2]],
     [1000, 0, 0],
     testSetup.reputationArray
   );
