@@ -104,6 +104,14 @@ contract('VotingMachineCallbacks', function(accounts) {
       assert.equal(await testSetup.schemeMock.voteParamsHash(), testSetup.votingMachine.params);
    });
 
+   it("initializeGovernance parameters already set", async function() {
+      var testSetup = await setup(accounts);
+      testSetup = await setup(accounts);
+      assert.equal(await testSetup.schemeMock.avatar(), testSetup.org.avatar.address);
+      assert.equal(await testSetup.schemeMock.votingMachine(), testSetup.votingMachine.genesisProtocol.address);
+      assert.equal(await testSetup.schemeMock.voteParamsHash(), testSetup.votingMachine.params);
+   });
+
    it("initializeGovernance gp set params", async function() {
       var testSetup = await setup(accounts, true, false, false, false);
       assert.equal(await testSetup.schemeMock.avatar(), testSetup.org.avatar.address);
