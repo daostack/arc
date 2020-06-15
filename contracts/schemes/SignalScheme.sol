@@ -30,43 +30,39 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         bool executed;
     }
 
-    uint256 public signalType;
+    struct Parameters {
+        bytes32 voteApproveParams;
+        IntVoteInterface intVote;
+        uint256 signalType;
+    }
 
     mapping(bytes32  =>  Proposal) public proposals;
 
+    Parameters public params;
+
     /**
      * @dev initialize
-     * @param _avatar the avatar this scheme referring to.
-     * @param _votingParams genesisProtocol parameters
-     * @param _voteOnBehalf  parameter
-     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
-     * @param _stakingToken (for GenesisProtocol)
-     * @param _packageVersion packageVersion to instance the votingMachine from.
-     * @param _votingMachineName the votingMachine contract name.
+     * @param  _avatar the scheme avatar
      * @param _signalType - signal types
+     * @param _voteApproveParams voting machine params
+     * @param _votingMachine  voting machine address
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
      */
-    function initialize(
-        Avatar _avatar,
-        uint256[11] calldata _votingParams,
-        address _voteOnBehalf,
-        DAOFactory _daoFactory,
-        address _stakingToken,
-        uint64[3] calldata _packageVersion,
-        string calldata _votingMachineName,
-        uint256 _signalType)
+    function initialize(Avatar _avatar,
+                        uint256 _signalType,
+                        bytes32 _voteApproveParams,
+                        IntVoteInterface _votingMachine,
+                        uint256[11] calldata _votingParams,
+                        address _voteOnBehalf)
     external
     initializer {
-        super._initializeGovernance(
-            _avatar,
-            _votingParams,
-            _voteOnBehalf,
-            _daoFactory,
-            _stakingToken,
-            address(this),
-            address(this),
-            _packageVersion,
-            _votingMachineName);
-        signalType = _signalType;
+        super._initializeGovernance(_avatar, _votingMachine, _voteApproveParams, _votingParams, _voteOnBehalf);
+        params = Parameters({
+            voteApproveParams: voteParamsHash,
+            signalType: _signalType,
+            intVote: _votingMachine
+        });
     }
 
     /**
@@ -77,23 +73,29 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         string calldata _descriptionHash
     )
     external
-    returns(bytes32 proposalId)
+    returns(bytes32)
     {
         require(Controller(avatar.owner()).isSchemeRegistered(address(this)),
         "scheme is not registered");
 
-        proposalId = votingMachine.propose(2, msg.sender);
+        bytes32 proposalId = params.intVote.propose(
+        2,
+        params.voteApproveParams,
+        msg.sender,
+        address(avatar)
+        );
 
         proposals[proposalId].descriptionHash = _descriptionHash;
 
         emit NewSignalProposal(
             address(avatar),
             proposalId,
-            signalType,
+            params.signalType,
             _descriptionHash
         );
 
         proposalsBlockNumber[proposalId] = block.number;
+        return proposalId;
     }
 
     /**
@@ -108,7 +110,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         if (_param == 1) {
             emit Signal(address(avatar),
                         _proposalId,
-                        signalType,
+                        params.signalType,
                         proposals[_proposalId].descriptionHash);
         }
         return true;

@@ -22,12 +22,10 @@ const setupUpgradeSchemeParams = async function(
     upgradeSchemeParams.initdata = await new web3.eth.Contract(registration.upgradeScheme.abi)
                           .methods
                           .initialize(helpers.NULL_ADDRESS,
+                            upgradeSchemeParams.votingMachine.genesisProtocol.address,
                             upgradeSchemeParams.votingMachine.uintArray,
                             upgradeSchemeParams.votingMachine.voteOnBehalf,
-                            registration.daoFactory.address,
                             helpers.NULL_ADDRESS,
-                            [0,1,0],
-                            "GenesisProtocol",
                             registration.packageInstance.address)
                           .encodeABI();
     } else {
@@ -35,12 +33,10 @@ const setupUpgradeSchemeParams = async function(
       upgradeSchemeParams.initdata = await new web3.eth.Contract(registration.upgradeScheme.abi)
                         .methods
                         .initialize(helpers.NULL_ADDRESS,
-                          upgradeSchemeParams.votingMachine.uintArray,
-                          upgradeSchemeParams.votingMachine.voteOnBehalf,
-                          registration.daoFactory.address,
+                          upgradeSchemeParams.votingMachine.absoluteVote.address,
+                          [0,0,0,0,0,0,0,0,0,0,0],
                           helpers.NULL_ADDRESS,
-                          [0,1,0],
-                          "AbsoluteVote",
+                          upgradeSchemeParams.votingMachine.params,
                           registration.packageInstance.address)
                         .encodeABI();
   }
@@ -84,8 +80,6 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
                                                                       "metaData");
   testSetup.registration = registration;
   testSetup.upgradeScheme = await UpgradeScheme.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
-  testSetup.upgradeSchemeParams.votingMachineInstance =
-  await helpers.getVotingMachine(await testSetup.upgradeScheme.votingMachine(),genesisProtocol);
   return testSetup;
 };
 
@@ -120,7 +114,7 @@ contract('UpgradeScheme', function(accounts) {
         helpers.NULL_HASH);
 
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-       await testSetup.upgradeSchemeParams.votingMachineInstance.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
        assert.equal(organizationProposal,false);
@@ -142,7 +136,7 @@ contract('UpgradeScheme', function(accounts) {
         var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
         assert.equal(organizationProposal,true);
 
-        await testSetup.upgradeSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+        await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
         //check organizationsProposals after execution
         organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
         assert.equal(organizationProposal,false);
@@ -250,7 +244,7 @@ contract('UpgradeScheme', function(accounts) {
       );
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
-      await testSetup.upgradeSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
       assert.equal(organizationProposal,false);
 
@@ -310,7 +304,7 @@ contract('UpgradeScheme', function(accounts) {
       );
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
-      await testSetup.upgradeSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
       assert.equal(organizationProposal,false);
 
@@ -370,7 +364,7 @@ contract('UpgradeScheme', function(accounts) {
       );
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
-      await testSetup.upgradeSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.upgradeSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
       assert.equal(organizationProposal,false);
 
@@ -398,12 +392,10 @@ contract('UpgradeScheme', function(accounts) {
         try {
           await testSetup.upgradeScheme.initialize(
             testSetup.org.avatar.address,
-            testSetup.upgradeSchemeParams.votingMachine.uintArray,
-            testSetup.upgradeSchemeParams.votingMachine.voteOnBehalf,
-            testSetup.registration.daoFactory.address,
-              helpers.NULL_ADDRESS,
-              [0,1,0],
-              "AbsoluteVote",
+            testSetup.upgradeSchemeParams.votingMachine.absoluteVote.address,
+            [0,0,0,0,0,0,0,0,0,0,0],
+            helpers.NULL_ADDRESS,
+            testSetup.upgradeSchemeParams.votingMachine.params,
             testSetup.registration.packageInstance.address
           );
           assert(false, "cannot init twice");

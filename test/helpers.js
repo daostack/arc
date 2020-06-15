@@ -5,6 +5,7 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
+const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const DAOFactory = artifacts.require("./DAOFactory.sol");
 const SchemeMock = artifacts.require('./test/SchemeMock.sol');
@@ -36,6 +37,7 @@ const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallb
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
 const Dictator = artifacts.require("./Dictator.sol");
+
 
 const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -153,8 +155,6 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.new();
   registration.joinAndQuit = await JoinAndQuit.new();
   registration.fundingRequest = await FundingRequest.new();
-  registration.genesisProtocol = await GenesisProtocol.new();
-  registration.absoluteVote = await AbsoluteVote.new();
   registration.rewarderMock = await RewarderMock.new();
   registration.dictator = await Dictator.new();
 
@@ -187,9 +187,8 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   await implementationDirectory.setImplementation("ARCVotingMachineCallbacksMock",registration.arcVotingMachineCallbacksMock.address);
   await implementationDirectory.setImplementation("JoinAndQuit",registration.joinAndQuit.address);
   await implementationDirectory.setImplementation("FundingRequest",registration.fundingRequest.address);
-  await implementationDirectory.setImplementation("GenesisProtocol",registration.genesisProtocol.address);
-  await implementationDirectory.setImplementation("AbsoluteVote",registration.absoluteVote.address);
   await implementationDirectory.setImplementation("Dictator",registration.dictator.address);
+
 
   registration.implementationDirectory = implementationDirectory;
 
@@ -206,21 +205,12 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   return registration;
 };
 
-const getVotingMachine = async function (votingMachine, genesisProtocol) {
- if (genesisProtocol === true) {
-   return await GenesisProtocol.at(votingMachine);
- }
- return await AbsoluteVote.at(votingMachine);
-};
-
  const setupAbsoluteVote = async function (voteOnBehalf=NULL_ADDRESS, precReq=50 ) {
   var votingMachine = new VotingMachine();
+  votingMachine.absoluteVote = await AbsoluteVote.new();
   // register some parameters
-  votingMachine.uintArray = [precReq,
-                             0,0,0,0,0,0,0,0,0,0];
-  votingMachine.voteOnBehalf = voteOnBehalf;
-
-  // register some parameters
+  await votingMachine.absoluteVote.setParameters( precReq, voteOnBehalf);
+  votingMachine.params = await votingMachine.absoluteVote.getParametersHash( precReq, voteOnBehalf);
   return votingMachine;
 };
 
@@ -256,7 +246,7 @@ await daoFactory.getPastEvents('SchemeInstance', {
   ) {
   var votingMachine = new VotingMachine();
 
-  //votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
+  votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
 
   // set up a reputation system
   votingMachine.reputationArray = [20, 10 ,70];
@@ -273,6 +263,18 @@ await daoFactory.getPastEvents('SchemeInstance', {
                                                      _daoBountyConst,
                                                      _activationTime];
   votingMachine.voteOnBehalf = voteOnBehalf;
+  votingMachine.params = await votingMachine.genesisProtocol.getParametersHash([_queuedVoteRequiredPercentage,
+                                                     _queuedVotePeriodLimit,
+                                                     _boostedVotePeriodLimit,
+                                                     _preBoostedVotePeriodLimit,
+                                                     _thresholdConst,
+                                                     _quietEndingPeriod,
+                                                     _proposingRepReward,
+                                                     _votersReputationLossRatio,
+                                                     _minimumDaoBounty,
+                                                     _daoBountyConst,
+                                                     _activationTime],voteOnBehalf);
+
   return votingMachine;
 };
 
@@ -406,6 +408,5 @@ module.exports = { MAX_UINT_256,
                   checkVoteInfo,
                   registrationAddVersionToPackege,
                   concatBytes,
-                  getProposalId,
-                  getVotingMachine,
-                  getSchemeAddress};
+                  getSchemeAddress,
+                  getProposalId};

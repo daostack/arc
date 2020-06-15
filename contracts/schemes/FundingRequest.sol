@@ -46,36 +46,23 @@ contract FundingRequest is
     /**
      * @dev initialize
      * @param _avatar the avatar this scheme referring to.
-     * @param _votingParams genesisProtocol parameters
-     * @param _voteOnBehalf  parameter
-     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
-     * @param _stakingToken (for GenesisProtocol)
-     * @param _packageVersion packageVersion to instance the votingMachine from.
-     * @param _votingMachineName the votingMachine contract name.
+     * @param _votingMachine the voting machines address to
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
+     * @param _voteParamsHash voting machine parameters.
      * @param _fundingToken token to transfer to funding requests. 0x0 address for the native coin
      */
     function initialize(
         Avatar _avatar,
+        IntVoteInterface _votingMachine,
         uint256[11] calldata _votingParams,
         address _voteOnBehalf,
-        DAOFactory _daoFactory,
-        address _stakingToken,
-        uint64[3] calldata _packageVersion,
-        string calldata _votingMachineName,
+        bytes32 _voteParamsHash,
         IERC20 _fundingToken
     )
     external
     {
-        super._initializeGovernance(
-            _avatar,
-            _votingParams,
-            _voteOnBehalf,
-            _daoFactory,
-            _stakingToken,
-            address(this),
-            address(this),
-            _packageVersion,
-            _votingMachineName);
+        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
         fundingToken = _fundingToken;
     }
 
@@ -117,7 +104,7 @@ contract FundingRequest is
             avatar.db(FUNDED_BEFORE_DEADLINE_KEY).hashCompareWithLengthCheck(FUNDED_BEFORE_DEADLINE_VALUE),
             "funding is not allowed yet"
         );
-        bytes32 proposalId = votingMachine.propose(2, msg.sender);
+        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
         address payable beneficiary = _beneficiary;
         if (beneficiary == address(0)) {
             beneficiary = msg.sender;

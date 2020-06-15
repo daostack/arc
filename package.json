@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc-experimental",
-  "version": "0.1.1-rc.22",
+  "version": "0.1.1-rc.23",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -44,8 +44,7 @@
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
     "solidity-coverage": "^0.7.0-beta.3",
-    "uint32": "^0.2.1",
-    "web3-utils": "^1.2.8"
+    "uint32": "^0.2.1"
   },
   "repository": {
     "type": "git",
@@ -70,7 +69,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra-experimental": "0.1.1-rc.18",
+    "@daostack/infra-experimental": "0.1.1-rc.19",
     "@openzeppelin/contracts-ethereum-package": "2.4.0",
     "@openzeppelin/upgrades": "2.7.1",
     "math": "0.0.3",

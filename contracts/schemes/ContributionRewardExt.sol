@@ -83,37 +83,30 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
 
     /**
      * @dev initialize
-     * @param _avatar the avatar this scheme referring to.
-     * @param _votingParams genesisProtocol parameters
-     * @param _voteOnBehalf  parameter
-     * @param _daoFactory  DAOFactory instance to instance a votingMachine.
-     * @param _stakingToken (for GenesisProtocol)
-     * @param _packageVersion packageVersion to instance the votingMachine from.
-     * @param _votingMachineName the votingMachine contract name.
+     * @param _avatar the avatar to mint reputation from
+     * @param _votingMachine the voting machines address
+     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
+     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
+     * @param _voteParamsHash voting machine parameters
+     * @param _daoFactory DAOFactory instance to instance a rewarder.
+     * if _daoFactory is zero so no rewarder will be set.
+     * @param _packageVersion packageVersion to instance the rewarder from.
      * @param _rewarderName the rewarder contract name.
+
      */
     function initialize(
         Avatar _avatar,
-        uint256[11] calldata _votingParams,
+        IntVoteInterface _votingMachine,
+        uint[11] calldata _votingParams,
         address _voteOnBehalf,
+        bytes32 _voteParamsHash,
         DAOFactory _daoFactory,
-        address _stakingToken,
         uint64[3] calldata _packageVersion,
-        string calldata _votingMachineName,
         string calldata _rewarderName
     )
     external
     {
-        super._initializeGovernance(
-            _avatar,
-            _votingParams,
-            _voteOnBehalf,
-            _daoFactory,
-            _stakingToken,
-            address(this),
-            address(this),
-            _packageVersion,
-            _votingMachineName);
+        super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
         vault = new Vault();
         vault.initialize(address(this));
         if (bytes(_rewarderName).length != 0) {
@@ -170,7 +163,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         if (proposer == address(0)) {
             proposer = msg.sender;
         }
-        proposalId = votingMachine.propose(2, proposer);
+        proposalId = votingMachine.propose(2, voteParamsHash, proposer, address(avatar));
         address payable beneficiary = _beneficiary;
         if (beneficiary == address(0)) {
             beneficiary = msg.sender;

@@ -15,8 +15,7 @@ const setupGenericSchemeParams = async function(
                                               accounts,
                                               genesisProtocol,
                                               token,
-                                              contractToCall,
-                                              _packageVersion = [0,1,0]
+                                              contractToCall
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
 
@@ -25,12 +24,10 @@ const setupGenericSchemeParams = async function(
     genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericScheme.abi)
                           .methods
                           .initialize(helpers.NULL_ADDRESS,
+                            genericSchemeParams.votingMachine.genesisProtocol.address,
                             genericSchemeParams.votingMachine.uintArray,
                             genericSchemeParams.votingMachine.voteOnBehalf,
-                            registration.daoFactory.address,
-                            token,
-                            _packageVersion,
-                            "GenesisProtocol",
+                            helpers.NULL_HASH,
                             contractToCall)
                           .encodeABI();
     } else {
@@ -38,19 +35,17 @@ const setupGenericSchemeParams = async function(
   genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericScheme.abi)
                         .methods
                         .initialize(helpers.NULL_ADDRESS,
-                          genericSchemeParams.votingMachine.uintArray,
-                          genericSchemeParams.votingMachine.voteOnBehalf,
-                          registration.daoFactory.address,
-                          token,
-                          _packageVersion,
-                          "AbsoluteVote",
+                          genericSchemeParams.votingMachine.absoluteVote.address,
+                          [0,0,0,0,0,0,0,0,0,0,0],
+                          helpers.NULL_ADDRESS,
+                          genericSchemeParams.votingMachine.params,
                           contractToCall)
                         .encodeABI();
   }
   return genericSchemeParams;
 };
 
-const setup = async function (accounts,contractToCall = 0,reputationAccount=0,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
+const setup = async function (accounts,contractToCall = 0,reputationAccount=0,genesisProtocol = false,tokenAddress=0) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
   registration = await helpers.registerImplementation();
@@ -87,8 +82,6 @@ const setup = async function (accounts,contractToCall = 0,reputationAccount=0,ge
                                                                     );
 
   testSetup.genericScheme = await GenericScheme.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
-  testSetup.genericSchemeParams.votingMachineInstance =
-  await helpers.getVotingMachine(await testSetup.genericScheme.votingMachine(),genesisProtocol);
   return testSetup;
 };
 
@@ -120,7 +113,7 @@ contract('GenericScheme', function(accounts) {
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
        var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-       await testSetup.genericSchemeParams.votingMachineInstance.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
        var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
        assert.equal(organizationProposal.passed,false);
@@ -135,7 +128,7 @@ contract('GenericScheme', function(accounts) {
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
         var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
         assert.equal(organizationProposal[0],callData,helpers.NULL_HASH);
-        await testSetup.genericSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
         //check organizationsProposals after execution
         organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
         assert.equal(organizationProposal.callData,null);//new contract address
@@ -148,7 +141,7 @@ contract('GenericScheme', function(accounts) {
        var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
-       await testSetup.genericSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
        var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
        assert.equal(organizationProposal.exist,true);//new contract address
@@ -167,7 +160,7 @@ contract('GenericScheme', function(accounts) {
        var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
-       await testSetup.genericSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
        var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
        assert.equal(organizationProposal.exist,true);//new contract address
@@ -197,7 +190,7 @@ contract('GenericScheme', function(accounts) {
        var tx = await testSetup.genericScheme.proposeCall(encodeABI,0,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
-       await testSetup.genericSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
 
     });
 
@@ -228,7 +221,7 @@ contract('GenericScheme', function(accounts) {
        //transfer some eth to avatar
        await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
        assert.equal(await web3.eth.getBalance(actionMock.address),0);
-       tx  = await testSetup.genericSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {
              fromBlock: tx.blockNumber,
              toBlock: 'latest'
@@ -248,7 +241,7 @@ contract('GenericScheme', function(accounts) {
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
        var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-       tx  = await testSetup.genericSchemeParams.votingMachineInstance.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        await testSetup.genericScheme.getPastEvents('ProposalExecutedByVotingMachine', {
              fromBlock: tx.blockNumber,
              toBlock: 'latest'
@@ -269,7 +262,7 @@ contract('GenericScheme', function(accounts) {
          var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
          assert.equal(await web3.eth.getBalance(wallet.address),web3.utils.toWei('1', "ether"));
-         await testSetup.genericSchemeParams.votingMachineInstance.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+         await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
          assert.equal(await web3.eth.getBalance(wallet.address),web3.utils.toWei('1', "ether"));
          await wallet.transferOwnership(testSetup.org.avatar.address);
          await testSetup.genericScheme.execute( proposalId);
@@ -282,14 +275,12 @@ contract('GenericScheme', function(accounts) {
 
          try {
            await testSetup.genericScheme.initialize(
+             testSetup.org.avatar.address,
+             accounts[0],
+             [0,0,0,0,0,0,0,0,0,0,0],
              helpers.NULL_ADDRESS,
-               testSetup.genericSchemeParams.votingMachine.uintArray,
-               testSetup.genericSchemeParams.votingMachine.voteOnBehalf,
-               registration.daoFactory.address,
-               helpers.NULL_ADDRESS,
-               [0,1,0],
-               "GenesisProtocol",
-               helpers.NULL_ADDRESS
+             helpers.SOME_HASH,
+             accounts[0]
            );
            assert(false, "cannot init twice");
          } catch(error) {
