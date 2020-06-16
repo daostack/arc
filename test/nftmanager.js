@@ -82,10 +82,6 @@ const setup = async function(
     account2 = reputationAccount;
   }
   testSetup.proxyAdmin = accounts[5];
-  console.log("TestSetup", {
-    accounts,
-    usedAccounts: [accounts[0], accounts[1], account2],
-  });
   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(
     testSetup.proxyAdmin,
     accounts,
