@@ -86,7 +86,7 @@ const setup = async function(
     testSetup.proxyAdmin,
     accounts,
     registration,
-    [accounts[0], accounts[1], accounts[2]],
+    [accounts[0], accounts[1], account2],
     [1000, 0, 0],
     testSetup.reputationArray
   );
