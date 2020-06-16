@@ -7,47 +7,46 @@ const proposalId = "0x1234000000000000000000000000000000000000000000000000000000
 
 
  var registration;
-const setup = async function (accounts, avatarZero=false) {
+const setup = async function (accounts) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                       accounts,
-                                                                       registration,
-                                                                       [accounts[0]],
-                                                                       [1000],
-                                                                       [1000]);
-   testSetup.standardTokenMock = await ERC20Mock.new(testSetup.org.avatar.address,100);
+
+   testSetup.standardTokenMock = await ERC20Mock.new(accounts[0],100);
+
+
 
    var schemeMockData = await new web3.eth.Contract(registration.arcVotingMachineCallbacksMock.abi)
    .methods
-   .initialize((avatarZero ? helpers.NULL_ADDRESS : testSetup.org.avatar.address), accounts[0])
+   .initialize(helpers.NULL_ADDRESS , accounts[0])
    .encodeABI();
 
    var permissions = "0x00000000";
-   var tx = await registration.daoFactory.setSchemes(
-      testSetup.org.avatar.address,
-      [web3.utils.fromAscii("ARCVotingMachineCallbacksMock")],
-      schemeMockData,
-      [helpers.getBytesLength(schemeMockData)],
-      [permissions],
-      "metaData",
-      {from:testSetup.proxyAdmin});
 
-   if (!avatarZero) {
-      testSetup.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.at(tx.logs[1].args._scheme);
+    [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                        accounts,
+                                                                        registration,
+                                                                        [accounts[0]],
+                                                                        [1000],
+                                                                        [1000],0,
+                                                                        [web3.utils.fromAscii("ARCVotingMachineCallbacksMock")],
+                                                                        schemeMockData,
+                                                                        [helpers.getBytesLength(schemeMockData)],
+                                                                        [permissions],
+                                                                        "metaData");
 
+      testSetup.arcVotingMachineCallbacksMock = await ARCVotingMachineCallbacksMock.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
       await testSetup.arcVotingMachineCallbacksMock.propose(proposalId);
-   
-   
+      await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,100);
+
       return testSetup;
-   }
+
 };
 contract('VotingMachineCallbacks', function(accounts) {
 
    it("avatar address cannot be 0 ", async function() {
       try {
-         await setup(accounts, true);
+         await setup(accounts);
          assert(false, "avatar 0 address should revert");
        } catch(error) {
           // revert

@@ -14,16 +14,14 @@ class ControllerUpgradeSchemeParams {
 var registration;
 const setupControllerUpgradeSchemeParams = async function(
                                               accounts,
-                                              genesisProtocol,
-                                              token,
-                                              avatarAddress
+                                              genesisProtocol
                                             ) {
     var controllerUpgradeSchemeParams = new ControllerUpgradeSchemeParams();
     if (genesisProtocol === true) {
-      controllerUpgradeSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,avatarAddress,helpers.NULL_ADDRESS);
+      controllerUpgradeSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
       controllerUpgradeSchemeParams.initdata = await new web3.eth.Contract(registration.controllerUpgradeScheme.abi)
                             .methods
-                            .initialize(avatarAddress,
+                            .initialize(helpers.NULL_ADDRESS,
                               controllerUpgradeSchemeParams.votingMachine.genesisProtocol.address,
                               controllerUpgradeSchemeParams.votingMachine.uintArray,
                               controllerUpgradeSchemeParams.votingMachine.voteOnBehalf,
@@ -33,7 +31,7 @@ const setupControllerUpgradeSchemeParams = async function(
     controllerUpgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
     controllerUpgradeSchemeParams.initdata = await new web3.eth.Contract(registration.controllerUpgradeScheme.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             controllerUpgradeSchemeParams.votingMachine.absoluteVote.address,
                             [0,0,0,0,0,0,0,0,0,0,0],
                             helpers.NULL_ADDRESS,
@@ -67,34 +65,32 @@ const setupNewController = async function (accounts,permission='0x00000000') {
 };
 
 
-const setup = async function (accounts,genesisProtocol=false,tokenAddress= helpers.NULL_HASH) {
+const setup = async function (accounts,genesisProtocol=false) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
   registration = await helpers.registerImplementation();
   testSetup.reputationArray =  [20,40,70];
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+  testSetup.controllerUpgradeSchemeParams= await setupControllerUpgradeSchemeParams(
+    accounts,
+    genesisProtocol);
+  var permissions = "0x0000000a";
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
                                                                       registration,
                                                                       [accounts[0],
                                                                       accounts[1],
                                                                       accounts[2]],
                                                                       [1000,0,0],
-                                                                      testSetup.reputationArray);
-  testSetup.controllerUpgradeSchemeParams= await setupControllerUpgradeSchemeParams(
-    accounts,
-    genesisProtocol,
-    tokenAddress,
-    testSetup.org.avatar.address);
-  var permissions = "0x0000000a";
-  var tx = await registration.daoFactory.setSchemes(
-                          testSetup.org.avatar.address,
-                          [web3.utils.fromAscii("ControllerUpgradeScheme")],
-                          testSetup.controllerUpgradeSchemeParams.initdata,
-                          [helpers.getBytesLength(testSetup.controllerUpgradeSchemeParams.initdata)],
-                          [permissions],
-                          "metaData",{from:testSetup.proxyAdmin});
-  testSetup.controllerUpgradeScheme = await ControllerUpgradeScheme.at(tx.logs[1].args._scheme);
+                                                                      testSetup.reputationArray,
+                                                                      0,
+                                                                      [web3.utils.fromAscii("ControllerUpgradeScheme")],
+                                                                      testSetup.controllerUpgradeSchemeParams.initdata,
+                                                                      [helpers.getBytesLength(testSetup.controllerUpgradeSchemeParams.initdata)],
+                                                                      [permissions],
+                                                                      "metaData");
+
+  testSetup.controllerUpgradeScheme = await ControllerUpgradeScheme.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
   return testSetup;
 };
 contract('ControllerUpgradeScheme', accounts => {

@@ -15,7 +15,6 @@ const setupGenericSchemeParams = async function(
                                               accounts,
                                               genesisProtocol,
                                               token,
-                                              avatarAddress,
                                               contractToCall
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
@@ -24,7 +23,7 @@ const setupGenericSchemeParams = async function(
     genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericScheme.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             genericSchemeParams.votingMachine.genesisProtocol.address,
                             genericSchemeParams.votingMachine.uintArray,
                             genericSchemeParams.votingMachine.voteOnBehalf,
@@ -35,7 +34,7 @@ const setupGenericSchemeParams = async function(
   genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericScheme.abi)
                         .methods
-                        .initialize(avatarAddress,
+                        .initialize(helpers.NULL_ADDRESS,
                           genericSchemeParams.votingMachine.absoluteVote.address,
                           [0,0,0,0,0,0,0,0,0,0,0],
                           helpers.NULL_ADDRESS,
@@ -58,31 +57,31 @@ const setup = async function (accounts,contractToCall = 0,reputationAccount=0,ge
      account2 = reputationAccount;
   }
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+  testSetup.genericSchemeParams= await setupGenericSchemeParams(
+                     accounts,
+                     genesisProtocol,
+                     tokenAddress,
+                     contractToCall
+                     );
+
+  var permissions = "0x0000001f";
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
                                                                       registration,
                                                                       [accounts[0],
                                                                       accounts[1],
                                                                       account2],
                                                                       [1000,0,0],
-                                                                      testSetup.reputationArray);
-  testSetup.genericSchemeParams= await setupGenericSchemeParams(
-                     accounts,
-                     genesisProtocol,
-                     tokenAddress,
-                     testSetup.org.avatar.address,
-                     contractToCall
-                     );
+                                                                      testSetup.reputationArray,
+                                                                      0,
+                                                                      [web3.utils.fromAscii("GenericScheme")],
+                                                                      testSetup.genericSchemeParams.initdata,
+                                                                      [helpers.getBytesLength(testSetup.genericSchemeParams.initdata)],
+                                                                      [permissions],
+                                                                      "metaData"
+                                                                    );
 
-  var permissions = "0x0000001f";
-  var tx = await registration.daoFactory.setSchemes(
-                          testSetup.org.avatar.address,
-                          [web3.utils.fromAscii("GenericScheme")],
-                          testSetup.genericSchemeParams.initdata,
-                          [helpers.getBytesLength(testSetup.genericSchemeParams.initdata)],
-                          [permissions],
-                          "metaData",{from:testSetup.proxyAdmin});
-  testSetup.genericScheme = await GenericScheme.at(tx.logs[1].args._scheme);
+  testSetup.genericScheme = await GenericScheme.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
   return testSetup;
 };
 

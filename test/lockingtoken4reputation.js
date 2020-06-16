@@ -22,16 +22,11 @@ const setup = async function (accounts,
    registration = await helpers.registerImplementation();
    testSetup.lockingToken = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
    testSetup.lockingToken2 = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
-   
+
 
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                       accounts,
-                                                                       registration,
-                                                                       [accounts[0]],
-                                                                       [1000],
-                                                                       [1000]);
-                                                                       
+
+
    testSetup.lockingEndTime = (await web3.eth.getBlock("latest")).timestamp + _lockingEndTime;
    testSetup.lockingStartTime = (await web3.eth.getBlock("latest")).timestamp + _lockingStartTime;
    testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
@@ -47,7 +42,7 @@ const setup = async function (accounts,
 
    testSetup.lockingToken4ReputationParams.initdata = await new web3.eth.Contract(registration.lockingToken4Reputation.abi)
    .methods
-   .initialize(testSetup.org.avatar.address,
+   .initialize(helpers.NULL_ADDRESS,
     _repAllocation,
     testSetup.lockingStartTime,
     testSetup.lockingEndTime,
@@ -60,17 +55,23 @@ const setup = async function (accounts,
 
    var permissions = "0x00000000";
 
-   var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
-    [web3.utils.fromAscii("LockingToken4Reputation")],
-    testSetup.lockingToken4ReputationParams.initdata,
-    [helpers.getBytesLength(testSetup.lockingToken4ReputationParams.initdata)],
-    [permissions],
-    "metaData",
-    {from:testSetup.proxyAdmin});
 
-   testSetup.lockingToken4Reputation = await LockingToken4Reputation.at(tx.logs[1].args._scheme);
-   
+    [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                        accounts,
+                                                                        registration,
+                                                                        [accounts[0]],
+                                                                        [1000],
+                                                                        [1000],
+                                                                        0,
+                                                                        [web3.utils.fromAscii("LockingToken4Reputation")],
+                                                                        testSetup.lockingToken4ReputationParams.initdata,
+                                                                        [helpers.getBytesLength(testSetup.lockingToken4ReputationParams.initdata)],
+                                                                        [permissions],
+                                                                        "metaData"
+                                                                         );
+
+   testSetup.lockingToken4Reputation = await LockingToken4Reputation.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
+
    await testSetup.lockingToken.approve(testSetup.lockingToken4Reputation.address,web3.utils.toWei('100', "ether"));
    return testSetup;
 };
@@ -354,14 +355,5 @@ contract('LockingToken4Reputation', accounts => {
                                                 6000,
                                                 accounts[1],
                                                 helpers.SOME_HASH);
-    });
-
-    it("get earned reputation", async () => {
-        let testSetup = await setup(accounts);
-        await testSetup.lockingToken4Reputation.lock(web3.utils.toWei('1', "ether"),100,testSetup.lockingToken.address,testSetup.agreementHash);
-        await helpers.increaseTime(3001);
-        const reputation = await testSetup.lockingToken4Reputation.redeem.call(accounts[0]);
-        assert.equal(reputation,100);
-        assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000);
     });
 });

@@ -18,14 +18,9 @@ const setup = async function (accounts,
                              _agreementHash = helpers.SOME_HASH) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
-   
+
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                       accounts,
-                                                                       registration,
-                                                                       [accounts[0]],
-                                                                       [1000],
-                                                                       [1000]);
+
 
    testSetup.lockingEndTime = (await web3.eth.getBlock("latest")).timestamp + _lockingEndTime;
    testSetup.lockingStartTime = (await web3.eth.getBlock("latest")).timestamp + _lockingStartTime;
@@ -37,7 +32,7 @@ const setup = async function (accounts,
 
    testSetup.lockingEth4ReputationParams.initdata = await new web3.eth.Contract(registration.lockingEth4Reputation.abi)
    .methods
-   .initialize(testSetup.org.avatar.address,
+   .initialize(helpers.NULL_ADDRESS,
     _repAllocation,
     testSetup.lockingStartTime,
     testSetup.lockingEndTime,
@@ -47,19 +42,23 @@ const setup = async function (accounts,
    .encodeABI();
 
 
-   var permissions = "0x00000000";
+    var permissions = "0x00000000";
 
-   var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
-    [web3.utils.fromAscii("LockingEth4Reputation")],
-    testSetup.lockingEth4ReputationParams.initdata,
-    [helpers.getBytesLength(testSetup.lockingEth4ReputationParams.initdata)],
-    [permissions],
-    "metaData",
-    {from:testSetup.proxyAdmin});
+    [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                        accounts,
+                                                                        registration,
+                                                                        [accounts[0]],
+                                                                        [1000],
+                                                                        [1000],
+                                                                        0,
+                                                                        [web3.utils.fromAscii("LockingEth4Reputation")],
+                                                                        testSetup.lockingEth4ReputationParams.initdata,
+                                                                        [helpers.getBytesLength(testSetup.lockingEth4ReputationParams.initdata)],
+                                                                        [permissions],
+                                                                        "metaData"
+                                                                        );
 
-   testSetup.lockingEth4Reputation = await LockingEth4Reputation.at(tx.logs[1].args._scheme);
-
+   testSetup.lockingEth4Reputation = await LockingEth4Reputation.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
    return testSetup;
 };
 

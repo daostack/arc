@@ -15,8 +15,7 @@ var registration;
 const setupVoteInOrganizationParams = async function(
                                             accounts,
                                             genesisProtocol = false,
-                                            tokenAddress = 0,
-                                            avatarAddress
+                                            tokenAddress = helpers.NULL_ADDRESS
                                             ) {
   var voteInOrganizationParams = new VoteInOrganizationParams();
     voteInOrganizationParams.paramsHash = helpers.NULL_HASH;
@@ -24,7 +23,7 @@ const setupVoteInOrganizationParams = async function(
     voteInOrganizationParams.votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress,helpers.NULL_ADDRESS);
     voteInOrganizationParams.initdata = await new web3.eth.Contract(registration.voteInOrganization.abi)
       .methods
-      .initialize(avatarAddress,
+      .initialize(helpers.NULL_ADDRESS,
         voteInOrganizationParams.votingMachine.genesisProtocol.address,
         voteInOrganizationParams.votingMachine.uintArray,
         voteInOrganizationParams.votingMachine.voteOnBehalf,
@@ -35,7 +34,7 @@ const setupVoteInOrganizationParams = async function(
       voteInOrganizationParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
       voteInOrganizationParams.initdata = await new web3.eth.Contract(registration.voteInOrganization.abi)
       .methods
-      .initialize(avatarAddress,
+      .initialize(helpers.NULL_ADDRESS,
         voteInOrganizationParams.votingMachine.absoluteVote.address,
         [0,0,0,0,0,0,0,0,0,0,0],
         helpers.NULL_ADDRESS,
@@ -46,45 +45,36 @@ const setupVoteInOrganizationParams = async function(
   return voteInOrganizationParams;
 };
 
-const setup = async function (accounts,reputationAccount=0,genesisProtocol = false,tokenAddress=0) {
+const setup = async function (accounts,reputationAccount=helpers.NULL_ADDRESS,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    registration = await helpers.registerImplementation();
    testSetup.reputationArray = [200,100,700];
    testSetup.proxyAdmin = accounts[5];
-   if (reputationAccount === 0) {
-    testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-      accounts,
-      registration,
-      [accounts[0],accounts[1],accounts[2]],
-      [1000,1000,1000],
-      testSetup.reputationArray);
-   } else {
-    testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-      accounts,
-      registration,
-      [accounts[0],accounts[1],reputationAccount],
-      [1000,1000,1000],
-      testSetup.reputationArray);
+   if (reputationAccount === helpers.NULL_ADDRESS) {
+     reputationAccount = accounts[2];
    }
 
    testSetup.voteInOrganizationParams= await setupVoteInOrganizationParams(
                                                                            accounts,
                                                                            genesisProtocol,
-                                                                           tokenAddress,
-                                                                           testSetup.org.avatar.address);
+                                                                           tokenAddress);
    var permissions = "0x00000010";
 
-   var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
-    [web3.utils.fromAscii("VoteInOrganization")],
-    testSetup.voteInOrganizationParams.initdata,
-    [helpers.getBytesLength(testSetup.voteInOrganizationParams.initdata)],
-    [permissions],
-    "metaData",{from:testSetup.proxyAdmin});
+    [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+      accounts,
+      registration,
+      [accounts[0],accounts[1],reputationAccount],
+      [1000,1000,1000],
+      testSetup.reputationArray,0,
+      [web3.utils.fromAscii("VoteInOrganization")],
+      testSetup.voteInOrganizationParams.initdata,
+      [helpers.getBytesLength(testSetup.voteInOrganizationParams.initdata)],
+      [permissions],
+      "metaData");
 
-    testSetup.voteInOrganization = await VoteInOrganization.at(tx.logs[1].args._scheme);
+    testSetup.voteInOrganization = await VoteInOrganization.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
 
    return testSetup;
 };
@@ -143,9 +133,9 @@ contract('VoteInOrganizationScheme', accounts => {
 
   it("proposeVote vote not in range", async function() {
     var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-    var testSetup = await setup(accounts,0,true,standardTokenMock.address);
+    var testSetup = await setup(accounts,helpers.NULL_ADDRESS,true,standardTokenMock.address);
 
-    var anotherTestSetup =  await setup(accounts,0,true,standardTokenMock.address);
+    var anotherTestSetup =  await setup(accounts,helpers.NULL_ADDRESS,true,standardTokenMock.address);
     var reputation = await Reputation.new();
     await reputation.initialize(accounts[0]);
     await reputation.mint(testSetup.org.avatar.address,100);
@@ -257,9 +247,9 @@ contract('VoteInOrganizationScheme', accounts => {
 
      it("execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
         var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-        var testSetup = await setup(accounts,0,true,standardTokenMock.address);
+        var testSetup = await setup(accounts,helpers.NULL_ADDRESS,true,standardTokenMock.address);
 
-        var anotherTestSetup =  await setup(accounts,0,true,standardTokenMock.address);
+        var anotherTestSetup =  await setup(accounts,helpers.NULL_ADDRESS,true,standardTokenMock.address);
         var reputation = await Reputation.new();
         await reputation.initialize(accounts[0]);
         await reputation.mint(testSetup.org.avatar.address,100);

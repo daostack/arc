@@ -30,7 +30,6 @@ const setupJoinAndQuit = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
-                                            avatarAddress,
                                             _fundingToken,
                                             _minFeeToJoin,
                                             _memberReputation,
@@ -44,7 +43,7 @@ const setupJoinAndQuit = async function(
     joinAndQuitParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     joinAndQuitParams.initdata = await new web3.eth.Contract(registration.joinAndQuit.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             joinAndQuitParams.votingMachine.genesisProtocol.address,
                             joinAndQuitParams.votingMachine.uintArray,
                             joinAndQuitParams.votingMachine.voteOnBehalf,
@@ -60,7 +59,7 @@ const setupJoinAndQuit = async function(
   joinAndQuitParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   joinAndQuitParams.initdata = await new web3.eth.Contract(registration.joinAndQuit.abi)
                         .methods
-                        .initialize(avatarAddress,
+                        .initialize(helpers.NULL_ADDRESS,
                           joinAndQuitParams.votingMachine.absoluteVote.address,
                           [0,0,0,0,0,0,0,0,0,0,0],
                           helpers.NULL_ADDRESS,
@@ -90,12 +89,6 @@ const setup = async function (accounts,
   registration = await helpers.registerImplementation();
   testSetup.reputationArray = [7000];
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                      accounts,
-                                                                      registration,
-                                                                      [accounts[2]],
-                                                                      [0],
-                                                                      testSetup.reputationArray);
   testSetup.fundingGoalDeadline = (await web3.eth.getBlock("latest")).timestamp + fundingGoalDeadline;
   testSetup.minFeeToJoin = minFeeToJoin;
   testSetup.memberReputation = memberReputation;
@@ -110,7 +103,6 @@ const setup = async function (accounts,
                      accounts,
                      genesisProtocol,
                      tokenAddress,
-                     testSetup.org.avatar.address,
                      fundPath,
                      minFeeToJoin,
                      memberReputation,
@@ -119,15 +111,22 @@ const setup = async function (accounts,
                      rageQuitEnable);
 
   var permissions = "0x00000000";
-  var tx = await registration.daoFactory.setSchemes(
-                          testSetup.org.avatar.address,
-                          [web3.utils.fromAscii("JoinAndQuit")],
-                          testSetup.joinAndQuitParams.initdata,
-                          [helpers.getBytesLength(testSetup.joinAndQuitParams.initdata)],
-                          [permissions],
-                          "metaData",{from:testSetup.proxyAdmin});
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                      accounts,
+                                                                      registration,
+                                                                      [accounts[2]],
+                                                                      [0],
+                                                                      testSetup.reputationArray,
+                                                                      0,
+                                                                      [web3.utils.fromAscii("JoinAndQuit")],
+                                                                      testSetup.joinAndQuitParams.initdata,
+                                                                      [helpers.getBytesLength(testSetup.joinAndQuitParams.initdata)],
+                                                                      [permissions],
+                                                                      "metaData");
+
+  testSetup.joinAndQuit = await JoinAndQuit.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
+
   await testSetup.standardTokenMock.transfer(accounts[3],10000);
-  testSetup.joinAndQuit = await JoinAndQuit.at(tx.logs[1].args._scheme);
 
   return testSetup;
 };

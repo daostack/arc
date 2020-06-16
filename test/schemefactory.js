@@ -10,16 +10,14 @@ class SchemeFactoryParams {
 var registration;
 const setupSchemeFactoryParams = async function(
                                             accounts,
-                                            genesisProtocol,
-                                            token,
-                                            avatarAddress
+                                            genesisProtocol
                                             ) {
   var schemeFactoryParams = new SchemeFactoryParams();
   if (genesisProtocol === true) {
-    schemeFactoryParams.votingMachine = await helpers.setupGenesisProtocol(accounts,avatarAddress,helpers.NULL_ADDRESS);
+    schemeFactoryParams.votingMachine = await helpers.setupGenesisProtocol(accounts,helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
     schemeFactoryParams.initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             schemeFactoryParams.votingMachine.genesisProtocol.address,
                             schemeFactoryParams.votingMachine.uintArray,
                             schemeFactoryParams.votingMachine.voteOnBehalf,
@@ -30,7 +28,7 @@ const setupSchemeFactoryParams = async function(
       schemeFactoryParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
       schemeFactoryParams.initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
                             .methods
-                            .initialize(avatarAddress,
+                            .initialize(helpers.NULL_ADDRESS,
                               schemeFactoryParams.votingMachine.absoluteVote.address,
                               [0,0,0,0,0,0,0,0,0,0,0],
                               helpers.NULL_ADDRESS,
@@ -42,36 +40,36 @@ const setupSchemeFactoryParams = async function(
   return schemeFactoryParams;
 };
 
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=helpers.NULL_HASH) {
+const setup = async function (accounts,genesisProtocol = false) {
   var testSetup = new helpers.TestSetup();
   registration = await helpers.registerImplementation();
   testSetup.reputationArray = [2000,4000,7000];
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+
+  testSetup.schemeFactoryParams= await setupSchemeFactoryParams(
+                                        accounts,
+                                        genesisProtocol);
+
+  var permissions = "0x0000001f";
+
+
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
                                                                       registration,
                                                                       [accounts[0],
                                                                       accounts[1],
                                                                       accounts[2]],
                                                                       [1000,0,0],
-                                                                      testSetup.reputationArray);
-  testSetup.schemeFactoryParams= await setupSchemeFactoryParams(
-                                        accounts,
-                                        genesisProtocol,
-                                        tokenAddress,
-                                        testSetup.org.avatar.address);
+                                                                      testSetup.reputationArray,
+                                                                      0,
+                                                                      [web3.utils.fromAscii("SchemeFactory")],
+                                                                      testSetup.schemeFactoryParams.initdata,
+                                                                      [helpers.getBytesLength(testSetup.schemeFactoryParams.initdata)],
+                                                                      [permissions],
+                                                                      "metaData"
+                                                                     );
 
-  var permissions = "0x0000001f";
-
-  var tx = await registration.daoFactory.setSchemes(
-                          testSetup.org.avatar.address,
-                          [web3.utils.fromAscii("SchemeFactory")],
-                          testSetup.schemeFactoryParams.initdata,
-                          [helpers.getBytesLength(testSetup.schemeFactoryParams.initdata)],
-                          [permissions],
-                          "metaData",{from:testSetup.proxyAdmin});
-
-  testSetup.schemeFactory = await SchemeFactory.at(tx.logs[1].args._scheme);
+   testSetup.schemeFactory = await SchemeFactory.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
   return testSetup;
 };
 contract('SchemeFactory', accounts => {
@@ -116,10 +114,19 @@ contract('SchemeFactory', accounts => {
 
     it("execute proposeScheme and execute -yes - permissions== 0x0000001f", async function() {
       var testSetup = await setup(accounts);
+      var initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
+                            .methods
+                            .initialize(testSetup.org.avatar.address,
+                              testSetup.schemeFactoryParams.votingMachine.absoluteVote.address,
+                              [0,0,0,0,0,0,0,0,0,0,0],
+                              helpers.NULL_ADDRESS,
+                              testSetup.schemeFactoryParams.votingMachine.params,
+                              registration.daoFactory.address)
+                            .encodeABI();
       var tx = await testSetup.schemeFactory.proposeScheme(
         [0,1,0],
         'SchemeFactory',
-        testSetup.schemeFactoryParams.initdata,
+        initdata,
         "0x0000001f",
         helpers.NULL_ADDRESS,
         helpers.NULL_HASH);
@@ -136,10 +143,19 @@ contract('SchemeFactory', accounts => {
 
      it("execute proposeScheme and execute -yes - replace scheme", async function() {
       var testSetup = await setup(accounts);
+      var initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
+                            .methods
+                            .initialize(testSetup.org.avatar.address,
+                              testSetup.schemeFactoryParams.votingMachine.absoluteVote.address,
+                              [0,0,0,0,0,0,0,0,0,0,0],
+                              helpers.NULL_ADDRESS,
+                              testSetup.schemeFactoryParams.votingMachine.params,
+                              registration.daoFactory.address)
+                            .encodeABI();
       var tx = await testSetup.schemeFactory.proposeScheme(
         [0,1,0],
         'SchemeFactory',
-        testSetup.schemeFactoryParams.initdata,
+        initdata,
         "0x0000001f",
         testSetup.schemeFactory.address,
         helpers.NULL_HASH);
@@ -158,10 +174,19 @@ contract('SchemeFactory', accounts => {
 
      it("execute proposeScheme and execute -yes - replace scheme + genesisProtocol", async function() {
       var testSetup = await setup(accounts,true);
+      var initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
+                            .methods
+                            .initialize(testSetup.org.avatar.address,
+                              testSetup.schemeFactoryParams.votingMachine.genesisProtocol.address,
+                              [0,0,0,0,0,0,0,0,0,0,0],
+                              helpers.NULL_ADDRESS,
+                              testSetup.schemeFactoryParams.votingMachine.params,
+                              registration.daoFactory.address)
+                            .encodeABI();
       var tx = await testSetup.schemeFactory.proposeScheme(
         [0,1,0],
         'SchemeFactory',
-        testSetup.schemeFactoryParams.initdata,
+        initdata,
         "0x0000001f",
         testSetup.schemeFactory.address,
         helpers.NULL_HASH);

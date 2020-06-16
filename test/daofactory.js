@@ -20,7 +20,15 @@ const setup = async function (accounts,founderToken,founderReputation,cap=0) {
                         .initialize("TEST","TST",cap,registration.daoFactory.address)
                         .encodeABI();
 
-  var tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[founderToken],[founderReputation],[0,0,0],{gas:constants.ARC_GAS_LIMIT});
+
+  var encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+                                                            ["testOrg",nativeTokenData,[accounts[0]],[founderToken],[founderReputation],[0,0,0]]);
+
+  var encodedSetSchemesParams = '0x';
+
+  var tx = await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
+                                                  encodedSetSchemesParams,
+                                                  {gas:constants.ARC_GAS_LIMIT});
   assert.equal(tx.logs.length, 5);
   assert.equal(tx.logs[4].event, "NewOrg");
   var avatarAddress = tx.logs[4].args._avatar;
@@ -29,6 +37,16 @@ const setup = async function (accounts,founderToken,founderReputation,cap=0) {
   daoToken = await DAOToken.at(tokenAddress);
   var reputationAddress = await avatar.nativeReputation({from:accounts[1]});
   reputation = await Reputation.at(reputationAddress);
+};
+
+const setSchemes = async function(_data) {
+    var encodedSetSchemesParams = web3.eth.abi.encodeParameters(['bytes32[]','bytes','uint256[]','bytes4[]','string'],
+    _data);
+    var tx = await registration.daoFactory.setSchemes(
+                avatar.address,
+                encodedSetSchemesParams);
+    return tx;
+
 };
 
 contract('DaoFactory', function(accounts) {
@@ -89,16 +107,17 @@ contract('DaoFactory', function(accounts) {
                                                     .methods
                                                     .initialize(avatar.address)
                                                     .encodeABI();
-
+        var encodedSetSchemesParams = web3.eth.abi.encodeParameters(['bytes32[]','bytes','uint256[]','bytes4[]','string'],
+        [[web3.utils.fromAscii("Wallet"),
+        web3.utils.fromAscii("SchemeMock"),
+        web3.utils.fromAscii("SchemeMock")],
+        helpers.concatBytes(helpers.concatBytes(walletData,schemeMockData1),schemeMockData2),
+        [helpers.getBytesLength(walletData), helpers.getBytesLength(schemeMockData1),helpers.getBytesLength(schemeMockData2)],
+        ["0x0000000F","0x0000000F","0x0000000F"],
+        "metaData"]);
         var tx = await registration.daoFactory.setSchemes(
                     avatar.address,
-                    [web3.utils.fromAscii("Wallet"),
-                    web3.utils.fromAscii("SchemeMock"),
-                    web3.utils.fromAscii("SchemeMock")],
-                    helpers.concatBytes(helpers.concatBytes(walletData,schemeMockData1),schemeMockData2),
-                    [helpers.getBytesLength(walletData), helpers.getBytesLength(schemeMockData1),helpers.getBytesLength(schemeMockData2)],
-                    ["0x0000000F","0x0000000F","0x0000000F"],
-                    "metaData");
+                    encodedSetSchemesParams);
         assert.equal(tx.logs.length, 7);
         assert.equal(tx.logs[6].event, "InitialSchemesSet");
         assert.equal(tx.logs[6].args._avatar, avatar.address);
@@ -123,15 +142,17 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,2)
                               .encodeABI();
-
+      var data = [[web3.utils.fromAscii("SchemeMock"),web3.utils.fromAscii("SchemeMock")],
+      helpers.concatBytes(schemeMockData1, schemeMockData2),
+      [helpers.getBytesLength(schemeMockData1), helpers.getBytesLength(schemeMockData2)],
+      ["0x0000000F","0x0000000F"],
+      "metaData"];
+      var encodedSetSchemesParams = web3.eth.abi.encodeParameters(['bytes32[]','bytes','uint256[]','bytes4[]','string'],data);
         try {
           await registration.daoFactory.setSchemes(
                       avatar.address,
-                      [web3.utils.fromAscii("SchemeMock"),web3.utils.fromAscii("SchemeMock")],
-                      helpers.concatBytes(schemeMockData1, schemeMockData2),
-                      [helpers.getBytesLength(schemeMockData1), helpers.getBytesLength(schemeMockData2)],
-                      ["0x0000000F","0x0000000F"],
-                      "metaData",{from:accounts[1]});
+                      encodedSetSchemesParams,
+                      {from:accounts[1]});
          assert(false,"should fail because accounts[1] does not hold the lock");
         }
         catch(ex){
@@ -147,14 +168,11 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-
-        var tx = await registration.daoFactory.setSchemes(
-                                avatar.address,
-                                [web3.utils.fromAscii("SchemeMock")],
-                                schemeMockData1,
-                                [helpers.getBytesLength(schemeMockData1)],
-                                ["0x0000000F"],
-                                "metaData");
+        var tx = await setSchemes([[web3.utils.fromAscii("SchemeMock")],
+        schemeMockData1,
+        [helpers.getBytesLength(schemeMockData1)],
+        ["0x0000000F"],
+        "metaData"]);
         controllerAddress = await avatar.owner({from:accounts[1]});
         controller = await Controller.at(controllerAddress);
         var isSchemeRegistered = await controller.isSchemeRegistered(tx.logs[1].args._scheme,{from:accounts[1]});
@@ -174,14 +192,11 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-
-        await registration.daoFactory.setSchemes(
-                                avatar.address,
-                                [web3.utils.fromAscii("SchemeMock")],
-                                schemeMockData1,
-                                [helpers.getBytesLength(schemeMockData1)],
-                                ["0x0000000F"],
-                                "metaData");
+        await setSchemes([[web3.utils.fromAscii("SchemeMock")],
+        schemeMockData1,
+        [helpers.getBytesLength(schemeMockData1)],
+        ["0x0000000F"],
+        "metaData"]);
         isSchemeRegistered = await controller.isSchemeRegistered(registration.daoFactory.address,{from:accounts[1]});
         assert.equal(isSchemeRegistered,false);
     });
@@ -193,22 +208,17 @@ contract('DaoFactory', function(accounts) {
                               .methods
                               .initialize(avatar.address,1)
                               .encodeABI();
-
-         await registration.daoFactory.setSchemes(
-                                avatar.address,
-                                [web3.utils.fromAscii("SchemeMock")],
-                                schemeMockData1,
-                                [helpers.getBytesLength(schemeMockData1)],
-                                ["0x0000000F"],
-                                "metaData");
+         await setSchemes([[web3.utils.fromAscii("SchemeMock")],
+         schemeMockData1,
+         [helpers.getBytesLength(schemeMockData1)],
+         ["0x0000000F"],
+         "metaData"]);
         try {
-          await registration.daoFactory.setSchemes(
-                                  avatar.address,
-                                  [web3.utils.fromAscii("SchemeMock")],
-                                  schemeMockData1,
-                                  [helpers.getBytesLength(schemeMockData1)],
-                                  ["0x0000000F"],
-                                  "metaData");
+          await setSchemes([[web3.utils.fromAscii("SchemeMock")],
+          schemeMockData1,
+          [helpers.getBytesLength(schemeMockData1)],
+          ["0x0000000F"],
+          "metaData"]);
          assert(false,"should fail because lock for account[0] suppose to be deleted by the first call");
         }
         catch(ex){
@@ -219,31 +229,45 @@ contract('DaoFactory', function(accounts) {
     it("forgeOrg with different params length should revert", async function() {
        var amountToMint = 10;
        await setup(accounts,amountToMint,amountToMint);
+       var encodedForgeOrgParams;
 
+       var encodedSetSchemesParams = '0x';
        try {
-        await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[11],[],[0,0,0],{gas:constants.ARC_GAS_LIMIT});
-        assert(false,"should revert  because reputation array size is 0");
+
+         encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+                                                                   ["testOrg",nativeTokenData,[accounts[0]],[11],[],[0,0,0]]);
+         await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
+                                               encodedSetSchemesParams,
+                                               {gas:constants.ARC_GAS_LIMIT});
+          assert(false,"should revert  because reputation array size is 0");
        }
        catch(ex){
          helpers.assertVMException(ex);
        }
 
        try {
-        await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[],[11],[0,0,0],{gas:constants.ARC_GAS_LIMIT});
-        assert(false,"should revert  because token array size is 0");
+         encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+                                                                   ["testOrg",nativeTokenData,[accounts[0]],[],[11],[0,0,0]]);
+         await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
+                                               encodedSetSchemesParams,
+                                               {gas:constants.ARC_GAS_LIMIT});
+         assert(false,"should revert  because token array size is 0");
        }
        catch(ex){
          helpers.assertVMException(ex);
        }
 
        try {
-        await registration.daoFactory.forgeOrg("testOrg",
-                       nativeTokenData,[accounts[0],
-                       helpers.NULL_ADDRESS],
-                       [amountToMint,amountToMint],
-                       [amountToMint,amountToMint],
-                       [0,0,0],
-                       {gas:constants.ARC_GAS_LIMIT});
+         encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+                                                                   ["testOrg",
+                                                                    nativeTokenData,[accounts[0],
+                                                                    helpers.NULL_ADDRESS],
+                                                                    [amountToMint,amountToMint],
+                                                                    [amountToMint,amountToMint],
+                                                                    [0,0,0]]);
+        await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
+                                              encodedSetSchemesParams,
+                                              {gas:constants.ARC_GAS_LIMIT});
         assert(false,"should revert because account is 0");
        }
        catch(ex){
@@ -283,13 +307,12 @@ contract('DaoFactory', function(accounts) {
                               .initialize(avatar.address,1)
                               .encodeABI();
 
-        var tx = await registration.daoFactory.setSchemes(
-                                avatar.address,
-                                [web3.utils.fromAscii("SchemeMock")],
+        var tx = await setSchemes(
+                                [[web3.utils.fromAscii("SchemeMock")],
                                 schemeMockData1,
                                 [helpers.getBytesLength(schemeMockData1)],
                                 ["0x0000000F"],
-                                "metaData");
+                                "metaData"]);
         assert.equal(tx.logs.length, 3);
         assert.equal(tx.logs[2].event, "InitialSchemesSet");
         assert.equal(tx.logs[2].args._avatar, avatar.address);
@@ -363,8 +386,11 @@ contract('DaoFactory', function(accounts) {
                                 .methods
                                 .initialize("TEST","TST",0,registration.daoFactory.address)
                                 .encodeABI();
-
-          var tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[amountToMint],[amountToMint],[0,1,0],{gas:constants.ARC_GAS_LIMIT});
+          var encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+                                                                    ["testOrg",nativeTokenData,[accounts[0]],[amountToMint],[amountToMint],[0,1,0]]);
+          var tx = await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
+                                                "0x",
+                                                {gas:constants.ARC_GAS_LIMIT});
           assert.equal(tx.logs.length, 5);
           var avatarAddress = tx.logs[4].args._avatar;
           assert.equal(tx.logs[2].event, "ProxyCreated");
@@ -372,8 +398,12 @@ contract('DaoFactory', function(accounts) {
           assert.equal(tx.logs[2].args._implementation, oldAvatarImplementation);
           assert.equal(tx.logs[2].args._contractName, "Avatar");
           assert.equal(tx.logs[2].args._version[1].toNumber(),1);
+          encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+                                                                    ["testOrg",nativeTokenData,[accounts[0]],[amountToMint],[amountToMint],[0,2,0]]);
+          tx = await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
+                                                "0x",
+                                                {gas:constants.ARC_GAS_LIMIT});
 
-          tx = await registration.daoFactory.forgeOrg("testOrg",nativeTokenData,[accounts[0]],[amountToMint],[amountToMint],[0,2,0],{gas:constants.ARC_GAS_LIMIT});
           assert.equal(tx.logs.length, 5);
           avatarAddress = tx.logs[4].args._avatar;
           assert.equal(tx.logs[2].event, "ProxyCreated");

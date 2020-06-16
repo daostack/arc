@@ -214,6 +214,20 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   return votingMachine;
 };
 
+const getSchemeAddress = async function (daoFactoryAddress,daoFactoryTx) {
+var daoFactory = await DAOFactory.at(daoFactoryAddress);
+var address;
+
+await daoFactory.getPastEvents('SchemeInstance', {
+      fromBlock: daoFactoryTx.blockNumber,
+      toBlock: 'latest'
+  })
+  .then(function(events){
+    address = events[0].args._scheme;
+  });
+  return address;
+};
+
  const setupGenesisProtocol = async function (
    accounts,
    token,
@@ -270,20 +284,28 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
                                                                      daoFactoryOwner,
                                                                      founderToken,
                                                                      founderReputation,
-                                                                     cap=0) {
+                                                                     cap=0,
+                                                                     schemesNames,
+                                                                     schemesData,
+                                                                     schemesInitilizeDataLens,
+                                                                     permissions,
+                                                                     metaData) {
+
   var org = new Organization();
   var nativeTokenData = await new web3.eth.Contract(registration.daoToken.abi)
                         .methods
                         .initialize("TEST","TST",cap,registration.daoFactory.address)
                         .encodeABI();
-  var tx = await registration.daoFactory.forgeOrg("testOrg",
-                                                  nativeTokenData,
-                                                  daoFactoryOwner,
-                                                  founderToken,
-                                                  founderReputation,
-                                                  [0,0,0],
-                                                  {from:proxyAdmin,gas:constants.ARC_GAS_LIMIT});
-  assert.equal(tx.logs.length, 5);
+  var encodedForgeOrgParams = web3.eth.abi.encodeParameters(['string','bytes','address[]','uint256[]','uint256[]','uint64[3]'],
+                                                            ["testOrg",nativeTokenData,daoFactoryOwner,founderToken,founderReputation,[0,0,0]]);
+  var encodedSetSchemesParams = web3.eth.abi.encodeParameters(['bytes32[]','bytes','uint256[]','bytes4[]','string'],
+                                                              [schemesNames,schemesData,schemesInitilizeDataLens,permissions,metaData]);
+
+  var tx = await registration.daoFactory.forgeOrg(encodedForgeOrgParams,
+                                                  encodedSetSchemesParams,
+                                                  {from:proxyAdmin});
+
+
   assert.equal(tx.logs[4].event, "NewOrg");
   var avatarAddress = tx.logs[4].args._avatar;
   org.avatar = await Avatar.at(avatarAddress);
@@ -291,7 +313,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   org.token = await DAOToken.at(tokenAddress);
   var reputationAddress = await org.avatar.nativeReputation();
   org.reputation = await Reputation.at(reputationAddress);
-  return org;
+  return [org,tx];
 };
 
  const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
@@ -364,7 +386,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
 };
 
  const getBytesLength = function (bytes) {
-  return web3.utils.toBN(Number(bytes.slice(2).length) / 2);
+  return Number(web3.utils.toBN(Number(bytes.slice(2).length) / 2));
 };
 
 
@@ -386,4 +408,5 @@ module.exports = { MAX_UINT_256,
                   checkVoteInfo,
                   registrationAddVersionToPackege,
                   concatBytes,
+                  getSchemeAddress,
                   getProposalId};

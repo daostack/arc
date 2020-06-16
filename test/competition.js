@@ -3,6 +3,7 @@ const helpers = require("./helpers");
 const ContributionRewardExt = artifacts.require("./ContributionRewardExt.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Competition = artifacts.require("./Competition.sol");
+const DAOFactory = artifacts.require("./DAOFactory.sol");
 
 class ContributionRewardParams {
   constructor() {
@@ -13,7 +14,6 @@ const setupContributionRewardExt = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
-                                            avatarAddress,
                                             _daoFactoryAddress,
                                             _packageVersion = [0,1,0],
                                             _rewarderName = 'Competition'
@@ -24,7 +24,7 @@ const setupContributionRewardExt = async function(
     contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             contributionRewardParams.votingMachine.genesisProtocol.address,
                             contributionRewardParams.votingMachine.uintArray,
                             contributionRewardParams.votingMachine.voteOnBehalf,
@@ -38,7 +38,7 @@ const setupContributionRewardExt = async function(
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
                         .methods
-                        .initialize(avatarAddress,
+                        .initialize(helpers.NULL_ADDRESS,
                           contributionRewardParams.votingMachine.absoluteVote.address,
                           [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
@@ -63,32 +63,38 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
       testSetup.reputationArray = [2000,5000,7000];
    }
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+   var permissions = "0x00000000";
+   testSetup.contributionRewardExtParams= await setupContributionRewardExt(
+                      accounts,
+                      genesisProtocol,
+                      tokenAddress,
+                      registration.daoFactory.address);
+   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                        accounts,
                                                                        registration,
                                                                        [accounts[0],
                                                                        accounts[1],
                                                                        accounts[2]],
                                                                        [1000,0,0],
-                                                                       testSetup.reputationArray);
+                                                                       testSetup.reputationArray,
+                                                                       0,
+                                                                       [web3.utils.fromAscii("ContributionRewardExt")],
+                                                                       testSetup.contributionRewardExtParams.initdata,
+                                                                       [helpers.getBytesLength(testSetup.contributionRewardExtParams.initdata)],
+                                                                       [permissions],
+                                                                       "metaData");
 
+   var daoFactory = await DAOFactory.at(registration.daoFactory.address);
+   var contributionRewardExtAddress;
+   await daoFactory.getPastEvents('SchemeInstance', {
+         fromBlock: tx.blockNumber,
+         toBlock: 'latest'
+     })
+     .then(function(events){
+         contributionRewardExtAddress = events[0].args._scheme;
+     });
+   testSetup.contributionRewardExt = await ContributionRewardExt.at(contributionRewardExtAddress);
 
-   testSetup.contributionRewardExtParams= await setupContributionRewardExt(
-                      accounts,
-                      genesisProtocol,
-                      tokenAddress,
-                      testSetup.org.avatar.address,
-                      registration.daoFactory.address);
-
-   var permissions = "0x00000000";
-   tx = await registration.daoFactory.setSchemes(
-                           testSetup.org.avatar.address,
-                           [web3.utils.fromAscii("ContributionRewardExt")],
-                           testSetup.contributionRewardExtParams.initdata,
-                           [helpers.getBytesLength(testSetup.contributionRewardExtParams.initdata)],
-                           [permissions],
-                           "metaData",{from:testSetup.proxyAdmin});
-   testSetup.contributionRewardExt = await ContributionRewardExt.at(tx.logs[2].args._scheme);
    var competitionAddress = await testSetup.contributionRewardExt.rewarder();
    testSetup.competition = await Competition.at(competitionAddress);
    testSetup.admin = accounts[0];
@@ -111,7 +117,12 @@ const proposeCompetition = async function(
                                           ) {
 
     var block = await web3.eth.getBlock("latest");
-    _testSetup.startTime = _startTime > 0 ? block.timestamp + _startTime : 0;
+    if (_startTime === "invalid") {
+      _testSetup.startTime = 1;
+    } else {
+      _testSetup.startTime = _startTime > 0 ? block.timestamp + _startTime : 0;
+
+    }
     _testSetup.votingStartTime = block.timestamp + _votingStartTime;
     _testSetup.endTime = block.timestamp + _endTime;
     _testSetup.suggestionsEndTime = block.timestamp + _suggestionsEndTime;
@@ -198,6 +209,17 @@ contract('Competition', accounts => {
               helpers.assertVMException(ex);
         }
         rewardSplit = [50,25,15,10];
+        try {
+          await proposeCompetition(testSetup,
+                                  descriptionHash,
+                                  reputationChange,
+                                  rewards,
+                                  rewardSplit,
+                                  "invalid");
+          assert(false, 'start time cannot be in the past');
+        } catch (ex) {
+          helpers.assertVMException(ex);
+        }
 
         try {
 

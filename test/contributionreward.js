@@ -43,7 +43,6 @@ const setupContributionReward = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
-                                            avatarAddress
                                             ) {
   var contributionRewardParams = new ContributionRewardParams();
 
@@ -51,7 +50,7 @@ const setupContributionReward = async function(
     contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionReward.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             contributionRewardParams.votingMachine.genesisProtocol.address,
                             contributionRewardParams.votingMachine.uintArray,
                             contributionRewardParams.votingMachine.voteOnBehalf,
@@ -61,7 +60,7 @@ const setupContributionReward = async function(
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionReward.abi)
                         .methods
-                        .initialize(avatarAddress,
+                        .initialize(helpers.NULL_ADDRESS,
                           contributionRewardParams.votingMachine.absoluteVote.address,
                           [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
@@ -71,7 +70,7 @@ const setupContributionReward = async function(
   return contributionRewardParams;
 };
 
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,setParameters = false) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
@@ -82,38 +81,29 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,se
       testSetup.reputationArray = [2000,4000,7000];
    }
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+   testSetup.contributionRewardParams= await setupContributionReward(
+                      accounts,
+                      genesisProtocol,
+                      tokenAddress);
+   var permissions = "0x00000000";
+   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                        accounts,
                                                                        registration,
                                                                        [accounts[0],
                                                                        accounts[1],
                                                                        accounts[2]],
                                                                        [1000,0,0],
-                                                                       testSetup.reputationArray);
-   testSetup.contributionRewardParams= await setupContributionReward(
-                      accounts,genesisProtocol,
-                      tokenAddress,
-                      testSetup.org.avatar.address);
-   var permissions = "0x00000000";
+                                                                       testSetup.reputationArray,
+                                                                       0,
+                                                                       [web3.utils.fromAscii("ContributionReward")],
+                                                                       testSetup.contributionRewardParams.initdata,
+                                                                       [helpers.getBytesLength(testSetup.contributionRewardParams.initdata)],
+                                                                       [permissions],
+                                                                       "metaData");
 
-   if ((genesisProtocol === true) && (setParameters === true)) {
-      await testSetup.
-            contributionRewardParams.
-            votingMachine.
-            genesisProtocol.
-            setParameters(testSetup.contributionRewardParams.votingMachine.uintArray,
-                          testSetup.contributionRewardParams.votingMachine.voteOnBehalf);
-   }
 
-   var tx = await registration.daoFactory.setSchemes(
-                           testSetup.org.avatar.address,
-                           [web3.utils.fromAscii("ContributionReward")],
-                           testSetup.contributionRewardParams.initdata,
-                           [helpers.getBytesLength(testSetup.contributionRewardParams.initdata)],
-                           [permissions],
-                           "metaData",{from:testSetup.proxyAdmin});
 
-   testSetup.contributionReward = await ContributionReward.at(tx.logs[1].args._scheme);
+   testSetup.contributionReward = await ContributionReward.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
    return testSetup;
 };
 contract('ContributionReward', accounts => {

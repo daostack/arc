@@ -20,16 +20,6 @@ const setup = async function (accounts,
    testSetup.proxyAdmin = accounts[5];
    var registration = await helpers.registerImplementation();
    testSetup.biddingToken = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(
-     testSetup.proxyAdmin,
-     accounts,
-     registration,
-     [accounts[0]],
-     [1000],
-     [1000]
-  );
-
-
    testSetup.auctionsEndTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsEndTime;
    testSetup.auctionsStartTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsStartTime;
    testSetup.redeemEnableTime = (await web3.eth.getBlock("latest")).timestamp + _redeemEnableTime;
@@ -37,29 +27,35 @@ const setup = async function (accounts,
    testSetup.auctionPeriod = (testSetup.auctionsEndTime - testSetup.auctionsStartTime)/3;
    testSetup.agreementHash = _agreementHash;
    testSetup.auction4ReputationParams = new Auction4ReputationParams();
-
    testSetup.auction4ReputationParams.initdata = await new web3.eth.Contract(registration.auction4Reputation.abi)
    .methods
-   .initialize(testSetup.org.avatar.address,
+   .initialize(helpers.NULL_ADDRESS,
     _auctionReputationReward,
     testSetup.auctionsStartTime,
     testSetup.auctionPeriod,
     _numberOfAuctions,
     testSetup.redeemEnableTime,
     testSetup.biddingToken.address,
-    testSetup.org.avatar.address,
     testSetup.agreementHash)
    .encodeABI();
    var permissions = "0x00000000";
+   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(
+     testSetup.proxyAdmin,
+     accounts,
+     registration,
+     [accounts[0]],
+     [1000],
+     [1000],
+     helpers.NULL_ADDRESS,
+     [web3.utils.fromAscii("Auction4Reputation")],
+     testSetup.auction4ReputationParams.initdata,
+     [helpers.getBytesLength(testSetup.auction4ReputationParams.initdata)],
+     [permissions],
+     "metaData"
+  );
 
-   var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
-    [web3.utils.fromAscii("Auction4Reputation")],
-    testSetup.auction4ReputationParams.initdata,
-    [helpers.getBytesLength(testSetup.auction4ReputationParams.initdata)],
-    [permissions],
-    "metaData",{from:testSetup.proxyAdmin});
-   testSetup.auction4Reputation = await Auction4Reputation.at(tx.logs[1].args._scheme);
+
+   testSetup.auction4Reputation = await Auction4Reputation.at(tx.logs[6].args._scheme);
    await testSetup.biddingToken.approve(testSetup.auction4Reputation.address,web3.utils.toWei('100', "ether"));
    return testSetup;
 };
@@ -74,7 +70,6 @@ contract('Auction4Reputation', accounts => {
       assert.equal(await testSetup.auction4Reputation.redeemEnableTime(),testSetup.redeemEnableTime);
       assert.equal(await testSetup.auction4Reputation.token(),testSetup.biddingToken.address);
       assert.equal(await testSetup.auction4Reputation.numberOfAuctions(),3);
-      assert.equal(await testSetup.auction4Reputation.wallet(),testSetup.org.avatar.address);
       assert.equal(await testSetup.auction4Reputation.auctionPeriod(),testSetup.auctionPeriod);
       assert.equal(await testSetup.auction4Reputation.getAgreementHash(),testSetup.agreementHash);
     });
@@ -88,7 +83,6 @@ contract('Auction4Reputation', accounts => {
                                                1000,
                                                0,
                                                3000,
-                                              accounts[0],
                                               accounts[0],
                                               helpers.SOME_HASH,
                                               {gas :constants.ARC_GAS_LIMIT});
@@ -108,7 +102,6 @@ contract('Auction4Reputation', accounts => {
                                                3,
                                                3000,
                                               accounts[0],
-                                              accounts[0],
                                               helpers.SOME_HASH,
                                               {gas :constants.ARC_GAS_LIMIT});
         assert(false, "numberOfAuctions = 0  is not allowed");
@@ -126,7 +119,6 @@ contract('Auction4Reputation', accounts => {
                                                1000,
                                                1,
                                                1000-1,
-                                              accounts[0],
                                               accounts[0],
                                               helpers.SOME_HASH,
                                               {gas :constants.ARC_GAS_LIMIT});
@@ -146,7 +138,6 @@ contract('Auction4Reputation', accounts => {
                                                1,
                                                300,
                                               accounts[0],
-                                              accounts[0],
                                               helpers.SOME_HASH);
         assert(false, "auctionsEndTime = auctionsStartTime is not allowed");
       } catch(error) {
@@ -163,7 +154,6 @@ contract('Auction4Reputation', accounts => {
                                                100,
                                                1,
                                                100,
-                                              accounts[0],
                                               accounts[0],
                                               helpers.SOME_HASH);
         assert(false, "auctionsEndTime < auctionsStartTime is not allowed");
@@ -351,7 +341,6 @@ contract('Auction4Reputation', accounts => {
                                                               100,
                                                               1,
                                                               100,
-                                                              accounts[0],
                                                               accounts[0],
                                                               helpers.SOME_HASH);
              assert(false, "cannot initialize twice");

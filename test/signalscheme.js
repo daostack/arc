@@ -12,15 +12,14 @@ var registration;
 const setupSignalSchemeParam = async function(
                                               accounts,
                                               genesisProtocol,
-                                              token,
-                                              avatarAddress
+                                              token
                                             ) {
   var signalSchemeParams = new SignalSchemeParams();
   if (genesisProtocol === true) {
     signalSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     signalSchemeParams.initdata = await new web3.eth.Contract(registration.signalScheme.abi)
     .methods
-    .initialize(   avatarAddress,
+    .initialize(helpers.NULL_ADDRESS,
      1234,
      helpers.NULL_HASH,
      signalSchemeParams.votingMachine.genesisProtocol.address,
@@ -31,7 +30,7 @@ const setupSignalSchemeParam = async function(
       signalSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
       signalSchemeParams.initdata = await new web3.eth.Contract(registration.signalScheme.abi)
                                                 .methods
-                                                .initialize(avatarAddress,
+                                                .initialize(helpers.NULL_ADDRESS,
                                                   1234,
                                                   signalSchemeParams.votingMachine.params,
                                                   signalSchemeParams.votingMachine.absoluteVote.address,
@@ -52,30 +51,28 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress = he
       testSetup.reputationArray = [2000,4000,7000];
    }
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                       accounts,
-                                                                       registration,
-                                                                       [accounts[0],
-                                                                       accounts[1],
-                                                                       accounts[2]],
-                                                                       [1000,0,0],
-                                                                       testSetup.reputationArray);
+
 
   testSetup.signalSchemeParams= await setupSignalSchemeParam(
                                       accounts,
                                       genesisProtocol,
-                                      tokenAddress,
-                                      testSetup.org.avatar.address);
+                                      tokenAddress);
    var permissions = "0x00000000";
-   var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
-    [web3.utils.fromAscii("SignalScheme")],
-    testSetup.signalSchemeParams.initdata,
-    [helpers.getBytesLength(testSetup.signalSchemeParams.initdata)],
-    [permissions],
-    "metaData",{from:testSetup.proxyAdmin});
-
-    testSetup.signalScheme = await SignalScheme.at(tx.logs[1].args._scheme);
+    [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                        accounts,
+                                                                        registration,
+                                                                        [accounts[0],
+                                                                        accounts[1],
+                                                                        accounts[2]],
+                                                                        [1000,0,0],
+                                                                        testSetup.reputationArray,
+                                                                        0,
+                                                                        [web3.utils.fromAscii("SignalScheme")],
+                                                                        testSetup.signalSchemeParams.initdata,
+                                                                        [helpers.getBytesLength(testSetup.signalSchemeParams.initdata)],
+                                                                        [permissions],
+                                                                        "metaData");
+    testSetup.signalScheme = await SignalScheme.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
    return testSetup;
 };
 contract('SignalScheme', accounts => {
@@ -83,7 +80,8 @@ contract('SignalScheme', accounts => {
     it("proposeSignal log", async function() {
       var testSetup = await setup(accounts);
       var parameters = await testSetup.signalScheme.params();
-      assert.equal(parameters.avatar,testSetup.org.avatar.address);
+      var avatar = await testSetup.signalScheme.avatar();
+      assert.equal(avatar,testSetup.org.avatar.address);
       assert.equal(parameters.signalType,1234);
       assert.equal(parameters.voteApproveParams,testSetup.signalSchemeParams.votingMachine.params);
       assert.equal(parameters.intVote,testSetup.signalSchemeParams.votingMachine.absoluteVote.address);

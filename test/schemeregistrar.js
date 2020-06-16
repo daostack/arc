@@ -13,20 +13,21 @@ var registration;
 const setupSchemeRegistrarParams = async function(
                                             accounts,
                                             genesisProtocol,
-                                            token,
-                                            avatarAddress,
+                                            token
                                             ) {
   var schemeRegistrarParams = new SchemeRegistrarParams();
   if (genesisProtocol === true) {
     schemeRegistrarParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
+    let removalSchemeParams = [...schemeRegistrarParams.votingMachine.uintArray];
+    removalSchemeParams[10] = 1;
     schemeRegistrarParams.initdata = await new web3.eth.Contract(registration.schemeRegistrar.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             schemeRegistrarParams.votingMachine.genesisProtocol.address,
                             schemeRegistrarParams.votingMachine.uintArray,
                             schemeRegistrarParams.votingMachine.voteOnBehalf,
                             helpers.NULL_HASH,
-                            schemeRegistrarParams.votingMachine.uintArray,
+                            removalSchemeParams,
                             schemeRegistrarParams.votingMachine.voteOnBehalf,
                             helpers.NULL_HASH)
                           .encodeABI();
@@ -34,7 +35,7 @@ const setupSchemeRegistrarParams = async function(
       schemeRegistrarParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
       schemeRegistrarParams.initdata = await new web3.eth.Contract(registration.schemeRegistrar.abi)
                             .methods
-                            .initialize(avatarAddress,
+                            .initialize(helpers.NULL_ADDRESS,
                               schemeRegistrarParams.votingMachine.absoluteVote.address,
                               [0,0,0,0,0,0,0,0,0,0,0],
                               helpers.NULL_ADDRESS,
@@ -47,36 +48,35 @@ const setupSchemeRegistrarParams = async function(
   return schemeRegistrarParams;
 };
 
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
   registration = await helpers.registerImplementation();
   testSetup.reputationArray = [2000,4000,7000];
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+
+  testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(
+                                          accounts,
+                                          genesisProtocol,
+                                          tokenAddress);
+
+  var permissions = "0x0000001f";
+
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
                                                                       registration,
                                                                       [accounts[0],
                                                                       accounts[1],
                                                                       accounts[2]],
                                                                       [1000,0,0],
-                                                                      testSetup.reputationArray);
-  testSetup.schemeRegistrarParams= await setupSchemeRegistrarParams(
-                                          accounts,
-                                          genesisProtocol,
-                                          tokenAddress,
-                                          testSetup.org.avatar.address);
-
-  var permissions = "0x0000001f";
-  var tx = await registration.daoFactory.setSchemes(
-                          testSetup.org.avatar.address,
-                          [web3.utils.fromAscii("SchemeRegistrar")],
-                          testSetup.schemeRegistrarParams.initdata,
-                          [helpers.getBytesLength(testSetup.schemeRegistrarParams.initdata)],
-                          [permissions],
-                          "metaData",{from:testSetup.proxyAdmin});
-
-  testSetup.schemeRegistrar = await SchemeRegistrar.at(tx.logs[1].args._scheme);
+                                                                      testSetup.reputationArray,
+                                                                      0,
+                                                                      [web3.utils.fromAscii("SchemeRegistrar")],
+                                                                      testSetup.schemeRegistrarParams.initdata,
+                                                                      [helpers.getBytesLength(testSetup.schemeRegistrarParams.initdata)],
+                                                                      [permissions],
+                                                                      "metaData");
+  testSetup.schemeRegistrar = await SchemeRegistrar.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
   return testSetup;
 };
 contract('SchemeRegistrar', accounts => {

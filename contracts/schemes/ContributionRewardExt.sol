@@ -109,7 +109,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
         vault = new Vault();
         vault.initialize(address(this));
-        if (_daoFactory != DAOFactory(0)) {
+        if (bytes(_rewarderName).length != 0) {
             rewarder = address(_daoFactory.createInstance(
                                 _packageVersion,
                                 _rewarderName,

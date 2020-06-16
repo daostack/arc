@@ -15,7 +15,6 @@ const setupContributionRewardExt = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
-                                            avatarAddress,
                                             daoFactoryAddress = helpers.NULL_ADDRESS,
                                             service = "",
                                             vmZero=false
@@ -25,7 +24,7 @@ const setupContributionRewardExt = async function(
     contributionRewardParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             contributionRewardParams.votingMachine.genesisProtocol.address,
                             contributionRewardParams.votingMachine.uintArray,
                             contributionRewardParams.votingMachine.voteOnBehalf,
@@ -38,7 +37,7 @@ const setupContributionRewardExt = async function(
   contributionRewardParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   contributionRewardParams.initdata = await new web3.eth.Contract(registration.contributionRewardExt.abi)
                         .methods
-                        .initialize(avatarAddress,
+                        .initialize(helpers.NULL_ADDRESS,
                           vmZero ? helpers.NULL_ADDRESS : contributionRewardParams.votingMachine.absoluteVote.address,
                           [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
@@ -62,41 +61,30 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0,se
      testSetup.reputationArray = [2000,4000,7000];
   }
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+  testSetup.contributionRewardExtParams= await setupContributionRewardExt(
+                     accounts,
+                     genesisProtocol,
+                     tokenAddress,
+                     registration.daoFactory.address,
+                     service,
+                     vmZero);
+
+  var permissions = "0x00000000";
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
                                                                       registration,
                                                                       [accounts[0],
                                                                       accounts[1],
                                                                       accounts[2]],
                                                                       [1000,0,0],
-                                                                      testSetup.reputationArray);
-  var daoFactoryAddress = helpers.NULL_ADDRESS;
-  if (service !== "") {
-     daoFactoryAddress = registration.daoFactory.address;
-  }
-  testSetup.contributionRewardExtParams= await setupContributionRewardExt(
-                     accounts,
-                     genesisProtocol,
-                     tokenAddress,
-                     testSetup.org.avatar.address,
-                     daoFactoryAddress,
-                     service,
-                     vmZero);
-
-  var permissions = "0x00000000";
-  var tx = await registration.daoFactory.setSchemes(
-                          testSetup.org.avatar.address,
-                          [web3.utils.fromAscii("ContributionRewardExt")],
-                          testSetup.contributionRewardExtParams.initdata,
-                          [helpers.getBytesLength(testSetup.contributionRewardExtParams.initdata)],
-                          [permissions],
-                          "metaData",{from:testSetup.proxyAdmin});
-
-  if (service !== "") {
-    testSetup.contributionRewardExt = await ContributionRewardExt.at(tx.logs[2].args._scheme);
-  } else {
-    testSetup.contributionRewardExt = await ContributionRewardExt.at(tx.logs[1].args._scheme);
-  }
+                                                                      testSetup.reputationArray,
+                                                                      0,
+                                                                      [web3.utils.fromAscii("ContributionRewardExt")],
+                                                                      testSetup.contributionRewardExtParams.initdata,
+                                                                      [helpers.getBytesLength(testSetup.contributionRewardExtParams.initdata)],
+                                                                      [permissions],
+                                                                      "metaData");
+  testSetup.contributionRewardExt = await ContributionRewardExt.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
 
   testSetup.admin = accounts[0];
 

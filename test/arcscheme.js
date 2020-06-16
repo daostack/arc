@@ -5,24 +5,16 @@ const SchemeMock = artifacts.require('./test/SchemeMock.sol');
 
 
  var registration;
-const setup = async function (accounts, initGov=true, avatarZero=false, vmZero=false, gpParamsHash=true) {
+const setup = async function (accounts, initGov=true, vmZero=false, gpParamsHash=true) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
    testSetup.proxyAdmin = accounts[5];
-   testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                       accounts,
-                                                                       registration,
-                                                                       [accounts[0]],
-                                                                       [1000],
-                                                                       [1000]);
-   testSetup.standardTokenMock = await ERC20Mock.new(testSetup.org.avatar.address,100);
-
    var schemeMockData;
    if (!initGov) {
       schemeMockData = await new web3.eth.Contract(registration.schemeMock.abi)
       .methods
       .initialize(
-         avatarZero ? helpers.NULL_ADDRESS : testSetup.org.avatar.address,
+         helpers.NULL_ADDRESS,
          1
       )
       .encodeABI();
@@ -32,7 +24,7 @@ const setup = async function (accounts, initGov=true, avatarZero=false, vmZero=f
       schemeMockData = await new web3.eth.Contract(registration.schemeMock.abi)
       .methods
       .initializeGovernance(
-         avatarZero ? helpers.NULL_ADDRESS : testSetup.org.avatar.address,
+         helpers.NULL_ADDRESS,
          vmZero ? helpers.NULL_ADDRESS : testSetup.votingMachine.genesisProtocol.address,
          testSetup.votingMachine.uintArray,
          testSetup.votingMachine.voteOnBehalf,
@@ -41,30 +33,50 @@ const setup = async function (accounts, initGov=true, avatarZero=false, vmZero=f
       )
       .encodeABI();
    }
-    
 
    var permissions = "0x00000000";
-   var tx = await registration.daoFactory.setSchemes(
-      testSetup.org.avatar.address,
-      [web3.utils.fromAscii("SchemeMock")],
-      schemeMockData,
-      [helpers.getBytesLength(schemeMockData)],
-      [permissions],
-      "metaData",
-      {from:testSetup.proxyAdmin});
+   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                        accounts,
+                                                                        registration,
+                                                                        [accounts[0]],
+                                                                        [1000],
+                                                                        [1000],
+                                                                        0,
+                                                                        [web3.utils.fromAscii("SchemeMock")],
+                                                                        schemeMockData,
+                                                                        [helpers.getBytesLength(schemeMockData)],
+                                                                        [permissions],
+                                                                        "metaData");
+                                                                        testSetup.standardTokenMock = await ERC20Mock.new(testSetup.org.avatar.address,100);
 
-   if (!avatarZero && !vmZero) {
-      testSetup.schemeMock = await SchemeMock.at(tx.logs[1].args._scheme);
-
-      return testSetup;
-   }
+   testSetup.schemeMock = await SchemeMock.at(tx.logs[6].args._scheme);
+   return testSetup;
 };
 contract('VotingMachineCallbacks', function(accounts) {
 
    it("avatar address cannot be 0 ", async function() {
+      var schemeMock = await SchemeMock.new();
+
       try {
-         await setup(accounts, false, true);
+         await schemeMock.initialize(helpers.NULL_ADDRESS,1);
          assert(false, "avatar 0 address should revert");
+       } catch(error) {
+          // revert
+      }
+      await schemeMock.initialize(accounts[0],1);
+
+      var params = await helpers.setupGenesisProtocol(accounts,helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
+
+      schemeMock = await SchemeMock.new();
+      try {
+         await schemeMock.initializeGovernance(accounts[0],
+            helpers.NULL_ADDRESS,                                   
+            params.uintArray,
+            params.voteOnBehalf,
+            helpers.NULL_HASH,
+            1
+         );
+         assert(false, "votingMachine cannot be zero");
        } catch(error) {
           // revert
       }
@@ -87,6 +99,14 @@ contract('VotingMachineCallbacks', function(accounts) {
 
    it("initializeGovernance ", async function() {
       var testSetup = await setup(accounts);
+      assert.equal(await testSetup.schemeMock.avatar(), testSetup.org.avatar.address);
+      assert.equal(await testSetup.schemeMock.votingMachine(), testSetup.votingMachine.genesisProtocol.address);
+      assert.equal(await testSetup.schemeMock.voteParamsHash(), testSetup.votingMachine.params);
+   });
+
+   it("initializeGovernance parameters already set", async function() {
+      var testSetup = await setup(accounts);
+      testSetup = await setup(accounts);
       assert.equal(await testSetup.schemeMock.avatar(), testSetup.org.avatar.address);
       assert.equal(await testSetup.schemeMock.votingMachine(), testSetup.votingMachine.genesisProtocol.address);
       assert.equal(await testSetup.schemeMock.voteParamsHash(), testSetup.votingMachine.params);

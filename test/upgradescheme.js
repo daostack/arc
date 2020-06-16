@@ -13,8 +13,7 @@ var registration;
 const setupUpgradeSchemeParams = async function(
                                               accounts,
                                               genesisProtocol,
-                                              token,
-                                              avatarAddress,
+                                              token
                                             ) {
   var upgradeSchemeParams = new UpgradeSchemeParams();
 
@@ -22,7 +21,7 @@ const setupUpgradeSchemeParams = async function(
     upgradeSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     upgradeSchemeParams.initdata = await new web3.eth.Contract(registration.upgradeScheme.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             upgradeSchemeParams.votingMachine.genesisProtocol.address,
                             upgradeSchemeParams.votingMachine.uintArray,
                             upgradeSchemeParams.votingMachine.voteOnBehalf,
@@ -33,7 +32,7 @@ const setupUpgradeSchemeParams = async function(
       upgradeSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
       upgradeSchemeParams.initdata = await new web3.eth.Contract(registration.upgradeScheme.abi)
                         .methods
-                        .initialize(avatarAddress,
+                        .initialize(helpers.NULL_ADDRESS,
                           upgradeSchemeParams.votingMachine.absoluteVote.address,
                           [0,0,0,0,0,0,0,0,0,0,0],
                           helpers.NULL_ADDRESS,
@@ -56,31 +55,31 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
      account2 = reputationAccount;
   }
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+
+  testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(
+                     accounts,
+                     genesisProtocol,
+                     tokenAddress,
+                     );
+
+  var permissions = "0x0000001f";
+
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                       accounts,
                                                                       registration,
                                                                       [accounts[0],
                                                                       accounts[1],
                                                                       account2],
                                                                       [1000,0,0],
-                                                                      testSetup.reputationArray);
-  testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(
-                     accounts,
-                     genesisProtocol,
-                     tokenAddress,
-                     testSetup.org.avatar.address,
-                     );
-
-  var permissions = "0x0000001f";
-  var tx = await registration.daoFactory.setSchemes(
-                          testSetup.org.avatar.address,
-                          [web3.utils.fromAscii("UpgradeScheme")],
-                          testSetup.upgradeSchemeParams.initdata,
-                          [helpers.getBytesLength(testSetup.upgradeSchemeParams.initdata)],
-                          [permissions],
-                          "metaData",{from:testSetup.proxyAdmin});
+                                                                      testSetup.reputationArray,
+                                                                      0,
+                                                                      [web3.utils.fromAscii("UpgradeScheme")],
+                                                                      testSetup.upgradeSchemeParams.initdata,
+                                                                      [helpers.getBytesLength(testSetup.upgradeSchemeParams.initdata)],
+                                                                      [permissions],
+                                                                      "metaData");
   testSetup.registration = registration;
-  testSetup.upgradeScheme = await UpgradeScheme.at(tx.logs[1].args._scheme);
+  testSetup.upgradeScheme = await UpgradeScheme.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
   return testSetup;
 };
 

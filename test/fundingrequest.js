@@ -17,7 +17,6 @@ const setupJoinAndQuit = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
-                                            avatarAddress,
                                             _fundingToken,
                                             _minFeeToJoin,
                                             _memberReputation,
@@ -30,7 +29,7 @@ const setupJoinAndQuit = async function(
     joinAndQuitParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     joinAndQuitParams.initdata = await new web3.eth.Contract(registration.joinAndQuit.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             joinAndQuitParams.votingMachine.genesisProtocol.address,
                             joinAndQuitParams.votingMachine.uintArray,
                             joinAndQuitParams.votingMachine.voteOnBehalf,
@@ -46,7 +45,7 @@ const setupJoinAndQuit = async function(
   joinAndQuitParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   joinAndQuitParams.initdata = await new web3.eth.Contract(registration.joinAndQuit.abi)
                         .methods
-                        .initialize(avatarAddress,
+                        .initialize(helpers.NULL_ADDRESS,
                           joinAndQuitParams.votingMachine.absoluteVote.address,
                           [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
@@ -67,7 +66,6 @@ const setupFundingRequest = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
-                                            avatarAddress,
                                             externalToken) {
   var fundingRequestParams = new FundingRequestParams();
 
@@ -75,7 +73,7 @@ const setupFundingRequest = async function(
     fundingRequestParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     fundingRequestParams.initdata = await new web3.eth.Contract(registration.fundingRequest.abi)
                           .methods
-                          .initialize(avatarAddress,
+                          .initialize(helpers.NULL_ADDRESS,
                             fundingRequestParams.votingMachine.genesisProtocol.address,
                             fundingRequestParams.votingMachine.uintArray,
                             fundingRequestParams.votingMachine.voteOnBehalf,
@@ -87,7 +85,7 @@ const setupFundingRequest = async function(
       fundingRequestParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
       fundingRequestParams.initdata = await new web3.eth.Contract(registration.fundingRequest.abi)
                         .methods
-                        .initialize(avatarAddress,
+                        .initialize(helpers.NULL_ADDRESS,
                           fundingRequestParams.votingMachine.absoluteVote.address,
                           [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
@@ -116,14 +114,6 @@ const setup = async function (accounts,
 
   testSetup.reputationArray = [2000,4000,7000];
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-                                                                      accounts,
-                                                                      registration,
-                                                                      [accounts[0],
-                                                                      accounts[1],
-                                                                      accounts[2]],
-                                                                      [1000,0,0],
-                                                                      testSetup.reputationArray);
   testSetup.fundingGoalDeadline = (await web3.eth.getBlock("latest")).timestamp + fundingGoalDeadline;
   testSetup.minFeeToJoin = minFeeToJoin;
   testSetup.memberReputation = memberReputation;
@@ -138,7 +128,6 @@ const setup = async function (accounts,
                      accounts,
                      genesisProtocol,
                      tokenAddress,
-                     testSetup.org.avatar.address,
                      fundPath,
                      minFeeToJoin,
                      memberReputation,
@@ -149,20 +138,27 @@ const setup = async function (accounts,
                      accounts,
                      genesisProtocol,
                      tokenAddress,
-                     testSetup.org.avatar.address,
                      fundPath);
 
   var permissions = "0x00000000";
-  var tx = await registration.daoFactory.setSchemes(
-                          testSetup.org.avatar.address,
-                          [web3.utils.fromAscii("JoinAndQuit"), web3.utils.fromAscii("FundingRequest")],
-                          helpers.concatBytes(testSetup.joinAndQuitParams.initdata, testSetup.fundingRequestParams.initdata),
-                          [helpers.getBytesLength(testSetup.joinAndQuitParams.initdata), helpers.getBytesLength(testSetup.fundingRequestParams.initdata)],
-                          [permissions, permissions],
-                          "metaData",{from:testSetup.proxyAdmin});
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+                                                                      accounts,
+                                                                      registration,
+                                                                      [accounts[0],
+                                                                      accounts[1],
+                                                                      accounts[2]],
+                                                                      [1000,0,0],
+                                                                      testSetup.reputationArray,
+                                                                      0,
+                                                                      [web3.utils.fromAscii("JoinAndQuit"), web3.utils.fromAscii("FundingRequest")],
+                                                                      helpers.concatBytes(testSetup.joinAndQuitParams.initdata, testSetup.fundingRequestParams.initdata),
+                                                                      [helpers.getBytesLength(testSetup.joinAndQuitParams.initdata), helpers.getBytesLength(testSetup.fundingRequestParams.initdata)],
+                                                                      [permissions, permissions],
+                                                                      "metaData");
 
-  testSetup.joinAndQuit = await JoinAndQuit.at(tx.logs[1].args._scheme);
-  testSetup.fundingRequest = await FundingRequest.at(tx.logs[3].args._scheme);
+  testSetup.joinAndQuit = await JoinAndQuit.at(tx.logs[6].args._scheme);
+  testSetup.fundingRequest = await FundingRequest.at(tx.logs[8].args._scheme);
+
 
   if(setupJAQProposal) {
     await testSetup.standardTokenMock.transfer(accounts[3],10000);
