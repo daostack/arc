@@ -12,20 +12,12 @@ contract NFTManager is Initializable, Ownable, IERC721Receiver {
         Ownable.initialize(msg.sender);
     }
 
-    /// @notice Safe Transfer specified NFT to a given recipient
-    /// @param recipient Address to transfer NFT to
-    /// @param nftContract NFT token contract to transfer from (e.g. Cryptokitties contract)
-    /// @param tokenId ID of specific NFT to transfer
-    function sendNFT(address recipient, IERC721 nftContract, uint tokenId) public onlyOwner {
-        sendNFTWithData(recipient, nftContract, tokenId, "");
-    }
-
     /// @notice Safe Transfer specified NFT to a given recipient, with arbitrary extra data
     /// @param recipient Address to transfer NFT to
     /// @param nftContract NFT token contract to transfer from (e.g. Cryptokitties contract)
     /// @param tokenId ID of specific NFT to transfer
     /// @param data Arbitrary data to transfer
-    function sendNFTWithData(address recipient, IERC721 nftContract, uint tokenId, bytes memory data) public onlyOwner {
+    function sendNFT(address recipient, IERC721 nftContract, uint tokenId, bytes calldata data) external onlyOwner {
         nftContract.safeTransferFrom(address(this), recipient, tokenId, data);
         emit SendNFT(recipient, nftContract, tokenId);
     }
@@ -34,7 +26,7 @@ contract NFTManager is Initializable, Ownable, IERC721Receiver {
     /// @param recipient Address to transfer NFT to
     /// @param nftContract NFT token contract to transfer from (e.g. Cryptokitties contract)
     /// @param tokenId ID of specific NFT to transfer
-    function sendNFTNoSafeguards(address recipient, IERC721 nftContract, uint tokenId) public onlyOwner {
+    function sendNFTNoSafeguards(address recipient, IERC721 nftContract, uint tokenId) external onlyOwner {
         nftContract.transferFrom(address(this), recipient, tokenId);
         emit SendNFT(recipient, nftContract, tokenId);
     }
@@ -48,16 +40,11 @@ contract NFTManager is Initializable, Ownable, IERC721Receiver {
      * returned can be obtained as `this.onERC721Received.selector`. This
      * function MAY throw to revert and reject the transfer.
      * Note: the ERC721 contract address is always the message sender.
-     * @param operator The address which called `safeTransferFrom` function
-     * @param from The address which previously owned the token
-     * @param tokenId The NFT identifier which is being transferred
-     * @param data Additional data with no specified format
      * @return bytes4 `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
      */
-    function onERC721Received(address operator, address from, uint256 tokenId, bytes memory data)
+    function onERC721Received(address, address, uint256, bytes memory)
     public returns (bytes4)
     {
         return bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
     }
-
 }
