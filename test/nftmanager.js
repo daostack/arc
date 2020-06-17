@@ -1,4 +1,5 @@
 const helpers = require("./helpers");
+const constants = require("./constants");
 const GenericScheme = artifacts.require("./GenericScheme.sol");
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ERC721Mock = artifacts.require("./ERC721Mock.sol");
@@ -75,41 +76,35 @@ const setup = async function(
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1], 100);
   registration = await helpers.registerImplementation();
   testSetup.reputationArray = [20, 10, 70];
-  var account2;
-  if (reputationAccount === 0) {
-    account2 = accounts[2];
-  } else {
-    account2 = reputationAccount;
-  }
+
   testSetup.proxyAdmin = accounts[5];
-  testSetup.org = await helpers.setupOrganizationWithArraysDAOFactory(
-    testSetup.proxyAdmin,
-    accounts,
-    registration,
-    [accounts[0], accounts[1], account2],
-    [1000, 0, 0],
-    testSetup.reputationArray
-  );
+
   testSetup.genericSchemeParams = await setupGenericSchemeParams(
     accounts,
     genesisProtocol,
     tokenAddress,
-    testSetup.org.avatar.address,
+    helpers.NULL_ADDRESS,
     contractToCall
   );
-
   var permissions = "0x0000001f";
-  var tx = await registration.daoFactory.setSchemes(
-    testSetup.org.avatar.address,
+
+  [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
+    accounts,
+    registration,
+    [accounts[0],
+    accounts[1],
+    accounts[2]],
+    [1000,0,0],
+    testSetup.reputationArray,
+    0,
     [web3.utils.fromAscii("GenericScheme")],
     testSetup.genericSchemeParams.initdata,
     [helpers.getBytesLength(testSetup.genericSchemeParams.initdata)],
     [permissions],
-    "metaData",
-    { from: testSetup.proxyAdmin }
-  );
-  testSetup.genericScheme = await GenericScheme.at(tx.logs[1].args._scheme);
-  return testSetup;
+    "metaData");
+
+    testSetup.genericScheme = await GenericScheme.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
+    return testSetup;
 };
 
 const setupAndExecuteProposal = async (accounts, nftManager, callData, votingMachine) => {
