@@ -75,6 +75,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     function executeProposal(bytes32 _proposalId, int256 _decision)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool) {
         Proposal storage proposal = organizationProposals[_proposalId];
         require(proposal.exist, "must be a live proposal");

@@ -72,6 +72,7 @@ contract SchemeFactory is VotingMachineCallbacks, ProposalExecuteInterface {
     function executeProposal(bytes32 _proposalId, int256 _decision)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool) {
         Proposal memory proposal = proposals[_proposalId];
         delete proposals[_proposalId];

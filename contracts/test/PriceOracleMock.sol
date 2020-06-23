@@ -3,10 +3,10 @@ pragma solidity ^0.6.10;
 
 import "../schemes/PriceOracleInterface.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@daostack/upgrades/contracts/Initializable.sol";
 
 
-contract PriceOracleMock is Initializable, PriceOracleInterface, Ownable {
+
+contract PriceOracleMock is Initializable, PriceOracleInterface, OwnableUpgradeSafe {
 
     struct Price {
         uint256 numerator;
@@ -23,14 +23,15 @@ contract PriceOracleMock is Initializable, PriceOracleInterface, Ownable {
     function initialize(address _owner)
     public
     initializer {
-        Ownable.initialize(_owner);
+        __Ownable_init_unchained();
+        transferOwnership(_owner);
     }
 
     function setTokenPrice(address token, uint256 numerator, uint256 denominator) public onlyOwner {
         tokenPrices[token] = Price(numerator, denominator);
     }
 
-    function getPrice(address token) public view returns (uint, uint) {
+    function getPrice(address token) public view override returns (uint, uint) {
         Price memory price = tokenPrices[token];
         return (price.numerator, price.denominator);
     }

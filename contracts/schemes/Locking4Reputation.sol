@@ -40,7 +40,7 @@ contract Locking4Reputation is Agreement, ArcScheme {
     /**
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary for the release
-     * @return uint256 reputation rewarded
+     * @return reputation reputation rewarded
      */
     function redeem(address _beneficiary) public returns(uint256 reputation) {
         // solhint-disable-next-line not-rely-on-time
@@ -65,7 +65,7 @@ contract Locking4Reputation is Agreement, ArcScheme {
      * @dev release function
      * @param _beneficiary the beneficiary for the release
      * @param _lockingId the locking id to release
-     * @return bool
+     * @return amount released
      */
     function _release(address _beneficiary, bytes32 _lockingId) internal returns(uint256 amount) {
         Locker storage locker = lockers[_beneficiary][_lockingId];

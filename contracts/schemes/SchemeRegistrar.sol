@@ -105,6 +105,7 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     function executeProposal(bytes32 _proposalId, int256 _decision)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool) {
         SchemeProposal memory proposal = organizationProposals[_proposalId];
         require(proposal.scheme != address(0));

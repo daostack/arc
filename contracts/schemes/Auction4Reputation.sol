@@ -82,7 +82,7 @@ contract Auction4Reputation is Agreement, ArcScheme {
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary to redeem.
      * @param _auctionId the auction id to redeem from.
-     * @return uint256 reputation rewarded
+     * @return reputation rewarded
      */
     function redeem(address _beneficiary, uint256 _auctionId) public returns(uint256 reputation) {
         // solhint-disable-next-line not-rely-on-time

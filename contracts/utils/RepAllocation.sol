@@ -2,7 +2,7 @@ pragma solidity ^0.6.10;
 // SPDX-License-Identifier: GPL-3.0
 
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
-import "@daostack/upgrades/contracts/Initializable.sol";
+
 
 
 /**
@@ -11,7 +11,7 @@ import "@daostack/upgrades/contracts/Initializable.sol";
  * beneficiaries.
  * this contract can be used as the rep mapping contract for  RepitationFromToken contract.
  */
-contract RepAllocation is Initializable, Ownable {
+contract RepAllocation is Initializable, OwnableUpgradeSafe {
 
 
        // beneficiary -> amount
@@ -25,7 +25,8 @@ contract RepAllocation is Initializable, Ownable {
     * @param _owner contract's owner to be set
     */
     function initialize(address _owner) public initializer {
-        Ownable.initialize(_owner);
+        __Ownable_init_unchained();
+        transferOwnership(_owner);
     }
 
     /**

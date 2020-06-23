@@ -4,7 +4,7 @@ pragma solidity ^0.6.10;
 import "../controller/Avatar.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.sol";
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
-import "@daostack/upgrades/contracts/Initializable.sol";
+
 
 
 contract ArcScheme is Initializable {

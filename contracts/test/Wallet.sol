@@ -3,12 +3,12 @@ pragma solidity ^0.6.10;
 import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 
 
-contract Wallet is Ownable {
+contract Wallet is OwnableUpgradeSafe {
 
     event ReceiveEther(address indexed _sender, uint256 _value);
     event Pay(address indexed _sender, uint256 _value);
 
-    function() external payable {
+    receive() external payable {
         emit ReceiveEther(msg.sender, msg.value);
     }
 
@@ -19,7 +19,8 @@ contract Wallet is Ownable {
     function initialize(address _owner)
     public
     initializer {
-        Ownable.initialize(_owner);
+        __Ownable_init_unchained();
+        transferOwnership(_owner);
     }
 
     function pay(address payable _beneficiary) public onlyOwner {

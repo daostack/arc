@@ -92,6 +92,7 @@ contract ContributionReward is
     function executeProposal(bytes32 _proposalId, int256 _decision)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool) {
         require(organizationProposals[_proposalId].executionTime == 0);
         require(organizationProposals[_proposalId].beneficiary != address(0));
@@ -282,7 +283,10 @@ contract ContributionReward is
     *         whatToRedeem[1] - nativeTokenReward
     *         whatToRedeem[2] - Ether
     *         whatToRedeem[3] - ExternalToken
-    * @return  result boolean array for each redeem type.
+    * @return  reputationReward redeebed.
+    *          nativeTokenReward redeebed.
+    *          etherReward redeebed.
+    *          externalTokenReward redeebed.
     */
     function redeem(bytes32 _proposalId, bool[4] memory _whatToRedeem)
     public

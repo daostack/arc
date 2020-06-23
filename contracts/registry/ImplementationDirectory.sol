@@ -71,7 +71,7 @@ contract ImplementationDirectory is ImplementationProvider, OpenZeppelinUpgrades
      * @param contractName Name of the contract.
      * @return Address of the implementation.
      */
-    function getImplementation(string memory contractName) public view returns (address) {
+    function getImplementation(string memory contractName) public view override returns (address) {
         return implementations[contractName];
     }
 }

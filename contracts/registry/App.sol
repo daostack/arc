@@ -100,7 +100,7 @@ contract App is OpenZeppelinUpgradesOwnable {
     /**
      * @dev Returns the provider for a given package name, or zero if not set.
      * @param packageName Name of the package to be retrieved.
-     * @return The provider.
+     * @return provider The provider.
      */
     function getProvider(string memory packageName) public view returns (ImplementationProvider provider) {
         ProviderInfo storage info = providers[packageName];

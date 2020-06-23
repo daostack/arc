@@ -20,6 +20,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
     function mintReputation(uint256 _amount, address _beneficiary, bytes32 _proposalId)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool)
     {
         return Controller(avatar.owner()).mintReputation(_amount, _beneficiary);
@@ -28,6 +29,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
     function burnReputation(uint256 _amount, address _beneficiary, bytes32 _proposalId)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool)
     {
         return Controller(avatar.owner()).burnReputation(_amount, _beneficiary);
@@ -40,25 +42,26 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
         bytes32 _proposalId)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool)
     {
         return Controller(avatar.owner()).externalTokenTransfer(_stakingToken, _beneficiary, _amount);
     }
 
     function balanceOfStakingToken(IERC20 _stakingToken, bytes32 _proposalId)
-    external view onlyVotingMachine(_proposalId) returns(uint256)
+    external view onlyVotingMachine(_proposalId) override returns(uint256)
     {
         return _stakingToken.balanceOf(address(avatar));
     }
 
     function getTotalReputationSupply(bytes32 _proposalId)
-    external view onlyVotingMachine(_proposalId) returns(uint256)
+    external view onlyVotingMachine(_proposalId) override returns(uint256)
     {
         return avatar.nativeReputation().totalSupplyAt(proposalsBlockNumber[_proposalId]);
     }
 
     function reputationOf(address _owner, bytes32 _proposalId)
-    external view onlyVotingMachine(_proposalId) returns(uint256)
+    external view onlyVotingMachine(_proposalId) override returns(uint256)
     {
         return avatar.nativeReputation().balanceOfAt(_owner, proposalsBlockNumber[_proposalId]);
     }

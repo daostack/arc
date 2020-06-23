@@ -2,12 +2,12 @@ pragma solidity ^0.6.10;
 // SPDX-License-Identifier: GPL-3.0
 pragma experimental ABIEncoderV2;
 
-import "@daostack/upgrades/contracts/Initializable.sol";
+
 import "../registry/App.sol";
 import "../registry/ImplementationDirectory.sol";
 import "@daostack/upgrades/contracts/upgradeability/ProxyAdmin.sol";
 import "@daostack/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
-import "solidity-bytes-utils/contracts/BytesLib.sol";
+import "../libs/BytesLib.sol";
 import "../controller/Controller.sol";
 import "../libs/Bytes32ToStr.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";

@@ -3,7 +3,6 @@ pragma solidity ^0.6.10;
 
 import "./Avatar.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
-import "@daostack/upgrades/contracts/Initializable.sol";
 
 
 /**
@@ -290,7 +289,7 @@ contract Controller is Initializable {
                     globalConstraintsPre[globalConstraintRegister.index] = globalConstraint;
                     globalConstraintsRegisterPre[globalConstraint].index = globalConstraintRegister.index;
                 }
-                globalConstraintsPre.length--;
+                globalConstraintsPre.pop();
                 delete globalConstraintsRegisterPre[_globalConstraint];
                 retVal = true;
             }
@@ -304,7 +303,7 @@ contract Controller is Initializable {
                     globalConstraintsPost[globalConstraintRegister.index] = globalConstraint;
                     globalConstraintsRegisterPost[globalConstraint].index = globalConstraintRegister.index;
                 }
-                globalConstraintsPost.length--;
+                globalConstraintsPost.pop();
                 delete globalConstraintsRegisterPost[_globalConstraint];
                 retVal = true;
             }

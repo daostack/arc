@@ -75,6 +75,7 @@ contract FundingRequest is
     function executeProposal(bytes32 _proposalId, int256 _decision)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool) {
         require(proposals[_proposalId].executionTime == 0);
         require(proposals[_proposalId].beneficiary != address(0));

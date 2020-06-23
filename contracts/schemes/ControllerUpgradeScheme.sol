@@ -64,7 +64,11 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
     * @param _proposalId the ID of the voting in the voting machine
     * @param _param a parameter of the voting result, 1 yes and 2 is no.
     */
-    function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
+    function executeProposal(bytes32 _proposalId, int256 _param)
+    external
+    onlyVotingMachine(_proposalId)
+    override
+    returns(bool) {
         UpgradeProposal memory proposal = organizationProposals[_proposalId];
         require(proposal.proposalType != 0);
         delete organizationProposals[_proposalId];

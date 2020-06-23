@@ -3,7 +3,8 @@ pragma solidity ^0.6.10;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "./GlobalConstraintInterface.sol";
-import "@daostack/upgrades/contracts/Initializable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
+
 
 /**
  * @title Token Cap Global Constraint

@@ -7,7 +7,7 @@ import "../schemes/ContributionRewardExt.sol";
 contract RewarderMock is Rewarder {
     ContributionRewardExt public contributionRewardExt;
 
-    function initialize(address payable _contributionRewardExt) external {
+    function initialize(address payable _contributionRewardExt) external override {
         contributionRewardExt = ContributionRewardExt(_contributionRewardExt);
     }
 
