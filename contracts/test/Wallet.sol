@@ -1,5 +1,6 @@
-pragma solidity ^0.5.17;
-import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
+import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 
 
 contract Wallet is Ownable {

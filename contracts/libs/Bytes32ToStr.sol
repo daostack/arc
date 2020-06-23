@@ -1,4 +1,5 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 library Bytes32ToStr {
     function toStr(bytes32 x) internal pure returns (string memory) {

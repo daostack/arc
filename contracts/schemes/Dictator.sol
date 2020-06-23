@@ -1,9 +1,10 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "../controller/Avatar.sol";
 import "../controller/Controller.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "@daostack/upgrades/contracts/Initializable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 
 /**
  * @title A scheme for register other scheme with full permission.

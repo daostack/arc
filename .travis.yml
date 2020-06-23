@@ -3,7 +3,7 @@ dist: trusty
 language: node_js
 
 node_js:
-  - "12.16.1"
+  - "12.18.1"
 
 before_install:
 
@@ -31,4 +31,3 @@ jobs:
         name: "Solidity Test Coverage"
         if: branch = arc-factory
         script: npm run coveralls
-        

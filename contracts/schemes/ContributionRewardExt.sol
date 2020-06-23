@@ -1,4 +1,4 @@
-pragma solidity 0.5.17;
+pragma solidity 0.6.10;
 
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../utils/DAOFactory.sol";

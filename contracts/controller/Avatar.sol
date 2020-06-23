@@ -1,11 +1,12 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "@daostack/infra-experimental/contracts/Reputation.sol";
 import "./DAOToken.sol";
 import "./Vault.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "@daostack/upgrades/contracts/Initializable.sol";
 
 
 /**

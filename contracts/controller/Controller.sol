@@ -1,8 +1,9 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "./Avatar.sol";
 import "../globalConstraints/GlobalConstraintInterface.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "@daostack/upgrades/contracts/Initializable.sol";
 
 
 /**

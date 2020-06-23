@@ -1,6 +1,6 @@
-pragma solidity 0.5.17;
+pragma solidity 0.6.10;
 
-import "@openzeppelin/upgrades/contracts/ownership/Ownable.sol";
+import "@daostack/upgrades/contracts/ownership/Ownable.sol";
 
 
 /**

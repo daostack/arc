@@ -1,9 +1,9 @@
-pragma solidity 0.5.17;
+pragma solidity 0.6.10;
 
 import "./ImplementationProvider.sol";
 import "./Package.sol";
-import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
-import "@openzeppelin/upgrades/contracts/ownership/Ownable.sol";
+import "@daostack/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
+import "@daostack/upgrades/contracts/ownership/Ownable.sol";
 
 
 /**
