@@ -53,10 +53,7 @@ contract ContinuousLocking4Reputation is Agreement, ArcScheme {
     uint256 public batchesIndexCap;
 
     uint256 constant private REAL_FBITS = 40;
-    /**
-     * What's the first non-fractional bit
-     */
-
+    // What's the first non-fractional bit
     uint256 constant private REAL_ONE = uint256(1) << REAL_FBITS;
     uint256 constant private BATCHES_INDEX_HARDCAP = 100;
     uint256 constant public MAX_LOCKING_BATCHES_HARDCAP = 24;

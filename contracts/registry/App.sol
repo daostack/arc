@@ -1,4 +1,5 @@
-pragma solidity 0.6.10;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "./ImplementationProvider.sol";
 import "./Package.sol";
@@ -80,7 +81,8 @@ contract App is OpenZeppelinUpgradesOwnable {
     payable
     returns (AdminUpgradeabilityProxy) {
         address implementation = getImplementation(packageName, contractName);
-        AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy).value(msg.value)(implementation, admin, data);
+        // solhint-disable-next-line
+        AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy){value:msg.value}(implementation, admin, data);
         emit ProxyCreated(address(proxy));
         return proxy;
     }

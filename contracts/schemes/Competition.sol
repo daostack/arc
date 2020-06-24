@@ -1,4 +1,5 @@
-pragma solidity 0.6.10;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "./ContributionRewardExt.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
@@ -396,7 +397,7 @@ contract Competition is Initializable, Rewarder {
             }
             topSuggestions.push(_suggestionId);
         } else {
-         /** get the index of the smallest element **/
+           // get the index of the smallest element
             uint256 smallest = 0;
             for (i = 0; i < proposals[_proposalId].numberOfWinners; i++) {
                 if (suggestions[topSuggestions[i]].totalVotes <

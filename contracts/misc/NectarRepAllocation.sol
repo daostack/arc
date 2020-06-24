@@ -3,7 +3,7 @@ pragma solidity ^0.6.10;
 
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
-
+// solhint-disable-next-line indent
 abstract contract MiniMeToken {
     function balanceOfAt(address _owner, uint _blockNumber) public view virtual returns (uint);
     function totalSupplyAt(uint _blockNumber) public view virtual returns(uint);

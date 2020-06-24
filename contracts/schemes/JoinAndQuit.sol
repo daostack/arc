@@ -132,8 +132,8 @@ contract JoinAndQuit is
         if ((_decision == 1) && (avatar.nativeReputation().balanceOf(proposal.proposedMember) == 0)) {
             proposals[_proposalId].accepted = true;
             if (fundingToken == IERC20(0)) {
-                // solhint-disable-next-line avoid-call-value
-                (success, ) = address(avatar).call.value(proposal.funding)("");
+                // solhint-disable-next-line
+                (success, ) = address(avatar).call{value:proposal.funding}("");
                 require(success, "sendEther to avatar failed");
             } else {
                 fundingToken.safeTransfer(address(avatar), proposal.funding);
@@ -143,8 +143,8 @@ contract JoinAndQuit is
             setFundingGoalReachedFlag();
         } else {
             if (fundingToken == IERC20(0)) {
-                // solhint-disable-next-line avoid-call-value
-                (success, ) = proposal.proposedMember.call.value(proposal.funding)("");
+                // solhint-disable-next-line
+                (success, ) = proposal.proposedMember.call{value:proposal.funding}("");
                 require(success, "sendEther to avatar failed");
             } else {
                 fundingToken.safeTransfer(proposal.proposedMember, proposal.funding);

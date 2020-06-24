@@ -1,7 +1,7 @@
 pragma solidity ^0.6.10;
 // SPDX-License-Identifier: GPL-3.0
 
-
+// solhint-disable-next-line indent
 abstract contract GlobalConstraintInterface {
 
     enum CallPhase { Pre, Post, PreAndPost }

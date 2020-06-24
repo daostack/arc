@@ -24,6 +24,7 @@ contract Vault is OwnableUpgradeSafe {
     /**
     * @dev enables this contract to receive ethers
     */
+    /* solhint-disable */
     receive() external payable {
         emit ReceiveEther(msg.sender, msg.value);
     }

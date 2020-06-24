@@ -7,7 +7,7 @@ contract Wallet is OwnableUpgradeSafe {
 
     event ReceiveEther(address indexed _sender, uint256 _value);
     event Pay(address indexed _sender, uint256 _value);
-
+    /* solhint-disable */
     receive() external payable {
         emit ReceiveEther(msg.sender, msg.value);
     }

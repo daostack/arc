@@ -1,11 +1,12 @@
-pragma solidity 0.6.10;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../utils/DAOFactory.sol";
 
 
 interface Rewarder {
-    function initialize(address payable) external virtual;
+    function initialize(address payable) external;
 }
 
 

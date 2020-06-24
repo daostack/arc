@@ -186,7 +186,9 @@ contract DAOFactory is Initializable {
     returns (AdminUpgradeabilityProxy) {
         uint64[3] memory version = getPackageVersion(_packageVersion);
         address implementation = getImplementation(version, _contractName);
-        AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy).value(msg.value)(implementation, _admin, _data);
+        /* solhint-disable */
+        AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy){value:msg.value}(implementation, _admin, _data);
+        /* solhint-enable */
         emit ProxyCreated(address(proxy), implementation, _contractName, version);
         return proxy;
     }

@@ -29,10 +29,11 @@ contract Avatar is Initializable, OwnableUpgradeSafe {
     /**
     * @dev enables an avatar to receive ethers
     */
+    /* solhint-disable */
     receive() external payable {
-        if (msg.sender != address(vault)) {
+       if (msg.sender != address(vault)) {
       // solhint-disable-next-line avoid-call-value
-            (bool success, ) = address(vault).call.value(msg.value)("");
+            (bool success, ) = address(vault).call{value:msg.value}("");
             require(success, "sendEther failed.");
         }
     }
@@ -72,7 +73,7 @@ contract Avatar is Initializable, OwnableUpgradeSafe {
             vault.sendEther(_value, address(this));
         }
         // solhint-disable-next-line avoid-call-value
-        (success, returnValue) = _contract.call.value(_value)(_data);
+        (success, returnValue) = _contract.call{value:_value}(_data);
         emit GenericCall(_contract, _data, _value, success);
     }
 
