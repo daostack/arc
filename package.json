@@ -70,8 +70,9 @@
   "homepage": "https://daostack.io",
   "dependencies": {
     "@daostack/infra-experimental": "daostack/infra#solidity-6",
-    "@openzeppelin/contracts-ethereum-package": "3.0.0",
     "@daostack/upgrades": "2.8.0-rc.0",
-    "math": "0.0.3"
+    "@openzeppelin/contracts-ethereum-package": "3.0.0",
+    "math": "0.0.3",
+    "websocket": "^1.0.31"
   }
 }
