@@ -25,7 +25,7 @@ library BytesLib {
         assembly {
             // Get a location of some free memory and store it in tempBytes as
             // Solidity does for memory variables.
-            tempBytes := mload(0x40
+            tempBytes := mload(0x40)
             // Store the length of the first bytes array at the beginning of
             // the memory for tempBytes.
             let length := mload(_preBytes)
