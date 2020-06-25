@@ -264,8 +264,8 @@ contract('UpgradeScheme', function(accounts) {
         await newImp.getImplementation("Reputation")
       );
     });
-
     it("execute proposeVote -positive decision - verify version upgraded up to 60 contracts", async function() {
+      this.timeout(50000);
       var testSetup = await setup(accounts);
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
 
@@ -323,9 +323,10 @@ contract('UpgradeScheme', function(accounts) {
         await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
         await newImp.getImplementation("Reputation")
       );
-    });
+    })
 
     it("execute proposeVote -positive decision - verify version upgraded up to 60 contracts + genesisProtocol", async function() {
+      this.timeout(50000);
       var testSetup = await setup(accounts,0,true,helpers.NULL_ADDRESS);
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
 
@@ -384,7 +385,6 @@ contract('UpgradeScheme', function(accounts) {
         await newImp.getImplementation("Reputation")
       );
     });
-
 
     it("cannot init twice", async function() {
         var testSetup = await setup(accounts);
