@@ -184,10 +184,10 @@ const assertEventParams = (event, params, expectedParams) => {
 
 const setupNFT = async (owner, nftMinter, nftSender) => {
   const nftMock = await ERC721Mock.new({ from: nftMinter });
-  await nftMock.__ERC721Mock_initialize({ from: nftMinter });
+  await nftMock.initialize(nftMinter ,{ from: nftMinter });
 
   const nftManager = await NFTManager.new({ from: owner });
-  await nftManager.initialize({ from: owner });
+  await nftManager.initialize(owner, { from: owner });
 
   await nftMock.mint(nftManager.address, 0, { from: nftMinter });
   await nftMock.mint(nftSender, 1, { from: nftMinter });
