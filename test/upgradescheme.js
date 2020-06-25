@@ -323,7 +323,7 @@ contract('UpgradeScheme', function(accounts) {
         await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
         await newImp.getImplementation("Reputation")
       );
-    })
+    });
 
     it("execute proposeVote -positive decision - verify version upgraded up to 60 contracts + genesisProtocol", async function() {
       this.timeout(50000);
