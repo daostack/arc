@@ -1,4 +1,5 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "../libs/StringUtil.sol";
@@ -121,6 +122,7 @@ contract JoinAndQuit is
     function executeProposal(bytes32 _proposalId, int256 _decision)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool) {
         require(proposals[_proposalId].accepted == false);
         require(proposals[_proposalId].proposedMember != address(0));
@@ -130,8 +132,8 @@ contract JoinAndQuit is
         if ((_decision == 1) && (avatar.nativeReputation().balanceOf(proposal.proposedMember) == 0)) {
             proposals[_proposalId].accepted = true;
             if (fundingToken == IERC20(0)) {
-                // solhint-disable-next-line avoid-call-value
-                (success, ) = address(avatar).call.value(proposal.funding)("");
+                // solhint-disable-next-line
+                (success, ) = address(avatar).call{value:proposal.funding}("");
                 require(success, "sendEther to avatar failed");
             } else {
                 fundingToken.safeTransfer(address(avatar), proposal.funding);
@@ -141,8 +143,8 @@ contract JoinAndQuit is
             setFundingGoalReachedFlag();
         } else {
             if (fundingToken == IERC20(0)) {
-                // solhint-disable-next-line avoid-call-value
-                (success, ) = proposal.proposedMember.call.value(proposal.funding)("");
+                // solhint-disable-next-line
+                (success, ) = proposal.proposedMember.call{value:proposal.funding}("");
                 require(success, "sendEther to avatar failed");
             } else {
                 fundingToken.safeTransfer(proposal.proposedMember, proposal.funding);

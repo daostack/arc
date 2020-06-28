@@ -1,9 +1,10 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
-import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 
 
-contract ExternalTokenLockerMock is Ownable {
+contract ExternalTokenLockerMock is OwnableUpgradeSafe {
 
     // user => amount
     mapping (address => uint256) public lockedTokenBalances;
@@ -15,7 +16,8 @@ contract ExternalTokenLockerMock is Ownable {
     function initialize(address _owner)
     public
     initializer {
-        Ownable.initialize(_owner);
+        __Ownable_init_unchained();
+        transferOwnership(_owner);
     }
 
     function lock(uint256 _amount, address _beneficiary) public onlyOwner {

@@ -1,17 +1,17 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "@daostack/infra-experimental/contracts/Reputation.sol";
 import "./DAOToken.sol";
 import "./Vault.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
 
 
 /**
  * @title An Avatar holds tokens, reputation and ether for a controller
  */
-contract Avatar is Initializable, Ownable {
+contract Avatar is Initializable, OwnableUpgradeSafe {
     using SafeERC20 for IERC20;
 
     string public orgName;
@@ -29,10 +29,11 @@ contract Avatar is Initializable, Ownable {
     /**
     * @dev enables an avatar to receive ethers
     */
-    function() external payable {
-        if (msg.sender != address(vault)) {
+    /* solhint-disable */
+    receive() external payable {
+       if (msg.sender != address(vault)) {
       // solhint-disable-next-line avoid-call-value
-            (bool success, ) = address(vault).call.value(msg.value)("");
+            (bool success, ) = address(vault).call{value:msg.value}("");
             require(success, "sendEther failed.");
         }
     }
@@ -50,7 +51,8 @@ contract Avatar is Initializable, Ownable {
         orgName = _orgName;
         nativeToken = _nativeToken;
         nativeReputation = _nativeReputation;
-        Ownable.initialize(_owner);
+        __Ownable_init_unchained();
+        transferOwnership(_owner);
         vault = new Vault();
         vault.initialize(address(this));
     }
@@ -60,8 +62,8 @@ contract Avatar is Initializable, Ownable {
     * @param _contract  the contract's address to call
     * @param _data ABI-encoded contract call to call `_contract` address.
     * @param _value value (ETH) to transfer with the transaction
-    * @return bool    success or fail
-    *         bytes - the return bytes of the called contract's function.
+    * @return success  success or fail
+    *         returnValue - the return bytes of the called contract's function.
     */
     function genericCall(address _contract, bytes calldata _data, uint256 _value)
     external
@@ -71,7 +73,7 @@ contract Avatar is Initializable, Ownable {
             vault.sendEther(_value, address(this));
         }
         // solhint-disable-next-line avoid-call-value
-        (success, returnValue) = _contract.call.value(_value)(_data);
+        (success, returnValue) = _contract.call{value:_value}(_data);
         emit GenericCall(_contract, _data, _value, success);
     }
 

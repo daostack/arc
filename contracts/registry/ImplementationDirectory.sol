@@ -1,8 +1,9 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "./ImplementationProvider.sol";
-import "@openzeppelin/upgrades/contracts/ownership/Ownable.sol";
-import "@openzeppelin/upgrades/contracts/utils/Address.sol";
+import "@daostack/upgrades/contracts/ownership/Ownable.sol";
+import "@daostack/upgrades/contracts/utils/Address.sol";
 
 
 /**
@@ -71,7 +72,7 @@ contract ImplementationDirectory is ImplementationProvider, OpenZeppelinUpgrades
      * @param contractName Name of the contract.
      * @return Address of the implementation.
      */
-    function getImplementation(string memory contractName) public view returns (address) {
+    function getImplementation(string memory contractName) public view override returns (address) {
         return implementations[contractName];
     }
 }

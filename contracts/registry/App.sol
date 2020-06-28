@@ -1,9 +1,10 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "./ImplementationProvider.sol";
 import "./Package.sol";
-import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
-import "@openzeppelin/upgrades/contracts/ownership/Ownable.sol";
+import "@daostack/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
+import "@daostack/upgrades/contracts/ownership/Ownable.sol";
 
 
 /**
@@ -80,7 +81,8 @@ contract App is OpenZeppelinUpgradesOwnable {
     payable
     returns (AdminUpgradeabilityProxy) {
         address implementation = getImplementation(packageName, contractName);
-        AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy).value(msg.value)(implementation, admin, data);
+        // solhint-disable-next-line
+        AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy){value:msg.value}(implementation, admin, data);
         emit ProxyCreated(address(proxy));
         return proxy;
     }
@@ -100,7 +102,7 @@ contract App is OpenZeppelinUpgradesOwnable {
     /**
      * @dev Returns the provider for a given package name, or zero if not set.
      * @param packageName Name of the package to be retrieved.
-     * @return The provider.
+     * @return provider The provider.
      */
     function getProvider(string memory packageName) public view returns (ImplementationProvider provider) {
         ProviderInfo storage info = providers[packageName];

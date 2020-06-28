@@ -1,21 +1,17 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20Burnable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 
 
 /**
  * @title DAOToken, base on zeppelin contract.
  * @dev ERC20 compatible token. It is a mintable, burnable token.
  */
-contract DAOToken is Initializable, Ownable, ERC20, ERC20Burnable {
+contract DAOToken is ERC20BurnableUpgradeSafe, OwnableUpgradeSafe {
 
-    string public name;
-    string public symbol;
-    // solhint-disable-next-line const-name-snakecase
-    uint8 public constant decimals = 18;
     uint256 public cap;
 
     /**
@@ -27,10 +23,10 @@ contract DAOToken is Initializable, Ownable, ERC20, ERC20Burnable {
     function initialize(string calldata _name, string calldata _symbol, uint256 _cap, address _owner)
     external
     initializer {
-        name = _name;
-        symbol = _symbol;
         cap = _cap;
-        Ownable.initialize(_owner);
+        __ERC20_init_unchained(_name, _symbol);
+        __Ownable_init_unchained();
+        transferOwnership(_owner);
     }
 
     /**

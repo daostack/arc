@@ -1,12 +1,13 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/upgrades/contracts/Initializable.sol";
+
 import "../registry/App.sol";
 import "../registry/ImplementationDirectory.sol";
-import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
-import "@openzeppelin/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
-import "solidity-bytes-utils/contracts/BytesLib.sol";
+import "@daostack/upgrades/contracts/upgradeability/ProxyAdmin.sol";
+import "@daostack/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
+import "../libs/BytesLib.sol";
 import "../controller/Controller.sol";
 import "../libs/Bytes32ToStr.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
@@ -185,7 +186,9 @@ contract DAOFactory is Initializable {
     returns (AdminUpgradeabilityProxy) {
         uint64[3] memory version = getPackageVersion(_packageVersion);
         address implementation = getImplementation(version, _contractName);
-        AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy).value(msg.value)(implementation, _admin, _data);
+        /* solhint-disable */
+        AdminUpgradeabilityProxy proxy = (new AdminUpgradeabilityProxy){value:msg.value}(implementation, _admin, _data);
+        /* solhint-enable */
         emit ProxyCreated(address(proxy), implementation, _contractName, version);
         return proxy;
     }

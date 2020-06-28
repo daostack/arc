@@ -1,4 +1,5 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "../schemes/ContributionReward.sol";
 import "../schemes/ContributionRewardExt.sol";
@@ -32,10 +33,10 @@ contract Redeemer {
     * @return winningVote
     *                   1 - executed or closed and the winning vote is YES
     *                   2 - executed or closed and the winning vote is NO
-    * @return int256 crReputationReward Reputation - from ContributionReward
-    * @return int256 crNativeTokenReward NativeTokenReward - from ContributionReward
-    * @return int256 crEthReward Ether - from ContributionReward
-    * @return int256 crExternalTokenReward ExternalToken - from ContributionReward
+    * @return crReputationReward Reputation - from ContributionReward
+    * @return crNativeTokenReward NativeTokenReward - from ContributionReward
+    * @return crEthReward Ether - from ContributionReward
+    * @return crExternalTokenReward ExternalToken - from ContributionReward
     */
     function redeem(ContributionReward _contributionReward,
                     GenesisProtocol _genesisProtocol,
@@ -87,10 +88,10 @@ contract Redeemer {
      * @return winningVote
      *                   1 - executed or closed and the winning vote is YES
      *                   2 - executed or closed and the winning vote is NO
-     * @return int256 crReputationReward Reputation - from ContributionReward
-     * @return int256 crNativeTokenReward NativeTokenReward - from ContributionReward
-     * @return int256 crEthReward Ether - from ContributionReward
-     * @return int256 crExternalTokenReward ExternalToken - from ContributionReward
+     * @return crReputationReward Reputation - from ContributionReward
+     * @return crNativeTokenReward NativeTokenReward - from ContributionReward
+     * @return crEthReward Ether - from ContributionReward
+     * @return crExternalTokenReward ExternalToken - from ContributionReward
      */
     function redeemFromCRExt(ContributionRewardExt _contributionRewardExt,
                             GenesisProtocol _genesisProtocol,

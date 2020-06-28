@@ -1,4 +1,5 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "../controller/Controller.sol";
@@ -81,7 +82,7 @@ contract Auction4Reputation is Agreement, ArcScheme {
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary to redeem.
      * @param _auctionId the auction id to redeem from.
-     * @return uint256 reputation rewarded
+     * @return reputation rewarded
      */
     function redeem(address _beneficiary, uint256 _auctionId) public returns(uint256 reputation) {
         // solhint-disable-next-line not-rely-on-time

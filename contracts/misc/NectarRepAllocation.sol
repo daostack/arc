@@ -1,11 +1,12 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 
-
-contract MiniMeToken {
-    function balanceOfAt(address _owner, uint _blockNumber) public view returns (uint);
-    function totalSupplyAt(uint _blockNumber) public view returns(uint);
+// solhint-disable-next-line indent
+abstract contract MiniMeToken {
+    function balanceOfAt(address _owner, uint _blockNumber) public view virtual returns (uint);
+    function totalSupplyAt(uint _blockNumber) public view virtual returns(uint);
 }
 
 /**

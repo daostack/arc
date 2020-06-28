@@ -1,4 +1,5 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
@@ -104,6 +105,7 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     function executeProposal(bytes32 _proposalId, int256 _decision)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool) {
         SchemeProposal memory proposal = organizationProposals[_proposalId];
         require(proposal.scheme != address(0));

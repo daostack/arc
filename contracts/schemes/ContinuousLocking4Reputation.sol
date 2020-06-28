@@ -1,4 +1,5 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/Math.sol";
@@ -52,10 +53,7 @@ contract ContinuousLocking4Reputation is Agreement, ArcScheme {
     uint256 public batchesIndexCap;
 
     uint256 constant private REAL_FBITS = 40;
-    /**
-     * What's the first non-fractional bit
-     */
-
+    // What's the first non-fractional bit
     uint256 constant private REAL_ONE = uint256(1) << REAL_FBITS;
     uint256 constant private BATCHES_INDEX_HARDCAP = 100;
     uint256 constant public MAX_LOCKING_BATCHES_HARDCAP = 24;
@@ -119,7 +117,7 @@ contract ContinuousLocking4Reputation is Agreement, ArcScheme {
      * @dev redeem reputation function
      * @param _beneficiary the beneficiary to redeem.
      * @param _lockingId the lockingId to redeem from.
-     * @return uint256 reputation rewarded
+     * @return reputation reputation rewarded
      */
     function redeem(address _beneficiary, uint256 _lockingId) public returns(uint256 reputation) {
         // solhint-disable-next-line not-rely-on-time
@@ -239,7 +237,7 @@ contract ContinuousLocking4Reputation is Agreement, ArcScheme {
      * @dev release function
      * @param _beneficiary the beneficiary for the release
      * @param _lockingId the locking id to release
-     * @return bool
+     * @return amount released
      */
     function release(address _beneficiary, uint256 _lockingId) public returns(uint256 amount) {
         Lock storage locker = lockers[_beneficiary][_lockingId];

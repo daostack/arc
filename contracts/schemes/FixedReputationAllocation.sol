@@ -1,7 +1,8 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "../controller/Controller.sol";
-import "@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/access/Ownable.sol";
 import "./ArcScheme.sol";
 
 /**
@@ -9,7 +10,7 @@ import "./ArcScheme.sol";
  * This scheme can be used to allocate a pre define amount of reputation to whitelisted
  * beneficiaries.
  */
-contract FixedReputationAllocation is Ownable, ArcScheme {
+contract FixedReputationAllocation is OwnableUpgradeSafe, ArcScheme {
     using SafeMath for uint256;
 
     event Redeem(address indexed _beneficiary, uint256 _amount);
@@ -36,7 +37,8 @@ contract FixedReputationAllocation is Ownable, ArcScheme {
         super._initialize(_avatar);
         reputationReward = _reputationReward;
         redeemEnableTime = _redeemEnableTime;
-        Ownable.initialize(_owner);
+        __Ownable_init_unchained();
+        transferOwnership(_owner);
     }
 
     /**

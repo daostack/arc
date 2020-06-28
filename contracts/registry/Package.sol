@@ -1,6 +1,7 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
-import "@openzeppelin/upgrades/contracts/ownership/Ownable.sol";
+import "@daostack/upgrades/contracts/ownership/Ownable.sol";
 
 
 /**
@@ -82,7 +83,8 @@ contract Package is OpenZeppelinUpgradesOwnable {
    * @dev Returns the version with the highest semver identifier registered in the package.
    * For instance, if `1.2.0`, `1.3.0`, and `2.0.0` are present, will always return `2.0.0`, regardless
    * of the order in which they were registered. Returns zero if no versions are registered.
-   * @return Semver identifier, contract address, and content URI for the version, or zero if not exists.
+   * @return semanticVersion Semver identifier, contract address,
+   * and content URI for the version, or zero if not exists.
    */
     function getLatest()
     public
@@ -97,7 +99,8 @@ contract Package is OpenZeppelinUpgradesOwnable {
    * regardless of the order in which they were registered. Returns zero if no versions are registered
    * for the specified major.
    * @param major Major identifier to query
-   * @return Semver identifier, contract address, and content URI for the version, or zero if not exists.
+   * @return semanticVersion Semver identifier, contract address,
+   * and content URI for the version, or zero if not exists.
    */
     function getLatestByMajor(uint64 major)
     public
@@ -110,7 +113,8 @@ contract Package is OpenZeppelinUpgradesOwnable {
     /**
      * @dev Returns a version given its semver identifier.
      * @param semanticVersion Semver identifier of the version.
-     * @return Contract address and content URI for the version, or zero if not exists.
+     * @return contractAddress Contract address and content URI for the version,
+     * or zero if not exists.
      */
     function getVersion(uint64[3] memory semanticVersion)
     public
@@ -124,7 +128,7 @@ contract Package is OpenZeppelinUpgradesOwnable {
    * @dev Returns a contract for a version given its semver identifier.
    * This method is equivalent to `getVersion`, but returns only the contract address.
    * @param semanticVersion Semver identifier of the version.
-   * @return Contract address for the version, or zero if not exists.
+   * @return contractAddress address for the version, or zero if not exists.
    */
     function getContract(uint64[3] memory semanticVersion) public view returns (address contractAddress) {
         Version storage version = versions[semanticVersionHash(semanticVersion)];

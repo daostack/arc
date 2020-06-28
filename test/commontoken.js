@@ -7,7 +7,7 @@ contract('CommonToken', accounts => {
     const testTokenSymbol = "CMN";
     beforeEach( async function() {
       token = await CommonToken.new();
-      await token.initialize(testTokenName,testTokenSymbol,18,[accounts[0]],[accounts[0]]);
+      await token.initialize(testTokenName,testTokenSymbol,accounts[0]);
    });
     it("should put 0 Coins in the first account", async () => {
 
@@ -17,7 +17,7 @@ contract('CommonToken', accounts => {
 
     it("should be owned by its creator", async () => {
 
-        assert.equal(await token.isMinter(accounts[0]), true);
+        assert.equal(await token.owner(), accounts[0]);
     });
 
     it("should mint tokens to owner account", async () => {

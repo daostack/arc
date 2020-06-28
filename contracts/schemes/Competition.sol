@@ -1,6 +1,8 @@
-pragma solidity 0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "./ContributionRewardExt.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
 
 contract Competition is Initializable, Rewarder {
@@ -87,7 +89,7 @@ contract Competition is Initializable, Rewarder {
      * @param _contributionRewardExt the contributionRewardExt scheme which
      *        manage and allocate the rewards for the competition.
      */
-    function initialize(address payable _contributionRewardExt) external initializer {
+    function initialize(address payable _contributionRewardExt) external initializer override {
         require(_contributionRewardExt != address(0), "contributionRewardExt cannot be zero");
         contributionRewardExt = _contributionRewardExt;
     }
@@ -143,7 +145,7 @@ contract Competition is Initializable, Rewarder {
         "suggestionsEndTime should be earlier than proposal end time");
         require(_competitionParams[4] > startTime, "suggestionsEndTime should be later than proposal start time");
         if (_rewards[2] > 0) {
-            require(_externalToken != ERC20(0), "extenal token cannot be zero");
+            require(_externalToken != IERC20(0), "extenal token cannot be zero");
         }
         require(_reputationChange >= 0, "negative reputation change is not allowed for a competition");
         uint256 totalRewardSplit;
@@ -395,7 +397,7 @@ contract Competition is Initializable, Rewarder {
             }
             topSuggestions.push(_suggestionId);
         } else {
-         /** get the index of the smallest element **/
+           // get the index of the smallest element
             uint256 smallest = 0;
             for (i = 0; i < proposals[_proposalId].numberOfWinners; i++) {
                 if (suggestions[topSuggestions[i]].totalVotes <

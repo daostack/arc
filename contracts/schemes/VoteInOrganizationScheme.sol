@@ -1,4 +1,5 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "../votingMachines/VotingMachineCallbacks.sol";
 
@@ -60,6 +61,7 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
     function executeProposal(bytes32 _proposalId, int256 _decision)
     external
     onlyVotingMachine(_proposalId)
+    override
     returns(bool) {
         // Save proposal to memory and delete from storage:
         VoteProposal memory proposal = organizationProposals[_proposalId];
