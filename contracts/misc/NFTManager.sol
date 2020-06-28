@@ -1,4 +1,5 @@
 pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0
 
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC721/IERC721Receiver.sol";
