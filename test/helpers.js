@@ -37,6 +37,7 @@ const ARCVotingMachineCallbacksMock = artifacts.require("./ARCVotingMachineCallb
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
 const Dictator = artifacts.require("./Dictator.sol");
+const ReputationAdmin = artifacts.require("./ReputationAdmin.sol");
 
 
 const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -157,6 +158,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.fundingRequest = await FundingRequest.new();
   registration.rewarderMock = await RewarderMock.new();
   registration.dictator = await Dictator.new();
+  registration.reputationAdmin = await ReputationAdmin.new();
 
 
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
@@ -188,6 +190,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   await implementationDirectory.setImplementation("JoinAndQuit",registration.joinAndQuit.address);
   await implementationDirectory.setImplementation("FundingRequest",registration.fundingRequest.address);
   await implementationDirectory.setImplementation("Dictator",registration.dictator.address);
+  await implementationDirectory.setImplementation("ReputationAdmin",registration.reputationAdmin.address);
 
 
   registration.implementationDirectory = implementationDirectory;
