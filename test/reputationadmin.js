@@ -172,11 +172,61 @@ contract('reputationAdmin', accounts => {
     }
   });
 
-  it('mint reputation with 0 _maxRepReward should allow any amount', async () => {
+  it('mint with un-matching array lengths should fail', async () => {
+    let testSetup = await setup(accounts);
+    try {
+      await testSetup.reputationAdmin.reputationMint([accounts[2], accounts[3]], [1]);
+      assert(false, 'mint with un-matching array lengths should fail');
+    } catch (error) {
+      helpers.assertVMException(error);
+    }
+  });
+
+  it('burn with un-matching array lengths should fail', async () => {
+    let testSetup = await setup(accounts);
+    await testSetup.reputationAdmin.reputationMint([accounts[2], accounts[3]], [1, 1]);
+
+    assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 1);
+    assert.equal(await testSetup.org.reputation.balanceOf(accounts[3]), 1);
+    try {
+        await testSetup.reputationAdmin.reputationBurn([accounts[2], accounts[3]], [1]);
+        assert(false, 'burn with un-matching array lengths should fail');
+    } catch (error) {
+        helpers.assertVMException(error);
+    }
+  });
+
+  it('burn before _activationStartTime should fail', async () => {
+    let testSetup = await setup(accounts, 2000, 3000, 100, true);
+    try {
+      await testSetup.reputationAdmin.reputationBurn([accounts[2]],[1]);
+      assert(false, 'burn before _activationStartTime should fail');
+    } catch (error) {
+      helpers.assertVMException(error);
+    }
+  });
+
+  it('burn after _activationEndTime should revert', async () => {
+    let testSetup = await setup(accounts);
+    await testSetup.reputationAdmin.reputationMint([accounts[2]], [1]);
+    assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 1);
+    await helpers.increaseTime(3001);
+    try {
+      await testSetup.reputationAdmin.reputationBurn([accounts[2]], [1]);
+      assert(false, 'burn after _activationEndTime should revert');
+    } catch (error) {
+      helpers.assertVMException(error);
+    }
+  });
+
+  it('mint and burn reputation with 0 _maxRepReward should allow any amount', async () => {
     let testSetup = await setup(accounts, 0, 3000, 0, true);
     await testSetup.reputationAdmin.reputationMint([accounts[2]], [1000]);
 
     assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 1000);
+    await testSetup.reputationAdmin.reputationBurn([accounts[2]], [1000]);
+
+    assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 0);
   });
 
   it('cannot initialize twice', async () => {
