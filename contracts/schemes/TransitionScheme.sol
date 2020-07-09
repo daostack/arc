@@ -8,7 +8,7 @@ import "../controller/Controller.sol";
 
 contract TransitionScheme {
 
-    uint public constant ASSETS_CAP = 100;
+    uint256 public constant ASSETS_CAP = 100;
 
     event OwnershipTransferred(Avatar indexed _avatar, address indexed _newAvatar, address indexed _asset);
 
