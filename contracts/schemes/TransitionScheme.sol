@@ -8,6 +8,8 @@ import "../controller/Controller.sol";
 
 contract TransitionScheme {
 
+    uint public constant ASSETS_CAP = 100;
+
     event OwnershipTransferred(Avatar indexed _avatar, address indexed _newAvatar, address indexed _asset);
 
     Avatar public avatar;
@@ -31,6 +33,7 @@ contract TransitionScheme {
         address[] calldata _assetAddresses,
         bytes4[] calldata _selectors
     ) external {
+        require(_assetAddresses.length <= ASSETS_CAP, "cannot transfer more than 100 assets");
         require(_assetAddresses.length == _selectors.length, "Arrays length mismatch");
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");

@@ -12,7 +12,8 @@ let selector = web3.eth.abi.encodeFunctionSignature('transferOwnership(address)'
 const setup = async function(
   accounts,
   testInitDifferentArrayLength=false,
-  testLimit=false
+  testLimit=false,
+  testOverLimit=false,
 ) {
   var testSetup = new helpers.TestSetup();
   var controllerCreator = await ControllerCreator.new({
@@ -45,7 +46,7 @@ const setup = async function(
   }
 
   if (testLimit) {
-    for (let i=0; i < 100; i++) {
+    for (let i=0; i < (testOverLimit ? 100 : 99); i++) {
       let wallet = await Wallet.new();
       await wallet.transferOwnership(testSetup.org.avatar.address);
       testSetup.assets.push(wallet.address);
@@ -106,6 +107,15 @@ contract('TransitionScheme', accounts => {
     }
   });
 
+  it('initialize with more than 100 assets should fail', async () => {
+    try {
+      await setup(accounts, false, true, true);
+      assert(false, 'initialize with more than 100 assets should fail');
+    } catch (error) {
+      helpers.assertVMException(error);
+    }
+  });
+
   it('transfer assets', async () => {
     let testSetup = await setup(accounts);
     assert.equal(await testSetup.wallet.owner(), testSetup.org.avatar.address);
@@ -132,7 +142,7 @@ contract('TransitionScheme', accounts => {
         toBlock: 'latest'
     })
     .then(function(events){
-        assert.equal(events.length, 101);
+        assert.equal(events.length, 100);
         assert.equal(events[0].event,"OwnershipTransferred");
         assert.equal(events[0].args._avatar, testSetup.org.avatar.address);
         assert.equal(events[0].args._newAvatar, helpers.SOME_ADDRESS);
