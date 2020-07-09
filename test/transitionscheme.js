@@ -11,7 +11,8 @@ let selector = web3.eth.abi.encodeFunctionSignature('transferOwnership(address)'
 
 const setup = async function(
   accounts,
-  testInitDifferentArrayLength=false
+  testInitDifferentArrayLength=false,
+  testLimit=false
 ) {
   var testSetup = new helpers.TestSetup();
   var controllerCreator = await ControllerCreator.new({
@@ -30,8 +31,11 @@ const setup = async function(
     1000,
     1000
   );
+
   testSetup.wallet = await Wallet.new();
-  testSetup.wallet.transferOwnership(testSetup.org.avatar.address);
+  await testSetup.wallet.transferOwnership(testSetup.org.avatar.address);
+  testSetup.assets = [testSetup.wallet.address];
+  
   testSetup.standardToken = await ERC20Mock.new(testSetup.org.avatar.address, 100);
   
   testSetup.transitionScheme = await TransitionScheme.new();
@@ -40,11 +44,20 @@ const setup = async function(
     testSetup.selectors = [selector, selector];
   }
 
+  if (testLimit) {
+    for (let i=0; i < 100; i++) {
+      let wallet = await Wallet.new();
+      await wallet.transferOwnership(testSetup.org.avatar.address);
+      testSetup.assets.push(wallet.address);
+      testSetup.selectors.push(selector);
+    }
+  }
+
   await testSetup.transitionScheme.initialize(
     testSetup.org.avatar.address,
     helpers.SOME_ADDRESS,
     [testSetup.standardToken.address],
-    [testSetup.wallet.address],
+    testSetup.assets,
     testSetup.selectors,
     { gas: constants.ARC_GAS_LIMIT }
   );
@@ -102,6 +115,24 @@ contract('TransitionScheme', accounts => {
         toBlock: 'latest'
     })
     .then(function(events){
+        assert.equal(events[0].event,"OwnershipTransferred");
+        assert.equal(events[0].args._avatar, testSetup.org.avatar.address);
+        assert.equal(events[0].args._newAvatar, helpers.SOME_ADDRESS);
+        assert.equal(events[0].args._asset, testSetup.wallet.address);
+    });
+    assert.equal(await testSetup.wallet.owner(), helpers.SOME_ADDRESS);
+  });
+
+  it('transfer many assets', async () => {
+    let testSetup = await setup(accounts, false, true);
+    assert.equal(await testSetup.wallet.owner(), testSetup.org.avatar.address);
+    let tx = await testSetup.transitionScheme.transferAssets();
+    await testSetup.transitionScheme.getPastEvents('OwnershipTransferred', {
+        fromBlock: tx.blockNumber,
+        toBlock: 'latest'
+    })
+    .then(function(events){
+        assert.equal(events.length, 101);
         assert.equal(events[0].event,"OwnershipTransferred");
         assert.equal(events[0].args._avatar, testSetup.org.avatar.address);
         assert.equal(events[0].args._newAvatar, helpers.SOME_ADDRESS);
