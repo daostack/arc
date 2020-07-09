@@ -8,7 +8,7 @@ import "../controller/Controller.sol";
 
 contract TransitionScheme {
 
-    event OwnershipTransferred(address indexed _avatar, address indexed _newAvatar, address indexed _asset);
+    event OwnershipTransferred(Avatar indexed _avatar, address indexed _newAvatar, address indexed _asset);
 
     Avatar public avatar;
     address payable public newAvatar;
@@ -58,7 +58,7 @@ contract TransitionScheme {
                 0
             );
             if (success) {
-                emit OwnershipTransferred(avatar, newAvatar, assetAddresses[i])
+                emit OwnershipTransferred(avatar, newAvatar, assetAddresses[i]);
             }
         }
     }

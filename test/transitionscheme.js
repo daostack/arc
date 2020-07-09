@@ -103,7 +103,7 @@ contract('TransitionScheme', accounts => {
     })
     .then(function(events){
         assert.equal(events[0].event,"OwnershipTransferred");
-        assert.equal(events[0].args._avatar, testSetup.org.avatar.avatar);
+        assert.equal(events[0].args._avatar, testSetup.org.avatar.address);
         assert.equal(events[0].args._newAvatar, helpers.SOME_ADDRESS);
         assert.equal(events[0].args._asset, testSetup.wallet.address);
     });
