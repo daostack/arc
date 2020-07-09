@@ -45,7 +45,12 @@ contract TransitionScheme {
      */
     function transferAssets() external {
         for (uint256 i=0; i < assetAddresses.length; i++) {
-            Controller(avatar.owner()).genericCall(assetAddresses[i], abi.encodeWithSelector(selectors[i], newAvatar), avatar, 0);
+            Controller(avatar.owner()).genericCall(
+                assetAddresses[i],
+                abi.encodeWithSelector(selectors[i], newAvatar),
+                avatar,
+                0
+            );
         }
     }
 
@@ -69,7 +74,12 @@ contract TransitionScheme {
         for (uint256 i=0; i < externalTokens.length; i++) {
             if (_amounts[i] > 0) {
                 require(
-                    Controller(avatar.owner()).externalTokenTransfer(IERC20(externalTokens[i]), newAvatar, _amounts[i], avatar),
+                    Controller(avatar.owner()).externalTokenTransfer(
+                        IERC20(externalTokens[i]),
+                        newAvatar,
+                        _amounts[i],
+                        avatar
+                    ),
                     "Sending external token should succeed"
                 );
             }
