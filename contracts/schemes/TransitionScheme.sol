@@ -8,6 +8,8 @@ import "../controller/Controller.sol";
 
 contract TransitionScheme {
 
+    event OwnershipTransferred(address indexed _avatar, address indexed _newAvatar, address indexed _asset);
+
     Avatar public avatar;
     address payable public newAvatar;
     address[] public externalTokens;
@@ -45,12 +47,19 @@ contract TransitionScheme {
      */
     function transferAssets() external {
         for (uint256 i=0; i < assetAddresses.length; i++) {
-            Controller(avatar.owner()).genericCall(
+            bytes memory genericCallReturnValue;
+            bool success;
+            Controller controller = Controller(avatar.owner());
+            (success, genericCallReturnValue) =
+            controller.genericCall(
                 assetAddresses[i],
                 abi.encodeWithSelector(selectors[i], newAvatar),
                 avatar,
                 0
             );
+            if (success) {
+                emit OwnershipTransferred(avatar, newAvatar, assetAddresses[i])
+            }
         }
     }
 

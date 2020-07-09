@@ -96,7 +96,17 @@ contract('TransitionScheme', accounts => {
   it('transfer assets', async () => {
     let testSetup = await setup(accounts);
     assert.equal(await testSetup.wallet.owner(), testSetup.org.avatar.address);
-    await testSetup.transitionScheme.transferAssets();
+    let tx = await testSetup.transitionScheme.transferAssets();
+    await testSetup.transitionScheme.getPastEvents('OwnershipTransferred', {
+        fromBlock: tx.blockNumber,
+        toBlock: 'latest'
+    })
+    .then(function(events){
+        assert.equal(events[0].event,"OwnershipTransferred");
+        assert.equal(events[0].args._avatar, testSetup.org.avatar.avatar);
+        assert.equal(events[0].args._newAvatar, helpers.SOME_ADDRESS);
+        assert.equal(events[0].args._asset, testSetup.wallet.address);
+    });
     assert.equal(await testSetup.wallet.owner(), helpers.SOME_ADDRESS);
   });
 
