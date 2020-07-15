@@ -308,7 +308,7 @@ contract Competition {
         // solhint-disable-next-line not-rely-on-time
         require(proposal.endTime < now, "competition is still on");
         // solhint-disable-next-line not-rely-on-time
-        require(proposal.endTime.add(REDEMPTION_PERIOD) > now, "competition is still on");
+        require(proposal.endTime.add(REDEMPTION_PERIOD) > now, "redemption period is over");
         require(proposal.maxNumberOfVotesPerVoter > 0, "proposal does not exist");
         require(suggestions[_suggestionId].beneficiary != address(0),
         "suggestion was already redeemed");
