@@ -519,6 +519,40 @@ contract('Competition', accounts => {
 
   });
 
+  it("cannot redeem after the REDEMPTION_PERIOD", async function() {
+    var testSetup = await setup(accounts);
+    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address,30,{from:accounts[1]});
+    await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value:20});
+    var proposalId = await proposeCompetition(testSetup);
+    await helpers.increaseTime(20);
+    await testSetup.competition.suggest(proposalId,"suggestion",helpers.NULL_ADDRESS);
+    try {
+            await testSetup.competition.redeem(1);
+            assert(false, 'cannot redeem if no vote');
+       } catch (ex) {
+            helpers.assertVMException(ex);
+      }
+    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.contributionRewardExtParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+    await testSetup.contributionRewardExt.redeem(proposalId,[true,true,true,true]);
+    await helpers.increaseTime(650);
+    await testSetup.competition.vote(1,{from:accounts[1]});
+    try {
+            await testSetup.competition.redeem(1);
+            assert(false, 'cannot redeem if competion not ended yet');
+       } catch (ex) {
+            helpers.assertVMException(ex);
+      }
+    await helpers.increaseTime(650+7776000+1);
+    try {
+          await testSetup.competition.redeem(1);
+          assert(false, 'cannot redeem after the REDEMPTION_PERIOD');
+       } catch (ex) {
+            helpers.assertVMException(ex);
+      }
+
+  });
+
   it("negative reputation change is not allowed", async function() {
     var testSetup = await setup(accounts);
     try {
