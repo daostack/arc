@@ -606,7 +606,7 @@ contract('Competition', accounts => {
 
       try {
               await testSetup.competition.sendLeftOverFunds(proposalId);
-              assert(false, 'cannot sendLeftOverFunds because not all proposals redeemed yet');
+              assert(false, 'cannot sendLeftOverFunds because redeemed period is still on');
          } catch (ex) {
               helpers.assertVMException(ex);
         }
@@ -618,7 +618,7 @@ contract('Competition', accounts => {
       assert.equal(tx.logs[0].args._rewardPercentage,53);
 
       var proposal = await testSetup.contributionRewardExt.organizationProposals(proposalId);
-
+      await helpers.increaseTime(7776000);
       tx = await testSetup.competition.sendLeftOverFunds(proposalId);
       await testSetup.contributionRewardExt.getPastEvents('RedeemExternalToken', {
             fromBlock: tx.blockNumber,
