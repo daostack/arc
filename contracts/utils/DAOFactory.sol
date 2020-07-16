@@ -5,7 +5,6 @@ pragma experimental ABIEncoderV2;
 
 import "../registry/App.sol";
 import "../registry/ImplementationDirectory.sol";
-import "@daostack/upgrades/contracts/upgradeability/ProxyAdmin.sol";
 import "@daostack/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
 import "../libs/BytesLib.sol";
 import "../controller/Controller.sol";
