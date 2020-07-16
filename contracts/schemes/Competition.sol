@@ -274,7 +274,7 @@ contract Competition {
     */
     function sendLeftOverFunds(bytes32 _proposalId) public {
         // solhint-disable-next-line not-rely-on-time
-        require(proposals[_proposalId].endTime.add(REDEMPTION_PERIOD) < now, "redemption period is till on");
+        require(proposals[_proposalId].endTime.add(REDEMPTION_PERIOD) < now, "redemption period is still on");
         require(proposals[_proposalId].maxNumberOfVotesPerVoter > 0, "proposal does not exist");
         require(_proposalId != bytes32(0), "proposalId is zero");
 
