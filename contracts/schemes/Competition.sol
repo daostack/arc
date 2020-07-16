@@ -6,8 +6,6 @@ import "./ContributionRewardExt.sol";
 contract Competition {
     using SafeMath for uint256;
 
-    uint256 constant public MAX_NUMBER_OF_WINNERS = 100;
-
     event NewCompetitionProposal(
         bytes32 indexed _proposalId,
         uint256 _numberOfWinners,
@@ -81,6 +79,8 @@ contract Competition {
     mapping(uint256=>Suggestion) public suggestions;
     uint256 public suggestionsCounter;
     address payable public contributionRewardExt; //address of the contract to redeem from.
+    uint256 constant public REDEMPTION_PERIOD = 7776000; //90 days
+    uint256 constant public MAX_NUMBER_OF_WINNERS = 100;
 
     /**
      * @dev initialize
@@ -274,13 +274,9 @@ contract Competition {
     */
     function sendLeftOverFunds(bytes32 _proposalId) public {
         // solhint-disable-next-line not-rely-on-time
-        require(proposals[_proposalId].endTime < now, "competition is still on");
+        require(proposals[_proposalId].endTime.add(REDEMPTION_PERIOD) < now, "redemption period is still on");
         require(proposals[_proposalId].maxNumberOfVotesPerVoter > 0, "proposal does not exist");
         require(_proposalId != bytes32(0), "proposalId is zero");
-        uint256[] memory topSuggestions = proposals[_proposalId].topSuggestions;
-        for (uint256 i = 0; i < topSuggestions.length; i++) {
-            require(suggestions[topSuggestions[i]].beneficiary == address(0), "not all winning suggestions redeemed");
-        }
 
         (, , , , , ,
         uint256 nativeTokenRewardLeft, ,
@@ -311,6 +307,8 @@ contract Competition {
         require(_suggestionId > 0, "suggestionId is zero");
         // solhint-disable-next-line not-rely-on-time
         require(proposal.endTime < now, "competition is still on");
+        // solhint-disable-next-line not-rely-on-time
+        require(proposal.endTime.add(REDEMPTION_PERIOD) > now, "redemption period is over");
         require(proposal.maxNumberOfVotesPerVoter > 0, "proposal does not exist");
         require(suggestions[_suggestionId].beneficiary != address(0),
         "suggestion was already redeemed");
