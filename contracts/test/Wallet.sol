@@ -29,4 +29,12 @@ contract Wallet is OwnableUpgradeSafe {
         emit Pay(_beneficiary, amount);
     }
 
+    function genericCall(address _contract, bytes memory _encodedABI)
+    public
+    returns(bool success, bytes memory returnValue) {
+       // solhint-disable-next-line avoid-low-level-calls
+        (success, returnValue) = _contract.call(_encodedABI);
+        require(success, "call fail");
+    }
+
 }
