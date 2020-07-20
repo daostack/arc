@@ -43,6 +43,8 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
         uint256 sendTokenAmount;
         IERC20 receiveToken;
         uint256 receiveTokenAmount;
+        bool exist;
+        bool passed;
     }
 
     mapping(bytes32=>Proposal) public proposals;
@@ -79,8 +81,25 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
     override
     returns(bool) {
         Proposal memory proposal = proposals[_proposalId];
-        delete proposals[_proposalId];
-        if (_decision == 1 && proposal.receiveToken.balanceOf(address(avatar)) >= proposal.receiveTokenAmount) {
+        if (_decision == 1) {
+            proposals[_proposalId].passed = true;
+            execute(_proposalId);
+        } else {
+            delete proposals[_proposalId];
+            proposal.sendToken.safeTransfer(address(proposal.beneficiary), proposal.sendTokenAmount);
+        }
+
+        emit ProposalExecuted(address(avatar), _proposalId, _decision);
+        return true;
+    }
+
+
+    function execute(bytes32 _proposalId) public returns(bool) {
+        Proposal storage proposal = proposals[_proposalId];
+        require(proposal.exist, "must be a live proposal");
+        require(proposal.passed, "proposal must passed by voting machine");
+        if (proposal.receiveToken.balanceOf(address(avatar)) >= proposal.receiveTokenAmount) {
+            proposal.exist = false;
             proposal.sendToken.safeTransfer(address(avatar), proposal.sendTokenAmount);
             require(
                 Controller(avatar.owner()).externalTokenTransfer(
@@ -97,12 +116,10 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
                 proposal.receiveToken,
                 proposal.receiveTokenAmount
             );
-        } else {
-            proposal.sendToken.safeTransfer(address(proposal.beneficiary), proposal.sendTokenAmount);
+            delete proposals[_proposalId];
+            return true;
         }
-
-        emit ProposalExecuted(address(avatar), _proposalId, _decision);
-        return true;
+        return false;
     }
 
     /**
@@ -138,7 +155,9 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
             sendToken: _sendToken,
             sendTokenAmount: _sendTokenAmount,
             receiveToken: _receiveToken,
-            receiveTokenAmount: _receiveTokenAmount
+            receiveTokenAmount: _receiveTokenAmount,
+            exist: true,
+            passed: false
         });
 
         proposalsBlockNumber[proposalId] = block.number;

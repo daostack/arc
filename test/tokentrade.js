@@ -266,7 +266,7 @@ contract('TokenTrade', function(accounts) {
     });
   });
 
-  it("execute proposal - pass - proposal should still fail if DAO doesn't have enough tokens", async function() {
+  it("execute proposal - pass - proposal should pass without execution if DAO doesn't have enough tokens", async function() {
     var testSetup = await setup(accounts);
     await testSetup.standardTokenMock.transfer(accounts[1], 5000);
     await testSetup.standardTokenMock.approve(testSetup.tokenTrade.address, 100);
@@ -291,15 +291,96 @@ contract('TokenTrade', function(accounts) {
     tx = await testSetup.tokenTradeParams.votingMachine.absoluteVote.vote(proposalId, 1, 0, helpers.NULL_ADDRESS, {from:accounts[2]});
 
     proposal = await testSetup.tokenTrade.proposals(proposalId);
-    assert.equal(proposal.sendToken, NULL_ADDRESS);
-    assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]), 5000);
-    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.tokenTrade.address), 0);
+    assert.equal(proposal.passed, true);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]), 4900);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.tokenTrade.address), 100);
     await testSetup.tokenTrade.getPastEvents("TokenTradeProposalExecuted", {
       fromBlock: tx.blockNumber,
       toBlock: 'latest'
     }).then(function(events){
       assert.equal(events.length, 0);
     });
+
+    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address, 5000, {from: accounts[1]});
+    tx = await testSetup.tokenTrade.execute(proposalId);
+
+    proposal = await testSetup.tokenTrade.proposals(proposalId);
+    assert.equal(proposal.sendToken, NULL_ADDRESS);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address), 4999);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]), 5001);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.tokenTrade.address), 0);
+    await testSetup.tokenTrade.getPastEvents("TokenTradeProposalExecuted", {
+      fromBlock: tx.blockNumber,
+      toBlock: 'latest'
+    }).then(function(events){
+      assert.equal(events[0].event, "TokenTradeProposalExecuted");
+      assert.equal(events[0].args._avatar, testSetup.org.avatar.address);
+      assert.equal(events[0].args._proposalId, proposalId);
+      assert.equal(events[0].args._beneficiary, accounts[0]);
+      assert.equal(events[0].args._sendToken, testSetup.standardTokenMock.address);
+      assert.equal(events[0].args._sendTokenAmount, 100);
+      assert.equal(events[0].args._receiveToken, testSetup.standardTokenMock.address);
+      assert.equal(events[0].args._receiveTokenAmount, 101);
+    });
+  });
+
+  it("execute proposal - pass - proposal cannot execute before passed/ twice", async function() {
+    var testSetup = await setup(accounts);
+    await testSetup.standardTokenMock.transfer(testSetup.org.avatar.address, 5000);
+    await testSetup.standardTokenMock.approve(testSetup.tokenTrade.address, 100);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address), 5000);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]), 5000);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.tokenTrade.address), 0);
+
+    var tx = await testSetup.tokenTrade.proposeTokenTrade(
+      testSetup.standardTokenMock.address,
+      100,
+      testSetup.standardTokenMock.address,
+      101,
+      helpers.NULL_HASH
+    );
+    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address), 5000);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]), 4900);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.tokenTrade.address), 100);
+    var proposal = await testSetup.tokenTrade.proposals(proposalId);
+    assert.equal(proposal.sendToken, testSetup.standardTokenMock.address);
+
+    try {
+      await testSetup.tokenTrade.execute(proposalId);
+      assert(false, "cannot execute before passed");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+    tx = await testSetup.tokenTradeParams.votingMachine.absoluteVote.vote(proposalId, 1, 0, helpers.NULL_ADDRESS, {from:accounts[2]});
+
+    proposal = await testSetup.tokenTrade.proposals(proposalId);
+    assert.equal(proposal.sendToken, NULL_ADDRESS);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address), 4999);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]), 5001);
+    assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.tokenTrade.address), 0);
+    await testSetup.tokenTrade.getPastEvents("TokenTradeProposalExecuted", {
+      fromBlock: tx.blockNumber,
+      toBlock: 'latest'
+    }).then(function(events){
+      assert.equal(events[0].event, "TokenTradeProposalExecuted");
+      assert.equal(events[0].args._avatar, testSetup.org.avatar.address);
+      assert.equal(events[0].args._proposalId, proposalId);
+      assert.equal(events[0].args._beneficiary, accounts[0]);
+      assert.equal(events[0].args._sendToken, testSetup.standardTokenMock.address);
+      assert.equal(events[0].args._sendTokenAmount, 100);
+      assert.equal(events[0].args._receiveToken, testSetup.standardTokenMock.address);
+      assert.equal(events[0].args._receiveTokenAmount, 101);
+    });
+
+    try {
+      await testSetup.tokenTrade.execute(proposalId);
+      assert(false, "cannot execute twice");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
   });
 
   it("cannot init twice", async function() {
