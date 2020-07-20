@@ -45,6 +45,7 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
         uint256 receiveTokenAmount;
         bool exist;
         bool passed;
+        bool decided;
     }
 
     mapping(bytes32=>Proposal) public proposals;
@@ -83,22 +84,19 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
         Proposal memory proposal = proposals[_proposalId];
         if (_decision == 1) {
             proposals[_proposalId].passed = true;
-            execute(_proposalId);
-        } else {
-            delete proposals[_proposalId];
-            proposal.sendToken.safeTransfer(address(proposal.beneficiary), proposal.sendTokenAmount);
         }
+        proposals[_proposalId].decided = true;
 
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
     }
 
 
-    function execute(bytes32 _proposalId) public returns(bool) {
+    function execute(bytes32 _proposalId) public {
         Proposal storage proposal = proposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
-        require(proposal.passed, "proposal must passed by voting machine");
-        if (proposal.receiveToken.balanceOf(address(avatar)) >= proposal.receiveTokenAmount) {
+        require(proposal.decided, "must be a decided proposal");
+        if (proposal.passed) {
             proposal.exist = false;
             proposal.sendToken.safeTransfer(address(avatar), proposal.sendTokenAmount);
             require(
@@ -117,9 +115,11 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
                 proposal.receiveTokenAmount
             );
             delete proposals[_proposalId];
-            return true;
+        } else {
+            Proposal memory _proposal = proposals[_proposalId];
+            delete proposals[_proposalId];
+            _proposal.sendToken.safeTransfer(address(_proposal.beneficiary), _proposal.sendTokenAmount);
         }
-        return false;
     }
 
     /**
@@ -157,7 +157,8 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
             receiveToken: _receiveToken,
             receiveTokenAmount: _receiveTokenAmount,
             exist: true,
-            passed: false
+            passed: false,
+            decided: false
         });
 
         proposalsBlockNumber[proposalId] = block.number;

@@ -207,8 +207,8 @@ contract('TokenTrade', function(accounts) {
       var proposal = await testSetup.tokenTrade.proposals(proposalId);
       assert.equal(proposal.sendToken, testSetup.standardTokenMock.address);
 
-      tx = await testSetup.tokenTradeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-
+      await testSetup.tokenTradeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.tokenTrade.execute(proposalId);
       proposal = await testSetup.tokenTrade.proposals(proposalId);
       assert.equal(proposal.sendToken, NULL_ADDRESS);
       assert.equal(await testSetup.standardTokenMock.balanceOf(accounts[0]), 5000);
@@ -244,8 +244,8 @@ contract('TokenTrade', function(accounts) {
     var proposal = await testSetup.tokenTrade.proposals(proposalId);
     assert.equal(proposal.sendToken, testSetup.standardTokenMock.address);
 
-    tx = await testSetup.tokenTradeParams.votingMachine.absoluteVote.vote(proposalId, 1, 0, helpers.NULL_ADDRESS, {from:accounts[2]});
-
+    await testSetup.tokenTradeParams.votingMachine.absoluteVote.vote(proposalId, 1, 0, helpers.NULL_ADDRESS, {from:accounts[2]});
+    tx = await testSetup.tokenTrade.execute(proposalId);
     proposal = await testSetup.tokenTrade.proposals(proposalId);
     assert.equal(proposal.sendToken, NULL_ADDRESS);
     assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address), 4999);
@@ -354,7 +354,8 @@ contract('TokenTrade', function(accounts) {
       helpers.assertVMException(error);
     }
 
-    tx = await testSetup.tokenTradeParams.votingMachine.absoluteVote.vote(proposalId, 1, 0, helpers.NULL_ADDRESS, {from:accounts[2]});
+    await testSetup.tokenTradeParams.votingMachine.absoluteVote.vote(proposalId, 1, 0, helpers.NULL_ADDRESS, {from:accounts[2]});
+    tx = await testSetup.tokenTrade.execute(proposalId);
 
     proposal = await testSetup.tokenTrade.proposals(proposalId);
     assert.equal(proposal.sendToken, NULL_ADDRESS);
