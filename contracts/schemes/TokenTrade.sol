@@ -11,7 +11,7 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  * - A member can donate to a dao.
  */
 contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
-    using SafeMath for uint;
+    using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
     event TokenTradeProposed(
