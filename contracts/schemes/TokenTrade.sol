@@ -90,7 +90,6 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
 
     function execute(bytes32 _proposalId) public {
         Proposal storage proposal = proposals[_proposalId];
-        require(address(_sendToken) != address(0), "must be a live proposal");
         require(proposal.decided, "must be a decided proposal");
         if (proposal.passed) {
             proposal.sendToken.safeTransfer(address(avatar), proposal.sendTokenAmount);
