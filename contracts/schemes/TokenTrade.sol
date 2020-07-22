@@ -5,10 +5,7 @@ import "../votingMachines/VotingMachineCallbacks.sol";
 
 
 /**
- * @title A scheme for join in a dao.
- * - A member can be proposed to join in by sending a min amount of fee.
- * - A member can ask to quite (RageQuit) a dao on any time.
- * - A member can donate to a dao.
+ * @title A scheme for trading ERC20 tokens with the DAO
  */
 contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
     using SafeMath for uint256;
@@ -43,7 +40,6 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
         uint256 sendTokenAmount;
         IERC20 receiveToken;
         uint256 receiveTokenAmount;
-        bool exist;
         bool passed;
         bool decided;
     }
@@ -94,10 +90,9 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
 
     function execute(bytes32 _proposalId) public {
         Proposal storage proposal = proposals[_proposalId];
-        require(proposal.exist, "must be a live proposal");
+        require(address(_sendToken) != address(0), "must be a live proposal");
         require(proposal.decided, "must be a decided proposal");
         if (proposal.passed) {
-            proposal.exist = false;
             proposal.sendToken.safeTransfer(address(avatar), proposal.sendTokenAmount);
             require(
                 Controller(avatar.owner()).externalTokenTransfer(
@@ -129,7 +124,7 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
     * @param _receiveToken token the proposer asks to receive from the DAO
     * @param _receiveTokenAmount token amount the proposer asks to receive from the DAO
     * @param _descriptionHash proposal description hash
-    * @return an id which represents the proposal
+    * @return proposalId an id which represents the proposal
     */
     function proposeTokenTrade(
         IERC20 _sendToken,
@@ -139,7 +134,7 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
         string memory _descriptionHash
     )
     public
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
         require(
             address(_sendToken) != address(0) && address(_receiveToken) != address(0),
@@ -148,7 +143,7 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
         require(_sendTokenAmount > 0 && _receiveTokenAmount > 0, "Token amount must be greater than 0");
 
         _sendToken.safeTransferFrom(msg.sender, address(this), _sendTokenAmount);
-        bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
+        proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
 
         proposals[proposalId] = Proposal({
             beneficiary: msg.sender,
@@ -156,7 +151,6 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
             sendTokenAmount: _sendTokenAmount,
             receiveToken: _receiveToken,
             receiveTokenAmount: _receiveTokenAmount,
-            exist: true,
             passed: false,
             decided: false
         });
@@ -173,7 +167,5 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
             _receiveToken,
             _receiveTokenAmount
         );
-
-        return proposalId;
     }
 }
