@@ -2,7 +2,7 @@
 
 rm -rf ./node_modules
 rm -rf ./build
-git checkout origin/arc-factory
+git checkout origin/master-2
 echo "npm install ..."
 npm i
 echo "truffle compile ..."
