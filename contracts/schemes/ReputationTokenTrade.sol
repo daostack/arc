@@ -103,12 +103,10 @@ contract ReputationTokenTrade is VotingMachineCallbacks, ProposalExecuteInterfac
                 proposal.sendTokenAmount,
                 proposal.reputationAmount
             );
-            delete proposals[_proposalId];
         } else {
-            Proposal memory _proposal = proposals[_proposalId];
-            delete proposals[_proposalId];
-            _proposal.sendToken.safeTransfer(address(_proposal.beneficiary), _proposal.sendTokenAmount);
+            proposal.sendToken.safeTransfer(address(proposal.beneficiary), proposal.sendTokenAmount);
         }
+        delete proposals[_proposalId];
     }
 
     /**
