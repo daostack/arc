@@ -256,6 +256,7 @@ contract JoinAndQuit is
     function rageQuit() public returns(uint256 refundAmount) {
         require(rageQuitEnable, "RageQuit disabled");
         require(fundings[msg.sender].funding > 0, "no fund to RageQuit");
+        require(fundings[msg.sender].accepted, "member not accepted by the dao");
         uint256 userDonation = fundings[msg.sender].funding;
         fundings[msg.sender].funding = 0;
         fundings[msg.sender].rageQuit = true;
