@@ -390,8 +390,20 @@ contract('JoinAndQuit', accounts => {
 
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-      await testSetup.joinAndQuitParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var arcUtils = await Redeemer.new();
+      tx = await arcUtils.redeemJoinAndQuit(testSetup.joinAndQuit.address,
+                                             testSetup.joinAndQuitParams.votingMachine.genesisProtocol.address,
+                                             proposalId,
+                                             accounts[2]);
+
+      await testSetup.joinAndQuit.getPastEvents('RedeemReputation', {
+           fromBlock: tx.blockNumber,
+           toBlock: 'latest'
+        })
+        .then(function(events){
+          assert.equal(events.length,0);
+        });
+      await testSetup.joinAndQuitParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       tx = await arcUtils.redeemJoinAndQuit(testSetup.joinAndQuit.address,
                                             testSetup.joinAndQuitParams.votingMachine.genesisProtocol.address,
                                             proposalId,

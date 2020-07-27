@@ -295,11 +295,26 @@ contract('FundingRequest', accounts => {
         testSetup.minFeeToJoin - 1,
         "description-hash");
 
-      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+
+     let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+     var arcUtils = await Redeemer.new();
+     tx = await arcUtils.redeemFundingRequest(testSetup.fundingRequest.address,
+                                            testSetup.fundingRequestParams.votingMachine.genesisProtocol.address,
+                                            proposalId,
+                                            accounts[2]);
+
+     await testSetup.fundingRequest.getPastEvents('Redeem', {
+          fromBlock: tx.blockNumber,
+          toBlock: 'latest'
+       })
+       .then(function(events){
+          assert.equal(events.length,0);
+       });
+
       await testSetup.fundingRequestParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.fundingRequest.proposals(proposalId);
       assert.equal(proposal.executionTime, (await web3.eth.getBlock("latest")).timestamp);
-      var arcUtils = await Redeemer.new();
+
       tx = await arcUtils.redeemFundingRequest(testSetup.fundingRequest.address,
                                               testSetup.fundingRequestParams.votingMachine.genesisProtocol.address,
                                               proposalId,
