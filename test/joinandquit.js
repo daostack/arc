@@ -2,6 +2,7 @@ const helpers = require("./helpers");
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Avatar = artifacts.require("./Avatar.sol");
+const Redeemer = artifacts.require("./Redeemer.sol");
 
 class JoinAndQuitParams {
   constructor() {
@@ -223,7 +224,6 @@ contract('JoinAndQuit', accounts => {
        await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        await testSetup.joinAndQuit.redeemReputation(proposalId);
 
-
        try {
        await testSetup.joinAndQuit.proposeToJoin(
                                                 "description-hash",
@@ -391,9 +391,21 @@ contract('JoinAndQuit', accounts => {
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.joinAndQuitParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-      tx = await testSetup.joinAndQuit.redeemReputation(proposalId);
-      assert.equal(tx.logs[0].event, "RedeemReputation");
-      assert.equal(tx.logs[0].args._amount, testSetup.memberReputation);
+      var arcUtils = await Redeemer.new();
+      tx = await arcUtils.redeemJoinAndQuit(testSetup.joinAndQuit.address,
+                                            testSetup.joinAndQuitParams.votingMachine.genesisProtocol.address,
+                                            proposalId,
+                                            accounts[2]);
+
+      await testSetup.joinAndQuit.getPastEvents('RedeemReputation', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"RedeemReputation");
+            assert.equal(events[0].args._amount, testSetup.memberReputation);
+
+        });
       assert.equal(await testSetup.org.reputation.balanceOf(accounts[3]),testSetup.memberReputation);
       try {
          await testSetup.joinAndQuit.redeemReputation(proposalId);
