@@ -274,7 +274,7 @@ contract('JoinAndQuit', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.joinAndQuit.proposals(proposalId);
-      assert.equal(proposal.accepted,true);
+      assert.equal(proposal.executed,true);
       assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),testSetup.minFeeToJoin);
       assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
       assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
@@ -291,7 +291,7 @@ contract('JoinAndQuit', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.joinAndQuit.proposals(proposalId);
-      assert.equal(proposal.accepted,true);
+      assert.equal(proposal.executed,true);
       assert.equal(await avatarBalance(testSetup),testSetup.minFeeToJoin);
       assert.equal(await web3.eth.getBalance(testSetup.joinAndQuit.address),0);
       assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,testSetup.minFeeToJoin);
@@ -309,7 +309,9 @@ contract('JoinAndQuit', accounts => {
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
        await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        var proposal = await testSetup.joinAndQuit.proposals(proposalId);
-       assert.equal(proposal.accepted,false);
+       assert.equal(proposal.executed,true);
+       var fundings = await testSetup.joinAndQuit.fundings(accounts[3]);
+       assert.equal(fundings.accepted,false);
        assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),0);
        assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
        assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,0);
@@ -329,7 +331,9 @@ contract('JoinAndQuit', accounts => {
      var balanceBefore = await web3.eth.getBalance(accounts[3]);
      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
      var proposal = await testSetup.joinAndQuit.proposals(proposalId);
-     assert.equal(proposal.accepted,false);
+     assert.equal(proposal.executed,true);
+     var fundings = await testSetup.joinAndQuit.fundings(accounts[3]);
+     assert.equal(fundings.accepted,false);
      assert.equal(await avatarBalance(testSetup),0);
      assert.equal(await web3.eth.getBalance(testSetup.joinAndQuit.address),0);
      assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,0);
