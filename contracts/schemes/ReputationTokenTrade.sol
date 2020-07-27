@@ -74,7 +74,6 @@ contract ReputationTokenTrade is VotingMachineCallbacks, ProposalExecuteInterfac
     onlyVotingMachine(_proposalId)
     override
     returns(bool) {
-        Proposal memory proposal = proposals[_proposalId];
         if (_decision == 1) {
             proposals[_proposalId].passed = true;
         }
