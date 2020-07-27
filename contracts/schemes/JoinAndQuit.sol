@@ -258,12 +258,12 @@ contract JoinAndQuit is
         } else {
             refundAmount = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
         }
+        totalDonation = totalDonation.sub(userDonation);
         sendToBeneficiary(refundAmount, msg.sender);
         uint256 msgSenderReputation = avatar.nativeReputation().balanceOf(msg.sender);
         require(
         Controller(
         avatar.owner()).burnReputation(msgSenderReputation, msg.sender));
-        totalDonation = totalDonation.sub(userDonation);
         emit RageQuit(address(avatar), msg.sender, refundAmount);
     }
 
