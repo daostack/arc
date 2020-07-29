@@ -2,6 +2,7 @@ const helpers = require("./helpers");
 const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
+const Redeemer = artifacts.require("./Redeemer.sol");
 
 class JoinAndQuitParams {
   constructor() {
@@ -294,16 +295,41 @@ contract('FundingRequest', accounts => {
         testSetup.minFeeToJoin - 1,
         "description-hash");
 
-      let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+
+     let proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+     var arcUtils = await Redeemer.new();
+     tx = await arcUtils.redeemFundingRequest(testSetup.fundingRequest.address,
+                                            testSetup.fundingRequestParams.votingMachine.genesisProtocol.address,
+                                            proposalId,
+                                            accounts[2]);
+
+     await testSetup.fundingRequest.getPastEvents('Redeem', {
+          fromBlock: tx.blockNumber,
+          toBlock: 'latest'
+       })
+       .then(function(events){
+          assert.equal(events.length,0);
+       });
+
       await testSetup.fundingRequestParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var proposal = await testSetup.fundingRequest.proposals(proposalId);
       assert.equal(proposal.executionTime, (await web3.eth.getBlock("latest")).timestamp);
-      tx = await testSetup.fundingRequest.redeem(proposalId);
-      assert.equal(tx.logs[0].event, "Redeem");
-      assert.equal(tx.logs[0].args._avatar, testSetup.org.avatar.address);
-      assert.equal(tx.logs[0].args._proposalId, proposalId);
-      assert.equal(tx.logs[0].args._beneficiary, accounts[1]);
-      assert.equal(tx.logs[0].args._amount, testSetup.minFeeToJoin - 1);
+
+      tx = await arcUtils.redeemFundingRequest(testSetup.fundingRequest.address,
+                                              testSetup.fundingRequestParams.votingMachine.genesisProtocol.address,
+                                              proposalId,
+                                              accounts[2]);
+      await testSetup.fundingRequest.getPastEvents('Redeem', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"Redeem");
+            assert.equal(events[0].args._avatar, testSetup.org.avatar.address);
+            assert.equal(events[0].args._proposalId, proposalId);
+            assert.equal(events[0].args._beneficiary, accounts[1]);
+            assert.equal(events[0].args._amount, testSetup.minFeeToJoin - 1);
+        });
       assert.equal((await testSetup.standardTokenMock.balanceOf(accounts[1])), testSetup.minFeeToJoin - 1);
       proposal = await testSetup.fundingRequest.proposals(proposalId);
       assert.equal(proposal.executionTime, 0);
