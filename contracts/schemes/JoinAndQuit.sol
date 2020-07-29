@@ -56,12 +56,12 @@ contract JoinAndQuit is
         address proposedMember;
         uint256 funding;
         bool executed;
+        bool accepted;
     }
 
     struct MemberFund {
         bool candidate;
         bool rageQuit;
-        bool accepted;
         uint256 funding;
     }
 
@@ -127,14 +127,13 @@ contract JoinAndQuit is
     returns(bool) {
         Proposal memory proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "not a valid proposal");
-        require(fundings[proposal.proposedMember].accepted == false, "already accepted by the dao");
         require(proposal.executed == false, "proposal already been executed");
         proposals[_proposalId].executed = true;
 
         bool success;
         // Check if vote was successful:
         if ((_decision == 1) && (avatar.nativeReputation().balanceOf(proposal.proposedMember) == 0)) {
-            fundings[proposal.proposedMember].accepted = true;
+            proposals[_proposalId].accepted = true;
             fundings[proposal.proposedMember].funding = proposal.funding;
             totalDonation = totalDonation.add(proposal.funding);
             if (fundingToken == IERC20(0)) {
@@ -177,7 +176,6 @@ contract JoinAndQuit is
         address proposer = msg.sender;
         require(!fundings[proposer].candidate, "already a candidate");
         require(avatar.nativeReputation().balanceOf(proposer) == 0, "already a member");
-        require(!fundings[proposer].accepted, "already accepted by the dao");
         require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
         fundings[proposer].candidate = true;
         if (fundingToken == IERC20(0)) {
@@ -190,7 +188,8 @@ contract JoinAndQuit is
         Proposal memory proposal = Proposal({
             executed: false,
             proposedMember: proposer,
-            funding : _feeAmount
+            funding : _feeAmount,
+            accepted: false
         });
         proposals[proposalId] = proposal;
 
@@ -216,7 +215,7 @@ contract JoinAndQuit is
         Proposal storage proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "no member to redeem");
         require(!fundings[proposal.proposedMember].rageQuit, "member already rageQuit");
-        require(fundings[proposal.proposedMember].accepted == true, " proposal not accepted");
+        require(proposal.accepted == true, " proposal not accepted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposal.proposedMember = address(0);
         if (memberReputation == 0) {

@@ -222,15 +222,6 @@ contract('JoinAndQuit', accounts => {
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
        await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-       try {
-       await testSetup.joinAndQuit.proposeToJoin(
-                                                "description-hash",
-                                                 testSetup.minFeeToJoin,
-                                                 {from:candidate});
-            assert(false, 'proposer already benn accepted by the dao');
-         } catch (ex) {
-            helpers.assertVMException(ex);
-        }
 
        await testSetup.joinAndQuit.redeemReputation(proposalId);
 
@@ -320,8 +311,6 @@ contract('JoinAndQuit', accounts => {
        await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        var proposal = await testSetup.joinAndQuit.proposals(proposalId);
        assert.equal(proposal.executed,true);
-       var fundings = await testSetup.joinAndQuit.fundings(accounts[3]);
-       assert.equal(fundings.accepted,false);
        assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.org.avatar.address),0);
        assert.equal(await testSetup.standardTokenMock.balanceOf(testSetup.joinAndQuit.address),0);
        assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,0);
@@ -342,8 +331,6 @@ contract('JoinAndQuit', accounts => {
      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
      var proposal = await testSetup.joinAndQuit.proposals(proposalId);
      assert.equal(proposal.executed,true);
-     var fundings = await testSetup.joinAndQuit.fundings(accounts[3]);
-     assert.equal(fundings.accepted,false);
      assert.equal(await avatarBalance(testSetup),0);
      assert.equal(await web3.eth.getBalance(testSetup.joinAndQuit.address),0);
      assert.equal((await testSetup.joinAndQuit.fundings(accounts[3])).funding,0);
