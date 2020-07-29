@@ -222,6 +222,16 @@ contract('JoinAndQuit', accounts => {
        //Vote with reputation to trigger execution
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
        await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       try {
+       await testSetup.joinAndQuit.proposeToJoin(
+                                                "description-hash",
+                                                 testSetup.minFeeToJoin,
+                                                 {from:candidate});
+            assert(false, 'proposer already benn accepted by the dao');
+         } catch (ex) {
+            helpers.assertVMException(ex);
+        }
+
        await testSetup.joinAndQuit.redeemReputation(proposalId);
 
        try {
@@ -503,6 +513,7 @@ contract('JoinAndQuit', accounts => {
       helpers.assertVMException(ex);
    }
   });
+
 
     it("rageQuit with eth", async function() {
       var testSetup = await setup(accounts,true);
