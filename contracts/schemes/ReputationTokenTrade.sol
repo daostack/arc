@@ -83,7 +83,6 @@ contract ReputationTokenTrade is VotingMachineCallbacks, ProposalExecuteInterfac
         return true;
     }
 
-
     function execute(bytes32 _proposalId) public {
         Proposal memory proposal = proposals[_proposalId];
         require(proposal.decided, "must be a decided proposal");

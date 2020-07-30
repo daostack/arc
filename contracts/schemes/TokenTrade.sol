@@ -77,7 +77,6 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
     onlyVotingMachine(_proposalId)
     override
     returns(bool) {
-        Proposal memory proposal = proposals[_proposalId];
         if (_decision == 1) {
             proposals[_proposalId].passed = true;
         }
@@ -86,7 +85,6 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
     }
-
 
     function execute(bytes32 _proposalId) public {
         Proposal storage proposal = proposals[_proposalId];
