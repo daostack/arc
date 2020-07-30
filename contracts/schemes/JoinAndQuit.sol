@@ -1,4 +1,4 @@
-pragma solidity ^0.6.10;
+pragma solidity ^0.6.12;
 // SPDX-License-Identifier: GPL-3.0
 
 import "../votingMachines/VotingMachineCallbacks.sol";
@@ -53,9 +53,10 @@ contract JoinAndQuit is
     event ProposalExecuted(address indexed _avatar, bytes32 indexed _proposalId, int256 _decision);
 
     struct Proposal {
-        bool accepted;
         address proposedMember;
         uint256 funding;
+        bool executed;
+        bool accepted;
     }
 
     struct MemberFund {
@@ -124,13 +125,17 @@ contract JoinAndQuit is
     onlyVotingMachine(_proposalId)
     override
     returns(bool) {
-        require(proposals[_proposalId].accepted == false);
-        require(proposals[_proposalId].proposedMember != address(0));
         Proposal memory proposal = proposals[_proposalId];
+        require(proposal.proposedMember != address(0), "not a valid proposal");
+        require(proposal.executed == false, "proposal already been executed");
+        proposals[_proposalId].executed = true;
+
         bool success;
         // Check if vote was successful:
         if ((_decision == 1) && (avatar.nativeReputation().balanceOf(proposal.proposedMember) == 0)) {
             proposals[_proposalId].accepted = true;
+            fundings[proposal.proposedMember].funding = proposal.funding;
+            totalDonation = totalDonation.add(proposal.funding);
             if (fundingToken == IERC20(0)) {
                 // solhint-disable-next-line
                 (success, ) = address(avatar).call{value:proposal.funding}("");
@@ -138,8 +143,7 @@ contract JoinAndQuit is
             } else {
                 fundingToken.safeTransfer(address(avatar), proposal.funding);
             }
-            fundings[proposal.proposedMember].funding = proposal.funding;
-            totalDonation = totalDonation.add(proposal.funding);
+            //this should be called/check after the transfer to the avatar.
             setFundingGoalReachedFlag();
         } else {
             if (fundingToken == IERC20(0)) {
@@ -182,9 +186,10 @@ contract JoinAndQuit is
         bytes32 proposalId = votingMachine.propose(2, voteParamsHash, proposer, address(avatar));
 
         Proposal memory proposal = Proposal({
-            accepted: false,
+            executed: false,
             proposedMember: proposer,
-            funding : _feeAmount
+            funding : _feeAmount,
+            accepted: false
         });
         proposals[proposalId] = proposal;
 
@@ -210,9 +215,9 @@ contract JoinAndQuit is
         Proposal storage proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "no member to redeem");
         require(!fundings[proposal.proposedMember].rageQuit, "member already rageQuit");
+        require(proposal.accepted == true, " proposal not accepted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposal.proposedMember = address(0);
-        require(proposal.accepted == true, " proposal not accepted");
         if (memberReputation == 0) {
             reputation = _proposal.funding;
         } else {
@@ -258,12 +263,12 @@ contract JoinAndQuit is
         } else {
             refundAmount = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
         }
+        totalDonation = totalDonation.sub(userDonation);
         sendToBeneficiary(refundAmount, msg.sender);
         uint256 msgSenderReputation = avatar.nativeReputation().balanceOf(msg.sender);
         require(
         Controller(
         avatar.owner()).burnReputation(msgSenderReputation, msg.sender));
-        totalDonation = totalDonation.sub(userDonation);
         emit RageQuit(address(avatar), msg.sender, refundAmount);
     }
 
