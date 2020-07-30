@@ -85,7 +85,7 @@ contract ReputationTokenTrade is VotingMachineCallbacks, ProposalExecuteInterfac
 
 
     function execute(bytes32 _proposalId) public {
-        Proposal storage proposal = proposals[_proposalId];
+        Proposal memory proposal = proposals[_proposalId];
         require(proposal.decided, "must be a decided proposal");
         if (proposal.passed) {
             proposal.sendToken.safeTransfer(address(avatar), proposal.sendTokenAmount);
