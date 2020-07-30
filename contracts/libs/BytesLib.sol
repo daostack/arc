@@ -6,7 +6,7 @@
  *      The library lets you concatenate, slice and type cast bytes arrays both in memory and storage.
  */
 
-pragma solidity ^0.6.10;
+pragma solidity ^0.6.12;
 // SPDX-License-Identifier: GPL-3.0
 
 
