@@ -352,6 +352,15 @@ contract('JoinAndQuit', accounts => {
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      try {
+        await testSetup.joinAndQuit.proposeToJoin(
+                                                             "description-hash",
+                                                             testSetup.minFeeToJoin,
+                                                             {from:accounts[3]});
+         assert(false, 'accepted candidate which not redeemed yet cannt be proposed again');
+      } catch (ex) {
+         helpers.assertVMException(ex);
+      }
       tx = await testSetup.joinAndQuit.redeemReputation(proposalId);
       assert.equal(tx.logs[0].event, "RedeemReputation");
       assert.equal(tx.logs[0].args._amount, testSetup.memberReputation);
