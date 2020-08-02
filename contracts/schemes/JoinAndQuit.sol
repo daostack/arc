@@ -210,23 +210,22 @@ contract JoinAndQuit is
     * @return reputation the redeemed reputation.
     */
     function redeemReputation(bytes32 _proposalId) public returns(uint256 reputation) {
-        Proposal memory _proposal = proposals[_proposalId];
-        Proposal storage proposal = proposals[_proposalId];
+        Proposal memory proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "no member to redeem");
         require(!fundings[proposal.proposedMember].rageQuit, "member already rageQuit");
         require(fundings[proposal.proposedMember].state == MemeberState.Accepted, "member not accepeted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
-        proposal.proposedMember = address(0);
+        proposals[_proposalId].proposedMember = address(0);
         fundings[proposal.proposedMember].state = MemeberState.ReputationRedeemed;
         if (memberReputation == 0) {
-            reputation = _proposal.funding;
+            reputation = proposal.funding;
         } else {
             reputation = memberReputation;
         }
         require(
         Controller(
-        avatar.owner()).mintReputation(reputation, _proposal.proposedMember), "failed to mint reputation");
-        emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, reputation);
+        avatar.owner()).mintReputation(reputation, proposal.proposedMember), "failed to mint reputation");
+        emit RedeemReputation(address(avatar), _proposalId, proposal.proposedMember, reputation);
     }
 
     /**
