@@ -1,10 +1,10 @@
 const helpers = require("./helpers");
-const JoinAndQuit = artifacts.require("./JoinAndQuit.sol");
+const Join = artifacts.require("./Join.sol");
 const FundingRequest = artifacts.require("./FundingRequest.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Redeemer = artifacts.require("./Redeemer.sol");
 
-class JoinAndQuitParams {
+class JoinParams {
   constructor() {
   }
 }
@@ -14,7 +14,7 @@ class FundingRequestParams {
   }
 }
 
-const setupJoinAndQuit = async function(
+const setupJoin = async function(
                                             accounts,
                                             genesisProtocol,
                                             token,
@@ -24,42 +24,40 @@ const setupJoinAndQuit = async function(
                                             _fundingGoal,
                                             _fundingGoalDeadline
                                             ) {
-  var joinAndQuitParams = new JoinAndQuitParams();
+  var joinParams = new JoinParams();
 
   if (genesisProtocol === true) {
-    joinAndQuitParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
-    joinAndQuitParams.initdata = await new web3.eth.Contract(registration.joinAndQuit.abi)
+    joinParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
+    joinParams.initdata = await new web3.eth.Contract(registration.join.abi)
                           .methods
                           .initialize(helpers.NULL_ADDRESS,
-                            joinAndQuitParams.votingMachine.genesisProtocol.address,
-                            joinAndQuitParams.votingMachine.uintArray,
-                            joinAndQuitParams.votingMachine.voteOnBehalf,
+                            joinParams.votingMachine.genesisProtocol.address,
+                            joinParams.votingMachine.uintArray,
+                            joinParams.votingMachine.voteOnBehalf,
                             helpers.NULL_HASH,
                             _fundingToken,
                             _minFeeToJoin,
                             _memberReputation,
                             _fundingGoal,
-                           _fundingGoalDeadline,
-                           false)
+                           _fundingGoalDeadline)
                           .encodeABI();
     } else {
-  joinAndQuitParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
-  joinAndQuitParams.initdata = await new web3.eth.Contract(registration.joinAndQuit.abi)
+  joinParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
+  joinParams.initdata = await new web3.eth.Contract(registration.join.abi)
                         .methods
                         .initialize(helpers.NULL_ADDRESS,
-                          joinAndQuitParams.votingMachine.absoluteVote.address,
+                          joinParams.votingMachine.absoluteVote.address,
                           [1,1,1,1,1,1,1,1,1,1,1],
                           helpers.NULL_ADDRESS,
-                          joinAndQuitParams.votingMachine.params,
+                          joinParams.votingMachine.params,
                           _fundingToken,
                           _minFeeToJoin,
                           _memberReputation,
                           _fundingGoal,
-                         _fundingGoalDeadline,
-                         false)
+                         _fundingGoalDeadline)
                         .encodeABI();
   }
-  return joinAndQuitParams;
+  return joinParams;
 };
 
 
@@ -125,7 +123,7 @@ const setup = async function (accounts,
      fundPath = helpers.NULL_ADDRESS;
   }
 
-  testSetup.joinAndQuitParams= await setupJoinAndQuit(
+  testSetup.joinParams= await setupJoin(
                      accounts,
                      genesisProtocol,
                      tokenAddress,
@@ -151,32 +149,32 @@ const setup = async function (accounts,
                                                                       [1000,0,0],
                                                                       testSetup.reputationArray,
                                                                       0,
-                                                                      [web3.utils.fromAscii("JoinAndQuit"), web3.utils.fromAscii("FundingRequest")],
-                                                                      helpers.concatBytes(testSetup.joinAndQuitParams.initdata, testSetup.fundingRequestParams.initdata),
-                                                                      [helpers.getBytesLength(testSetup.joinAndQuitParams.initdata), helpers.getBytesLength(testSetup.fundingRequestParams.initdata)],
+                                                                      [web3.utils.fromAscii("Join"), web3.utils.fromAscii("FundingRequest")],
+                                                                      helpers.concatBytes(testSetup.joinParams.initdata, testSetup.fundingRequestParams.initdata),
+                                                                      [helpers.getBytesLength(testSetup.joinParams.initdata), helpers.getBytesLength(testSetup.fundingRequestParams.initdata)],
                                                                       [permissions, permissions],
                                                                       "metaData");
 
-  testSetup.joinAndQuit = await JoinAndQuit.at(tx.logs[6].args._scheme);
+  testSetup.join = await Join.at(tx.logs[6].args._scheme);
   testSetup.fundingRequest = await FundingRequest.at(tx.logs[8].args._scheme);
 
 
   if(setupJAQProposal) {
     await testSetup.standardTokenMock.transfer(accounts[3],10000);
-    await testSetup.standardTokenMock.approve(testSetup.joinAndQuit.address,testSetup.fundingGoal,{from:accounts[3]});
+    await testSetup.standardTokenMock.approve(testSetup.join.address,testSetup.fundingGoal,{from:accounts[3]});
     let value = 0;
     if (ethFunding) {
         value = testSetup.fundingGoal;
     }
-    tx = await testSetup.joinAndQuit.proposeToJoin(
+    tx = await testSetup.join.proposeToJoin(
                                                   "description-hash",
                                                   testSetup.fundingGoal,
                                                   {value, from:accounts[3]});
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
     if (genesisProtocol === false) {
-      await testSetup.joinAndQuitParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     } else {
-      await testSetup.joinAndQuitParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.joinParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     }
   }
   return testSetup;
