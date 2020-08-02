@@ -215,7 +215,11 @@ contract JoinAndQuit is
         require(!fundings[proposal.proposedMember].rageQuit, "member already rageQuit");
         require(fundings[proposal.proposedMember].state == MemeberState.Accepted, "member not accepeted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
+<<<<<<< HEAD
         proposals[_proposalId].proposedMember = address(0);
+=======
+        proposal.proposedMember = address(0);
+>>>>>>> joinandquit fix
         fundings[proposal.proposedMember].state = MemeberState.ReputationRedeemed;
         if (memberReputation == 0) {
             reputation = proposal.funding;
