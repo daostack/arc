@@ -180,7 +180,7 @@ contract JoinAndQuit is
         require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
         fundings[proposer].state = MemeberState.Candidate;
         if (fundingToken == IERC20(0)) {
-            require(_feeAmount == msg.value, "ETH received shoul match the _feeAmount");
+            require(_feeAmount == msg.value, "ETH received should match the _feeAmount");
         } else {
             fundingToken.safeTransferFrom(proposer, address(this), _feeAmount);
         }
