@@ -20,6 +20,8 @@ contract JoinAndQuit is
     using SafeERC20 for IERC20;
     using StringUtil for string;
 
+    enum MemeberState { None, Candidate, Accepted, Rejected, ReputationRedeemed }
+
     event JoinInProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -55,12 +57,10 @@ contract JoinAndQuit is
     struct Proposal {
         address proposedMember;
         uint256 funding;
-        bool executed;
-        bool accepted;
     }
 
     struct MemberFund {
-        bool candidate;
+        MemeberState state;
         bool rageQuit;
         uint256 funding;
     }
@@ -127,13 +127,12 @@ contract JoinAndQuit is
     returns(bool) {
         Proposal memory proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "not a valid proposal");
-        require(proposal.executed == false, "proposal already been executed");
-        proposals[_proposalId].executed = true;
+        require(fundings[proposal.proposedMember].state == MemeberState.Candidate, "proposal already been executed");
 
         bool success;
         // Check if vote was successful:
         if ((_decision == 1) && (avatar.nativeReputation().balanceOf(proposal.proposedMember) == 0)) {
-            proposals[_proposalId].accepted = true;
+            fundings[proposal.proposedMember].state = MemeberState.Accepted;
             fundings[proposal.proposedMember].funding = proposal.funding;
             totalDonation = totalDonation.add(proposal.funding);
             if (fundingToken == IERC20(0)) {
@@ -146,15 +145,16 @@ contract JoinAndQuit is
             //this should be called/check after the transfer to the avatar.
             setFundingGoalReachedFlag();
         } else {
+            fundings[proposal.proposedMember].state = MemeberState.Rejected;
             if (fundingToken == IERC20(0)) {
                 // solhint-disable-next-line
                 (success, ) = proposal.proposedMember.call{value:proposal.funding}("");
-                require(success, "sendEther to avatar failed");
+                require(success, "sendEther back to candidate failed");
             } else {
                 fundingToken.safeTransfer(proposal.proposedMember, proposal.funding);
             }
         }
-        fundings[proposal.proposedMember].candidate = false;
+
         emit ProposalExecuted(address(avatar), _proposalId, _decision);
         return true;
     }
@@ -174,22 +174,21 @@ contract JoinAndQuit is
     returns(bytes32)
     {
         address proposer = msg.sender;
-        require(!fundings[proposer].candidate, "already a candidate");
+        require(fundings[proposer].state != MemeberState.Candidate, "already a candidate");
+        require(fundings[proposer].state != MemeberState.Accepted, "accepted and not redeemed yet");
         require(avatar.nativeReputation().balanceOf(proposer) == 0, "already a member");
         require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
-        fundings[proposer].candidate = true;
+        fundings[proposer].state = MemeberState.Candidate;
         if (fundingToken == IERC20(0)) {
-            require(_feeAmount == msg.value, "ETH received shoul match the _feeAmount");
+            require(_feeAmount == msg.value, "ETH received should match the _feeAmount");
         } else {
             fundingToken.safeTransferFrom(proposer, address(this), _feeAmount);
         }
         bytes32 proposalId = votingMachine.propose(2, voteParamsHash, proposer, address(avatar));
 
         Proposal memory proposal = Proposal({
-            executed: false,
             proposedMember: proposer,
-            funding : _feeAmount,
-            accepted: false
+            funding : _feeAmount
         });
         proposals[proposalId] = proposal;
 
@@ -211,22 +210,22 @@ contract JoinAndQuit is
     * @return reputation the redeemed reputation.
     */
     function redeemReputation(bytes32 _proposalId) public returns(uint256 reputation) {
-        Proposal memory _proposal = proposals[_proposalId];
-        Proposal storage proposal = proposals[_proposalId];
+        Proposal memory proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "no member to redeem");
         require(!fundings[proposal.proposedMember].rageQuit, "member already rageQuit");
-        require(proposal.accepted == true, " proposal not accepted");
+        require(fundings[proposal.proposedMember].state == MemeberState.Accepted, "member not accepeted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
-        proposal.proposedMember = address(0);
+        proposals[_proposalId].proposedMember = address(0);
+        fundings[proposal.proposedMember].state = MemeberState.ReputationRedeemed;
         if (memberReputation == 0) {
-            reputation = _proposal.funding;
+            reputation = proposal.funding;
         } else {
             reputation = memberReputation;
         }
         require(
         Controller(
-        avatar.owner()).mintReputation(reputation, _proposal.proposedMember), "failed to mint reputation");
-        emit RedeemReputation(address(avatar), _proposalId, _proposal.proposedMember, reputation);
+        avatar.owner()).mintReputation(reputation, proposal.proposedMember), "failed to mint reputation");
+        emit RedeemReputation(address(avatar), _proposalId, proposal.proposedMember, reputation);
     }
 
     /**
@@ -264,11 +263,11 @@ contract JoinAndQuit is
             refundAmount = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
         }
         totalDonation = totalDonation.sub(userDonation);
-        sendToBeneficiary(refundAmount, msg.sender);
         uint256 msgSenderReputation = avatar.nativeReputation().balanceOf(msg.sender);
         require(
         Controller(
         avatar.owner()).burnReputation(msgSenderReputation, msg.sender));
+        sendToBeneficiary(refundAmount, msg.sender);
         emit RageQuit(address(avatar), msg.sender, refundAmount);
     }
 
