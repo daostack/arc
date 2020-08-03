@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc-experimental",
-  "version": "0.1.2-rc.3",
+  "version": "0.1.2-rc.4",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
