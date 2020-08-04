@@ -19,7 +19,7 @@ contract Join is
     using SafeERC20 for IERC20;
     using StringUtil for string;
 
-    enum MemeberState { None, Candidate, Accepted, Rejected, ReputationRedeemed }
+    enum MemberState { None, Candidate, Accepted, Rejected, ReputationRedeemed }
 
     event JoinInProposal(
         address indexed _avatar,
@@ -47,7 +47,7 @@ contract Join is
     }
 
     mapping(bytes32=>Proposal) public proposals;
-    mapping(address=>MemeberState) public membersState;
+    mapping(address=>MemberState) public membersState;
 
     IERC20 public fundingToken;
     uint256 public minFeeToJoin;
@@ -104,12 +104,12 @@ contract Join is
     returns(bool) {
         Proposal memory proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "not a valid proposal");
-        require(membersState[proposal.proposedMember] == MemeberState.Candidate, "proposal already been executed");
+        require(membersState[proposal.proposedMember] == MemberState.Candidate, "member is not a cadidate");
 
         bool success;
         // Check if vote was successful:
         if ((_decision == 1) && (avatar.nativeReputation().balanceOf(proposal.proposedMember) == 0)) {
-            membersState[proposal.proposedMember] = MemeberState.Accepted;
+            membersState[proposal.proposedMember] = MemberState.Accepted;
             totalDonation = totalDonation.add(proposal.funding);
             if (fundingToken == IERC20(0)) {
                 // solhint-disable-next-line
@@ -121,7 +121,7 @@ contract Join is
             //this should be called/check after the transfer to the avatar.
             setFundingGoalReachedFlag();
         } else {
-            membersState[proposal.proposedMember] = MemeberState.Rejected;
+            membersState[proposal.proposedMember] = MemberState.Rejected;
             if (fundingToken == IERC20(0)) {
                 // solhint-disable-next-line
                 (success, ) = proposal.proposedMember.call{value:proposal.funding}("");
@@ -150,11 +150,11 @@ contract Join is
     returns(bytes32)
     {
         address proposer = msg.sender;
-        require(membersState[proposer] != MemeberState.Candidate, "already a candidate");
-        require(membersState[proposer] != MemeberState.Accepted, "accepted and not redeemed yet");
-        require(avatar.nativeReputation().balanceOf(proposer) == 0, "already a member");
-        require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
-        membersState[proposer] = MemeberState.Candidate;
+        require(membersState[proposer] != MemberState.Candidate, "proposer is already a candidate");
+        require(membersState[proposer] != MemberState.Accepted, "proposer is accepted and not redeemed yet");
+        require(avatar.nativeReputation().balanceOf(proposer) == 0, "proposer is already a member");
+        require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= than the minFeeToJoin");
+        membersState[proposer] = MemberState.Candidate;
         if (fundingToken == IERC20(0)) {
             require(_feeAmount == msg.value, "ETH received should match the _feeAmount");
         } else {
@@ -188,11 +188,11 @@ contract Join is
     function redeemReputation(bytes32 _proposalId) public returns(uint256 reputation) {
         Proposal memory proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "no member to redeem");
-        require(membersState[proposal.proposedMember] == MemeberState.Accepted, "member not accepeted");
+        require(membersState[proposal.proposedMember] == MemberState.Accepted, "member not accepted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposals[_proposalId].proposedMember = address(0);
         proposals[_proposalId].proposedMember = address(0);
-        membersState[proposal.proposedMember] = MemeberState.ReputationRedeemed;
+        membersState[proposal.proposedMember] = MemberState.ReputationRedeemed;
         if (memberReputation == 0) {
             reputation = proposal.funding;
         } else {
