@@ -190,20 +190,9 @@ contract Join is
         require(proposal.proposedMember != address(0), "no member to redeem");
         require(membersState[proposal.proposedMember] == MemeberState.Accepted, "member not accepeted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
-<<<<<<< HEAD
-<<<<<<< HEAD
         proposals[_proposalId].proposedMember = address(0);
-<<<<<<< HEAD:contracts/schemes/JoinAndQuit.sol
-=======
-        proposal.proposedMember = address(0);
->>>>>>> joinandquit fix
-=======
         proposals[_proposalId].proposedMember = address(0);
->>>>>>> opt
-        fundings[proposal.proposedMember].state = MemeberState.ReputationRedeemed;
-=======
         membersState[proposal.proposedMember] = MemeberState.ReputationRedeemed;
->>>>>>> remove ragequit and  refund:contracts/schemes/Join.sol
         if (memberReputation == 0) {
             reputation = proposal.funding;
         } else {
