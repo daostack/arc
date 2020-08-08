@@ -4,7 +4,7 @@ pragma solidity ^0.6.12;
 import "../schemes/ContributionReward.sol";
 import "../schemes/ContributionRewardExt.sol";
 import "../schemes/FundingRequest.sol";
-import "../schemes/JoinAndQuit.sol";
+import "../schemes/Join.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
 
@@ -125,11 +125,11 @@ contract Redeemer {
      * @dev helper to redeem rewards for a proposal
      * It calls execute on the proposal if it is not yet executed.
      * It tries to redeem reputation and stake from the GenesisProtocol.
-     * It tries to redeem proposal rewards from the JoinAndQuit scheme.
+     * It tries to redeem proposal rewards from the Join scheme.
      * This function does not emit events.
-     * A client should listen to GenesisProtocol and JoinAndQuit redemption events
+     * A client should listen to GenesisProtocol and Join redemption events
      * to monitor redemption operations.
-     * @param _joinAndQuit joinAndQuit scheme
+     * @param _join join scheme
      * @param _genesisProtocol genesisProtocol
      * @param _proposalId the ID of the voting in the voting machine
      * @param _beneficiary beneficiary
@@ -145,9 +145,9 @@ contract Redeemer {
      * @return winningVote
      *                   1 - executed or closed and the winning vote is YES
      *                   2 - executed or closed and the winning vote is NO
-     * @return joinAndQuitReputationReward Reputation - from JoinAndQuit reputation reward
+     * @return joinReputationReward Reputation - from Join reputation reward
      */
-    function redeemJoinAndQuit(JoinAndQuit _joinAndQuit,
+    function redeemJoin(Join _join,
                             GenesisProtocol _genesisProtocol,
                             bytes32 _proposalId,
                             address _beneficiary)
@@ -156,14 +156,14 @@ contract Redeemer {
                 uint[2] memory gpDaoBountyReward,
                 bool executed,
                 uint256 winningVote,
-                uint256 joinAndQuitReputationReward
+                uint256 joinReputationReward
                 )
     {
-        bool callJoinAndQuit;
-        (gpRewards, gpDaoBountyReward, executed, winningVote, callJoinAndQuit) =
+        bool callJoin;
+        (gpRewards, gpDaoBountyReward, executed, winningVote, callJoin) =
         genesisProtocolRedeem(_genesisProtocol, _proposalId, _beneficiary);
-        if (callJoinAndQuit) {
-            joinAndQuitReputationReward = _joinAndQuit.redeemReputation(_proposalId);
+        if (callJoin) {
+            joinReputationReward = _join.redeemReputation(_proposalId);
         }
     }
 

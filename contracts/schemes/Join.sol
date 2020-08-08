@@ -9,10 +9,9 @@ import "./CommonInterface.sol";
 /**
  * @title A scheme for join in a dao.
  * - A member can be proposed to join in by sending a min amount of fee.
- * - A member can ask to quite (RageQuit) a dao on any time.
  * - A member can donate to a dao.
  */
-contract JoinAndQuit is
+contract Join is
         VotingMachineCallbacks,
         ProposalExecuteInterface,
         CommonInterface {
@@ -20,7 +19,7 @@ contract JoinAndQuit is
     using SafeERC20 for IERC20;
     using StringUtil for string;
 
-    enum MemeberState { None, Candidate, Accepted, Rejected, ReputationRedeemed }
+    enum MemberState { None, Candidate, Accepted, Rejected, ReputationRedeemed }
 
     event JoinInProposal(
         address indexed _avatar,
@@ -32,18 +31,6 @@ contract JoinAndQuit is
 
     event FundedBeforeDeadline(
         address indexed _avatar
-    );
-
-    event RageQuit(
-        address indexed _avatar,
-        address indexed _rageQuitter,
-        uint256 indexed _refund
-    );
-
-    event Refund(
-        address indexed _avatar,
-        address indexed _beneficiary,
-        uint256 indexed _refund
     );
 
     event RedeemReputation(
@@ -59,14 +46,8 @@ contract JoinAndQuit is
         uint256 funding;
     }
 
-    struct MemberFund {
-        MemeberState state;
-        bool rageQuit;
-        uint256 funding;
-    }
-
     mapping(bytes32=>Proposal) public proposals;
-    mapping(address=>MemberFund) public fundings;
+    mapping(address=>MemberState) public membersState;
 
     IERC20 public fundingToken;
     uint256 public minFeeToJoin;
@@ -74,7 +55,6 @@ contract JoinAndQuit is
     uint256 public fundingGoal;
     uint256 public fundingGoalDeadline;
     uint256 public totalDonation;
-    bool public rageQuitEnable;
 
     /**
      * @dev initialize
@@ -89,7 +69,6 @@ contract JoinAndQuit is
               if this param is zero so the repution will be allocated proportional to the fee paid
      * @param _fundingGoal the funding goal
      * @param _fundingGoalDeadline the funding goal deadline
-     * @param _rageQuitEnable rageQuit enabling flag
      */
     function initialize(
         Avatar _avatar,
@@ -101,8 +80,7 @@ contract JoinAndQuit is
         uint256 _minFeeToJoin,
         uint256 _memberReputation,
         uint256 _fundingGoal,
-        uint256 _fundingGoalDeadline,
-        bool    _rageQuitEnable
+        uint256 _fundingGoalDeadline
     )
     external
     {
@@ -112,7 +90,6 @@ contract JoinAndQuit is
         memberReputation = _memberReputation;
         fundingGoal = _fundingGoal;
         fundingGoalDeadline = _fundingGoalDeadline;
-        rageQuitEnable = _rageQuitEnable;
     }
 
     /**
@@ -127,13 +104,12 @@ contract JoinAndQuit is
     returns(bool) {
         Proposal memory proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "not a valid proposal");
-        require(fundings[proposal.proposedMember].state == MemeberState.Candidate, "proposal already been executed");
+        require(membersState[proposal.proposedMember] == MemberState.Candidate, "member is not a cadidate");
 
         bool success;
         // Check if vote was successful:
         if ((_decision == 1) && (avatar.nativeReputation().balanceOf(proposal.proposedMember) == 0)) {
-            fundings[proposal.proposedMember].state = MemeberState.Accepted;
-            fundings[proposal.proposedMember].funding = proposal.funding;
+            membersState[proposal.proposedMember] = MemberState.Accepted;
             totalDonation = totalDonation.add(proposal.funding);
             if (fundingToken == IERC20(0)) {
                 // solhint-disable-next-line
@@ -145,7 +121,7 @@ contract JoinAndQuit is
             //this should be called/check after the transfer to the avatar.
             setFundingGoalReachedFlag();
         } else {
-            fundings[proposal.proposedMember].state = MemeberState.Rejected;
+            membersState[proposal.proposedMember] = MemberState.Rejected;
             if (fundingToken == IERC20(0)) {
                 // solhint-disable-next-line
                 (success, ) = proposal.proposedMember.call{value:proposal.funding}("");
@@ -174,11 +150,11 @@ contract JoinAndQuit is
     returns(bytes32)
     {
         address proposer = msg.sender;
-        require(fundings[proposer].state != MemeberState.Candidate, "already a candidate");
-        require(fundings[proposer].state != MemeberState.Accepted, "accepted and not redeemed yet");
-        require(avatar.nativeReputation().balanceOf(proposer) == 0, "already a member");
-        require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= then the minFeeToJoin");
-        fundings[proposer].state = MemeberState.Candidate;
+        require(membersState[proposer] != MemberState.Candidate, "proposer is already a candidate");
+        require(membersState[proposer] != MemberState.Accepted, "proposer is accepted and not redeemed yet");
+        require(avatar.nativeReputation().balanceOf(proposer) == 0, "proposer is already a member");
+        require(_feeAmount >= minFeeToJoin, "_feeAmount should be >= than the minFeeToJoin");
+        membersState[proposer] = MemberState.Candidate;
         if (fundingToken == IERC20(0)) {
             require(_feeAmount == msg.value, "ETH received should match the _feeAmount");
         } else {
@@ -212,11 +188,11 @@ contract JoinAndQuit is
     function redeemReputation(bytes32 _proposalId) public returns(uint256 reputation) {
         Proposal memory proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "no member to redeem");
-        require(!fundings[proposal.proposedMember].rageQuit, "member already rageQuit");
-        require(fundings[proposal.proposedMember].state == MemeberState.Accepted, "member not accepeted");
+        require(membersState[proposal.proposedMember] == MemberState.Accepted, "member not accepted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposals[_proposalId].proposedMember = address(0);
-        fundings[proposal.proposedMember].state = MemeberState.ReputationRedeemed;
+        proposals[_proposalId].proposedMember = address(0);
+        membersState[proposal.proposedMember] = MemberState.ReputationRedeemed;
         if (memberReputation == 0) {
             reputation = proposal.funding;
         } else {
@@ -226,49 +202,6 @@ contract JoinAndQuit is
         Controller(
         avatar.owner()).mintReputation(reputation, proposal.proposedMember), "failed to mint reputation");
         emit RedeemReputation(address(avatar), _proposalId, proposal.proposedMember, reputation);
-    }
-
-    /**
-    * @dev refund refund donator if the the funding goal did not reached till the funding goal deadline.
-    * @return refundAmount the refund amount
-    */
-    function refund() public returns(uint256 refundAmount) {
-       // solhint-disable-next-line not-rely-on-time
-        require(now > fundingGoalDeadline, "can refund only after fundingGoalDeadline");
-        require(
-        (avatar.db(FUNDED_BEFORE_DEADLINE_KEY).hashCompareWithLengthCheck(FUNDED_BEFORE_DEADLINE_VALUE) == false),
-        "can refund only if funding goal not reached");
-        require(fundings[msg.sender].funding > 0, "no funds to refund");
-        refundAmount = fundings[msg.sender].funding;
-        fundings[msg.sender].funding = 0;
-        sendToBeneficiary(refundAmount, msg.sender);
-        emit Refund(address(avatar), msg.sender, refundAmount);
-    }
-
-    /**
-    * @dev rageQuit quit from the dao.
-    * can be done on any time
-    * REFUND = USER_DONATION * CURRENT_DAO_BALANCE / TOTAL_DONATIONS
-    * @return refundAmount the refund amount
-    */
-    function rageQuit() public returns(uint256 refundAmount) {
-        require(rageQuitEnable, "RageQuit disabled");
-        require(fundings[msg.sender].funding > 0, "no fund to RageQuit");
-        uint256 userDonation = fundings[msg.sender].funding;
-        fundings[msg.sender].funding = 0;
-        fundings[msg.sender].rageQuit = true;
-        if (fundingToken == IERC20(0)) {
-            refundAmount = userDonation.mul(address(avatar.vault()).balance).div(totalDonation);
-        } else {
-            refundAmount = userDonation.mul(fundingToken.balanceOf(address(avatar))).div(totalDonation);
-        }
-        totalDonation = totalDonation.sub(userDonation);
-        uint256 msgSenderReputation = avatar.nativeReputation().balanceOf(msg.sender);
-        require(
-        Controller(
-        avatar.owner()).burnReputation(msgSenderReputation, msg.sender));
-        sendToBeneficiary(refundAmount, msg.sender);
-        emit RageQuit(address(avatar), msg.sender, refundAmount);
     }
 
     /**
@@ -291,23 +224,6 @@ contract JoinAndQuit is
             avatar.owner()).
             setDBValue(CommonInterface.FUNDED_BEFORE_DEADLINE_KEY, CommonInterface.FUNDED_BEFORE_DEADLINE_VALUE));
             emit FundedBeforeDeadline(address(avatar));
-        }
-    }
-
-    /**
-    * @dev sendToBeneficiary send amount of eth or token to beneficiary
-    * @param _amount the amount to send
-    * @param _beneficiary the beneficiary
-    */
-    function sendToBeneficiary(uint256 _amount, address payable _beneficiary) private {
-        if (fundingToken == IERC20(0)) {
-            require(
-            Controller(
-            avatar.owner()).sendEther(_amount, _beneficiary), "send ether failed");
-        } else {
-            require(
-            Controller(
-            avatar.owner()).externalTokenTransfer(fundingToken, _beneficiary, _amount), "send token failed");
         }
     }
 
