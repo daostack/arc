@@ -191,7 +191,6 @@ contract Join is
         require(membersState[proposal.proposedMember] == MemberState.Accepted, "member not accepted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
         proposals[_proposalId].proposedMember = address(0);
-        proposals[_proposalId].proposedMember = address(0);
         membersState[proposal.proposedMember] = MemberState.ReputationRedeemed;
         if (memberReputation == 0) {
             reputation = proposal.funding;
