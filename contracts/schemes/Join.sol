@@ -104,7 +104,7 @@ contract Join is
     returns(bool) {
         Proposal memory proposal = proposals[_proposalId];
         require(proposal.proposedMember != address(0), "not a valid proposal");
-        require(membersState[proposal.proposedMember] == MemberState.Candidate, "member is not a cadidate");
+        require(membersState[proposal.proposedMember] == MemberState.Candidate, "member is not a candidate");
 
         bool success;
         // Check if vote was successful:
@@ -190,7 +190,6 @@ contract Join is
         require(proposal.proposedMember != address(0), "no member to redeem");
         require(membersState[proposal.proposedMember] == MemberState.Accepted, "member not accepted");
         //set proposal proposedMember to zero to prevent reentrancy attack.
-        proposals[_proposalId].proposedMember = address(0);
         proposals[_proposalId].proposedMember = address(0);
         membersState[proposal.proposedMember] = MemberState.ReputationRedeemed;
         if (memberReputation == 0) {

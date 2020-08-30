@@ -39,7 +39,7 @@ const setupJoin = async function(
                                             ) {
   var joinParams = new JoinParams();
 
-  if (genesisProtocol === true) {
+  if (genesisProtocol === 1) {
     joinParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
     joinParams.initdata = await new web3.eth.Contract(registration.join.abi)
                           .methods
@@ -54,7 +54,7 @@ const setupJoin = async function(
                             _fundingGoal,
                            _fundingGoalDeadline)
                           .encodeABI();
-    } else {
+    } else if (genesisProtocol === 0){
   joinParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
   joinParams.initdata = await new web3.eth.Contract(registration.join.abi)
                         .methods
@@ -69,13 +69,27 @@ const setupJoin = async function(
                           _fundingGoal,
                          _fundingGoalDeadline)
                         .encodeABI();
+  } else {
+    joinParams.initdata = await new web3.eth.Contract(registration.join.abi)
+                          .methods
+                          .initialize(helpers.NULL_ADDRESS,
+                            accounts[0],
+                            [0,0,0,0,0,0,0,0,0,0,0],
+                            helpers.NULL_ADDRESS,
+                            "0x1234",
+                            _fundingToken,
+                            _minFeeToJoin,
+                            _memberReputation,
+                            _fundingGoal,
+                           _fundingGoalDeadline)
+                          .encodeABI();
   }
   return joinParams;
 };
 var registration;
 const setup = async function (accounts,
                               ethFunding = false,
-                              genesisProtocol = false,
+                              genesisProtocol = 0,
                               tokenAddress=helpers.NULL_ADDRESS,
                               minFeeToJoin = 100,
                               memberReputation = 100,
@@ -366,7 +380,7 @@ contract('Join', accounts => {
     });
 
     it("reputation redeem memberReputation 0", async function() {
-      var testSetup = await setup(accounts, false, false, helpers.NULL_ADDRESS, 100, 0);
+      var testSetup = await setup(accounts, false, 0, helpers.NULL_ADDRESS, 100, 0);
       await testSetup.standardTokenMock.approve(testSetup.join.address,testSetup.minFeeToJoin,{from:accounts[3]});
       var tx = await testSetup.join.proposeToJoin(
                                                            "description-hash",
@@ -383,7 +397,7 @@ contract('Join', accounts => {
     });
 
     it("reputation redeem + genesisProtocol", async function() {
-      var testSetup = await setup(accounts,false,true);
+      var testSetup = await setup(accounts,false,1);
       await testSetup.standardTokenMock.approve(testSetup.join.address,testSetup.minFeeToJoin,{from:accounts[3]});
       var tx = await testSetup.join.proposeToJoin(
                                                            "description-hash",
@@ -548,6 +562,16 @@ contract('Join', accounts => {
           .then(function(events){
               assert.equal(events[0].event,"FundedBeforeDeadline");
           });
+    });
+
+    it("bad vm", async function() {
+      var testSetup = await setup(accounts,false,2);
+      try {
+         await testSetup.join.executeProposal(helpers.NULL_HASH,1);
+         assert(false, 'not a valid proposal');
+      } catch (ex) {
+         helpers.assertVMException(ex);
+      }
     });
 
 });
