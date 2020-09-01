@@ -146,7 +146,7 @@ contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterf
             (_contractsToCall.length == _callData.length) && (_contractsToCall.length == _value.length),
             "Wrong length of _contractsToCall, _callData or _value arrays"
         );
-        bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
+        proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
 
         proposals[proposalId] = MultiCallProposal({
             contractsToCall: _contractsToCall,
