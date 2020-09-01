@@ -161,7 +161,6 @@ contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterf
         });
 
         emit NewMultiCallProposal(address(avatar), proposalId, _callData, _value, _descriptionHash, _contractsToCall);
-        return proposalId;
 
     }
 
