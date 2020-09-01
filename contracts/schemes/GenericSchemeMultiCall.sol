@@ -6,18 +6,18 @@ import "@daostack/infra/contracts/votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 
 /**
- * @title GenericScheme.
- * @dev  A scheme for proposing and executing calls to multiple arbitrary function
- * on whitelisted contract on behalf of the organization avatar.
+ * @title GenericSchemeMulticall.
+ * @dev  A scheme for proposing and executing one/multiple calls to or or multiple arbitrary functions
+ * on contracts on behalf of the organization avatar.
  */
 contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterface {
     event NewMultiCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
         bytes[]   _callData,
-        uint[] _value,
+        uint256[] _value,
         string  _descriptionHash,
-        address[] _contractToCall
+        address[] _contractsToCall
     );
 
     event ProposalExecuted(
@@ -42,14 +42,14 @@ contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterf
 
     // Details of a voting proposal:
     struct MultiCallProposal {
-        address[] contractToCall;
+        address[] contractsToCall;
         bytes[] callData;
         uint256[] value;
         bool exist;
         bool passed;
     }
 
-    mapping(bytes32=>MultiCallProposal) public organizationProposals;
+    mapping(bytes32=>MultiCallProposal) public proposals;
 
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
@@ -85,7 +85,7 @@ contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterf
     external
     onlyVotingMachine(_proposalId)
     returns(bool) {
-        MultiCallProposal storage proposal = organizationProposals[_proposalId];
+        MultiCallProposal storage proposal = proposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed == false, "cannot execute twice");
 
@@ -93,7 +93,7 @@ contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterf
             proposal.passed = true;
             execute(_proposalId);
         } else {
-            delete organizationProposals[_proposalId];
+            delete proposals[_proposalId];
             emit ProposalDeleted(address(avatar), _proposalId);
         }
 
@@ -106,7 +106,7 @@ contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterf
     * @param _proposalId the ID of the voting in the voting machine
     */
     function execute(bytes32 _proposalId) public {
-        MultiCallProposal storage proposal = organizationProposals[_proposalId];
+        MultiCallProposal storage proposal = proposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed, "proposal must passed by voting machine");
         proposal.exist = false;
@@ -114,41 +114,42 @@ contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterf
         bool success;
         Controller controller = Controller(avatar.owner());
 
-        for (uint i = 0; i < proposal.contractToCall.length; i ++) {
+        for (uint i = 0; i < proposal.contractsToCall.length; i ++) {
             (success, genericCallReturnValue) =
-            controller.genericCall(proposal.contractToCall[i], proposal.callData[i], avatar, proposal.value[i]);
+            controller.genericCall(proposal.contractsToCall[i], proposal.callData[i], avatar, proposal.value[i]);
+            /* All transactions must be successfull otherwise the whole proposal transaction will be reverted*/
             require(success, "Proposal call failed");
-            emit ProposalCallExecuted(address(avatar), _proposalId, proposal.contractToCall[i], genericCallReturnValue);
+            emit ProposalCallExecuted(address(avatar), _proposalId, proposal.contractsToCall[i], genericCallReturnValue);
         }
 
-        delete organizationProposals[_proposalId];
+        delete proposals[_proposalId];
         emit ProposalDeleted(address(avatar), _proposalId);
         emit ProposalExecuted(address(avatar), _proposalId);
 
     }
 
     /**
-    * @dev propose to call on behalf of the _avatar
-    *      The function trigger NewCallProposal event
-    * @param _contractToCall the contract to be called 
-    * @param _callData - The abi encode data for the call
-    * @param _value value(ETH) to transfer with the call
+    * @dev propose to call one or multiple contracts on behalf of the _avatar
+    *      The function trigger NewMultiCallProposal event
+    * @param _contractsToCall the contracts to be called 
+    * @param _callData - The abi encode data for the calls
+    * @param _value value(ETH) to transfer with the calls
     * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
 
-    function proposeCall(address[] memory _contractToCall, bytes[] memory _callData, uint256[] memory _value, string memory _descriptionHash)
+    function proposeCalls(address[] memory _contractsToCall, bytes[] memory _callData, uint256[] memory _value, string memory _descriptionHash)
     public
-    returns(bytes32)
+    returns(bytes32 proposalId)
     {
         require(
-            (_contractToCall.length == _callData.length) && (_contractToCall.length == _value.length),
-            "Wrong length of _contractToCall, _callData or _value arrays"
+            (_contractsToCall.length == _callData.length) && (_contractsToCall.length == _value.length),
+            "Wrong length of _contractsToCall, _callData or _value arrays"
         );
         bytes32 proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
 
-        organizationProposals[proposalId] = MultiCallProposal({
-            contractToCall: _contractToCall,
+        proposals[proposalId] = MultiCallProposal({
+            contractsToCall: _contractsToCall,
             callData: _callData,
             value: _value,
             exist: true,
@@ -159,7 +160,7 @@ contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterf
             avatar:avatar
         });
 
-        emit NewMultiCallProposal(address(avatar), proposalId, _callData, _value, _descriptionHash, _contractToCall);
+        emit NewMultiCallProposal(address(avatar), proposalId, _callData, _value, _descriptionHash, _contractsToCall);
         return proposalId;
 
     }
