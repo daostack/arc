@@ -232,7 +232,7 @@ contract('GenericScheme', function(accounts) {
         });
       });
 
-      it("Wallet - execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
+      it.only("Wallet - execute proposeVote -positive decision - check action - with GenesisProtocol", async function() {
          var wallet =await Wallet.new();
          await web3.eth.sendTransaction({from:accounts[0],to:wallet.address, value: web3.utils.toWei('1', "ether")});
          var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
