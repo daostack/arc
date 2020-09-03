@@ -6,11 +6,11 @@ import "@daostack/infra/contracts/votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 
 /**
- * @title GenericScheme.
+ * @title GenericSchemeMultiCall.
  * @dev  A scheme for proposing and executing calls to multiple arbitrary function
- * on whitelisted contract on behalf of the organization avatar.
+ * on one or multiple contracts on behalf of the organization avatar.
  */
-contract GenericSchemeMulticall is VotingMachineCallbacks, ProposalExecuteInterface {
+contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterface {
     event NewMultiCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
