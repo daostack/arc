@@ -324,7 +324,6 @@ contract('GenericSchemeMultiCall', function(accounts) {
         } catch(error) {
           helpers.assertVMException(error);
         }
-
     });
 
     it("cannot init twice", async function() {
@@ -358,5 +357,5 @@ contract('GenericSchemeMultiCall', function(accounts) {
         assert.equal(await genericSchemeMultiCall.whitelistedContracts(2),accounts[2]);
         assert.equal(await genericSchemeMultiCall.whitelistedContracts(3),accounts[3]);
     });
-    
+
 });

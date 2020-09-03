@@ -138,7 +138,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
              proposal.callData[i],
              (IERC20, address, uint256)
            );
-           controller.externalTokenApproval(extToken,spender,valueToSpend,avatar);
+           (success) = controller.externalTokenApproval(extToken,spender,valueToSpend,avatar);
          } else {
            (success, genericCallReturnValue) =
            controller.genericCall(proposal.contractsToCall[i], proposal.callData[i], avatar, proposal.value[i]);
