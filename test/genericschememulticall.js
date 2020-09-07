@@ -287,7 +287,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
       var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
       var avatarInst = await new web3.eth.Contract(testSetup.org.avatar.abi,testSetup.org.avatar.address);
-      var controllerAddr = await avatarInst.methods.owner().call()
+      var controllerAddr = await avatarInst.methods.owner().call();
       var encodedTokenApproval= await web3.eth.abi.encodeParameters(['address','address', 'uint256'], [standardTokenMock.address, accounts[3], 1000]);
       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address,controllerAddr],[callData,encodedTokenApproval],[0,0],helpers.NULL_HASH);

@@ -12,6 +12,23 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  */
 contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterface {
 
+    // Details of a voting proposal:
+    struct MultiCallProposal {
+        address[] contractsToCall;
+        bytes[] callData;
+        uint256[] value;
+        bool exist;
+        bool passed;
+    }
+
+    mapping(bytes32=>MultiCallProposal) public proposals;
+
+    IntVoteInterface public votingMachine;
+    bytes32 public voteParams;
+    mapping(address=>bool) internal contractWhitelist;
+    address[] public whitelistedContracts;
+    Avatar public avatar;
+
     event NewMultiCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
@@ -42,23 +59,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
 
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
-    // Details of a voting proposal:
-    struct MultiCallProposal {
-        address[] contractsToCall;
-        bytes[] callData;
-        uint256[] value;
-        bool exist;
-        bool passed;
-    }
-
-    mapping(bytes32=>MultiCallProposal) public proposals;
-
-    IntVoteInterface public votingMachine;
-    bytes32 public voteParams;
-    mapping(address=>bool) internal contractWhitelist;
-    address[] public whitelistedContracts;
-    Avatar public avatar;
-
     /**
      * @dev initialize
      * @param _avatar the avatar to mint reputation from
@@ -81,9 +81,9 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
-        for(uint i = 0; i < _contractWhitelist.length; i ++) {
-          contractWhitelist[_contractWhitelist[i]] = true;
-          whitelistedContracts.push(_contractWhitelist[i]);
+        for (uint i = 0; i < _contractWhitelist.length; i++) {
+            contractWhitelist[_contractWhitelist[i]] = true;
+            whitelistedContracts.push(_contractWhitelist[i]);
         }
     }
 
@@ -126,18 +126,18 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         bool success;
         Controller controller = Controller(avatar.owner());
 
-        for (uint i = 0; i < proposal.contractsToCall.length; i ++) {
-          if (proposal.contractsToCall[i] == address(controller)) {
-
-           (IERC20 extToken,
-            address spender,
-            uint256 valueToSpend
-           ) =
-           /* solhint-disable */
-           abi.decode(
-             proposal.callData[i],
-             (IERC20, address, uint256)
-           );
+        for (uint i = 0; i < proposal.contractsToCall.length; i++) {
+            if (proposal.contractsToCall[i] == address(controller)) {
+                (IERC20 extToken,
+                address spender,
+                uint256 valueToSpend
+                ) =
+                /* solhint-disable */
+                abi.decode(
+                    proposal.callData[i],
+                    (IERC20, address, uint256)
+                );
+           require(contractWhitelist[spender], "spender contract not whitelisted");
            (success) = controller.externalTokenApproval(extToken,spender,valueToSpend,avatar);
          } else {
            (success, genericCallReturnValue) =
