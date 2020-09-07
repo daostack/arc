@@ -169,12 +169,11 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             (_contractsToCall.length == _callData.length) && (_contractsToCall.length == _value.length),
             "Wrong length of _contractsToCall, _callData or _value arrays"
         );
+        Controller controller = Controller(avatar.owner());
         for (uint i = 0; i < _contractsToCall.length; i ++) {
             require(
-                contractWhitelist[_contractsToCall[i]] || _contractsToCall[i] == avatar.owner(),
-                 "contractToCall is not whitelisted"
+                contractWhitelist[_contractsToCall[i]] || _contractsToCall[i] == address(controller), "contractToCall is not whitelisted"
             );
-            Controller controller = Controller(avatar.owner());
             if (_contractsToCall[i] == address(controller)) {
                 (IERC20 extToken,
                 address spender,

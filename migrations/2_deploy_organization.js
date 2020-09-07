@@ -9,6 +9,7 @@ var ContributionReward = artifacts.require('./ContributionReward.sol');
 var UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
 var ControllerCreator = artifacts.require('./ControllerCreator.sol');
 var DAOTracker = artifacts.require('./DAOTracker.sol');
+var GenericSchemeMultiCall = artifacts.require('./GenericSchemeMultiCall.sol');
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 
@@ -62,6 +63,8 @@ module.exports = async function(deployer) {
 
       await deployer.deploy(ContributionReward);
       var contributionRewardInst = await ContributionReward.deployed();
+
+      await deployer.deploy(GenericSchemeMultiCall);
 
       // Voting parameters and schemes params:
       var voteParametersHash = await AbsoluteVoteInst.getParametersHash(votePrec, NULL_ADDRESS);
