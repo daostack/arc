@@ -137,7 +137,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                     proposal.callData[i],
                     (IERC20, address, uint256)
                 );
-           require(contractWhitelist[spender], "spender contract not whitelisted");
            (success) = controller.externalTokenApproval(extToken,spender,valueToSpend,avatar);
          } else {
            (success, genericCallReturnValue) =
@@ -175,6 +174,19 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                 contractWhitelist[_contractsToCall[i]] || _contractsToCall[i] == avatar.owner(),
                  "contractToCall is not whitelisted"
             );
+            Controller controller = Controller(avatar.owner());
+            if (_contractsToCall[i] == address(controller)) {
+                (IERC20 extToken,
+                address spender,
+                uint256 valueToSpend
+                ) =
+                /* solhint-disable */
+                abi.decode(
+                    _callData[i],
+                    (IERC20, address, uint256)
+                );
+                require(contractWhitelist[spender], "spender contract not whitelisted");
+            }
         }
         proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
 
