@@ -7,4 +7,3 @@ node_modules/
 *.tgz
 .vscode/
 site/
-yarn*
