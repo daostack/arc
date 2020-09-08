@@ -15,8 +15,8 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     // Details of a voting proposal:
     struct MultiCallProposal {
         address[] contractsToCall;
-        bytes[] callData;
-        uint256[] value;
+        bytes[] callsData;
+        uint256[] values;
         bool exist;
         bool passed;
     }
@@ -32,8 +32,8 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     event NewMultiCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        bytes[]   _callData,
-        uint256[] _value,
+        bytes[]   _callsData,
+        uint256[] _values,
         string  _descriptionHash,
         address[] _contractsToCall
     );
@@ -137,18 +137,23 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                 address spender,
                 uint256 valueToSpend
                 ) =
-                /* solhint-disable */
                 abi.decode(
-                    proposal.callData[i],
+                    proposal.callsData[i],
                     (IERC20, address, uint256)
                 );
-           (success) = controller.externalTokenApproval(extToken,spender,valueToSpend,avatar);
-         } else {
-           (success, genericCallReturnValue) =
-           controller.genericCall(proposal.contractsToCall[i], proposal.callData[i], avatar, proposal.value[i]);
-         }
+                (success) = controller.externalTokenApproval(extToken, spender, valueToSpend, avatar);
+            } else {
+                (success, genericCallReturnValue) =
+                controller.genericCall(proposal.contractsToCall[i], proposal.callsData[i], avatar, proposal.values[i]);
+            }
          
-         emit ProposalCallExecuted(address(avatar), _proposalId, proposal.contractsToCall[i], success, genericCallReturnValue);
+            emit ProposalCallExecuted(
+                address(avatar),
+                _proposalId,
+                proposal.contractsToCall[i],
+                success,
+                genericCallReturnValue
+            );
         }
 
         delete proposals[_proposalId];
@@ -160,22 +165,26 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     * @dev propose to call one or multiple contracts on behalf of the _avatar
     *      The function trigger NewMultiCallProposal event
     * @param _contractsToCall the contracts to be called 
-    * @param _callData - The abi encode data for the calls
-    * @param _value value(ETH) to transfer with the calls
+    * @param _callsData - The abi encode data for the calls
+    * @param _values value(ETH) to transfer with the calls
     * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
     */
-
-    function proposeCalls(address[] memory _contractsToCall, bytes[] memory _callData, uint256[] memory _value, string memory _descriptionHash)
+    function proposeCalls(
+        address[] memory _contractsToCall,
+        bytes[] memory _callsData,
+        uint256[] memory _values,
+        string memory _descriptionHash
+    )
     public
     returns(bytes32 proposalId)
     {
         require(
-            (_contractsToCall.length == _callData.length) && (_contractsToCall.length == _value.length),
-            "Wrong length of _contractsToCall, _callData or _value arrays"
+            (_contractsToCall.length == _callsData.length) && (_contractsToCall.length == _values.length),
+            "Wrong length of _contractsToCall, _callsData or _values arrays"
         );
         Controller controller = Controller(whitelistedContracts[0]);
-        for (uint i = 0; i < _contractsToCall.length; i ++) {
+        for (uint i = 0; i < _contractsToCall.length; i++) {
             require(
                 contractWhitelist[_contractsToCall[i]], "contractToCall is not whitelisted"
             );
@@ -184,9 +193,8 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                 address spender,
                 uint256 valueToSpend
                 ) =
-                /* solhint-disable */
                 abi.decode(
-                    _callData[i],
+                    _callsData[i],
                     (IERC20, address, uint256)
                 );
                 require(contractWhitelist[spender], "spender contract not whitelisted");
@@ -196,8 +204,8 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
 
         proposals[proposalId] = MultiCallProposal({
             contractsToCall: _contractsToCall,
-            callData: _callData,
-            value: _value,
+            callsData: _callsData,
+            values: _values,
             exist: true,
             passed: false
         });
@@ -206,7 +214,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             avatar:avatar
         });
 
-        emit NewMultiCallProposal(address(avatar), proposalId, _callData, _value, _descriptionHash, _contractsToCall);
+        emit NewMultiCallProposal(address(avatar), proposalId, _callsData, _values, _descriptionHash, _contractsToCall);
 
     }
 }
