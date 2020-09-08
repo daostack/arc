@@ -368,10 +368,10 @@ contract('GenericSchemeMultiCall', function(accounts) {
             helpers.SOME_HASH,
             [accounts[0],accounts[1],accounts[2],accounts[3]]
         );
-        assert.equal(await genericSchemeMultiCall.whitelistedContracts(0),accounts[0]);
-        assert.equal(await genericSchemeMultiCall.whitelistedContracts(1),accounts[1]);
-        assert.equal(await genericSchemeMultiCall.whitelistedContracts(2),accounts[2]);
-        assert.equal(await genericSchemeMultiCall.whitelistedContracts(3),accounts[3]);
+        assert.equal(await genericSchemeMultiCall.whitelistedContracts(1),accounts[0]);
+        assert.equal(await genericSchemeMultiCall.whitelistedContracts(2),accounts[1]);
+        assert.equal(await genericSchemeMultiCall.whitelistedContracts(3),accounts[2]);
+        assert.equal(await genericSchemeMultiCall.whitelistedContracts(4),accounts[3]);
     });
 
 });

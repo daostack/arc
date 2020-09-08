@@ -81,6 +81,11 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
+        /* Whitelist controller by default*/
+        Controller controller = Controller(_avatar.owner());
+        whitelistedContracts.push(address(controller));
+        contractWhitelist[address(controller)] = true;
+        
         for (uint i = 0; i < _contractWhitelist.length; i++) {
             contractWhitelist[_contractWhitelist[i]] = true;
             whitelistedContracts.push(_contractWhitelist[i]);
@@ -172,7 +177,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         Controller controller = Controller(avatar.owner());
         for (uint i = 0; i < _contractsToCall.length; i ++) {
             require(
-                contractWhitelist[_contractsToCall[i]] || _contractsToCall[i] == address(controller), "contractToCall is not whitelisted"
+                contractWhitelist[_contractsToCall[i]], "contractToCall is not whitelisted"
             );
             if (_contractsToCall[i] == address(controller)) {
                 (IERC20 extToken,
