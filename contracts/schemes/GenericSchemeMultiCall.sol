@@ -129,7 +129,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
-        Controller controller = Controller(avatar.owner());
+        Controller controller = Controller(whitelistedContracts[0]);
 
         for (uint i = 0; i < proposal.contractsToCall.length; i++) {
             if (proposal.contractsToCall[i] == address(controller)) {
@@ -174,7 +174,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             (_contractsToCall.length == _callData.length) && (_contractsToCall.length == _value.length),
             "Wrong length of _contractsToCall, _callData or _value arrays"
         );
-        Controller controller = Controller(avatar.owner());
+        Controller controller = Controller(whitelistedContracts[0]);
         for (uint i = 0; i < _contractsToCall.length; i ++) {
             require(
                 contractWhitelist[_contractsToCall[i]], "contractToCall is not whitelisted"
@@ -209,5 +209,4 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         emit NewMultiCallProposal(address(avatar), proposalId, _callData, _value, _descriptionHash, _contractsToCall);
 
     }
-
 }
