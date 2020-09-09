@@ -50,7 +50,6 @@
     "run-with-ganache": "^0.1.1",
     "solhint": "^2.2.0",
     "truffle": "5.0.34",
-    "truffle-plugin-verify": "^0.4.0",
     "uint32": "^0.2.1"
   },
   "repository": {
@@ -77,8 +76,6 @@
   "homepage": "https://daostack.io",
   "dependencies": {
     "@daostack/infra": "0.0.1-rc.19",
-    "@truffle/hdwallet-provider": "^1.0.43",
-    "dotenv": "^8.2.0",
     "math": "0.0.3",
     "openzeppelin-solidity": "2.4.0",
     "truffle-flattener": "^1.4.2"
