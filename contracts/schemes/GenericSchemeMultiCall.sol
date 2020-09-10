@@ -5,6 +5,7 @@ import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 
+
 /**
  * @title GenericSchemeMultiCall.
  * @dev  A scheme for proposing and executing calls to multiple arbitrary function
@@ -65,7 +66,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
      * @param _contractWhitelist the contracts the scheme is allowed to interact with
-     * 
+     *
      */
     function initialize(
         Avatar _avatar,
@@ -85,7 +86,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         Controller controller = Controller(_avatar.owner());
         whitelistedContracts.push(address(controller));
         contractWhitelist[address(controller)] = true;
-        
+
         for (uint i = 0; i < _contractWhitelist.length; i++) {
             contractWhitelist[_contractWhitelist[i]] = true;
             whitelistedContracts.push(_contractWhitelist[i]);
@@ -146,7 +147,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                 (success, genericCallReturnValue) =
                 controller.genericCall(proposal.contractsToCall[i], proposal.callsData[i], avatar, proposal.values[i]);
             }
-         
+
             emit ProposalCallExecuted(
                 address(avatar),
                 _proposalId,
@@ -164,7 +165,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     /**
     * @dev propose to call one or multiple contracts on behalf of the _avatar
     *      The function trigger NewMultiCallProposal event
-    * @param _contractsToCall the contracts to be called 
+    * @param _contractsToCall the contracts to be called
     * @param _callsData - The abi encode data for the calls
     * @param _values value(ETH) to transfer with the calls
     * @param _descriptionHash proposal description hash
@@ -189,10 +190,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                 contractWhitelist[_contractsToCall[i]], "contractToCall is not whitelisted"
             );
             if (_contractsToCall[i] == address(controller)) {
-                (IERC20 extToken,
-                address spender,
-                uint256 valueToSpend
-                ) =
+                (, address spender,) =
                 abi.decode(
                     _callsData[i],
                     (IERC20, address, uint256)
