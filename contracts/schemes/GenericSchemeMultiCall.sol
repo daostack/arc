@@ -152,9 +152,10 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             } else {
                 (success, genericCallReturnValue) =
                 controller.genericCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]);
-                /* Whole transaction will be reverted if at least one call fails*/
-                require(success, "Proposal call failed");
             }
+
+            /* Whole transaction will be reverted if at least one call fails*/
+            require(success, "Proposal call failed");
             startIndex = startIndex.add(proposal.callsDataLens[i]);
             emit ProposalCallExecuted(
                 address(avatar),
