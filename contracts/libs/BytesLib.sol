@@ -88,8 +88,8 @@ library BytesLib {
 
     function slice(
         bytes memory _bytes,
-        uint _start,
-        uint _length
+        uint256 _start,
+        uint256 _length
     )
         internal
         pure
@@ -140,12 +140,6 @@ library BytesLib {
                 //update free-memory pointer
                 //allocating the array padded to 32 bytes like the compiler does now
                 mstore(0x40, and(add(mc, 31), not(31)))
-            }
-            //if we want a zero-length slice let's just return a zero-length array
-            default {
-                tempBytes := mload(0x40)
-
-                mstore(0x40, add(tempBytes, 0x20))
             }
         }
 

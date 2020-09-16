@@ -247,14 +247,17 @@ contract DAOFactory is Initializable {
         Controller controller = Controller(Avatar(_avatar).owner());
         uint256 startIndex =  0;
         for (uint256 i = 0; i < schemesNames.length; i++) {
-          //add avatar to encoded data and encode the call to initilize
-            // functionSignature + encodedAvatar+ encodedRestOfData
-            bytes memory schemeEncodedData = (schemesData.slice(startIndex, schemesInitilizeDataLens[i])).slice(0, 4);
-            schemeEncodedData = schemeEncodedData.concat(abi.encode(_avatar));
-            schemeEncodedData =
-            schemeEncodedData
-            .concat((schemesData.slice(startIndex, schemesInitilizeDataLens[i]))
-            .slice(36, schemesInitilizeDataLens[i]-36));
+            bytes memory schemeEncodedData = (schemesData.slice(startIndex, schemesInitilizeDataLens[i]));
+            if (schemeEncodedData.length >= 4) {
+              //add avatar to encoded data and encode the call to initilize
+              // functionSignature + encodedAvatar+ encodedRestOfData
+                schemeEncodedData = schemeEncodedData.slice(0, 4);
+                schemeEncodedData = schemeEncodedData.concat(abi.encode(_avatar));
+                schemeEncodedData =
+                schemeEncodedData
+                .concat((schemesData.slice(startIndex, schemesInitilizeDataLens[i]))
+                .slice(36, schemesInitilizeDataLens[i]-36));
+            }
             address scheme = address(createInstance(_packageVersion,
                                 schemesNames[i].toStr(),
                                 _avatar,
