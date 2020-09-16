@@ -346,9 +346,9 @@ contract('GenericSchemeMultiCall', function(accounts) {
         })
         .then(function(events){
             assert.equal(events[0].event,"ProposalCallExecuted");
-            assert.equal(events[0].args._success,true);
+            assert.equal(events[0].args._proposalId,proposalId);
             assert.equal(events[1].event,"ProposalCallExecuted");
-            assert.equal(events[1].args._success,true);
+            assert.equal(events[1].args._proposalId,proposalId);
       });
     });
 

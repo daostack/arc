@@ -52,7 +52,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         bytes32 indexed _proposalId,
         address _contractToCall,
         bytes _callsData,
-        bool _success,
         bytes _callDataReturnValue
     );
 
@@ -147,7 +146,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                     callData,
                     (IERC20, address, uint256)
                 );
-                (success) = controller.externalTokenApproval(extToken, spender, valueToSpend, avatar);
+                success = controller.externalTokenApproval(extToken, spender, valueToSpend, avatar);
             } else {
                 (success, genericCallReturnValue) =
                 controller.genericCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]);
@@ -161,7 +160,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                 _proposalId,
                 proposal.contractsToCall[i],
                 callData,
-                success,
                 genericCallReturnValue
             );
         }
