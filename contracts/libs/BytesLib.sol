@@ -8,20 +8,23 @@
 
 pragma solidity 0.5.17;
 
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+
 
 library BytesLib {
+    using SafeMath for uint256;
 
     function slice(
         bytes memory _bytes,
-        uint _start,
-        uint _length
+        uint256 _start,
+        uint256 _length
     )
         internal
         pure
         returns (bytes memory)
     // solhint-disable-next-line function-max-lines
     {
-        require(_bytes.length >= (_start + _length));
+        require(_bytes.length >= _start.add(_length), "_bytes.length < (_start + _length)");
 
         bytes memory tempBytes;
         // solhint-disable-next-line no-inline-assembly
