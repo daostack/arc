@@ -113,7 +113,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
 
         if (_decision == 1) {
             proposal.passed = true;
-            execute(_proposalId);
         } else {
             delete proposals[_proposalId];
             emit ProposalDeleted(address(avatar), _proposalId);
