@@ -109,7 +109,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     returns(bool) {
         MultiCallProposal storage proposal = proposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
-        require(proposal.passed == false, "cannot execute twice");
+        require(!proposal.passed, "cannot execute twice");
 
         if (_decision == 1) {
             proposal.passed = true;
