@@ -154,15 +154,12 @@ contract('GenericSchemeMultiCall', function(accounts) {
         [actionMock.address],callData,[getBytesLength(callData)],[0],helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        //actionMock revert because msg.sender is not the _addr param at actionMock though the whole proposal execution will fail.
-       await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalCallExecuted', {
-             fromBlock: tx.blockNumber,
-             toBlock: 'latest'
-         })
-         .then(function(events){
-             assert.equal(events[0].event,"ProposalCallExecuted");
-             assert.equal(events[0].args._success,false);
-        });
+       try {
+         await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+         assert(false, "Proposal call failed");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
     });
 
     it("execute proposeVote -positive decision - not whitelisted contract", async function() {
@@ -289,17 +286,12 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var proposal = await testSetup.GenericSchemeMultiCall.proposals(proposalId);
       assert.equal(proposal.exist,true);
       assert.equal(proposal.passed,false);
-      await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-      await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalCallExecuted', {
-            fromBlock: tx.blockNumber,
-            toBlock: 'latest'
-        })
-        .then(function(events){
-            assert.equal(events[0].event,"ProposalCallExecuted");
-            assert.equal(events[0].args._success,true);
-            assert.equal(events[1].event,"ProposalCallExecuted");
-            assert.equal(events[1].args._success,false);
-      });
+      try {
+         await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+         assert(false, "Proposal call failed");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
     });
 
     it("execute proposeVote with multiple calls with votingMachine without whitelisted spender -negative decision", async function() {
