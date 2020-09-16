@@ -9,12 +9,8 @@
 pragma solidity ^0.6.12;
 // SPDX-License-Identifier: GPL-3.0
 
-import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
-
 
 library BytesLib {
-    using SafeMath for uint256;
-
     function concat(
         bytes memory _preBytes,
         bytes memory _postBytes
@@ -96,7 +92,7 @@ library BytesLib {
         returns (bytes memory)
     // solhint-disable-next-line function-max-lines
     {
-        require(_bytes.length >= _start.add(_length), "_bytes.length < (_start + _length)");
+        require(_bytes.length >= (_start + _length));
 
         bytes memory tempBytes;
         // solhint-disable-next-line no-inline-assembly
