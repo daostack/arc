@@ -9,8 +9,12 @@
 pragma solidity ^0.6.12;
 // SPDX-License-Identifier: GPL-3.0
 
+import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
+
 
 library BytesLib {
+    using SafeMath for uint256;
+
     function concat(
         bytes memory _preBytes,
         bytes memory _postBytes
@@ -84,15 +88,15 @@ library BytesLib {
 
     function slice(
         bytes memory _bytes,
-        uint _start,
-        uint _length
+        uint256 _start,
+        uint256 _length
     )
         internal
         pure
         returns (bytes memory)
     // solhint-disable-next-line function-max-lines
     {
-        require(_bytes.length >= (_start + _length));
+        require(_bytes.length >= _start.add(_length), "_bytes.length < (_start + _length)");
 
         bytes memory tempBytes;
         // solhint-disable-next-line no-inline-assembly
@@ -136,12 +140,6 @@ library BytesLib {
                 //update free-memory pointer
                 //allocating the array padded to 32 bytes like the compiler does now
                 mstore(0x40, and(add(mc, 31), not(31)))
-            }
-            //if we want a zero-length slice let's just return a zero-length array
-            default {
-                tempBytes := mload(0x40)
-
-                mstore(0x40, add(tempBytes, 0x20))
             }
         }
 
