@@ -155,14 +155,12 @@ contract('GenericSchemeMultiCall', function(accounts) {
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        //actionMock revert because msg.sender is not the _addr param at actionMock though the whole proposal execution will fail.
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalCallExecuted', {
-             fromBlock: tx.blockNumber,
-             toBlock: 'latest'
-         })
-         .then(function(events){
-             assert.equal(events[0].event,"ProposalCallExecuted");
-             assert.equal(events[0].args._success,false);
-        });
+       try {
+         await testSetup.GenericSchemeMultiCall.execute(proposalId);
+         assert(false, "Proposal call failed");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
     });
 
     it("execute proposeVote -positive decision - not whitelisted contract", async function() {
@@ -213,14 +211,15 @@ contract('GenericSchemeMultiCall', function(accounts) {
        //transfer some eth to avatar
        await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
        assert.equal(await web3.eth.getBalance(actionMock.address),0);
-       tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalExecutedByVotingMachine', {
+       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       tx = await testSetup.GenericSchemeMultiCall.execute(proposalId);
+       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalExecuted', {
              fromBlock: tx.blockNumber,
              toBlock: 'latest'
          })
          .then(function(events){
-             assert.equal(events[0].event,"ProposalExecutedByVotingMachine");
-             assert.equal(events[0].args._param,1);
+             assert.equal(events[0].event,"ProposalExecuted");
+             assert.equal(events[0].args._proposalId,proposalId);
         });
         assert.equal(await web3.eth.getBalance(actionMock.address),value);
     });
@@ -290,16 +289,12 @@ contract('GenericSchemeMultiCall', function(accounts) {
       assert.equal(proposal.exist,true);
       assert.equal(proposal.passed,false);
       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-      await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalCallExecuted', {
-            fromBlock: tx.blockNumber,
-            toBlock: 'latest'
-        })
-        .then(function(events){
-            assert.equal(events[0].event,"ProposalCallExecuted");
-            assert.equal(events[0].args._success,true);
-            assert.equal(events[1].event,"ProposalCallExecuted");
-            assert.equal(events[1].args._success,false);
-      });
+      try {
+         await testSetup.GenericSchemeMultiCall.execute(proposalId);
+         assert(false, "Proposal call failed");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
     });
 
     it("execute proposeVote with multiple calls with votingMachine without whitelisted spender -negative decision", async function() {
@@ -344,15 +339,16 @@ contract('GenericSchemeMultiCall', function(accounts) {
       assert.equal(proposal.exist,true);
       assert.equal(proposal.passed,false);
       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.GenericSchemeMultiCall.execute(proposalId);
       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalCallExecuted', {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
         })
         .then(function(events){
             assert.equal(events[0].event,"ProposalCallExecuted");
-            assert.equal(events[0].args._success,true);
+            assert.equal(events[0].args._proposalId,proposalId);
             assert.equal(events[1].event,"ProposalCallExecuted");
-            assert.equal(events[1].args._success,true);
+            assert.equal(events[1].args._proposalId,proposalId);
       });
     });
 

@@ -52,7 +52,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         bytes32 indexed _proposalId,
         address _contractToCall,
         bytes _callsData,
-        bool _success,
         bytes _callDataReturnValue
     );
 
@@ -109,11 +108,10 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     returns(bool) {
         MultiCallProposal storage proposal = proposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
-        require(proposal.passed == false, "cannot execute twice");
+        require(!proposal.passed, "cannot execute twice");
 
         if (_decision == 1) {
             proposal.passed = true;
-            execute(_proposalId);
         } else {
             delete proposals[_proposalId];
             emit ProposalDeleted(address(avatar), _proposalId);
@@ -148,18 +146,20 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                     callData,
                     (IERC20, address, uint256)
                 );
-                (success) = controller.externalTokenApproval(extToken, spender, valueToSpend, avatar);
+                success = controller.externalTokenApproval(extToken, spender, valueToSpend, avatar);
             } else {
                 (success, genericCallReturnValue) =
                 controller.genericCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]);
             }
+
+            /* Whole transaction will be reverted if at least one call fails*/
+            require(success, "Proposal call failed");
             startIndex = startIndex.add(proposal.callsDataLens[i]);
             emit ProposalCallExecuted(
                 address(avatar),
                 _proposalId,
                 proposal.contractsToCall[i],
                 callData,
-                success,
                 genericCallReturnValue
             );
         }
