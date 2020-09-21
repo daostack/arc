@@ -1,5 +1,4 @@
 const helpers = require('./helpers');
-const constants = require('./constants');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var SchemeFactory = artifacts.require("./SchemeFactory.sol");
 var ContinuousLocking4Reputation = artifacts.require("./ContinuousLocking4Reputation.sol");
@@ -53,7 +52,6 @@ var schemeFactoryParams = new SchemeFactoryParams();
     return schemeFactoryParams;
 };
 const setup = async function (accounts,
-                             _initialize = true,
                              _reputationReward = 850000,
                              _startTime = 0,
                              _periodsUnit = (30*60*60),
@@ -138,7 +136,7 @@ const setup = async function (accounts,
    testSetup.cL4RRedeemerParams.initdata = await new web3.eth.Contract(registration.cL4RRedeemer.abi)
    .methods.initialize(helpers.NULL_ADDRESS, testSetup.continuousLocking4Reputation.address).encodeABI();
 
-   var permissions = "0x00000000";
+    permissions = "0x00000000";
 
   [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(
     testSetup.proxyAdmin,
