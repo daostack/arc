@@ -164,9 +164,7 @@ contract('ContinuousLocking4ReputationRedeemer', accounts => {
       assert.equal(await testSetup.cL4RRedeemer.reputationRewardLeft(),testSetup.reputationReward);
       assert.equal(await testSetup.cL4RRedeemer.startTime(),testSetup.startTime);
       assert.equal(await testSetup.cL4RRedeemer.redeemEnableTime(),testSetup.redeemEnableTime);
-      assert.equal(await testSetup.cL4RRedeemer.token(),testSetup.lockingToken.address);
       assert.equal(await testSetup.cL4RRedeemer.batchTime(),testSetup.periodsUnit);
-      assert.equal(await testSetup.cL4RRedeemer.batchesIndexCap(),testSetup.periodsCap);
       assert.equal(await testSetup.cL4RRedeemer.cl4r(),testSetup.continuousLocking4Reputation.address);
     });
 
