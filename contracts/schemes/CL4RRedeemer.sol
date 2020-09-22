@@ -66,7 +66,7 @@ contract CL4RRedeemer is ArcScheme {
 
         // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "now > redeemEnableTime");
-        Lock memory locker = lockers[_beneficiary][_lockingId];
+        Lock memory locker = Lock(0, 0, 0);
         (locker.amount, locker.lockingTime, locker.period) = cl4r.lockers(_beneficiary, _lockingId);
 
         require(locker.lockingTime != 0, "_lockingId does not exist");
