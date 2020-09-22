@@ -28,28 +28,18 @@ contract CL4RRedeemer is ArcScheme {
         uint256 period;
     }
 
-    // A mapping from lockers addresses to their locks
-    mapping(address => mapping(uint256=>Lock)) public lockers;
     // A mapping from batch index to batch
     mapping(uint256 => Batch) public batches;
 
     uint256 public reputationRewardLeft; // the amount of reputation that is still left to distribute
     uint256 public startTime; // the time (in secs since epoch) that locking can start (is enable)
     uint256 public redeemEnableTime;
-    uint256 public maxLockingBatches;
     uint256 public batchTime; // the length of a batch, in seconds
-    IERC20 public token; // the token to be locked
-    uint256 public lockCounter; // Total number of locks
-    uint256 public totalLockedLeft; // the amount of reputation  that is still left to distribute
-    uint256 public repRewardConstA;
-    uint256 public repRewardConstB;
-    uint256 public batchesIndexCap;
     ContinuousLocking4Reputation public cl4r;
 
     uint256 constant private REAL_FBITS = 40;
     // What's the first non-fractional bit
     uint256 constant private REAL_ONE = uint256(1) << REAL_FBITS;
-    uint256 constant private BATCHES_INDEX_HARDCAP = 100;
 
     /**
      * @dev initialize
@@ -60,15 +50,10 @@ contract CL4RRedeemer is ArcScheme {
         super._initialize(_avatar);
         require(address(_cl4r) != address(0), "ContinuousLocking4Reputation reference contract must be specified");
         cl4r = _cl4r;
-        token = _cl4r.token();
         startTime = _cl4r.startTime();
         reputationRewardLeft = _cl4r.reputationRewardLeft();
         redeemEnableTime = _cl4r.redeemEnableTime();
-        maxLockingBatches = _cl4r.maxLockingBatches();
         batchTime = _cl4r.batchTime();
-        repRewardConstA = _cl4r.repRewardConstA();
-        repRewardConstB = _cl4r.repRewardConstB();
-        batchesIndexCap = _cl4r.batchesIndexCap();
     }
 
     /**
@@ -81,7 +66,7 @@ contract CL4RRedeemer is ArcScheme {
 
         // solhint-disable-next-line not-rely-on-time
         require(now > redeemEnableTime, "now > redeemEnableTime");
-        Lock storage locker = lockers[_beneficiary][_lockingId];
+        Lock memory locker = lockers[_beneficiary][_lockingId];
         (locker.amount, locker.lockingTime, locker.period) = cl4r.lockers(_beneficiary, _lockingId);
 
         require(locker.lockingTime != 0, "_lockingId does not exist");
