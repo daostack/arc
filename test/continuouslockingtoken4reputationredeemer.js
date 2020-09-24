@@ -1,3 +1,4 @@
+const { NULL_ADDRESS } = require('./helpers');
 const helpers = require('./helpers');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var SchemeFactory = artifacts.require("./SchemeFactory.sol");
@@ -52,6 +53,7 @@ var schemeFactoryParams = new SchemeFactoryParams();
     return schemeFactoryParams;
 };
 const setup = async function (accounts,
+                             _cl4r=null,
                              _reputationReward = 850000,
                              _startTime = 0,
                              _periodsUnit = (30*60*60),
@@ -134,7 +136,7 @@ const setup = async function (accounts,
    testSetup.cL4RRedeemer = await CL4RRedeemer.new();
    testSetup.cL4RRedeemerParams = new CL4RRedeemerParams();
    testSetup.cL4RRedeemerParams.initdata = await new web3.eth.Contract(registration.cL4RRedeemer.abi)
-   .methods.initialize(helpers.NULL_ADDRESS, testSetup.continuousLocking4Reputation.address).encodeABI();
+   .methods.initialize(helpers.NULL_ADDRESS, _cl4r == null ? testSetup.continuousLocking4Reputation.address : _cl4r).encodeABI();
 
     permissions = "0x00000000";
 
@@ -168,6 +170,15 @@ contract('ContinuousLocking4ReputationRedeemer', accounts => {
       assert.equal(await testSetup.cL4RRedeemer.cl4r(),testSetup.continuousLocking4Reputation.address);
     });
 
+    it("initialize CL4R can't be empty", async () => {
+      try {
+        await setup(accounts, NULL_ADDRESS);
+        assert(false, "must pass cl4r contract");
+      } catch(error) {
+        // revert
+      }
+    });
+
     it("redeem", async () => {
         let testSetup = await setup(accounts);
         var period = 12;
@@ -191,6 +202,20 @@ contract('ContinuousLocking4ReputationRedeemer', accounts => {
         totalRedeemAmount = Math.floor(totalRedeemAmount);
         assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),1000+totalRedeemAmount);
     });
+
+    it("redeem can't redeem non existing locking id", async () => {
+      let testSetup = await setup(accounts);
+      var period = 12;
+      var tx = await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),period,0,testSetup.agreementHash);
+      var id = await helpers.getValueFromLogs(tx, '_lockingId',1);
+      await helpers.increaseTime(testSetup.periodsUnit * period +1);
+      try {
+        await testSetup.cL4RRedeemer.redeem(accounts[0], id + 1);
+        assert(false, "cannot redeem non existing locking id");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+  });
 
     it("redeem part of the periods", async () => {
         let testSetup = await setup(accounts);
