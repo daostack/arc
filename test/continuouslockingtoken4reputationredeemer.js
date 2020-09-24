@@ -136,7 +136,7 @@ const setup = async function (accounts,
    testSetup.cL4RRedeemer = await CL4RRedeemer.new();
    testSetup.cL4RRedeemerParams = new CL4RRedeemerParams();
    testSetup.cL4RRedeemerParams.initdata = await new web3.eth.Contract(registration.cL4RRedeemer.abi)
-   .methods.initialize(helpers.NULL_ADDRESS, _cl4r == null ? testSetup.continuousLocking4Reputation.address : _cl4r).encodeABI();
+   .methods.initialize(helpers.NULL_ADDRESS, _cl4r === null ? testSetup.continuousLocking4Reputation.address : _cl4r).encodeABI();
 
     permissions = "0x00000000";
 
