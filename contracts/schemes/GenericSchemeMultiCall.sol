@@ -125,7 +125,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     * @dev execution of proposals after it has been decided by the voting machine
     * @param _proposalId the ID of the voting in the voting machine
     */
-    function execute(bytes32 _proposalId) public {
+    function execute(bytes32 _proposalId) external {
         MultiCallProposal storage proposal = proposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed, "proposal must passed by voting machine");
@@ -193,15 +193,14 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             (_contractsToCall.length == _callsDataLens.length) && (_contractsToCall.length == _values.length),
             "Wrong length of _contractsToCall, _callsDataLens or _values arrays"
         );
-        Controller controller = Controller(whitelistedContracts[0]);
         uint256 startIndex = 0;
         for (uint i = 0; i < _contractsToCall.length; i++) {
             require(
                 contractWhitelist[_contractsToCall[i]], "contractToCall is not whitelisted"
             );
-            if (_contractsToCall[i] == address(controller)) {
+            bytes memory callData = _callsData.slice(startIndex, _callsDataLens[i]);
+            if (_contractsToCall[i] == whitelistedContracts[0]) {
 
-                bytes memory callData = _callsData.slice(startIndex, _callsDataLens[i]);
                 (, address spender,) =
                 abi.decode(
                     callData,
@@ -211,6 +210,8 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             }
             startIndex = startIndex.add(_callsDataLens[i]);
         }
+        require(startIndex == _callsData.length, "_callsDataLens is wrong");
+
         proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
 
         proposals[proposalId] = MultiCallProposal({
@@ -227,6 +228,5 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         });
 
         emit NewMultiCallProposal(address(avatar), proposalId, _callsData, _values, _descriptionHash, _contractsToCall);
-
     }
 }
