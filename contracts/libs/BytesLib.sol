@@ -24,7 +24,7 @@ library BytesLib {
         returns (bytes memory)
     // solhint-disable-next-line function-max-lines
     {
-        require(_bytes.length >= _start.add(_length), "_bytes.length < (_start + _length)");
+        require(_bytes.length >= _start.add(_length), "Read out of bounds");
 
         bytes memory tempBytes;
         // solhint-disable-next-line no-inline-assembly
