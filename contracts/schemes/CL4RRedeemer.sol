@@ -5,10 +5,11 @@ import "./ContinuousLocking4Reputation.sol";
 
 /**
  * @title A scheme for redeeming a ContinuousLocking4Reputation contract used in a different DAO.
- * This is used to migrate from an older DAO to a new one while the older DAO has an active ContinuousLocking4Reputation
- * Using it should be done by initiaalizing this contract s a scheme in the new DAO,
- * with the old ContinuousLocking4Reputation as an init parameter.
- * Then the old ContinuousLocking4Reputation should be unregistered as a scheme from the older DAO so
+ * This contract can be used to migrate from an older DAO to a new one while the older DAO 
+ * has an active ContinuousLocking4Reputation.
+ * Using it should be done by initializing this contract as a scheme in the new DAO,
+ * with the old ContinuousLocking4Reputation as an init parameter (_ct4r).
+ * Note: the old ContinuousLocking4Reputation should be unregistered as a scheme from the older DAO so
  * that redeeming is done only through this scheme into the new DAO.
  */
 contract CL4RRedeemer is ArcScheme {
