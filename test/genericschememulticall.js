@@ -78,9 +78,13 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var testSetup = await setup(accounts,[actionMock.address]);
       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls(
-            [actionMock.address],[callData],[0],helpers.NULL_HASH);
+            [actionMock.address],[callData],[10],"description");
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewMultiCallProposal");
+      assert.equal(tx.logs[0].args._callsData[0],callData);
+      assert.equal(tx.logs[0].args._contractsToCall[0],actionMock.address);
+      assert.equal(tx.logs[0].args._values[0],10);
+      assert.equal(tx.logs[0].args._descriptionHash,"description");
     });
 
     it("proposeCall log - with invalid array - reverts", async function() {
