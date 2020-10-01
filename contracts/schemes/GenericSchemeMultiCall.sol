@@ -1,9 +1,9 @@
 pragma solidity 0.5.17;
+pragma experimental ABIEncoderV2;
 
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "../libs/BytesLib.sol";
 
 
 /**
@@ -12,14 +12,12 @@ import "../libs/BytesLib.sol";
  * on one or multiple contracts on behalf of the organization avatar.
  */
 contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterface {
-    using BytesLib for bytes;
     using SafeMath for uint256;
 
     // Details of a voting proposal:
     struct MultiCallProposal {
         address[] contractsToCall;
-        bytes callsData;
-        uint256[] callsDataLens;
+        bytes[] callsData;
         uint256[] values;
         bool exist;
         bool passed;
@@ -36,7 +34,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     event NewMultiCallProposal(
         address indexed _avatar,
         bytes32 indexed _proposalId,
-        bytes   _callsData,
+        bytes[]   _callsData,
         uint256[] _values,
         string  _descriptionHash,
         address[] _contractsToCall
@@ -51,7 +49,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         address indexed _avatar,
         bytes32 indexed _proposalId,
         address _contractToCall,
-        bytes _callsData,
+        bytes _callData,
         bytes _callDataReturnValue
     );
 
@@ -133,10 +131,9 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         bytes memory genericCallReturnValue;
         bool success;
         Controller controller = Controller(whitelistedContracts[0]);
-        uint256 startIndex = 0;
 
         for (uint i = 0; i < proposal.contractsToCall.length; i++) {
-            bytes memory callData = proposal.callsData.slice(startIndex, proposal.callsDataLens[i]);
+            bytes memory callData = proposal.callsData[i];
             if (proposal.contractsToCall[i] == address(controller)) {
                 (IERC20 extToken,
                 address spender,
@@ -154,7 +151,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
 
             /* Whole transaction will be reverted if at least one call fails*/
             require(success, "Proposal call failed");
-            startIndex = startIndex.add(proposal.callsDataLens[i]);
             emit ProposalCallExecuted(
                 address(avatar),
                 _proposalId,
@@ -174,15 +170,16 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     *      The function trigger NewMultiCallProposal event
     * @param _contractsToCall the contracts to be called
     * @param _callsData - The abi encode data for the calls
-    * @param _callsDataLens the length of each callData
     * @param _values value(ETH) to transfer with the calls
     * @param _descriptionHash proposal description hash
     * @return an id which represents the proposal
+    * Note: The reasone this function is public(and not 'external') is due to
+    *       known compiler issue handling calldata bytes[] still not solved in 0.5.17
+    *       see : https://github.com/ethereum/solidity/issues/6835#issuecomment-549895381
     */
     function proposeCalls(
         address[] memory _contractsToCall,
-        bytes memory _callsData,
-        uint256[] memory _callsDataLens,
+        bytes[] memory _callsData,
         uint256[] memory _values,
         string memory _descriptionHash
     )
@@ -190,34 +187,29 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     returns(bytes32 proposalId)
     {
         require(
-            (_contractsToCall.length == _callsDataLens.length) && (_contractsToCall.length == _values.length),
+            (_contractsToCall.length == _callsData.length) && (_contractsToCall.length == _values.length),
             "Wrong length of _contractsToCall, _callsDataLens or _values arrays"
         );
-        uint256 startIndex = 0;
         for (uint i = 0; i < _contractsToCall.length; i++) {
             require(
                 contractWhitelist[_contractsToCall[i]], "contractToCall is not whitelisted"
             );
-            bytes memory callData = _callsData.slice(startIndex, _callsDataLens[i]);
             if (_contractsToCall[i] == whitelistedContracts[0]) {
 
                 (, address spender,) =
                 abi.decode(
-                    callData,
+                    _callsData[i],
                     (IERC20, address, uint256)
                 );
                 require(contractWhitelist[spender], "spender contract not whitelisted");
             }
-            startIndex = startIndex.add(_callsDataLens[i]);
         }
-        require(startIndex == _callsData.length, "_callsDataLens is wrong");
 
         proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
 
         proposals[proposalId] = MultiCallProposal({
             contractsToCall: _contractsToCall,
             callsData: _callsData,
-            callsDataLens: _callsDataLens,
             values: _values,
             exist: true,
             passed: false
