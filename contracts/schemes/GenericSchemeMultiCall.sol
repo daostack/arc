@@ -174,12 +174,22 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         );
         for (uint i = 0; i < _contractsToCall.length; i++) {
             if (!contractsWhitelist[_contractsToCall[i]]) {
+                address spender;
+                bytes memory callData = _callsData[i];
                 require(
-                        _callsData[i][0] == APPROVE_SIGNATURE[0] &&
-                        _callsData[i][1] == APPROVE_SIGNATURE[1] &&
-                        _callsData[i][2] == APPROVE_SIGNATURE[2] &&
-                        _callsData[i][3] == APPROVE_SIGNATURE[3],
+                    callData[0] == APPROVE_SIGNATURE[0] &&
+                    callData[1] == APPROVE_SIGNATURE[1] &&
+                    callData[2] == APPROVE_SIGNATURE[2] &&
+                    callData[3] == APPROVE_SIGNATURE[3],
                 "allow only approve call for none whitelistedContracts");
+                //in solidity > 6 this can be replaced by:
+                //(spender,) = abi.decode(callData[4:], (address, uint));
+                //see https://github.com/ethereum/solidity/issues/9439
+                // solhint-disable-next-line no-inline-assembly
+                assembly {
+                    spender := mload(add(callData, 36))
+                }
+                require(contractsWhitelist[spender], "spender contract not whitelisted");
             }
         }
 

@@ -378,4 +378,22 @@ contract('GenericSchemeMultiCall', function(accounts) {
 
     });
 
+    it("execute proposeVote with multiple calls with votingMachine without whitelisted spender", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
+      var encodedTokenApproval= await createCallToTokenApproval(standardTokenMock, accounts[3], 1000);
+      var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+      try {
+         await testSetup.GenericSchemeMultiCall.proposeCalls(
+           [actionMock.address],
+           [callData1,encodedTokenApproval],
+           [0,0],
+           helpers.NULL_HASH);
+         assert(false, "spender contract not whitelisted");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
+    });
+
 });
