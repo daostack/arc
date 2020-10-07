@@ -309,6 +309,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var proposal = await testSetup.GenericSchemeMultiCall.proposals(proposalId);
       assert.equal(proposal.exist,true);
       assert.equal(proposal.passed,false);
+      assert.equal(await standardTokenMock.allowance(testSetup.org.avatar.address,accounts[3]),0);
       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       await testSetup.GenericSchemeMultiCall.execute(proposalId);
       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalCallExecuted', {
@@ -321,6 +322,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
             assert.equal(events[1].event,"ProposalCallExecuted");
             assert.equal(events[1].args._proposalId,proposalId);
       });
+      assert.equal(await standardTokenMock.allowance(testSetup.org.avatar.address,accounts[3]),1000);
     });
 
     it("cannot init without contract whitelist", async function() {
