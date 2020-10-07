@@ -24,12 +24,11 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     }
 
     mapping(bytes32=>MultiCallProposal) public proposals;
-
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
-    mapping(address=>bool) internal contractWhitelist;
-    address[] public whitelistedContracts;
+    mapping(address=>bool) public contractsWhitelist;
     Avatar public avatar;
+    bytes4 private constant APPROVE_SIGNATURE = 0x095ea7b3;//approve(address,uint256)
 
     event NewMultiCallProposal(
         address indexed _avatar,
@@ -61,37 +60,34 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
 
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
-    /**
-     * @dev initialize
+    event WhiteListedContracts(address indexed _avatar, address[] _contractsWhitelist);
+
+    /* @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
-     * @param _contractWhitelist the contracts the scheme is allowed to interact with
+     * @param _contractsWhitelist the contracts the scheme is allowed to interact with
      *
      */
     function initialize(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams,
-        address[] calldata _contractWhitelist
+        address[] calldata _contractsWhitelist
     )
     external
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
-        require(_contractWhitelist.length > 0, "contractWhitelist cannot be empty");
+        require(_contractsWhitelist.length > 0, "contractsWhitelist cannot be empty");
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
-        /* Whitelist controller by default*/
-        Controller controller = Controller(_avatar.owner());
-        whitelistedContracts.push(address(controller));
-        contractWhitelist[address(controller)] = true;
 
-        for (uint i = 0; i < _contractWhitelist.length; i++) {
-            contractWhitelist[_contractWhitelist[i]] = true;
-            whitelistedContracts.push(_contractWhitelist[i]);
+        for (uint i = 0; i < _contractsWhitelist.length; i++) {
+            contractsWhitelist[_contractsWhitelist[i]] = true;
         }
+        emit WhiteListedContracts(address(avatar), _contractsWhitelist);
     }
 
     /**
@@ -130,25 +126,11 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
-        Controller controller = Controller(whitelistedContracts[0]);
-
+        Controller controller = Controller(avatar.owner());
         for (uint i = 0; i < proposal.contractsToCall.length; i++) {
             bytes memory callData = proposal.callsData[i];
-            if (proposal.contractsToCall[i] == address(controller)) {
-                (IERC20 extToken,
-                address spender,
-                uint256 valueToSpend
-                ) =
-                abi.decode(
-                    callData,
-                    (IERC20, address, uint256)
-                );
-                success = controller.externalTokenApproval(extToken, spender, valueToSpend, avatar);
-            } else {
-                (success, genericCallReturnValue) =
-                controller.genericCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]);
-            }
-
+            (success, genericCallReturnValue) =
+            controller.genericCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]);
             /* Whole transaction will be reverted if at least one call fails*/
             require(success, "Proposal call failed");
             emit ProposalCallExecuted(
@@ -191,17 +173,13 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             "Wrong length of _contractsToCall, _callsDataLens or _values arrays"
         );
         for (uint i = 0; i < _contractsToCall.length; i++) {
-            require(
-                contractWhitelist[_contractsToCall[i]], "contractToCall is not whitelisted"
-            );
-            if (_contractsToCall[i] == whitelistedContracts[0]) {
-
-                (, address spender,) =
-                abi.decode(
-                    _callsData[i],
-                    (IERC20, address, uint256)
-                );
-                require(contractWhitelist[spender], "spender contract not whitelisted");
+            if (!contractsWhitelist[_contractsToCall[i]]) {
+                require(
+                        _callsData[i][0] == APPROVE_SIGNATURE[0] &&
+                        _callsData[i][1] == APPROVE_SIGNATURE[1] &&
+                        _callsData[i][2] == APPROVE_SIGNATURE[2] &&
+                        _callsData[i][3] == APPROVE_SIGNATURE[3],
+                "allow only approve call for none whitelistedContracts");
             }
         }
 
