@@ -184,7 +184,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
                 "allow only approve call for none whitelistedContracts");
                 //in solidity > 6 this can be replaced by:
                 //(spender,) = abi.decode(callData[4:], (address, uint));
-                //see https://github.com/ethereum/solidity/issues/9439
+                // see https://github.com/ethereum/solidity/issues/9439
                 // solhint-disable-next-line no-inline-assembly
                 assembly {
                     spender := mload(add(callData, 36))
