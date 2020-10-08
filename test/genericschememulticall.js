@@ -6,6 +6,7 @@ const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ActionMock = artifacts.require("./ActionMock.sol");
+const DxDaoSchemeConstraints = artifacts.require("./DxDaoSchemeConstraints.sol");
 
 export class GenericSchemeParams {
   constructor() {
@@ -18,7 +19,8 @@ const setupGenericSchemeParams = async function(
                                             contractWhitelist,
                                             genesisProtocol = false,
                                             tokenAddress = 0,
-                                            avatar
+                                            avatar,
+                                            schemeConstraints
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
   if (genesisProtocol === true){
@@ -27,7 +29,8 @@ const setupGenericSchemeParams = async function(
             avatar.address,
             genericSchemeParams.votingMachine.genesisProtocol.address,
             genericSchemeParams.votingMachine.params,
-            contractWhitelist);
+            contractWhitelist,
+            schemeConstraints.address);
     }
   else {
       genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,genericScheme.address);
@@ -35,7 +38,8 @@ const setupGenericSchemeParams = async function(
             avatar.address,
             genericSchemeParams.votingMachine.absoluteVote.address,
             genericSchemeParams.votingMachine.params,
-            contractWhitelist);
+            contractWhitelist,
+            schemeConstraints.address);
   }
   return genericSchemeParams;
 };
@@ -53,7 +57,8 @@ const setup = async function (accounts,contractsWhitelist,reputationAccount=0,ge
    } else {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
    }
-   testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.GenericSchemeMultiCall,accounts,contractsWhitelist,genesisProtocol,tokenAddress,testSetup.org.avatar);
+   testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
+   testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.GenericSchemeMultiCall,accounts,contractsWhitelist,genesisProtocol,tokenAddress,testSetup.org.avatar,testSetup.schemeConstraints);
    var permissions = "0x00000010";
 
 
@@ -335,7 +340,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
             testSetup.org.avatar.address,
             accounts[0],
             helpers.SOME_HASH,
-            []
+            [],
+            testSetup.schemeConstraints.address
           );
           assert(false, "contractWhitelist cannot be empty");
         } catch(error) {
@@ -351,7 +357,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
             testSetup.org.avatar.address,
             accounts[0],
             helpers.SOME_HASH,
-            [accounts[0]]
+            [accounts[0]],
+            testSetup.schemeConstraints.address
           );
           assert(false, "cannot init twice");
         } catch(error) {
@@ -367,7 +374,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
               testSetup.org.avatar.address,
               accounts[0],
               helpers.SOME_HASH,
-              [accounts[0],accounts[1],accounts[2],accounts[3]]
+              [accounts[0],accounts[1],accounts[2],accounts[3]],
+              testSetup.schemeConstraints.address
         );
         assert.equal(tx.logs.length,1);
         assert.equal(tx.logs[0].event,"WhiteListedContracts");

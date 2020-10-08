@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 import "@daostack/infra/contracts/votingMachines/IntVoteInterface.sol";
 import "@daostack/infra/contracts/votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
-import "./SchemeConstraint.sol";
+import "./SchemeConstraints.sol";
 
 
 /**
@@ -30,7 +30,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     mapping(address=>bool) public contractsWhitelist;
     Avatar public avatar;
     bytes4 private constant APPROVE_SIGNATURE = 0x095ea7b3;//approve(address,uint256)
-    SchemeConstraint public schemeConstraint;
+    SchemeConstraints public schemeConstraints;
 
     event NewMultiCallProposal(
         address indexed _avatar,
@@ -76,7 +76,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         IntVoteInterface _votingMachine,
         bytes32 _voteParams,
         address[] calldata _contractsWhitelist,
-        SchemeConstraint _schemeConstraint
+        SchemeConstraints _schemeConstraints
     )
     external
     {
@@ -86,7 +86,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
-        schemeConstraint = _schemeConstraint;
+        schemeConstraints = _schemeConstraints;
 
         for (uint i = 0; i < _contractsWhitelist.length; i++) {
             contractsWhitelist[_contractsWhitelist[i]] = true;
@@ -133,7 +133,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         Controller controller = Controller(avatar.owner());
         for (uint i = 0; i < proposal.contractsToCall.length; i++) {
             bytes memory callData = proposal.callsData[i];
-            require(schemeConstraint.isAllowedToCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]),
+            require(schemeConstraints.isAllowedToCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]),
             "call is not allowed");
             (success, genericCallReturnValue) =
             controller.genericCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]);
