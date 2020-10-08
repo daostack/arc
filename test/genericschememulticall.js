@@ -58,6 +58,7 @@ const setup = async function (accounts,contractsWhitelist,reputationAccount=0,ge
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
    }
    testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
+   await testSetup.schemeConstraints.initialize(100000,1000000);
    testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.GenericSchemeMultiCall,accounts,contractsWhitelist,genesisProtocol,tokenAddress,testSetup.org.avatar,testSetup.schemeConstraints);
    var permissions = "0x00000010";
 
@@ -95,7 +96,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
       assert.equal(tx.logs[0].args._values[0],10);
       assert.equal(tx.logs[0].args._descriptionHash,"description");
     });
-
+    
     it("proposeCall log - with invalid array - reverts", async function() {
       var actionMock =await ActionMock.new();
       var testSetup = await setup(accounts,[actionMock.address]);
