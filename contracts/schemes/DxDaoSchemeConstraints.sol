@@ -39,8 +39,12 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     {
 
         uint256 observervationIndex = observationIndexOf(block.timestamp);
-        require(periodSpendingWei[observervationIndex].add(_ethAmount) <= periodLimitWei, "periodSpendingWeiExceeded");
-      //do the logic
+        periodSpendingWei[observervationIndex] = periodSpendingWei[observervationIndex].add(_ethAmount);
+        require(periodSpendingWei[observervationIndex] <= periodLimitWei, "periodSpendingWeiExceeded");
+      //do other logic :
+      // constraint approve calls
+      // constraint token transfer
+      // ...
         return true;
 
     }
