@@ -55,7 +55,7 @@ const setup = async function (accounts,contractsWhitelist,reputationAccount=0,ge
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
    }
    testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
-   await testSetup.schemeConstraints.initialize(100000,1000000,[tokenAddress],[1000],contractsWhitelist);
+   await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhitelist);
    testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.GenericSchemeMultiCall,accounts,genesisProtocol,tokenAddress,testSetup.org.avatar,testSetup.schemeConstraints);
    var permissions = "0x00000010";
 
@@ -207,9 +207,9 @@ contract('GenericSchemeMultiCall', function(accounts) {
        var actionMock =await ActionMock.new();
        var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
        var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
-       var value = 123;
+       var value = 50000;
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address],[callData],[value],helpers.NULL_HASH);
+       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[value,value],helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        //transfer some eth to avatar
        await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
@@ -224,7 +224,47 @@ contract('GenericSchemeMultiCall', function(accounts) {
              assert.equal(events[0].event,"ProposalExecuted");
              assert.equal(events[0].args._proposalId,proposalId);
         });
-        assert.equal(await web3.eth.getBalance(actionMock.address),value);
+        assert.equal(await web3.eth.getBalance(actionMock.address),value*2);
+       //try to execute another one within the same period should fail
+       tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[value,value],helpers.NULL_HASH);
+       proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       try {
+          await testSetup.GenericSchemeMultiCall.execute(proposalId);
+          assert(false, "cannot send more within the same period");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+       await helpers.increaseTime(100000);
+       tx = await testSetup.GenericSchemeMultiCall.execute(proposalId);
+       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalExecuted', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"ProposalExecuted");
+             assert.equal(events[0].args._proposalId,proposalId);
+        });
+    });
+
+    it("schemeconstrains eth value exceed limit", async function() {
+       var actionMock =await ActionMock.new();
+       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
+       var value = 100001;
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address],[callData],[value],helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       //transfer some eth to avatar
+       await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
+       assert.equal(await web3.eth.getBalance(actionMock.address),0);
+       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       try {
+          await testSetup.GenericSchemeMultiCall.execute(proposalId);
+          assert(false, "cannot transfer eth amount");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
     });
 
     it("execute proposeVote -negative decision - check action - with GenesisProtocol", async function() {
