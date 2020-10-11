@@ -445,12 +445,15 @@ contract('GenericSchemeMultiCall', function(accounts) {
     it("cannot init twice", async function() {
         var actionMock =await ActionMock.new();
         var testSetup = await setup(accounts,[actionMock.address]);
+    
         try {
           await testSetup.genericSchemeMultiCall.initialize(
             testSetup.org.avatar.address,
-            accounts[0],
-            helpers.SOME_HASH,
-            testSetup.schemeConstraints.address
+            testSetup.genericSchemeParams.votingMachine.absoluteVote.address,
+            [0,0,0,0,0,0,0,0,0,0,0],
+            helpers.NULL_ADDRESS,
+            testSetup.genericSchemeParams.votingMachine.params,
+            helpers.NULL_ADDRESS
           );
           assert(false, "cannot init twice");
         } catch(error) {
