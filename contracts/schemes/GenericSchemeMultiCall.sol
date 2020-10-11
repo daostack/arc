@@ -3,8 +3,9 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
-import "@daostack/infra-experimental/contracts/votingMachines/VotingMachineCallbacksInterface.sol";
+import "@daostack/infra-experimental/contracts/votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
+import "./SchemeConstraints.sol";
 
 
 /**
@@ -25,8 +26,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     }
 
     mapping(bytes32=>MultiCallProposal) public proposals;
-    mapping(address=>bool) public contractsWhitelist;
-    bytes4 private constant APPROVE_SIGNATURE = 0x095ea7b3;//approve(address,uint256)
+    SchemeConstraints public schemeConstraints;
 
     event NewMultiCallProposal(
         address indexed _avatar,
@@ -58,16 +58,12 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
 
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
-    event WhiteListedContracts(address indexed _avatar, address[] _contractsWhitelist);
-
-    /**
-     * @dev initialize
+    /* @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _votingMachine the voting machines address to
-     * @param _votingParams genesisProtocol parameters - valid only if _voteParamsHash is zero
-     * @param _voteOnBehalf genesisProtocol parameter - valid only if _voteParamsHash is zero
-     * @param _voteParamsHash voting machine parameters.
+     * @param _voteParams voting machine parameters.
      * @param _contractsWhitelist the contracts the scheme is allowed to interact with
+     *
      */
     function initialize(
         Avatar _avatar,
@@ -75,16 +71,12 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         uint256[11] calldata _votingParams,
         address _voteOnBehalf,
         bytes32 _voteParamsHash,
-        address[] calldata _contractsWhitelist
+        SchemeConstraints _schemeConstraints
     )
     external
     {
-        require(_contractsWhitelist.length > 0, "contractsWhitelist cannot be empty");
         super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
-        for (uint i = 0; i < _contractsWhitelist.length; i++) {
-            contractsWhitelist[_contractsWhitelist[i]] = true;
-        }
-        emit WhiteListedContracts(address(avatar), _contractsWhitelist);
+        schemeConstraints = _schemeConstraints;
     }
 
     /**
@@ -121,6 +113,15 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         MultiCallProposal storage proposal = proposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed, "proposal must passed by voting machine");
+        if (schemeConstraints != SchemeConstraints(0)) {
+            require(
+            schemeConstraints.isAllowedToCall(
+            proposal.contractsToCall,
+            proposal.callsData,
+            proposal.values,
+            avatar),
+            "call is not allowed");
+        }
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
@@ -158,10 +159,10 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     *       see : https://github.com/ethereum/solidity/issues/6835#issuecomment-549895381
     */
     function proposeCalls(
-        address[] calldata _contractsToCall,
-        bytes[] calldata _callsData,
-        uint256[] calldata _values,
-        string calldata _descriptionHash
+        address[] memory _contractsToCall,
+        bytes[] memory _callsData,
+        uint256[] memory _values,
+        string memory _descriptionHash
     )
     public
     returns(bytes32 proposalId)
@@ -170,23 +171,15 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             (_contractsToCall.length == _callsData.length) && (_contractsToCall.length == _values.length),
             "Wrong length of _contractsToCall, _callsDataLens or _values arrays"
         );
-        for (uint i = 0; i < _contractsToCall.length; i++) {
-            if (!contractsWhitelist[_contractsToCall[i]]) {
-                address spender;
-                bytes calldata callData = _callsData[i];
-                require(
-                    callData[0] == APPROVE_SIGNATURE[0] &&
-                    callData[1] == APPROVE_SIGNATURE[1] &&
-                    callData[2] == APPROVE_SIGNATURE[2] &&
-                    callData[3] == APPROVE_SIGNATURE[3],
-                "allow only approve call for none whitelistedContracts");
-                (spender,) = abi.decode
-                (
-                callData[4:],
-                (address, uint)
-                );
-                require(contractsWhitelist[spender], "spender contract not whitelisted");
-            }
+
+        if (schemeConstraints != SchemeConstraints(0)) {
+            require(
+            schemeConstraints.isAllowedToPropose(
+            _contractsToCall,
+            _callsData,
+            _values,
+            avatar),
+            "propose is not allowed");
         }
 
         proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
@@ -198,7 +191,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             exist: true,
             passed: false
         });
-
         proposalsBlockNumber[proposalId] = block.number;
 
         emit NewMultiCallProposal(address(avatar), proposalId, _callsData, _values, _descriptionHash, _contractsToCall);

@@ -6,6 +6,7 @@ const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ActionMock = artifacts.require("./ActionMock.sol");
+const DxDaoSchemeConstraints = artifacts.require("./DxDaoSchemeConstraints.sol");
 
 export class GenericSchemeParams {
   constructor() {
@@ -15,10 +16,10 @@ export class GenericSchemeParams {
 const setupGenericSchemeParams = async function(
                                             genericScheme,
                                             accounts,
-                                            contractWhitelist,
                                             genesisProtocol = false,
                                             tokenAddress = 0,
-                                            avatar
+                                            avatar,
+                                            schemeConstraints
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
   if (genesisProtocol === true){
@@ -27,7 +28,7 @@ const setupGenericSchemeParams = async function(
             avatar.address,
             genericSchemeParams.votingMachine.genesisProtocol.address,
             genericSchemeParams.votingMachine.params,
-            contractWhitelist);
+            schemeConstraints.address);
     }
   else {
       genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,genericScheme.address);
@@ -35,12 +36,12 @@ const setupGenericSchemeParams = async function(
             avatar.address,
             genericSchemeParams.votingMachine.absoluteVote.address,
             genericSchemeParams.votingMachine.params,
-            contractWhitelist);
+            schemeConstraints.address);
   }
   return genericSchemeParams;
 };
 
-const setup = async function (accounts,contractsWhitelist,reputationAccount=0,genesisProtocol = false,tokenAddress=0) {
+const setup = async function (accounts,contractsWhitelist,reputationAccount=0,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.GenericSchemeMultiCall = await GenericSchemeMultiCall.new();
@@ -53,7 +54,9 @@ const setup = async function (accounts,contractsWhitelist,reputationAccount=0,ge
    } else {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
    }
-   testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.GenericSchemeMultiCall,accounts,contractsWhitelist,genesisProtocol,tokenAddress,testSetup.org.avatar);
+   testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
+   await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhitelist);
+   testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.GenericSchemeMultiCall,accounts,genesisProtocol,tokenAddress,testSetup.org.avatar,testSetup.schemeConstraints);
    var permissions = "0x00000010";
 
 
@@ -204,9 +207,9 @@ contract('GenericSchemeMultiCall', function(accounts) {
        var actionMock =await ActionMock.new();
        var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
        var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
-       var value = 123;
+       var value = 50000;
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address],[callData],[value],helpers.NULL_HASH);
+       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[value,value],helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        //transfer some eth to avatar
        await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
@@ -221,7 +224,47 @@ contract('GenericSchemeMultiCall', function(accounts) {
              assert.equal(events[0].event,"ProposalExecuted");
              assert.equal(events[0].args._proposalId,proposalId);
         });
-        assert.equal(await web3.eth.getBalance(actionMock.address),value);
+        assert.equal(await web3.eth.getBalance(actionMock.address),value*2);
+       //try to execute another one within the same period should fail
+       tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[value,value],helpers.NULL_HASH);
+       proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       try {
+          await testSetup.GenericSchemeMultiCall.execute(proposalId);
+          assert(false, "cannot send more within the same period");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+       await helpers.increaseTime(100000);
+       tx = await testSetup.GenericSchemeMultiCall.execute(proposalId);
+       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalExecuted', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"ProposalExecuted");
+             assert.equal(events[0].args._proposalId,proposalId);
+        });
+    });
+
+    it("schemeconstrains eth value exceed limit", async function() {
+       var actionMock =await ActionMock.new();
+       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
+       var value = 100001;
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address],[callData],[value],helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       //transfer some eth to avatar
+       await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
+       assert.equal(await web3.eth.getBalance(actionMock.address),0);
+       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       try {
+          await testSetup.GenericSchemeMultiCall.execute(proposalId);
+          assert(false, "cannot transfer eth amount");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
     });
 
     it("execute proposeVote -negative decision - check action - with GenesisProtocol", async function() {
@@ -325,24 +368,6 @@ contract('GenericSchemeMultiCall', function(accounts) {
       assert.equal(await standardTokenMock.allowance(testSetup.org.avatar.address,accounts[3]),1000);
     });
 
-    it("cannot init without contract whitelist", async function() {
-        var actionMock =await ActionMock.new();
-        var testSetup = await setup(accounts,[actionMock.address]);
-        var genericSchemeMultiCall =await GenericSchemeMultiCall.new();
-
-        try {
-          await genericSchemeMultiCall.initialize(
-            testSetup.org.avatar.address,
-            accounts[0],
-            helpers.SOME_HASH,
-            []
-          );
-          assert(false, "contractWhitelist cannot be empty");
-        } catch(error) {
-          helpers.assertVMException(error);
-        }
-    });
-
     it("cannot init twice", async function() {
         var actionMock =await ActionMock.new();
         var testSetup = await setup(accounts,[actionMock.address]);
@@ -351,7 +376,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
             testSetup.org.avatar.address,
             accounts[0],
             helpers.SOME_HASH,
-            [accounts[0]]
+            testSetup.schemeConstraints.address
           );
           assert(false, "cannot init twice");
         } catch(error) {
@@ -360,13 +385,12 @@ contract('GenericSchemeMultiCall', function(accounts) {
     });
 
     it("can init with multiple contracts on whitelist", async function() {
-        var actionMock =await ActionMock.new();
-        var testSetup = await setup(accounts,[actionMock.address]);
-        var genericSchemeMultiCall =await GenericSchemeMultiCall.new();
-        var tx = await genericSchemeMultiCall.initialize(
-              testSetup.org.avatar.address,
-              accounts[0],
-              helpers.SOME_HASH,
+        var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
+        var tx = await dxDaoSchemeConstraints.initialize(
+              1,
+              0,
+              [],
+              [],
               [accounts[0],accounts[1],accounts[2],accounts[3]]
         );
         assert.equal(tx.logs.length,1);
