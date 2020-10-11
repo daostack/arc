@@ -6,7 +6,6 @@ import "@daostack/infra-experimental/contracts/votingMachines/GenesisProtocol.so
 import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.sol";
 
 
-
 contract ArcScheme is Initializable {
     Avatar public avatar;
     IntVoteInterface public votingMachine;
@@ -43,14 +42,7 @@ contract ArcScheme is Initializable {
         votingMachine = _votingMachine;
         if (_voteParamsHash == bytes32(0)) {
             //genesisProtocol
-            GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
-            voteParamsHash = genesisProtocol.getParametersHash(_votingParams, _voteOnBehalf);
-            (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
-            genesisProtocol.parameters(voteParamsHash);
-            if (queuedVoteRequiredPercentage == 0) {
-               //params not set already
-                genesisProtocol.setParameters(_votingParams, _voteOnBehalf);
-            }
+            voteParamsHash = GenesisProtocol(address(_votingMachine)).setParameters(_votingParams, _voteOnBehalf);
         } else {
             //for other voting machines
             voteParamsHash = _voteParamsHash;
