@@ -116,13 +116,15 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         MultiCallProposal storage proposal = proposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed, "proposal must passed by voting machine");
-        require(
-        schemeConstraints.isAllowedToCall(
-        proposal.contractsToCall,
-        proposal.callsData,
-        proposal.values,
-        avatar),
-        "call is not allowed");
+        if (schemeConstraints != SchemeConstraints(0)) {
+            require(
+            schemeConstraints.isAllowedToCall(
+            proposal.contractsToCall,
+            proposal.callsData,
+            proposal.values,
+            avatar),
+            "call is not allowed");
+        }
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
@@ -172,14 +174,15 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             (_contractsToCall.length == _callsData.length) && (_contractsToCall.length == _values.length),
             "Wrong length of _contractsToCall, _callsDataLens or _values arrays"
         );
-
-        require(
-        schemeConstraints.isAllowedToPropose(
-        _contractsToCall,
-        _callsData,
-        _values,
-        avatar),
-        "propose is not allowed");
+        if (schemeConstraints != SchemeConstraints(0)) {
+            require(
+            schemeConstraints.isAllowedToPropose(
+            _contractsToCall,
+            _callsData,
+            _values,
+            avatar),
+            "propose is not allowed");
+        }
 
         proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
 
