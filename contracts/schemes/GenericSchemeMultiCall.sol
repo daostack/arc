@@ -27,9 +27,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
     mapping(bytes32=>MultiCallProposal) public proposals;
     IntVoteInterface public votingMachine;
     bytes32 public voteParams;
-    mapping(address=>bool) public contractsWhitelist;
     Avatar public avatar;
-    bytes4 private constant APPROVE_SIGNATURE = 0x095ea7b3;//approve(address,uint256)
     SchemeConstraints public schemeConstraints;
 
     event NewMultiCallProposal(
@@ -62,8 +60,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
 
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
-    event WhiteListedContracts(address indexed _avatar, address[] _contractsWhitelist);
-
     /* @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _votingMachine the voting machines address to
@@ -75,23 +71,16 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         Avatar _avatar,
         IntVoteInterface _votingMachine,
         bytes32 _voteParams,
-        address[] calldata _contractsWhitelist,
         SchemeConstraints _schemeConstraints
     )
     external
     {
         require(avatar == Avatar(0), "can be called only one time");
         require(_avatar != Avatar(0), "avatar cannot be zero");
-        require(_contractsWhitelist.length > 0, "contractsWhitelist cannot be empty");
         avatar = _avatar;
         votingMachine = _votingMachine;
         voteParams = _voteParams;
         schemeConstraints = _schemeConstraints;
-
-        for (uint i = 0; i < _contractsWhitelist.length; i++) {
-            contractsWhitelist[_contractsWhitelist[i]] = true;
-        }
-        emit WhiteListedContracts(address(avatar), _contractsWhitelist);
     }
 
     /**
@@ -127,14 +116,19 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         MultiCallProposal storage proposal = proposals[_proposalId];
         require(proposal.exist, "must be a live proposal");
         require(proposal.passed, "proposal must passed by voting machine");
+        require(
+        schemeConstraints.isAllowedToCall(
+        proposal.contractsToCall,
+        proposal.callsData,
+        proposal.values,
+        avatar),
+        "call is not allowed");
         proposal.exist = false;
         bytes memory genericCallReturnValue;
         bool success;
         Controller controller = Controller(avatar.owner());
         for (uint i = 0; i < proposal.contractsToCall.length; i++) {
             bytes memory callData = proposal.callsData[i];
-            require(schemeConstraints.isAllowedToCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]),
-            "call is not allowed");
             (success, genericCallReturnValue) =
             controller.genericCall(proposal.contractsToCall[i], callData, avatar, proposal.values[i]);
             /* Whole transaction will be reverted if at least one call fails*/
@@ -178,26 +172,14 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
             (_contractsToCall.length == _callsData.length) && (_contractsToCall.length == _values.length),
             "Wrong length of _contractsToCall, _callsDataLens or _values arrays"
         );
-        for (uint i = 0; i < _contractsToCall.length; i++) {
-            if (!contractsWhitelist[_contractsToCall[i]]) {
-                address spender;
-                bytes memory callData = _callsData[i];
-                require(
-                    callData[0] == APPROVE_SIGNATURE[0] &&
-                    callData[1] == APPROVE_SIGNATURE[1] &&
-                    callData[2] == APPROVE_SIGNATURE[2] &&
-                    callData[3] == APPROVE_SIGNATURE[3],
-                "allow only approve call for none whitelistedContracts");
-                //in solidity > 6 this can be replaced by:
-                //(spender,) = abi.decode(callData[4:], (address, uint));
-                // see https://github.com/ethereum/solidity/issues/9439
-                // solhint-disable-next-line no-inline-assembly
-                assembly {
-                    spender := mload(add(callData, 36))
-                }
-                require(contractsWhitelist[spender], "spender contract not whitelisted");
-            }
-        }
+
+        require(
+        schemeConstraints.isAllowedToPropose(
+        _contractsToCall,
+        _callsData,
+        _values,
+        avatar),
+        "propose is not allowed");
 
         proposalId = votingMachine.propose(2, voteParams, msg.sender, address(avatar));
 

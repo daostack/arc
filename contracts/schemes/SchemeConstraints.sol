@@ -1,14 +1,22 @@
 pragma solidity 0.5.17;
-
+pragma experimental ABIEncoderV2;
 import "../controller/Avatar.sol";
 
 
 interface SchemeConstraints {
 
     function isAllowedToCall(
-        address _contractToCall,
-        bytes calldata callData,
-        Avatar _avatar,
-        uint256 _ethAmount) external returns(bool);
+        address[] calldata _contractsToCall,
+        bytes[] calldata _callsData,
+        uint256[] calldata _values,
+        Avatar _avatar)
+    external returns(bool);
+
+    function isAllowedToPropose(
+        address[] calldata _contractsToCall,
+        bytes[] calldata _callsData,
+        uint256[] calldata _values,
+        Avatar _avatar)
+    external returns(bool);
 
 }
