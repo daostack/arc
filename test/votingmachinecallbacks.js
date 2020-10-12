@@ -59,38 +59,6 @@ contract('VotingMachineCallbacks', function(accounts) {
        assert.equal(await testSetup.arcVotingMachineCallbacksMock.reputationOf(accounts[0],proposalId),1000);
     });
 
-    it("mintReputation allowed only for genesisProtocol", async function() {
-       var testSetup = await setup(accounts);
-       try {
-           await testSetup.arcVotingMachineCallbacksMock.mintReputation(1000,accounts[0],proposalId,{from:accounts[1]});
-           assert(false, 'mintReputation allowed only for votingMachine');
-       } catch (ex) {
-         helpers.assertVMException(ex);
-       }
-    });
-
-    it("mintReputation  ", async function() {
-       var testSetup = await setup(accounts);
-       await testSetup.arcVotingMachineCallbacksMock.mintReputation(1000,accounts[2],proposalId,{from:accounts[0]});
-       assert.equal(await testSetup.org.reputation.totalSupply(),2000);
-    });
-
-    it("burnReputation allowed only for votingMachine", async function() {
-       var testSetup = await setup(accounts);
-       try {
-           await testSetup.arcVotingMachineCallbacksMock.burnReputation(500,accounts[0],proposalId,{from:accounts[1]});
-           assert(false, 'burnReputation allowed only for votingMachine');
-       } catch (ex) {
-         helpers.assertVMException(ex);
-       }
-    });
-
-    it("burnReputation  ", async function() {
-       var testSetup = await setup(accounts);
-       await testSetup.arcVotingMachineCallbacksMock.burnReputation(500,accounts[0],proposalId,{from:accounts[0]});
-       assert.equal(await testSetup.org.reputation.totalSupply(),500);
-    });
-
     it("stakingTokenTransfer allowed only for votingMachine", async function() {
        var testSetup = await setup(accounts);
        try {
