@@ -17,24 +17,6 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
     // proposalId  ->  blockNumber
     mapping(bytes32 => uint256) public proposalsBlockNumber;
 
-    function mintReputation(uint256 _amount, address _beneficiary, bytes32 _proposalId)
-    external
-    onlyVotingMachine(_proposalId)
-    override
-    returns(bool)
-    {
-        return Controller(avatar.owner()).mintReputation(_amount, _beneficiary);
-    }
-
-    function burnReputation(uint256 _amount, address _beneficiary, bytes32 _proposalId)
-    external
-    onlyVotingMachine(_proposalId)
-    override
-    returns(bool)
-    {
-        return Controller(avatar.owner()).burnReputation(_amount, _beneficiary);
-    }
-
     function stakingTokenTransfer(
         IERC20 _stakingToken,
         address _beneficiary,
