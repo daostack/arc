@@ -26,14 +26,6 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         bool passed;
     }
 
-    struct SchemeConstraintsFactoryParams {
-        DAOFactory daoFactory;
-        uint64[3]  packageVersion;
-        string  schemeConstraintsName;
-        bytes  schemeConstraintsInitData;
-        address[]  contractsWhitelist;
-    }
-
     mapping(bytes32=>MultiCallProposal) public proposals;
     SchemeConstraints public schemeConstraints;
 
@@ -98,14 +90,14 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
               _schemeConstraintsFactoryParams,
               (address, uint64[3], string, bytes, address[])
             );
+            /* solhint-enable */
             schemeConstraints = SchemeConstraints(address(DAOFactory(daoFactory).createInstance(
                                         packageVersion,
                                         schemeConstraintsName,
                                         address(avatar),
                                         schemeConstraintsInitData)));
             emit WhiteListedContracts(address(_avatar), contractsWhitelist);
-
-      }
+        }
     }
 
     /**
