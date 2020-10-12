@@ -44,7 +44,7 @@ const setupGenericSchemeMultiCallParams = async function(
 };
 
 
-const setup = async function (accounts,contractsWhitelist,reputationAccount=0,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
+const setup = async function (accounts,contractsWhitelist,reputationAccount=0,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS,schemeConstraints=true) {
   var testSetup = new helpers.TestSetup();
   testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
   registration = await helpers.registerImplementation();
@@ -56,13 +56,19 @@ const setup = async function (accounts,contractsWhitelist,reputationAccount=0,ge
      account2 = reputationAccount;
   }
   testSetup.proxyAdmin = accounts[5];
-  testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
-  await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhitelist);
+  var schemeConstraintsAddress;
+  if (schemeConstraints) {
+    testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
+    await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhitelist);
+    schemeConstraintsAddress = testSetup.schemeConstraints.address;
+  } else {
+     schemeConstraintsAddress = helpers.NULL_ADDRESS;
+  }
   testSetup.genericSchemeParams= await setupGenericSchemeMultiCallParams(
                      accounts,
                      genesisProtocol,
                      tokenAddress,
-                     testSetup.schemeConstraints.address
+                     schemeConstraintsAddress
                      );
 
   var permissions = "0x0000001f";
@@ -302,6 +308,27 @@ contract('GenericSchemeMultiCall', function(accounts) {
         }
     });
 
+    it("no schemeconstrains test execute", async function() {
+       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,[accounts[3]],0,true,standardTokenMock.address,false);
+       var encodedTokenApproval = await createCallToTokenApproval(standardTokenMock,accounts[3], 10001);
+       var tx = await testSetup.genericSchemeMultiCall.proposeCalls([standardTokenMock.address],[encodedTokenApproval],[0],helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.genericSchemeMultiCall.execute(proposalId);
+    });
+
+    it("execute none exist proposal", async function() {
+       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,[accounts[3]],0,true,standardTokenMock.address,false);
+       try {
+          await testSetup.genericSchemeMultiCall.execute(helpers.SOME_HASH);
+          assert(false, "cannot execute none exist proposal");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+    });
+
     it("execute proposeVote -negative decision - check action - with GenesisProtocol", async function() {
        var actionMock =await ActionMock.new();
        var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
@@ -440,6 +467,19 @@ contract('GenericSchemeMultiCall', function(accounts) {
        }
     });
 
+    it("no schemeConstraints test proposeCall ", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address,false);
+      var encodedTokenApproval= await createCallToTokenApproval(standardTokenMock, accounts[3], 1000);
+      var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+      await testSetup.genericSchemeMultiCall.proposeCalls(
+        [actionMock.address,standardTokenMock.address],
+        [callData1,encodedTokenApproval],
+        [0,0],
+        helpers.NULL_HASH);
+    });
+
     it("can init with multiple contracts on whitelist", async function() {
         var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
         var tx = await dxDaoSchemeConstraints.initialize(
@@ -497,7 +537,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
 
     });
 
-    it("DxDaoSchemeConstraints: period size > 0", async function() {
+    it("DxDaoSchemeConstraints: wrong token address array length", async function() {
         var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
         try {
           await dxDaoSchemeConstraints.initialize(
