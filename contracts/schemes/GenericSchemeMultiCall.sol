@@ -64,8 +64,7 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
      * @param _avatar the avatar to mint reputation from
      * @param _votingMachine the voting machines address to
      * @param _voteParams voting machine parameters.
-     * @param _contractsWhitelist the contracts the scheme is allowed to interact with
-     *
+     * @param _schemeConstraints the schemeConstraints contracts.
      */
     function initialize(
         Avatar _avatar,

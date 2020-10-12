@@ -7,8 +7,6 @@ import "./SchemeConstraints.sol";
 contract DxDaoSchemeConstraints is SchemeConstraints {
     using SafeMath for uint256;
 
-    event WhiteListedContracts(address[] _contractsWhitelist);
-
     uint256 public initialTimestamp;
     uint256 public periodSize;
     uint256 public periodLimitWei;
@@ -17,21 +15,22 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     mapping(address=>uint256) public periodLimitToken;
     mapping (uint256 => mapping(address => uint256)) public periodSpendingToken;
     mapping(uint256=>uint256) public periodSpendingWei;
-    mapping(address=>bool) public contractsWhitelist;
+    mapping(address=>bool) public contractsWhiteListMap;
     bytes4 private constant APPROVE_SIGNATURE = 0x095ea7b3;//approve(address,uint256)
 
     /* @dev initialize
-     * @param _avatar the avatar to mint reputation from
-     * @param _votingMachine the voting machines address to
-     * @param _voteParams voting machine parameters.
-     * @param _contractsWhitelist the contracts the scheme is allowed to interact with
+     * @param _periodSize the time period to limit the tokens and eth spending
+     * @param _periodLimitWei the limit of eth which can be sent per period
+     * @param _periodLimitTokensAddresses tokens to limit
+     * @param _periodLimitTokensAmounts the limit of token which can be sent per period
+     * @param _contractsWhiteList the contracts the scheme is allowed to interact with
      */
     function initialize(
         uint256 _periodSize,
         uint256 _periodLimitWei,
         address[] calldata _periodLimitTokensAddresses,
         uint256[] calldata _periodLimitTokensAmounts,
-        address[] calldata _contractsWhitelist
+        address[] calldata _contractsWhiteList
     )
     external {
         require(initialTimestamp == 0, "cannot initialize twice");
@@ -42,15 +41,25 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         periodLimitWei = _periodLimitWei;
         // solhint-disable-next-line not-rely-on-time
         initialTimestamp = block.timestamp;
-        for (uint i = 0; i < _contractsWhitelist.length; i++) {
-            contractsWhitelist[_contractsWhitelist[i]] = true;
+        for (uint i = 0; i < _contractsWhiteList.length; i++) {
+            contractsWhiteListMap[_contractsWhiteList[i]] = true;
         }
-        emit WhiteListedContracts(_contractsWhitelist);
         for (uint i = 0; i < _periodLimitTokensAmounts.length; i++) {
             periodLimitToken[_periodLimitTokensAddresses[i]] = _periodLimitTokensAmounts[i];
         }
+        contractsWhiteList = _contractsWhiteList;
     }
 
+    /*
+     * @dev isAllowedToCall should be called upon a proposal execution.
+     *  - check that the total spending of tokens within a 'periodSize' does not exceed the periodLimit per token
+     *  - check that the total sending of eth within a 'periodSize' does not exceed the periodLimit
+     * @param _contractsToCall the contracts to be called
+     * @param _callsData - The abi encode data for the calls
+     * @param _values value(ETH) to transfer with the calls
+     * @param _avatar avatar
+     * @return bool value true-allowed false not allowed
+     */
     function isAllowedToCall(
         address[] calldata _contractsToCall,
         bytes[] calldata _callsData,
@@ -76,7 +85,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
                 address contractToCall = _contractsToCall[i];
                 // solhint-disable-next-line no-inline-assembly
                 assembly {
-                    amount := calldataload(add(callData, 68))
+                    amount := mload(add(callData, 68))
                 }
                 periodSpendingToken[observervationIndex][contractToCall] =
                 periodSpendingToken[observervationIndex][contractToCall].add(amount);
@@ -92,6 +101,15 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         return true;
     }
 
+    /*
+     * @dev isAllowedToPropose should be called upon a proposal submition.
+     * allow only whitelisted target contracts or 'approve' calls which the 'spender' is whitelisted
+     * @param _contractsToCall the contracts to be called
+     * @param _callsData - The abi encode data for the calls
+     * @param _values value(ETH) to transfer with the calls
+     * @param _avatar avatar
+     * @return bool value true-allowed false not allowed
+     */
     function isAllowedToPropose(
         address[] calldata _contractsToCall,
         bytes[] calldata _callsData,
@@ -101,8 +119,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     returns(bool)
     {
         for (uint i = 0; i < _contractsToCall.length; i++) {
-        // constraint approve calls
-            if (!contractsWhitelist[_contractsToCall[i]]) {
+            if (!contractsWhiteListMap[_contractsToCall[i]]) {
                 address spender;
                 bytes memory callData = _callsData[i];
                 require(
@@ -112,13 +129,13 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
                     callData[3] == APPROVE_SIGNATURE[3],
                 "allow only approve call for none whitelistedContracts");
                 //in solidity > 6 this can be replaced by:
-                //(spender,) = abi.decode(callData[4:], (address, uint));
+                //(spender,) = abi.descode(callData[4:], (address, uint));
                 // see https://github.com/ethereum/solidity/issues/9439
                 // solhint-disable-next-line no-inline-assembly
                 assembly {
-                    spender := calldataload(add(callData, 36))
+                    spender := mload(add(callData, 36))
                 }
-                require(contractsWhitelist[spender], "spender contract not whitelisted");
+                require(contractsWhiteListMap[spender], "spender contract not whitelisted");
             }
         }
         return true;

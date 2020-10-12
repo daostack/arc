@@ -41,7 +41,7 @@ const setupGenericSchemeParams = async function(
   return genericSchemeParams;
 };
 
-const setup = async function (accounts,contractsWhitelist,reputationAccount=0,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
+const setup = async function (accounts,contractsWhiteList,reputationAccount=0,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.GenericSchemeMultiCall = await GenericSchemeMultiCall.new();
@@ -55,7 +55,7 @@ const setup = async function (accounts,contractsWhitelist,reputationAccount=0,ge
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
    }
    testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
-   await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhitelist);
+   await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhiteList);
    testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.GenericSchemeMultiCall,accounts,genesisProtocol,tokenAddress,testSetup.org.avatar,testSetup.schemeConstraints);
    var permissions = "0x00000010";
 
@@ -386,19 +386,18 @@ contract('GenericSchemeMultiCall', function(accounts) {
 
     it("can init with multiple contracts on whitelist", async function() {
         var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
-        var tx = await dxDaoSchemeConstraints.initialize(
+        await dxDaoSchemeConstraints.initialize(
               1,
               0,
               [],
               [],
               [accounts[0],accounts[1],accounts[2],accounts[3]]
         );
-        assert.equal(tx.logs.length,1);
-        assert.equal(tx.logs[0].event,"WhiteListedContracts");
-        assert.equal(tx.logs[0].args._contractsWhitelist[0],accounts[0]);
-        assert.equal(tx.logs[0].args._contractsWhitelist[1],accounts[1]);
-        assert.equal(tx.logs[0].args._contractsWhitelist[2],accounts[2]);
-        assert.equal(tx.logs[0].args._contractsWhitelist[3],accounts[3]);
+        var contractsWhiteList = await dxDaoSchemeConstraints.getContractsWhiteList();
+        assert.equal(contractsWhiteList[0],accounts[0]);
+        assert.equal(contractsWhiteList[1],accounts[1]);
+        assert.equal(contractsWhiteList[2],accounts[2]);
+        assert.equal(contractsWhiteList[3],accounts[3]);
 
     });
 
