@@ -3,9 +3,10 @@ pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 
 import "./SchemeConstraints.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 
 
-contract DxDaoSchemeConstraints is SchemeConstraints {
+contract DxDaoSchemeConstraints is SchemeConstraints, Initializable {
     using SafeMath for uint256;
 
     event WhiteListedContracts(address[] _contractsWhitelist);
@@ -34,8 +35,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         uint256[] calldata _periodLimitTokensAmounts,
         address[] calldata _contractsWhitelist
     )
-    external {
-        require(initialTimestamp == 0, "cannot initialize twice");
+    external initializer {
         require(_periodSize > 0, "preriod size should be greater than 0");
         require(_periodLimitTokensAddresses.length == _periodLimitTokensAmounts.length,
         "invalid length _periodLimitTokensAddresses");
