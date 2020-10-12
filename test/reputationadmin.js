@@ -13,9 +13,7 @@ const setup = async function(
   _initialize = true
 ) {
   var testSetup = new helpers.TestSetup();
-  var controllerCreator = await ControllerCreator.new({
-    gas: constants.ARC_GAS_LIMIT
-  });
+  var controllerCreator = await ControllerCreator.new();
   var daoTracker = await DAOTracker.new();
   testSetup.daoCreator = await DaoCreator.new(
     controllerCreator.address,
