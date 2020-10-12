@@ -67,7 +67,7 @@ contract('LockingEth4Reputation', accounts => {
 
     });
 
-    it("score too high", async () => {
+    it("score too high [ @skip-on-coverage ]", async () => {
       let testSetup = await setup(accounts);
       let BigNumber = require('bignumber.js');
       BigNumber.set({ DECIMAL_PLACES: 0, ROUNDING_MODE: 4 });
