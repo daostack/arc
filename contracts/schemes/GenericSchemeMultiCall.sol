@@ -6,6 +6,7 @@ import "@daostack/infra-experimental/contracts/votingMachines/IntVoteInterface.s
 import "@daostack/infra-experimental/contracts/votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacks.sol";
 import "./SchemeConstraints.sol";
+import "../utils/DAOFactory.sol";
 
 
 /**
@@ -23,6 +24,14 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         uint256[] values;
         bool exist;
         bool passed;
+    }
+
+    struct SchemeConstraintsFactoryParams {
+        DAOFactory daoFactory;
+        uint64[3]  packageVersion;
+        string  schemeConstraintsName;
+        bytes  schemeConstraintsInitData;
+        address[]  contractsWhitelist;
     }
 
     mapping(bytes32=>MultiCallProposal) public proposals;
@@ -58,6 +67,8 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
 
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
+    event WhiteListedContracts(address indexed _avatar, address[] _contractsWhitelist);
+
     /* @dev initialize
      * @param _avatar the avatar to mint reputation from
      * @param _votingMachine the voting machines address to
@@ -71,12 +82,30 @@ contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterf
         uint256[11] calldata _votingParams,
         address _voteOnBehalf,
         bytes32 _voteParamsHash,
-        SchemeConstraints _schemeConstraints
-    )
+        bytes calldata _schemeConstraintsFactoryParams)
     external
     {
         super._initializeGovernance(_avatar, _votingMachine, _voteParamsHash, _votingParams, _voteOnBehalf);
-        schemeConstraints = _schemeConstraints;
+        if (_schemeConstraintsFactoryParams.length > 0) {
+            (
+            address daoFactory,
+            uint64[3] memory packageVersion,
+            string memory schemeConstraintsName,
+            bytes memory schemeConstraintsInitData,
+            address[] memory contractsWhitelist) =
+            /* solhint-disable */
+            abi.decode(
+              _schemeConstraintsFactoryParams,
+              (address, uint64[3], string, bytes, address[])
+            );
+            schemeConstraints = SchemeConstraints(address(DAOFactory(daoFactory).createInstance(
+                                        packageVersion,
+                                        schemeConstraintsName,
+                                        address(avatar),
+                                        schemeConstraintsInitData)));
+            emit WhiteListedContracts(address(_avatar), contractsWhitelist);
+
+      }
     }
 
     /**

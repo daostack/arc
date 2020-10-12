@@ -13,31 +13,32 @@ const setupGenericSchemeMultiCallParams = async function(
                                               accounts,
                                               genesisProtocol,
                                               token,
-                                              schemeConstraints
+                                              schemeConstraintsFactoryParams
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
 
+
   if (genesisProtocol === true) {
     genericSchemeParams.votingMachine = await helpers.setupGenesisProtocol(accounts,token,helpers.NULL_ADDRESS);
-    genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericScheme.abi)
+    genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericSchemeMultiCall.abi)
                           .methods
                           .initialize(helpers.NULL_ADDRESS,
                             genericSchemeParams.votingMachine.genesisProtocol.address,
                             genericSchemeParams.votingMachine.uintArray,
                             genericSchemeParams.votingMachine.voteOnBehalf,
                             helpers.NULL_HASH,
-                            schemeConstraints)
+                            schemeConstraintsFactoryParams)
                           .encodeABI();
     } else {
   genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50);
-  genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericScheme.abi)
+  genericSchemeParams.initdata = await new web3.eth.Contract(registration.genericSchemeMultiCall.abi)
                         .methods
                         .initialize(helpers.NULL_ADDRESS,
                           genericSchemeParams.votingMachine.absoluteVote.address,
                           [0,0,0,0,0,0,0,0,0,0,0],
                           helpers.NULL_ADDRESS,
                           genericSchemeParams.votingMachine.params,
-                          schemeConstraints)
+                          schemeConstraintsFactoryParams)
                         .encodeABI();
   }
   return genericSchemeParams;
@@ -56,19 +57,24 @@ const setup = async function (accounts,contractsWhitelist,reputationAccount=0,ge
      account2 = reputationAccount;
   }
   testSetup.proxyAdmin = accounts[5];
-  var schemeConstraintsAddress;
+  var schemeConstraintsFactoryParams;
   if (schemeConstraints) {
-    testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
-    await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhitelist);
-    schemeConstraintsAddress = testSetup.schemeConstraints.address;
+    schemeConstraintsInitData = await new web3.eth.Contract(registration.dxDaoSchemeConstraints.abi)
+                          .methods
+                          .initialize(100000,100000,[tokenAddress],[1000],contractsWhitelist)
+                          .encodeABI();
+    var packageV = [0,1,0];
+    schemeConstraintsFactoryParams =  web3.eth.abi.encodeParameters(
+                                        ['address','uint64[3]','string','bytes','address[]'],
+                                        [registration.daoFactory.address,packageV,"DxDaoSchemeConstraints",schemeConstraintsInitData,contractsWhitelist]);
   } else {
-     schemeConstraintsAddress = helpers.NULL_ADDRESS;
+     schemeConstraintsFactoryParams = '0x';
   }
   testSetup.genericSchemeParams= await setupGenericSchemeMultiCallParams(
                      accounts,
                      genesisProtocol,
                      tokenAddress,
-                     schemeConstraintsAddress
+                     schemeConstraintsFactoryParams
                      );
 
   var permissions = "0x0000001f";
@@ -89,6 +95,18 @@ const setup = async function (accounts,contractsWhitelist,reputationAccount=0,ge
                                                                     );
 
   testSetup.genericSchemeMultiCall = await GenericSchemeMultiCall.at(await helpers.getSchemeAddress(registration.daoFactory.address,tx));
+  if (contractsWhitelist.length > 0 && schemeConstraints) {
+  await testSetup.genericSchemeMultiCall.getPastEvents('WhiteListedContracts', {
+        fromBlock: tx.blockNumber,
+        toBlock: 'latest'
+    })
+    .then(function(events){
+        assert.equal(events[0].event,"WhiteListedContracts");
+        assert.equal(events[0].args._avatar,testSetup.org.avatar.address);
+        assert.equal(events[0].args._contractsWhitelist[0],contractsWhitelist[0]);
+   });
+ }
+
   return testSetup;
 };
 
@@ -118,6 +136,9 @@ contract('GenericSchemeMultiCall', function(accounts) {
       assert.equal(tx.logs[0].args._contractsToCall[0],actionMock.address);
       assert.equal(tx.logs[0].args._values[0],10);
       assert.equal(tx.logs[0].args._descriptionHash,"description");
+
+
+
     });
 
     it("proposeCall log - with invalid array - reverts", async function() {

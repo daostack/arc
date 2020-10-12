@@ -42,6 +42,7 @@ const ReputationAdmin = artifacts.require("./ReputationAdmin.sol");
 const TokenTrade = artifacts.require("./TokenTrade.sol");
 const ReputationTokenTrade = artifacts.require("./ReputationTokenTrade.sol");
 const GenericSchemeMultiCall = artifacts.require("./GenericSchemeMultiCall.sol");
+const DxDaoSchemeConstraints = artifacts.require("./DxDaoSchemeConstraints.sol");
 
 
 const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -167,6 +168,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   registration.tokenTrade = await TokenTrade.new();
   registration.reputationTokenTrade = await ReputationTokenTrade.new();
   registration.genericSchemeMultiCall = await GenericSchemeMultiCall.new();
+  registration.dxDaoSchemeConstraints = await DxDaoSchemeConstraints.new();
 
   await implementationDirectory.setImplementation("DAOToken",registration.daoToken.address);
   await implementationDirectory.setImplementation("Reputation",registration.reputation.address);
@@ -202,6 +204,7 @@ const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
   await implementationDirectory.setImplementation("TokenTrade",registration.tokenTrade.address);
   await implementationDirectory.setImplementation("ReputationTokenTrade",registration.reputationTokenTrade.address);
   await implementationDirectory.setImplementation("GenericSchemeMultiCall",registration.genericSchemeMultiCall.address);
+    await implementationDirectory.setImplementation("DxDaoSchemeConstraints",registration.dxDaoSchemeConstraints.address);
 
 
   registration.implementationDirectory = implementationDirectory;
