@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const DaoCreator = artifacts.require('./DaoCreator.sol');
 const ControllerCreator = artifacts.require('./ControllerCreator.sol');
 const DAOTracker = artifacts.require('./DAOTracker.sol');
-const constants = require('./constants');
+
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Wallet = artifacts.require("./Wallet.sol");
 const TransitionScheme = artifacts.require('./TransitionScheme.sol');
@@ -19,11 +19,11 @@ const setup = async function(
   var controllerCreator = await ControllerCreator.new({
     gas: constants.ARC_GAS_LIMIT
   });
-  var daoTracker = await DAOTracker.new({ gas: constants.ARC_GAS_LIMIT });
+  var daoTracker = await DAOTracker.new();
   testSetup.daoCreator = await DaoCreator.new(
     controllerCreator.address,
     daoTracker.address,
-    { gas: constants.ARC_GAS_LIMIT }
+
   );
 
   testSetup.org = await helpers.setupOrganization(
@@ -36,9 +36,9 @@ const setup = async function(
   testSetup.wallet = await Wallet.new();
   await testSetup.wallet.transferOwnership(testSetup.org.avatar.address);
   testSetup.assets = [testSetup.wallet.address];
-  
+
   testSetup.standardToken = await ERC20Mock.new(testSetup.org.avatar.address, 100);
-  
+
   testSetup.transitionScheme = await TransitionScheme.new();
   testSetup.selectors = [selector];
   if (testInitDifferentArrayLength) {
@@ -60,7 +60,7 @@ const setup = async function(
     [testSetup.standardToken.address],
     testSetup.assets,
     testSetup.selectors,
-    { gas: constants.ARC_GAS_LIMIT }
+
   );
 
   var permissions = '0x00000010';
@@ -198,7 +198,7 @@ contract('TransitionScheme', accounts => {
         [testSetup.standardToken.address],
         [testSetup.wallet.address],
         testSetup.selectors,
-        { gas: constants.ARC_GAS_LIMIT }
+
       );
       assert(false, 'cannot initialize twice');
     } catch (error) {

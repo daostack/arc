@@ -25,3 +25,8 @@ jobs:
       - stage: tests
         name: "JS Lint"
         script: npm run lint
+
+      - stage: coverage
+        name: "Solidity Test Coverage"
+        if: branch = master
+        script: npm run coveralls

@@ -1,5 +1,5 @@
 const helpers = require("./helpers");
-const constants = require('./constants');
+
 const RageQuitWithToken = artifacts.require("./RageQuitWithToken.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
@@ -11,9 +11,9 @@ const setup = async function (accounts) {
   var testSetup = new helpers.TestSetup();
   testSetup.rageQuitToken = await ERC20Mock.new(accounts[0],100000);
 
-  var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-  var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-  testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+  var controllerCreator = await ControllerCreator.new();
+  var daoTracker = await DAOTracker.new();
+  testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
 
   testSetup.reputationArray = [0,0,0];
   testSetup.tokenArray = [100,200,300];

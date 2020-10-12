@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const DaoCreator = artifacts.require('./DaoCreator.sol');
 const ControllerCreator = artifacts.require('./ControllerCreator.sol');
 const DAOTracker = artifacts.require('./DAOTracker.sol');
-const constants = require('./constants');
+
 var ReputationAdmin = artifacts.require('./ReputationAdmin.sol');
 
 const setup = async function(
@@ -16,11 +16,11 @@ const setup = async function(
   var controllerCreator = await ControllerCreator.new({
     gas: constants.ARC_GAS_LIMIT
   });
-  var daoTracker = await DAOTracker.new({ gas: constants.ARC_GAS_LIMIT });
+  var daoTracker = await DAOTracker.new();
   testSetup.daoCreator = await DaoCreator.new(
     controllerCreator.address,
     daoTracker.address,
-    { gas: constants.ARC_GAS_LIMIT }
+
   );
 
   testSetup.org = await helpers.setupOrganization(
@@ -41,7 +41,7 @@ const setup = async function(
       testSetup.activationStartTime,
       testSetup.activationEndTime,
       testSetup.maxRepReward,
-      { gas: constants.ARC_GAS_LIMIT }
+
     );
   }
 
@@ -85,7 +85,7 @@ contract('reputationAdmin', accounts => {
         testSetup.activationStartTime,
         testSetup.activationStartTime - 1,
         testSetup.maxRepReward,
-        { gas: constants.ARC_GAS_LIMIT }
+
       );
       assert(false, '_redeemEnableTime < auctionsEndTime is not allowed');
     } catch (error) {
@@ -189,7 +189,7 @@ contract('reputationAdmin', accounts => {
         testSetup.activationStartTime,
         testSetup.activationEndTime,
         testSetup.maxRepReward,
-        { gas: constants.ARC_GAS_LIMIT }
+
       );
       assert(false, 'cannot initialize twice');
     } catch (error) {

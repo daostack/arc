@@ -1,5 +1,5 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
+
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const VoteInOrganizationScheme = artifacts.require('./VoteInOrganizationScheme.sol');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
@@ -51,9 +51,9 @@ const setup = async function (accounts,reputationAccount=0,genesisProtocol = fal
    testSetup.fee = 10;
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.voteInOrganization = await VoteInOrganizationScheme.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   var daoTracker = await DAOTracker.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
    testSetup.reputationArray = [200,100,700];
    if (reputationAccount === 0) {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
