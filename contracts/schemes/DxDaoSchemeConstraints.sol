@@ -7,6 +7,7 @@ import "./SchemeConstraints.sol";
 contract DxDaoSchemeConstraints is SchemeConstraints {
     using SafeMath for uint256;
 
+    address public avatar;
     uint256 public initialTimestamp;
     uint256 public periodSize;
     uint256 public periodLimitWei;
@@ -19,6 +20,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     bytes4 private constant APPROVE_SIGNATURE = 0x095ea7b3;//approve(address,uint256)
 
     /* @dev initialize
+     * @param avatar the DAOs avatar address
      * @param _periodSize the time period to limit the tokens and eth spending
      * @param _periodLimitWei the limit of eth which can be sent per period
      * @param _periodLimitTokensAddresses tokens to limit
@@ -26,6 +28,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
      * @param _contractsWhiteList the contracts the scheme is allowed to interact with
      */
     function initialize(
+        address avatar,
         uint256 _periodSize,
         uint256 _periodLimitWei,
         address[] calldata _periodLimitTokensAddresses,
@@ -48,6 +51,51 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
             periodLimitToken[_periodLimitTokensAddresses[i]] = _periodLimitTokensAmounts[i];
         }
         contractsWhiteList = _contractsWhiteList;
+    }
+
+    /*
+     * @dev updateContractWhitelist used to let the DAO update whitelisted contracts.
+     * @param _contractsAddresses - The contract that should be update
+     * @param _contractsWhitelisted – true adds a contract to the whitelist, false removes it.
+     */
+    function updateContractWhitelist(
+        address[] _contractsAddresses, 
+        bool[] _contractsWhitelisted
+    )
+    external {
+        require(msg.sender == avatar, "caller must be avatar");
+        require(_contractsAddresses.length == _contractsWhitelisted.length,
+        "invalid length _periodLimitTokensAddresses");
+        for (uint i = 0; i < _contractsAddresses.length; i++) {
+            contractsWhiteListMap[_contractsAddresses[i]] = contractsWhiteListMap[_contractsWhitelisted[i]];
+        }
+    }
+
+    /*
+     * @dev updatePeriodLimitTokens lets the dao update limits to token limits.
+     * @param _tokensAddresses - The token that should be updated
+     * @param _tokensPeriodLimits – The amount that will be set as a spending limit
+     */
+    function updatePeriodLimitTokens(
+        address[] _tokensAddresses, 
+        uint256[] _tokensPeriodLimits
+    )
+    external {
+        require(msg.sender == avatar, "caller must be avatar");
+        require(_tokensAddresses.length == _tokensPeriodLimits.length,
+        "invalid length _tokensPeriodLimits");
+        for (uint i = 0; i < _tokensAddresses.length; i++) {
+            periodLimitToken[_tokensAddresses[i]] = _tokensPeriodLimits[i];
+        }
+    }
+
+    /*
+     * @dev updatePeriodLimitWei lets the dao update limits to ETH spending limit.
+     * @param _periodLimitWei - The new spending limit in WEI that should be set.
+     */
+    function updatePeriodLimitWei(uint256 _periodLimitWei) external {
+        require(msg.sender == avatar, "caller must be avatar");
+        periodLimitWei = _periodLimitWei;
     }
 
     /*
