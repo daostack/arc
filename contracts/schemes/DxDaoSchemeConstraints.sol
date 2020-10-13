@@ -11,7 +11,6 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     uint256 public periodSize;
     uint256 public periodLimitWei;
 
-    mapping(uint256=>uint256) public periodSpendingTokens;
     mapping(address=>uint256) public periodLimitToken;
     mapping (uint256 => mapping(address => uint256)) public periodSpendingToken;
     mapping(uint256=>uint256) public periodSpendingWei;
@@ -143,7 +142,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
 
     function observationIndex() public view returns (uint256) {
         // solhint-disable-next-line not-rely-on-time
-        return uint8((block.timestamp - initialTimestamp) / periodSize);
+        return ((block.timestamp - initialTimestamp) / periodSize);
     }
 
 }
