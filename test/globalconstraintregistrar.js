@@ -1,5 +1,5 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
+
 const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar.sol");
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
@@ -43,9 +43,9 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
    var testSetup = new helpers.TestSetup();
    testSetup.fee = 10;
    testSetup.globalConstraintRegistrar = await GlobalConstraintRegistrar.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   var daoTracker = await DAOTracker.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
    testSetup.reputationArray = [20,10,70];
    testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);
    testSetup.globalConstraintRegistrarParams= await setupGlobalConstraintRegistrarParams(testSetup.globalConstraintRegistrar,accounts,genesisProtocol,tokenAddress);

@@ -6,7 +6,7 @@ const Avatar = artifacts.require("./Avatar.sol");
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
-const constants = require('./constants');
+
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 
 export const MAX_UINT_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -148,7 +148,7 @@ export const setupGenesisProtocol = async function (
   ) {
   var votingMachine = new VotingMachine();
 
-  votingMachine.genesisProtocol = await GenesisProtocol.new(token,{gas: constants.ARC_GAS_LIMIT});
+  votingMachine.genesisProtocol = await GenesisProtocol.new(token,);
 
   // set up a reputation system
   votingMachine.reputationArray = [20, 10 ,70];
@@ -181,7 +181,7 @@ export const setupGenesisProtocol = async function (
 
 export const setupOrganizationWithArrays = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
   var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,cap,{gas: constants.ARC_GAS_LIMIT});
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",daoCreatorOwner,founderToken,founderReputation,cap,);
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -195,7 +195,7 @@ export const setupOrganizationWithArrays = async function (daoCreator,daoCreator
 
 export const setupOrganization = async function (daoCreator,daoCreatorOwner,founderToken,founderReputation,cap=0) {
   var org = new Organization();
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],cap,{gas: constants.ARC_GAS_LIMIT});
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[daoCreatorOwner],[founderToken],[founderReputation],cap,);
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;

@@ -1,5 +1,5 @@
 //this migration file is used only for testing purpose
-var constants = require('../test/constants');
+
 var Avatar = artifacts.require('./Avatar.sol');
 var DaoCreator = artifacts.require('./DaoCreator.sol');
 var GlobalConstraintRegistrar = artifacts.require('./GlobalConstraintRegistrar.sol');
@@ -34,20 +34,20 @@ var accounts;
 //Deploy test organization with the following schemes:
 //schemeRegistrar, upgradeScheme,globalConstraintRegistrar,simpleICO,contributionReward.
 module.exports = async function(deployer) {
-    deployer.deploy(ControllerCreator, {gas: constants.ARC_GAS_LIMIT}).then(async function(){
-      await deployer.deploy(DAOTracker, {gas: constants.ARC_GAS_LIMIT});
+    deployer.deploy(ControllerCreator).then(async function(){
+      await deployer.deploy(DAOTracker);
       var daoTracker = await DAOTracker.deployed();
       var controllerCreator = await ControllerCreator.deployed();
-      await deployer.deploy(DaoCreator,controllerCreator.address,daoTracker.address, {gas: constants.ARC_GAS_LIMIT});
-      var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address,{gas: constants.ARC_GAS_LIMIT});
+      await deployer.deploy(DaoCreator,controllerCreator.address,daoTracker.address);
+      var daoCreatorInst = await DaoCreator.deployed(controllerCreator.address);
       // Create DAOstack:
 
       await web3.eth.getAccounts(function(err,res) { accounts = res; });
       founders[0] = accounts[0];
       var returnedParams = await daoCreatorInst.forgeOrg(orgName, tokenName, tokenSymbol, founders,
-          initTokenInWei, initRepInWei,cap,{gas: constants.ARC_GAS_LIMIT});
+          initTokenInWei, initRepInWei,cap);
       var AvatarInst = await Avatar.at(returnedParams.logs[0].args._avatar);
-      await deployer.deploy(AbsoluteVote,{gas: constants.ARC_GAS_LIMIT});
+      await deployer.deploy(AbsoluteVote);
       // Deploy AbsoluteVote:
       var AbsoluteVoteInst = await AbsoluteVote.deployed();
       // Deploy SchemeRegistrar:

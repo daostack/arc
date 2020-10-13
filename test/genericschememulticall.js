@@ -1,5 +1,5 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
+
 const GenericSchemeMultiCall = artifacts.require('./GenericSchemeMultiCall.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
@@ -44,9 +44,9 @@ const setup = async function (accounts,contractsWhitelist,reputationAccount=0,ge
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.GenericSchemeMultiCall = await GenericSchemeMultiCall.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   var daoTracker = await DAOTracker.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
    testSetup.reputationArray = [20,10,70];
    if (reputationAccount === 0) {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,1000,1000],testSetup.reputationArray);

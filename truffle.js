@@ -34,7 +34,7 @@ module.exports = {
       network_id: "*",
       host: "localhost",
       port: 8545,
-      gas: 4543760
+      gas: 6200000
     },
     coverage: {
       host: 'localhost',
@@ -62,5 +62,6 @@ module.exports = {
         runs: 200
       }
       }
-  }
+  },
+  plugins: ["solidity-coverage"]
 };

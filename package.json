@@ -22,7 +22,8 @@
     "lint --fix": "eslint --fix .",
     "solhint": "solhint contracts/**/*.sol",
     "truffle": "truffle",
-    "build": "rimraf build && truffle compile"
+    "build": "rimraf build && truffle compile",
+    "coveralls": "truffle run coverage && cat coverage/lcov.info | coveralls"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -32,6 +33,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-register": "^6.26.0",
     "bignumber.js": "^5.0.0",
+    "coveralls": "^3.1.0",
     "cross-conf-env": "^1.1.2",
     "default-options": "^1.0.0",
     "eslint": "^5.16.0",
@@ -49,6 +51,7 @@
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
     "solhint": "^2.2.0",
+    "solidity-coverage": "^0.7.11",
     "truffle": "5.0.34",
     "uint32": "^0.2.1"
   },

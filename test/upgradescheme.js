@@ -1,5 +1,5 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
+
 const Controller = artifacts.require("./Controller.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const UpgradeScheme = artifacts.require('./UpgradeScheme.sol');
@@ -36,12 +36,12 @@ const setupNewController = async function (accounts,permission='0x00000000') {
   var avatar = await Avatar.new('name', token.address, reputation.address);
   var _controller;
   if (permission !== '0'){
-    _controller = await Controller.new(avatar.address,{from:accounts[1],gas: constants.ARC_GAS_LIMIT});
+    _controller = await Controller.new(avatar.address,{from:accounts[1]});
     await _controller.registerScheme(accounts[0],helpers.NULL_HASH,permission,avatar.address,{from:accounts[1]});
     await _controller.unregisterSelf(avatar.address,{from:accounts[1]});
   }
   else {
-    _controller = await Controller.new(avatar.address,{gas: constants.ARC_GAS_LIMIT});
+    _controller = await Controller.new(avatar.address,);
   }
   return _controller;
 };
@@ -52,9 +52,9 @@ const setup = async function (accounts) {
    testSetup.fee = 10;
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.upgradeScheme = await UpgradeScheme.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   var daoTracker = await DAOTracker.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
    testSetup.reputationArray = [20,40,70];
    testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],accounts[2]],[1000,0,0],testSetup.reputationArray);
    testSetup.upgradeSchemeParams= await setupUpgradeSchemeParams(testSetup.upgradeScheme);

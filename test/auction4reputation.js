@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
-const constants = require('./constants');
+
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var Auction4Reputation = artifacts.require("./Auction4Reputation.sol");
 
@@ -17,9 +17,9 @@ const setup = async function (accounts,
                              _initialize = true) {
    var testSetup = new helpers.TestSetup();
    testSetup.biddingToken = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   var daoTracker = await DAOTracker.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
 
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.auctionsEndTime = (await web3.eth.getBlock("latest")).timestamp + _auctionsEndTime;
@@ -37,8 +37,8 @@ const setup = async function (accounts,
                                                      testSetup.redeemEnableTime,
                                                      testSetup.biddingToken.address,
                                                      testSetup.org.avatar.address,
-                                                     testSetup.agreementHash,
-                                                     {gas : constants.ARC_GAS_LIMIT});
+                                                     testSetup.agreementHash
+                                                     );
    }
 
    var permissions = "0x00000000";
@@ -73,8 +73,8 @@ contract('Auction4Reputation', accounts => {
                                                3000,
                                               accounts[0],
                                               accounts[0],
-                                              helpers.SOME_HASH,
-                                              {gas :constants.ARC_GAS_LIMIT});
+                                              helpers.SOME_HASH
+                                              );
         assert(false, "numberOfAuctions = 0  is not allowed");
       } catch(error) {
         helpers.assertVMException(error);
@@ -92,8 +92,8 @@ contract('Auction4Reputation', accounts => {
                                                3000,
                                               accounts[0],
                                               accounts[0],
-                                              helpers.SOME_HASH,
-                                              {gas :constants.ARC_GAS_LIMIT});
+                                              helpers.SOME_HASH
+                                              );
         assert(false, "numberOfAuctions = 0  is not allowed");
       } catch(error) {
         helpers.assertVMException(error);
@@ -111,8 +111,8 @@ contract('Auction4Reputation', accounts => {
                                                1000-1,
                                               accounts[0],
                                               accounts[0],
-                                              helpers.SOME_HASH,
-                                              {gas :constants.ARC_GAS_LIMIT});
+                                              helpers.SOME_HASH
+                                              );
         assert(false, "_redeemEnableTime < auctionsEndTime is not allowed");
       } catch(error) {
         helpers.assertVMException(error);

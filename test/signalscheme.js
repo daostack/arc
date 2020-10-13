@@ -1,5 +1,5 @@
 import * as helpers from './helpers';
-const constants = require('./constants');
+
 const SignalScheme = artifacts.require("./SignalScheme.sol");
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
@@ -37,9 +37,9 @@ const setupSignalSchemeParam = async function(
 const setup = async function (accounts,genesisProtocol = false) {
    var testSetup = new helpers.TestSetup();
    testSetup.signalScheme = await SignalScheme.new();
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   var daoTracker = await DAOTracker.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
    if (genesisProtocol) {
       testSetup.reputationArray = [1000,100,0];
    } else {

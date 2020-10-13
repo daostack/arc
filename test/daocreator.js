@@ -1,5 +1,5 @@
 const helpers = require('./helpers');
-const constants = require('./constants');
+
 const DAOToken = artifacts.require("./DAOToken.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const DaoCreator = artifacts.require("./DaoCreator.sol");
@@ -13,10 +13,10 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 const zeroBytes32 = helpers.NULL_HASH;
 var avatar,token,reputation,daoCreator,controllerCreator;
 const setup = async function (accounts,founderToken,founderReputation,cap=0) {
-  controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-  var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-  daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
-  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[founderToken],[founderReputation],cap,{gas:constants.ARC_GAS_LIMIT});
+  controllerCreator = await ControllerCreator.new();
+  var daoTracker = await DAOTracker.new();
+  daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
+  var tx = await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[founderToken],[founderReputation],cap);
   assert.equal(tx.logs.length, 1);
   assert.equal(tx.logs[0].event, "NewOrg");
   var avatarAddress = tx.logs[0].args._avatar;
@@ -165,11 +165,11 @@ contract('DaoCreator', function(accounts) {
 
     it("forgeOrg with different params length should revert", async function() {
        var amountToMint = 10;
-       var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-       var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-       daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+       var controllerCreator = await ControllerCreator.new();
+       var daoTracker = await DAOTracker.new();
+       daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
        try {
-        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[amountToMint],[],helpers.NULL_ADDRESS,{gas:constants.ARC_GAS_LIMIT});
+        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0]],[amountToMint],[],helpers.NULL_ADDRESS);
         assert(false,"should revert  because reputation array size is 0");
        }
        catch(ex){
@@ -177,7 +177,7 @@ contract('DaoCreator', function(accounts) {
        }
 
        try {
-        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0],helpers.NULL_ADDRESS],[amountToMint,amountToMint],[amountToMint,amountToMint],0,{gas:constants.ARC_GAS_LIMIT});
+        await daoCreator.forgeOrg("testOrg","TEST","TST",[accounts[0],helpers.NULL_ADDRESS],[amountToMint,amountToMint],[amountToMint,amountToMint],0);
         assert(false,"should revert  because account is 0");
        }
        catch(ex){
@@ -199,14 +199,14 @@ contract('DaoCreator', function(accounts) {
 
         }
         try {
-              await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{from:accounts[1],gas:constants.ARC_GAS_LIMIT});
+              await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{from:accounts[1]});
               assert(false,"should revert  because account is lock for account 0");
             }
             catch(ex){
               helpers.assertVMException(ex);
             }
 
-        await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken,{gas:constants.ARC_GAS_LIMIT});
+        await daoCreator.addFounders(avatar.address,foundersArray,founderReputation,founderToken);
         var rep = await reputation.balanceOf(accounts[1]);
         assert.equal(rep.toNumber(),numberOfFounders);
         var founderBalance = await token.balanceOf(accounts[1]);
