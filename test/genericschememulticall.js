@@ -63,7 +63,7 @@ const setup = async function (accounts,
    if (useSchemeConstraint) {
       testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
       schemeConstraintsAddress = testSetup.schemeConstraints.address;
-      await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhiteList);
+      await testSetup.schemeConstraints.initialize(testSetup.org.avatar.address,100000,100000,[tokenAddress],[1000],contractsWhiteList);
     } else {
       schemeConstraintsAddress = helpers.NULL_ADDRESS;
    }
@@ -396,8 +396,12 @@ contract('GenericSchemeMultiCall', function(accounts) {
     });
 
     it("can init with multiple contracts on whitelist", async function() {
+        var actionMock =await ActionMock.new();
+        var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+        var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
         var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
         await dxDaoSchemeConstraints.initialize(
+              testSetup.org.avatar.address,
               1,
               0,
               [],

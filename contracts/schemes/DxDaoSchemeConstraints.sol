@@ -28,7 +28,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
      * @param _contractsWhiteList the contracts the scheme is allowed to interact with
      */
     function initialize(
-        address avatar,
+        address _avatar,
         uint256 _periodSize,
         uint256 _periodLimitWei,
         address[] calldata _periodLimitTokensAddresses,
@@ -42,6 +42,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         "invalid length _periodLimitTokensAddresses");
         periodSize = _periodSize;
         periodLimitWei = _periodLimitWei;
+        avatar = _avatar;
         // solhint-disable-next-line not-rely-on-time
         initialTimestamp = block.timestamp;
         for (uint i = 0; i < _contractsWhiteList.length; i++) {
@@ -59,15 +60,15 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
      * @param _contractsWhitelisted – true adds a contract to the whitelist, false removes it.
      */
     function updateContractWhitelist(
-        address[] _contractsAddresses, 
-        bool[] _contractsWhitelisted
+        address[] calldata _contractsAddresses, 
+        bool[] calldata _contractsWhitelisted
     )
     external {
         require(msg.sender == avatar, "caller must be avatar");
         require(_contractsAddresses.length == _contractsWhitelisted.length,
         "invalid length _periodLimitTokensAddresses");
         for (uint i = 0; i < _contractsAddresses.length; i++) {
-            contractsWhiteListMap[_contractsAddresses[i]] = contractsWhiteListMap[_contractsWhitelisted[i]];
+            contractsWhiteListMap[_contractsAddresses[i]] = _contractsWhitelisted[i];
         }
     }
 
@@ -77,8 +78,8 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
      * @param _tokensPeriodLimits – The amount that will be set as a spending limit
      */
     function updatePeriodLimitTokens(
-        address[] _tokensAddresses, 
-        uint256[] _tokensPeriodLimits
+        address[] calldata _tokensAddresses, 
+        uint256[] calldata _tokensPeriodLimits
     )
     external {
         require(msg.sender == avatar, "caller must be avatar");
