@@ -19,7 +19,7 @@ const setupGenericSchemeParams = async function(
                                             genesisProtocol = false,
                                             tokenAddress = 0,
                                             avatar,
-                                            schemeConstraints
+                                            schemeConstraintsAddress
                                             ) {
   var genericSchemeParams = new GenericSchemeParams();
   if (genesisProtocol === true){
@@ -28,7 +28,7 @@ const setupGenericSchemeParams = async function(
             avatar.address,
             genericSchemeParams.votingMachine.genesisProtocol.address,
             genericSchemeParams.votingMachine.params,
-            schemeConstraints.address);
+            schemeConstraintsAddress);
     }
   else {
       genericSchemeParams.votingMachine = await helpers.setupAbsoluteVote(helpers.NULL_ADDRESS,50,genericScheme.address);
@@ -36,12 +36,17 @@ const setupGenericSchemeParams = async function(
             avatar.address,
             genericSchemeParams.votingMachine.absoluteVote.address,
             genericSchemeParams.votingMachine.params,
-            schemeConstraints.address);
+            schemeConstraintsAddress);
   }
   return genericSchemeParams;
 };
 
-const setup = async function (accounts,contractsWhiteList,reputationAccount=0,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
+const setup = async function (accounts,
+                              contractsWhiteList,
+                              reputationAccount=0,
+                              genesisProtocol = false,
+                              tokenAddress=helpers.NULL_ADDRESS,
+                              useSchemeConstraint = true) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.GenericSchemeMultiCall = await GenericSchemeMultiCall.new();
@@ -54,9 +59,15 @@ const setup = async function (accounts,contractsWhiteList,reputationAccount=0,ge
    } else {
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
    }
-   testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
-   await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhiteList);
-   testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.GenericSchemeMultiCall,accounts,genesisProtocol,tokenAddress,testSetup.org.avatar,testSetup.schemeConstraints);
+   var schemeConstraintsAddress;
+   if (useSchemeConstraint) {
+      testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
+      schemeConstraintsAddress = testSetup.schemeConstraints.address;
+      await testSetup.schemeConstraints.initialize(100000,100000,[tokenAddress],[1000],contractsWhiteList);
+    } else {
+      schemeConstraintsAddress = helpers.NULL_ADDRESS;
+   }
+   testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.GenericSchemeMultiCall,accounts,genesisProtocol,tokenAddress,testSetup.org.avatar,schemeConstraintsAddress);
    var permissions = "0x00000010";
 
 
@@ -417,6 +428,47 @@ contract('GenericSchemeMultiCall', function(accounts) {
        } catch(error) {
          helpers.assertVMException(error);
        }
+    });
+
+
+    it("none exist schemeConstraints for proposeCall", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address,false);
+      var encodedTokenApproval= await createCallToTokenApproval(standardTokenMock, accounts[3], 1000);
+      var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+      await testSetup.GenericSchemeMultiCall.proposeCalls(
+        [actionMock.address,actionMock.address],
+        [callData1,encodedTokenApproval],
+        [0,0],
+        helpers.NULL_HASH);
+    });
+
+    it("none exist schemeConstraints for executeCall", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address,false);
+      var value = 100001;
+      var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+      var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address],[callData],[value],helpers.NULL_HASH);
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+      //transfer some eth to avatar
+      await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
+      assert.equal(await web3.eth.getBalance(actionMock.address),0);
+      await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.GenericSchemeMultiCall.execute(proposalId);
+    });
+
+    it("execute none exist proposal", async function() {
+        var actionMock =await ActionMock.new();
+        var testSetup = await setup(accounts,[actionMock.address]);
+        try {
+          await testSetup.GenericSchemeMultiCall.execute(helpers.SOME_HASH);
+          assert(false, "cannot execute none exist proposal");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+
     });
 
 });
