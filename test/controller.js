@@ -6,7 +6,7 @@ const DAOToken   = artifacts.require("./DAOToken.sol");
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
 const ActionMock = artifacts.require('./test/ActionMock.sol');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
-var constants = require('../test/constants');
+
 
 
 var uint32 = require('uint32');
@@ -23,13 +23,13 @@ const setup = async function (accounts,permission='0',registerScheme = accounts[
   var sender = accounts[0];
   if (permission !== '0') {
     sender = accounts[1];
-    _controller = await Controller.new(avatar.address,{from:sender, gas: constants.ARC_GAS_LIMIT});
+    _controller = await Controller.new(avatar.address,{from:sender});
     await _controller.registerScheme(registerScheme,"0x0000000000000000000000000000000000000000",permission,avatar.address,{from:accounts[1]});
     await _controller.unregisterSelf(avatar.address,{from:sender});
   }
   else {
 
-    _controller = await Controller.new(avatar.address,{from:sender, gas: constants.ARC_GAS_LIMIT});
+    _controller = await Controller.new(avatar.address,{from:sender});
   }
   await _controller.getPastEvents('RegisterScheme', {
         fromBlock: 0,

@@ -3,7 +3,7 @@ dist: trusty
 language: node_js
 
 node_js:
-  - "10.16.3"
+  - "12.19.0"
 
 before_install:
 
@@ -25,3 +25,8 @@ jobs:
       - stage: tests
         name: "JS Lint"
         script: npm run lint
+
+      - stage: coverage
+        name: "Solidity Test Coverage"
+        if: branch = master
+        script: npm run coveralls

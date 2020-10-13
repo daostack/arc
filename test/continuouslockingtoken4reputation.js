@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
-const constants = require('./constants');
+
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 var ContinuousLocking4Reputation = artifacts.require("./ContinuousLocking4Reputation.sol");
 
@@ -21,9 +21,9 @@ const setup = async function (accounts,
                            ) {
    var testSetup = new helpers.TestSetup();
    testSetup.lockingToken = await ERC20Mock.new(accounts[0], web3.utils.toWei('100', "ether"));
-   var controllerCreator = await ControllerCreator.new({gas: constants.ARC_GAS_LIMIT});
-   var daoTracker = await DAOTracker.new({gas: constants.ARC_GAS_LIMIT});
-   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address,{gas:constants.ARC_GAS_LIMIT});
+   var controllerCreator = await ControllerCreator.new();
+   var daoTracker = await DAOTracker.new();
+   testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
 
    testSetup.org = await helpers.setupOrganization(testSetup.daoCreator,accounts[0],1000,1000);
    testSetup.startTime = (await web3.eth.getBlock("latest")).timestamp + _startTime;
@@ -48,8 +48,8 @@ const setup = async function (accounts,
                                                      testSetup.repRewardConstB,
                                                      testSetup.periodsCap,
                                                      testSetup.lockingToken.address,
-                                                     testSetup.agreementHash,
-                                                     {gas : constants.ARC_GAS_LIMIT});
+                                                     testSetup.agreementHash
+                                                     );
    }
 
    var permissions = "0x00000000";
@@ -83,8 +83,8 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         testSetup.repRewardConstB,
                                                         testSetup.periodsCap,
                                                         testSetup.lockingToken.address,
-                                                        testSetup.agreementHash,
-                                                        {gas : constants.ARC_GAS_LIMIT});
+                                                        testSetup.agreementHash
+                                                        );
         assert(false, "periodsUnit < 15  is not allowed");
       } catch(error) {
         helpers.assertVMException(error);
@@ -104,8 +104,8 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         testSetup.repRewardConstB,
                                                         testSetup.periodsCap,
                                                         testSetup.lockingToken.address,
-                                                        testSetup.agreementHash,
-                                                        {gas : constants.ARC_GAS_LIMIT});
+                                                        testSetup.agreementHash
+                                                        );
         assert(false, "_redeemEnableTime < _startTime+_periodsUnit  is not allowed");
       } catch(error) {
         helpers.assertVMException(error);
@@ -125,8 +125,8 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         testSetup.repRewardConstB,
                                                         testSetup.periodsCap +1,
                                                         testSetup.lockingToken.address,
-                                                        testSetup.agreementHash,
-                                                        {gas : constants.ARC_GAS_LIMIT});
+                                                        testSetup.agreementHash
+                                                        );
         assert(false, "period cap cannot be greater than 100");
       } catch(error) {
         helpers.assertVMException(error);
@@ -148,8 +148,8 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         testSetup.repRewardConstB,
                                                         testSetup.periodsCap,
                                                         testSetup.lockingToken.address,
-                                                        testSetup.agreementHash,
-                                                        {gas : constants.ARC_GAS_LIMIT});
+                                                        testSetup.agreementHash
+                                                        );
         assert(false, "repRewardConstA < reputationReward");
       } catch(error) {
         helpers.assertVMException(error);
@@ -364,8 +364,8 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                              testSetup.repRewardConstB,
                                                              testSetup.periodsCap,
                                                              testSetup.lockingToken.address,
-                                                             testSetup.agreementHash,
-                                                             {gas : constants.ARC_GAS_LIMIT});
+                                                             testSetup.agreementHash
+                                                             );
              assert(false, "cannot initialize twice");
            } catch(error) {
              helpers.assertVMException(error);
@@ -445,8 +445,8 @@ contract('ContinuousLocking4Reputation', accounts => {
                                                         testSetup.repRewardConstB,
                                                         testSetup.periodsCap,
                                                         testSetup.lockingToken.address,
-                                                        testSetup.agreementHash,
-                                                        {gas : constants.ARC_GAS_LIMIT});
+                                                        testSetup.agreementHash
+                                                        );
         await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),1,90,testSetup.agreementHash);
         try {
           await testSetup.continuousLocking4Reputation.lock(web3.utils.toWei('1', "ether"),period,90,testSetup.agreementHash);
