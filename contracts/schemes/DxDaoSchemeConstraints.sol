@@ -22,11 +22,12 @@ contract DxDaoSchemeConstraints is SchemeConstraints, Initializable {
     bytes4 private constant APPROVE_SIGNATURE = 0x095ea7b3;//approve(address,uint256)
 
     /* @dev initialize
-     * @param _avatar the avatar to mint reputation from
-     * @param _votingMachine the voting machines address to
-     * @param _voteParams voting machine parameters.
-     * @param _contractsWhitelist the contracts the scheme is allowed to interact with
-     */
+      * @param _periodSize the time period to limit the tokens and eth spending
+      * @param _periodLimitWei the limit of eth which can be sent per period
+      * @param _periodLimitTokensAddresses tokens to limit
+      * @param _periodLimitTokensAmounts the limit of token which can be sent per period
+      * @param _contractsWhiteList the contracts the scheme is allowed to interact with
+      */
     function initialize(
         uint256 _periodSize,
         uint256 _periodLimitWei,
@@ -51,6 +52,16 @@ contract DxDaoSchemeConstraints is SchemeConstraints, Initializable {
         }
     }
 
+    /*
+      * @dev isAllowedToCall should be called upon a proposal execution.
+      *  - check that the total spending of tokens within a 'periodSize' does not exceed the periodLimit per token
+      *  - check that the total sending of eth within a 'periodSize' does not exceed the periodLimit
+      * @param _contractsToCall the contracts to be called
+      * @param _callsData - The abi encode data for the calls
+      * @param _values value(ETH) to transfer with the calls
+      * @param _avatar avatar
+      * @return bool value true-allowed false not allowed
+      */
     function isAllowedToCall(
         address[] calldata _contractsToCall,
         bytes[] calldata _callsData,
@@ -93,6 +104,15 @@ contract DxDaoSchemeConstraints is SchemeConstraints, Initializable {
         return true;
     }
 
+  /*
+    * @dev isAllowedToPropose should be called upon a proposal submition.
+    * allow only whitelisted target contracts or 'approve' calls which the 'spender' is whitelisted
+    * @param _contractsToCall the contracts to be called
+    * @param _callsData - The abi encode data for the calls
+    * @param _values value(ETH) to transfer with the calls
+    * @param _avatar avatar
+    * @return bool value true-allowed false not allowed
+    */
     function isAllowedToPropose(
         address[] calldata _contractsToCall,
         bytes[] calldata _callsData,
