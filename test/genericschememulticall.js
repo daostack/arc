@@ -63,7 +63,14 @@ const setup = async function (accounts,
    if (useSchemeConstraint) {
       testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
       schemeConstraintsAddress = testSetup.schemeConstraints.address;
-      await testSetup.schemeConstraints.initialize(testSetup.org.avatar.address,100000,100000,[tokenAddress],[1000],contractsWhiteList);
+      //use accounts[4] as the avatar.
+      await testSetup.schemeConstraints.initialize(accounts[4],
+                                                   100000,
+                                                   100000,
+                                                   [tokenAddress],
+                                                   [1000],
+                                                   contractsWhiteList,
+                                                   testSetup.genericSchemeMultiCall.address);
     } else {
       schemeConstraintsAddress = helpers.NULL_ADDRESS;
    }
@@ -279,18 +286,18 @@ contract('GenericSchemeMultiCall', function(accounts) {
     });
 
     it("schemeconstrains token value exceed limit", async function() {
-      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);	
-      var testSetup = await setup(accounts,[standardTokenMock.address,accounts[3]],0,true,standardTokenMock.address);	
-      var encodedTokenApproval = await createCallToTokenApproval(standardTokenMock,accounts[3], 10001);	
-      var tx = await testSetup.genericSchemeMultiCall.proposeCalls([standardTokenMock.address],[encodedTokenApproval],[0],helpers.NULL_HASH);	
-      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');	
-      await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});	
-      try {	
-         await testSetup.genericSchemeMultiCall.execute(proposalId);	
-         assert(false, "periodSpendingTokensExceeded");	
-       } catch(error) {	
-         helpers.assertVMException(error);	
-       }	
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[standardTokenMock.address,accounts[3]],0,true,standardTokenMock.address);
+      var encodedTokenApproval = await createCallToTokenApproval(standardTokenMock,accounts[3], 10001);
+      var tx = await testSetup.genericSchemeMultiCall.proposeCalls([standardTokenMock.address],[encodedTokenApproval],[0],helpers.NULL_HASH);
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+      await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      try {
+         await testSetup.genericSchemeMultiCall.execute(proposalId);
+         assert(false, "periodSpendingTokensExceeded");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
     });
 
     it("execute proposeVote -negative decision - check action - with GenesisProtocol", async function() {
@@ -415,13 +422,29 @@ contract('GenericSchemeMultiCall', function(accounts) {
         var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
         var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
         var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
+        try {
         await dxDaoSchemeConstraints.initialize(
               testSetup.org.avatar.address,
               1,
               0,
               [],
               [],
-              [accounts[0],accounts[1],accounts[2],accounts[3]]
+              [accounts[0],accounts[1],accounts[2],accounts[3]],
+              helpers.NULL_ADDRESS
+        );
+        assert(false, "cannot init with zero genericSchemeMultiCall");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+
+        await dxDaoSchemeConstraints.initialize(
+              testSetup.org.avatar.address,
+              1,
+              0,
+              [],
+              [],
+              [accounts[0],accounts[1],accounts[2],accounts[3]],
+              testSetup.genericSchemeMultiCall.address
         );
         var contractsWhiteList = await dxDaoSchemeConstraints.getContractsWhiteList();
         assert.equal(contractsWhiteList[0],accounts[0]);
@@ -440,7 +463,9 @@ contract('GenericSchemeMultiCall', function(accounts) {
           0,
           [],
           [],
-          [accounts[0]]
+          [accounts[0]],
+          accounts[0]
+
         );
         assert(false, "preriod size should be greater than 0");
       } catch(error) {
@@ -449,15 +474,16 @@ contract('GenericSchemeMultiCall', function(accounts) {
     });
 
     it("cannot initialize contraints with invalid array length", async function() {
-      var dxDaoSchemeConstraintsArray=await DxDaoSchemeConstraints.new();
+      var dxDaoSchemeConstraintsArray = await DxDaoSchemeConstraints.new();
       try {
         await dxDaoSchemeConstraintsArray.initialize(
           accounts[0],
-          0,
+          1,
           0,
           [accounts[0]],
           [100,100],
-          [accounts[0]]
+          [accounts[0]],
+          accounts[0]
         );
         assert(false, "invalid length _periodLimitTokensAddresses");
       } catch(error) {
@@ -473,7 +499,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
         0,
         [],
         [],
-        [accounts[0]]
+        [accounts[0]],
+        accounts[0]
       );
       try {
         await dxDaoSchemeConstraintsDouble.initialize(
@@ -482,7 +509,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
           0,
           [],
           [],
-          [accounts[0]]
+          [accounts[0]],
+          accounts[0]
         );
         assert(false, "cannot initialize twice");
       } catch(error) {
@@ -516,25 +544,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
       try {
          await testSetup.genericSchemeMultiCall.proposeCalls(
-           [actionMock.address],
-           [callData1,encodedTokenApproval],
-           [0,0],
-           helpers.NULL_HASH);
-         assert(false, "spender contract not whitelisted");
-       } catch(error) {
-         helpers.assertVMException(error);
-       }
-    });
-
-    it("execute proposeVote with multiple calls with votingMachine without whitelisted spender", async function() {
-      var actionMock =await ActionMock.new();
-      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
-      var encodedTokenApproval= await createCallToTokenApproval(standardTokenMock, accounts[3], 1000);
-      var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-      try {
-         await testSetup.genericSchemeMultiCall.proposeCalls(
-           [actionMock.address],
+           [actionMock.address,actionMock.address],
            [callData1,encodedTokenApproval],
            [0,0],
            helpers.NULL_HASH);
@@ -595,7 +605,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
             0,
             [],
             [],
-            [accounts[0]]
+            [accounts[0]],
+            testSetup.genericSchemeMultiCall.address
       );
       try {
         await dxDaoSchemeConstraints.updateContractsWhitelist([actionMock.address],[true]);
@@ -610,7 +621,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
       } catch(error) {
         helpers.assertVMException(error);
       }
-      
+
       try {
         await dxDaoSchemeConstraints.updatePeriodLimitWei(5000);
         assert(false, "caller must be avatar");
@@ -625,7 +636,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
             0,
             [],
             [],
-            [accounts[0]]
+            [accounts[0]],
+            testSetup.genericSchemeMultiCall.address
       );
       await dxDaoSchemeConstraints.updatePeriodLimitWei(10000,{from:accounts[3]});
       await dxDaoSchemeConstraints.getPastEvents('UpdatedPeriodLimitWei', {
@@ -636,7 +648,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
             assert.equal(events[0].event,"UpdatedPeriodLimitWei");
             assert.equal(events[0].args._periodLimitWei,10000);
       });
-  
+
       await dxDaoSchemeConstraints.updatePeriodLimitsTokens([standardTokenMock.address],[10000],{from:accounts[3]});
       await dxDaoSchemeConstraints.getPastEvents('UpdatedPeriodLimitsTokens', {
         fromBlock: 0,
@@ -647,7 +659,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
             assert.equal(events[0].args._tokensAddresses[0],standardTokenMock.address);
             assert.equal(events[0].args._tokensPeriodLimits[0],10000);
       });
-  
+
       await dxDaoSchemeConstraints.updateContractsWhitelist([standardTokenMock.address],[true],{from:accounts[3]});
       await dxDaoSchemeConstraints.getPastEvents('UpdatedContractsWhitelist', {
         fromBlock: 0,
@@ -675,6 +687,62 @@ contract('GenericSchemeMultiCall', function(accounts) {
 
   });
 
+  it("update contraints whitelist after proposal call and before execute and check spender", async function() {
+    var actionMock =await ActionMock.new();
+    var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+    var testSetup = await setup(accounts,[actionMock.address,accounts[3],standardTokenMock.address],0,true,standardTokenMock.address);
+    var encodedTokenApproval= await createCallToTokenApproval(standardTokenMock, accounts[3], 1000);
+    var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+
+    var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address,standardTokenMock.address],
+                                                                  [callData1,encodedTokenApproval],
+                                                                  [0,0],
+                                                                  helpers.NULL_HASH);
+
+    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+    await testSetup.schemeConstraints.updateContractsWhitelist([accounts[3]],[false],{from:accounts[4]});
+
+    await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+
+    try {
+      await testSetup.genericSchemeMultiCall.execute(proposalId);
+      assert(false, "contract was blacklisted");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+    await testSetup.schemeConstraints.updateContractsWhitelist([accounts[3]],[true],{from:accounts[4]});
+    await testSetup.genericSchemeMultiCall.execute(proposalId);
+});
+
+  it("update contraints whitelist after proposal call and before execute", async function() {
+    var actionMock =await ActionMock.new();
+    var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+    var testSetup = await setup(accounts,[actionMock.address,accounts[3],standardTokenMock.address],0,true,standardTokenMock.address);
+    var encodedTokenApproval= await createCallToTokenApproval(standardTokenMock, accounts[3], 1000);
+    var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+
+    var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address,standardTokenMock.address],
+                                                                  [callData1,encodedTokenApproval],
+                                                                  [0,0],
+                                                                  helpers.NULL_HASH);
+
+    var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+    await testSetup.schemeConstraints.updateContractsWhitelist([actionMock.address],[false],{from:accounts[4]});
+    await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+
+    try {
+      await testSetup.genericSchemeMultiCall.execute(proposalId);
+      assert(false, "contract was blacklisted");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+    await testSetup.schemeConstraints.updateContractsWhitelist([actionMock.address],[true],{from:accounts[4]});
+    await testSetup.genericSchemeMultiCall.execute(proposalId);
+});
+
+
   it("can only update contraint whitelist & limits from avatar with correct array length", async function() {
     var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
     var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
@@ -698,7 +766,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
     var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
     var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
     var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
-    
+
     // 10 seconds period
     await dxDaoSchemeConstraints.initialize(
           testSetup.org.avatar.address,
@@ -706,19 +774,20 @@ contract('GenericSchemeMultiCall', function(accounts) {
           0,
           [],
           [],
-          [accounts[0]]
+          [accounts[0]],
+          testSetup.genericSchemeMultiCall.address
     );
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),0); 
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),0);
     await helpers.increaseTime(10);
     assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),1);
     await helpers.increaseTime(3600); // adding 1 hour
     assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),361);
     await helpers.increaseTime(86400); // adding 1 day
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),9001); 
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),9001);
     await helpers.increaseTime(315360000);// adding 10 year
     assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),31545001);
     var dxDaoSchemeConstraints2 =await DxDaoSchemeConstraints.new();
-    
+
     // 7 days period
     await dxDaoSchemeConstraints2.initialize(
           testSetup.org.avatar.address,
@@ -726,7 +795,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
           0,
           [],
           [],
-          [accounts[0]]
+          [accounts[0]],
+          testSetup.genericSchemeMultiCall.address
     );
     assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),0);
     await helpers.increaseTime(50);
@@ -749,6 +819,23 @@ contract('GenericSchemeMultiCall', function(accounts) {
     assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),100);
     await helpers.increaseTime(604800000); // adding 1000 days
     assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),1100);
+  });
+
+  it("only genericSchemeMultiCall allow to call isAllowedToCall", async function() {
+    var actionMock =await ActionMock.new();
+    var testSetup = await setup(accounts,[actionMock.address]);
+    const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
+
+    try {
+      await testSetup.schemeConstraints.isAllowedToCall(
+        [actionMock.address],
+        [encodeABI],
+        [1],
+        accounts[4]);
+        assert(false, "only genericSchemeMultiCall allow to call isAllowedToCall");
+    } catch(error) {
+     helpers.assertVMException(error);
+    }
   });
 
 });

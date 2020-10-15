@@ -21,6 +21,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     );
 
     address public avatar;
+    address public genericSchemeMultiCall;
     uint256 public initialTimestamp;
     uint256 public periodSize;
     uint256 public periodLimitWei;
@@ -45,13 +46,15 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         uint256 _periodLimitWei,
         address[] calldata _periodLimitTokensAddresses,
         uint256[] calldata _periodLimitTokensAmounts,
-        address[] calldata _contractsWhiteList
+        address[] calldata _contractsWhiteList,
+        address _genericSchemeMultiCall
     )
     external {
         require(initialTimestamp == 0, "cannot initialize twice");
         require(_periodSize > 0, "preriod size should be greater than 0");
         require(_periodLimitTokensAddresses.length == _periodLimitTokensAmounts.length,
         "invalid length _periodLimitTokensAddresses");
+        require(_genericSchemeMultiCall != address(0), "genericSchemeMultiCall cannot be zero");
         periodSize = _periodSize;
         periodLimitWei = _periodLimitWei;
         avatar = _avatar;
@@ -64,6 +67,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
             periodLimitToken[_periodLimitTokensAddresses[i]] = _periodLimitTokensAmounts[i];
         }
         contractsWhiteList = _contractsWhiteList;
+        genericSchemeMultiCall = _genericSchemeMultiCall;
     }
 
     /*
@@ -133,7 +137,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     external
     returns(bool)
     {
-
+        require(msg.sender == genericSchemeMultiCall, "only genericSchemeMultiCall");
         uint256 observervationIndex = observationIndex();
         uint256 totalPeriodSpendingInWei;
         for (uint i = 0; i < _contractsToCall.length; i++) {
