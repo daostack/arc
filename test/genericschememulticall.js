@@ -416,6 +416,24 @@ contract('GenericSchemeMultiCall', function(accounts) {
 
     });
 
+    it("execute proposeVote with multiple calls with votingMachine without whitelisted token", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[],0,true,standardTokenMock.address);
+      var encodedTokenApproval= await createCallToTokenApproval(standardTokenMock, accounts[3], 1000);
+      var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+      try {
+         await testSetup.GenericSchemeMultiCall.proposeCalls(
+           [actionMock.address],
+           [callData1,encodedTokenApproval],
+           [0,0],
+           helpers.NULL_HASH);
+         assert(false, "contract not whitelisted");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
+    });
+
     it("execute proposeVote with multiple calls with votingMachine without whitelisted spender", async function() {
       var actionMock =await ActionMock.new();
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
@@ -433,7 +451,6 @@ contract('GenericSchemeMultiCall', function(accounts) {
          helpers.assertVMException(error);
        }
     });
-
 
     it("none exist schemeConstraints for proposeCall", async function() {
       var actionMock =await ActionMock.new();
@@ -474,5 +491,153 @@ contract('GenericSchemeMultiCall', function(accounts) {
         }
 
     });
+
+    it("cannot update constraints from other address then avatar", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
+      var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
+      await dxDaoSchemeConstraints.initialize(
+            testSetup.org.avatar.address,
+            1,
+            0,
+            [],
+            [],
+            [accounts[0]]
+      );
+      try {
+        await dxDaoSchemeConstraints.updateContractsWhitelist([actionMock.address],[true])
+        assert(false, "caller must be avatar");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+
+      try {
+        await dxDaoSchemeConstraints.updatePeriodLimitsTokens([actionMock.address, standardTokenMock.address],[5000,6000])
+        assert(false, "caller must be avatar");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+      
+      try {
+        await dxDaoSchemeConstraints.updatePeriodLimitWei(5000)
+        assert(false, "caller must be avatar");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+
+      var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
+      await dxDaoSchemeConstraints.initialize(
+            accounts[3],
+            1,
+            0,
+            [],
+            [],
+            [accounts[0]]
+      );
+      await dxDaoSchemeConstraints.updatePeriodLimitWei(10000,{from:accounts[3]});
+      await dxDaoSchemeConstraints.getPastEvents('UpdatedPeriodLimitWei', {
+        fromBlock: 0,
+        toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"UpdatedPeriodLimitWei");
+            assert.equal(events[0].args._periodLimitWei,10000);
+      });
+  
+      await dxDaoSchemeConstraints.updatePeriodLimitsTokens([standardTokenMock.address],[10000],{from:accounts[3]});
+      await dxDaoSchemeConstraints.getPastEvents('UpdatedPeriodLimitsTokens', {
+        fromBlock: 0,
+        toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"UpdatedPeriodLimitsTokens");
+            assert.equal(events[0].args._tokenAddress,standardTokenMock.address);
+            assert.equal(events[0].args._tokenPeriodLimit,10000);
+      });
+  
+      await dxDaoSchemeConstraints.updateContractsWhitelist([standardTokenMock.address],[true],{from:accounts[3]});
+      await dxDaoSchemeConstraints.getPastEvents('UpdatedContractsWhitelist', {
+        fromBlock: 0,
+        toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"UpdatedContractsWhitelist");
+            assert.equal(events[0].args._contractAddress,standardTokenMock.address);
+            assert.equal(events[0].args._contractWhitelisted,true);
+      });
+      try {
+        await dxDaoSchemeConstraints.updateContractsWhitelist([standardTokenMock.address],[true, false],{from:accounts[3]});
+        assert(false, "invalid length _periodLimitTokensAddresses");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+
+      try {
+        await dxDaoSchemeConstraints.updatePeriodLimitsTokens([standardTokenMock.address],[10000, 500],{from:accounts[3]});
+        assert(false, "invalid length _tokensPeriodLimits");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+
+  });
+
+  it("calculates the observationIndex correctly", async function() {
+    var actionMock =await ActionMock.new();
+    var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+    var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
+    var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
+    
+    // 10 seconds period
+    await dxDaoSchemeConstraints.initialize(
+          testSetup.org.avatar.address,
+          10,
+          0,
+          [],
+          [],
+          [accounts[0]]
+    );
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),0); 
+    await helpers.increaseTime(10);
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),1);
+    await helpers.increaseTime(3600); // adding 1 hour
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),361);
+    await helpers.increaseTime(86400); // adding 1 day
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),9001); 
+    await helpers.increaseTime(315360000);// adding 10 year
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),31545001);
+    var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
+    
+    // 7 days period
+    await dxDaoSchemeConstraints.initialize(
+          testSetup.org.avatar.address,
+          604800,
+          0,
+          [],
+          [],
+          [accounts[0]]
+    );
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),0);
+    await helpers.increaseTime(50);
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),0);
+    await helpers.increaseTime(604750);
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),1);
+    await helpers.increaseTime(604800); // adding 7 days
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),2);
+    await helpers.increaseTime(604800); // adding 7 days
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),3);
+    await helpers.increaseTime(604800); // adding 7 days
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),4);
+    await helpers.increaseTime(604800); // adding 7 days
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),5);
+    await helpers.increaseTime(9072000); // adding 15 days
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),20);
+    await helpers.increaseTime(6048000); // adding 10 days
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),30);
+    await helpers.increaseTime(42336000); // adding 70 days
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),100);
+    await helpers.increaseTime(604800000); // adding 1000 days
+    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),1100);
+  });
 
 });
