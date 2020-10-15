@@ -7,12 +7,12 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     using SafeMath for uint256;
 
     event UpdatedContractsWhitelist(
-        address[] _contractsAddresses, 
+        address[] _contractsAddresses,
         bool[] _contractsWhitelisted
     );
 
     event UpdatedPeriodLimitsTokens(
-        address[] _tokensAddresses, 
+        address[] _tokensAddresses,
         uint256[] _tokensPeriodLimits
     );
 
@@ -39,6 +39,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
      * @param _periodLimitTokensAddresses tokens to limit
      * @param _periodLimitTokensAmounts the limit of token which can be sent per period
      * @param _contractsWhiteList the contracts the scheme is allowed to interact with
+     * @param _genericSchemeMultiCall genericSchemeMultiCall which allowed to call isAllowedToCall
      */
     function initialize(
         address _avatar,
@@ -76,7 +77,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
      * @param _contractsWhitelisted – true adds a contract to the whitelist, false removes it.
      */
     function updateContractsWhitelist(
-        address[] calldata _contractsAddresses, 
+        address[] calldata _contractsAddresses,
         bool[] calldata _contractsWhitelisted
     )
     external {
@@ -95,7 +96,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
      * @param _tokensPeriodLimits – The token amounts to be set as period limit.
      */
     function updatePeriodLimitsTokens(
-        address[] calldata _tokensAddresses, 
+        address[] calldata _tokensAddresses,
         uint256[] calldata _tokensPeriodLimits
     )
     external {
