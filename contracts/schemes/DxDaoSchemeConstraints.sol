@@ -25,7 +25,6 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     uint256 public periodSize;
     uint256 public periodLimitWei;
 
-    mapping(uint256=>uint256) public periodSpendingTokens;
     mapping(address=>uint256) public periodLimitToken;
     mapping (uint256 => mapping(address => uint256)) public periodSpendingToken;
     mapping(uint256=>uint256) public periodSpendingWei;
@@ -134,6 +133,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     external
     returns(bool)
     {
+
         uint256 observervationIndex = observationIndex();
         uint256 totalPeriodSpendingInWei;
         for (uint i = 0; i < _contractsToCall.length; i++) {
