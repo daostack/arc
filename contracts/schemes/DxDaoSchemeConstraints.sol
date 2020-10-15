@@ -6,6 +6,20 @@ import "./SchemeConstraints.sol";
 contract DxDaoSchemeConstraints is SchemeConstraints {
     using SafeMath for uint256;
 
+    event UpdatedContractsWhitelist(
+        address _contractAddress, 
+        bool _contractWhitelisted
+    );
+
+    event UpdatedPeriodLimitsTokens(
+        address _tokenAddress, 
+        uint256 _tokenPeriodLimit
+    );
+
+    event UpdatedPeriodLimitWei(
+        uint256 _periodLimitWei
+    );
+
     address public avatar;
     uint256 public initialTimestamp;
     uint256 public periodSize;
@@ -58,7 +72,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
      * @param _contractsAddresses - The contract that should be update
      * @param _contractsWhitelisted – true adds a contract to the whitelist, false removes it.
      */
-    function updateContractWhitelist(
+    function updateContractsWhitelist(
         address[] calldata _contractsAddresses, 
         bool[] calldata _contractsWhitelisted
     )
@@ -68,15 +82,16 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         "invalid length _periodLimitTokensAddresses");
         for (uint i = 0; i < _contractsAddresses.length; i++) {
             contractsWhiteListMap[_contractsAddresses[i]] = _contractsWhitelisted[i];
+            emit UpdatedContractsWhitelist(_contractsAddresses[i], _contractsWhitelisted[i]);
         }
     }
 
     /*
-     * @dev updatePeriodLimitTokens lets the dao update limits to token limits.
+     * @dev updatePeriodLimitsTokens lets the dao update limits to token limits.
      * @param _tokensAddresses - The token addresses to be updated
      * @param _tokensPeriodLimits – The token amounts to be set as period limit.
      */
-    function updatePeriodLimitTokens(
+    function updatePeriodLimitsTokens(
         address[] calldata _tokensAddresses, 
         uint256[] calldata _tokensPeriodLimits
     )
@@ -86,6 +101,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         "invalid length _tokensPeriodLimits");
         for (uint i = 0; i < _tokensAddresses.length; i++) {
             periodLimitToken[_tokensAddresses[i]] = _tokensPeriodLimits[i];
+            emit UpdatedPeriodLimitsTokens(_tokensAddresses[i], _tokensPeriodLimits[i]);
         }
     }
 
@@ -96,6 +112,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     function updatePeriodLimitWei(uint256 _periodLimitWei) external {
         require(msg.sender == avatar, "caller must be avatar");
         periodLimitWei = _periodLimitWei;
+        emit UpdatedPeriodLimitWei(_periodLimitWei);
     }
 
     /*
@@ -130,12 +147,14 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
                 callData[2] == APPROVE_SIGNATURE[2] &&
                 callData[3] == APPROVE_SIGNATURE[3]) {
                 uint256 amount;
+                address spender;
                 address contractToCall = _contractsToCall[i];
-                require(contractsWhiteListMap[contractToCall] == true, "tokenNotWhitelisted");
                 // solhint-disable-next-line no-inline-assembly
                 assembly {
-                    amount := mload(add(callData, 68))
+                    spender := mload(add(callData, 36))
+                    amount  := mload(add(callData, 68))
                 }
+                require(contractsWhiteListMap[spender], "spender contract not whitelisted");
                 periodSpendingToken[observervationIndex][contractToCall] =
                 periodSpendingToken[observervationIndex][contractToCall].add(amount);
                 require(
