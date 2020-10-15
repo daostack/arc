@@ -351,7 +351,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
     it("execute proposeVote with multiple calls with votingMachine -positive decision", async function() {
       var actionMock =await ActionMock.new();
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-      var testSetup = await setup(accounts,[actionMock.address,accounts[3]],0,true,standardTokenMock.address);
+      var testSetup = await setup(accounts,[actionMock.address,accounts[3],standardTokenMock.address],0,true,standardTokenMock.address);
       var encodedTokenApproval = await createCallToTokenApproval(standardTokenMock,accounts[3], 1000);
       var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls(

@@ -3,7 +3,6 @@ pragma experimental ABIEncoderV2;
 
 import "./SchemeConstraints.sol";
 
-
 contract DxDaoSchemeConstraints is SchemeConstraints {
     using SafeMath for uint256;
 
@@ -74,8 +73,8 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
 
     /*
      * @dev updatePeriodLimitTokens lets the dao update limits to token limits.
-     * @param _tokensAddresses - The token that should be updated
-     * @param _tokensPeriodLimits – The amount that will be set as a spending limit
+     * @param _tokensAddresses - The token addresses to be updated
+     * @param _tokensPeriodLimits – The token amounts to be set as period limit.
      */
     function updatePeriodLimitTokens(
         address[] calldata _tokensAddresses, 
@@ -118,10 +117,10 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     external
     returns(bool)
     {
-
         uint256 observervationIndex = observationIndex();
         uint256 totalPeriodSpendingInWei;
         for (uint i = 0; i < _contractsToCall.length; i++) {
+            require(contractsWhiteListMap[_contractsToCall[i]], "contract not whitelisted");
         // constraint eth transfer
             totalPeriodSpendingInWei = totalPeriodSpendingInWei.add(_values[i]);
             bytes memory callData = _callsData[i];
@@ -132,6 +131,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
                 callData[3] == APPROVE_SIGNATURE[3]) {
                 uint256 amount;
                 address contractToCall = _contractsToCall[i];
+                require(contractsWhiteListMap[contractToCall] == true, "tokenNotWhitelisted");
                 // solhint-disable-next-line no-inline-assembly
                 assembly {
                     amount := mload(add(callData, 68))
@@ -168,31 +168,26 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     returns(bool)
     {
         for (uint i = 0; i < _contractsToCall.length; i++) {
-            if (!contractsWhiteListMap[_contractsToCall[i]]) {
-                address spender;
-                bytes memory callData = _callsData[i];
-                require(
-                    callData[0] == APPROVE_SIGNATURE[0] &&
-                    callData[1] == APPROVE_SIGNATURE[1] &&
-                    callData[2] == APPROVE_SIGNATURE[2] &&
-                    callData[3] == APPROVE_SIGNATURE[3],
-                "allow only approve call for none whitelistedContracts");
-                //in solidity > 6 this can be replaced by:
-                //(spender,) = abi.descode(callData[4:], (address, uint));
-                // see https://github.com/ethereum/solidity/issues/9439
-                // solhint-disable-next-line no-inline-assembly
-                assembly {
-                    spender := mload(add(callData, 36))
-                }
-                require(contractsWhiteListMap[spender], "spender contract not whitelisted");
-            }
+          require(contractsWhiteListMap[_contractsToCall[i]], "contract not whitelisted");
+              bytes memory callData = _callsData[i];
+              if(callData[0] == APPROVE_SIGNATURE[0] &&
+                 callData[1] == APPROVE_SIGNATURE[1] &&
+                 callData[2] == APPROVE_SIGNATURE[2] &&
+                 callData[3] == APPROVE_SIGNATURE[3]){
+                    address spender;
+                    // solhint-disable-next-line no-inline-assembly
+                    assembly {
+                        spender := mload(add(callData, 36))
+                    }
+                    require(contractsWhiteListMap[spender], "spender contract not whitelisted");
+              }
         }
         return true;
     }
 
     function observationIndex() public view returns (uint256) {
         // solhint-disable-next-line not-rely-on-time
-        return uint8((block.timestamp - initialTimestamp) / periodSize);
+        return ((block.timestamp - initialTimestamp) / periodSize);
     }
 
 }
