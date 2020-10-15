@@ -20,10 +20,6 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         uint256 _periodLimitWei
     );
 
-
-
-    
-
     address public avatar;
     uint256 public initialTimestamp;
     uint256 public periodSize;
@@ -191,19 +187,19 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     returns(bool)
     {
         for (uint i = 0; i < _contractsToCall.length; i++) {
-          require(contractsWhiteListMap[_contractsToCall[i]], "contract not whitelisted");
-              bytes memory callData = _callsData[i];
-              if(callData[0] == APPROVE_SIGNATURE[0] &&
-                 callData[1] == APPROVE_SIGNATURE[1] &&
-                 callData[2] == APPROVE_SIGNATURE[2] &&
-                 callData[3] == APPROVE_SIGNATURE[3]){
-                    address spender;
-                    // solhint-disable-next-line no-inline-assembly
-                    assembly {
-                        spender := mload(add(callData, 36))
-                    }
-                    require(contractsWhiteListMap[spender], "spender contract not whitelisted");
-              }
+            require(contractsWhiteListMap[_contractsToCall[i]], "contract not whitelisted");
+            bytes memory callData = _callsData[i];
+            if (callData[0] == APPROVE_SIGNATURE[0] &&
+                callData[1] == APPROVE_SIGNATURE[1] &&
+                callData[2] == APPROVE_SIGNATURE[2] &&
+                callData[3] == APPROVE_SIGNATURE[3]) {
+                address spender;
+                // solhint-disable-next-line no-inline-assembly
+                assembly {
+                    spender := mload(add(callData, 36))
+                }
+                require(contractsWhiteListMap[spender], "spender contract not whitelisted");
+            }
         }
         return true;
     }
