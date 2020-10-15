@@ -49,7 +49,7 @@ const setup = async function (accounts,
                               useSchemeConstraint = true) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
-   testSetup.genericSchemeMultiCall = await GenericSchemeMultiCall.new();
+   testSetup.GenericSchemeMultiCall = await GenericSchemeMultiCall.new();
    var controllerCreator = await ControllerCreator.new();
    var daoTracker = await DAOTracker.new();
    testSetup.daoCreator = await DaoCreator.new(controllerCreator.address,daoTracker.address);
@@ -72,7 +72,7 @@ const setup = async function (accounts,
 
 
    await testSetup.daoCreator.setSchemes(testSetup.org.avatar.address,
-                                        [testSetup.genericSchemeMultiCall.address],
+                                        [testSetup.GenericSchemeMultiCall.address],
                                         [helpers.NULL_HASH],[permissions],"metaData");
 
    return testSetup;
@@ -95,7 +95,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var actionMock =await ActionMock.new();
       var testSetup = await setup(accounts,[actionMock.address]);
       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-      var tx = await testSetup.genericSchemeMultiCall.proposeCalls(
+      var tx = await testSetup.GenericSchemeMultiCall.proposeCalls(
             [actionMock.address],[callData],[10],"description");
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewMultiCallProposal");
@@ -110,21 +110,21 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var testSetup = await setup(accounts,[actionMock.address]);
       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
       try {
-        await testSetup.genericSchemeMultiCall.proposeCalls(
+        await testSetup.GenericSchemeMultiCall.proposeCalls(
             [actionMock.address,actionMock.address],[callData],[0],helpers.NULL_HASH);
          assert(false, "Wrong length of _contractsToCall, _callsDataLens or _value arrays");
        } catch(error) {
          helpers.assertVMException(error);
        }
        try {
-        await testSetup.genericSchemeMultiCall.proposeCalls(
+        await testSetup.GenericSchemeMultiCall.proposeCalls(
             [actionMock.address,actionMock.address],[callData],[0],helpers.NULL_HASH);
          assert(false, "Wrong length of _contractsToCall, _callsDataLens or _value arrays");
        } catch(error) {
          helpers.assertVMException(error);
        }
        try {
-        await testSetup.genericSchemeMultiCall.proposeCalls(
+        await testSetup.GenericSchemeMultiCall.proposeCalls(
             [actionMock.address,actionMock.address],[callData],[0,0],helpers.NULL_HASH);
          assert(false, "Wrong length of _contractsToCall, _callsDataLens or _value arrays");
        } catch(error) {
@@ -136,12 +136,12 @@ contract('GenericSchemeMultiCall', function(accounts) {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,[actionMock.address]);
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-       var tx = await testSetup.genericSchemeMultiCall.proposeCalls(
+       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls(
         [actionMock.address],[callData],[0],helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,0,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        //check organizationsProposals after execution
-       var proposal = await testSetup.genericSchemeMultiCall.proposals(proposalId);
+       var proposal = await testSetup.GenericSchemeMultiCall.proposals(proposalId);
        assert.equal(proposal.passed,false);
        assert.equal(proposal.callData,null);
     });
@@ -150,13 +150,13 @@ contract('GenericSchemeMultiCall', function(accounts) {
         var actionMock =await ActionMock.new();
         var testSetup = await setup(accounts,[actionMock.address]);
         var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-        var tx = await testSetup.genericSchemeMultiCall.proposeCalls(
+        var tx = await testSetup.GenericSchemeMultiCall.proposeCalls(
           [actionMock.address],[callData],[0],helpers.NULL_HASH);
         var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-        var proposal = await testSetup.genericSchemeMultiCall.proposals(proposalId);
+        var proposal = await testSetup.GenericSchemeMultiCall.proposals(proposalId);
         await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
         //check organizationsProposals after execution
-        proposal = await testSetup.genericSchemeMultiCall.proposals(proposalId);
+        proposal = await testSetup.GenericSchemeMultiCall.proposals(proposalId);
         assert.equal(proposal.callData,null);//new contract address
      });
 
@@ -164,13 +164,13 @@ contract('GenericSchemeMultiCall', function(accounts) {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,[actionMock.address]);
        var callData = await createCallToActionMock(helpers.NULL_ADDRESS,actionMock);
-       var tx = await testSetup.genericSchemeMultiCall.proposeCalls(
+       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls(
         [actionMock.address],[callData],[0],helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        //actionMock revert because msg.sender is not the _addr param at actionMock though the whole proposal execution will fail.
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
        try {
-         await testSetup.genericSchemeMultiCall.execute(proposalId);
+         await testSetup.GenericSchemeMultiCall.execute(proposalId);
          assert(false, "Proposal call failed");
        } catch(error) {
          helpers.assertVMException(error);
@@ -182,7 +182,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
        var testSetup = await setup(accounts,[accounts[1]]);
        var callData = await createCallToActionMock(helpers.NULL_ADDRESS,actionMock);
        try {
-         await testSetup.genericSchemeMultiCall.proposeCalls(
+         await testSetup.GenericSchemeMultiCall.proposeCalls(
         [actionMock.address],[callData],[0],helpers.NULL_HASH);
          assert(false, "contractToCall is not whitelisted");
        } catch(error) {
@@ -194,7 +194,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,[actionMock.address]);
        const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
-       var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address],[encodeABI],[0],helpers.NULL_HASH);
+       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address],[encodeABI],[0],helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        await testSetup.genericSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     });
@@ -203,10 +203,10 @@ contract('GenericSchemeMultiCall', function(accounts) {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,[actionMock.address]);
        const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
-       var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address],[encodeABI],[0],helpers.NULL_HASH);
+       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address],[encodeABI],[0],helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        try {
-         await testSetup.genericSchemeMultiCall.execute( proposalId);
+         await testSetup.GenericSchemeMultiCall.execute( proposalId);
          assert(false, "execute should fail if not executed from votingMachine");
        } catch(error) {
          helpers.assertVMException(error);
@@ -226,8 +226,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
        await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
        assert.equal(await web3.eth.getBalance(actionMock.address),0);
        await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-       tx = await testSetup.genericSchemeMultiCall.execute(proposalId);
-       await testSetup.genericSchemeMultiCall.getPastEvents('ProposalExecuted', {
+       tx = await testSetup.GenericSchemeMultiCall.execute(proposalId);
+       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalExecuted', {
              fromBlock: tx.blockNumber,
              toBlock: 'latest'
          })
@@ -278,31 +278,16 @@ contract('GenericSchemeMultiCall', function(accounts) {
         }
     });
 
-    it("schemeconstrains token value exceed limit", async function() {
-        var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-        var testSetup = await setup(accounts,[accounts[3]],0,true,standardTokenMock.address);
-        var encodedTokenApproval = await createCallToTokenApproval(standardTokenMock,accounts[3], 10001);
-        var tx = await testSetup.genericSchemeMultiCall.proposeCalls([standardTokenMock.address],[encodedTokenApproval],[0],helpers.NULL_HASH);
-        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-        await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-        try {
-           await testSetup.genericSchemeMultiCall.execute(proposalId);
-           assert(false, "cannot approve token amount: periodSpendingTokensExceeded");
-         } catch(error) {
-           helpers.assertVMException(error);
-         }
-     });
-
     it("execute proposeVote -negative decision - check action - with GenesisProtocol", async function() {
        var actionMock =await ActionMock.new();
        var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
        var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
 
        var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-       var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address],[callData],[0],helpers.NULL_HASH);
+       var tx = await testSetup.GenericSchemeMultiCall.proposeCalls([actionMock.address],[callData],[0],helpers.NULL_HASH);
        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
        tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,2,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-       await testSetup.genericSchemeMultiCall.getPastEvents('ProposalExecutedByVotingMachine', {
+       await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalExecutedByVotingMachine', {
              fromBlock: tx.blockNumber,
              toBlock: 'latest'
          })
@@ -320,14 +305,14 @@ contract('GenericSchemeMultiCall', function(accounts) {
 
       var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
       var callData2 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
-      var tx = await testSetup.genericSchemeMultiCall.proposeCalls(
+      var tx = await testSetup.GenericSchemeMultiCall.proposeCalls(
         [actionMock.address,actionMock2.address],
         [callData1,callData2],
         [0,0],
         helpers.NULL_HASH);
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
       tx  = await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-      await testSetup.genericSchemeMultiCall.getPastEvents('ProposalExecutedByVotingMachine', {
+      await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalExecutedByVotingMachine', {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
         })
@@ -344,18 +329,18 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var testSetup = await setup(accounts,[actionMock.address,actionMock2.address],0,true,standardTokenMock.address);
       var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
       var callData2 = await createCallToActionMock(accounts[0],actionMock);
-      var tx = await testSetup.genericSchemeMultiCall.proposeCalls(
+      var tx = await testSetup.GenericSchemeMultiCall.proposeCalls(
         [actionMock.address,actionMock2.address],
         [callData1,callData2],
         [0,0],
         helpers.NULL_HASH);
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-      var proposal = await testSetup.genericSchemeMultiCall.proposals(proposalId);
+      var proposal = await testSetup.GenericSchemeMultiCall.proposals(proposalId);
       assert.equal(proposal.exist,true);
       assert.equal(proposal.passed,false);
       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       try {
-         await testSetup.genericSchemeMultiCall.execute(proposalId);
+         await testSetup.GenericSchemeMultiCall.execute(proposalId);
          assert(false, "Proposal call failed");
        } catch(error) {
          helpers.assertVMException(error);
@@ -375,13 +360,13 @@ contract('GenericSchemeMultiCall', function(accounts) {
         [0,0],
         helpers.NULL_HASH);
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-      var proposal = await testSetup.genericSchemeMultiCall.proposals(proposalId);
+      var proposal = await testSetup.GenericSchemeMultiCall.proposals(proposalId);
       assert.equal(proposal.exist,true);
       assert.equal(proposal.passed,false);
       assert.equal(await standardTokenMock.allowance(testSetup.org.avatar.address,accounts[3]),0);
       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
-      await testSetup.genericSchemeMultiCall.execute(proposalId);
-      await testSetup.genericSchemeMultiCall.getPastEvents('ProposalCallExecuted', {
+      await testSetup.GenericSchemeMultiCall.execute(proposalId);
+      await testSetup.GenericSchemeMultiCall.getPastEvents('ProposalCallExecuted', {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
         })
@@ -417,7 +402,6 @@ contract('GenericSchemeMultiCall', function(accounts) {
         var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
         await dxDaoSchemeConstraints.initialize(
               testSetup.org.avatar.address,
-
               1,
               0,
               [],
@@ -468,7 +452,6 @@ contract('GenericSchemeMultiCall', function(accounts) {
        }
     });
 
-
     it("none exist schemeConstraints for proposeCall", async function() {
       var actionMock =await ActionMock.new();
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
@@ -476,7 +459,6 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var encodedTokenApproval= await createCallToTokenApproval(standardTokenMock, accounts[3], 1000);
       var callData1 = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
       await testSetup.GenericSchemeMultiCall.proposeCalls(
-
         [actionMock.address,actionMock.address],
         [callData1,encodedTokenApproval],
         [0,0],
@@ -603,16 +585,16 @@ contract('GenericSchemeMultiCall', function(accounts) {
 
   it("can only update contraint whitelist & limits from avatar with correct array length", async function() {
     var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
-    var dxDaoSchemeConstraints2 =await DxDaoSchemeConstraints.new();
+    var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
     try {
-      await dxDaoSchemeConstraints2.updateContractsWhitelist([standardTokenMock.address],[true, false],{from:accounts[3]});
+      await dxDaoSchemeConstraints.updateContractsWhitelist([standardTokenMock.address],[true, false],{from:accounts[3]});
       assert(false, "invalid length _periodLimitTokensAddresses");
     } catch(error) {
       helpers.assertVMException(error);
     }
 
     try {
-      await dxDaoSchemeConstraints2.updatePeriodLimitsTokens([standardTokenMock.address],[10000, 500],{from:accounts[3]});
+      await dxDaoSchemeConstraints.updatePeriodLimitsTokens([standardTokenMock.address],[10000, 500],{from:accounts[3]});
       assert(false, "invalid length _tokensPeriodLimits");
     } catch(error) {
       helpers.assertVMException(error);
