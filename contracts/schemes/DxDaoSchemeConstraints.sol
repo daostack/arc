@@ -7,18 +7,22 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
     using SafeMath for uint256;
 
     event UpdatedContractsWhitelist(
-        address _contractAddress, 
-        bool _contractWhitelisted
+        address[] _contractsAddresses, 
+        bool[] _contractsWhitelisted
     );
 
     event UpdatedPeriodLimitsTokens(
-        address _tokenAddress, 
-        uint256 _tokenPeriodLimit
+        address[] _tokensAddresses, 
+        uint256[] _tokensPeriodLimits
     );
 
     event UpdatedPeriodLimitWei(
         uint256 _periodLimitWei
     );
+
+
+
+    
 
     address public avatar;
     uint256 public initialTimestamp;
@@ -82,7 +86,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         "invalid length _periodLimitTokensAddresses");
         for (uint i = 0; i < _contractsAddresses.length; i++) {
             contractsWhiteListMap[_contractsAddresses[i]] = _contractsWhitelisted[i];
-            emit UpdatedContractsWhitelist(_contractsAddresses[i], _contractsWhitelisted[i]);
+            emit UpdatedContractsWhitelist(_contractsAddresses, _contractsWhitelisted);
         }
     }
 
@@ -101,7 +105,7 @@ contract DxDaoSchemeConstraints is SchemeConstraints {
         "invalid length _tokensPeriodLimits");
         for (uint i = 0; i < _tokensAddresses.length; i++) {
             periodLimitToken[_tokensAddresses[i]] = _tokensPeriodLimits[i];
-            emit UpdatedPeriodLimitsTokens(_tokensAddresses[i], _tokensPeriodLimits[i]);
+            emit UpdatedPeriodLimitsTokens(_tokensAddresses, _tokensPeriodLimits);
         }
     }
 

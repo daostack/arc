@@ -492,7 +492,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
 
     });
 
-    it("cannot update constraints from other address then avatar", async function() {
+    it("can only update contraint whitelist & limits from avatar", async function() {
       var actionMock =await ActionMock.new();
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
       var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
@@ -506,27 +506,27 @@ contract('GenericSchemeMultiCall', function(accounts) {
             [accounts[0]]
       );
       try {
-        await dxDaoSchemeConstraints.updateContractsWhitelist([actionMock.address],[true])
+        await dxDaoSchemeConstraints.updateContractsWhitelist([actionMock.address],[true]);
         assert(false, "caller must be avatar");
       } catch(error) {
         helpers.assertVMException(error);
       }
 
       try {
-        await dxDaoSchemeConstraints.updatePeriodLimitsTokens([actionMock.address, standardTokenMock.address],[5000,6000])
+        await dxDaoSchemeConstraints.updatePeriodLimitsTokens([actionMock.address, standardTokenMock.address],[5000,6000]);
         assert(false, "caller must be avatar");
       } catch(error) {
         helpers.assertVMException(error);
       }
       
       try {
-        await dxDaoSchemeConstraints.updatePeriodLimitWei(5000)
+        await dxDaoSchemeConstraints.updatePeriodLimitWei(5000);
         assert(false, "caller must be avatar");
       } catch(error) {
         helpers.assertVMException(error);
       }
 
-      var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
+      dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
       await dxDaoSchemeConstraints.initialize(
             accounts[3],
             1,
@@ -552,8 +552,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
         })
         .then(function(events){
             assert.equal(events[0].event,"UpdatedPeriodLimitsTokens");
-            assert.equal(events[0].args._tokenAddress,standardTokenMock.address);
-            assert.equal(events[0].args._tokenPeriodLimit,10000);
+            assert.equal(events[0].args._tokensAddresses[0],standardTokenMock.address);
+            assert.equal(events[0].args._tokensPeriodLimits[0],10000);
       });
   
       await dxDaoSchemeConstraints.updateContractsWhitelist([standardTokenMock.address],[true],{from:accounts[3]});
@@ -563,9 +563,10 @@ contract('GenericSchemeMultiCall', function(accounts) {
         })
         .then(function(events){
             assert.equal(events[0].event,"UpdatedContractsWhitelist");
-            assert.equal(events[0].args._contractAddress,standardTokenMock.address);
-            assert.equal(events[0].args._contractWhitelisted,true);
+            assert.equal(events[0].args._contractsAddresses[0],standardTokenMock.address);
+            assert.equal(events[0].args._contractsWhitelisted[0],true);
       });
+
       try {
         await dxDaoSchemeConstraints.updateContractsWhitelist([standardTokenMock.address],[true, false],{from:accounts[3]});
         assert(false, "invalid length _periodLimitTokensAddresses");
@@ -580,6 +581,24 @@ contract('GenericSchemeMultiCall', function(accounts) {
         helpers.assertVMException(error);
       }
 
+  });
+
+  it("can only update contraint whitelist & limits from avatar with correct array length", async function() {
+    var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+    var dxDaoSchemeConstraints2 =await DxDaoSchemeConstraints.new();
+    try {
+      await dxDaoSchemeConstraints2.updateContractsWhitelist([standardTokenMock.address],[true, false],{from:accounts[3]});
+      assert(false, "invalid length _periodLimitTokensAddresses");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+    try {
+      await dxDaoSchemeConstraints2.updatePeriodLimitsTokens([standardTokenMock.address],[10000, 500],{from:accounts[3]});
+      assert(false, "invalid length _tokensPeriodLimits");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
   });
 
   it("calculates the observationIndex correctly", async function() {
@@ -606,10 +625,10 @@ contract('GenericSchemeMultiCall', function(accounts) {
     assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),9001); 
     await helpers.increaseTime(315360000);// adding 10 year
     assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),31545001);
-    var dxDaoSchemeConstraints =await DxDaoSchemeConstraints.new();
+    var dxDaoSchemeConstraints2 =await DxDaoSchemeConstraints.new();
     
     // 7 days period
-    await dxDaoSchemeConstraints.initialize(
+    await dxDaoSchemeConstraints2.initialize(
           testSetup.org.avatar.address,
           604800,
           0,
@@ -617,27 +636,27 @@ contract('GenericSchemeMultiCall', function(accounts) {
           [],
           [accounts[0]]
     );
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),0);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),0);
     await helpers.increaseTime(50);
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),0);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),0);
     await helpers.increaseTime(604750);
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),1);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),1);
     await helpers.increaseTime(604800); // adding 7 days
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),2);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),2);
     await helpers.increaseTime(604800); // adding 7 days
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),3);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),3);
     await helpers.increaseTime(604800); // adding 7 days
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),4);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),4);
     await helpers.increaseTime(604800); // adding 7 days
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),5);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),5);
     await helpers.increaseTime(9072000); // adding 15 days
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),20);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),20);
     await helpers.increaseTime(6048000); // adding 10 days
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),30);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),30);
     await helpers.increaseTime(42336000); // adding 70 days
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),100);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),100);
     await helpers.increaseTime(604800000); // adding 1000 days
-    assert.equal((await dxDaoSchemeConstraints.observationIndex()).toString(),1100);
+    assert.equal((await dxDaoSchemeConstraints2.observationIndex()).toString(),1100);
   });
 
 });
