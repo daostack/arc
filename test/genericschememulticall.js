@@ -415,7 +415,23 @@ contract('GenericSchemeMultiCall', function(accounts) {
       } catch(error) {
         helpers.assertVMException(error);
       }
-  });
+    });
+
+    it("cannot init with invalid avatar address", async function() {
+      var genericSchemeMultiCallInitAvatar = await GenericSchemeMultiCall.new();
+      try {
+        await genericSchemeMultiCallInitAvatar.initialize(
+          helpers.NULL_ADDRESS,
+          accounts[0],
+          helpers.SOME_HASH,
+          accounts[0]
+        );
+        assert(false, "avatar cannot be zero");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+  
 
     it("can init with multiple contracts on whitelist", async function() {
         var actionMock =await ActionMock.new();
@@ -713,7 +729,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
     }
     await testSetup.schemeConstraints.updateContractsWhitelist([accounts[3]],[true],{from:accounts[4]});
     await testSetup.genericSchemeMultiCall.execute(proposalId);
-});
+  });
 
   it("update contraints whitelist after proposal call and before execute", async function() {
     var actionMock =await ActionMock.new();
@@ -740,7 +756,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
     }
     await testSetup.schemeConstraints.updateContractsWhitelist([actionMock.address],[true],{from:accounts[4]});
     await testSetup.genericSchemeMultiCall.execute(proposalId);
-});
+  });
 
 
   it("can only update contraint whitelist & limits from avatar with correct array length", async function() {
