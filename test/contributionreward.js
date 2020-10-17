@@ -3,22 +3,12 @@ const ContributionReward = artifacts.require("./ContributionReward.sol");
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Avatar = artifacts.require("./Avatar.sol");
 const Redeemer = artifacts.require("./Redeemer.sol");
-const SchemeFactory = artifacts.require("./SchemeFactory.sol");
-const DAOFactory = artifacts.require("./DAOFactory.sol");
-const GenericScheme = artifacts.require("./GenericScheme.sol");
-const AdminUpgradeabilityProxy = artifacts.require("./AdminUpgradeabilityProxy.sol");
-
-
 
 class ContributionRewardParams {
   constructor() {
   }
 }
 
-class SchemeFactoryParams {
-  constructor() {
-  }
-}
 
 const checkRedeemedPeriods = async function(
                                             testSetup,
@@ -973,147 +963,6 @@ contract('ContributionReward', accounts => {
             helpers.assertVMException(ex);
       }
     });
-
-    // it("execute proposeContributionReward send externalToken which is nativeToken ", async function() {
-    //    //this test test the changeAdmin workaround for daos which have the avatar as the daotoken admin.
-    //    //1. create a dao with schemeFactory + ContributionReward
-    //    //2. register genericScheme with daotoken as the contractToCall
-    //    //3. propose to changeAdmin of the daoToken to itself
-    //    //4. make sure that an external token (which is nativeToken) can be redeemed
-    //
-    //    var testSetup = new helpers.TestSetup();
-    //    registration = await helpers.registerImplementation();
-    //    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
-    //
-    //
-    //    testSetup.reputationArray = [1000,100,0];
-    //    testSetup.proxyAdmin = accounts[5];
-    //    testSetup.contributionRewardParams= await setupContributionReward(
-    //                       accounts,
-    //                       false,
-    //                       helpers.NULL_ADDRESS);
-    //    var crPermissions = "0x00000000";
-    //
-    //    var schemeFactoryParams = new SchemeFactoryParams();
-    //
-    //    schemeFactoryParams.votingMachine = testSetup.contributionRewardParams.votingMachine;
-    //    schemeFactoryParams.initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
-    //                          .methods
-    //                          .initialize(helpers.NULL_ADDRESS,
-    //                            schemeFactoryParams.votingMachine.absoluteVote.address,
-    //                            [0,0,0,0,0,0,0,0,0,0,0],
-    //                            helpers.NULL_ADDRESS,
-    //                            schemeFactoryParams.votingMachine.params,
-    //                            registration.daoFactory.address)
-    //                          .encodeABI();
-    //    var sfPermissions = "0x0000001f";
-    //    var tx;
-    //    [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
-    //                                                                        accounts,
-    //                                                                        registration,
-    //                                                                        [accounts[0],
-    //                                                                        accounts[1],
-    //                                                                        accounts[2]],
-    //                                                                        [1000,0,0],
-    //                                                                        testSetup.reputationArray,
-    //                                                                        0,
-    //                                                                        [web3.utils.fromAscii("ContributionReward"),
-    //                                                                        web3.utils.fromAscii("SchemeFactory")],
-    //                                                                        helpers.concatBytes(testSetup.contributionRewardParams.initdata,schemeFactoryParams.initdata),
-    //                                                                        [helpers.getBytesLength(testSetup.contributionRewardParams.initdata),helpers.getBytesLength(schemeFactoryParams.initdata)],
-    //                                                                        [crPermissions,sfPermissions],
-    //                                                                        "metaData");
-    //
-    //
-    //    var daoFactory = await DAOFactory.at(registration.daoFactory.address);
-    //    var address;
-    //
-    //    await daoFactory.getPastEvents('SchemeInstance', {
-    //          fromBlock: tx.blockNumber,
-    //          toBlock: 'latest'
-    //      })
-    //      .then(function(events){
-    //        crAddress = events[0].args._scheme;
-    //        sfAddress = events[1].args._scheme;
-    //      });
-    //    testSetup.contributionReward = await ContributionReward.at(crAddress);
-    //    testSetup.schemeFactory = await SchemeFactory.at(sfAddress);
-    //
-    //
-    //   //give some tokens to organization avatar
-    //   var reputationReward = 0;
-    //   var nativeTokenReward = 0;
-    //   var ethReward = 0;
-    //   var externalTokenReward = 12;
-    //   var periodLength = 50;
-    //   var numberOfPeriods = 1;
-    //   //send some ether to the org avatar
-    //   var otherAvatar = await Avatar.new();
-    //   await otherAvatar.initialize('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS , accounts[0]);
-    //   await testSetup.org.token.transfer(testSetup.org.avatar.address,externalTokenReward);
-    //
-    //   var tx = await testSetup.contributionReward.proposeContributionReward(
-    //                                                                  web3.utils.asciiToHex("description"),
-    //                                                                  reputationReward,
-    //                                                                  [nativeTokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
-    //                                                                  testSetup.org.token.address,
-    //                                                                  otherAvatar.address
-    //                                                                );
-    //   //Vote with reputation to trigger execution
-    //   var contributionRewardProposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-    //   await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(contributionRewardProposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
-    //   await helpers.increaseTime(periodLength+1);
-    //      try {
-    //           await testSetup.contributionReward.redeem(contributionRewardProposalId,[false,false,false,true]);
-    //           assert(false, 'cannot send external token as native token');
-    //           } catch (ex) {
-    //            helpers.assertVMException(ex);
-    //      }
-    //   //do a generic call to burn admin
-    //   //registe genericScheme
-    //   var initdata = await new web3.eth.Contract(registration.genericScheme.abi)
-    //                         .methods
-    //                         .initialize(testSetup.org.avatar.address,
-    //                           testSetup.contributionRewardParams.votingMachine.absoluteVote.address,
-    //                           [1,1,1,1,1,1,1,1,1,1,1],
-    //                           helpers.NULL_ADDRESS,
-    //                           schemeFactoryParams.votingMachine.params,
-    //                           testSetup.org.token.address)
-    //                         .encodeABI();
-    //   tx = await testSetup.schemeFactory.proposeScheme(
-    //     [0,1,0],
-    //     'GenericScheme',
-    //     initdata,
-    //     "0x0000001f",
-    //     helpers.NULL_ADDRESS,
-    //     helpers.NULL_HASH);
-    //   //Vote with reputation to trigger execution
-    //   proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
-    //
-    //   tx = await schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
-    //   //console.log(tx.logs)
-    //
-    //   let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
-    //   var schemeAddress = proxyEvents[0].returnValues._proxy;
-    //   var genericScheme = await GenericScheme.at(schemeAddress);
-    //   //now we have generic scheme registered so lets propose to change proxyAdmin
-    //   let daoTokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
-    //   console.log(await daoTokenProxy.admin.call(),testSetup.org.avatar.address);
-    //   var changerAdminCallData = await new web3.eth.Contract(daoTokenProxy.abi)
-    //                         .methods
-    //                         .changeAdmin(testSetup.org.token.address)
-    //                         .encodeABI();
-    //   tx = await  genericScheme.proposeCall(changerAdminCallData,0,helpers.NULL_HASH);
-    //   proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
-    //   //vote to change admin
-    //   tx = await schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
-    //   assert.equal(await daoTokenProxy.admin.call(),testSetup.org.token.address);
-    //
-    //   await helpers.increaseTime(periodLength+1);
-    //   await testSetup.contributionReward.redeem(contributionRewardProposalId,[false,false,false,true]);
-    //   var tokens = await testSetup.org.token.balanceOf(otherAvatar.address);
-    //   assert.equal(tokens.toNumber(),externalTokenReward);
-    //  });
 
       it("execute proposeContributionReward send externalToken(which is nativeToken) ", async function() {
         var testSetup = await setup(accounts);
