@@ -166,7 +166,7 @@ contract DAOFactory is Initializable {
         }
 
     /**
-   * @dev createNoneUpgradableInstance creates a new proxy for the given contract and forwards a function call to it.
+   * @dev createNonUpgradableInstance creates a new proxy for the given contract and forwards a function call to it.
    * This is useful to initialize the proxied contract.
    * @param _packageVersion of the instance.
    * @param _contractName Name of the contract.
@@ -176,7 +176,7 @@ contract DAOFactory is Initializable {
    * This parameter is optional, if no data is given the initialization call to proxied contract will be skipped.
    * @return Address of the new proxy.
    */
-    function createNoneUpgradableInstance(uint64[3] memory _packageVersion,
+    function createNonUpgradableInstance(uint64[3] memory _packageVersion,
                                         string memory _contractName,
                                         bytes memory _data)
     public
@@ -326,7 +326,7 @@ contract DAOFactory is Initializable {
         require(_founders.length == _foundersReputationAmount.length,
         "_founderlength != _foundersReputationAmount.length");
         UpgradeabilityProxy nativeToken =
-        createNoneUpgradableInstance(_packageVersion, "DAOToken", _tokenInitData);
+        createNonUpgradableInstance(_packageVersion, "DAOToken", _tokenInitData);
         AdminUpgradeabilityProxy nativeReputation =
         createInstance(_packageVersion, "Reputation", address(this),
         abi.encodeWithSignature("initialize(address)", address(this)));
