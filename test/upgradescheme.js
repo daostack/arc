@@ -217,7 +217,6 @@ contract('UpgradeScheme', function(accounts) {
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
 
       let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
-      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
       let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
 
       let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
@@ -228,18 +227,14 @@ contract('UpgradeScheme', function(accounts) {
         await oldImp.getImplementation("Avatar")
       );
       assert.equal(
-        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
-        await oldImp.getImplementation("DAOToken")
-      );
-      assert.equal(
         await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
         await oldImp.getImplementation("Reputation")
       );
 
       var tx = await testSetup.upgradeScheme.proposeUpgrade(
         [0, 1, 1],
-        [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
-        [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+        [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("Reputation")],
+        [testSetup.org.avatar.address,testSetup.org.reputation.address],
         helpers.NULL_HASH
       );
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
@@ -256,10 +251,6 @@ contract('UpgradeScheme', function(accounts) {
         await newImp.getImplementation("Avatar")
       );
       assert.equal(
-        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
-        await newImp.getImplementation("DAOToken")
-      );
-      assert.equal(
         await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
         await newImp.getImplementation("Reputation")
       );
@@ -270,7 +261,6 @@ contract('UpgradeScheme', function(accounts) {
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
 
       let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
-      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
       let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
 
       let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
@@ -280,10 +270,7 @@ contract('UpgradeScheme', function(accounts) {
         await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
         await oldImp.getImplementation("Avatar")
       );
-      assert.equal(
-        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
-        await oldImp.getImplementation("DAOToken")
-      );
+
       assert.equal(
         await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
         await oldImp.getImplementation("Reputation")
@@ -291,9 +278,9 @@ contract('UpgradeScheme', function(accounts) {
 
       let contractsNames = [];
       let contractsToUpgrade = [];
-      for (let i = 0; i < 20; i++) {
-        contractsNames.push(web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"));
-        contractsToUpgrade.push(testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address);
+      for (let i = 0; i < 30; i++) {
+        contractsNames.push(web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("Reputation"));
+        contractsToUpgrade.push(testSetup.org.avatar.address, testSetup.org.reputation.address);
       }
 
       var tx = await testSetup.upgradeScheme.proposeUpgrade(
@@ -315,10 +302,7 @@ contract('UpgradeScheme', function(accounts) {
         await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
         await newImp.getImplementation("Avatar")
       );
-      assert.equal(
-        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
-        await newImp.getImplementation("DAOToken")
-      );
+
       assert.equal(
         await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
         await newImp.getImplementation("Reputation")
@@ -331,7 +315,6 @@ contract('UpgradeScheme', function(accounts) {
       await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
 
       let avatarProxy = await AdminUpgradeabilityProxy.at(testSetup.org.avatar.address);
-      let tokenProxy = await AdminUpgradeabilityProxy.at(testSetup.org.token.address);
       let reputationProxy = await AdminUpgradeabilityProxy.at(testSetup.org.reputation.address);
 
       let oldImpAddress = await testSetup.registration.packageInstance.getContract([0,1,0]);
@@ -341,10 +324,7 @@ contract('UpgradeScheme', function(accounts) {
         await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
         await oldImp.getImplementation("Avatar")
       );
-      assert.equal(
-        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
-        await oldImp.getImplementation("DAOToken")
-      );
+
       assert.equal(
         await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
         await oldImp.getImplementation("Reputation")
@@ -352,9 +332,9 @@ contract('UpgradeScheme', function(accounts) {
 
       let contractsNames = [];
       let contractsToUpgrade = [];
-      for (let i = 0; i < 20; i++) {
-        contractsNames.push(web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation"));
-        contractsToUpgrade.push(testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address);
+      for (let i = 0; i < 30; i++) {
+        contractsNames.push(web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("Reputation"));
+        contractsToUpgrade.push(testSetup.org.avatar.address, testSetup.org.reputation.address);
       }
 
       var tx = await testSetup.upgradeScheme.proposeUpgrade(
@@ -375,10 +355,6 @@ contract('UpgradeScheme', function(accounts) {
       assert.equal(
         await avatarProxy.implementation.call({from: testSetup.org.avatar.address}),
         await newImp.getImplementation("Avatar")
-      );
-      assert.equal(
-        await tokenProxy.implementation.call({from: testSetup.org.avatar.address}),
-        await newImp.getImplementation("DAOToken")
       );
       assert.equal(
         await reputationProxy.implementation.call({from: testSetup.org.avatar.address}),
@@ -403,6 +379,36 @@ contract('UpgradeScheme', function(accounts) {
           helpers.assertVMException(error);
         }
 
+    });
+
+    it("cannot upgrade DAOToken", async function() {
+      var testSetup = await setup(accounts);
+
+      await helpers.registrationAddVersionToPackege(registration,[0, 1, 1]);
+
+       var tx = await testSetup.upgradeScheme.proposeUpgrade(
+        [0, 1, 1],
+        [web3.utils.fromAscii("Avatar"),web3.utils.fromAscii("DAOToken"),web3.utils.fromAscii("Reputation")],
+        [testSetup.org.avatar.address, testSetup.org.token.address, testSetup.org.reputation.address],
+        helpers.NULL_HASH);
+
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       tx = await testSetup.upgradeSchemeParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       await testSetup.upgradeScheme.getPastEvents('UpgradedContracts', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"UpgradedContracts");
+             for (var i = 0;i< events[0].args._upgradedContracts.length;i++) {
+                if (events[0].args._upgradedContracts[i] === testSetup.org.token.address) {
+                  assert.equal(false,true,"cannot upgrade daotoken");
+                }
+             }
+         });
+       //check organizationsProposals after execution
+       var organizationProposal = await testSetup.upgradeScheme.organizationProposals(proposalId);
+       assert.equal(organizationProposal,false);
     });
 
 });

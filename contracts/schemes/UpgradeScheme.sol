@@ -33,6 +33,8 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
 
     event ProposalDeleted(address indexed _avatar, bytes32 indexed _proposalId);
 
+    event UpgradedContracts(address indexed _avatar, address[] _upgradedContracts);
+
     // Details of a voting proposal:
     struct Proposal {
         uint64[3] packageVersion;
@@ -91,13 +93,18 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
                 ).getImplementation(contractName);
 
                 Controller controller = Controller(avatar.owner());
-                controller.genericCall(
+                (bool success,) = controller.genericCall(
                     contractsToUpgrade[i],
                     abi.encodeWithSignature("upgradeTo(address)", updatedImp),
                     0
                 );
+                if (!success) {
+                    contractsToUpgrade[i] = address(0);
+                }
             }
+            emit UpgradedContracts(address(avatar), contractsToUpgrade);
         }
+
 
         delete organizationProposals[_proposalId];
         emit ProposalDeleted(address(avatar), _proposalId);

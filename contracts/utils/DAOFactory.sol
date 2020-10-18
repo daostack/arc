@@ -6,6 +6,7 @@ pragma experimental ABIEncoderV2;
 import "../registry/App.sol";
 import "../registry/ImplementationDirectory.sol";
 import "@daostack/upgrades/contracts/upgradeability/AdminUpgradeabilityProxy.sol";
+import "@daostack/upgrades/contracts/upgradeability/UpgradeabilityProxy.sol";
 import "../libs/BytesLib.sol";
 import "../controller/Controller.sol";
 import "../libs/Bytes32ToStr.sol";
@@ -165,6 +166,32 @@ contract DAOFactory is Initializable {
         }
 
     /**
+   * @dev createNonUpgradableInstance creates a new proxy for the given contract and forwards a function call to it.
+   * This is useful to initialize the proxied contract.
+   * @param _packageVersion of the instance.
+   * @param _contractName Name of the contract.
+   * @param _data Data to send as msg.data to the corresponding implementation to initialize the proxied contract.
+   * It should include the signature and the parameters of the function to be called, as described in
+   * https://solidity.readthedocs.io/en/v0.4.24/abi-spec.html#function-selector-and-argument-encoding.
+   * This parameter is optional, if no data is given the initialization call to proxied contract will be skipped.
+   * @return Address of the new proxy.
+   */
+    function createNonUpgradableInstance(uint64[3] memory _packageVersion,
+                                        string memory _contractName,
+                                        bytes memory _data)
+    public
+    payable
+    returns (UpgradeabilityProxy) {
+        uint64[3] memory version = getPackageVersion(_packageVersion);
+        address implementation = getImplementation(version, _contractName);
+        /* solhint-disable */
+        UpgradeabilityProxy proxy = (new UpgradeabilityProxy){value:msg.value}(implementation, _data);
+        /* solhint-enable */
+        emit ProxyCreated(address(proxy), implementation, _contractName, version);
+        return proxy;
+    }
+
+    /**
    * @dev Creates a new proxy for the given contract and forwards a function call to it.
    * This is useful to initialize the proxied contract.
    * @param _packageVersion of the instance.
@@ -298,8 +325,8 @@ contract DAOFactory is Initializable {
         "_founderlength != _foundersTokenAmount.length");
         require(_founders.length == _foundersReputationAmount.length,
         "_founderlength != _foundersReputationAmount.length");
-        AdminUpgradeabilityProxy nativeToken =
-        createInstance(_packageVersion, "DAOToken", address(this), _tokenInitData);
+        UpgradeabilityProxy nativeToken =
+        createNonUpgradableInstance(_packageVersion, "DAOToken", _tokenInitData);
         AdminUpgradeabilityProxy nativeReputation =
         createInstance(_packageVersion, "Reputation", address(this),
         abi.encodeWithSignature("initialize(address)", address(this)));
@@ -311,7 +338,6 @@ contract DAOFactory is Initializable {
             address(nativeToken),
             address(nativeReputation),
             address(this)));
-        nativeToken.changeAdmin(address(avatar));
         nativeReputation.changeAdmin(address(avatar));
         avatar.changeAdmin(address(avatar));
          // Mint token and reputation for founders:

@@ -114,23 +114,22 @@ contract('SchemeFactory', accounts => {
 
     it("execute proposeScheme and execute -yes - permissions== 0x0000001f", async function() {
       var testSetup = await setup(accounts);
-      var initdata = await new web3.eth.Contract(registration.schemeFactory.abi)
+      var initdata = await new web3.eth.Contract(registration.genericScheme.abi)
                             .methods
                             .initialize(testSetup.org.avatar.address,
                               testSetup.schemeFactoryParams.votingMachine.absoluteVote.address,
                               [0,0,0,0,0,0,0,0,0,0,0],
                               helpers.NULL_ADDRESS,
                               testSetup.schemeFactoryParams.votingMachine.params,
-                              registration.daoFactory.address)
+                              testSetup.org.token.address)
                             .encodeABI();
-      var tx = await testSetup.schemeFactory.proposeScheme(
+      tx = await testSetup.schemeFactory.proposeScheme(
         [0,1,0],
-        'SchemeFactory',
+        'GenericScheme',
         initdata,
         "0x0000001f",
         helpers.NULL_ADDRESS,
         helpers.NULL_HASH);
-
       //Vote with reputation to trigger execution
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});

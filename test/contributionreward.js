@@ -4,12 +4,11 @@ const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const Avatar = artifacts.require("./Avatar.sol");
 const Redeemer = artifacts.require("./Redeemer.sol");
 
-
-
 class ContributionRewardParams {
   constructor() {
   }
 }
+
 
 const checkRedeemedPeriods = async function(
                                             testSetup,
@@ -70,7 +69,7 @@ const setupContributionReward = async function(
   return contributionRewardParams;
 };
 
-const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
+const setup = async function (accounts,genesisProtocol = false,tokenAddress=helpers.NULL_ADDRESS) {
    var testSetup = new helpers.TestSetup();
    registration = await helpers.registerImplementation();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
@@ -86,6 +85,7 @@ const setup = async function (accounts,genesisProtocol = false,tokenAddress=0) {
                       genesisProtocol,
                       tokenAddress);
    var permissions = "0x00000000";
+
    [testSetup.org,tx] = await helpers.setupOrganizationWithArraysDAOFactory(testSetup.proxyAdmin,
                                                                        accounts,
                                                                        registration,
@@ -963,4 +963,34 @@ contract('ContributionReward', accounts => {
             helpers.assertVMException(ex);
       }
     });
+
+      it("execute proposeContributionReward send externalToken(which is nativeToken) ", async function() {
+        var testSetup = await setup(accounts);
+        //give some nativ tokens to organization avatar
+        await testSetup.org.token.transfer(testSetup.org.avatar.address,30,{from:accounts[0]});
+        var reputationReward = 0;
+        var nativeTokenReward = 0;
+        var ethReward = 0;
+        var externalTokenReward = 12;
+        var periodLength = 50;
+        var numberOfPeriods = 1;
+        //send some ether to the org avatar
+        var otherAvatar = await Avatar.new();
+        await otherAvatar.initialize('otheravatar', helpers.NULL_ADDRESS, helpers.NULL_ADDRESS , accounts[0]);
+
+        var tx = await testSetup.contributionReward.proposeContributionReward(
+                                                                       web3.utils.asciiToHex("description"),
+                                                                       reputationReward,
+                                                                       [nativeTokenReward,ethReward,externalTokenReward,periodLength,numberOfPeriods],
+                                                                       testSetup.org.token.address,
+                                                                       otherAvatar.address
+                                                                     );
+        //Vote with reputation to trigger execution
+        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+        await testSetup.contributionRewardParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+        await helpers.increaseTime(periodLength+1);
+        await testSetup.contributionReward.redeem(proposalId,[false,false,false,true]);
+        var tokens = await testSetup.org.token.balanceOf(otherAvatar.address);
+        assert.equal(tokens.toNumber(),externalTokenReward);
+       });
 });
