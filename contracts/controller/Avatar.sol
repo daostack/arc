@@ -161,5 +161,13 @@ contract Avatar is Initializable, OwnableUpgradeSafe {
         return true;
     }
 
+    /**
+    * @dev sendEthToVault send eth to Vault. (if such balance exist)
+    */
+    function sendEthToVault() external {
+        (bool success, ) = address(vault).call{value:address(this).balance}("");
+        require(success, "sendEther failed.");
+    }
+
 
 }
