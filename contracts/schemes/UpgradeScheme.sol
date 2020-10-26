@@ -127,6 +127,7 @@ contract UpgradeScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         address[] memory _contractsToUpgrade,
         string memory _descriptionHash)
     public
+    onlyRegisteredScheme
     returns(bytes32)
     {
         require(_contractsNames.length <= 60, "can upgrade up to 60 contracts at a time");

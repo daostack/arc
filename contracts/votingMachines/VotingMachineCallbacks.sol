@@ -14,6 +14,13 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
         _;
     }
 
+    modifier onlyRegisteredScheme() {
+        require(Controller(avatar.owner()).isSchemeRegistered(address(this)),
+            "scheme is not registered"
+        );
+        _;
+    }
+
     // proposalId  ->  blockNumber
     mapping(bytes32 => uint256) public proposalsBlockNumber;
 
@@ -55,7 +62,7 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface, ArcScheme {
     }
 
     function getTotalReputationSupply(bytes32 _proposalId)
-    external view onlyVotingMachine(_proposalId) override returns(uint256)
+    external view onlyVotingMachine(_proposalId) onlyRegisteredScheme override returns(uint256)
     {
         return avatar.nativeReputation().totalSupplyAt(proposalsBlockNumber[_proposalId]);
     }

@@ -74,6 +74,7 @@ contract SignalScheme is VotingMachineCallbacks, ProposalExecuteInterface {
         string calldata _descriptionHash
     )
     external
+    onlyRegisteredScheme
     returns(bytes32)
     {
         require(Controller(avatar.owner()).isSchemeRegistered(address(this)),
