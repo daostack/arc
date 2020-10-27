@@ -255,7 +255,7 @@ contract('SchemeFactory', accounts => {
         } catch(error) {
           helpers.assertVMException(error);
         }
-
+        //check that a propsoal on unregister scheme cannot be voted.
         try {
             await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId2,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
             assert(false, "cannot vote on a proposal for scheme which is unregistered");
