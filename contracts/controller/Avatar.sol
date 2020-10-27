@@ -32,9 +32,7 @@ contract Avatar is Initializable, OwnableUpgradeSafe {
     /* solhint-disable */
     receive() external payable {
        if (msg.sender != address(vault)) {
-      // solhint-disable-next-line avoid-call-value
-            (bool success, ) = address(vault).call{value:msg.value}("");
-            require(success, "sendEther failed.");
+          sendEthToVault();
         }
     }
 
@@ -165,7 +163,7 @@ contract Avatar is Initializable, OwnableUpgradeSafe {
     * @dev sendEthToVault send eth to Vault. (if such balance exist)
     * A situation where Avatar receice ETH and it is bypass the fallback function is a valid case.
     */
-    function sendEthToVault() external {
+    function sendEthToVault() public {
         address(vault).transfer(address(this).balance);
     }
 
