@@ -163,7 +163,7 @@ contract Avatar is Initializable, OwnableUpgradeSafe {
 
     /**
     * @dev sendEthToVault send eth to Vault. (if such balance exist)
-    * A situation where Avatar receice ETH and it is bypass the fallback function is a valid case.
+    * For a case where ETH is beeing sent to the contrtact bypass the fallback function(e.g by destroyself).
     */
     function sendEthToVault() external {
         (bool success, ) = address(vault).call{value:address(this).balance}("");
