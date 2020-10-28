@@ -129,6 +129,7 @@ contract GenericScheme is VotingMachineCallbacks, ProposalExecuteInterface {
     */
     function proposeCall(bytes memory _callData, uint256 _value, string memory _descriptionHash)
     public
+    onlyRegisteredScheme
     returns(bytes32)
     {
         bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));

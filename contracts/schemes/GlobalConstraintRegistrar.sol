@@ -116,6 +116,7 @@ contract GlobalConstraintRegistrar is VotingMachineCallbacks, ProposalExecuteInt
     bytes32 _voteToRemoveParams,
     string memory _descriptionHash)
     public
+    onlyRegisteredScheme
     returns(bytes32)
     {
         bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));

@@ -104,6 +104,7 @@ contract VoteInOrganizationScheme is VotingMachineCallbacks, ProposalExecuteInte
     uint256 _vote,
     string memory _descriptionHash)
     public
+    onlyRegisteredScheme
     returns(bytes32)
     {
         (uint256 minVote, uint256 maxVote) = _originalIntVote.getAllowedRangeOfChoices();

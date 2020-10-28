@@ -216,10 +216,53 @@ contract('SchemeFactory', accounts => {
       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
       var controller = await Controller.at(await testSetup.org.avatar.owner());
       assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),true);
+      //can propose another proposal..
+      var initdata = await new web3.eth.Contract(registration.genericScheme.abi)
+                            .methods
+                            .initialize(testSetup.org.avatar.address,
+                              testSetup.schemeFactoryParams.votingMachine.absoluteVote.address,
+                              [0,0,0,0,0,0,0,0,0,0,0],
+                              helpers.NULL_ADDRESS,
+                              testSetup.schemeFactoryParams.votingMachine.params,
+                              testSetup.org.token.address)
+                            .encodeABI();
+
+      tx  = await testSetup.schemeFactory.proposeScheme(
+        [0,1,0],
+        'GenericScheme',
+        initdata,
+        "0x0000001f",
+        helpers.NULL_ADDRESS,
+        helpers.NULL_HASH);
+      var proposalId2 = await helpers.getValueFromLogs(tx, '_proposalId',1);
+      //can vote..
+      await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId2,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+
       tx = await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       let proxyEvents = await registration.daoFactory.getPastEvents("ProxyCreated", {fromBlock: tx.receipt.blockNumber, toBlock: tx.receipt.blockNumber});
       assert.equal(proxyEvents.length,0);
       assert.equal(await controller.isSchemeRegistered(testSetup.schemeFactory.address),false);
+      //test if can propose on unregisted scheme -- it should not be allowed
+        try {
+          await testSetup.schemeFactory.proposeScheme(
+            [0,1,0],
+            'GenericScheme',
+            initdata,
+            "0x0000001f",
+            helpers.NULL_ADDRESS,
+            helpers.NULL_HASH);
+            assert(false, "cannot propose on unregisted scheme");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+        //check that a propsoal on unregister scheme cannot be voted.
+        try {
+            await testSetup.schemeFactoryParams.votingMachine.absoluteVote.vote(proposalId2,1,0,helpers.NULL_ADDRESS,{from:accounts[0]});
+            assert(false, "cannot vote on a proposal for scheme which is unregistered");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+
      });
 
     it("execute proposeScheme - no decision - proposal data delete", async function() {

@@ -146,6 +146,7 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
         string memory _descriptionHash
     )
     public
+    onlyRegisteredScheme
     returns(bytes32)
     {
         // propose
@@ -184,6 +185,7 @@ contract SchemeRegistrar is VotingMachineCallbacks, ProposalExecuteInterface {
     */
     function proposeToRemoveScheme(address _scheme, string memory _descriptionHash)
     public
+    onlyRegisteredScheme
     returns(bytes32)
     {
         require(_scheme != address(0), "scheme cannot be zero");

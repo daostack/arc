@@ -131,6 +131,7 @@ contract TokenTrade is VotingMachineCallbacks, ProposalExecuteInterface {
         string memory _descriptionHash
     )
     public
+    onlyRegisteredScheme
     returns(bytes32 proposalId)
     {
         require(
