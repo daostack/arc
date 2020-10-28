@@ -106,6 +106,7 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
     */
     function proposeUpgrade(address _newController, string memory _descriptionHash)
         public
+        onlyRegisteredScheme
         returns(bytes32)
     {
         bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));
@@ -138,6 +139,7 @@ contract ControllerUpgradeScheme is VotingMachineCallbacks, ProposalExecuteInter
         string memory _descriptionHash
     )
         public
+        onlyRegisteredScheme
         returns(bytes32)
     {
         bytes32 proposalId = votingMachine.propose(2, voteParamsHash, msg.sender, address(avatar));

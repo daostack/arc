@@ -126,6 +126,7 @@ contract ContributionReward is
         address payable _beneficiary
     )
     public
+    onlyRegisteredScheme
     returns(bytes32)
     {
         validateProposalParams(_reputationChange, _rewards);

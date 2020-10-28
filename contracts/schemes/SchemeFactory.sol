@@ -117,6 +117,7 @@ contract SchemeFactory is VotingMachineCallbacks, ProposalExecuteInterface {
         string memory _descriptionHash
     )
     public
+    onlyRegisteredScheme
     returns(bytes32)
     {
         if (bytes(_schemeName).length > 0) {

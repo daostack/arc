@@ -146,6 +146,7 @@ contract Join is
         uint256 _feeAmount
     )
     public
+    onlyRegisteredScheme
     payable
     returns(bytes32)
     {

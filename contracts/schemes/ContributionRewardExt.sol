@@ -159,6 +159,7 @@ contract ContributionRewardExt is VotingMachineCallbacks, ProposalExecuteInterfa
         address _proposer
     )
     public
+    onlyRegisteredScheme
     returns(bytes32 proposalId)
     {
         address proposer = _proposer;
