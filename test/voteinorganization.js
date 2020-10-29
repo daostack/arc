@@ -81,7 +81,7 @@ const setup = async function (accounts,reputationAccount=helpers.NULL_ADDRESS,ge
 
 contract('VoteInOrganizationScheme', accounts => {
   before(function() {
-     this.timeout(50000) //50 second timeout for setup
+     this.timeout(50000); //50 second timeout for setup
      helpers.etherForEveryone(accounts);
   });
 
@@ -172,7 +172,7 @@ contract('VoteInOrganizationScheme', accounts => {
       helpers.assertVMException(error);
     }
   });
- 
+
    it("execute proposeVote -no decision - proposal data delete", async function() {
      var testSetup = await setup(accounts);
 
