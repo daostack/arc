@@ -2,7 +2,8 @@ module.exports = {
   mocha: {
    enableTimeouts: false,
    grep: "@skip-on-coverage", // Find everything with this tag
-   invert: true               // Run the grep's inverse set.
+   invert: true,               // Run the grep's inverse set.
+   timeout: 30000,
  },
   skipFiles: ['test/'],
   providerOptions: {
