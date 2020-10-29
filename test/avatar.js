@@ -134,4 +134,19 @@ contract('Avatar',  accounts =>  {
         await avatar.setDBValue("KEY","VALUE");
         assert.equal(await avatar.db("KEY"),"VALUE");
     });
+
+    it("sendEthToVault", async () => {
+        avatar = await setup(accounts);
+        var actionMock =await ActionMock.new();
+        await web3.eth.sendTransaction({from:accounts[0],to:actionMock.address, value: web3.utils.toWei('1', "ether")});
+        assert.equal(await web3.eth.getBalance(actionMock.address),web3.utils.toWei('1', "ether"));
+        assert.equal(await web3.eth.getBalance(avatar.address),0);
+        assert.equal(await web3.eth.getBalance(await avatar.vault()),0);
+        await actionMock.close(avatar.address);
+        assert.equal(await web3.eth.getBalance(await avatar.vault()),0);
+        assert.equal(await web3.eth.getBalance(actionMock.address),0);
+        assert.equal(await web3.eth.getBalance(avatar.address),web3.utils.toWei('1', "ether"));
+        await avatar.sendEthToVault();
+        assert.equal(await web3.eth.getBalance(await avatar.vault()),web3.utils.toWei('1', "ether"));
+    });
 });

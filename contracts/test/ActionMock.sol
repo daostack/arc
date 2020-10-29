@@ -11,6 +11,11 @@ contract ActionMock {
 
     uint public activationTime;
 
+    /* solhint-disable */
+    receive() external payable {
+        emit ReceiveEther(msg.sender, msg.value);
+    }
+
     function test(uint256 _a, address _b, bytes32 _c) public payable returns(uint256) {
         require(_a == 7);
         require(_b == address(this));
@@ -36,6 +41,10 @@ contract ActionMock {
     function test3() public view {
       // solhint-disable-next-line not-rely-on-time
         require(now > activationTime, "now should be greater than the activation time");
+    }
+
+    function close(address payable sendTo) public {
+        selfdestruct(sendTo);
     }
 
 }

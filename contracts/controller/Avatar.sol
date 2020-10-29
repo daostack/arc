@@ -32,9 +32,7 @@ contract Avatar is Initializable, OwnableUpgradeSafe {
     /* solhint-disable */
     receive() external payable {
        if (msg.sender != address(vault)) {
-      // solhint-disable-next-line avoid-call-value
-            (bool success, ) = address(vault).call{value:msg.value}("");
-            require(success, "sendEther failed.");
+          sendEthToVault();
         }
     }
 
@@ -161,5 +159,12 @@ contract Avatar is Initializable, OwnableUpgradeSafe {
         return true;
     }
 
+    /**
+    * @dev sendEthToVault send eth to Vault. (if such balance exist)
+    * For a case where ETH is beeing sent to the contrtact bypass the fallback function(e.g by destroyself).
+    */
+    function sendEthToVault() public {
+        address(vault).transfer(address(this).balance);
+    }
 
 }

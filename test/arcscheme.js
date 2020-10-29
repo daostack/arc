@@ -52,7 +52,7 @@ const setup = async function (accounts, initGov=true, vmZero=false, gpParamsHash
    testSetup.schemeMock = await SchemeMock.at(tx.logs[6].args._scheme);
    return testSetup;
 };
-contract('VotingMachineCallbacks', function(accounts) {
+contract('arcscheme', function(accounts) {
 
    it("avatar address cannot be 0 ", async function() {
       var schemeMock = await SchemeMock.new();
