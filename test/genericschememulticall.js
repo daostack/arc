@@ -218,6 +218,9 @@ contract('GenericSchemeMultiCall', function(accounts) {
        } catch(error) {
          helpers.assertVMException(error);
        }
+        await testSetup.genericSchemeMultiCall.proposeCalls(
+        [accounts[1]],[callData],[0],helpers.NULL_HASH);
+
     });
 
     it("execute proposeVote without return value-positive decision - check action", async function() {
@@ -506,6 +509,32 @@ contract('GenericSchemeMultiCall', function(accounts) {
         assert.equal(contractsWhiteList[3],accounts[3]);
 
         assert.equal(await simpleSchemeConstraints.descriptionHash(),"descriptionHash");
+      
+        try {
+          await simpleSchemeConstraints.isAllowedToPropose(
+              [accounts[4]],[],[],helpers.NULL_ADDRESS
+          );
+          assert(false, "cannot propose to call to non white list contract");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+        await simpleSchemeConstraints.isAllowedToPropose(
+            [accounts[3]],[],[],helpers.NULL_ADDRESS
+        );
+
+        try {
+          await simpleSchemeConstraints.isAllowedToCall(
+              [accounts[4]],[],[],helpers.NULL_ADDRESS
+          );
+          assert(false, "cannot propose to call to non white list contract");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+        await simpleSchemeConstraints.isAllowedToCall(
+            [accounts[3]],[],[],helpers.NULL_ADDRESS
+        );
+
+
     });
 
 
