@@ -6,6 +6,9 @@ import "../controller/Avatar.sol";
 contract SchemeConstraints {
 
     address[] public contractsWhiteList;
+    //descriptionHash can be used to add detalis description of the constraints.
+    //e.g it can be ipfs hash of the contractsWhiteList abis +names.
+    string public descriptionHash;
 
    /*
     * @dev isAllowedToCall should be called upon a proposal execution.
