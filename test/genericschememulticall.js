@@ -7,11 +7,16 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ActionMock = artifacts.require("./ActionMock.sol");
 const DxDaoSchemeConstraints = artifacts.require("./DxDaoSchemeConstraints.sol");
+const SimpleSchemeConstraints = artifacts.require("./SimpleSchemeConstraints.sol");
 
 export class GenericSchemeParams {
   constructor() {
   }
 }
+
+const DXDAO_SCHEME_CONSTRAINT = 1;
+const SIMPLE_SCHEME_CONSTRAINT = 2;
+
 
 const setupGenericSchemeParams = async function(
                                             genericScheme,
@@ -46,7 +51,7 @@ const setup = async function (accounts,
                               reputationAccount=0,
                               genesisProtocol = false,
                               tokenAddress=helpers.NULL_ADDRESS,
-                              useSchemeConstraint = true) {
+                              useSchemeConstraint = DXDAO_SCHEME_CONSTRAINT) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.genericSchemeMultiCall = await GenericSchemeMultiCall.new();
@@ -60,7 +65,7 @@ const setup = async function (accounts,
      testSetup.org = await helpers.setupOrganizationWithArrays(testSetup.daoCreator,[accounts[0],accounts[1],reputationAccount],[1000,1000,1000],testSetup.reputationArray);
    }
    var schemeConstraintsAddress;
-   if (useSchemeConstraint) {
+   if (useSchemeConstraint === DXDAO_SCHEME_CONSTRAINT) {
       testSetup.schemeConstraints = await DxDaoSchemeConstraints.new();
       schemeConstraintsAddress = testSetup.schemeConstraints.address;
       //use accounts[4] as the avatar.
@@ -71,9 +76,14 @@ const setup = async function (accounts,
                                                    [1000],
                                                    contractsWhiteList,
                                                    testSetup.genericSchemeMultiCall.address);
+    } else if (useSchemeConstraint === SIMPLE_SCHEME_CONSTRAINT) {
+      testSetup.schemeConstraints = await SimpleSchemeConstraints.new();
+      schemeConstraintsAddress = testSetup.schemeConstraints.address;
+      //use accounts[4] as the avatar.
+      await testSetup.schemeConstraints.initialize(contractsWhiteList,"descriptionHash");
     } else {
       schemeConstraintsAddress = helpers.NULL_ADDRESS;
-   }
+    }
    testSetup.genericSchemeParams= await setupGenericSchemeParams(testSetup.genericSchemeMultiCall,accounts,genesisProtocol,tokenAddress,testSetup.org.avatar,schemeConstraintsAddress);
    var permissions = "0x00000010";
 
@@ -184,7 +194,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
        }
     });
 
-    it("execute proposeVote -positive decision - not whitelisted contract", async function() {
+    it("propose call - not whitelisted contract", async function() {
        var actionMock =await ActionMock.new();
        var testSetup = await setup(accounts,[accounts[1]]);
        var callData = await createCallToActionMock(helpers.NULL_ADDRESS,actionMock);
@@ -195,6 +205,22 @@ contract('GenericSchemeMultiCall', function(accounts) {
        } catch(error) {
          helpers.assertVMException(error);
        }
+    });
+
+    it("propose call siplmeConstraint -positive decision - not whitelisted contract", async function() {
+       var actionMock =await ActionMock.new();
+       var testSetup = await setup(accounts,[accounts[1]],0,false,helpers.NULL_ADDRESS,SIMPLE_SCHEME_CONSTRAINT);
+       var callData = await createCallToActionMock(helpers.NULL_ADDRESS,actionMock);
+       try {
+         await testSetup.genericSchemeMultiCall.proposeCalls(
+        [actionMock.address],[callData],[0],helpers.NULL_HASH);
+         assert(false, "contractToCall is not whitelisted");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
+        await testSetup.genericSchemeMultiCall.proposeCalls(
+        [accounts[1]],[callData],[0],helpers.NULL_HASH);
+
     });
 
     it("execute proposeVote without return value-positive decision - check action", async function() {
@@ -431,7 +457,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
         helpers.assertVMException(error);
       }
     });
-  
+
 
     it("can init with multiple contracts on whitelist", async function() {
         var actionMock =await ActionMock.new();
@@ -469,6 +495,48 @@ contract('GenericSchemeMultiCall', function(accounts) {
         assert.equal(contractsWhiteList[3],accounts[3]);
 
     });
+
+    it("init SIMPLE_SCHEME_CONSTRAINT", async function() {
+        var simpleSchemeConstraints =await SimpleSchemeConstraints.new();
+        await simpleSchemeConstraints.initialize(
+              [accounts[0],accounts[1],accounts[2],accounts[3]],
+              "descriptionHash"
+        );
+        var contractsWhiteList = await simpleSchemeConstraints.getContractsWhiteList();
+        assert.equal(contractsWhiteList[0],accounts[0]);
+        assert.equal(contractsWhiteList[1],accounts[1]);
+        assert.equal(contractsWhiteList[2],accounts[2]);
+        assert.equal(contractsWhiteList[3],accounts[3]);
+
+        assert.equal(await simpleSchemeConstraints.descriptionHash(),"descriptionHash");
+      
+        try {
+          await simpleSchemeConstraints.isAllowedToPropose(
+              [accounts[4]],[],[],helpers.NULL_ADDRESS
+          );
+          assert(false, "cannot propose to call to non white list contract");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+        await simpleSchemeConstraints.isAllowedToPropose(
+            [accounts[3]],[],[],helpers.NULL_ADDRESS
+        );
+
+        try {
+          await simpleSchemeConstraints.isAllowedToCall(
+              [accounts[4]],[],[],helpers.NULL_ADDRESS
+          );
+          assert(false, "cannot propose to call to non white list contract");
+        } catch(error) {
+          helpers.assertVMException(error);
+        }
+        await simpleSchemeConstraints.isAllowedToCall(
+            [accounts[3]],[],[],helpers.NULL_ADDRESS
+        );
+
+
+    });
+
 
     it("cannot initialize contraints with zero period", async function() {
       var dxDaoSchemeConstraintsInit =await DxDaoSchemeConstraints.new();
@@ -527,6 +595,24 @@ contract('GenericSchemeMultiCall', function(accounts) {
           [],
           [accounts[0]],
           accounts[0]
+        );
+        assert(false, "cannot initialize twice");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+    });
+
+
+    it("cannot initialize SIMPLE_SCHEME_CONSTRAINT twice", async function() {
+      var simpleSchemeConstraints=await SimpleSchemeConstraints.new();
+      await simpleSchemeConstraints.initialize(
+        [accounts[0]],
+        "descriptionHash"
+      );
+      try {
+        await simpleSchemeConstraints.initialize(
+          [accounts[1]],
+          "descriptionHash"
         );
         assert(false, "cannot initialize twice");
       } catch(error) {
