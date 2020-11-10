@@ -66,8 +66,8 @@ module.exports = async function(deployer) {
       // Voting parameters and schemes params:
       var voteParametersHash = await AbsoluteVoteInst.getParametersHash(votePrec, NULL_ADDRESS);
 
-      await schemeRegistrarInst.setParameters(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);
-      var schemeRegisterParams = await schemeRegistrarInst.getParametersHash(voteParametersHash, voteParametersHash, AbsoluteVoteInst.address);
+      await schemeRegistrarInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
+      var schemeRegisterParams = await schemeRegistrarInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
       await globalConstraintRegistrarInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
       var schemeGCRegisterParams = await globalConstraintRegistrarInst.getParametersHash(voteParametersHash, AbsoluteVoteInst.address);
       await upgradeSchemeInst.setParameters(voteParametersHash, AbsoluteVoteInst.address);
