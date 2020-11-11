@@ -65,10 +65,6 @@ const setup = async function () {
 };
 
 contract('genericSchemeMultiCallFactory', function(accounts) {
-  before(function() {
-    helpers.etherForEveryone(accounts);
-  });
-
   it('initialize', async () => {
     let testSetup = await setup();
     let votingMachine = await helpers.setupGenesisProtocol(accounts,helpers.SOME_ADDRESS,0,helpers.NULL_ADDRESS);
