@@ -23,7 +23,7 @@ contract GenericSchemeMultiCallFactory {
         GenericSchemeMultiCall genericSchemeMultiCall = new GenericSchemeMultiCall();
         address simpleSchemeConstraints;
         if (_contractsWhiteList.length > 0) {
-            simpleSchemeConstraints = new SimpleSchemeConstraints();
+            simpleSchemeConstraints = address(new SimpleSchemeConstraints());
             SimpleSchemeConstraints(simpleSchemeConstraints).initialize(_contractsWhiteList, _descriptionHash);
         }
         
@@ -42,7 +42,7 @@ contract GenericSchemeMultiCallFactory {
             voteParams = _voteParamsHash;
         }
         genericSchemeMultiCall.initialize(
-            _avatar, _votingMachine, voteParams, simpleSchemeConstraints
+            _avatar, _votingMachine, voteParams, SchemeConstraints(simpleSchemeConstraints)
         );
         return address(genericSchemeMultiCall);
     }
