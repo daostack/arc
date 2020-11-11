@@ -13,6 +13,8 @@ contract GenericSchemeMultiCallFactory {
     uint8 public constant NORMAL = 2;
     uint8 public constant SLOW = 3;
 
+    event NewGenericSchemeMultiCall(address indexed genericSchemeMultiCall);
+
     function createGenericSchemeMultiCallSimple(
         Avatar _avatar,
         IntVoteInterface _votingMachine,
@@ -21,7 +23,7 @@ contract GenericSchemeMultiCallFactory {
         address _voteOnBehalf,
         address[] memory _contractsWhiteList,
         string memory _descriptionHash
-    ) public returns(address) {
+    ) external returns(address) {
         GenericSchemeMultiCall genericSchemeMultiCall = new GenericSchemeMultiCall();
         address simpleSchemeConstraints;
         if (_contractsWhiteList.length > 0) {
@@ -91,6 +93,8 @@ contract GenericSchemeMultiCallFactory {
         genericSchemeMultiCall.initialize(
             _avatar, _votingMachine, voteParamsHash, SchemeConstraints(simpleSchemeConstraints)
         );
+
+        emit NewGenericSchemeMultiCall(genericSchemeMultiCall);
         return address(genericSchemeMultiCall);
     }
 }
