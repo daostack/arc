@@ -15,13 +15,14 @@ contract('genericSchemeMultiCallFactory', function(accounts) {
 
   it('initialize', async () => {
     let testSetup = await setup();
-    votingMachine = await helpers.setupGenesisProtocol(accounts,tokenAddress,0,helpers.NULL_ADDRESS);
+    votingMachine = await helpers.setupGenesisProtocol(accounts,helpers.SOME_ADDRESS,0,helpers.NULL_ADDRESS);
 
     testSetup.genericSchemeMultiCallFactory.createGenericSchemeMultiCallSimple(
       helpers.SOME_ADDRESS,
       votingMachine.genesisProtocol.address,
-      0,
-      votingMachine.params,
+      1,
+      [],
+      helpers.NULL_ADDRESS,
       [],
       '0x0'
     );
