@@ -1,7 +1,7 @@
 pragma solidity 0.5.17;
 
-import "./GenericSchemeMultiCall.sol";
-import "./SimpleSchemeConstraints.sol";
+import "../schemes/GenericSchemeMultiCall.sol";
+import "../schemes/SimpleSchemeConstraints.sol";
 import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
 
 /**
