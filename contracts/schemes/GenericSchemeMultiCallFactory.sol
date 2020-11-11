@@ -2,6 +2,7 @@ pragma solidity 0.5.17;
 
 import "./GenericSchemeMultiCall.sol";
 import "./SimpleSchemeConstraints.sol";
+import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
 
 /**
  * @title 
@@ -16,7 +17,8 @@ contract GenericSchemeMultiCallFactory {
         Avatar _avatar,
         IntVoteInterface _votingMachine,
         uint8 _voteParamsType,
-        bytes32 _voteParamsHash,
+        uint256[11] memory _votingParams,
+        address _voteOnBehalf,
         address[] memory _contractsWhiteList,
         string memory _descriptionHash
     ) public returns(address) {
@@ -27,22 +29,67 @@ contract GenericSchemeMultiCallFactory {
             SimpleSchemeConstraints(simpleSchemeConstraints).initialize(_contractsWhiteList, _descriptionHash);
         }
         
-        bytes32 voteParams;
+        uint256[11] memory voteParams;
         if (_voteParamsType == FAST) {
             // Fast params hash
-            voteParams = bytes32(0x1b46f925b15bc0590168247d8df7f72773ca64dec3334183b5387dd3945f7f2e);
+            voteParams = [
+                uint256(50),
+                uint256(604800),
+                uint256(129600),
+                uint256(43200),
+                uint256(1200),
+                uint256(86400),
+                uint256(10000000000000000000),
+                uint256(1),
+                uint256(50000000000000000000),
+                uint256(10),
+                uint256(0)
+            ];
         } else if (_voteParamsType == NORMAL) {
             // Normal params hash
-            voteParams = bytes32(0x2dfa7be2af300c250ab9037a744295d497648ab65f4f27baec5cb0e1d7784240);
+            voteParams = [
+                uint256(50),
+                uint256(2592000),
+                uint256(345600),
+                uint256(86400),
+                uint256(1200),
+                uint256(172800),
+                uint256(50000000000000000000),
+                uint256(4),
+                uint256(150000000000000000000),
+                uint256(10),
+                uint256(0)
+            ];
         } else if (_voteParamsType == SLOW) {
             // Slow params hash
-            voteParams = bytes32(0x5d5931d5f0f6e9dc16afe1b3af57b44f5a83c2c731f372b0294c348a920362ff);
+            voteParams = [
+                uint256(50),
+                uint256(5184000),
+                uint256(691200),
+                uint256(172800),
+                uint256(1500),
+                uint256(345600),
+                uint256(200000000000000000000),
+                uint256(4),
+                uint256(500000000000000000000),
+                uint256(10),
+                uint256(0)
+            ];
         } else {
             // Custom params hash
-            voteParams = _voteParamsHash;
+            voteParams = _votingParams;
+        }
+
+        GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
+        bytes32 voteParamsHash = genesisProtocol.getParametersHash(voteParams, _voteOnBehalf);
+        (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
+        genesisProtocol.parameters(voteParamsHash);
+        if (queuedVoteRequiredPercentage == 0) {
+            //params not set already
+            genesisProtocol.setParameters(voteParams, _voteOnBehalf);
         }
         genericSchemeMultiCall.initialize(
-            _avatar, _votingMachine, voteParams, SchemeConstraints(simpleSchemeConstraints)
+            _avatar, _votingMachine, voteParamsHash, SchemeConstraints(simpleSchemeConstraints)
         );
         return address(genericSchemeMultiCall);
     }
