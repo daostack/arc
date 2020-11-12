@@ -195,6 +195,29 @@ contract('SchemeRegistrar', accounts => {
           var organizationProposal = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
           assert.equal(organizationProposal[2],0);//proposalType
          });
+
+         it("cannot propose in removed scheme", async function() {
+          var testSetup = await setup(accounts);
+
+          var tx = await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address,helpers.NULL_HASH);
+          var proposalId = await helpers.getValueFromLogs(tx, '_proposalId',1);
+          var controller = await Controller.at(await testSetup.org.avatar.owner());
+          assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,testSetup.org.avatar.address),true);
+          //Vote with reputation to trigger execution
+          await testSetup.schemeRegistrarParams.votingMachine.absoluteVote.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+          assert.equal(await controller.isSchemeRegistered(testSetup.schemeRegistrar.address,testSetup.org.avatar.address),false);
+          //check organizationsProposals after execution
+          var organizationProposal = await testSetup.schemeRegistrar.organizationsProposals(testSetup.org.avatar.address,proposalId);
+          assert.equal(organizationProposal[2],0);//proposalType
+
+          try {
+            await testSetup.schemeRegistrar.proposeToRemoveScheme(testSetup.org.avatar.address,testSetup.schemeRegistrar.address,helpers.NULL_HASH);
+            assert(false, "should fail to propose to unregistered scheme");
+          } catch(ex){
+            helpers.assertVMException(ex);
+          }
+         });
+
    it("execute proposeScheme  and execute -yes - autoRegisterOrganization==TRUE arc scheme", async function() {
      var testSetup = await setup(accounts);
 

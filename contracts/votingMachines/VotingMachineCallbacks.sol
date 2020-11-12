@@ -4,6 +4,7 @@ import "../universalSchemes/UniversalScheme.sol";
 import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
 
 
+
 contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
 
     struct ProposalInfo {
@@ -13,6 +14,14 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
 
     modifier onlyVotingMachine(bytes32 _proposalId) {
         require(proposalsInfo[msg.sender][_proposalId].avatar != Avatar(address(0)), "only VotingMachine");
+        _;
+    }
+
+    modifier onlyRegisteredScheme(bytes32 _proposalId) {
+        Avatar avatar = proposalsInfo[msg.sender][_proposalId].avatar;
+        require(Controller(avatar.owner()).isSchemeRegistered(address(this), address(avatar)),
+            "scheme is not registered"
+        );
         _;
     }
 
@@ -67,7 +76,11 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         return _stakingToken.balanceOf(address(avatar));
     }
 
-    function getTotalReputationSupply(bytes32 _proposalId) external view returns(uint256) {
+    function getTotalReputationSupply(bytes32 _proposalId)
+    external
+    view
+    onlyRegisteredScheme(_proposalId)
+    returns(uint256) {
         ProposalInfo memory proposal = proposalsInfo[msg.sender][_proposalId];
         if (proposal.avatar == Avatar(0)) {
             return 0;
@@ -75,7 +88,11 @@ contract VotingMachineCallbacks is VotingMachineCallbacksInterface {
         return proposal.avatar.nativeReputation().totalSupplyAt(proposal.blockNumber);
     }
 
-    function reputationOf(address _owner, bytes32 _proposalId) external view returns(uint256) {
+    function reputationOf(address _owner, bytes32 _proposalId)
+    external
+    view
+    onlyRegisteredScheme(_proposalId)
+    returns(uint256) {
         ProposalInfo memory proposal = proposalsInfo[msg.sender][_proposalId];
         if (proposal.avatar == Avatar(0)) {
             return 0;
