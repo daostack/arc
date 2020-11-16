@@ -1,11 +1,11 @@
 pragma solidity 0.5.17;
 
+import "@daostack/infra/contracts/votingMachines/GenesisProtocolInterface.sol";
 import "../schemes/GenericSchemeMultiCall.sol";
 import "../schemes/SimpleSchemeConstraints.sol";
-import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
 
 /**
- * @title 
+ * @title GenericSchemeMultiCallFactory
  */
 contract GenericSchemeMultiCallFactory {
     uint8 public constant CUSTOM = 0;
@@ -24,14 +24,33 @@ contract GenericSchemeMultiCallFactory {
         address[] memory _contractsWhiteList,
         string memory _descriptionHash
     ) public returns(address) {
+        require(_voteParamsType < 4, "Vote params type specified does not exist");
         GenericSchemeMultiCall genericSchemeMultiCall = new GenericSchemeMultiCall();
         address simpleSchemeConstraints;
         if (_contractsWhiteList.length > 0) {
             simpleSchemeConstraints = address(new SimpleSchemeConstraints());
             SimpleSchemeConstraints(simpleSchemeConstraints).initialize(_contractsWhiteList, _descriptionHash);
         }
-        
         uint256[11] memory voteParams;
+        if (_voteParamsType == CUSTOM) {
+           // Custom params hash
+            voteParams = _votingParams;
+        } else {
+            voteParams = getDefaultVoteParams(_voteParamsType);
+        }
+
+        bytes32 voteParamsHash = GenesisProtocolInterface(address(_votingMachine))
+                                    .setParameters(voteParams, _voteOnBehalf);
+
+        genericSchemeMultiCall.initialize(
+            _avatar, _votingMachine, voteParamsHash, SchemeConstraints(simpleSchemeConstraints)
+        );
+
+        emit NewGenericSchemeMultiCall(address(genericSchemeMultiCall));
+        return address(genericSchemeMultiCall);
+    }
+
+    function getDefaultVoteParams(uint8 _voteParamsType) private pure returns(uint256[11] memory voteParams) {
         if (_voteParamsType == FAST) {
             // Fast params hash
             voteParams = [
@@ -77,24 +96,6 @@ contract GenericSchemeMultiCallFactory {
                 uint256(10),
                 uint256(0)
             ];
-        } else {
-            // Custom params hash
-            voteParams = _votingParams;
         }
-
-        GenesisProtocol genesisProtocol = GenesisProtocol(address(_votingMachine));
-        bytes32 voteParamsHash = genesisProtocol.getParametersHash(voteParams, _voteOnBehalf);
-        (uint256 queuedVoteRequiredPercentage, , , , , , , , , , , ,) =
-        genesisProtocol.parameters(voteParamsHash);
-        if (queuedVoteRequiredPercentage == 0) {
-            //params not set already
-            genesisProtocol.setParameters(voteParams, _voteOnBehalf);
-        }
-        genericSchemeMultiCall.initialize(
-            _avatar, _votingMachine, voteParamsHash, SchemeConstraints(simpleSchemeConstraints)
-        );
-
-        emit NewGenericSchemeMultiCall(address(genericSchemeMultiCall));
-        return address(genericSchemeMultiCall);
     }
 }
