@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc",
-  "version": "0.0.1-rc.49",
+  "version": "0.0.1-rc.50",
   "description": "A platform for building DAOs",
   "files": [
     "contracts/",
@@ -78,7 +78,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra": "0.0.1-rc.19",
+    "@daostack/infra": "0.0.1-rc.20",
     "math": "0.0.3",
     "openzeppelin-solidity": "2.4.0",
     "truffle-flattener": "^1.4.2"

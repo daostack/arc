@@ -1,18 +1,8 @@
 pragma solidity 0.5.17;
 
+import "@daostack/infra/contracts/votingMachines/GenesisProtocolInterface.sol";
 import "../schemes/GenericSchemeMultiCall.sol";
 import "../schemes/SimpleSchemeConstraints.sol";
-
-
-contract GenesisProtocolSetParameterInterface {
-    function setParameters(
-        uint[11] calldata _params, //use array here due to stack too deep issue.
-        address _voteOnBehalf
-    )
-    external
-    returns(bytes32);
-}
-
 
 /**
  * @title GenericSchemeMultiCallFactory
@@ -48,7 +38,7 @@ contract GenericSchemeMultiCallFactory {
             voteParams = getDefaultVoteParams(_voteParamsType);
         }
 
-        bytes32 voteParamsHash = GenesisProtocolSetParameterInterface(address(_votingMachine))
+        bytes32 voteParamsHash = GenesisProtocolInterface(address(_votingMachine))
                                     .setParameters(voteParams, _voteOnBehalf);
 
         genericSchemeMultiCall.initialize(
