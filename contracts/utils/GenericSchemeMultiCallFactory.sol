@@ -24,6 +24,7 @@ contract GenericSchemeMultiCallFactory {
         address[] memory _contractsWhiteList,
         string memory _descriptionHash
     ) public returns(address) {
+        require(_voteParamsType < 4, "Vote params type specified does not exist");
         GenericSchemeMultiCall genericSchemeMultiCall = new GenericSchemeMultiCall();
         address simpleSchemeConstraints;
         if (_contractsWhiteList.length > 0) {

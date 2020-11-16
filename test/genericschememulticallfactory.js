@@ -104,6 +104,21 @@ contract('genericSchemeMultiCallFactory', function(accounts) {
       }
     }
 
+    try {
+      await testSetup.genericSchemeMultiCallFactory.createGenericSchemeMultiCallSimple(
+        helpers.SOME_ADDRESS,
+        votingMachine.genesisProtocol.address,
+        4,
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        helpers.NULL_ADDRESS,
+        [],
+        '0x0'
+      );
+      assert(false, "Vote params type specified does not exist");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
   });
 
 });
