@@ -56,6 +56,17 @@ const constraint = async function (method, pre=false, post=false) {
 
 contract('Controller', accounts =>  {
 
+  it("does not allow mistaken calls", async() => {
+       controller = await setup(accounts);
+       try {
+         await web3.eth.sendTransaction({from:accounts[0],to:controller.address, value: web3.utils.toWei('1', "ether")});
+         assert(false, 'not allow send eth by mistake');
+       } catch (ex) {
+         helpers.assertVMException(ex);
+       }
+
+   });
+
      it("getGlobalConstraintParameters", async() => {
           controller = await setup(accounts);
           // separate cases for pre and post
