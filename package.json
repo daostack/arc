@@ -17,7 +17,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint --fix": "eslint --fix .",
-    "coveralls": "buidler coverage && cat coverage/lcov.info | coveralls"
+    "coveralls": "hardhat coverage && cat coverage/lcov.info | coveralls"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
