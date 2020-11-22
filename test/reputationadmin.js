@@ -89,10 +89,28 @@ contract('reputationAdmin', accounts => {
     } catch (error) {
       helpers.assertVMException(error);
     }
+
+    try {
+      await reputationAdmin.initialize(
+        helpers.NULL_ADDRESS,
+        testSetup.activationStartTime,
+        testSetup.activationStartTime + 1,
+        testSetup.maxRepReward
+      );
+      assert(false, 'avatar cannot be zero');
+    } catch (error) {
+      helpers.assertVMException(error);
+    }
   });
 
   it('mint reputation', async () => {
     let testSetup = await setup(accounts);
+    try {
+      await testSetup.reputationAdmin.reputationMint([accounts[2]],[]);
+      assert(false, 'array mismuch');
+    } catch (error) {
+      helpers.assertVMException(error);
+    }
     await testSetup.reputationAdmin.reputationMint([accounts[2]],[1]);
 
     assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 1);
@@ -103,6 +121,12 @@ contract('reputationAdmin', accounts => {
     await testSetup.reputationAdmin.reputationMint([accounts[2]],[1]);
 
     assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 1);
+    try {
+      await testSetup.reputationAdmin.reputationBurn([accounts[2]],[1,1]);
+      assert(false, 'array mismuch');
+    } catch (error) {
+      helpers.assertVMException(error);
+    }
     await testSetup.reputationAdmin.reputationBurn([accounts[2]],[1]);
     assert.equal(await testSetup.org.reputation.balanceOf(accounts[2]), 0);
 
