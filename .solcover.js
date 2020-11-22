@@ -3,7 +3,6 @@ module.exports = {
    enableTimeouts: false,
    grep: "@skip-on-coverage", // Find everything with this tag
    invert: true,               // Run the grep's inverse set.
-   timeout: 50000,
  },
   skipFiles: ['test/'],
   providerOptions: {
