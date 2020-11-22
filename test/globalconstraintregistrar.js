@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require('./helpers');
 
 const GlobalConstraintRegistrar = artifacts.require("./GlobalConstraintRegistrar.sol");
 const GlobalConstraintMock = artifacts.require('./test/GlobalConstraintMock.sol');
@@ -10,7 +10,7 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 
 
 
-export class GlobalConstraintRegistrarParams {
+class GlobalConstraintRegistrarParams {
   constructor() {
   }
 }

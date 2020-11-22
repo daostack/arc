@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require('./helpers');
 
 const OrganizationRegister = artifacts.require('./OrganizationRegister.sol');
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
@@ -6,7 +6,7 @@ const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
 
-export class OrganizationRegisterParams {
+class OrganizationRegisterParams {
   constructor() {
   }
 }

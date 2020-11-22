@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require('./helpers');
 
 const GenericSchemeMultiCall = artifacts.require('./GenericSchemeMultiCall.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
@@ -9,7 +9,7 @@ const ActionMock = artifacts.require("./ActionMock.sol");
 const DxDaoSchemeConstraints = artifacts.require("./DxDaoSchemeConstraints.sol");
 const SimpleSchemeConstraints = artifacts.require("./SimpleSchemeConstraints.sol");
 
-export class GenericSchemeParams {
+class GenericSchemeParams {
   constructor() {
   }
 }

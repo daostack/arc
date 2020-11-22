@@ -1,11 +1,11 @@
-import * as helpers from './helpers';
+const helpers = require('./helpers');
 
 const SignalScheme = artifacts.require("./SignalScheme.sol");
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 
-export class SignalSchemeParams {
+class SignalSchemeParams {
   constructor() {
   }
 }

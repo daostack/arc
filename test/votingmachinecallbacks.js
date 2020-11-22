@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require('./helpers');
 
 const ERC20Mock = artifacts.require('./test/ERC20Mock.sol');
 const DaoCreator = artifacts.require("./DaoCreator.sol");

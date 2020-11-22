@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require('./helpers');
 const DAOToken   = artifacts.require("./DAOToken.sol");
 const TokenCapGC = artifacts.require('./globalConstraints/TokenCapGC.sol');
 const Controller = artifacts.require("./Controller.sol");

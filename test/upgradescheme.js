@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require('./helpers');
 
 const Controller = artifacts.require("./Controller.sol");
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
@@ -13,7 +13,7 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 
 
 
-export class UpgradeSchemeParams {
+class UpgradeSchemeParams {
   constructor() {
   }
 }

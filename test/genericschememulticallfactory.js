@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require('./helpers');
 
 const GenericSchemeMultiCall = artifacts.require('./GenericSchemeMultiCall.sol');
 const GenericSchemeMultiCallFactory = artifacts.require('./GenericSchemeMultiCallFactory.sol');
