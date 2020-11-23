@@ -1,4 +1,4 @@
-import * as helpers from './helpers';
+const helpers = require('./helpers');
 
 const AbsoluteVote = artifacts.require('./AbsoluteVote.sol');
 const VoteInOrganizationScheme = artifacts.require('./VoteInOrganizationScheme.sol');
@@ -11,7 +11,7 @@ const GenesisProtocolCallbacksMock = artifacts.require("./GenesisProtocolCallbac
 const Reputation = artifacts.require("./Reputation.sol");
 const Controller = artifacts.require("./Controller.sol");
 
-export class VoteInOrganizationParams {
+class VoteInOrganizationParams {
   constructor() {
   }
 }

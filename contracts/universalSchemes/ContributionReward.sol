@@ -11,7 +11,6 @@ import "../votingMachines/VotingMachineCallbacks.sol";
  * @dev An agent can ask an organization to recognize a contribution and reward
  * him with token, reputation, ether or any combination.
  */
-
 contract ContributionReward is UniversalScheme, VotingMachineCallbacks, ProposalExecuteInterface {
     using SafeMath for uint;
 
@@ -82,8 +81,10 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
     */
     function executeProposal(bytes32 _proposalId, int256 _param) external onlyVotingMachine(_proposalId) returns(bool) {
         ProposalInfo memory proposal = proposalsInfo[msg.sender][_proposalId];
-        require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
-        require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
+        require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0,
+        "cannot execute twice");
+        require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0),
+        "proposal must exist");
         // Check if vote was successful:
         if (_param == 1) {
           // solhint-disable-next-line not-rely-on-time
@@ -192,7 +193,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
 
         ContributionProposal memory _proposal = organizationsProposals[address(_avatar)][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[address(_avatar)][_proposalId];
-        require(proposal.executionTime != 0);
+        require(proposal.executionTime != 0, "cannot execute unapproved proposal");
         uint256 periodsToPay = getPeriodsToPay(_proposalId, address(_avatar), 0);
 
         //set proposal reward to zero to prevent reentrancy attack.
@@ -201,11 +202,13 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
         if (reputation > 0) {
             require(
             Controller(
-            _avatar.owner()).mintReputation(uint(reputation), _proposal.beneficiary, address(_avatar)));
+            _avatar.owner()).mintReputation(uint(reputation), _proposal.beneficiary, address(_avatar)),
+            "failed to mint reputation");
         } else if (reputation < 0) {
             require(
             Controller(
-            _avatar.owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary, address(_avatar)));
+            _avatar.owner()).burnReputation(uint(reputation*(-1)), _proposal.beneficiary, address(_avatar)),
+            "failed to burn reputation");
         }
         if (reputation != 0) {
             proposal.redeemedPeriods[0] = proposal.redeemedPeriods[0].add(periodsToPay);
@@ -225,14 +228,15 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
 
         ContributionProposal memory _proposal = organizationsProposals[address(_avatar)][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[address(_avatar)][_proposalId];
-        require(proposal.executionTime != 0);
+        require(proposal.executionTime != 0, "cannot execute unapproved proposal");
         uint256 periodsToPay = getPeriodsToPay(_proposalId, address(_avatar), 1);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.nativeTokenReward = 0;
 
         amount = periodsToPay.mul(_proposal.nativeTokenReward);
         if (amount > 0) {
-            require(Controller(_avatar.owner()).mintTokens(amount, _proposal.beneficiary, address(_avatar)));
+            require(Controller(_avatar.owner()).mintTokens(amount, _proposal.beneficiary, address(_avatar)),
+            "failed to mint tokens");
             proposal.redeemedPeriods[1] = proposal.redeemedPeriods[1].add(periodsToPay);
             emit RedeemNativeToken(address(_avatar), _proposalId, _proposal.beneficiary, amount);
         }
@@ -251,14 +255,15 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
 
         ContributionProposal memory _proposal = organizationsProposals[address(_avatar)][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[address(_avatar)][_proposalId];
-        require(proposal.executionTime != 0);
+        require(proposal.executionTime != 0, "cannot execute unapproved proposal");
         uint256 periodsToPay = getPeriodsToPay(_proposalId, address(_avatar), 2);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.ethReward = 0;
         amount = periodsToPay.mul(_proposal.ethReward);
 
         if (amount > 0) {
-            require(Controller(_avatar.owner()).sendEther(amount, _proposal.beneficiary, _avatar));
+            require(Controller(_avatar.owner()).sendEther(amount, _proposal.beneficiary, _avatar),
+            "failed to send ether");
             proposal.redeemedPeriods[2] = proposal.redeemedPeriods[2].add(periodsToPay);
             emit RedeemEther(address(_avatar), _proposalId, _proposal.beneficiary, amount);
         }
@@ -277,7 +282,7 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
 
         ContributionProposal memory _proposal = organizationsProposals[address(_avatar)][_proposalId];
         ContributionProposal storage proposal = organizationsProposals[address(_avatar)][_proposalId];
-        require(proposal.executionTime != 0);
+        require(proposal.executionTime != 0, "cannot execute unapproved proposal");
         uint256 periodsToPay = getPeriodsToPay(_proposalId, address(_avatar), 3);
         //set proposal rewards to zero to prevent reentrancy attack.
         proposal.externalTokenReward = 0;
@@ -288,7 +293,8 @@ contract ContributionReward is UniversalScheme, VotingMachineCallbacks, Proposal
                 require(
                 Controller(
                 _avatar.owner())
-                .externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount, _avatar));
+                .externalTokenTransfer(_proposal.externalToken, _proposal.beneficiary, amount, _avatar),
+                "failed to transfer external token");
                 proposal.redeemedPeriods[3] = proposal.redeemedPeriods[3].add(periodsToPay);
                 emit RedeemExternalToken(address(_avatar), _proposalId, _proposal.beneficiary, amount);
             }

@@ -12,3 +12,9 @@ coverage.json
 .covera*
 cache/
 yarn*
+
+node_modules
+
+#Hardhat files
+cache
+artifacts
