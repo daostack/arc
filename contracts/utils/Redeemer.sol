@@ -161,7 +161,8 @@ contract Redeemer {
         bool callGenericSchemeMultiCall;
         (gpRewards, gpDaoBountyReward, executed, winningVote, callGenericSchemeMultiCall) =
         genesisProtocolRedeem(_genesisProtocol, _proposalId, _beneficiary);
-        if (callGenericSchemeMultiCall) {
+        let passedAndNotExecuted = _genericSchemeMultiCall.proposals(_proposalId).passed
+        if (callGenericSchemeMultiCall && passedAndNotExecuted) {
             _genericSchemeMultiCall.execute(_proposalId);
         }
     }
