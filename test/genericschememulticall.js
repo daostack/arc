@@ -292,6 +292,37 @@ contract('GenericSchemeMultiCall', function(accounts) {
         });
     });
 
+    it("redeemer should fail if not executed from votingMachine", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
+      const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
+      var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address],[encodeABI],[0],helpers.NULL_HASH);
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+      var redeemer = await Redeemer.new();
+      var redeemRewards = await redeemer.redeemGenericSchemeMultiCall.call(
+        testSetup.genericSchemeMultiCall.address,
+        testSetup.genericSchemeParams.votingMachine.genesisProtocol.address,
+        proposalId,
+        accounts[0]);
+      assert.equal(redeemRewards[0][1],0); //redeemRewards[0] gpRewards
+      assert.equal(redeemRewards[0][2],0);
+      assert.equal(redeemRewards.executed,false);
+      assert.equal(redeemRewards.winningVote,0); // Cannot redeem, so will not get the winning vote
+      tx = await redeemer.redeemGenericSchemeMultiCall(
+        testSetup.genericSchemeMultiCall.address,
+        testSetup.genericSchemeParams.votingMachine.genesisProtocol.address,
+        proposalId,
+        accounts[0]);
+      await testSetup.genericSchemeMultiCall.getPastEvents('ProposalExecuted', {
+          fromBlock: tx.blockNumber,
+          toBlock: 'latest'
+      })
+      .then(function(events){
+          assert.equal(events.length,0);
+     });
+   });
+
     it("execute proposeVote -positive decision - execute with redeemer", async function() {
       var actionMock =await ActionMock.new();
       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
