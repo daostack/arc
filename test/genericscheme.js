@@ -7,6 +7,7 @@ const DAOTracker = artifacts.require("./DAOTracker.sol");
 const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ActionMock = artifacts.require("./ActionMock.sol");
 const Wallet = artifacts.require("./Wallet.sol");
+const Redeemer = artifacts.require("./Redeemer.sol");
 
 class GenericSchemeParams {
   constructor() {
@@ -161,6 +162,43 @@ contract('GenericScheme', function(accounts) {
        }
     });
 
+
+    it("execute proposeVote -positive decision - destination reverts and then active and executed with redeemer", async function() {
+        var actionMock =await ActionMock.new();
+        var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+        var testSetup = await setup(accounts,actionMock.address,0,true,standardTokenMock.address);
+        var activationTime = (await web3.eth.getBlock("latest")).timestamp + 1000;
+        await actionMock.setActivationTime(activationTime);
+        var callData = await new web3.eth.Contract(actionMock.abi).methods.test3().encodeABI();
+        var tx = await testSetup.genericScheme.proposeCall(callData,0,helpers.NULL_HASH);
+        var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+
+        await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+        //actionMock revert because msg.sender is not the _addr param at actionMock thpugh the generic scheme not .
+        var organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
+        assert.equal(organizationProposal.exist,true);//new contract address
+        assert.equal(organizationProposal.passed,true);//new contract address
+        //can call execute
+        await helpers.increaseTime(1001);
+        var redeemer = await Redeemer.new();
+        var redeemRewards = await redeemer.redeemGenericScheme.call(
+          testSetup.genericScheme.address,
+          testSetup.genericSchemeParams.votingMachine.genesisProtocol.address,
+          proposalId,
+          accounts[0]);
+        assert.equal(redeemRewards[0][1],0); //redeemRewards[0] gpRewards
+        assert.equal(redeemRewards[0][2],60);
+        assert.equal(redeemRewards.executed,false); // GP already executed by vote
+        assert.equal(redeemRewards.winningVote,1);
+        tx = await redeemer.redeemGenericScheme(
+          testSetup.genericScheme.address,
+          testSetup.genericSchemeParams.votingMachine.genesisProtocol.address,
+          proposalId,
+          accounts[0]);
+        organizationProposal = await testSetup.genericScheme.organizationProposals(proposalId);
+        assert.equal(organizationProposal.exist,false);//new contract address
+        assert.equal(organizationProposal.passed,false);//new contract address
+    });
 
 
     it("execute proposeVote without return value-positive decision - check action", async function() {
