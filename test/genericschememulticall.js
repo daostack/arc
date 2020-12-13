@@ -8,6 +8,7 @@ const ERC20Mock = artifacts.require("./ERC20Mock.sol");
 const ActionMock = artifacts.require("./ActionMock.sol");
 const DxDaoSchemeConstraints = artifacts.require("./DxDaoSchemeConstraints.sol");
 const SimpleSchemeConstraints = artifacts.require("./SimpleSchemeConstraints.sol");
+const Redeemer = artifacts.require("./Redeemer.sol");
 
 class GenericSchemeParams {
   constructor() {
@@ -290,6 +291,76 @@ contract('GenericSchemeMultiCall', function(accounts) {
              assert.equal(events[0].args._proposalId,proposalId);
         });
     });
+
+    it("redeemer should fail if not executed from votingMachine", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
+      const encodeABI = await new web3.eth.Contract(actionMock.abi).methods.withoutReturnValue(testSetup.org.avatar.address).encodeABI();
+      var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address],[encodeABI],[0],helpers.NULL_HASH);
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+      var redeemer = await Redeemer.new();
+      var redeemRewards = await redeemer.redeemGenericSchemeMultiCall.call(
+        testSetup.genericSchemeMultiCall.address,
+        testSetup.genericSchemeParams.votingMachine.genesisProtocol.address,
+        proposalId,
+        accounts[0]);
+      assert.equal(redeemRewards[0][1],0); //redeemRewards[0] gpRewards
+      assert.equal(redeemRewards[0][2],0);
+      assert.equal(redeemRewards.executed,false);
+      assert.equal(redeemRewards.winningVote,0); // Cannot redeem, so will not get the winning vote
+      tx = await redeemer.redeemGenericSchemeMultiCall(
+        testSetup.genericSchemeMultiCall.address,
+        testSetup.genericSchemeParams.votingMachine.genesisProtocol.address,
+        proposalId,
+        accounts[0]);
+      await testSetup.genericSchemeMultiCall.getPastEvents('ProposalExecuted', {
+          fromBlock: tx.blockNumber,
+          toBlock: 'latest'
+      })
+      .then(function(events){
+          assert.equal(events.length,0);
+     });
+   });
+
+    it("execute proposeVote -positive decision - execute with redeemer", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address);
+      var value = 50000;
+      var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+      var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[value,value],helpers.NULL_HASH);
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+      //transfer some eth to avatar
+      await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
+      assert.equal(await web3.eth.getBalance(actionMock.address),0);
+      await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      var redeemer = await Redeemer.new();
+      var redeemRewards = await redeemer.redeemGenericSchemeMultiCall.call(
+        testSetup.genericSchemeMultiCall.address,
+        testSetup.genericSchemeParams.votingMachine.genesisProtocol.address,
+        proposalId,
+        accounts[0]);
+      assert.equal(redeemRewards[0][1],0); //redeemRewards[0] gpRewards
+      assert.equal(redeemRewards[0][2],60);
+      assert.equal(redeemRewards.executed,false); // GP already executed by vote
+      assert.equal(redeemRewards.winningVote,1);
+      tx = await redeemer.redeemGenericSchemeMultiCall(
+        testSetup.genericSchemeMultiCall.address,
+        testSetup.genericSchemeParams.votingMachine.genesisProtocol.address,
+        proposalId,
+        accounts[0]);
+      await testSetup.genericSchemeMultiCall.getPastEvents('ProposalExecuted', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"ProposalExecuted");
+            assert.equal(events[0].args._proposalId,proposalId);
+       });
+       assert.equal(await web3.eth.getBalance(actionMock.address),value*2);
+   });
+
 
     it("schemeconstrains eth value exceed limit", async function() {
        var actionMock =await ActionMock.new();

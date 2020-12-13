@@ -2,6 +2,8 @@ pragma solidity 0.5.17;
 
 import "../universalSchemes/ContributionReward.sol";
 import "../schemes/ContributionRewardExt.sol";
+import "../schemes/GenericSchemeMultiCall.sol";
+import "../schemes/GenericScheme.sol";
 import "@daostack/infra/contracts/votingMachines/GenesisProtocol.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
@@ -118,6 +120,98 @@ contract Redeemer {
                 (crReputationReward, crNativeTokenReward, crEthReward, crExternalTokenReward) =
                 contributionRewardExtRedeem(_contributionRewardExt, _proposalId);
             }
+        }
+    }
+
+    /**
+     * @dev helper to redeem proposal and execute the multi-call
+     * It calls execute on the proposal if it is not yet executed.
+     * It tries to redeem reputation and stake from the GenesisProtocol.
+     * It tries to execute multi call to contracts from the GenericSchemeMultiCall
+     * This function does not emit events.
+     * A client should listen to GenesisProtocol and GenericSchemeMultiCall events
+     * to monitor redemption and execution operations.
+     * @param _genericSchemeMultiCall GenericSchemeMultiCall scheme
+     * @param _genesisProtocol genesisProtocol
+     * @param _proposalId the ID of the voting in the voting machine
+     * @param _beneficiary beneficiary
+     * @return gpRewards array
+     *          gpRewards[0] - stakerTokenAmount
+     *          gpRewards[1] - voterReputationAmount
+     *          gpRewards[2] - proposerReputationAmount
+     * @return gpDaoBountyReward array
+     *         gpDaoBountyReward[0] - staker dao bounty reward -
+     *                                will be zero for the case there is not enough tokens in avatar for the reward.
+     *         gpDaoBountyReward[1] - staker potential dao bounty reward.
+     * @return executed  bool true or false
+     * @return winningVote
+     *                   1 - executed or closed and the winning vote is YES
+     *                   2 - executed or closed and the winning vote is NO
+     */
+    function redeemGenericSchemeMultiCall(GenericSchemeMultiCall _genericSchemeMultiCall,
+                            GenesisProtocol _genesisProtocol,
+                            bytes32 _proposalId,
+                            address _beneficiary)
+        external
+        returns(uint[3] memory gpRewards,
+                uint[2] memory gpDaoBountyReward,
+                bool executed,
+                uint256 winningVote
+                )
+    {
+        bool callGenericSchemeMultiCall;
+        (gpRewards, gpDaoBountyReward, executed, winningVote, callGenericSchemeMultiCall) =
+        genesisProtocolRedeem(_genesisProtocol, _proposalId, _beneficiary);
+        bool passedAndNotExecuted;
+        (,passedAndNotExecuted) = _genericSchemeMultiCall.proposals(_proposalId);
+        if (callGenericSchemeMultiCall && passedAndNotExecuted) {
+            _genericSchemeMultiCall.execute(_proposalId);
+        }
+    }
+
+    /**
+     * @dev helper to redeem proposal and execute the call
+     * It calls execute on the proposal if it is not yet executed.
+     * It tries to redeem reputation and stake from the GenesisProtocol.
+     * It tries to execute call to contract from the GenericScheme
+     * This function does not emit events.
+     * A client should listen to GenesisProtocol and GenericScheme events
+     * to monitor redemption and execution operations.
+     * @param _genericScheme GenericScheme scheme
+     * @param _genesisProtocol genesisProtocol
+     * @param _proposalId the ID of the voting in the voting machine
+     * @param _beneficiary beneficiary
+     * @return gpRewards array
+     *          gpRewards[0] - stakerTokenAmount
+     *          gpRewards[1] - voterReputationAmount
+     *          gpRewards[2] - proposerReputationAmount
+     * @return gpDaoBountyReward array
+     *         gpDaoBountyReward[0] - staker dao bounty reward -
+     *                                will be zero for the case there is not enough tokens in avatar for the reward.
+     *         gpDaoBountyReward[1] - staker potential dao bounty reward.
+     * @return executed  bool true or false
+     * @return winningVote
+     *                   1 - executed or closed and the winning vote is YES
+     *                   2 - executed or closed and the winning vote is NO
+     */
+    function redeemGenericScheme(GenericScheme _genericScheme,
+                            GenesisProtocol _genesisProtocol,
+                            bytes32 _proposalId,
+                            address _beneficiary)
+        external
+        returns(uint[3] memory gpRewards,
+                uint[2] memory gpDaoBountyReward,
+                bool executed,
+                uint256 winningVote
+                )
+    {
+        bool callGenericScheme;
+        (gpRewards, gpDaoBountyReward, executed, winningVote, callGenericScheme) =
+        genesisProtocolRedeem(_genesisProtocol, _proposalId, _beneficiary);
+        bool passedAndNotExecuted;
+        (,,,passedAndNotExecuted) = _genericScheme.organizationProposals(_proposalId);
+        if (callGenericScheme && passedAndNotExecuted) {
+            _genericScheme.execute(_proposalId);
         }
     }
 
