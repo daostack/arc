@@ -6,8 +6,10 @@ git checkout origin/master
 echo "npm install ..."
 npm i
 echo "truffle compile ..."
-npm hardhat clean
+npx hardhat clean
 npx hardhat compile
+echo "extract-abis"
+npm run extractabis
 # publish npm
 echo "Publishing to npm..."
 npm publish
