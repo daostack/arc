@@ -12,7 +12,7 @@ import "./SchemeConstraints.sol";
  * @dev  A scheme for proposing and executing calls to multiple arbitrary function
  * on one or multiple contracts on behalf of the organization avatar.
  */
-contract GenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterface {
+contract DxDaoGenericSchemeMultiCall is VotingMachineCallbacks, ProposalExecuteInterface {
     using SafeMath for uint256;
 
     // Details of a voting proposal:
