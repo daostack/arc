@@ -52,7 +52,8 @@ const setup = async function (accounts,
                               reputationAccount=0,
                               genesisProtocol = false,
                               tokenAddress=helpers.NULL_ADDRESS,
-                              useSchemeConstraint = DXDAO_SCHEME_CONSTRAINT) {
+                              useSchemeConstraint = DXDAO_SCHEME_CONSTRAINT,
+                              enableSendEth = true) {
    var testSetup = new helpers.TestSetup();
    testSetup.standardTokenMock = await ERC20Mock.new(accounts[1],100);
    testSetup.genericSchemeMultiCall = await GenericSchemeMultiCall.new();
@@ -81,7 +82,7 @@ const setup = async function (accounts,
       testSetup.schemeConstraints = await SimpleSchemeConstraints.new();
       schemeConstraintsAddress = testSetup.schemeConstraints.address;
       //use accounts[4] as the avatar.
-      await testSetup.schemeConstraints.initialize(contractsWhiteList,"descriptionHash");
+      await testSetup.schemeConstraints.initialize(contractsWhiteList,"descriptionHash",enableSendEth);
     } else {
       schemeConstraintsAddress = helpers.NULL_ADDRESS;
     }
@@ -290,6 +291,60 @@ contract('GenericSchemeMultiCall', function(accounts) {
              assert.equal(events[0].event,"ProposalExecuted");
              assert.equal(events[0].args._proposalId,proposalId);
         });
+    });
+
+    it("execute proposeVote -positive decision - check action - with GenesisProtocol - with simpleSchemeConstraints", async function() {
+       var actionMock =await ActionMock.new();
+       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address,SIMPLE_SCHEME_CONSTRAINT);
+       var value = 50000;
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+       var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[value,value],helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       //transfer some eth to avatar
+       await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
+       assert.equal(await web3.eth.getBalance(actionMock.address),0);
+       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       tx = await testSetup.genericSchemeMultiCall.execute(proposalId);
+       await testSetup.genericSchemeMultiCall.getPastEvents('ProposalExecuted', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"ProposalExecuted");
+             assert.equal(events[0].args._proposalId,proposalId);
+        });
+        assert.equal(await web3.eth.getBalance(actionMock.address),value*2);
+    });
+
+    it("execute proposeVote -positive decision - check action - with simpleSchemeConstraints disableSendEth", async function() {
+       var actionMock =await ActionMock.new();
+       var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+       var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address,SIMPLE_SCHEME_CONSTRAINT,false);
+       var value = 50000;
+       var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+       try {
+         await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[value,value],helpers.NULL_HASH);
+         assert(false, "sendEth is not allowed");
+       } catch(error) {
+         helpers.assertVMException(error);
+       }
+       var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[0,0],helpers.NULL_HASH);
+       var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+       //transfer some eth to avatar
+       await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
+       assert.equal(await web3.eth.getBalance(actionMock.address),0);
+       await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+       tx = await testSetup.genericSchemeMultiCall.execute(proposalId);
+       await testSetup.genericSchemeMultiCall.getPastEvents('ProposalExecuted', {
+             fromBlock: tx.blockNumber,
+             toBlock: 'latest'
+         })
+         .then(function(events){
+             assert.equal(events[0].event,"ProposalExecuted");
+             assert.equal(events[0].args._proposalId,proposalId);
+        });
+        assert.equal(await web3.eth.getBalance(actionMock.address),0);
     });
 
     it("redeemer should fail if not executed from votingMachine", async function() {
@@ -571,7 +626,8 @@ contract('GenericSchemeMultiCall', function(accounts) {
         var simpleSchemeConstraints =await SimpleSchemeConstraints.new();
         await simpleSchemeConstraints.initialize(
               [accounts[0],accounts[1],accounts[2],accounts[3]],
-              "descriptionHash"
+              "descriptionHash",
+              true
         );
         var contractsWhiteList = await simpleSchemeConstraints.getContractsWhiteList();
         assert.equal(contractsWhiteList[0],accounts[0]);
@@ -580,7 +636,7 @@ contract('GenericSchemeMultiCall', function(accounts) {
         assert.equal(contractsWhiteList[3],accounts[3]);
 
         assert.equal(await simpleSchemeConstraints.descriptionHash(),"descriptionHash");
-      
+
         try {
           await simpleSchemeConstraints.isAllowedToPropose(
               [accounts[4]],[],[],helpers.NULL_ADDRESS
@@ -678,12 +734,14 @@ contract('GenericSchemeMultiCall', function(accounts) {
       var simpleSchemeConstraints=await SimpleSchemeConstraints.new();
       await simpleSchemeConstraints.initialize(
         [accounts[0]],
-        "descriptionHash"
+        "descriptionHash",
+        true
       );
       try {
         await simpleSchemeConstraints.initialize(
           [accounts[1]],
-          "descriptionHash"
+          "descriptionHash",
+          true
         );
         assert(false, "cannot initialize twice");
       } catch(error) {
