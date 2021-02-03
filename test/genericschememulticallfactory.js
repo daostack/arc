@@ -77,6 +77,7 @@ contract('genericSchemeMultiCallFactory', function(accounts) {
         (i === 0 ? params[0] : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
         helpers.NULL_ADDRESS,
         (i === 0 ? [helpers.SOME_ADDRESS] : []),
+        true,
         '0x0'
       );
 
@@ -87,6 +88,7 @@ contract('genericSchemeMultiCallFactory', function(accounts) {
         (i === 0 ? params[0] : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
         helpers.NULL_ADDRESS,
         (i === 0 ? [helpers.SOME_ADDRESS] : []),
+        true,
         '0x0'
       );
 
@@ -112,6 +114,7 @@ contract('genericSchemeMultiCallFactory', function(accounts) {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         helpers.NULL_ADDRESS,
         [],
+        true,
         '0x0'
       );
       assert(false, "Vote params type specified does not exist");
