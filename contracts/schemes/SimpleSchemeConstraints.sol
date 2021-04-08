@@ -9,6 +9,7 @@ contract SimpleSchemeConstraints is SchemeConstraints {
 
     mapping(address=>bool) public contractsWhiteListMap;
     bool public initialized;
+    bool public enableWhitelisting;
     bool public enableSendEth;
 
     /* @dev initialize
@@ -29,6 +30,7 @@ contract SimpleSchemeConstraints is SchemeConstraints {
         contractsWhiteList = _contractsWhiteList;
         descriptionHash = _descriptionHash;
         enableSendEth = _enableSendEth;
+        enableWhitelisting = _contractsWhiteList.length > 0;
     }
 
     /*
@@ -47,7 +49,7 @@ contract SimpleSchemeConstraints is SchemeConstraints {
     returns(bool)
     {
         for (uint i = 0; i < _contractsToCall.length; i++) {
-            require(contractsWhiteListMap[_contractsToCall[i]], "contract not whitelisted");
+            require(!enableWhitelisting || contractsWhiteListMap[_contractsToCall[i]], "contract not whitelisted");
             if (!enableSendEth) {
                 require(_values[i] == 0, "sending eth is not allowed");
             }
@@ -70,7 +72,7 @@ contract SimpleSchemeConstraints is SchemeConstraints {
     returns(bool)
     {
         for (uint i = 0; i < _contractsToCall.length; i++) {
-            require(contractsWhiteListMap[_contractsToCall[i]], "contract not whitelisted");
+            require(!enableWhitelisting || contractsWhiteListMap[_contractsToCall[i]], "contract not whitelisted");
             if (!enableSendEth) {
                 require(_values[i] == 0, "sending eth is not allowed");
             }
