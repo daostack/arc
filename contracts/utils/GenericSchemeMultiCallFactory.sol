@@ -28,7 +28,7 @@ contract GenericSchemeMultiCallFactory {
         require(_voteParamsType < 4, "Vote params type specified does not exist");
         GenericSchemeMultiCall genericSchemeMultiCall = new GenericSchemeMultiCall();
         address simpleSchemeConstraints;
-        if (_contractsWhiteList.length > 0) {
+        if (_contractsWhiteList.length > 0 || !_enableSendEth) {
             simpleSchemeConstraints = address(new SimpleSchemeConstraints());
             SimpleSchemeConstraints(simpleSchemeConstraints)
             .initialize(_contractsWhiteList, _descriptionHash, _enableSendEth);

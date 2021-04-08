@@ -211,11 +211,11 @@ contract('GenericSchemeMultiCall', function(accounts) {
 
     it("propose call siplmeConstraint -positive decision - not whitelisted contract", async function() {
        var actionMock =await ActionMock.new();
-       var testSetup = await setup(accounts,[accounts[1]],0,false,helpers.NULL_ADDRESS,SIMPLE_SCHEME_CONSTRAINT);
+       var testSetup = await setup(accounts,[],0,false,helpers.NULL_ADDRESS,SIMPLE_SCHEME_CONSTRAINT, false);
        var callData = await createCallToActionMock(helpers.NULL_ADDRESS,actionMock);
        try {
          await testSetup.genericSchemeMultiCall.proposeCalls(
-        [actionMock.address],[callData],[0],helpers.NULL_HASH);
+        [accounts[1]],[callData],[1],helpers.NULL_HASH);
          assert(false, "contractToCall is not whitelisted");
        } catch(error) {
          helpers.assertVMException(error);
@@ -346,6 +346,36 @@ contract('GenericSchemeMultiCall', function(accounts) {
         });
         assert.equal(await web3.eth.getBalance(actionMock.address),0);
     });
+
+    it("execute proposeVote -positive decision - check action - with simpleSchemeConstraints disableSendEth and no whitelist", async function() {
+      var actionMock =await ActionMock.new();
+      var standardTokenMock = await ERC20Mock.new(accounts[0],1000);
+      var testSetup = await setup(accounts,[actionMock.address],0,true,standardTokenMock.address,SIMPLE_SCHEME_CONSTRAINT,false);
+      var value = 50000;
+      var callData = await createCallToActionMock(testSetup.org.avatar.address,actionMock);
+      try {
+        await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[value,value],helpers.NULL_HASH);
+        assert(false, "sendEth is not allowed");
+      } catch(error) {
+        helpers.assertVMException(error);
+      }
+      var tx = await testSetup.genericSchemeMultiCall.proposeCalls([actionMock.address,actionMock.address],[callData,callData],[0,0],helpers.NULL_HASH);
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
+      //transfer some eth to avatar
+      await web3.eth.sendTransaction({from:accounts[0],to:testSetup.org.avatar.address, value: web3.utils.toWei('1', "ether")});
+      assert.equal(await web3.eth.getBalance(actionMock.address),0);
+      await testSetup.genericSchemeParams.votingMachine.genesisProtocol.vote(proposalId,1,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+      tx = await testSetup.genericSchemeMultiCall.execute(proposalId);
+      await testSetup.genericSchemeMultiCall.getPastEvents('ProposalExecuted', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].event,"ProposalExecuted");
+            assert.equal(events[0].args._proposalId,proposalId);
+       });
+       assert.equal(await web3.eth.getBalance(actionMock.address),0);
+   });
 
     it("redeemer should fail if not executed from votingMachine", async function() {
       var actionMock =await ActionMock.new();

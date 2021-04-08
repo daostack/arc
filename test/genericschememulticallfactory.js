@@ -124,4 +124,59 @@ contract('genericSchemeMultiCallFactory', function(accounts) {
 
   });
 
+  it('initialize - sendEth disabled', async () => {
+    let testSetup = await setup();
+    let votingMachine = await helpers.setupGenesisProtocol(accounts,helpers.SOME_ADDRESS,0,helpers.NULL_ADDRESS);
+
+    for (let i=0; i < 4; i++) {
+      let address = await testSetup.genericSchemeMultiCallFactory.createGenericSchemeMultiCallSimple.call(
+        helpers.SOME_ADDRESS,
+        votingMachine.genesisProtocol.address,
+        i,
+        (i === 0 ? params[0] : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+        helpers.NULL_ADDRESS,
+        (i === 0 ? [helpers.SOME_ADDRESS] : []),
+        false,
+        '0x0'
+      );
+
+      await testSetup.genericSchemeMultiCallFactory.createGenericSchemeMultiCallSimple(
+        helpers.SOME_ADDRESS,
+        votingMachine.genesisProtocol.address,
+        i,
+        (i === 0 ? params[0] : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+        helpers.NULL_ADDRESS,
+        (i === 0 ? [helpers.SOME_ADDRESS] : []),
+        false,
+        '0x0'
+      );
+
+      let genericSchemeMultiCall = await GenericSchemeMultiCall.at(address);
+      assert.equal(await genericSchemeMultiCall.avatar(), helpers.SOME_ADDRESS);
+      assert.equal(await genericSchemeMultiCall.votingMachine(), votingMachine.genesisProtocol.address);
+      assert.equal(
+        await genericSchemeMultiCall.voteParams(),
+        await votingMachine.genesisProtocol.getParametersHash(params[i], helpers.NULL_ADDRESS)
+      );
+      assert.notEqual(await genericSchemeMultiCall.schemeConstraints(), helpers.NULL_ADDRESS);
+    }
+
+    try {
+      await testSetup.genericSchemeMultiCallFactory.createGenericSchemeMultiCallSimple(
+        helpers.SOME_ADDRESS,
+        votingMachine.genesisProtocol.address,
+        4,
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        helpers.NULL_ADDRESS,
+        [],
+        true,
+        '0x0'
+      );
+      assert(false, "Vote params type specified does not exist");
+    } catch(error) {
+      helpers.assertVMException(error);
+    }
+
+  });
+
 });
