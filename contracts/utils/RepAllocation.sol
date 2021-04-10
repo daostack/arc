@@ -1,6 +1,7 @@
 pragma solidity 0.5.17;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/cryptography/MerkleProof.sol";
 
 
 /**
@@ -11,12 +12,15 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  */
 contract RepAllocation is Ownable {
 
+    using MerkleProof for bytes32[];
 
        // beneficiary -> amount
     mapping(address   =>   uint256) public reputationAllocations;
+    mapping(bytes32 => bool) public reputationAllocationsRoots;
     bool public isFreeze;
 
     event BeneficiaryAddressAdded(address indexed _beneficiary, uint256 indexed _amount);
+    event BeneficiaryAddressAddedByRoot(bytes32 indexed root, address[] _beneficiaries, uint256[] _amounts);
 
     /**
      * @dev addBeneficiary function
@@ -32,7 +36,7 @@ contract RepAllocation is Ownable {
     }
 
     /**
-     * @dev add addBeneficiaries function
+     * @dev add beneficiaries array function
      * @param _beneficiaries addresses
      */
     function addBeneficiaries(address[] memory _beneficiaries, uint256[] memory _amounts) public onlyOwner {
@@ -40,6 +44,37 @@ contract RepAllocation is Ownable {
         for (uint256 i = 0; i < _beneficiaries.length; i++) {
             addBeneficiary(_beneficiaries[i], _amounts[i]);
         }
+    }
+
+    /**
+     * @dev add beneficiaries by merkle root function
+     * @param _root Merkle Tree root
+     * @param _beneficiaries user addresses
+     * @param _amounts allocations
+     */
+    function addBeneficiariesRoot(
+        bytes32 _root,
+        address[] memory _beneficiaries,
+        uint256[] memory _amounts
+    ) public onlyOwner {
+        require(!reputationAllocationsRoots[_root]);
+        reputationAllocationsRoots[_root] = true;
+        emit BeneficiaryAddressAddedByRoot(_root, _beneficiaries, _amounts);
+    }
+
+    /**
+     * @dev reveal beneficiary from previously submitted merkle root function
+     * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/cryptography/MerkleProof.sol
+     * @param _beneficiary user address
+     * @param _amount allocation
+     * @param _root Merkle root
+     * @param _proof Merkle proof related to previously submitted Merkle root
+     */
+    function revealBeneficiary(address _beneficiary, uint256 _amount, bytes32 _root, bytes32[] memory _proof) public {
+        require(reputationAllocationsRoots[_root], "Root does not exist");
+        bytes32 leaf = keccak256(abi.encodePacked(_beneficiary, _amount));
+        require(_proof.verify(_root, leaf));
+        addBeneficiary(_beneficiary, _amount);
     }
 
     /**

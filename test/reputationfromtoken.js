@@ -1,4 +1,5 @@
 const helpers = require('./helpers');
+const { MerkleTree } = require('./merkleTree.js');
 const DaoCreator = artifacts.require("./DaoCreator.sol");
 const ControllerCreator = artifacts.require("./ControllerCreator.sol");
 const DAOTracker = artifacts.require("./DAOTracker.sol");
@@ -96,7 +97,7 @@ const redeem = async function(_testSetup,_beneficiary,_agreementHash, _redeemer,
   return tx;
 };
 
-contract('ReputationFromToken and RepAllocation', accounts => {
+contract.only('ReputationFromToken and RepAllocation', accounts => {
     it("initialize", async () => {
       let testSetup = await setup(accounts);
       assert.equal(await testSetup.reputationFromToken.tokenContract(),testSetup.repAllocation.address);
@@ -141,6 +142,42 @@ contract('ReputationFromToken and RepAllocation', accounts => {
       let testSetup = await setup(accounts);
       let tx = await testSetup.repAllocation.addBeneficiaries([accounts[3],accounts[4]],[300,400]);
       assert.equal(tx.logs.length,2);
+    });
+
+    it("repAllocation addBeneficiariesRoot", async () => {
+      let testSetup = await setup(accounts);
+
+      // Backend side code:
+
+      const elements = [
+        accounts[3] + (100).toString(16).padStart(64, '0'),
+        accounts[4] + (200).toString(16).padStart(64, '0'),
+      ];
+      const merkleTree = new MerkleTree(elements);
+
+      const tx = await testSetup.repAllocation.addBeneficiariesRoot(
+        merkleTree.getHexRoot(),
+        [accounts[3], accounts[4]],
+        [100, 200]
+      );
+      assert(await testSetup.repAllocation.balanceOf(accounts[3]),0);
+      assert(await testSetup.repAllocation.balanceOf(accounts[4]),0);
+
+      // Client side code:
+
+      const beneficiaries = tx.logs[0].args._beneficiaries;
+      const amounts = tx.logs[0].args._amounts;
+
+      const elementsOnClientSide = beneficiaries.map((beneficiary, i) =>
+        '0x' + beneficiary.substring(2) + amounts[i].toString(16).padStart(64, '0'),
+      );
+      const merkleTreeOnClientSide = new MerkleTree(elementsOnClientSide);
+
+      await testSetup.repAllocation.revealBeneficiary(beneficiaries[0],amounts[0],merkleTree.getHexRoot(),merkleTreeOnClientSide.getProof(elementsOnClientSide[0]));
+      assert(await testSetup.repAllocation.balanceOf(accounts[3]),100);
+
+      await testSetup.repAllocation.revealBeneficiary(beneficiaries[1],amounts[1],merkleTree.getHexRoot(),merkleTreeOnClientSide.getProof(elementsOnClientSide[1]));
+      assert(await testSetup.repAllocation.balanceOf(accounts[4]),200);
     });
 
 
