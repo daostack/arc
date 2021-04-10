@@ -44,6 +44,23 @@ contract('Avatar',  accounts =>  {
 
     });
 
+    it("generic call - must call to contract", async () => {
+        avatar = await setup(accounts);
+        let actionMock = await ActionMock.new();
+        var scheme = await UniversalSchemeMock.new();
+        await avatar.transferOwnership(scheme.address);
+        let a = 7;
+        let b = actionMock.address;
+        let c = "0x1234";
+        await web3.eth.sendTransaction({from:accounts[0],to:avatar.address, value: web3.utils.toWei('1', "ether")});
+        try{
+          await scheme.genericCallDirect.call(avatar.address,helpers.SOME_ADDRESS,a,b,c,100);
+          assert(false, "genericAction must call to contract");
+         } catch (ex) {
+             helpers.assertVMException(ex);
+        }
+    });
+
     it("generic call should not revert if action revert", async () => {
         avatar = await setup(accounts);
         let actionMock = await ActionMock.new();

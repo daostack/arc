@@ -5,6 +5,7 @@ import "./DAOToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "../libs/SafeERC20.sol";
+import "openzeppelin-solidity/contracts/utils/Address.sol";
 
 
 /**
@@ -12,6 +13,7 @@ import "../libs/SafeERC20.sol";
  */
 contract Avatar is Ownable {
     using SafeERC20 for address;
+    using Address for address;
 
     string public orgName;
     DAOToken public nativeToken;
@@ -54,6 +56,8 @@ contract Avatar is Ownable {
     public
     onlyOwner
     returns(bool success, bytes memory returnValue) {
+
+        require(_contract.isContract(), "address must be a contract");
       // solhint-disable-next-line avoid-call-value
         (success, returnValue) = _contract.call.value(_value)(_data);
         emit GenericCall(_contract, _data, _value, success);
